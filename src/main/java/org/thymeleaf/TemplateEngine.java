@@ -19,57 +19,34 @@
  */
 package org.thymeleaf;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.attoparser.select.IMarkupSelectorReferenceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.cache.StandardCacheManager;
-import org.thymeleaf.context.AbstractContext;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.context.DialectAwareProcessingContext;
 import org.thymeleaf.context.IContext;
-import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.context.IWebContext;
-import org.thymeleaf.context.WebContext;
 import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.dom.Document;
-import org.thymeleaf.dom.Node;
-import org.thymeleaf.exceptions.ConfigurationException;
-import org.thymeleaf.exceptions.NotInitializedException;
+import org.thymeleaf.engine.TemplateProcessor;
 import org.thymeleaf.exceptions.TemplateEngineException;
-import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateOutputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
-import org.thymeleaf.resource.IResource;
-import org.thymeleaf.resource.ReaderResource;
-import org.thymeleaf.resourceresolver.IResourceResolver;
-import org.thymeleaf.templatemode.ITemplateModeHandler;
-import org.thymeleaf.templatemode.StandardTemplateModeHandlers;
-import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.templateresolver.ITemplateResolver;
-import org.thymeleaf.templateresolver.TemplateResolution;
-import org.thymeleaf.templatewriter.ITemplateWriter;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.text.TextRepositories;
-import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -130,19 +107,12 @@ import org.thymeleaf.util.Validate;
  *       </ul>
  *   </li>
  *   <li>One or more <b>Message Resolvers</b> (instances of {@link IMessageResolver}), in
- *       charge of resolving externalized messages. If no message resolver is explicitly set, the default
- *       setting specified by {@link #setDefaultMessageResolvers(Set)} will be applied (this
- *       default setting defaults itself to a single instance of {@link StandardMessageResolver}). 
+ *       charge of resolving externalized messages. If no message resolver is explicitly set, it will default
+ *       to a single instance of {@link StandardMessageResolver}).
  *       If only one message resolver is set, the {@link #setMessageResolver(IMessageResolver)} method
  *       can be used for this. If more resolvers are to be set, both the
  *       {@link #setMessageResolvers(Set)} and {@link #addMessageResolver(IMessageResolver)} methods
  *       can be used.</li>
- *   <li>A set of <b>Template Mode Handlers</b> (instances of {@link ITemplateModeHandler}, which will
- *       take care of reading/parsing templates and also writing the results of processing them for a 
- *       specific template mode. The presence of these template mode handlers defines which are the valid
- *       values for the <tt>templateMode</tt> attribute of template resolution results 
- *       ({@link TemplateResolution#getTemplateMode()}). If not explicitly set, template mode handlers
- *       will be initialized to {@link StandardTemplateModeHandlers#ALL_TEMPLATE_MODE_HANDLERS}. 
  *   <li>A <b>Cache Manager</b> (instance of {@link ICacheManager}. The Cache Manager is in charge of
  *       providing the cache objects (instances of {@link org.thymeleaf.cache.ICache}) to be used for
  *       caching (at least) templates, fragments, messages and expressions. By default, a 
@@ -246,16 +216,19 @@ public final class TemplateEngine implements ITemplateEngine {
 
     private static final int NANOS_IN_SECOND = 1000000;
 
-    private final Set<DialectConfiguration> dialectConfigurations;
-    private final Set<ITemplateResolver> templateResolvers;
-    private final Set<IMessageResolver> messageResolvers;
-    private final ICacheManager cacheManager;
+    private final AtomicBoolean initialized = new AtomicBoolean(false);
 
+    private final Set<DialectConfiguration> dialectConfigurations = new LinkedHashSet<DialectConfiguration>(3);
+    private final Set<ITemplateResolver> templateResolvers = new LinkedHashSet<ITemplateResolver>(3);
+    private final Set<IMessageResolver> messageResolvers = new LinkedHashSet<IMessageResolver>(3);
+    private ICacheManager cacheManager = null;
+
+    // TODO Make this configurable!
     private final ITextRepository textRepository = TextRepositories.createLimitedSizeCacheRepository();
 
 
-    private final Configuration configuration;
-    private TemplateRepository templateRepository;
+    private IEngineConfiguration configuration = null;
+    private TemplateProcessor templateProcessor = null;
 
 
 
@@ -272,61 +245,136 @@ public final class TemplateEngine implements ITemplateEngine {
      */
     public TemplateEngine() {
         super();
-        this.configuration = new Configuration();
         setCacheManager(new StandardCacheManager());
-        setDefaultMessageResolvers(Collections.singleton(new StandardMessageResolver()));
-        setDefaultTemplateModeHandlers(StandardTemplateModeHandlers.ALL_TEMPLATE_MODE_HANDLERS);
+        setMessageResolver(new StandardMessageResolver());
+        setDialect(new StandardDialect());
     }
 
-    
-    
+
+
+
+    private void checkNotInitialized() {
+        if (this.initialized.get()) {
+            throw new IllegalStateException(
+                    "Template engine has already been initialized (probably because it has already been executed or " +
+                    "a fully-built Configuration object has been requested from it. At this state, no modifications on " +
+                    "its configuration are allowed.");
+        }
+    }
+
+
+
+
+
+
+
 
 
     /**
      * <p>
-     *   Checks whether the <tt>TemplateEngine</tt> has already been initialized
-     *   or not. A <tt>TemplateEngine</tt> is initialized when the {@link #initialize()}
-     *   method is called the first time a template is processed.
+     *   Internal method that initializes the Template Engine instance. This method
+     *   is called before the first execution of {@link #process(String, IContext)}
+     *   in order to create all the structures required for a quick execution of
+     *   templates.
      * </p>
      * <p>
-     *   Normally, there is no good reason why users would need to call this method.
+     *   THIS METHOD IS INTERNAL AND SHOULD <b>NEVER</b> BE CALLED DIRECTLY.
      * </p>
-     * 
-     * @return <tt>true</tt> if the template engine has already been initialized,
-     *         <tt>false</tt> if not.
+     * <p>
+     *   If a subclass of <tt>TemplateEngine</tt> needs additional steps for
+     *   initialization, the {@link #initializeSpecific()} method should
+     *   be overridden.
+     * </p>
      */
-    public final boolean isInitialized() {
-        return this.initialized;
+    private void initialize() {
+
+        if (!this.initialized.get()) {
+
+            synchronized (this.initialized) {
+
+                if (!this.initialized.get()) {
+
+                    logger.info("[THYMELEAF] INITIALIZING TEMPLATE ENGINE");
+
+                    this.configuration =
+                            new EngineConfiguration(this.templateResolvers, this.messageResolvers, this.dialectConfigurations, this.cacheManager, this.textRepository);
+                    this.templateProcessor = new TemplateProcessor(this.configuration);
+
+                    initializeSpecific();
+
+                    this.initialized.set(true);
+
+                    // Log configuration details
+                    ConfigurationPrinterHelper.printConfiguration(this.configuration);
+
+                    logger.info("[THYMELEAF] TEMPLATE ENGINE INITIALIZED");
+
+                }
+
+            }
+
+        }
+
     }
 
 
-    
+
+    /**
+     * <p>
+     *   This method performs additional initializations required for a
+     *   <tt>TemplateEngine</tt>. It is called by {@link #initialize()}.
+     * </p>
+     * <p>
+     *   The implementation of this method does nothing, and it is designed
+     *   for being overridden by subclasses of <tt>TemplateEngine</tt>.
+     * </p>
+     */
+    protected void initializeSpecific() {
+        // Nothing to be executed here. Meant for extension
+    }
+
+
+
+
+
+
     /**
      * <p>
      *   Returns the configuration object.
      * </p>
+     * <p>
+     *   Note that calling this method will effectively <em>initialize</em> the engine object, and therefore
+     *   any modifications to the configuration will be forbidden from that moment.
+     * </p>
      * 
      * @return the current configuration
      */
-    public Configuration getConfiguration() {
+    public IEngineConfiguration getConfiguration() {
+        if (!this.initialized.get()) {
+            initialize();
+        }
         return this.configuration;
     }
     
     
     /**
      * <p>
-     *   Returns the template repository. Normally there is no reason why users
+     *   Returns the template processor. Normally there is no reason why users
      *   would want to obtain or use this object directly (and it is not recommended
      *   behaviour).
      * </p>
-     * 
-     * @return the template repository
+     * <p>
+     *   Note that calling this method will effectively <em>initialize</em> the engine object, and therefore
+     *   any modifications to the configuration will be forbidden from that moment.
+     * </p>
+     *
+     * @return the template processor
      */
-    public TemplateRepository getTemplateRepository() {
-        if (!isInitialized()) {
-            throw new NotInitializedException("Template Engine has not been initialized");
+    public TemplateProcessor getTemplateProcessor() {
+        if (!this.initialized.get()) {
+            initialize();
         }
-        return this.templateRepository;
+        return this.templateProcessor;
     }
 
     
@@ -336,9 +384,26 @@ public final class TemplateEngine implements ITemplateEngine {
      * </p>
      * 
      * @return the {@link IDialect} instances currently configured.
+     * @since 3.0.0
      */
-    public final Map<String,IDialect> getDialectsByPrefix() {
-        return this.configuration.getDialects();
+    public final Map<String,Set<IDialect>> getDialectsByPrefix() {
+        final Set<DialectConfiguration> dialectConfs;
+        if (this.initialized.get()) {
+            dialectConfs = this.configuration.getDialectConfigurations();
+        } else {
+            dialectConfs = this.dialectConfigurations;
+        }
+        final Map<String,Set<IDialect>> dialectsByPrefix = new LinkedHashMap<String, Set<IDialect>>(3);
+        for (final DialectConfiguration dialectConfiguration : dialectConfs) {
+            final String prefix = dialectConfiguration.getPrefix();
+            Set<IDialect> dialectsForPrefix = dialectsByPrefix.get(prefix);
+            if (dialectsForPrefix == null) {
+                dialectsForPrefix = new LinkedHashSet<IDialect>(2);
+                dialectsByPrefix.put(prefix, dialectsForPrefix);
+            }
+            dialectsForPrefix.add(dialectConfiguration.getDialect());
+        }
+        return Collections.unmodifiableMap(dialectsByPrefix);
     }
     
     
@@ -350,7 +415,14 @@ public final class TemplateEngine implements ITemplateEngine {
      * @return the {@link IDialect} instances currently configured.
      */
     public final Set<IDialect> getDialects() {
-        return this.configuration.getDialectSet();
+        if (this.initialized.get()) {
+            return this.configuration.getDialects();
+        }
+        final Set<IDialect> dialects = new LinkedHashSet<IDialect>(this.dialectConfigurations.size());
+        for (final DialectConfiguration dialectConfiguration : this.dialectConfigurations) {
+            dialects.add(dialectConfiguration.getDialect());
+        }
+        return Collections.unmodifiableSet(dialects);
     }
 
     /**
@@ -371,7 +443,10 @@ public final class TemplateEngine implements ITemplateEngine {
      * @param dialect the new unique {@link IDialect} to be used.
      */
     public void setDialect(final IDialect dialect) {
-        this.configuration.setDialect(dialect);
+        Validate.notNull(dialect, "Dialect cannot be null");
+        checkNotInitialized();
+        this.dialectConfigurations.clear();
+        this.dialectConfigurations.add(new DialectConfiguration(dialect));
     }
 
     /**
@@ -392,7 +467,9 @@ public final class TemplateEngine implements ITemplateEngine {
      * @param dialect the new {@link IDialect} to be added to the existing ones.
      */
     public void addDialect(final String prefix, final IDialect dialect) {
-        this.configuration.addDialect(prefix, dialect);
+        Validate.notNull(dialect, "Dialect cannot be null");
+        checkNotInitialized();
+        this.dialectConfigurations.add(new DialectConfiguration(prefix, dialect));
     }
 
     /**
@@ -413,7 +490,9 @@ public final class TemplateEngine implements ITemplateEngine {
      * @param dialect the new {@link IDialect} to be added to the existing ones.
      */
     public void addDialect(final IDialect dialect) {
-        this.configuration.addDialect(dialect.getPrefix(), dialect);
+        Validate.notNull(dialect, "Dialect cannot be null");
+        checkNotInitialized();
+        this.dialectConfigurations.add(new DialectConfiguration(dialect));
     }
 
     /**
@@ -432,7 +511,12 @@ public final class TemplateEngine implements ITemplateEngine {
      *        by their prefixes.
      */
     public void setDialectsByPrefix(final Map<String,IDialect> dialects) {
-        this.configuration.setDialects(dialects);
+        Validate.notNull(dialects, "Dialect map cannot be null");
+        checkNotInitialized();
+        this.dialectConfigurations.clear();
+        for (final Map.Entry<String,IDialect> dialectEntry : dialects.entrySet()) {
+            addDialect(dialectEntry.getKey(), dialectEntry.getValue());
+        }
     }
 
     /**
@@ -451,11 +535,11 @@ public final class TemplateEngine implements ITemplateEngine {
      */
     public void setDialects(final Set<IDialect> dialects) {
         Validate.notNull(dialects, "Dialect set cannot be null");
-        final Map<String,IDialect> dialectMap = new LinkedHashMap<String, IDialect>(dialects.size() + 2, 1.0f);
+        checkNotInitialized();
+        this.dialectConfigurations.clear();
         for (final IDialect dialect : dialects)  {
-            dialectMap.put(dialect.getPrefix(), dialect);
+            addDialect(dialect);
         }
-        this.configuration.setDialects(dialectMap);
     }
 
     
@@ -477,13 +561,11 @@ public final class TemplateEngine implements ITemplateEngine {
      * 
      */
     public void setAdditionalDialects(final Set<IDialect> additionalDialects) {
-        Validate.notNull(additionalDialects, "Additional dialect set cannot be null");
-        final Map<String,IDialect> dialectMap = new LinkedHashMap<String, IDialect>(5, 1.0f);
-        dialectMap.putAll(this.configuration.getDialects());
+        Validate.notNull(additionalDialects, "Dialect set cannot be null");
+        checkNotInitialized();
         for (final IDialect dialect : additionalDialects)  {
-            dialectMap.put(dialect.getPrefix(), dialect);
+            addDialect(dialect);
         }
-        this.configuration.setDialects(dialectMap);
     }
 
     
@@ -499,7 +581,8 @@ public final class TemplateEngine implements ITemplateEngine {
      * </p>
      */
     public void clearDialects() {
-        this.configuration.clearDialects();
+        checkNotInitialized();
+        this.dialectConfigurations.clear();
     }
 
     
@@ -512,7 +595,10 @@ public final class TemplateEngine implements ITemplateEngine {
      * @return the template resolvers.
      */
     public final Set<ITemplateResolver> getTemplateResolvers() {
-        return this.configuration.getTemplateResolvers();
+        if (this.initialized.get()) {
+            return this.configuration.getTemplateResolvers();
+        }
+        return Collections.unmodifiableSet(this.templateResolvers);
     }
 
     /**
@@ -522,8 +608,13 @@ public final class TemplateEngine implements ITemplateEngine {
      * 
      * @param templateResolvers the new template resolvers.
      */
-    public void setTemplateResolvers(final Set<? extends ITemplateResolver> templateResolvers) {
-        this.configuration.setTemplateResolvers(templateResolvers);
+    public void setTemplateResolvers(final Set<ITemplateResolver> templateResolvers) {
+        Validate.notNull(templateResolvers, "Template Resolver set cannot be null");
+        checkNotInitialized();
+        this.templateResolvers.clear();
+        for (final ITemplateResolver templateResolver : templateResolvers)  {
+            addTemplateResolver(templateResolver);
+        }
     }
 
     /**
@@ -534,7 +625,9 @@ public final class TemplateEngine implements ITemplateEngine {
      * @param templateResolver the new template resolver.
      */
     public void addTemplateResolver(final ITemplateResolver templateResolver) {
-        this.configuration.addTemplateResolver(templateResolver);
+        Validate.notNull(templateResolver, "Template Resolver cannot be null");
+        checkNotInitialized();
+        this.templateResolvers.add(templateResolver);
     }
 
     /**
@@ -549,7 +642,10 @@ public final class TemplateEngine implements ITemplateEngine {
      * @param templateResolver the template resolver to be set.
      */
     public void setTemplateResolver(final ITemplateResolver templateResolver) {
-        this.configuration.setTemplateResolver(templateResolver);
+        Validate.notNull(templateResolver, "Template Resolver cannot be null");
+        checkNotInitialized();
+        this.templateResolvers.clear();
+        this.templateResolvers.add(templateResolver);
     }
 
     
@@ -566,7 +662,10 @@ public final class TemplateEngine implements ITemplateEngine {
      * @return the cache manager
      */
     public ICacheManager getCacheManager() {
-        return this.configuration.getCacheManager();
+        if (this.initialized.get()) {
+            return this.configuration.getCacheManager();
+        }
+        return this.cacheManager;
     }
     
     /**
@@ -590,7 +689,8 @@ public final class TemplateEngine implements ITemplateEngine {
      */
     public void setCacheManager(final ICacheManager cacheManager) {
         // Can be set to null (= no caches at all)
-        this.configuration.setCacheManager(cacheManager);
+        checkNotInitialized();
+        this.cacheManager = cacheManager;
     }
 
     
@@ -602,7 +702,10 @@ public final class TemplateEngine implements ITemplateEngine {
      * @return the set of message resolvers.
      */
     public final Set<IMessageResolver> getMessageResolvers() {
-        return this.configuration.getMessageResolvers();
+        if (this.initialized.get()) {
+            return this.configuration.getMessageResolvers();
+        }
+        return Collections.unmodifiableSet(this.messageResolvers);
     }
 
     /**
@@ -618,8 +721,13 @@ public final class TemplateEngine implements ITemplateEngine {
      * 
      * @param messageResolvers the Set of template resolvers.
      */
-    public void setMessageResolvers(final Set<? extends IMessageResolver> messageResolvers) {
-        this.configuration.setMessageResolvers(messageResolvers);
+    public void setMessageResolvers(final Set<IMessageResolver> messageResolvers) {
+        Validate.notNull(messageResolvers, "Message Resolver set cannot be null");
+        checkNotInitialized();
+        this.messageResolvers.clear();
+        for (final IMessageResolver messageResolver : messageResolvers)  {
+            addMessageResolver(messageResolver);
+        }
     }
     
     /**
@@ -637,7 +745,9 @@ public final class TemplateEngine implements ITemplateEngine {
      * @param messageResolver the new message resolver to be added.
      */
     public void addMessageResolver(final IMessageResolver messageResolver) {
-        this.configuration.addMessageResolver(messageResolver);
+        Validate.notNull(messageResolver, "Message Resolver cannot be null");
+        checkNotInitialized();
+        this.messageResolvers.add(messageResolver);
     }
 
     /**
@@ -658,122 +768,12 @@ public final class TemplateEngine implements ITemplateEngine {
      * @param messageResolver the message resolver to be set.
      */
     public void setMessageResolver(final IMessageResolver messageResolver) {
-        this.configuration.setMessageResolver(messageResolver);
+        Validate.notNull(messageResolver, "Message Resolver cannot be null");
+        checkNotInitialized();
+        this.messageResolvers.clear();
+        this.messageResolvers.add(messageResolver);
     }
 
-    /**
-     * <p>
-     *   Sets the default message resolvers. These are used when no message resolvers
-     *   are set via the {@link #setMessageResolver(IMessageResolver)}, 
-     *   {@link #setMessageResolvers(Set)} or {@link #addMessageResolver(IMessageResolver)}
-     *   methods.
-     * </p>
-     * <p>
-     *   This method is useful for creating subclasses of <tt>TemplateEngine</tt> that
-     *   establish default configurations for message resolvers.
-     * </p>
-     * <p>
-     *   This operation can only be executed before processing templates for the first
-     *   time. Once a template is processed, the template engine is considered to be
-     *   <i>initialized</i>, and from then on any attempt to change its configuration
-     *   will result in an exception.
-     * </p>
-     * 
-     * @param defaultMessageResolvers the default message resolvers.
-     */
-    public void setDefaultMessageResolvers(final Set<? extends IMessageResolver> defaultMessageResolvers) {
-        this.configuration.setDefaultMessageResolvers(defaultMessageResolvers);
-    }
-
-    
-    /**
-     * <p>
-     *   Returns the set of Template Mode Handlers configured for this 
-     *   Template Engine.
-     * </p>
-     * <p>
-     *   By default, template mode handlers set are
-     *   {@link StandardTemplateModeHandlers#ALL_TEMPLATE_MODE_HANDLERS}
-     * </p>
-     * 
-     * @return the set of Template Mode Handlers.
-     */
-    public final Set<ITemplateModeHandler> getTemplateModeHandlers() {
-        return this.configuration.getTemplateModeHandlers();
-    }
-
-    /**
-     * <p>
-     *   Sets the Template Mode Handlers to be used by this template engine.
-     *   Every available template mode must have its corresponding handler.
-     * </p>
-     * <p>
-     *   By default, template mode handlers set are
-     *   {@link StandardTemplateModeHandlers#ALL_TEMPLATE_MODE_HANDLERS}
-     * </p>
-     * <p>
-     *   This operation can only be executed before processing templates for the first
-     *   time. Once a template is processed, the template engine is considered to be
-     *   <i>initialized</i>, and from then on any attempt to change its configuration
-     *   will result in an exception.
-     * </p>
-     * 
-     * @param templateModeHandlers the Set of Template Mode Handlers.
-     */
-    public void setTemplateModeHandlers(final Set<? extends ITemplateModeHandler> templateModeHandlers) {
-        this.configuration.setTemplateModeHandlers(templateModeHandlers);
-    }
-    
-    /**
-     * <p>
-     *   Adds a Template Mode Handler to the set of Template Mode Handlers to be used
-     *   by the template engine.
-     *   Every available template mode must have its corresponding handler.
-     * </p>
-     * <p>
-     *   By default, template mode handlers set are
-     *   {@link StandardTemplateModeHandlers#ALL_TEMPLATE_MODE_HANDLERS}
-     * </p>
-     * <p>
-     *   This operation can only be executed before processing templates for the first
-     *   time. Once a template is processed, the template engine is considered to be
-     *   <i>initialized</i>, and from then on any attempt to change its configuration
-     *   will result in an exception.
-     * </p>
-     * 
-     * @param templateModeHandler the new Template Mode Handler to be added.
-     */
-    public void addTemplateModeHandler(final ITemplateModeHandler templateModeHandler) {
-        this.configuration.addTemplateModeHandler(templateModeHandler);
-    }
-
-    /**
-     * <p>
-     *   Sets the default Template Mode Handlers. These are used when no Template Mode Handlers
-     *   are set via the {@link #setTemplateModeHandlers(Set)} or 
-     *   {@link #addTemplateModeHandler(ITemplateModeHandler)} methods.
-     * </p>
-     * <p>
-     *   This method is useful for creating subclasses of <tt>TemplateEngine</tt> that
-     *   establish default configurations for Template Mode Handlers.
-     * </p>
-     * <p>
-     *   By default, template mode handlers set are
-     *   {@link StandardTemplateModeHandlers#ALL_TEMPLATE_MODE_HANDLERS}
-     * </p>
-     * <p>
-     *   This operation can only be executed before processing templates for the first
-     *   time. Once a template is processed, the template engine is considered to be
-     *   <i>initialized</i>, and from then on any attempt to change its configuration
-     *   will result in an exception.
-     * </p>
-     * 
-     * @param defaultTemplateModeHandlers the default Template Mode Handlers.
-     */
-    public void setDefaultTemplateModeHandlers(final Set<? extends ITemplateModeHandler> defaultTemplateModeHandlers) {
-        this.configuration.setDefaultTemplateModeHandlers(defaultTemplateModeHandlers);
-    }
-    
     
     
     
@@ -790,10 +790,10 @@ public final class TemplateEngine implements ITemplateEngine {
      * </p>
      */
     public void clearTemplateCache() {
-        if (!isInitialized()) {
+        if (!this.initialized.get()) {
             initialize();
         }
-        this.templateRepository.clearTemplateCache();
+        this.templateProcessor.clearTemplateCache();
     }
 
 
@@ -811,72 +811,15 @@ public final class TemplateEngine implements ITemplateEngine {
      */
     public void clearTemplateCacheFor(final String templateName) {
         Validate.notNull(templateName, "Template name cannot be null");
-        if (!isInitialized()) {
+        if (!this.initialized.get()) {
             initialize();
         }
-        this.templateRepository.clearTemplateCacheFor(templateName);
+        this.templateProcessor.clearTemplateCacheFor(templateName);
     }
     
     
     
-    
-    
-    
-    
-    /**
-     * <p>
-     *   Internal method that initializes the Template Engine instance. This method 
-     *   is called before the first execution of {@link #process(String, IContext)} 
-     *   in order to create all the structures required for a quick execution of 
-     *   templates.
-     * </p>
-     * <p>
-     *   THIS METHOD IS INTERNAL AND SHOULD <b>NEVER</b> BE CALLED DIRECTLY.
-     * </p>
-     * <p>
-     *   If a subclass of <tt>TemplateEngine</tt> needs additional steps for
-     *   initialization, the {@link #initializeSpecific()} method should
-     *   be overridden.
-     * </p>
-     */
-    public final synchronized void initialize() {
-        
-        if (!isInitialized()) {
-            
-            logger.info("[THYMELEAF] INITIALIZING TEMPLATE ENGINE");
 
-            this.configuration.initialize();
-            
-            this.templateRepository = new TemplateRepository(this.configuration);
-            
-            initializeSpecific();
-            
-            this.initialized = true;
-
-            // Log configuration details
-            this.configuration.printConfiguration();
-            
-            logger.info("[THYMELEAF] TEMPLATE ENGINE INITIALIZED");
-            
-        }
-        
-    }
-    
-
-    /**
-     * <p>
-     *   This method performs additional initializations required for a
-     *   <tt>TemplateEngine</tt>. It is called by {@link #initialize()}.
-     * </p>
-     * <p> 
-     *   The implementation of this method does nothing, and it is designed 
-     *   for being overridden by subclasses of <tt>TemplateEngine</tt>. 
-     * </p>
-     */
-    protected void initializeSpecific() {
-        // Nothing to be executed here. Meant for extension
-    }
-    
     
     
     /**
@@ -975,38 +918,7 @@ public final class TemplateEngine implements ITemplateEngine {
     public final void process(final String templateName, final IContext context, final Writer writer) {
         process(templateName, context, null, writer);
     }
-    
 
-    
-
-    /**
-     * <p>
-     *   Process a template. This method receives a <i>template name</i>, a <i>processing context</i> 
-     *   (which might include local variables) and also a {@link Writer}, so that there is no need 
-     *   to create a String object containing the whole processing results because these will be 
-     *   written to the specified writer as soon as they are generated from the processed DOM 
-     *   tree. This is specially useful for web environments 
-     *   (using {@link javax.servlet.http.HttpServletResponse#getWriter()}).
-     * </p>
-     * <p>
-     *   The template name will be used as input for the template resolvers, queried in chain
-     *   until one of them resolves the template, which will then be executed.
-     * </p>
-     * <p>
-     *   The context will contain the variables that will be available for the execution of
-     *   expressions inside the template.
-     * </p>
-     * 
-     * @param templateName the name of the template.
-     * @param processingContext the processing context.
-     * @param writer the writer the results will be output to.
-     * 
-     * @since 2.0.0 
-     */
-    public final void process(final String templateName, final IProcessingContext processingContext, final Writer writer) {
-        process(templateName, processingContext, null, writer);
-    }
-    
 
     
 
@@ -1029,57 +941,24 @@ public final class TemplateEngine implements ITemplateEngine {
      */
     public final void process(final String templateName, final IContext context, 
             final IFragmentSpec fragmentSpec, final Writer writer) {
-        process(templateName, new DialectAwareProcessingContext(context, getDialects()), fragmentSpec, writer);
-    }
-    
 
-    
-
-    /**
-     * <p>
-     *   Process a template. This method receives a <i>template name</i>, a <i>processing context</i>
-     *   (which might include local variables), a <i>fragment specification</i> ({@link IFragmentSpec}) 
-     *   and also a {@link Writer}. This method works essentially the same as 
-     *   {@link #process(String, IContext, Writer)} but applying the specified fragment specification 
-     *   as a filter on the parsed template in order to process only a fragment of such template.
-     * </p>
-     * 
-     * @param templateName the name of the template.
-     * @param processingContext the processing context.
-     * @param fragmentSpec the fragment specification that will be applied as a filter to the parsed
-     *                     template, before processing.
-     * @param writer the writer the results will be output to.
-     * 
-     * @since 2.0.9
-     */
-    public final void process(final String templateName, final IProcessingContext processingContext, 
-            final IFragmentSpec fragmentSpec, final Writer writer) {
-        
-        if (!isInitialized()) {
+        if (!this.initialized.get()) {
             initialize();
         }
         
         try {
             
             Validate.notNull(templateName, "Template name cannot be null");
-            Validate.notNull(processingContext, "Processing context cannot be null");
-            
-            final IContext context = processingContext.getContext();
-            
+            Validate.notNull(context, "Context cannot be null");
+            Validate.notNull(writer, "Writer cannot be null");
+
             final long startNanos = System.nanoTime();
 
             if (logger.isDebugEnabled()) {
                 logger.debug("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH LOCALE {}", new Object[] {TemplateEngine.threadIndex(), templateName, context.getLocale()});
             }
             
-            // Add context execution info
-            context.addContextExecutionInfo(templateName);
-            
-            final TemplateProcessingParameters templateProcessingParameters =
-                new TemplateProcessingParameters(this.configuration, templateName, processingContext);
-            
-            processTemplate2(templateProcessingParameters, writer);
-//            process(templateProcessingParameters, fragmentSpec, writer);
+            this.templateProcessor.processTemplate(this.configuration, context, templateName, writer);
 
             final long endNanos = System.nanoTime();
             
@@ -1100,19 +979,19 @@ public final class TemplateEngine implements ITemplateEngine {
         } catch (final TemplateOutputException e) {
 
             // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
-            logger.error(String.format("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()}), e);
+            logger.error("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()}, e);
             throw e;
             
         } catch (final TemplateEngineException e) {
 
             // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
-            logger.error(String.format("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()}), e);
+            logger.error("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()}, e);
             throw e;
             
         } catch (final RuntimeException e) {
 
             // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
-            logger.error(String.format("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()}), e);
+            logger.error("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()}, e);
             throw new TemplateProcessingException("Exception processing template", templateName, e);
             
         }
@@ -1122,229 +1001,6 @@ public final class TemplateEngine implements ITemplateEngine {
 
 
 
-
-
-    private static final org.thymeleaf.aurora.TemplateEngine AURORA_TEMPLATE_ENGINE = new org.thymeleaf.aurora.TemplateEngine();
-
-
-    public void processTemplate2(final TemplateProcessingParameters templateProcessingParameters, final Writer writer) {
-
-        Validate.notNull(templateProcessingParameters, "Template processing parameters cannot be null");
-
-        final String templateName = templateProcessingParameters.getTemplateName();
-        final Configuration configuration = templateProcessingParameters.getConfiguration();
-
-//        String templateContent = this.entireTemplatesByName.get(templateName);
-//
-//        if (templateContent == null) {
-
-            final Set<ITemplateResolver> templateResolvers = configuration.getTemplateResolvers();
-            TemplateResolution templateResolution = null;
-            InputStream templateInputStream = null;
-
-            for (final ITemplateResolver templateResolver : templateResolvers) {
-
-                templateResolution = templateResolver.resolveTemplate(templateProcessingParameters);
-
-                if (templateResolution != null) {
-
-                    final String resourceName = templateResolution.getResourceName();
-
-                    final IResourceResolver resourceResolver = templateResolution.getResourceResolver();
-
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("[THYMELEAF][{}] Trying to resolve template \"{}\" as resource \"{}\" with resource resolver \"{}\"", new Object[]{TemplateEngine.threadIndex(), templateName, resourceName, resourceResolver.getName()});
-                    }
-
-                    templateInputStream =
-                            resourceResolver.getResourceAsStream(templateProcessingParameters, resourceName);
-
-                    if (templateInputStream == null) {
-                        if (logger.isTraceEnabled()) {
-                            logger.trace("[THYMELEAF][{}] Template \"{}\" could not be resolved as resource \"{}\" with resource resolver \"{}\"", new Object[]{TemplateEngine.threadIndex(), templateName, resourceName, resourceResolver.getName()});
-                        }
-                    } else {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("[THYMELEAF][{}] Template \"{}\" was correctly resolved as resource \"{}\" in mode {} with resource resolver \"{}\"", new Object[]{TemplateEngine.threadIndex(), templateName, resourceName, templateResolution.getTemplateMode(), resourceResolver.getName()});
-                        }
-                        break;
-                    }
-
-                } else {
-
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("[THYMELEAF][{}] Skipping template resolver \"{}\" for template \"{}\"", new Object[]{TemplateEngine.threadIndex(), templateResolver.getName(), templateName});
-                    }
-
-                }
-
-            }
-
-            if (templateResolution == null || templateInputStream == null) {
-                throw new TemplateInputException(
-                        "Error resolving template \"" + templateProcessingParameters.getTemplateName() + "\", " +
-                                "template might not exist or might not be accessible by " +
-                                "any of the configured Template Resolvers");
-            }
-
-
-            final String characterEncoding = templateResolution.getCharacterEncoding();
-            Reader reader = null;
-            if (!StringUtils.isEmptyOrWhitespace(characterEncoding)) {
-                try {
-                    reader = new InputStreamReader(templateInputStream, characterEncoding);
-                } catch (final UnsupportedEncodingException e) {
-                    throw new TemplateInputException("Exception parsing document", e);
-                }
-            } else {
-                reader = new InputStreamReader(templateInputStream);
-            }
-
-//            try {
-//                final BufferedReader br = new BufferedReader(reader);
-//                final StringBuilder strBuilder = new StringBuilder();
-//                String line;
-//                while ((line = br.readLine()) != null) {
-//                    strBuilder.append(line);
-//                    strBuilder.append('\n');
-//                }
-//                templateContent = strBuilder.toString();
-//                this.entireTemplatesByName.put(templateName, templateContent);
-//            } catch (final IOException e) {
-//                throw new TemplateInputException("Exception reading template", e);
-//            }
-//
-//
-//        }
-
-        // TODO The entire-template-contents cache seems to have no effect!! (disk cache so fast? hit the actual Tomcat performance top?)
-
-        final IResource templateResource = new ReaderResource(templateName, reader);
-
-        final IContext originalContext = templateProcessingParameters.getContext();
-        final AbstractContext newContext;
-        if (originalContext instanceof IWebContext) {
-            final IWebContext originalWebContext = (IWebContext) originalContext;
-            newContext =
-                    new WebContext(
-                            originalWebContext.getHttpServletRequest(),
-                            originalWebContext.getHttpServletResponse(),
-                            originalWebContext.getServletContext(),
-                            originalContext.getLocale());
-        } else {
-            newContext = new Context(originalContext.getLocale());
-        }
-        newContext.setVariables(originalContext.getVariables());
-        newContext.removeVariable("application");
-        newContext.removeVariable("session");
-        newContext.removeVariable("param");
-
-        AURORA_TEMPLATE_ENGINE.process(TemplateMode.HTML, templateName, templateResource, newContext, writer);
-
-    }
-
-    final static TestMarkupSelectorReferenceResolver TEST_MARKUP_SELECTOR_REFERENCE_RESOLVER = new TestMarkupSelectorReferenceResolver();
-    private static class TestMarkupSelectorReferenceResolver implements IMarkupSelectorReferenceResolver {
-        public String resolveSelectorFromReference(final String reference) {
-            return "[th:fragment='" + reference + "' or data-th-fragment='" + reference + "']";
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-    private void process(final TemplateProcessingParameters templateProcessingParameters,
-            final IFragmentSpec fragmentSpec, final Writer writer) {
-        
-        final String templateName = templateProcessingParameters.getTemplateName();
-        
-        final Template template = this.templateRepository.getTemplate(templateProcessingParameters);
-        final TemplateResolution templateResolution = template.getTemplateResolution();
-        final String templateMode = templateResolution.getTemplateMode(); 
-
-        Document document = template.getDocument();
-
-        if (fragmentSpec != null) {
-
-            // Apply the fragment specification and filter the parsed template.
-            final List<Node> processingRootNodes = 
-                    fragmentSpec.extractFragment(this.configuration, Collections.singletonList((Node)document));
-            
-            if (processingRootNodes == null || processingRootNodes.size() == 0) {
-                // If the result is null, there will be no processing to do
-                document = null;
-            } else {
-                final Node firstProcessingRootNode = processingRootNodes.get(0);
-                if (processingRootNodes.size() == 1 &&
-                        firstProcessingRootNode != null && 
-                        firstProcessingRootNode instanceof Document) {
-                    // If it is a document, just process it as it is output from the filter
-                    document = (Document) firstProcessingRootNode;
-                } else {
-                    // Fragment exists and it is not a Document. We will therefore lose DOCTYPE
-                    final String documentName = document.getDocumentName();
-                    document = new Document(documentName);
-                    for (final Node processingRootNode : processingRootNodes) {
-                        if (processingRootNode != null) {
-                            final Node clonedProcessingRootNode = 
-                                    processingRootNode.cloneNode(document, false);
-                            document.addChild(clonedProcessingRootNode);
-                        }
-                    }
-                    document.precompute(this.configuration);
-                }
-            }
-            
-        }
-        
-        final Arguments arguments = 
-                new Arguments(this, 
-                        templateProcessingParameters, templateResolution, 
-                        this.templateRepository, document);
-       
-        
-        if (logger.isDebugEnabled()) {
-            logger.debug("[THYMELEAF][{}] Starting process on template \"{}\" using mode \"{}\"", 
-                    new Object[] { TemplateEngine.threadIndex(), templateName, templateMode });
-        }
-
-        if (document != null) {
-            document.process(arguments);
-        }
-        
-        if (logger.isDebugEnabled()) {
-            logger.debug("[THYMELEAF][{}] Finished process on template \"{}\" using mode \"{}\"", 
-                    new Object[] { TemplateEngine.threadIndex(), templateName, templateMode });
-        }
-        
-        final ITemplateModeHandler templateModeHandler =
-                this.configuration.getTemplateModeHandler(templateMode);
-        final ITemplateWriter templateWriter = templateModeHandler.getTemplateWriter();
-
-        if (templateWriter == null) {
-            throw new ConfigurationException(
-                    "No template writer defined for template mode \"" + templateMode + "\"");
-        }
-        
-        try {
-            // It depends on the ITemplateWriter implementation to allow nulls or not.
-            // Standard writer will simply not write anything for null.
-            templateWriter.write(arguments, writer, document);
-        } catch (IOException e) {
-            throw new TemplateOutputException("Error during creation of output", e);
-        }
-    
-    }
-
-    
     
     
 }

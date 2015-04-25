@@ -19,11 +19,19 @@
  */
 package org.thymeleaf.standard.processor;
 
+import org.thymeleaf.context.ILocalVariableAwareVariablesMap;
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.IVariablesMap;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
+import org.thymeleaf.standard.expression.Assignation;
+import org.thymeleaf.standard.expression.AssignationSequence;
+import org.thymeleaf.standard.expression.AssignationUtils;
+import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.util.StringUtils;
 
 /**
  *
@@ -32,11 +40,13 @@ import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagPr
  * @since 3.0.0
  *
  */
-public class StandardWithTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
+public final class StandardWithTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
 
+    public static final int PRECEDENCE = 600;
+    public static final String ATTR_NAME = "with";
 
     public StandardWithTagProcessor() {
-        super("with", 600);
+        super(ATTR_NAME, PRECEDENCE);
     }
 
 
@@ -46,11 +56,53 @@ public class StandardWithTagProcessor extends AbstractAttributeMatchingHTMLEleme
             final IProcessableElementTag tag,
             final IElementStructureHandler structureHandler) {
 
-        // We know this will not be null, because we linked the processor to a specific attribute
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
-        tag.getAttributes().removeAttribute(attributeName);
 
-        structureHandler.setLocalVariable("one", "a value");
+        final String attributeValue = tag.getAttributes().getValue(attributeName);
+
+        final AssignationSequence assignations =
+                AssignationUtils.parseAssignationSequence(
+                        processingContext, attributeValue, false /* no parameters without value */);
+        if (assignations == null) {
+            throw new TemplateProcessingException(
+                    "Could not parse value as attribute assignations: \"" + attributeValue + "\"");
+        }
+
+        // Normally we would just allow the structure handler to be in charge of declaring the local variables
+        // by using structureHandler.setLocalVariable(...) but in this case we want each variable defined at an
+        // expression to be available for the next expressions, and that forces us to cast our Variables Map into
+        // a more specific interface --which shouldn't be used directly except in this specific, special case-- and
+        // put the local variables directly into it.
+        final IVariablesMap variablesMap = processingContext.getVariablesMap();
+        ILocalVariableAwareVariablesMap localVariableAwareVariablesMap = null;
+        if (variablesMap instanceof ILocalVariableAwareVariablesMap) {
+            localVariableAwareVariablesMap = (ILocalVariableAwareVariablesMap) variablesMap;
+        }
+
+        for (final Assignation assignation : assignations) {
+
+            final IStandardExpression leftExpr = assignation.getLeft();
+            final Object leftValue = leftExpr.execute(processingContext);
+
+            final IStandardExpression rightExpr = assignation.getRight();
+            final Object rightValue = rightExpr.execute(processingContext);
+
+            final String newVariableName = (leftValue == null? null : leftValue.toString());
+            if (StringUtils.isEmptyOrWhitespace(newVariableName)) {
+                throw new TemplateProcessingException(
+                        "Variable name expression evaluated as null or empty: \"" + leftExpr + "\"");
+            }
+
+            if (localVariableAwareVariablesMap != null) {
+                localVariableAwareVariablesMap.put(newVariableName, rightValue);
+            } else {
+                // The problem is, these won't be available until we execute the next processor
+                structureHandler.setLocalVariable(newVariableName, rightValue);
+            }
+
+        }
+
+        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

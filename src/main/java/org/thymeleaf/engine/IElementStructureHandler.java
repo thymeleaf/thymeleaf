@@ -46,6 +46,8 @@ public interface IElementStructureHandler {
 
     public void removeElement();
     public void removeTag();
+    public void removeBody();
+    public void removeAllButFirstChild();
 
     public void iterateElement(final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject);
 

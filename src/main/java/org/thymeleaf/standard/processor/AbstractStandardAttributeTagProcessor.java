@@ -19,10 +19,10 @@
  */
 package org.thymeleaf.standard.processor;
 
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
 import org.thymeleaf.standard.expression.IStandardExpression;
@@ -36,25 +36,20 @@ import org.thymeleaf.standard.expression.StandardExpressions;
  * @since 3.0.0
  *
  */
-public final class StandardRemoveTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
-
-    public static final int PRECEDENCE = 1600;
-    public static final String ATTR_NAME = "remove";
-
-    public static final String VALUE_ALL = "all";
-    public static final String VALUE_ALL_BUT_FIRST = "all-but-first";
-    public static final String VALUE_TAG = "tag";
-    public static final String VALUE_BODY = "body";
-    public static final String VALUE_NONE = "none";
+public abstract class AbstractStandardAttributeTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
 
 
-    public StandardRemoveTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE);
+    private final boolean removeIfEmpty;
+
+
+    protected AbstractStandardAttributeTagProcessor(final String attrName, final int precedence, final boolean removeIfEmpty) {
+        super(attrName, precedence);
+        this.removeIfEmpty = removeIfEmpty;
     }
 
 
 
-    public void process(
+    public final void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final IElementStructureHandler structureHandler) {
@@ -62,31 +57,22 @@ public final class StandardRemoveTagProcessor extends AbstractAttributeMatchingH
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
         final String attributeValue = tag.getAttributes().getValue(attributeName);
 
-        final IStandardExpressionParser expressionParser =
-                StandardExpressions.getExpressionParser(processingContext.getConfiguration());
+        final IEngineConfiguration configuration = processingContext.getConfiguration();
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
 
         final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
 
         final Object result = expression.execute(processingContext);
 
-        if (result != null) {
+        final String newAttributeValue = (result == null? null : result.toString());
 
-            final String resultStr = result.toString();
-
-            if (VALUE_ALL.equalsIgnoreCase(resultStr)) {
-                structureHandler.removeElement();
-            } else if (VALUE_TAG.equalsIgnoreCase(resultStr)) {
-                structureHandler.removeTag();
-            } else if (VALUE_ALL_BUT_FIRST.equalsIgnoreCase(resultStr)) {
-                structureHandler.removeAllButFirstChild();
-            } else  if (VALUE_BODY.equalsIgnoreCase(resultStr)) {
-                structureHandler.removeBody();
-            } else if (!VALUE_NONE.equalsIgnoreCase(resultStr)) {
-                throw new TemplateProcessingException(
-                        "Invalid value specified for \"" + attributeName + "\": only 'all', 'tag', 'body', 'none' " +
-                        "and 'all-but-first' are allowed, but \"" + attributeValue + "\" was specified.");
-            }
-
+        // These attributes might be "removable if empty", in which case we would simply remove the target attribute...
+        if (this.removeIfEmpty && (newAttributeValue == null || newAttributeValue.length() == 0)) {
+            // We are removing the equivalent attribute name, without the prefix...
+            tag.getAttributes().removeAttribute(attributeName.getAttributeName());
+        } else {
+            // We are setting the equivalent attribute name, without the prefix...
+            tag.getAttributes().setAttribute(attributeName.getAttributeName(), newAttributeValue);
         }
 
         tag.getAttributes().removeAttribute(attributeName);

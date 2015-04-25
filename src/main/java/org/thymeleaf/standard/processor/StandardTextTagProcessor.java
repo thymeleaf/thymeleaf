@@ -23,9 +23,9 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
-import org.thymeleaf.engine.IterationStatusVar;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
+import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
@@ -36,11 +36,13 @@ import org.thymeleaf.standard.expression.StandardExpressions;
  * @since 3.0.0
  *
  */
-public class StandardTextTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
+public final class StandardTextTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
 
+    public static final int PRECEDENCE = 1300;
+    public static final String ATTR_NAME = "text";
 
     public StandardTextTagProcessor() {
-        super("text", 1300);
+        super(ATTR_NAME, PRECEDENCE);
     }
 
 
@@ -50,52 +52,17 @@ public class StandardTextTagProcessor extends AbstractAttributeMatchingHTMLEleme
             final IProcessableElementTag tag,
             final IElementStructureHandler structureHandler) {
 
-
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
         final String attributeValue = tag.getAttributes().getValue(attributeName);
 
         final IEngineConfiguration configuration = processingContext.getConfiguration();
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-//
-//        final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
-//
-//        final Object result = expression.execute(configuration, arguments);
-//
-//        return (result == null? "" : result.toString());
 
+        final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
 
+        final Object result = expression.execute(processingContext);
 
-
-        final Object localIterValue = processingContext.getVariablesMap().getVariable("iter");
-        if (localIterValue != null) {
-
-            final IterationStatusVar stat = (IterationStatusVar) processingContext.getVariablesMap().getVariable("iterStat");
-            structureHandler.setBody(localIterValue.toString() + " [" + stat.getCount() + (stat.getSize() != null? (" of " + stat.getSize()) : "") + "]", false);
-
-        } else {
-
-            final boolean inlining = processingContext.getVariablesMap().isTextInliningActive();
-
-            if (processingContext.getVariablesMap().hasSelectionTarget()) {
-
-                final Object selectionTarget = processingContext.getVariablesMap().getSelectionTarget();
-
-                structureHandler.setBody((inlining? "" : "$") + selectionTarget.toString(), false);
-
-            } else {
-
-
-                final Object localVarValue = processingContext.getVariablesMap().getVariable("one");
-
-                if (localVarValue != null) {
-                    structureHandler.setBody((inlining? "" : "$") + "*Whoohooooo!*", false);
-                } else {
-                    structureHandler.setBody((inlining? "" : "$") + "Whoohooooo!", false);
-                }
-
-            }
-
-        }
+        structureHandler.setBody(result == null? "" : result.toString(), false);
 
         tag.getAttributes().removeAttribute(attributeName);
 

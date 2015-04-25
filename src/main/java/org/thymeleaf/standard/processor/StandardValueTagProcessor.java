@@ -17,28 +17,24 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.exceptions;
+package org.thymeleaf.standard.processor;
 
 /**
- * 
+ *
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 1.0
+ *
+ * @since 3.0.0
  *
  */
-public class NotInitializedException extends TemplateEngineException {
-    
+public final class StandardValueTagProcessor extends AbstractStandardAttributeTagProcessor {
 
-    private static final long serialVersionUID = 8325023074287846388L;
+    public static final int PRECEDENCE = 1000;
+    public static final String ATTR_NAME = "value";
 
-    public NotInitializedException(final String message, final Throwable cause) {
-        super(message, cause);
+
+    public StandardValueTagProcessor() {
+        super(ATTR_NAME, PRECEDENCE, true);
     }
 
-    public NotInitializedException(final String message) {
-        super(message);
-    }
-    
-    
-    
+
 }

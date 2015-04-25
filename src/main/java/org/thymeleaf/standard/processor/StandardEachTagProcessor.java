@@ -19,13 +19,16 @@
  */
 package org.thymeleaf.standard.processor;
 
-import java.util.Iterator;
-
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
+import org.thymeleaf.standard.expression.Each;
+import org.thymeleaf.standard.expression.EachUtils;
+import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.util.StringUtils;
 
 /**
  *
@@ -34,11 +37,13 @@ import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagPr
  * @since 3.0.0
  *
  */
-public class StandardEachTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
+public final class StandardEachTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
 
+    public static final int PRECEDENCE = 200;
+    public static final String ATTR_NAME = "each";
 
     public StandardEachTagProcessor() {
-        super("each", 200);
+        super(ATTR_NAME, PRECEDENCE);
     }
 
 
@@ -48,29 +53,38 @@ public class StandardEachTagProcessor extends AbstractAttributeMatchingHTMLEleme
             final IProcessableElementTag tag,
             final IElementStructureHandler structureHandler) {
 
-        // We know this will not be null, because we linked the processor to a specific attribute
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
+        final String attributeValue = tag.getAttributes().getValue(attributeName);
 
-        final String[] values = new String[] { "Iteration One", "Iteration Two", "Iteration Three" };
-//        structureHandler.iterateElement("iter", "iterStat", values);
-//        structureHandler.iterateElement("iter", "iterStat", new int[] { 12, 3, 123, 512311, 23, 3, 3, 123, 231, 2311});
-        structureHandler.iterateElement("iter", "iterStat", new Iterator<String>() {
+        final Each each = EachUtils.parseEach(processingContext, attributeValue);
 
-            private int i = 0;
+        final IStandardExpression iterVarExpr = each.getIterVar();
+        final Object iterVarValue = iterVarExpr.execute(processingContext);
 
-            public boolean hasNext() {
-                return i < 10;
-            }
+        final IStandardExpression statusVarExpr = each.getStatusVar();
+        final Object statusVarValue;
+        if (statusVarExpr != null) {
+            statusVarValue = statusVarExpr.execute(processingContext);
+        } else {
+            statusVarValue = null; // Will provoke the default behaviour: iterVarValue + 'Stat'
+        }
 
-            public String next() {
-                return "Iteration " + i++;
-            }
+        final IStandardExpression iterableExpr = each.getIterable();
+        final Object iteratedValue = iterableExpr.execute(processingContext);
 
-            public void remove() {
+        final String iterVarName = (iterVarValue == null? null : iterVarValue.toString());
+        if (StringUtils.isEmptyOrWhitespace(iterVarName)) {
+            throw new TemplateProcessingException(
+                    "Iteration variable name expression evaluated as null: \"" + iterVarExpr + "\"");
+        }
 
-            }
+        final String statusVarName = (statusVarValue == null? null : statusVarValue.toString());
+        if (statusVarExpr != null && StringUtils.isEmptyOrWhitespace(statusVarName)) {
+            throw new TemplateProcessingException(
+                    "Status variable name expression evaluated as null or empty: \"" + statusVarExpr + "\"");
+        }
 
-        });
+        structureHandler.iterateElement(iterVarName, statusVarName, iteratedValue);
 
         tag.getAttributes().removeAttribute(attributeName);
 

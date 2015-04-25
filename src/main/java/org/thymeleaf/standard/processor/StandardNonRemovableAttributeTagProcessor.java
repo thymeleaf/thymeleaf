@@ -17,13 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf;
-
-import java.io.Writer;
-
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.fragment.IFragmentSpec;
-
+package org.thymeleaf.standard.processor;
 
 /**
  *
@@ -32,13 +26,23 @@ import org.thymeleaf.fragment.IFragmentSpec;
  * @since 3.0.0
  *
  */
-public interface ITemplateEngine {
+public final class StandardNonRemovableAttributeTagProcessor extends AbstractStandardAttributeTagProcessor {
 
-    public String process(final String templateName, final IContext context);
-    public String process(final String templateName, final IContext context, final IFragmentSpec fragmentSpec);
+    public static final int PRECEDENCE = 1000;
 
-    public void process(final String templateName, final IContext context, final Writer writer);
-    public void process(final String templateName, final IContext context,
-                        final IFragmentSpec fragmentSpec, final Writer writer);
+    // These attributes should not be removed even if their value evaluates to null or empty string
+    // The reason why we don't let all these attributes to be processed by the default processor is that some other attribute
+    // processors executing afterwards (e.g. th:field) might need attribute values already processed by these.
+    public static final String[] ATTR_NAMES =
+            new String[] {
+                    "name",
+                    "type"
+            };
+
+
+    public StandardNonRemovableAttributeTagProcessor(final String attrName) {
+        super(attrName, PRECEDENCE, false);
+    }
+
 
 }

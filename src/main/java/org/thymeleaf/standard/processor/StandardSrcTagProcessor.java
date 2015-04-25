@@ -17,13 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf;
-
-import java.io.Writer;
-
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.fragment.IFragmentSpec;
-
+package org.thymeleaf.standard.processor;
 
 /**
  *
@@ -32,13 +26,14 @@ import org.thymeleaf.fragment.IFragmentSpec;
  * @since 3.0.0
  *
  */
-public interface ITemplateEngine {
+public final class StandardSrcTagProcessor extends AbstractStandardAttributeTagProcessor {
 
-    public String process(final String templateName, final IContext context);
-    public String process(final String templateName, final IContext context, final IFragmentSpec fragmentSpec);
+    public static final int PRECEDENCE = 1000;
+    public static final String ATTR_NAME = "src";
 
-    public void process(final String templateName, final IContext context, final Writer writer);
-    public void process(final String templateName, final IContext context,
-                        final IFragmentSpec fragmentSpec, final Writer writer);
+    public StandardSrcTagProcessor() {
+        super(ATTR_NAME, PRECEDENCE, false);
+    }
+
 
 }

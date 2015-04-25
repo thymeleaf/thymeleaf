@@ -53,6 +53,7 @@ public final class OGNLVariablesMapPropertyAccessor implements PropertyAccessor 
     public static final String RESTRICT_REQUEST_PARAMETERS = "%RESTRICT_REQUEST_PARAMETERS%";
 
 
+    // TODO Actually control request parameter restrictions!
 
     OGNLVariablesMapPropertyAccessor() {
         super();

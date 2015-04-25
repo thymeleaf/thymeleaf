@@ -34,11 +34,13 @@ import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagPr
  * @since 3.0.0
  *
  */
-public class StandardReplaceTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
+public final class StandardReplaceTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
 
+    public static final int PRECEDENCE = 100;
+    public static final String ATTR_NAME = "replace";
 
     public StandardReplaceTagProcessor() {
-        super("replace", 100);
+        super(ATTR_NAME, PRECEDENCE);
     }
 
 

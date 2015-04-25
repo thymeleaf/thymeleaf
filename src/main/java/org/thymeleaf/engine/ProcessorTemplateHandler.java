@@ -97,7 +97,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     private int markupLevel = 0;
 
-    private int skipMarkupFromLevel = Integer.MAX_VALUE;
+    private boolean[] allowedNonElementStructuresByMarkupLevel;
+    private int[] allowedElementCountByMarkupLevel;
     private LevelArray skipCloseTagLevels = new LevelArray(5);
 
     // We will have just one (reusable) instance of the element processor iterator, which will take into account the
@@ -107,7 +108,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     // These arrays will be initialized with all the registered processors for the different kind of non-element
     // processors. This is done so because non-element processors will not change during the execution of the engine
     // (whereas element processors can). And they are kept in the form of an array because they will be faster to
-    // iterate than asking everytime the configuration object for the Set of processors and creating an iterator for it
+    // iterate than asking every time the configuration object for the Set of processors and creating an iterator for it
     private ICDATASectionProcessor[] cdataSectionProcessors = null;
     private ICommentProcessor[] commentProcessors = null;
     private IDocTypeProcessor[] docTypeProcessors = null;
@@ -152,7 +153,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
      *
      */
     public ProcessorTemplateHandler() {
+
         super();
+
+        this.allowedElementCountByMarkupLevel = new int[15];
+        Arrays.fill(this.allowedElementCountByMarkupLevel, Integer.MAX_VALUE);
+        this.allowedNonElementStructuresByMarkupLevel = new boolean[15];
+        Arrays.fill(this.allowedNonElementStructuresByMarkupLevel, true);
+
         this.elementStructureHandler = new ElementStructureHandler();
         this.cdataSectionStructureHandler = new CDATASectionStructureHandler();
         this.commentStructureHandler = new CommentStructureHandler();
@@ -160,6 +168,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         this.processingInstructionStructureHandler = new ProcessingInstructionStructureHandler();
         this.textStructureHandler = new TextStructureHandler();
         this.xmlDeclarationStructureHandler = new XMLDeclarationStructureHandler();
+
     }
 
 
@@ -224,6 +233,33 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     }
 
+
+
+
+    private void increaseMarkupLevel() {
+
+        this.markupLevel++;
+
+        if (this.markupLevel == this.allowedElementCountByMarkupLevel.length) {
+
+            final int[] newAllowedElementCountByMarkupLevel = new int[this.allowedElementCountByMarkupLevel.length + 10];
+            Arrays.fill(newAllowedElementCountByMarkupLevel, Integer.MAX_VALUE);
+            System.arraycopy(this.allowedElementCountByMarkupLevel, 0, newAllowedElementCountByMarkupLevel, 0, this.allowedElementCountByMarkupLevel.length);
+            this.allowedElementCountByMarkupLevel = newAllowedElementCountByMarkupLevel;
+
+            final boolean[] newAllowedNonElementStructuresByMarkupLevel = new boolean[this.allowedNonElementStructuresByMarkupLevel.length + 10];
+            Arrays.fill(newAllowedNonElementStructuresByMarkupLevel, true);
+            System.arraycopy(this.allowedNonElementStructuresByMarkupLevel, 0, newAllowedNonElementStructuresByMarkupLevel, 0, this.allowedNonElementStructuresByMarkupLevel.length);
+            this.allowedNonElementStructuresByMarkupLevel = newAllowedNonElementStructuresByMarkupLevel;
+
+        }
+
+    }
+
+
+    private void decreaseMarkupLevel() {
+        this.markupLevel--;
+    }
 
 
 
@@ -326,7 +362,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (this.markupLevel >= this.skipMarkupFromLevel) {
+        if (!this.allowedNonElementStructuresByMarkupLevel[this.markupLevel]) {
             return;
         }
 
@@ -420,7 +456,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (this.markupLevel >= this.skipMarkupFromLevel) {
+        if (!this.allowedNonElementStructuresByMarkupLevel[this.markupLevel]) {
             return;
         }
 
@@ -513,7 +549,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (this.markupLevel >= this.skipMarkupFromLevel) {
+        if (!this.allowedNonElementStructuresByMarkupLevel[this.markupLevel]) {
             return;
         }
 
@@ -608,7 +644,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (this.markupLevel >= this.skipMarkupFromLevel) {
+        if (this.allowedElementCountByMarkupLevel[this.markupLevel]-- <= 0) {
             return;
         }
 
@@ -742,7 +778,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
                     this.suspended = true;
-                    this.suspensionSpec.bodyRemoved = false;
+                    this.suspensionSpec.allowedElementCountInBody = Integer.MAX_VALUE;
+                    this.suspensionSpec.allowedNonElementStructuresInBody = true;
                     this.suspensionSpec.queueProcessable = queueProcessable;
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
@@ -791,7 +828,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
                     this.suspended = true;
-                    this.suspensionSpec.bodyRemoved = false;
+                    this.suspensionSpec.allowedElementCountInBody = Integer.MAX_VALUE;
+                    this.suspensionSpec.allowedNonElementStructuresInBody = true;
                     this.suspensionSpec.queueProcessable = this.elementStructureHandler.setBodyTextProcessable;
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
@@ -834,7 +872,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
                     this.suspended = true;
-                    this.suspensionSpec.bodyRemoved = false;
+                    this.suspensionSpec.allowedElementCountInBody = Integer.MAX_VALUE;
                     this.suspensionSpec.queueProcessable = this.elementStructureHandler.setBodyQueueProcessable;
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
@@ -892,6 +930,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     tagRemoved = true;
 
                 }
+                // No way to process 'removeBody' or 'removeAllButFirstChild' on a standalone tag
 
             } else if (processor instanceof IElementNodeProcessor) {
                 throw new UnsupportedOperationException("Support for Node processors not implemented yet");
@@ -943,8 +982,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (this.markupLevel >= this.skipMarkupFromLevel) {
-            this.markupLevel++;
+        if (this.allowedElementCountByMarkupLevel[this.markupLevel] <= 0) { // Note the structure doesn't end here, so we don't decrease until the close tag
+            increaseMarkupLevel();
+            this.allowedElementCountByMarkupLevel[this.markupLevel] = 0; // we make sure all is skipped inside
+            this.allowedNonElementStructuresByMarkupLevel[this.markupLevel] = false; // we make sure all is skipped inside
             return;
         }
 
@@ -955,7 +996,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
             this.iterationSpec.iterationQueue.add(
                     OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, iopenElementTag, true));
-            this.markupLevel++;
+            increaseMarkupLevel();
             return;
         }
 
@@ -966,7 +1007,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          */
         if (!this.suspended && !iopenElementTag.hasAssociatedProcessors()) {
             super.handleOpenElement(iopenElementTag);
-            this.markupLevel++;
+            increaseMarkupLevel();
             if (this.variablesMap != null) {
                 this.variablesMap.increaseLevel();
             }
@@ -986,7 +1027,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          */
         boolean tagRemoved = false; // If the tag is removed, we have to immediately stop the execution of processors
         boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
-        boolean bodyRemoved = false; // If the body of this tag should be removed, we must signal it accordingly at the engine
+        boolean allowedNonElementStructuresInBody = true; // Needed to discard the body, or allow only a certain amount of children to execute
+        int allowedElementCountInBody = Integer.MAX_VALUE; // Needed to discard the body, or allow only a certain amount of children to execute
 
 
         /*
@@ -1023,7 +1065,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
              */
             queue.resetAsCloneOf(this.suspensionSpec.suspendedQueue);
             queueProcessable = this.suspensionSpec.queueProcessable;
-            bodyRemoved = this.suspensionSpec.bodyRemoved;
+            allowedElementCountInBody = this.suspensionSpec.allowedElementCountInBody;
+            allowedNonElementStructuresInBody = this.suspensionSpec.allowedNonElementStructuresInBody;
             this.elementProcessorIterator.resetAsCloneOf(this.suspensionSpec.suspendedIterator);
             this.suspended = false;
             this.suspensionSpec.reset();
@@ -1093,7 +1136,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
                     this.suspended = true;
-                    this.suspensionSpec.bodyRemoved = bodyRemoved;
+                    this.suspensionSpec.allowedElementCountInBody = allowedElementCountInBody;
+                    this.suspensionSpec.allowedNonElementStructuresInBody = allowedNonElementStructuresInBody;
                     this.suspensionSpec.queueProcessable = queueProcessable;
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
@@ -1102,7 +1146,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.iterationSpec.iterationQueue.add(openElementTag.cloneElementTag());
 
                     // Increase markup level, as normal with open tags
-                    this.markupLevel++;
+                    increaseMarkupLevel();
 
                     // Decrease the handler execution level (all important bits are already in suspensionSpec)
                     decreaseHandlerExecLevel();
@@ -1124,7 +1168,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.textBodyReplacementBuffer.setText(this.elementStructureHandler.setBodyTextValue);
                     queue.add(this.textBodyReplacementBuffer);
 
-                    bodyRemoved = true;
+                    allowedElementCountInBody = 0;
+                    allowedNonElementStructuresInBody = false;
 
                 } else if (this.elementStructureHandler.setBodyQueue) {
 
@@ -1133,7 +1178,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     queue.addQueue(this.elementStructureHandler.setBodyQueueValue, true); // we need to clone the queue!
 
-                    bodyRemoved = true;
+                    allowedElementCountInBody = 0;
+                    allowedNonElementStructuresInBody = false;
 
                 } else if (this.elementStructureHandler.replaceWithText) {
 
@@ -1146,7 +1192,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     queue.add(this.textBodyReplacementBuffer);
 
                     tagRemoved = true;
-                    bodyRemoved = true;
+                    allowedElementCountInBody = 0;
+                    allowedNonElementStructuresInBody = false;
 
                 } else if (this.elementStructureHandler.replaceWithQueue) {
 
@@ -1156,20 +1203,36 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     queue.addQueue(this.elementStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
 
                     tagRemoved = true;
-                    bodyRemoved = true;
+                    allowedElementCountInBody = 0;
+                    allowedNonElementStructuresInBody = false;
 
                 } else if (this.elementStructureHandler.removeElement) {
 
                     queue.reset(); // Remove any previous results on the queue
 
                     tagRemoved = true;
-                    bodyRemoved = true;
+                    allowedElementCountInBody = 0;
+                    allowedNonElementStructuresInBody = false;
 
                 } else if (this.elementStructureHandler.removeTag) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
 
                     tagRemoved = true;
+
+                } else if (this.elementStructureHandler.removeBody) {
+
+                    queue.reset(); // Remove any previous results on the queue
+
+                    allowedElementCountInBody = 0;
+                    allowedNonElementStructuresInBody = false;
+
+                } else if (this.elementStructureHandler.removeAllButFirstChild) {
+
+                    queue.reset(); // Remove any previous results on the queue
+
+                    allowedElementCountInBody = 1;
+                    allowedNonElementStructuresInBody = true;
 
                 }
 
@@ -1196,7 +1259,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * INCREASE THE MARKUP LEVEL to the value that will be applied to the tag's bodies
          */
-        this.markupLevel++;
+        increaseMarkupLevel();
 
 
         /*
@@ -1208,9 +1271,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * SET BODY TO BE SKIPPED, if required
          */
-        if (bodyRemoved) {
+        if (!allowedNonElementStructuresInBody) {
+            this.allowedNonElementStructuresByMarkupLevel[this.markupLevel] = false;
+        }
+        if (allowedElementCountInBody != Integer.MAX_VALUE) {
             // We make sure no other nested events will be processed at all
-            this.skipMarkupFromLevel = this.markupLevel;
+            this.allowedElementCountByMarkupLevel[this.markupLevel] = allowedElementCountInBody;
         }
 
 
@@ -1240,8 +1306,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (this.markupLevel >= this.skipMarkupFromLevel) {
-            this.markupLevel++;
+        if (this.allowedElementCountByMarkupLevel[this.markupLevel] <= 0) { // Note the structure doesn't end here, so we don't decrease until the close tag
+            increaseMarkupLevel();
+            this.allowedElementCountByMarkupLevel[this.markupLevel] = 0; // we make sure all is skipped inside
+            this.allowedNonElementStructuresByMarkupLevel[this.markupLevel] = false; // we make sure all is skipped inside
             return;
         }
 
@@ -1252,7 +1320,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
             this.iterationSpec.iterationQueue.add(
                     AutoOpenElementTag.asEngineAutoOpenElementTag(this.templateMode, this.configuration, iautoOpenElementTag, true));
-            this.markupLevel++;
+            increaseMarkupLevel();
             return;
         }
 
@@ -1263,7 +1331,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          */
         if (!this.suspended && !iautoOpenElementTag.hasAssociatedProcessors()) {
             super.handleAutoOpenElement(iautoOpenElementTag);
-            this.markupLevel++;
+            increaseMarkupLevel();
             if (this.variablesMap != null) {
                 this.variablesMap.increaseLevel();
             }
@@ -1283,7 +1351,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          */
         boolean tagRemoved = false; // If the tag is removed, we have to immediately stop the execution of processors
         boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
-        boolean bodyRemoved = false; // If the body of this tag should be removed, we must signal it accordingly at the engine
+        boolean allowedNonElementStructuresInBody = true; // Needed to discard the body, or allow only a certain amount of children to execute
+        int allowedElementCountInBody = Integer.MAX_VALUE; // Needed to discard the body, or allow only a certain amount of children to execute
 
 
         /*
@@ -1320,7 +1389,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
              */
             queue.resetAsCloneOf(this.suspensionSpec.suspendedQueue);
             queueProcessable = this.suspensionSpec.queueProcessable;
-            bodyRemoved = this.suspensionSpec.bodyRemoved;
+            allowedElementCountInBody = this.suspensionSpec.allowedElementCountInBody;
+            allowedNonElementStructuresInBody = this.suspensionSpec.allowedNonElementStructuresInBody;
             this.elementProcessorIterator.resetAsCloneOf(this.suspensionSpec.suspendedIterator);
             this.suspended = false;
             this.suspensionSpec.reset();
@@ -1390,7 +1460,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
                     this.suspended = true;
-                    this.suspensionSpec.bodyRemoved = bodyRemoved;
+                    this.suspensionSpec.allowedElementCountInBody = allowedElementCountInBody;
+                    this.suspensionSpec.allowedNonElementStructuresInBody = allowedNonElementStructuresInBody;
                     this.suspensionSpec.queueProcessable = queueProcessable;
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
@@ -1399,7 +1470,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.iterationSpec.iterationQueue.add(autoOpenElementTag.cloneElementTag());
 
                     // Increase markup level, as normal with open tags
-                    this.markupLevel++;
+                    increaseMarkupLevel();
 
                     // Decrease the handler execution level (all important bits are already in suspensionSpec)
                     decreaseHandlerExecLevel();
@@ -1421,7 +1492,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.textBodyReplacementBuffer.setText(this.elementStructureHandler.setBodyTextValue);
                     queue.add(this.textBodyReplacementBuffer);
 
-                    bodyRemoved = true;
+                    allowedElementCountInBody = 0;
+                    allowedNonElementStructuresInBody = false;
 
                 } else if (this.elementStructureHandler.setBodyQueue) {
 
@@ -1430,7 +1502,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     queue.addQueue(this.elementStructureHandler.setBodyQueueValue, true); // we need to clone the queue!
 
-                    bodyRemoved = true;
+                    allowedElementCountInBody = 0;
+                    allowedNonElementStructuresInBody = false;
 
                 } else if (this.elementStructureHandler.replaceWithText) {
 
@@ -1443,7 +1516,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     queue.add(this.textBodyReplacementBuffer);
 
                     tagRemoved = true;
-                    bodyRemoved = true;
+                    allowedElementCountInBody = 0;
+                    allowedNonElementStructuresInBody = false;
 
                 } else if (this.elementStructureHandler.replaceWithQueue) {
 
@@ -1453,20 +1527,36 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     queue.addQueue(this.elementStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
 
                     tagRemoved = true;
-                    bodyRemoved = true;
+                    allowedElementCountInBody = 0;
+                    allowedNonElementStructuresInBody = false;
 
                 } else if (this.elementStructureHandler.removeElement) {
 
                     queue.reset(); // Remove any previous results on the queue
 
                     tagRemoved = true;
-                    bodyRemoved = true;
+                    allowedElementCountInBody = 0;
+                    allowedNonElementStructuresInBody = false;
 
                 } else if (this.elementStructureHandler.removeTag) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
 
                     tagRemoved = true;
+
+                } else if (this.elementStructureHandler.removeBody) {
+
+                    queue.reset(); // Remove any previous results on the queue
+
+                    allowedElementCountInBody = 0;
+                    allowedNonElementStructuresInBody = false;
+
+                } else if (this.elementStructureHandler.removeAllButFirstChild) {
+
+                    queue.reset(); // Remove any previous results on the queue
+
+                    allowedElementCountInBody = 1;
+                    allowedNonElementStructuresInBody = true;
 
                 }
 
@@ -1493,7 +1583,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * INCREASE THE MARKUP LEVEL to the value that will be applied to the tag's bodies
          */
-        this.markupLevel++;
+        increaseMarkupLevel();
 
 
         /*
@@ -1505,9 +1595,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * SET BODY TO BE SKIPPED, if required
          */
-        if (bodyRemoved) {
+        if (!allowedNonElementStructuresInBody) {
+            this.allowedNonElementStructuresByMarkupLevel[this.markupLevel] = false;
+        }
+        if (allowedElementCountInBody != Integer.MAX_VALUE) {
             // We make sure no other nested events will be processed at all
-            this.skipMarkupFromLevel = this.markupLevel;
+            this.allowedElementCountByMarkupLevel[this.markupLevel] = allowedElementCountInBody;
         }
 
 
@@ -1537,12 +1630,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * DECREASE THE MARKUP LEVEL, as only the body of elements should be considered in a higher level
          */
-        this.markupLevel--;
+        decreaseMarkupLevel();
 
         /*
          * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (this.markupLevel >= this.skipMarkupFromLevel) {
+        if (this.allowedElementCountByMarkupLevel[this.markupLevel]-- <= 0) {
             return;
         }
 
@@ -1586,9 +1679,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER WE SHOULD KEEP SKIPPING MARKUP or we just got to the end of the discarded block
          */
-        if (this.markupLevel + 1 == this.skipMarkupFromLevel) {
+        if (this.allowedElementCountByMarkupLevel[this.markupLevel + 1] <= 0) {
             // We've reached the last point where markup should be discarded, so we should reset the variable
-            this.skipMarkupFromLevel = Integer.MAX_VALUE;
+            Arrays.fill(this.allowedElementCountByMarkupLevel, this.markupLevel + 1, this.allowedElementCountByMarkupLevel.length, Integer.MAX_VALUE);
+            Arrays.fill(this.allowedNonElementStructuresByMarkupLevel, this.markupLevel + 1, this.allowedNonElementStructuresByMarkupLevel.length, true);
         }
 
         /*
@@ -1614,12 +1708,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * DECREASE THE MARKUP LEVEL, as only the body of elements should be considered in a higher level
          */
-        this.markupLevel--;
+        decreaseMarkupLevel();
 
         /*
          * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (this.markupLevel >= this.skipMarkupFromLevel) {
+        if (this.allowedElementCountByMarkupLevel[this.markupLevel]-- <= 0) {
             return;
         }
 
@@ -1663,9 +1757,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER WE SHOULD KEEP SKIPPING MARKUP or we just got to the end of the discarded block
          */
-        if (this.markupLevel + 1 == this.skipMarkupFromLevel) {
+        if (this.allowedElementCountByMarkupLevel[this.markupLevel + 1] <= 0) {
             // We've reached the last point where markup should be discarded, so we should reset the variable
-            this.skipMarkupFromLevel = Integer.MAX_VALUE;
+            Arrays.fill(this.allowedElementCountByMarkupLevel, this.markupLevel + 1, this.allowedElementCountByMarkupLevel.length, Integer.MAX_VALUE);
+            Arrays.fill(this.allowedNonElementStructuresByMarkupLevel, this.markupLevel + 1, this.allowedNonElementStructuresByMarkupLevel.length, true);
         }
 
         /*
@@ -1691,7 +1786,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (this.markupLevel >= this.skipMarkupFromLevel) {
+        if (!this.allowedNonElementStructuresByMarkupLevel[this.markupLevel]) { // an unmatched is not really an element
             return;
         }
 
@@ -1729,7 +1824,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (this.markupLevel >= this.skipMarkupFromLevel) {
+        if (!this.allowedNonElementStructuresByMarkupLevel[this.markupLevel]) {
             return;
         }
 
@@ -1824,7 +1919,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (this.markupLevel >= this.skipMarkupFromLevel) {
+        if (!this.allowedNonElementStructuresByMarkupLevel[this.markupLevel]) {
             return;
         }
 
@@ -1922,7 +2017,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (this.markupLevel >= this.skipMarkupFromLevel) {
+        if (!this.allowedNonElementStructuresByMarkupLevel[this.markupLevel]) {
             return;
         }
 
@@ -2074,7 +2169,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * FIX THE SUSPENSION-RELATED VARIABLES
          */
 
-        final boolean suspendedBodyRemoved = this.suspensionSpec.bodyRemoved;
+        final int suspendedAllowedElementCountInBody = this.suspensionSpec.allowedElementCountInBody;
+        final boolean suspendedAllowedNonElementStructuresInBody = this.suspensionSpec.allowedNonElementStructuresInBody;
         final boolean suspendedQueueProcessable = this.suspensionSpec.queueProcessable;
         iterArtifacts.suspendedQueue.resetAsCloneOf(this.suspensionSpec.suspendedQueue);
         iterArtifacts.suspendedElementProcessorIterator.resetAsCloneOf(this.suspensionSpec.suspendedIterator);
@@ -2098,11 +2194,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.variablesMap.put(iterStatusVariableName, status);
 
             // We will initialize the suspension artifacts just as if we had just suspended it
-            this.suspensionSpec.bodyRemoved = suspendedBodyRemoved;
+            this.suspensionSpec.allowedElementCountInBody = suspendedAllowedElementCountInBody;
+            this.suspensionSpec.allowedNonElementStructuresInBody = suspendedAllowedNonElementStructuresInBody;
             this.suspensionSpec.queueProcessable = suspendedQueueProcessable;
             this.suspensionSpec.suspendedQueue.resetAsCloneOf(iterArtifacts.suspendedQueue);
             this.suspensionSpec.suspendedIterator.resetAsCloneOf(iterArtifacts.suspendedElementProcessorIterator);
             this.suspended = true;
+
+            // We increase the element counter in order to compensate for the fact that the element being iterated
+            // might have been the only one allowed at this markup level (which means all its iterations should
+            // be allowed)
+            this.allowedElementCountByMarkupLevel[this.markupLevel]++;
 
             iterArtifacts.iterationQueue.process(this, false);
 
@@ -2265,7 +2367,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     private static class SuspensionSpec {
 
-        boolean bodyRemoved;
+        int allowedElementCountInBody;
+        boolean allowedNonElementStructuresInBody;
         boolean queueProcessable;
         final EngineEventQueue suspendedQueue;
         final ElementProcessorIterator suspendedIterator;
@@ -2277,7 +2380,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         void reset() {
-            this.bodyRemoved = false;
+            this.allowedElementCountInBody = Integer.MAX_VALUE;
+            this.allowedNonElementStructuresInBody = true;
             this.queueProcessable = false;
             this.suspendedQueue.reset();
             this.suspendedIterator.reset();

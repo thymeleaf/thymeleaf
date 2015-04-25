@@ -98,7 +98,6 @@ public class StandardMessageResolver
      * @param defaultMessages the new default messages
      */
     public void setDefaultMessages(final Properties defaultMessages) {
-        checkNotInitialized();
         if (defaultMessages != null) {
             this.defaultMessages.putAll(defaultMessages);
         }
@@ -114,7 +113,6 @@ public class StandardMessageResolver
      * @param value the message value (text)
      */
     public void addDefaultMessage(final String key, final String value) {
-        checkNotInitialized();
         Validate.notNull(key, "Key for default message cannot be null");
         Validate.notNull(value, "Value for default message cannot be null");
         this.defaultMessages.put(key, value);
@@ -127,7 +125,6 @@ public class StandardMessageResolver
      * </p>
      */
     public void clearDefaultMessages() {
-        checkNotInitialized();
         this.defaultMessages.clear();
     }
 
@@ -140,9 +137,7 @@ public class StandardMessageResolver
             final ITemplateProcessingContext processingContext, final String key, final Object[] messageParameters) {
         
         // This method can be overriden
-        
-        checkInitialized();
-        
+
         final String message =
             StandardMessageResolutionUtils.resolveMessageForTemplate(
                     processingContext, key, messageParameters, unsafeGetDefaultMessages());

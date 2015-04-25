@@ -17,28 +17,17 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf;
-
-import java.io.Writer;
-
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.fragment.IFragmentSpec;
-
+package org.thymeleaf.fragment;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
- *
- * @since 3.0.0
+ * 
+ * @since 2.0.9 (reimplemented in 3.0.0)
  *
  */
-public interface ITemplateEngine {
+public interface IFragmentSpec {
 
-    public String process(final String templateName, final IContext context);
-    public String process(final String templateName, final IContext context, final IFragmentSpec fragmentSpec);
 
-    public void process(final String templateName, final IContext context, final Writer writer);
-    public void process(final String templateName, final IContext context,
-                        final IFragmentSpec fragmentSpec, final Writer writer);
 
 }

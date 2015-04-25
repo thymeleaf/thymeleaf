@@ -35,8 +35,12 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-public class StandardDefaultAttributesTagProcessor
+public final class StandardDefaultAttributesTagProcessor
         extends AbstractProcessor implements IElementTagProcessor {
+
+
+    public static final int PRECEDENCE = Integer.MAX_VALUE;
+
 
     private MatchingElementName matchingElementName = null;
     private MatchingAttributeName matchingAttributeName = null;
@@ -44,7 +48,7 @@ public class StandardDefaultAttributesTagProcessor
 
 
     public StandardDefaultAttributesTagProcessor() {
-        super(TemplateMode.HTML, Integer.MAX_VALUE);
+        super(TemplateMode.HTML, PRECEDENCE);
     }
 
 

@@ -32,11 +32,13 @@ import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagPr
  * @since 3.0.0
  *
  */
-public class StandardInlineTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
+public final class StandardInlineTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
 
+    public static final int PRECEDENCE = 1000;
+    public static final String ATTR_NAME = "inline";
 
     public StandardInlineTagProcessor() {
-        super("inline", 1000);
+        super(ATTR_NAME, PRECEDENCE);
     }
 
 

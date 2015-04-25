@@ -55,6 +55,10 @@ final class ElementStructureHandler implements IElementStructureHandler {
 
     boolean removeTag;
 
+    boolean removeBody;
+
+    boolean removeAllButFirstChild;
+
     boolean setLocalVariable;
     Map<String,Object> addedLocalVariables = new LinkedHashMap<String, Object>(3);
 
@@ -127,6 +131,18 @@ final class ElementStructureHandler implements IElementStructureHandler {
     public void removeTag() {
         resetAllButLocalVariables();
         this.removeTag = true;
+    }
+
+
+    public void removeBody() {
+        resetAllButLocalVariables();
+        this.removeBody = true;
+    }
+
+
+    public void removeAllButFirstChild() {
+        resetAllButLocalVariables();
+        this.removeAllButFirstChild = true;
     }
 
 
@@ -211,6 +227,10 @@ final class ElementStructureHandler implements IElementStructureHandler {
         this.removeElement = false;
 
         this.removeTag = false;
+
+        this.removeBody = false;
+
+        this.removeAllButFirstChild = false;
 
         this.iterateElement = false;
         this.iterVariableName = null;

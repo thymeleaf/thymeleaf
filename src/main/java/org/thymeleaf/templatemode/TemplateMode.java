@@ -80,20 +80,20 @@ public enum TemplateMode {
         // This code should probably be removed at some point in the distant future after Thymeleaf v3
         if ("HTML5".equalsIgnoreCase(mode) || "XHTML".equalsIgnoreCase(mode) ||
                 "VALIDXHTML".equalsIgnoreCase(mode) || "LEGACYHTML5".equalsIgnoreCase(mode)) {
-            logger.warn(String.format(
+            logger.warn(
                     "[THYMELEAF][{}] Template Mode '{}' is deprecated. Using Template Mode '{}' instead.",
-                    new Object[]{TemplateEngine.threadIndex(), mode, HTML}));
+                    new Object[]{TemplateEngine.threadIndex(), mode, HTML});
             return HTML;
         }
         if ("VALIDXML".equalsIgnoreCase(mode)) {
-            logger.warn(String.format(
+            logger.warn(
                     "[THYMELEAF][{}] Template Mode '{}' is deprecated. Using Template Mode '{}' instead.",
-                    new Object[]{TemplateEngine.threadIndex(), mode, XML}));
+                    new Object[]{TemplateEngine.threadIndex(), mode, XML});
             return XML;
         }
-        logger.warn(String.format(
+        logger.warn(
                 "[THYMELEAF][{}] Unknown Template Mode '{}'. Using default Template Mode '{}'.",
-                new Object[]{TemplateEngine.threadIndex(), mode, HTML}));
+                new Object[]{TemplateEngine.threadIndex(), mode, HTML});
         return HTML;
     }
 

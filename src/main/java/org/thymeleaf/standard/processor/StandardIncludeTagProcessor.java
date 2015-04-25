@@ -34,11 +34,13 @@ import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagPr
  * @since 3.0.0
  *
  */
-public class StandardIncludeTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
+public final class StandardIncludeTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
 
+    public static final int PRECEDENCE = 100;
+    public static final String ATTR_NAME = "include";
 
     public StandardIncludeTagProcessor() {
-        super("include", 100);
+        super(ATTR_NAME, PRECEDENCE);
     }
 
 

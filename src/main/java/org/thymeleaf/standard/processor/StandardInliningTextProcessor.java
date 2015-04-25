@@ -34,9 +34,10 @@ import org.thymeleaf.templatemode.TemplateMode;
  */
 public final class StandardInliningTextProcessor extends AbstractTextProcessor {
 
+    public static final int PRECEDENCE = 1000;
 
     public StandardInliningTextProcessor() {
-        super(TemplateMode.HTML, 1000);
+        super(TemplateMode.HTML, PRECEDENCE);
     }
 
 

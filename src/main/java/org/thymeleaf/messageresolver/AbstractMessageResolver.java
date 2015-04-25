@@ -21,8 +21,6 @@ package org.thymeleaf.messageresolver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.exceptions.AlreadyInitializedException;
-import org.thymeleaf.exceptions.NotInitializedException;
 
 /**
  * <p>
@@ -41,110 +39,26 @@ public abstract class AbstractMessageResolver
     
     private static final Logger logger = LoggerFactory.getLogger(AbstractMessageResolver.class);
 
-    private String name = null;
+    private String name = this.getClass().getName();
     private Integer order = null;
-    
-    private volatile boolean initialized;
-    
+
     
     
     
     protected AbstractMessageResolver() {
         super();
-        this.initialized = false;
     }
 
     
-    
-    
-    protected final boolean isInitialized() {
-        return this.initialized;
-    }
-    
-    public final synchronized void initialize() {
-        
-        if (!isInitialized()) {
-            
-            if (this.name == null) {
-                this.name = this.getClass().getName();
-            }
-            
-            logger.info("[THYMELEAF] INITIALIZING MESSAGE RESOLVER: " + this.name);
-            
-            initializeSpecific();
-            
-            this.initialized = true;
 
-            logger.info("[THYMELEAF] MESSAGE RESOLVER INITIALIZED OK");
-            
-        }
-        
-    }
-    
-    
-    /**
-     * <p>
-     *   Initialize specific aspects of a subclass. This method is called during initialization
-     *   of TemplateResolver ({@link #initialize()}) and is meant for being overridden by subclasses. 
-     * </p>
-     */
-    protected void initializeSpecific() {
-        // Nothing to be executed here. Meant for extension
-    }
-    
-    
-    /**
-     * <p>
-     *   Check the message resolver is not initialized, and throw an exception if it is.
-     * </p>
-     * <p>
-     *   Calling this method allows to protect calls to methods that change the configuration,
-     *   ensuring the message resolver has not been initialized yet.
-     * </p>
-     */
-    protected final void checkNotInitialized() {
-        if (isInitialized()) {
-            throw new AlreadyInitializedException(
-                    "Cannot modify message resolver when it has already been initialized");
-        }
-    }
-    
-    
-    /**
-     * <p>
-     *   Check the message resolver is initialized, and throw an exception if it is not.
-     * </p>
-     * <p>
-     *   Calling this method allows to protect calls to methods that need the message
-     *   resolver to be already initialized.
-     * </p>
-     */
-    protected final void checkInitialized() {
-        if (!isInitialized()) {
-            throw new NotInitializedException("Message Resolver has not been initialized");
-        }
-    }
-    
+
 
 
     public final String getName() {
-        checkInitialized();
         return this.name;
     }
 
     
-    /**
-     * <p>
-     *   Uninitialized method <b>meant only for use by subclasses</b>. 
-     * </p>
-     * 
-     * @return the name
-     */
-    protected final String unsafeGetName() {
-        return this.name;
-    }
-
-
     /**
      * <p>
      *   Sets a name for this message resolver.
@@ -153,29 +67,16 @@ public abstract class AbstractMessageResolver
      * @param name the new name
      */
     public void setName(final String name) {
-        checkNotInitialized();
         this.name = name;
     }
-    
+
+
     
     public final Integer getOrder() {
-        checkInitialized();
         return this.order;
     }
 
     
-    /**
-     * <p>
-     *   Uninitialized method <b>meant only for use by subclasses</b>. 
-     * </p>
-     * 
-     * @return the order
-     */
-    protected final Integer unsafeGetOrder() {
-        return this.order;
-    }
-
-
     /**
      * <p>
      *   Sets a new order for the message resolver. 
@@ -184,7 +85,6 @@ public abstract class AbstractMessageResolver
      * @param order the new order
      */
     public void setOrder(final Integer order) {
-        checkNotInitialized();
         this.order = order;
     }
 

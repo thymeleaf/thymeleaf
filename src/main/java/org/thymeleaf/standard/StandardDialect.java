@@ -37,16 +37,16 @@ import org.thymeleaf.standard.expression.StandardConversionService;
 import org.thymeleaf.standard.expression.StandardExpressionObjectsFactory;
 import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
-import org.thymeleaf.standard.processor.StandardClassTagProcessor;
-import org.thymeleaf.standard.processor.StandardDefaultAttributesTagProcessor;
+import org.thymeleaf.standard.processor.StandardActionTagProcessor;
 import org.thymeleaf.standard.processor.StandardEachTagProcessor;
-import org.thymeleaf.standard.processor.StandardIncludeTagProcessor;
-import org.thymeleaf.standard.processor.StandardInlineTagProcessor;
-import org.thymeleaf.standard.processor.StandardInliningTextProcessor;
-import org.thymeleaf.standard.processor.StandardObjectTagProcessor;
+import org.thymeleaf.standard.processor.StandardHrefTagProcessor;
+import org.thymeleaf.standard.processor.StandardMethodTagProcessor;
+import org.thymeleaf.standard.processor.StandardNonRemovableAttributeTagProcessor;
+import org.thymeleaf.standard.processor.StandardRemovableAttributeTagProcessor;
 import org.thymeleaf.standard.processor.StandardRemoveTagProcessor;
-import org.thymeleaf.standard.processor.StandardReplaceTagProcessor;
+import org.thymeleaf.standard.processor.StandardSrcTagProcessor;
 import org.thymeleaf.standard.processor.StandardTextTagProcessor;
+import org.thymeleaf.standard.processor.StandardValueTagProcessor;
 import org.thymeleaf.standard.processor.StandardWithTagProcessor;
 import org.thymeleaf.util.Validate;
 
@@ -270,16 +270,26 @@ public class StandardDialect
          */
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
         processors.add(new StandardTextTagProcessor());
-        processors.add(new StandardRemoveTagProcessor());
-        processors.add(new StandardClassTagProcessor());
-        processors.add(new StandardDefaultAttributesTagProcessor());
-        processors.add(new StandardIncludeTagProcessor());
-        processors.add(new StandardReplaceTagProcessor());
         processors.add(new StandardWithTagProcessor());
+        for (final String attrName : StandardRemovableAttributeTagProcessor.ATTR_NAMES) {
+            processors.add(new StandardRemovableAttributeTagProcessor(attrName));
+        }
+        for (final String attrName : StandardNonRemovableAttributeTagProcessor.ATTR_NAMES) {
+            processors.add(new StandardNonRemovableAttributeTagProcessor(attrName));
+        }
+        processors.add(new StandardActionTagProcessor());
+        processors.add(new StandardHrefTagProcessor());
+        processors.add(new StandardSrcTagProcessor());
+        processors.add(new StandardValueTagProcessor());
+        processors.add(new StandardMethodTagProcessor());
         processors.add(new StandardEachTagProcessor());
-        processors.add(new StandardObjectTagProcessor());
-        processors.add(new StandardInlineTagProcessor());
-        processors.add(new StandardInliningTextProcessor());
+        processors.add(new StandardRemoveTagProcessor());
+//        processors.add(new StandardDefaultAttributesTagProcessor());
+//        processors.add(new StandardIncludeTagProcessor());
+//        processors.add(new StandardReplaceTagProcessor());
+//        processors.add(new StandardObjectTagProcessor());
+//        processors.add(new StandardInlineTagProcessor());
+//        processors.add(new StandardInliningTextProcessor());
         return processors;
     }
 

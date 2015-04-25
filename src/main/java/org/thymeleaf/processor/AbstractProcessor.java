@@ -42,6 +42,8 @@ public abstract class AbstractProcessor implements IProcessor {
     private IDialect dialect = null;
 
 
+    // TODO Will probably need to handle exceptions in process() here, including logging the name of the template where the original node was, line, col...
+
 
 
     public AbstractProcessor(final TemplateMode templateMode, final int precedence) {
