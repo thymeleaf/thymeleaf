@@ -26,16 +26,14 @@ package org.thymeleaf.standard.processor;
  * @since 3.0.0
  *
  */
-public final class StandardAltTitleTagProcessor extends AbstractStandardDoubleAttributeModifierTagProcessor {
+public final class StandardAttrappendTagProcessor extends AbstractStandardMultipleAttributeModifierTagProcessor {
 
-    public static final int PRECEDENCE = 990;
-    public static final String ATTR_NAME = "alt-title";
-    public static final String TARGET_ATTR_NAME_ONE = "alt";
-    public static final String TARGET_ATTR_NAME_TWO = "title";
+    public static final int PRECEDENCE = 900;
+    public static final String ATTR_NAME = "attrappend";
 
 
-    public StandardAltTitleTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE, TARGET_ATTR_NAME_ONE, TARGET_ATTR_NAME_TWO, true);
+    public StandardAttrappendTagProcessor() {
+        super(ATTR_NAME, PRECEDENCE, ModificationType.APPEND);
     }
 
 

@@ -30,10 +30,12 @@ public final class StandardLangXmlLangTagProcessor extends AbstractStandardDoubl
 
     public static final int PRECEDENCE = 990;
     public static final String ATTR_NAME = "lang-xmllang";
+    public static final String TARGET_ATTR_NAME_ONE = "lang";
+    public static final String TARGET_ATTR_NAME_TWO = "xml:lang";
 
 
     public StandardLangXmlLangTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE, "lang", "xml:lang", true);
+        super(ATTR_NAME, PRECEDENCE, TARGET_ATTR_NAME_ONE, TARGET_ATTR_NAME_TWO, true);
     }
 
 
