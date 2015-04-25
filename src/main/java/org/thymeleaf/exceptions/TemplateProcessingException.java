@@ -43,21 +43,13 @@ public class TemplateProcessingException extends TemplateEngineException {
     
     
     public TemplateProcessingException(final String message) {
-        this(message, (String)null);
+        this(message, null);
     }
     
     public TemplateProcessingException(final String message, final Throwable cause) {
         this(message, null, cause);
     }
-    
-    public TemplateProcessingException(
-            final String message, final String templateName) {
-        super(message);
-        this.templateName = templateName;
-        this.line = null;
-        this.col = null;
-    }
-    
+
     public TemplateProcessingException(
             final String message, final String templateName, final Throwable cause) {
         super(message, cause);
@@ -109,23 +101,16 @@ public class TemplateProcessingException extends TemplateEngineException {
         return this.col;
     }
 
-    public boolean hasLine() {
-        return this.line != null;
-    }
-
-    public boolean hasCol() {
-        return this.col != null;
+    public boolean hasLineAndCol() {
+        return this.line != null && this.col != null;
     }
 
     public void setTemplateName(final String templateName) {
         this.templateName = templateName;
     }
 
-    public void setLine(final int line) {
+    public void setLineAndCol(final int line, final int col) {
         this.line = (line < 0? null : Integer.valueOf(line));
-    }
-
-    public void setCol(final int col) {
         this.col = (col < 0? null : Integer.valueOf(col));
     }
 
@@ -142,9 +127,7 @@ public class TemplateProcessingException extends TemplateEngineException {
         if (this.templateName != null) {
             sb.append(' ');
             sb.append('(');
-            sb.append('"');
             sb.append(this.templateName);
-            sb.append('"');
             if (this.line != null || this.col != null) {
                 sb.append(": ");
                 if (this.line != null) {

@@ -21,6 +21,7 @@ package org.thymeleaf.processor.xmldeclaration;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.IXMLDeclarationStructureHandler;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -43,10 +44,32 @@ public abstract class AbstractXMLDeclarationProcessor
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public void process(final ITemplateProcessingContext processingContext, final IXMLDeclaration xmlDeclaration,
+    public final void process(final ITemplateProcessingContext processingContext, final IXMLDeclaration xmlDeclaration,
                         final IXMLDeclarationStructureHandler structureHandler) {
-        // Nothing to do
+
+        try {
+
+            doProcess(processingContext, xmlDeclaration, structureHandler);
+
+        } catch (final TemplateProcessingException e) {
+            if (!e.hasTemplateName()) {
+                e.setTemplateName(xmlDeclaration.getTemplateName());
+            }
+            if (!e.hasLineAndCol()) {
+                e.setLineAndCol(xmlDeclaration.getLine(), xmlDeclaration.getCol());
+            }
+            throw e;
+        } catch (final Exception e) {
+            throw new TemplateProcessingException(
+                    "Error during execution of processor '" + this.getClass().getName() + "'",
+                    xmlDeclaration.getTemplateName(), xmlDeclaration.getLine(), xmlDeclaration.getCol(), e);
+        }
+
     }
+
+
+    protected abstract void doProcess(final ITemplateProcessingContext processingContext, final IXMLDeclaration xmlDeclaration,
+                        final IXMLDeclarationStructureHandler structureHandler);
 
 
 }

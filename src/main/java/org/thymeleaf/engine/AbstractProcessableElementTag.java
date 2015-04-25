@@ -186,9 +186,9 @@ abstract class AbstractProcessableElementTag
 
     protected void resetProcessableElementTag(
             final String elementName,
-            final int line, final int col) {
+            final String templateName, final int line, final int col) {
 
-        resetElementTag(elementName, line, col);
+        resetElementTag(elementName, templateName, line, col);
         this.elementAttributes.clearAll();
         this.associatedProcessorsAttributesVersion = Integer.MIN_VALUE;
 

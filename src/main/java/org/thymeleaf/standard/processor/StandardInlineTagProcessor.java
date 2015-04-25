@@ -23,7 +23,6 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
 
 /**
  *
@@ -32,7 +31,7 @@ import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagPr
  * @since 3.0.0
  *
  */
-public final class StandardInlineTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
+public final class StandardInlineTagProcessor extends AbstractStandardAttributeTagProcessor {
 
     public static final int PRECEDENCE = 1000;
     public static final String ATTR_NAME = "inline";
@@ -43,17 +42,13 @@ public final class StandardInlineTagProcessor extends AbstractAttributeMatchingH
 
 
 
-    public void process(
+    protected void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue,
             final IElementStructureHandler structureHandler) {
 
-        // We know this will not be null, because we linked the processor to a specific attribute
-        final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
-
         structureHandler.setTextInliningActive(Boolean.valueOf(tag.getAttributes().getValue(attributeName)));
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

@@ -26,7 +26,6 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
 import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.AssignationUtils;
@@ -40,7 +39,7 @@ import org.thymeleaf.util.StringUtils;
  * @since 3.0.0
  *
  */
-public final class StandardWithTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
+public final class StandardWithTagProcessor extends AbstractStandardAttributeTagProcessor {
 
     public static final int PRECEDENCE = 600;
     public static final String ATTR_NAME = "with";
@@ -51,14 +50,11 @@ public final class StandardWithTagProcessor extends AbstractAttributeMatchingHTM
 
 
 
-    public void process(
+    protected void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue,
             final IElementStructureHandler structureHandler) {
-
-        final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
-
-        final String attributeValue = tag.getAttributes().getValue(attributeName);
 
         final AssignationSequence assignations =
                 AssignationUtils.parseAssignationSequence(
@@ -101,8 +97,6 @@ public final class StandardWithTagProcessor extends AbstractAttributeMatchingHTM
             }
 
         }
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

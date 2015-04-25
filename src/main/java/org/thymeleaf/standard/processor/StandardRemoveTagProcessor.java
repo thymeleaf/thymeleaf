@@ -24,7 +24,6 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
@@ -36,7 +35,7 @@ import org.thymeleaf.standard.expression.StandardExpressions;
  * @since 3.0.0
  *
  */
-public final class StandardRemoveTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
+public final class StandardRemoveTagProcessor extends AbstractStandardAttributeTagProcessor {
 
     public static final int PRECEDENCE = 1600;
     public static final String ATTR_NAME = "remove";
@@ -54,13 +53,11 @@ public final class StandardRemoveTagProcessor extends AbstractAttributeMatchingH
 
 
 
-    public void process(
+    protected void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue,
             final IElementStructureHandler structureHandler) {
-
-        final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
-        final String attributeValue = tag.getAttributes().getValue(attributeName);
 
         final IStandardExpressionParser expressionParser =
                 StandardExpressions.getExpressionParser(processingContext.getConfiguration());
@@ -88,8 +85,6 @@ public final class StandardRemoveTagProcessor extends AbstractAttributeMatchingH
             }
 
         }
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

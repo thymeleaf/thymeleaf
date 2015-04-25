@@ -42,7 +42,7 @@ public final class StandardInliningTextProcessor extends AbstractTextProcessor {
 
 
     @Override
-    public void process(final ITemplateProcessingContext processingContext, final IText text,
+    protected void doProcess(final ITemplateProcessingContext processingContext, final IText text,
                         final ITextStructureHandler structureHandler) {
 
         boolean candidate = false;

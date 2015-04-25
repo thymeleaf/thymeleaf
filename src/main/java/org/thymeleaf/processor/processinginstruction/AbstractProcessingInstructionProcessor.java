@@ -21,6 +21,7 @@ package org.thymeleaf.processor.processinginstruction;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.IProcessingInstructionStructureHandler;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -43,10 +44,31 @@ public abstract class AbstractProcessingInstructionProcessor
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public void process(final ITemplateProcessingContext processingContext, final IProcessingInstruction processingInstruction,
+    public final void process(final ITemplateProcessingContext processingContext, final IProcessingInstruction processingInstruction,
                         final IProcessingInstructionStructureHandler structureHandler) {
-        // Nothing to do
+
+        try {
+
+            doProcess(processingContext, processingInstruction, structureHandler);
+
+        } catch (final TemplateProcessingException e) {
+            if (!e.hasTemplateName()) {
+                e.setTemplateName(processingInstruction.getTemplateName());
+            }
+            if (!e.hasLineAndCol()) {
+                e.setLineAndCol(processingInstruction.getLine(), processingInstruction.getCol());
+            }
+            throw e;
+        } catch (final Exception e) {
+            throw new TemplateProcessingException(
+                    "Error during execution of processor '" + this.getClass().getName() + "'",
+                    processingInstruction.getTemplateName(), processingInstruction.getLine(), processingInstruction.getCol(), e);
+        }
+
     }
 
+
+    protected abstract void doProcess(final ITemplateProcessingContext processingContext, final IProcessingInstruction processingInstruction,
+                        final IProcessingInstructionStructureHandler structureHandler);
 
 }

@@ -33,6 +33,7 @@ import org.thymeleaf.engine.ITemplateHandlerEvent;
 public interface INode extends ITemplateHandlerEvent {
 
     public boolean hasLocation();
+    public String getTemplateName();
     public int getLine();
     public int getCol();
 

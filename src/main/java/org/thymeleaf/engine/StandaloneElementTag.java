@@ -98,9 +98,9 @@ final class StandaloneElementTag
     // Meant to be called only from within the engine
     void reset(final String elementName,
                final boolean minimized,
-               final int line, final int col) {
+               final String templateName, final int line, final int col) {
 
-        resetProcessableElementTag(elementName, line, col);
+        resetProcessableElementTag(elementName, templateName, line, col);
         this.minimized = minimized;
 
     }
@@ -153,7 +153,7 @@ final class StandaloneElementTag
 
         final StandaloneElementTag newInstance = new StandaloneElementTag(templateMode, configuration.getElementDefinitions(), configuration.getAttributeDefinitions());
 
-        newInstance.reset(standaloneElementTag.getElementName(), standaloneElementTag.isMinimized(), standaloneElementTag.getLine(), standaloneElementTag.getCol());
+        newInstance.reset(standaloneElementTag.getElementName(), standaloneElementTag.isMinimized(), standaloneElementTag.getTemplateName(), standaloneElementTag.getLine(), standaloneElementTag.getCol());
 
         final IElementAttributes attributes = standaloneElementTag.getAttributes();
         if (attributes != null) {

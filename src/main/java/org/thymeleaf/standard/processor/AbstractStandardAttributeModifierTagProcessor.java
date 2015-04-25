@@ -35,18 +35,20 @@ import org.thymeleaf.standard.expression.StandardExpressions;
  * @since 3.0.0
  *
  */
-public final class StandardTextTagProcessor extends AbstractStandardAttributeTagProcessor {
+public abstract class AbstractStandardAttributeModifierTagProcessor extends AbstractStandardAttributeTagProcessor {
 
-    public static final int PRECEDENCE = 1300;
-    public static final String ATTR_NAME = "text";
 
-    public StandardTextTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE);
+    private final boolean removeIfEmpty;
+
+
+    protected AbstractStandardAttributeModifierTagProcessor(final String attrName, final int precedence, final boolean removeIfEmpty) {
+        super(attrName, precedence);
+        this.removeIfEmpty = removeIfEmpty;
     }
 
 
 
-    protected void doProcess(
+    protected final void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
@@ -59,7 +61,16 @@ public final class StandardTextTagProcessor extends AbstractStandardAttributeTag
 
         final Object result = expression.execute(processingContext);
 
-        structureHandler.setBody(result == null ? "" : result.toString(), false);
+        final String newAttributeValue = (result == null? null : result.toString());
+
+        // These attributes might be "removable if empty", in which case we would simply remove the target attribute...
+        if (this.removeIfEmpty && (newAttributeValue == null || newAttributeValue.length() == 0)) {
+            // We are removing the equivalent attribute name, without the prefix...
+            tag.getAttributes().removeAttribute(attributeName.getAttributeName());
+        } else {
+            // We are setting the equivalent attribute name, without the prefix...
+            tag.getAttributes().setAttribute(attributeName.getAttributeName(), newAttributeValue);
+        }
 
     }
 

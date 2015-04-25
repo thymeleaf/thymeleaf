@@ -51,6 +51,7 @@ final class XMLDeclaration
     private String encoding;
     private String standalone;
 
+    private String templateName;
     private int line;
     private int col;
 
@@ -168,7 +169,7 @@ final class XMLDeclaration
                final String version,
                final String encoding,
                final String standalone,
-               final int line, final int col) {
+               final String templateName, final int line, final int col) {
 
         this.keyword = keyword;
         this.version = version;
@@ -177,6 +178,7 @@ final class XMLDeclaration
 
         this.xmlDeclaration = xmlDeclaration;
 
+        this.templateName = templateName;
         this.line = line;
         this.col = col;
 
@@ -201,6 +203,7 @@ final class XMLDeclaration
 
         this.xmlDeclaration = null;
 
+        this.templateName = null;
         this.line = -1;
         this.col = -1;
 
@@ -212,7 +215,11 @@ final class XMLDeclaration
 
 
     public boolean hasLocation() {
-        return (this.line != -1 && this.col != -1);
+        return (this.templateName != null && this.line != -1 && this.col != -1);
+    }
+
+    public String getTemplateName() {
+        return this.templateName;
     }
 
     public int getLine() {
@@ -261,6 +268,7 @@ final class XMLDeclaration
         this.version = original.version;
         this.encoding = original.encoding;
         this.standalone = original.standalone;
+        this.templateName = original.templateName;
         this.line = original.line;
         this.col = original.col;
 
@@ -284,6 +292,7 @@ final class XMLDeclaration
         newInstance.version = xmlDeclaration.getVersion();
         newInstance.encoding = xmlDeclaration.getEncoding();
         newInstance.standalone = xmlDeclaration.getStandalone();
+        newInstance.templateName = xmlDeclaration.getTemplateName();
         newInstance.line = xmlDeclaration.getLine();
         newInstance.col = xmlDeclaration.getCol();
         return newInstance;

@@ -23,7 +23,6 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
 
 /**
  *
@@ -32,7 +31,7 @@ import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagPr
  * @since 3.0.0
  *
  */
-public final class StandardObjectTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
+public final class StandardObjectTagProcessor extends AbstractStandardAttributeTagProcessor {
 
     public static final int PRECEDENCE = 500;
     public static final String ATTR_NAME = "object";
@@ -43,14 +42,11 @@ public final class StandardObjectTagProcessor extends AbstractAttributeMatchingH
 
 
 
-    public void process(
+    protected void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue,
             final IElementStructureHandler structureHandler) {
-
-        // We know this will not be null, because we linked the processor to a specific attribute
-        final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
-        tag.getAttributes().removeAttribute(attributeName);
 
         structureHandler.setSelectionTarget(new UserForm("Mark", "Lettuce"));
 

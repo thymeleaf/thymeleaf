@@ -42,6 +42,7 @@ public final class ProcessingInstruction
     private String target;
     private String content;
 
+    private String templateName;
     private int line;
     private int col;
 
@@ -127,13 +128,14 @@ public final class ProcessingInstruction
     void reset(final String processingInstruction,
                final String target,
                final String content,
-               final int line, final int col) {
+               final String templateName, final int line, final int col) {
 
         this.target = target;
         this.content = content;
 
         this.processingInstruction = processingInstruction;
 
+        this.templateName = templateName;
         this.line = line;
         this.col = col;
 
@@ -154,6 +156,7 @@ public final class ProcessingInstruction
 
         this.processingInstruction = null;
 
+        this.templateName = null;
         this.line = -1;
         this.col = -1;
 
@@ -165,7 +168,11 @@ public final class ProcessingInstruction
 
 
     public boolean hasLocation() {
-        return (this.line != -1 && this.col != -1);
+        return (this.templateName != null && this.line != -1 && this.col != -1);
+    }
+
+    public String getTemplateName() {
+        return this.templateName;
     }
 
     public int getLine() {
@@ -209,6 +216,7 @@ public final class ProcessingInstruction
         this.processingInstruction = original.processingInstruction;
         this.target = original.target;
         this.content = original.content;
+        this.templateName = original.templateName;
         this.line = original.line;
         this.col = original.col;
 
@@ -230,6 +238,7 @@ public final class ProcessingInstruction
         newInstance.processingInstruction = processingInstruction.getProcessingInstruction();
         newInstance.target = processingInstruction.getTarget();
         newInstance.content = processingInstruction.getContent();
+        newInstance.templateName = processingInstruction.getTemplateName();
         newInstance.line = processingInstruction.getLine();
         newInstance.col = processingInstruction.getCol();
         return newInstance;

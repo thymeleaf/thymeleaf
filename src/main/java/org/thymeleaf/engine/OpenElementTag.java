@@ -77,8 +77,8 @@ final class OpenElementTag
 
     // Meant to be called only from within the engine
     void reset(final String elementName,
-               final int line, final int col) {
-        resetProcessableElementTag(elementName, line, col);
+               final String templateName, final int line, final int col) {
+        resetProcessableElementTag(elementName, templateName, line, col);
     }
 
 
@@ -130,7 +130,7 @@ final class OpenElementTag
 
         final OpenElementTag newInstance = new OpenElementTag(templateMode, configuration.getElementDefinitions(), configuration.getAttributeDefinitions());
 
-        newInstance.reset(openElementTag.getElementName(), openElementTag.getLine(), openElementTag.getCol());
+        newInstance.reset(openElementTag.getElementName(), openElementTag.getTemplateName(), openElementTag.getLine(), openElementTag.getCol());
 
         final IElementAttributes attributes = openElementTag.getAttributes();
         if (attributes != null) {

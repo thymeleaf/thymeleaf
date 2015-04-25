@@ -52,6 +52,7 @@ final class DocType
     private String systemId;
     private String internalSubset;
 
+    private String templateName;
     private int line;
     private int col;
 
@@ -196,7 +197,7 @@ final class DocType
                final String publicId,
                final String systemId,
                final String internalSubset,
-               final int line, final int col) {
+               final String templateName, final int line, final int col) {
 
         this.keyword = keyword;
         this.elementName = elementName;
@@ -207,6 +208,7 @@ final class DocType
 
         this.docType = docType;
 
+        this.templateName = templateName;
         this.line = line;
         this.col = col;
 
@@ -253,6 +255,7 @@ final class DocType
 
         this.docType = null;
 
+        this.templateName = null;
         this.line = -1;
         this.col = -1;
 
@@ -284,7 +287,11 @@ final class DocType
 
 
     public boolean hasLocation() {
-        return (this.line != -1 && this.col != -1);
+        return (this.templateName != null && this.line != -1 && this.col != -1);
+    }
+
+    public String getTemplateName() {
+        return this.templateName;
     }
 
     public int getLine() {
@@ -334,6 +341,7 @@ final class DocType
         this.publicId = original.publicId;
         this.systemId = original.systemId;
         this.internalSubset = original.internalSubset;
+        this.templateName = original.templateName;
         this.line = original.line;
         this.col = original.col;
 
@@ -360,6 +368,7 @@ final class DocType
         newInstance.publicId = docType.getPublicId();
         newInstance.systemId = docType.getSystemId();
         newInstance.internalSubset = docType.getInternalSubset();
+        newInstance.templateName = docType.getTemplateName();
         newInstance.line = docType.getLine();
         newInstance.col = docType.getCol();
         return newInstance;

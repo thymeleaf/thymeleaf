@@ -26,7 +26,7 @@ package org.thymeleaf.standard.processor;
  * @since 3.0.0
  *
  */
-public final class StandardRemovableAttributeTagProcessor extends AbstractStandardAttributeTagProcessor {
+public final class StandardRemovableAttributeTagProcessor extends AbstractStandardAttributeModifierTagProcessor {
 
     public static final int PRECEDENCE = 1000;
 

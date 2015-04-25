@@ -108,14 +108,14 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                     "has been specified: " + templateMode);
         }
 
-        final String documentName = templateResource.getName();
+        final String templateResourceName = templateResource.getName();
 
         try {
 
             // The final step of the handler chain will be the adapter that will convert attoparser's handler chain to thymeleaf's.
             IMarkupHandler handler =
                         new TemplateHandlerAdapterMarkupHandler(
-                                documentName,
+                                templateResourceName,
                                 templateHandler,
                                 configuration.getTextRepository(),
                                 configuration.getElementDefinitions(),
@@ -137,7 +137,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
             // This is the point at which we insert thymeleaf's own handler, which will take care of parser-level
             // and prototype-only comments.
-            handler = new ThymeleafMarkupHandler(handler, documentName);
+            handler = new ThymeleafMarkupHandler(handler, templateResourceName);
 
             // Each type of resource will require a different parser method to be called.
             if (templateResource instanceof ReaderResource) {
@@ -187,7 +187,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
         private static final Logger logger = LoggerFactory.getLogger(AbstractMarkupTemplateParser.class);
 
-        private final String documentName;
+        private final String templateName;
 
         private ParseStatus parseStatus;
         private IMarkupParser parser;
@@ -213,13 +213,13 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
 
         protected ThymeleafMarkupHandler(
-                final IMarkupHandler next, final String documentName) {
+                final IMarkupHandler next, final String templateName) {
 
             // We need to adapt the AttoParser adapter to Thymeleaf's own, in a way that causes the less
             // disturbance to the parser, so we just chain a specific-purpose adapter handler.
             super(next);
 
-            this.documentName = documentName;
+            this.templateName = templateName;
             this.lineOffset = 0;
             this.colOffset = 0;
 
@@ -280,7 +280,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             if (logger.isTraceEnabled()) {
                 final BigDecimal elapsed = BigDecimal.valueOf(totalTimeNanos);
                 final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(1000000), RoundingMode.HALF_UP);
-                if (this.documentName == null) {
+                if (this.templateName == null) {
                     logger.trace("[THYMELEAF][{}][{}][{}] Processed unnamed template or fragment in {} nanoseconds (approx. {}ms)",
                             new Object[] {TemplateEngine.threadIndex(),
                                             elapsed, elapsedMs,
@@ -288,8 +288,8 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 } else {
                     logger.trace("[THYMELEAF][{}][{}][{}][{}] Processed template \"{}\" in {} nanoseconds (approx. {}ms)",
                             new Object[] {TemplateEngine.threadIndex(),
-                                            this.documentName, elapsed, elapsedMs,
-                                            this.documentName, elapsed, elapsedMs});
+                                            this.templateName, elapsed, elapsedMs,
+                                            this.templateName, elapsed, elapsedMs});
                 }
             }
 

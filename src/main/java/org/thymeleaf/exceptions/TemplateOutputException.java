@@ -23,7 +23,7 @@ package org.thymeleaf.exceptions;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
 public class TemplateOutputException extends TemplateProcessingException {
@@ -31,34 +31,6 @@ public class TemplateOutputException extends TemplateProcessingException {
     private static final long serialVersionUID = -247484715700490790L;
 
     
-    public TemplateOutputException(final String message) {
-        super(message);
-    }
-    
-    public TemplateOutputException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-
-    public TemplateOutputException(final String message, final String templateName) {
-        super(message, templateName);
-    }
-
-    public TemplateOutputException(final String message, final String templateName, final Throwable cause) {
-        super(message, templateName, cause);
-    }
-
-    /**
-     *
-     * @since 3.0.0
-     */
-    public TemplateOutputException(final String message, final String templateName, final int line, final int col) {
-        super(message, templateName, line, col);
-    }
-
-    /**
-     *
-     * @since 3.0.0
-     */
     public TemplateOutputException(final String message, final String templateName, final int line, final int col, final Throwable cause) {
         super(message, templateName, line, col, cause);
     }

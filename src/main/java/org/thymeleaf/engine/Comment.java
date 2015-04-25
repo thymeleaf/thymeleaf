@@ -50,6 +50,7 @@ final class Comment
     private int commentLength;
     private int contentLength;
 
+    private String templateName;
     private int line;
     private int col;
 
@@ -155,7 +156,7 @@ final class Comment
 
     void reset(final char[] buffer,
                final int outerOffset, final int outerLen,
-               final int line, final int col) {
+               final String templateName, final int line, final int col) {
 
         // This is only meant to be called internally, so no need to perform a lot of checks on the input validity
 
@@ -168,6 +169,7 @@ final class Comment
         this.comment = null;
         this.content = null;
 
+        this.templateName = templateName;
         this.line = line;
         this.col = col;
 
@@ -191,6 +193,7 @@ final class Comment
         this.buffer = null;
         this.offset = -1;
 
+        this.templateName = null;
         this.line = -1;
         this.col = -1;
 
@@ -201,7 +204,11 @@ final class Comment
 
 
     public boolean hasLocation() {
-        return (this.line != -1 && this.col != -1);
+        return (this.templateName != null && this.line != -1 && this.col != -1);
+    }
+
+    public String getTemplateName() {
+        return this.templateName;
     }
 
     public int getLine() {
@@ -258,6 +265,7 @@ final class Comment
         this.content = original.getContent(); // Need to call the method in order to force computing -- no buffer cloning!
         this.commentLength = original.commentLength;
         this.contentLength = original.contentLength;
+        this.templateName = original.templateName;
         this.line = original.line;
         this.col = original.col;
 
@@ -282,6 +290,7 @@ final class Comment
         newInstance.content = comment.getContent();
         newInstance.commentLength = newInstance.comment.length();
         newInstance.contentLength = newInstance.content.length();
+        newInstance.templateName = comment.getTemplateName();
         newInstance.line = comment.getLine();
         newInstance.col = comment.getCol();
         return newInstance;

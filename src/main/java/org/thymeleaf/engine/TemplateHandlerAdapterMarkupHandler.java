@@ -150,7 +150,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         final String standalone =
                 (standaloneLen == 0? null : this.textRepository.getText(buffer, standaloneOffset, standaloneLen));
 
-        this.xmlDeclaration.reset(fullXmlDeclaration, keyword, version, encoding, standalone, line, col);
+        this.xmlDeclaration.reset(fullXmlDeclaration, keyword, version, encoding, standalone, this.templateName, line, col);
 
         this.templateHandler.handleXMLDeclaration(this.xmlDeclaration);
 
@@ -189,7 +189,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         final String internalSubset =
                 (internalSubsetLen == 0? null : this.textRepository.getText(buffer, internalSubsetOffset, internalSubsetLen));
 
-        this.docType.reset(fullDocType, keyword, rootElementName, type, publicId, systemId, internalSubset, outerLine, outerCol);
+        this.docType.reset(fullDocType, keyword, rootElementName, type, publicId, systemId, internalSubset, this.templateName, outerLine, outerCol);
 
         this.templateHandler.handleDocType(this.docType);
 
@@ -204,7 +204,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int outerOffset, final int outerLen,
             final int line, final int col)
             throws ParseException {
-        this.cdataSection.reset(buffer, outerOffset, outerLen, line, col);
+        this.cdataSection.reset(buffer, outerOffset, outerLen, this.templateName, line, col);
         this.templateHandler.handleCDATASection(this.cdataSection);
     }
 
@@ -217,7 +217,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int outerOffset, final int outerLen,
             final int line, final int col)
             throws ParseException {
-        this.comment.reset(buffer, outerOffset, outerLen, line, col);
+        this.comment.reset(buffer, outerOffset, outerLen, this.templateName, line, col);
         this.templateHandler.handleComment(this.comment);
     }
 
@@ -229,7 +229,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int offset, final int len,
             final int line, final int col)
             throws ParseException {
-        this.text.reset(buffer, offset, len, line, col);
+        this.text.reset(buffer, offset, len, this.templateName, line, col);
         this.templateHandler.handleText(this.text);
     }
 
@@ -244,7 +244,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         this.standaloneElementTag.reset(
-                this.textRepository.getText(buffer, nameOffset, nameLen), minimized, line, col);
+                this.textRepository.getText(buffer, nameOffset, nameLen), minimized, this.templateName, line, col);
         this.currentElementAttributes = (ElementAttributes) this.standaloneElementTag.getAttributes();
 
     }
@@ -274,7 +274,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         this.openElementTag.reset(
-                this.textRepository.getText(buffer, nameOffset, nameLen), line, col);
+                this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, line, col);
         this.currentElementAttributes = (ElementAttributes) this.openElementTag.getAttributes();
 
     }
@@ -304,7 +304,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         this.autoOpenElementTag.reset(
-                this.textRepository.getText(buffer, nameOffset, nameLen), line, col);
+                this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, line, col);
         this.currentElementAttributes = (ElementAttributes) this.openElementTag.getAttributes();
 
     }
@@ -331,7 +331,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        this.closeElementTag.reset(this.textRepository.getText(buffer, nameOffset, nameLen), line, col);
+        this.closeElementTag.reset(this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, line, col);
         this.currentElementAttributes = null;
 
     }
@@ -358,7 +358,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        this.autoCloseElementTag.reset(this.textRepository.getText(buffer, nameOffset, nameLen), line, col);
+        this.autoCloseElementTag.reset(this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, line, col);
         this.currentElementAttributes = null;
 
     }
@@ -385,7 +385,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        this.unmatchedCloseElementTag.setUnmatchedCloseElementTag(this.textRepository.getText(buffer, nameOffset,nameLen), line, col);
+        this.unmatchedCloseElementTag.setUnmatchedCloseElementTag(this.textRepository.getText(buffer, nameOffset,nameLen), this.templateName, line, col);
         this.currentElementAttributes = null;
 
     }
@@ -491,7 +491,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         final String content =
                 (contentLen == 0? null : this.textRepository.getText(buffer, contentOffset, contentLen));
 
-        this.processingInstruction.reset(fullProcessingInstruction, target, content, line, col);
+        this.processingInstruction.reset(fullProcessingInstruction, target, content, this.templateName, line, col);
         this.templateHandler.handleProcessingInstruction(this.processingInstruction);
 
     }

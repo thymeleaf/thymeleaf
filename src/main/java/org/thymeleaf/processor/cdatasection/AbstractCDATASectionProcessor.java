@@ -21,6 +21,7 @@ package org.thymeleaf.processor.cdatasection;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.ICDATASectionStructureHandler;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -43,10 +44,32 @@ public abstract class AbstractCDATASectionProcessor
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public void process(final ITemplateProcessingContext processingContext, final ICDATASection cdataSection,
+    public final void process(final ITemplateProcessingContext processingContext, final ICDATASection cdataSection,
                         final ICDATASectionStructureHandler structureHandler) {
-        // Nothing to do
+
+        try {
+
+            doProcess(processingContext, cdataSection, structureHandler);
+
+        } catch (final TemplateProcessingException e) {
+            if (!e.hasTemplateName()) {
+                e.setTemplateName(cdataSection.getTemplateName());
+            }
+            if (!e.hasLineAndCol()) {
+                e.setLineAndCol(cdataSection.getLine(), cdataSection.getCol());
+            }
+            throw e;
+        } catch (final Exception e) {
+            throw new TemplateProcessingException(
+                    "Error during execution of processor '" + this.getClass().getName() + "'",
+                    cdataSection.getTemplateName(), cdataSection.getLine(), cdataSection.getCol(), e);
+        }
+
     }
+
+
+    protected abstract void doProcess(final ITemplateProcessingContext processingContext, final ICDATASection cdataSection,
+                        final ICDATASectionStructureHandler structureHandler);
 
 
 }

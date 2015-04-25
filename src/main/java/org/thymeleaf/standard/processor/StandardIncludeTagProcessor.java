@@ -20,12 +20,12 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.engine.TemplateHandlerEventQueue;
 import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
 
 /**
  *
@@ -34,7 +34,7 @@ import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagPr
  * @since 3.0.0
  *
  */
-public final class StandardIncludeTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
+public final class StandardIncludeTagProcessor extends AbstractStandardAttributeTagProcessor {
 
     public static final int PRECEDENCE = 100;
     public static final String ATTR_NAME = "include";
@@ -45,9 +45,10 @@ public final class StandardIncludeTagProcessor extends AbstractAttributeMatching
 
 
 
-    public void process(
+    protected void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue,
             final IElementStructureHandler structureHandler) {
 
         final IModelFactory modelFactory = processingContext.getModelFactory();

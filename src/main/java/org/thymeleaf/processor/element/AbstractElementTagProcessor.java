@@ -23,6 +23,7 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeNames;
 import org.thymeleaf.engine.ElementNames;
 import org.thymeleaf.engine.IElementStructureHandler;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -90,13 +91,39 @@ public abstract class AbstractElementTagProcessor
 
 
 
-    // Default implementation - meant to be overridden by subclasses if needed
-    public void process(
+    // Default implementation, meant to take care of adequate error handling
+    public final void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final IElementStructureHandler structureHandler) {
-        // Nothing to do here -- empty action
+
+        try {
+
+            doProcess(processingContext, tag, structureHandler);
+
+        } catch (final TemplateProcessingException e) {
+            if (!e.hasTemplateName()) {
+                e.setTemplateName(tag.getTemplateName());
+            }
+            if (!e.hasLineAndCol()) {
+                e.setLineAndCol(tag.getLine(), tag.getCol());
+            }
+            throw e;
+        } catch (final Exception e) {
+            throw new TemplateProcessingException(
+                    "Error during execution of processor '" + this.getClass().getName() + "'",
+                    tag.getTemplateName(), tag.getLine(), tag.getCol(), e);
+        }
+
     }
+
+
+
+    protected abstract void doProcess(
+            final ITemplateProcessingContext processingContext,
+            final IProcessableElementTag tag,
+            final IElementStructureHandler structureHandler);
+
 
 
 }

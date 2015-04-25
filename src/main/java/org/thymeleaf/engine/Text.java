@@ -45,6 +45,7 @@ final class Text
 
     private int length;
 
+    private String templateName;
     private int line;
     private int col;
 
@@ -116,7 +117,7 @@ final class Text
 
     void reset(final char[] buffer,
                final int offset, final int len,
-               final int line, final int col) {
+               final String templateName, final int line, final int col) {
 
         this.buffer = buffer;
         this.offset = offset;
@@ -125,6 +126,7 @@ final class Text
 
         this.text = null;
 
+        this.templateName = templateName;
         this.line = line;
         this.col = col;
 
@@ -146,6 +148,7 @@ final class Text
         this.buffer = null;
         this.offset = -1;
 
+        this.templateName = null;
         this.line = -1;
         this.col = -1;
 
@@ -155,7 +158,11 @@ final class Text
 
 
     public boolean hasLocation() {
-        return (this.line != -1 && this.col != -1);
+        return (this.templateName != null && this.line != -1 && this.col != -1);
+    }
+
+    public String getTemplateName() {
+        return this.templateName;
     }
 
     public int getLine() {
@@ -204,6 +211,7 @@ final class Text
         this.offset = -1;
         this.text = original.getText(); // Need to call the method in order to force computing -- no buffer cloning!
         this.length = this.text.length();
+        this.templateName = original.templateName;
         this.line = original.line;
         this.col = original.col;
 
@@ -226,6 +234,7 @@ final class Text
         newInstance.offset = -1;
         newInstance.text = text.getText();
         newInstance.length = newInstance.text.length();
+        newInstance.templateName = text.getTemplateName();
         newInstance.line = text.getLine();
         newInstance.col = text.getCol();
         return newInstance;

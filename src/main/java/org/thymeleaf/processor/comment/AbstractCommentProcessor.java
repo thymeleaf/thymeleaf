@@ -21,6 +21,7 @@ package org.thymeleaf.processor.comment;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.ICommentStructureHandler;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -43,10 +44,32 @@ public abstract class AbstractCommentProcessor
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public void process(final ITemplateProcessingContext processingContext, final IComment comment,
+    public final void process(final ITemplateProcessingContext processingContext, final IComment comment,
                         final ICommentStructureHandler structureHandler) {
-        // Nothing to do
+
+        try {
+
+            doProcess(processingContext, comment, structureHandler);
+
+        } catch (final TemplateProcessingException e) {
+            if (!e.hasTemplateName()) {
+                e.setTemplateName(comment.getTemplateName());
+            }
+            if (!e.hasLineAndCol()) {
+                e.setLineAndCol(comment.getLine(), comment.getCol());
+            }
+            throw e;
+        } catch (final Exception e) {
+            throw new TemplateProcessingException(
+                    "Error during execution of processor '" + this.getClass().getName() + "'",
+                    comment.getTemplateName(), comment.getLine(), comment.getCol(), e);
+        }
+
     }
+
+
+    protected abstract void doProcess(final ITemplateProcessingContext processingContext, final IComment comment,
+                        final ICommentStructureHandler structureHandler);
 
 
 }

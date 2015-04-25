@@ -26,7 +26,7 @@ package org.thymeleaf.standard.processor;
  * @since 3.0.0
  *
  */
-public final class StandardValueTagProcessor extends AbstractStandardAttributeTagProcessor {
+public final class StandardValueTagProcessor extends AbstractStandardAttributeModifierTagProcessor {
 
     public static final int PRECEDENCE = 1000;
     public static final String ATTR_NAME = "value";

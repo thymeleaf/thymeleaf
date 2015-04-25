@@ -24,7 +24,6 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
 import org.thymeleaf.standard.expression.Each;
 import org.thymeleaf.standard.expression.EachUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
@@ -37,7 +36,7 @@ import org.thymeleaf.util.StringUtils;
  * @since 3.0.0
  *
  */
-public final class StandardEachTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
+public final class StandardEachTagProcessor extends AbstractStandardAttributeTagProcessor {
 
     public static final int PRECEDENCE = 200;
     public static final String ATTR_NAME = "each";
@@ -48,13 +47,11 @@ public final class StandardEachTagProcessor extends AbstractAttributeMatchingHTM
 
 
 
-    public void process(
+    protected void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue,
             final IElementStructureHandler structureHandler) {
-
-        final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
-        final String attributeValue = tag.getAttributes().getValue(attributeName);
 
         final Each each = EachUtils.parseEach(processingContext, attributeValue);
 
@@ -85,8 +82,6 @@ public final class StandardEachTagProcessor extends AbstractAttributeMatchingHTM
         }
 
         structureHandler.iterateElement(iterVarName, statusVarName, iteratedValue);
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

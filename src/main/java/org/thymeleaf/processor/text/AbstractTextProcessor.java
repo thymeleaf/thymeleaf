@@ -21,6 +21,7 @@ package org.thymeleaf.processor.text;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.ITextStructureHandler;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -43,10 +44,32 @@ public abstract class AbstractTextProcessor
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public void process(final ITemplateProcessingContext processingContext, final IText text,
+    public final void process(final ITemplateProcessingContext processingContext, final IText text,
                         final ITextStructureHandler structureHandler) {
-        // Nothing to do
+
+        try {
+
+            doProcess(processingContext, text, structureHandler);
+
+        } catch (final TemplateProcessingException e) {
+            if (!e.hasTemplateName()) {
+                e.setTemplateName(text.getTemplateName());
+            }
+            if (!e.hasLineAndCol()) {
+                e.setLineAndCol(text.getLine(), text.getCol());
+            }
+            throw e;
+        } catch (final Exception e) {
+            throw new TemplateProcessingException(
+                    "Error during execution of processor '" + this.getClass().getName() + "'",
+                    text.getTemplateName(), text.getLine(), text.getCol(), e);
+        }
+
     }
+
+
+    protected abstract void doProcess(final ITemplateProcessingContext processingContext, final IText text,
+                        final ITextStructureHandler structureHandler);
 
 
 }

@@ -74,8 +74,8 @@ final class UnmatchedCloseElementTag
     // Meant to be called only from within the engine
     void setUnmatchedCloseElementTag(
             final String elementName,
-            final int line, final int col) {
-        resetElementTag(elementName, line, col);
+            final String templateName, final int line, final int col) {
+        resetElementTag(elementName, templateName, line, col);
     }
 
 
@@ -122,7 +122,7 @@ final class UnmatchedCloseElementTag
         }
 
         final UnmatchedCloseElementTag newInstance = new UnmatchedCloseElementTag(templateMode, configuration.getElementDefinitions());
-        newInstance.setUnmatchedCloseElementTag(unmatchedCloseElementTag.getElementName(), unmatchedCloseElementTag.getLine(), unmatchedCloseElementTag.getCol());
+        newInstance.setUnmatchedCloseElementTag(unmatchedCloseElementTag.getElementName(), unmatchedCloseElementTag.getTemplateName(), unmatchedCloseElementTag.getLine(), unmatchedCloseElementTag.getCol());
         return newInstance;
 
     }

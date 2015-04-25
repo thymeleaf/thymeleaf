@@ -73,8 +73,8 @@ final class CloseElementTag
 
     // Meant to be called only from within the engine
     void reset(final String elementName,
-               final int line, final int col) {
-        resetElementTag(elementName, line, col);
+               final String templateName, final int line, final int col) {
+        resetElementTag(elementName, templateName, line, col);
     }
 
 
@@ -128,7 +128,7 @@ final class CloseElementTag
         }
 
         final CloseElementTag newInstance = new CloseElementTag(templateMode, configuration.getElementDefinitions());
-        newInstance.reset(closeElementTag.getElementName(), closeElementTag.getLine(), closeElementTag.getCol());
+        newInstance.reset(closeElementTag.getElementName(), closeElementTag.getTemplateName(), closeElementTag.getLine(), closeElementTag.getCol());
         return newInstance;
 
     }

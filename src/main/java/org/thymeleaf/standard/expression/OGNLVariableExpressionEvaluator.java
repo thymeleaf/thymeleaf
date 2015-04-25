@@ -96,8 +96,6 @@ public final class OGNLVariableExpressionEvaluator
        
         try {
 
-            // TODO OGNL now has compiled expressions... maybe worth trying?
-
             if (logger.isTraceEnabled()) {
                 logger.trace("[THYMELEAF][{}] OGNL expression: evaluating expression \"{}\" on target", TemplateEngine.threadIndex(), expression);
             }

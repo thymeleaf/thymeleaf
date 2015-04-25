@@ -21,6 +21,7 @@ package org.thymeleaf.processor.doctype;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.IDocTypeStructureHandler;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IDocType;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -43,10 +44,32 @@ public abstract class AbstractDocTypeProcessor
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public void process(final ITemplateProcessingContext processingContext, final IDocType docType,
+    public final void process(final ITemplateProcessingContext processingContext, final IDocType docType,
                         final IDocTypeStructureHandler structureHandler) {
-        // Nothing to do
+
+        try {
+
+            doProcess(processingContext, docType, structureHandler);
+
+        } catch (final TemplateProcessingException e) {
+            if (!e.hasTemplateName()) {
+                e.setTemplateName(docType.getTemplateName());
+            }
+            if (!e.hasLineAndCol()) {
+                e.setLineAndCol(docType.getLine(), docType.getCol());
+            }
+            throw e;
+        } catch (final Exception e) {
+            throw new TemplateProcessingException(
+                    "Error during execution of processor '" + this.getClass().getName() + "'",
+                    docType.getTemplateName(), docType.getLine(), docType.getCol(), e);
+        }
+
     }
+
+
+    protected abstract void doProcess(final ITemplateProcessingContext processingContext, final IDocType docType,
+                        final IDocTypeStructureHandler structureHandler);
 
 
 }

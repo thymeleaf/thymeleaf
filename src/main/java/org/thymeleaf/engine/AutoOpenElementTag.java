@@ -76,9 +76,9 @@ final class AutoOpenElementTag
 
     // Meant to be called only from within the engine
     void reset(final String elementName,
-               final int line, final int col) {
+               final String templateName, final int line, final int col) {
 
-        resetProcessableElementTag(elementName, line, col);
+        resetProcessableElementTag(elementName, templateName, line, col);
 
     }
 
@@ -118,7 +118,7 @@ final class AutoOpenElementTag
 
         final AutoOpenElementTag newInstance = new AutoOpenElementTag(templateMode, configuration.getElementDefinitions(), configuration.getAttributeDefinitions());
 
-        newInstance.reset(autoOpenElementTag.getElementName(), autoOpenElementTag.getLine(), autoOpenElementTag.getCol());
+        newInstance.reset(autoOpenElementTag.getElementName(), autoOpenElementTag.getTemplateName(), autoOpenElementTag.getLine(), autoOpenElementTag.getCol());
 
         final IElementAttributes attributes = autoOpenElementTag.getAttributes();
         if (attributes != null) {

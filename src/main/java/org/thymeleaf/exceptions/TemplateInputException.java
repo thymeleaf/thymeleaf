@@ -40,10 +40,6 @@ public class TemplateInputException extends TemplateProcessingException {
         super(message, cause);
     }
 
-    public TemplateInputException(final String message, final String templateName) {
-        super(message, templateName);
-    }
-
     public TemplateInputException(final String message, final String templateName, final Throwable cause) {
         super(message, templateName, cause);
     }

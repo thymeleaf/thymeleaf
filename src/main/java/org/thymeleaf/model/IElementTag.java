@@ -37,6 +37,7 @@ public interface IElementTag extends ITemplateHandlerEvent {
     public String getElementName();
 
     public boolean hasLocation();
+    public String getTemplateName();
     public int getLine();
     public int getCol();
 

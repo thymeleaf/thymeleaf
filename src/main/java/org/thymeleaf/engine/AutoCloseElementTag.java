@@ -72,8 +72,8 @@ final class AutoCloseElementTag
 
     // Meant to be called only from within the engine
     void reset(final String elementName,
-               final int line, final int col) {
-        resetElementTag(elementName, line, col);
+               final String templateName, final int line, final int col) {
+        resetElementTag(elementName, templateName, line, col);
     }
 
 
@@ -115,7 +115,7 @@ final class AutoCloseElementTag
         }
 
         final AutoCloseElementTag newInstance = new AutoCloseElementTag(templateMode, configuration.getElementDefinitions());
-        newInstance.reset(autoCloseElementTag.getElementName(), autoCloseElementTag.getLine(), autoCloseElementTag.getCol());
+        newInstance.reset(autoCloseElementTag.getElementName(), autoCloseElementTag.getTemplateName(), autoCloseElementTag.getLine(), autoCloseElementTag.getCol());
         return newInstance;
 
     }

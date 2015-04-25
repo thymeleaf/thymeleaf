@@ -19,12 +19,12 @@
  */
 package org.thymeleaf.processor.element;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeNames;
 import org.thymeleaf.engine.ElementNames;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.INode;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -93,9 +93,29 @@ public abstract class AbstractElementNodeProcessor
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public List<INode> process(final ITemplateProcessingContext processingContext, final INode node) {
-        return Collections.singletonList(node);
+    public final List<INode> process(final ITemplateProcessingContext processingContext, final INode node) {
+
+        try {
+
+            return doProcess(processingContext, node);
+
+        } catch (final TemplateProcessingException e) {
+            if (!e.hasTemplateName()) {
+                e.setTemplateName(node.getTemplateName());
+            }
+            if (!e.hasLineAndCol()) {
+                e.setLineAndCol(node.getLine(), node.getCol());
+            }
+            throw e;
+        } catch (final Exception e) {
+            throw new TemplateProcessingException(
+                    "Error during execution of processor '" + this.getClass().getName() + "'",
+                    node.getTemplateName(), node.getLine(), node.getCol(), e);
+        }
+
     }
 
+
+    protected abstract List<INode> doProcess(final ITemplateProcessingContext processingContext, final INode node);
 
 }

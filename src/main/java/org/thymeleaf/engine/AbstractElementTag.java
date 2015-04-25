@@ -40,8 +40,10 @@ abstract class AbstractElementTag implements IElementTag {
 
     protected ElementDefinition elementDefinition;
     protected String elementName;
-    protected int line;
-    protected int col;
+
+    private String templateName;
+    private int line;
+    private int col;
 
 
 
@@ -70,7 +72,7 @@ abstract class AbstractElementTag implements IElementTag {
         this.templateMode = templateMode;
         this.elementDefinitions = elementDefinitions;
 
-        resetElementTag(elementName, -1, -1);
+        resetElementTag(elementName, null, -1, -1);
 
     }
 
@@ -97,13 +99,14 @@ abstract class AbstractElementTag implements IElementTag {
 
     protected void resetElementTag(
             final String elementName,
-            final int line, final int col) {
+            final String templateName, final int line, final int col) {
 
         this.elementName = elementName;
         this.elementDefinition =
                 (this.templateMode.isHTML()?
                     this.elementDefinitions.forHTMLName(this.elementName) : this.elementDefinitions.forXMLName(this.elementName));
 
+        this.templateName = templateName;
         this.line = line;
         this.col = col;
 
@@ -115,7 +118,11 @@ abstract class AbstractElementTag implements IElementTag {
 
 
     public final boolean hasLocation() {
-        return (this.line != -1 && this.col != -1);
+        return (this.templateName != null && this.line != -1 && this.col != -1);
+    }
+
+    public final String getTemplateName() {
+        return this.templateName;
     }
 
     public final int getLine() {
@@ -149,6 +156,7 @@ abstract class AbstractElementTag implements IElementTag {
         this.elementDefinitions = original.elementDefinitions;
         this.elementDefinition = original.elementDefinition;
         this.elementName = original.elementName;
+        this.templateName = original.templateName;
         this.line = original.line;
         this.col = original.col;
     }
