@@ -38,14 +38,20 @@ import org.thymeleaf.standard.expression.StandardExpressionObjectsFactory;
 import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.processor.StandardActionTagProcessor;
+import org.thymeleaf.standard.processor.StandardAltTitleTagProcessor;
+import org.thymeleaf.standard.processor.StandardAssertTagProcessor;
+import org.thymeleaf.standard.processor.StandardConditionalFixedValueTagProcessor;
 import org.thymeleaf.standard.processor.StandardEachTagProcessor;
 import org.thymeleaf.standard.processor.StandardHrefTagProcessor;
+import org.thymeleaf.standard.processor.StandardIfTagProcessor;
+import org.thymeleaf.standard.processor.StandardLangXmlLangTagProcessor;
 import org.thymeleaf.standard.processor.StandardMethodTagProcessor;
 import org.thymeleaf.standard.processor.StandardNonRemovableAttributeTagProcessor;
 import org.thymeleaf.standard.processor.StandardRemovableAttributeTagProcessor;
 import org.thymeleaf.standard.processor.StandardRemoveTagProcessor;
 import org.thymeleaf.standard.processor.StandardSrcTagProcessor;
 import org.thymeleaf.standard.processor.StandardTextTagProcessor;
+import org.thymeleaf.standard.processor.StandardUnlessTagProcessor;
 import org.thymeleaf.standard.processor.StandardValueTagProcessor;
 import org.thymeleaf.standard.processor.StandardWithTagProcessor;
 import org.thymeleaf.util.Validate;
@@ -277,6 +283,9 @@ public class StandardDialect
         for (final String attrName : StandardNonRemovableAttributeTagProcessor.ATTR_NAMES) {
             processors.add(new StandardNonRemovableAttributeTagProcessor(attrName));
         }
+        for (final String attrName : StandardConditionalFixedValueTagProcessor.ATTR_NAMES) {
+            processors.add(new StandardConditionalFixedValueTagProcessor(attrName));
+        }
         processors.add(new StandardActionTagProcessor());
         processors.add(new StandardHrefTagProcessor());
         processors.add(new StandardSrcTagProcessor());
@@ -284,6 +293,11 @@ public class StandardDialect
         processors.add(new StandardMethodTagProcessor());
         processors.add(new StandardEachTagProcessor());
         processors.add(new StandardRemoveTagProcessor());
+        processors.add(new StandardIfTagProcessor());
+        processors.add(new StandardUnlessTagProcessor());
+        processors.add(new StandardAltTitleTagProcessor());
+        processors.add(new StandardLangXmlLangTagProcessor());
+        processors.add(new StandardAssertTagProcessor());
 //        processors.add(new StandardDefaultAttributesTagProcessor());
 //        processors.add(new StandardIncludeTagProcessor());
 //        processors.add(new StandardReplaceTagProcessor());
