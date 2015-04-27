@@ -103,12 +103,12 @@ final class EngineEventQueue {
 
 
 
-    void add(final IEngineTemplateHandlerEvent event) {
-        insert(this.queueSize, event);
+    void add(final IEngineTemplateHandlerEvent event, final boolean cloneAlways) {
+        insert(this.queueSize, event, cloneAlways);
     }
 
 
-    void insert(final int pos, final IEngineTemplateHandlerEvent event) {
+    void insert(final int pos, final IEngineTemplateHandlerEvent event, final boolean cloneAlways) {
 
         if (pos < 0 && pos >= this.queueSize) {
             throw new IndexOutOfBoundsException("Requested position " + pos + " of event queue with size " + this.queueSize);
@@ -130,7 +130,7 @@ final class EngineEventQueue {
         System.arraycopy(this.queue, pos, this.queue, pos + 1, this.queueSize - pos);
 
         // Set the new event in its new position
-        this.queue[pos] = event;
+        this.queue[pos] = (cloneAlways? cloneEngineEvent(event) : event);
 
         this.queueSize++;
 
@@ -168,16 +168,28 @@ final class EngineEventQueue {
 
         final Markup markup;
         if (imarkup instanceof ParsedTemplateMarkup) {
-            markup = ((ParsedTemplateMarkup) imarkup).getMarkup();
+            if (cloneAlways) {
+                markup = ((ParsedTemplateMarkup) imarkup).getInternalMarkup().cloneMarkup();
+            } else {
+                markup = ((ParsedTemplateMarkup) imarkup).getInternalMarkup();
+            }
         } else if (imarkup instanceof ParsedFragmentMarkup) {
-            markup = ((ParsedFragmentMarkup) imarkup).getMarkup();
+            if (cloneAlways) {
+                markup = ((ParsedFragmentMarkup) imarkup).getInternalMarkup().cloneMarkup();
+            } else {
+                markup = ((ParsedFragmentMarkup) imarkup).getInternalMarkup();
+            }
         } else if (imarkup instanceof CacheableMarkup) {
             // This implementation does not directly come from the parser, but it is immutable so we won't need to clone
-            markup = ((CacheableMarkup) imarkup).getMarkup();
+            if (cloneAlways) {
+                markup = ((CacheableMarkup) imarkup).getInternalMarkup().cloneMarkup();
+            } else {
+                markup = ((CacheableMarkup) imarkup).getInternalMarkup();
+            }
         } else if (imarkup instanceof Markup) {
             // This implementation does not directly come from the parser nor is immutable, so we must clone its events
             // to avoid interactions.
-            markup = (Markup) ((Markup) imarkup).cloneMarkup();
+            markup = imarkup.cloneMarkup();
         } else {
             throw new TemplateProcessingException(
                     "Unrecognized implementation of the " + IMarkup.class.getName() + " interface: " + imarkup.getClass().getName());
@@ -204,6 +216,18 @@ final class EngineEventQueue {
     }
 
 
+
+    void remove(final int pos) {
+
+        if (pos < 0 && pos >= this.queueSize) {
+            throw new IndexOutOfBoundsException("Requested position " + pos + " of event queue with size " + this.queueSize);
+        }
+
+        System.arraycopy(this.queue, pos + 1, this.queue, pos, this.queueSize - (pos + 1));
+
+        this.queueSize--;
+
+    }
 
 
 
@@ -397,14 +421,14 @@ final class EngineEventQueue {
 
 
 
-    EngineEventQueue cloneEventQueue() {
+    EngineEventQueue cloneEventQueue(final boolean cloneEvents) {
         final EngineEventQueue clone = new EngineEventQueue(this.configuration, this.templateMode, this.queueSize);
-        clone.resetAsCloneOf(this);
+        clone.resetAsCloneOf(this, cloneEvents);
         return clone;
     }
 
 
-    void resetAsCloneOf(final EngineEventQueue original) {
+    void resetAsCloneOf(final EngineEventQueue original, final boolean cloneEvents) {
 
         this.queueSize = original.queueSize;
 
@@ -412,9 +436,50 @@ final class EngineEventQueue {
             this.queue = new IEngineTemplateHandlerEvent[original.queueSize];
         }
 
-        System.arraycopy(original.queue, 0, this.queue, 0, original.queueSize);
+        if (!cloneEvents) {
+            System.arraycopy(original.queue, 0, this.queue, 0, original.queueSize);
+        } else {
+            for (int i = 0; i < original.queueSize; i++) {
+                this.queue[i] = cloneEngineEvent(original.queue[i]);
+            }
+        }
 
         // No need to clone the buffers...
+
+    }
+
+
+    private static IEngineTemplateHandlerEvent cloneEngineEvent(final IEngineTemplateHandlerEvent event) {
+
+        if (event instanceof Text) {
+            return ((Text)event).cloneNode();
+        } else if (event instanceof OpenElementTag) {
+            return ((OpenElementTag)event).cloneElementTag();
+        } else if (event instanceof CloseElementTag) {
+            return ((CloseElementTag)event).cloneElementTag();
+        } else if (event instanceof StandaloneElementTag) {
+            return ((StandaloneElementTag)event).cloneElementTag();
+        } else if (event instanceof AutoOpenElementTag) {
+            return ((AutoOpenElementTag)event).cloneElementTag();
+        } else if (event instanceof AutoCloseElementTag) {
+            return ((AutoCloseElementTag)event).cloneElementTag();
+        } else if (event instanceof UnmatchedCloseElementTag) {
+            return ((UnmatchedCloseElementTag)event).cloneElementTag();
+        } else if (event instanceof Comment) {
+            return ((Comment)event).cloneNode();
+        } else if (event instanceof DocType) {
+            return ((DocType)event).cloneNode();
+        } else if (event instanceof XMLDeclaration) {
+            return ((XMLDeclaration)event).cloneNode();
+        } else if (event instanceof CDATASection) {
+            return ((CDATASection)event).cloneNode();
+        } else if (event instanceof ProcessingInstruction) {
+            return ((ProcessingInstruction)event).cloneNode();
+        }
+
+        throw new TemplateProcessingException(
+                "Unrecognized implementation of " + IEngineTemplateHandlerEvent.class.getName() + ": " +
+                event.getClass().getName());
 
     }
 

@@ -19,13 +19,13 @@
  */
 package org.thymeleaf.engine;
 
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.model.IAutoCloseElementTag;
 import org.thymeleaf.model.IAutoOpenElementTag;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
-import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
@@ -42,35 +42,56 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public class StandardModelFactory implements IModelFactory {
+public class StandardMarkupFactory implements IMarkupFactory {
 
 
-    private final TemplateMode templateMode;
+    private final IEngineConfiguration configuration;
     private final ITextRepository textRepository;
     private final AttributeDefinitions attributeDefinitions;
     private final ElementDefinitions elementDefinitions;
+    private final TemplateMode templateMode;
+    private final String templateName;
+    private final TemplateProcessor templateProcessor;
 
 
 
 
-    public StandardModelFactory(
-            final TemplateMode templateMode, final ITextRepository textRepository,
-            final AttributeDefinitions attributeDefinitions, final ElementDefinitions elementDefinitions) {
+    public StandardMarkupFactory(
+            final IEngineConfiguration configuration, final TemplateMode templateMode,
+            final String templateName, final TemplateProcessor templateProcessor) {
 
         super();
 
+        Validate.notNull(configuration, "Configuration cannot be null");
         Validate.notNull(templateMode, "Template Mode cannot be null");
-        Validate.notNull(textRepository, "Text Repository cannot be null");
-        Validate.notNull(attributeDefinitions, "Attribute Definitions cannot be null");
-        Validate.notNull(elementDefinitions, "Element Definitions cannot be null");
+        Validate.notNull(configuration.getTextRepository(), "Text Repository returned by Engine Configuration cannot be null");
+        Validate.notNull(configuration.getAttributeDefinitions(), "Attribute Definitions returned by Engine Configuration cannot be null");
+        Validate.notNull(configuration.getElementDefinitions(), "Element Definitions returned by Engine Configuration cannot be null");
+        Validate.notNull(templateName, "Template Name cannot be null");
+        Validate.notNull(templateProcessor, "Template Processor cannot be null");
 
+        this.configuration = configuration;
+        this.textRepository = this.configuration.getTextRepository();
+        this.attributeDefinitions = this.configuration.getAttributeDefinitions();
+        this.elementDefinitions = this.configuration.getElementDefinitions();
         this.templateMode = templateMode;
-        this.textRepository = textRepository;
-        this.attributeDefinitions = attributeDefinitions;
-        this.elementDefinitions = elementDefinitions;
+        this.templateName = templateName;
+        this.templateProcessor = templateProcessor;
 
     }
 
+
+
+
+    public Markup createMarkup() {
+        return new Markup(this.configuration, this.templateMode);
+    }
+
+
+
+    public IMarkup createMarkup(final String markup) {
+        return this.templateProcessor.parseTextualFragment(this.configuration, this.templateMode, this.templateName, markup);
+    }
 
 
 

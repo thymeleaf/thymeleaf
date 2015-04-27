@@ -19,13 +19,21 @@
  */
 package org.thymeleaf.standard.processor;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
-import org.thymeleaf.engine.Markup;
-import org.thymeleaf.model.IModelFactory;
-import org.thymeleaf.model.IOpenElementTag;
+import org.thymeleaf.engine.ParsedFragmentMarkup;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.standard.expression.Assignation;
+import org.thymeleaf.standard.expression.AssignationSequence;
+import org.thymeleaf.standard.expression.FragmentSelection;
+import org.thymeleaf.standard.expression.FragmentSelectionUtils;
+import org.thymeleaf.standard.expression.IStandardExpression;
 
 /**
  *
@@ -34,38 +42,19 @@ import org.thymeleaf.model.IProcessableElementTag;
  * @since 3.0.0
  *
  */
-public final class StandardIncludeTagProcessor extends AbstractStandardAttributeTagProcessor {
+public final class StandardIncludeTagProcessor extends AbstractStandardFragmentInsertionTagProcessor {
 
     public static final int PRECEDENCE = 100;
     public static final String ATTR_NAME = "include";
 
+
+
+
+
     public StandardIncludeTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE);
+        super(ATTR_NAME, PRECEDENCE, false, true);
     }
 
-
-
-    protected void doProcess(
-            final ITemplateProcessingContext processingContext,
-            final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue,
-            final IElementStructureHandler structureHandler) {
-
-        final IModelFactory modelFactory = processingContext.getModelFactory();
-
-        final Markup markup = new Markup(processingContext.getConfiguration(), processingContext.getTemplateMode());
-
-        final IOpenElementTag sectionOpenTag = modelFactory.createOpenElementTag("section");
-        sectionOpenTag.getAttributes().setAttribute("class", "included");
-        sectionOpenTag.getAttributes().setAttribute("th:text", "hohoh");
-
-        markup.add(sectionOpenTag);
-        markup.add(modelFactory.createText("This is included text!"));
-        markup.add(modelFactory.createCloseElementTag("section"));
-
-        structureHandler.setBody(markup, false);
-
-    }
 
 
 }

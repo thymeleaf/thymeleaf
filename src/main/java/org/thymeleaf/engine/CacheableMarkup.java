@@ -47,11 +47,12 @@ public final class CacheableMarkup implements IMarkup {
     }
 
 
-    // Meant to be called only from the cloneMarkup method
-    private CacheableMarkup(final Markup markup) {
+    // Only used internally for creating an immutable (cacheable) version of a Markup object
+    CacheableMarkup(final Markup markup) {
         super();
-        this.markup = markup;
+        this.markup = markup.cloneMarkup();
     }
+
 
 
     public final IEngineConfiguration getConfiguration() {
@@ -67,7 +68,7 @@ public final class CacheableMarkup implements IMarkup {
     // We don't want anyone to have direct access to the underlying Markup object from outside the engine.
     // This will effectively turn our ParsedFragmentMarkup into immutable (though not really) and therefore allow us
     // to confidently cache these objects without worrying that anyone can modify them
-    final Markup getMarkup() {
+    final Markup getInternalMarkup() {
         return this.markup;
     }
 
@@ -78,8 +79,8 @@ public final class CacheableMarkup implements IMarkup {
     }
 
 
-    public IMarkup cloneMarkup() {
-        return new CacheableMarkup((Markup)this.markup.cloneMarkup());
+    public Markup cloneMarkup() {
+        return this.markup.cloneMarkup();
     }
 
 

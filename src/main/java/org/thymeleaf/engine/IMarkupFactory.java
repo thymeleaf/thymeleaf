@@ -17,7 +17,20 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.model;
+package org.thymeleaf.engine;
+
+import org.thymeleaf.model.IAutoCloseElementTag;
+import org.thymeleaf.model.IAutoOpenElementTag;
+import org.thymeleaf.model.ICDATASection;
+import org.thymeleaf.model.ICloseElementTag;
+import org.thymeleaf.model.IComment;
+import org.thymeleaf.model.IDocType;
+import org.thymeleaf.model.IOpenElementTag;
+import org.thymeleaf.model.IProcessingInstruction;
+import org.thymeleaf.model.IStandaloneElementTag;
+import org.thymeleaf.model.IText;
+import org.thymeleaf.model.IUnmatchedCloseElementTag;
+import org.thymeleaf.model.IXMLDeclaration;
 
 /**
  *
@@ -25,8 +38,12 @@ package org.thymeleaf.model;
  * @since 3.0.0
  * 
  */
-public interface IModelFactory {
+public interface IMarkupFactory {
 
+
+    public Markup createMarkup();
+
+    public IMarkup createMarkup(final String markup);
 
     public ICDATASection createCDATASection(final String content);
 

@@ -49,14 +49,6 @@ public class ParsedTemplateMarkup implements IMarkup {
     }
 
 
-    // Meant to be called only from the cloneMarkup method
-    private ParsedTemplateMarkup(final Markup markup, final TemplateResolution templateResolution) {
-        super();
-        this.markup = markup;
-        this.templateResolution = templateResolution;
-    }
-
-
 
 
     public final IEngineConfiguration getConfiguration() {
@@ -77,7 +69,7 @@ public class ParsedTemplateMarkup implements IMarkup {
     // We don't want anyone to have direct access to the underlying Markup object from outside the engine.
     // This will effectively turn our ParsedFragmentMarkup into immutable (though not really) and therefore allow us
     // to confidently cache these objects without worrying that anyone can modify them
-    final Markup getMarkup() {
+    final Markup getInternalMarkup() {
         return this.markup;
     }
 
@@ -88,8 +80,8 @@ public class ParsedTemplateMarkup implements IMarkup {
     }
 
 
-    public IMarkup cloneMarkup() {
-        return new ParsedTemplateMarkup((Markup)this.markup.cloneMarkup(), this.templateResolution);
+    public Markup cloneMarkup() {
+        return this.markup.cloneMarkup();
     }
 
 

@@ -38,6 +38,6 @@ public interface IMarkup {
 
     public String computeMarkup();
 
-    public IMarkup cloneMarkup();
+    public Markup cloneMarkup();
 
 }

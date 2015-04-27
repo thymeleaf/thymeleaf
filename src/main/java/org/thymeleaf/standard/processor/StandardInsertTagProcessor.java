@@ -17,25 +17,28 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine;
+package org.thymeleaf.standard.processor;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
+ *
  * @since 3.0.0
  *
  */
-public interface ITemplateHandlerEventQueue {
+public final class StandardInsertTagProcessor extends AbstractStandardFragmentInsertionTagProcessor {
 
-    public int size();
-    public ITemplateHandlerEvent get(final int pos);
+    public static final int PRECEDENCE = 100;
+    public static final String ATTR_NAME = "insert";
 
-    public void add(final ITemplateHandlerEvent event);
-    public void addAll(final ITemplateHandlerEventQueue eventQueue);
 
-    public void insert(final int pos, final ITemplateHandlerEvent event);
-    public void insertAll(final int pos, final ITemplateHandlerEventQueue eventQueue);
 
-    public void reset();
+
+
+    public StandardInsertTagProcessor() {
+        super(ATTR_NAME, PRECEDENCE, false, false);
+    }
+
+
 
 }

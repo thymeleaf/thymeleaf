@@ -64,7 +64,7 @@ public final class StandardUtextTagProcessor extends AbstractStandardAttributeTa
         final String unescapedText = (result == null ? "" : result.toString());
 
         final ParsedFragmentMarkup parsedFragment =
-                processingContext.getTemplateProcessor().parseFragment(
+                processingContext.getTemplateProcessor().parseTextualFragment(
                         processingContext.getConfiguration(), processingContext.getTemplateMode(),
                         processingContext.getTemplateResolution().getTemplateName(), unescapedText);
 

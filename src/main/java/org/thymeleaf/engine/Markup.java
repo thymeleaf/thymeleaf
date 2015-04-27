@@ -54,11 +54,8 @@ public final class Markup implements IMarkup {
     private final EngineEventQueue queue;
 
 
-    // TODO Complete the API of this class: insert, etc. And also create these objects from the IModelFactory
-    // (now IMarkupFactory?) and also from a String representing the markup --> that should go to the factory?
-    // AND ALSO create a CacheableMarkup from this!!
 
-
+    // Only to be called from the IMarkupFactory
     public Markup(final IEngineConfiguration configuration, final TemplateMode templateMode) {
         super();
         Validate.notNull(configuration, "Engine Configuration cannot be null");
@@ -81,9 +78,45 @@ public final class Markup implements IMarkup {
 
 
 
-    public void add(final ITemplateHandlerEvent event) {
-        this.queue.add(asEngineEvent(this.configuration, this.templateMode, event, true));
+    public int size() {
+        return this.queue.size();
     }
+
+
+    public ITemplateHandlerEvent get(final int pos) {
+        return this.queue.get(pos);
+    }
+
+
+    public void add(final ITemplateHandlerEvent event) {
+        this.queue.add(asEngineEvent(this.configuration, this.templateMode, event, true), false);
+    }
+
+
+    public void addMarkup(final IMarkup markup) {
+        this.queue.addMarkup(markup, true);
+    }
+
+
+    public void insert(final int pos, final ITemplateHandlerEvent event) {
+        this.queue.insert(pos, asEngineEvent(this.configuration, this.templateMode, event, true), false);
+    }
+
+
+    public void insertMarkup(final int pos, final IMarkup markup) {
+        this.queue.insertMarkup(pos, markup, true);
+    }
+
+
+    public void remove(final int pos) {
+        this.queue.remove(pos);
+    }
+
+
+    public void reset() {
+        this.queue.reset();
+    }
+
 
 
 
@@ -97,8 +130,13 @@ public final class Markup implements IMarkup {
 
     void process(final ITemplateHandler templateHandler) {
 
-        // Queued events themselves will not be cloned, our events will remain as the master ones, and the new EngineEventQueue will use buffers
-        final EngineEventQueue eventQueue = this.queue.cloneEventQueue();
+        // Queued events themselves will not be cloned, our events will remain as the master ones,
+        // and the new EngineEventQueue will use its own buffers.
+        // The reason we are cloning the queue object itself before processing is precisely that the buffer objects
+        // (which are part of the state of the EngineEventQueue object) will be used for firing the events, and those
+        // can be modified during processing. So not queuing the queue and therefore not creating a new ser of buffers
+        // could result in pretty bad interactions between template executions...
+        final EngineEventQueue eventQueue = this.queue.cloneEventQueue(false);
 
         // Process the new, cloned queue
         eventQueue.process(templateHandler, false);
@@ -115,10 +153,16 @@ public final class Markup implements IMarkup {
     }
 
 
-    public IMarkup cloneMarkup() {
+    public Markup cloneMarkup() {
         final Markup clone = new Markup(this.configuration, this.templateMode);
-        clone.queue.resetAsCloneOf(this.queue);
+        clone.queue.resetAsCloneOf(this.queue, true);
         return clone;
+    }
+
+
+
+    public CacheableMarkup cloneAsCacheable() {
+        return new CacheableMarkup(this);
     }
 
 

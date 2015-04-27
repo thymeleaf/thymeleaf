@@ -20,6 +20,7 @@
 package org.thymeleaf.engine;
 
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -35,6 +36,8 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.context.TemplateProcessingContext;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.ICloseElementTag;
+import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.resource.IResource;
 import org.thymeleaf.resource.StringResource;
 import org.thymeleaf.resourceresolver.IResourceResolver;
@@ -183,24 +186,17 @@ public final class TemplateProcessor {
 
 
         /*
-         * Create the Processing Context instance that corresponds to this execution of the template engine
-         */
-        final ITemplateProcessingContext processingContext =
-                new TemplateProcessingContext(configuration, this, resolution.templateResolution, context);
-
-
-        /*
          *  Create the Template Handler that will be in charge of building a ParsedTemplateMarkup object as the result of reading the template
          */
         final ParsedTemplateMarkup parsedTemplate = new ParsedTemplateMarkup(configuration, resolution.templateResolution);
-        final MarkupBuilderTemplateHandler builderHandler = new MarkupBuilderTemplateHandler(parsedTemplate.getMarkup());
+        final MarkupBuilderTemplateHandler builderHandler = new MarkupBuilderTemplateHandler(parsedTemplate.getInternalMarkup());
 
 
         /*
          * PROCESS THE TEMPLATE
          */
         processTemplateAsResource(
-                processingContext.getConfiguration(), processingContext.getTemplateMode(), resolution.resource, builderHandler);
+                configuration, resolution.templateResolution.getTemplateMode(), resolution.resource, builderHandler);
 
 
         /*
@@ -222,15 +218,21 @@ public final class TemplateProcessor {
 
 
 
-    public ParsedFragmentMarkup parseFragment(final IEngineConfiguration configuration, final TemplateMode templateMode,
-                                      final String templateName, final String fragment) {
+    public ParsedFragmentMarkup parseTextualFragment(
+            final ITemplateProcessingContext processingContext, final String templateName, final String textualFragment) {
+        return parseTextualFragment(processingContext.getConfiguration(), processingContext.getTemplateMode(), templateName, textualFragment);
+    }
+
+
+    public ParsedFragmentMarkup parseTextualFragment(final IEngineConfiguration configuration, final TemplateMode templateMode,
+                                                     final String templateName, final String textualFragment) {
 
         Validate.notNull(configuration, "Configuration cannot be null");
         Validate.notNull(templateMode, "Template Mode cannot be null");
-        Validate.notNull(fragment, "Fragment cannot be null");
+        Validate.notNull(textualFragment, "Textual Fragment cannot be null");
 
 
-        final String cacheKey = computeFragmentCacheKey(configuration.getTextRepository(), templateName, fragment);
+        final String cacheKey = computeFragmentCacheKey(configuration.getTextRepository(), templateName, textualFragment);
 
         /*
          * First look at the cache - it might be already cached
@@ -246,7 +248,7 @@ public final class TemplateProcessor {
         /*
          * Create the Resource (a StringResource, in this case) representing the fragment to parse
          */
-        final IResource fragmentResource = new StringResource(cacheKey, fragment);
+        final IResource fragmentResource = new StringResource(cacheKey, textualFragment);
 
 
         /*
@@ -258,7 +260,7 @@ public final class TemplateProcessor {
          */
         final ParsedFragmentMarkup parsedFragment =
                 new ParsedFragmentMarkup(configuration, templateMode, AlwaysValidCacheEntryValidity.INSTANCE);
-        final MarkupBuilderTemplateHandler builderHandler = new MarkupBuilderTemplateHandler(parsedFragment.getMarkup());
+        final MarkupBuilderTemplateHandler builderHandler = new MarkupBuilderTemplateHandler(parsedFragment.getInternalMarkup());
 
 
         /*
@@ -279,6 +281,115 @@ public final class TemplateProcessor {
         return parsedFragment;
 
     }
+
+
+
+
+
+
+    public ParsedFragmentMarkup parseTemplateFragment(
+            final ITemplateProcessingContext processingContext, final String templateName, final String[] markupSelectors) {
+        return parseTemplateFragment(
+                processingContext.getConfiguration(), processingContext.getVariablesMap(), templateName, markupSelectors, false);
+    }
+
+
+    public ParsedFragmentMarkup parseTemplateFragment(
+            final IEngineConfiguration configuration, final IContext context,
+            final String templateName, final String[] markupSelectors) {
+        return parseTemplateFragment(configuration, context, templateName, markupSelectors, false);
+    }
+
+
+    public ParsedFragmentMarkup parseTemplateFragment(
+            final ITemplateProcessingContext processingContext, final String templateName, final String[] markupSelectors,
+            final boolean onlyContents) {
+        return parseTemplateFragment(
+                processingContext.getConfiguration(), processingContext.getVariablesMap(), templateName, markupSelectors, onlyContents);
+    }
+
+
+    public ParsedFragmentMarkup parseTemplateFragment(
+            final IEngineConfiguration configuration, final IContext context,
+            final String templateName, final String[] markupSelectors, final boolean onlyContents) {
+
+        Validate.notNull(configuration, "Engine Configuration cannot be null");
+        Validate.notNull(context, "Context cannot be null");
+        Validate.notNull(templateName, "Template Name cannot be null");
+        // markupSelectors CAN be null (selecting the whole template as a fragment...
+
+        final String cacheKey =
+                computeFragmentCacheKey(configuration.getTextRepository(), templateName,
+                computeCacheKeyFragmentIdentifierForMarkupSelectors(markupSelectors, onlyContents));
+
+        /*
+         * First look at the cache - it might be already cached
+         */
+        if (this.fragmentCache != null) {
+            final ParsedFragmentMarkup cached =  this.fragmentCache.get(cacheKey);
+            if (cached != null) {
+                return cached;
+            }
+        }
+
+
+        /*
+         * Resolve the template, obtain the IResource and its metadata (TemplateResolution)
+         */
+        final TemplateAndResourceResolution resolution =
+                resolveTemplate(configuration, context, templateName);
+
+
+        /*
+         *  Create the Template Handler that will be in charge of building a ParsedTemplateMarkup object as the result of reading the template
+         */
+        final ParsedFragmentMarkup parsedFragment =
+                new ParsedFragmentMarkup(configuration, resolution.templateResolution.getTemplateMode(), resolution.templateResolution.getValidity());
+        final MarkupBuilderTemplateHandler builderHandler = new MarkupBuilderTemplateHandler(parsedFragment.getInternalMarkup());
+
+
+        /*
+         * PROCESS THE TEMPLATE
+         */
+        processTemplateAsResource(
+                configuration, resolution.templateResolution.getTemplateMode(),
+                resolution.resource, markupSelectors, builderHandler);
+
+
+        /*
+         * EXTRACT ITS CONTENTS IF NEEDED
+         */
+        if (onlyContents) {
+            // Note it is very important that we do this low-level modifications on the markup BEFORE caching the fragment
+            final Markup markup = parsedFragment.getInternalMarkup();
+            final ITemplateHandlerEvent firstEvent = markup.get(0);
+            final ITemplateHandlerEvent lastEvent = markup.get(markup.size() - 1);
+
+            if (firstEvent instanceof IOpenElementTag && lastEvent instanceof ICloseElementTag) {
+                markup.remove(markup.size() - 1);
+                markup.remove(0);
+            }
+
+        }
+
+
+        /*
+         * Cache the template if it is cacheable
+         */
+        if (this.fragmentCache != null) {
+            if (parsedFragment.getValidity().isCacheable()) {
+                this.fragmentCache.put(cacheKey, parsedFragment);
+            }
+        }
+
+        return parsedFragment;
+
+    }
+
+
+
+
+
 
 
 
@@ -336,7 +447,7 @@ public final class TemplateProcessor {
         if (resolution.templateResolution.getValidity().isCacheable() && this.templateCache != null) {
             // Create the handler chain to create the Template object
             final ParsedTemplateMarkup parsedTemplate = new ParsedTemplateMarkup(processingContext.getConfiguration(), resolution.templateResolution);
-            final MarkupBuilderTemplateHandler builderHandler = new MarkupBuilderTemplateHandler(parsedTemplate.getMarkup());
+            final MarkupBuilderTemplateHandler builderHandler = new MarkupBuilderTemplateHandler(parsedTemplate.getInternalMarkup());
             // Process the cached template itself
             processTemplateAsResource(
                     processingContext.getConfiguration(), processingContext.getTemplateMode(),
@@ -430,18 +541,34 @@ public final class TemplateProcessor {
     private static void processTemplateAsResource(
             final IEngineConfiguration configuration, final TemplateMode templateMode,
             final IResource templateResource, final ITemplateHandler templateHandler) {
+        processTemplateAsResource(configuration, templateMode, templateResource, null, templateHandler);
+    }
+
+
+    private static void processTemplateAsResource(
+            final IEngineConfiguration configuration, final TemplateMode templateMode,
+            final IResource templateResource, final String[] markupSelectors, final ITemplateHandler templateHandler) {
 
         if (logger.isTraceEnabled()) {
-            logger.trace("[THYMELEAF][{}] Starting processing of template \"{}\"", TemplateEngine.threadIndex(), templateResource.getName());
+            if (templateHandler instanceof MarkupBuilderTemplateHandler) {
+                if (markupSelectors != null) {
+                    logger.trace("[THYMELEAF][{}] Starting parsing of template \"{}\" with selector/s \"{}\"",
+                            new Object[] {TemplateEngine.threadIndex(), templateResource.getName(), Arrays.asList(markupSelectors)});
+                } else {
+                    logger.trace("[THYMELEAF][{}] Starting parsing of template \"{}\"", TemplateEngine.threadIndex(), templateResource.getName());
+                }
+            } else {
+                logger.trace("[THYMELEAF][{}] Starting processing of template \"{}\"", TemplateEngine.threadIndex(), templateResource.getName());
+            }
         }
 
         /*
          * Handler chain is in place - now we must use it for calling the parser and initiate the processing
          */
         if (templateMode.isHTML()) {
-            htmlParser.parse(configuration, templateMode, templateResource, templateHandler);
+            htmlParser.parse(configuration, templateMode, templateResource, markupSelectors, templateHandler);
         } else if (templateMode.isXML()) {
-            xmlParser.parse(configuration, templateMode, templateResource, templateHandler);
+            xmlParser.parse(configuration, templateMode, templateResource, markupSelectors, templateHandler);
         } else {
             throw new IllegalArgumentException(
                 "Cannot process template \"" + templateResource.getName() + "\" " +
@@ -449,7 +576,16 @@ public final class TemplateProcessor {
         }
 
         if (logger.isTraceEnabled()) {
-            logger.trace("[THYMELEAF][{}] Finished processing of template \"{}\"", TemplateEngine.threadIndex(), templateResource.getName());
+            if (templateHandler instanceof MarkupBuilderTemplateHandler) {
+                if (markupSelectors != null) {
+                    logger.trace("[THYMELEAF][{}] Finished parsing of template \"{}\" with selector/s \"{}\"",
+                            new Object[] {TemplateEngine.threadIndex(), templateResource.getName(), Arrays.asList(markupSelectors)});
+                } else {
+                    logger.trace("[THYMELEAF][{}] Finished parsing of template \"{}\"", TemplateEngine.threadIndex(), templateResource.getName());
+                }
+            } else {
+                logger.trace("[THYMELEAF][{}] Finished processing of template \"{}\"", TemplateEngine.threadIndex(), templateResource.getName());
+            }
         }
 
     }
@@ -463,7 +599,7 @@ public final class TemplateProcessor {
             logger.trace("[THYMELEAF][{}] Starting processing of template \"{}\"", TemplateEngine.threadIndex(), template.getTemplateResolution().getTemplateName());
         }
 
-        template.getMarkup().process(templateHandler);
+        template.getInternalMarkup().process(templateHandler);
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Finished processing of template \"{}\"", TemplateEngine.threadIndex(), template.getTemplateResolution().getTemplateName());
@@ -575,20 +711,58 @@ public final class TemplateProcessor {
     // TODO In the case of utext fragments, there must be a better way to compute a cache key than using the fragment
     // itself as a part of it. Its hashCode operation, not being the String itself internalizable is going to be slow...
 
-    
-    private static String computeFragmentCacheKey(final ITextRepository textRepository, final String templateName, final String fragment) {
+
+
+    private static String computeFragmentCacheKey(
+            final ITextRepository textRepository, final String templateName, final CharSequence fragmentIdentifier) {
+
         // We will try to avoid the creation of too many strings when computing these keys by creating a StringBuilder
         // and then passing it to the Text Repository in order to find the canonical String representing it. Given
         // the StringBuilder implements CharSequence and it doesn't build a String with the different appended parts
         // until calling 'toString()', which we won't call, this should save us from creating the resulting String.
-        if (textRepository == null) {
-            return templateName + "@@" + fragment;
-        }
-        final StringBuilder strBuilder = new StringBuilder(fragment.length() + 10);
+        final StringBuilder strBuilder = new StringBuilder(fragmentIdentifier.length() + 10);
         strBuilder.append(templateName);
         strBuilder.append("@@");
-        strBuilder.append(fragment);
+        strBuilder.append(fragmentIdentifier);
+        if (textRepository == null) {
+            return strBuilder.toString();
+        }
         return textRepository.getText(strBuilder);
+
+    }
+
+
+    private static CharSequence computeCacheKeyFragmentIdentifierForMarkupSelectors(
+            final String[] fragmentIdentifiers, final boolean onlyContents) {
+
+        if (fragmentIdentifiers == null) {
+            return ""; // 'onlyContents' has no influence in this case
+        }
+        if (fragmentIdentifiers.length == 1) {
+            if (fragmentIdentifiers[0] == null) {
+                return ""; // 'onlyContents' has no influence in this case
+            }
+            if (!onlyContents) {
+                return fragmentIdentifiers[0];
+            }
+            final StringBuilder strBuilder = new StringBuilder(40);
+            strBuilder.append(fragmentIdentifiers[0]);
+            strBuilder.append(',');
+            strBuilder.append("(contents)");
+            return strBuilder;
+        }
+        final StringBuilder strBuilder = new StringBuilder(40);
+        strBuilder.append(fragmentIdentifiers[0] != null? fragmentIdentifiers[0] : "");
+        for (int i = 1; i < fragmentIdentifiers.length; i++) {
+            strBuilder.append(',');
+            strBuilder.append(fragmentIdentifiers[i] != null? fragmentIdentifiers[i] : "");
+        }
+        if (onlyContents) {
+            strBuilder.append(',');
+            strBuilder.append("(contents)");
+        }
+        return strBuilder;
+
     }
     
 

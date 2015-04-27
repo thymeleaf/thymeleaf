@@ -49,14 +49,6 @@ public final class ParsedFragmentMarkup implements IMarkup {
     }
 
 
-    // Meant to be called only from the cloneMarkup method
-    private ParsedFragmentMarkup(final Markup markup, final ICacheEntryValidity validity) {
-        super();
-        this.markup = markup;
-        this.validity = validity;
-    }
-
-
     public final IEngineConfiguration getConfiguration() {
         return this.markup.getConfiguration();
     }
@@ -76,7 +68,7 @@ public final class ParsedFragmentMarkup implements IMarkup {
     // We don't want anyone to have direct access to the underlying Markup object from outside the engine.
     // This will effectively turn our ParsedFragmentMarkup into immutable (though not really) and therefore allow us
     // to confidently cache these objects without worrying that anyone can modify them
-    final Markup getMarkup() {
+    final Markup getInternalMarkup() {
         return this.markup;
     }
 
@@ -87,8 +79,8 @@ public final class ParsedFragmentMarkup implements IMarkup {
     }
 
 
-    public IMarkup cloneMarkup() {
-        return new ParsedFragmentMarkup((Markup)this.markup.cloneMarkup(), this.validity);
+    public Markup cloneMarkup() {
+        return this.markup.cloneMarkup();
     }
 
 

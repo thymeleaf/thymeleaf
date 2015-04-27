@@ -26,16 +26,16 @@ package org.thymeleaf.standard.processor;
  * @since 3.0.0
  *
  */
-public final class StandardReplaceTagProcessor extends AbstractStandardFragmentInsertionTagProcessor {
+public final class StandardSubstituteByTagProcessor extends AbstractStandardFragmentInsertionTagProcessor {
 
     public static final int PRECEDENCE = 100;
-    public static final String ATTR_NAME = "replace";
+    public static final String ATTR_NAME = "substituteby";
 
 
 
 
 
-    public StandardReplaceTagProcessor() {
+    public StandardSubstituteByTagProcessor() {
         super(ATTR_NAME, PRECEDENCE, true, false);
     }
 
