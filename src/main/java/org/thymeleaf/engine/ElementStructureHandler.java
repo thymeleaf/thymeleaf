@@ -39,17 +39,17 @@ final class ElementStructureHandler implements IElementStructureHandler {
     String setBodyTextValue;
     boolean setBodyTextProcessable;
 
-    boolean setBodyQueue;
-    ITemplateHandlerEventQueue setBodyQueueValue;
-    boolean setBodyQueueProcessable;
+    boolean setBodyMarkup;
+    IMarkup setBodyMarkupValue;
+    boolean setBodyMarkupProcessable;
 
     boolean replaceWithText;
     String replaceWithTextValue;
     boolean replaceWithTextProcessable;
 
-    boolean replaceWithQueue;
-    ITemplateHandlerEventQueue replaceWithQueueValue;
-    boolean replaceWithQueueProcessable;
+    boolean replaceWithMarkup;
+    IMarkup replaceWithMarkupValue;
+    boolean replaceWithMarkupProcessable;
 
     boolean removeElement;
 
@@ -95,12 +95,12 @@ final class ElementStructureHandler implements IElementStructureHandler {
     }
 
 
-    public void setBody(final ITemplateHandlerEventQueue eventQueue, final boolean processable) {
+    public void setBody(final IMarkup markup, final boolean processable) {
         resetAllButLocalVariables();
-        Validate.notNull(eventQueue, "Event Queue cannot be null");
-        this.setBodyQueue = true;
-        this.setBodyQueueValue = eventQueue;
-        this.setBodyQueueProcessable = processable;
+        Validate.notNull(markup, "Markup cannot be null");
+        this.setBodyMarkup = true;
+        this.setBodyMarkupValue = markup;
+        this.setBodyMarkupProcessable = processable;
     }
 
 
@@ -113,12 +113,12 @@ final class ElementStructureHandler implements IElementStructureHandler {
     }
 
 
-    public void replaceWith(final ITemplateHandlerEventQueue eventQueue, final boolean processable) {
+    public void replaceWith(final IMarkup markup, final boolean processable) {
         resetAllButLocalVariables();
-        Validate.notNull(eventQueue, "Event Queue cannot be null");
-        this.replaceWithQueue = true;
-        this.replaceWithQueueValue = eventQueue;
-        this.replaceWithQueueProcessable = processable;
+        Validate.notNull(markup, "Markup cannot be null");
+        this.replaceWithMarkup = true;
+        this.replaceWithMarkupValue = markup;
+        this.replaceWithMarkupProcessable = processable;
     }
 
 
@@ -212,17 +212,17 @@ final class ElementStructureHandler implements IElementStructureHandler {
         this.setBodyTextValue = null;
         this.setBodyTextProcessable = false;
 
-        this.setBodyQueue = false;
-        this.setBodyQueueValue = null;
-        this.setBodyQueueProcessable = false;
+        this.setBodyMarkup = false;
+        this.setBodyMarkupValue = null;
+        this.setBodyMarkupProcessable = false;
 
         this.replaceWithText = false;
         this.replaceWithTextValue = null;
         this.replaceWithTextProcessable = false;
 
-        this.replaceWithQueue = false;
-        this.replaceWithQueueValue = null;
-        this.replaceWithQueueProcessable = false;
+        this.replaceWithMarkup = false;
+        this.replaceWithMarkupValue = null;
+        this.replaceWithMarkupProcessable = false;
 
         this.removeElement = false;
 

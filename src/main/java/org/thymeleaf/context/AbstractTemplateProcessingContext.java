@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.engine.StandardModelFactory;
+import org.thymeleaf.engine.TemplateProcessor;
 import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.TemplateResolution;
@@ -39,6 +40,7 @@ public abstract class AbstractTemplateProcessingContext
             extends AbstractProcessingContext
             implements ITemplateProcessingContext {
 
+    private final TemplateProcessor templateProcessor;
     private final TemplateResolution templateResolution;
     private final TemplateMode templateMode;
     private final IModelFactory modelFactory;
@@ -48,13 +50,16 @@ public abstract class AbstractTemplateProcessingContext
 
     public AbstractTemplateProcessingContext(
             final IEngineConfiguration configuration,
+            final TemplateProcessor templateProcessor,
             final TemplateResolution templateResolution,
             final IContext context) {
 
         super(configuration, context);
 
-        Validate.notNull(templateResolution, "Template Resolution object cannot be null");
+        Validate.notNull(templateProcessor, "Template Processor cannot be null");
+        Validate.notNull(templateResolution, "Template Resolution cannot be null");
 
+        this.templateProcessor = templateProcessor;
         this.templateResolution = templateResolution;
         this.templateMode = this.templateResolution.getTemplateMode();
         this.modelFactory =
@@ -67,13 +72,16 @@ public abstract class AbstractTemplateProcessingContext
 
     public AbstractTemplateProcessingContext(
             final IEngineConfiguration configuration,
+            final TemplateProcessor templateProcessor,
             final TemplateResolution templateResolution,
             final Locale locale, final Map<String, Object> variables) {
 
         super(configuration, locale, variables);
 
-        Validate.notNull(templateResolution, "Template Resolution object cannot be null");
+        Validate.notNull(templateProcessor, "Template Processor cannot be null");
+        Validate.notNull(templateResolution, "Template Resolution cannot be null");
 
+        this.templateProcessor = templateProcessor;
         this.templateResolution = templateResolution;
         this.templateMode = this.templateResolution.getTemplateMode();
         this.modelFactory =
@@ -85,6 +93,9 @@ public abstract class AbstractTemplateProcessingContext
     }
 
 
+    public final TemplateProcessor getTemplateProcessor() {
+        return this.templateProcessor;
+    }
 
     public final TemplateResolution getTemplateResolution() {
         return this.templateResolution;

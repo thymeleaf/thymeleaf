@@ -30,7 +30,7 @@ public interface ITextStructureHandler {
 
     public void reset();
 
-    public void replaceWith(final ITemplateHandlerEventQueue eventQueue, final boolean processable);
+    public void replaceWith(final IMarkup markup, final boolean processable);
 
     public void removeText();
 

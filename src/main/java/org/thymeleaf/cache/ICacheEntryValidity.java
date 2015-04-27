@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.templateresolver;
+package org.thymeleaf.cache;
 
 /**
  * <p>
@@ -30,7 +30,7 @@ package org.thymeleaf.templateresolver;
  *   if an existing cache entry is still valid.
  * </p>
  * <p>
- *   A typical implementation is {@link TTLTemplateResolutionValidity}, 
+ *   A typical implementation is {@link TTLCacheEntryValidity},
  *   which determines the validity of a cache entry based on a TTL (time-to-live).
  * </p>
  * 
@@ -39,7 +39,7 @@ package org.thymeleaf.templateresolver;
  * @since 1.0
  *
  */
-public interface ITemplateResolutionValidity {
+public interface ICacheEntryValidity {
 
     /**
      * <p>

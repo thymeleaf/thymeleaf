@@ -17,11 +17,11 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.templateresolver;
+package org.thymeleaf.cache;
 
 /**
  * <p>
- *   Simple implementation of {@link ITemplateResolutionValidity}
+ *   Simple implementation of {@link ICacheEntryValidity}
  *   that uses a TTL (time-to-live) expressed in milliseconds to
  *   compute the validity of template cache entries.
  * </p>
@@ -31,8 +31,8 @@ package org.thymeleaf.templateresolver;
  * @since 1.0
  *
  */
-public class TTLTemplateResolutionValidity 
-        implements ITemplateResolutionValidity {
+public class TTLCacheEntryValidity
+        implements ICacheEntryValidity {
     
     private final long cacheTTLMs;
     private final long creationTimeInMillis;
@@ -45,7 +45,7 @@ public class TTLTemplateResolutionValidity
      * 
      * @param cacheTTLMs the TTL to be applied to the template resolution.
      */
-    public TTLTemplateResolutionValidity(final long cacheTTLMs) {
+    public TTLCacheEntryValidity(final long cacheTTLMs) {
         super();
         this.cacheTTLMs = cacheTTLMs;
         this.creationTimeInMillis = System.currentTimeMillis();

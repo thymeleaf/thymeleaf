@@ -19,37 +19,25 @@
  */
 package org.thymeleaf.engine;
 
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.templatemode.TemplateMode;
+
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
-public interface IElementStructureHandler {
+public interface IMarkup {
 
 
-    public void reset();
+    public IEngineConfiguration getConfiguration();
 
-    public void setLocalVariable(final String name, final Object value);
-    public void removeLocalVariable(final String name);
+    public TemplateMode getTemplateMode();
 
-    public void setSelectionTarget(final Object selectionTarget);
+    public String computeMarkup();
 
-    public void setTextInliningActive(final boolean active);
-
-    public void setBody(final String text, final boolean processable);
-    public void setBody(final IMarkup markup, final boolean processable);
-
-    public void replaceWith(final String text, final boolean processable);
-    public void replaceWith(final IMarkup markup, final boolean processable);
-
-
-    public void removeElement();
-    public void removeTag();
-    public void removeBody();
-    public void removeAllButFirstChild();
-
-    public void iterateElement(final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject);
+    public IMarkup cloneMarkup();
 
 }
-

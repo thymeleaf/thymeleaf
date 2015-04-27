@@ -17,12 +17,18 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.templateresolver;
+package org.thymeleaf.cache;
 
 /**
  * <p>
- *   Simple implementation of {@link ITemplateResolutionValidity}
- *   that considers the template resolution to be non-cacheable.
+ *   Simple implementation of {@link ICacheEntryValidity}
+ *   that considers the template resolution to be always cacheable
+ *   and always valid.
+ * </p>
+ * <p>
+ *   This means that a cache entry for this template resolution would
+ *   only be evicted by the effect of LRU (being the least-recently
+ *   used entry).
  * </p>
  * 
  * 
@@ -31,46 +37,46 @@ package org.thymeleaf.templateresolver;
  * @since 1.0
  *
  */
-public class NonCacheableTemplateResolutionValidity 
-        implements ITemplateResolutionValidity {
+public class AlwaysValidCacheEntryValidity
+        implements ICacheEntryValidity {
 
-    
     /**
      * <p>
      *   Singleton instance. Meant to avoid creating too many objects of this class.
      * </p>
      */
-    public static final NonCacheableTemplateResolutionValidity INSTANCE = 
-        new NonCacheableTemplateResolutionValidity();
+    public static final AlwaysValidCacheEntryValidity INSTANCE =
+        new AlwaysValidCacheEntryValidity();
+
     
-    public NonCacheableTemplateResolutionValidity() {
+    public AlwaysValidCacheEntryValidity() {
         super();
     }
 
 
     /**
      * <p>
-     *   Returns false. Template Resolutions using this validity are always 
-     *   considered to be non-cacheable.
+     *   Returns true. Templates are always considered cacheable using this
+     *   validity implementation.
      * </p>
      * 
-     * @return false
+     * @return true
      */
     public boolean isCacheable() {
-        return false;
+        return true;
     }
     
 
     /**
      * <p>
-     *   This method will never be called, because templates using this
-     *   validity implementation are always considered to be non-cacheable.
+     *   Returns true. Template cache entries using this validity are always
+     *   considered valid, and thus only evicted from cache by LRU.
      * </p>
      * 
-     * @return false
+     * @return true
      */
     public boolean isCacheStillValid() {
-        return false;
+        return true;
     }
     
 }

@@ -30,9 +30,9 @@ import org.thymeleaf.util.Validate;
 final class TextStructureHandler implements ITextStructureHandler {
 
 
-    boolean replaceWithQueue;
-    ITemplateHandlerEventQueue replaceWithQueueValue;
-    boolean replaceWithQueueProcessable;
+    boolean replaceWithMarkup;
+    IMarkup replaceWithMarkupValue;
+    boolean replaceWithMarkupProcessable;
 
     boolean removeText;
 
@@ -46,12 +46,12 @@ final class TextStructureHandler implements ITextStructureHandler {
 
 
 
-    public void replaceWith(final ITemplateHandlerEventQueue eventQueue, final boolean processable) {
+    public void replaceWith(final IMarkup markup, final boolean processable) {
         reset();
-        Validate.notNull(eventQueue, "Event Queue cannot be null");
-        this.replaceWithQueue = true;
-        this.replaceWithQueueValue = eventQueue;
-        this.replaceWithQueueProcessable = processable;
+        Validate.notNull(markup, "Markup cannot be null");
+        this.replaceWithMarkup = true;
+        this.replaceWithMarkupValue = markup;
+        this.replaceWithMarkupProcessable = processable;
     }
 
 
@@ -65,9 +65,9 @@ final class TextStructureHandler implements ITextStructureHandler {
 
     public void reset() {
 
-        this.replaceWithQueue = false;
-        this.replaceWithQueueValue = null;
-        this.replaceWithQueueProcessable = false;
+        this.replaceWithMarkup = false;
+        this.replaceWithMarkupValue = null;
+        this.replaceWithMarkupProcessable = false;
 
         this.removeText = false;
 

@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.templateresolver;
 
+import org.thymeleaf.cache.ICacheEntryValidity;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
@@ -60,7 +61,7 @@ public final class TemplateResolution {
     private final IResourceResolver resourceResolver;
     private final String characterEncoding;
     private final TemplateMode templateMode;
-    private final ITemplateResolutionValidity validity;
+    private final ICacheEntryValidity validity;
 
 
     
@@ -68,7 +69,7 @@ public final class TemplateResolution {
             final String templateName, final String resourceName, 
             final IResourceResolver resourceResolver, final String characterEncoding, 
             final TemplateMode templateMode,
-            final ITemplateResolutionValidity validity) {
+            final ICacheEntryValidity validity) {
         super();
         Validate.notNull(templateName, "Template name cannot be null");
         Validate.notNull(resourceName, "Resource name cannot be null");
@@ -177,7 +178,7 @@ public final class TemplateResolution {
      * 
      * @return the validity object
      */
-    public ITemplateResolutionValidity getValidity() {
+    public ICacheEntryValidity getValidity() {
         return this.validity;
     }
     

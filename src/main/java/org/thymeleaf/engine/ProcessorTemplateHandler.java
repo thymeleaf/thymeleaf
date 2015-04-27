@@ -407,12 +407,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.textProcessors[i].process(this.processingContext, itext, this.textStructureHandler);
 
-            if (this.textStructureHandler.replaceWithQueue) {
+            if (this.textStructureHandler.replaceWithMarkup) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.textStructureHandler.replaceWithQueueProcessable;
+                queueProcessable = this.textStructureHandler.replaceWithMarkupProcessable;
 
-                queue.addQueue(this.textStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
+                queue.addMarkup(this.textStructureHandler.replaceWithMarkupValue, true); // we need to clone the queue!
 
                 structureRemoved = true;
 
@@ -501,12 +501,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.commentProcessors[i].process(this.processingContext, icomment, this.commentStructureHandler);
 
-            if (this.commentStructureHandler.replaceWithQueue) {
+            if (this.commentStructureHandler.replaceWithMarkup) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.commentStructureHandler.replaceWithQueueProcessable;
+                queueProcessable = this.commentStructureHandler.replaceWithMarkupProcessable;
 
-                queue.addQueue(this.commentStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
+                queue.addMarkup(this.commentStructureHandler.replaceWithMarkupValue, true); // we need to clone the queue!
 
                 structureRemoved = true;
 
@@ -594,12 +594,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.cdataSectionProcessors[i].process(this.processingContext, icdataSection, this.cdataSectionStructureHandler);
 
-            if (this.cdataSectionStructureHandler.replaceWithQueue) {
+            if (this.cdataSectionStructureHandler.replaceWithMarkup) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.cdataSectionStructureHandler.replaceWithQueueProcessable;
+                queueProcessable = this.cdataSectionStructureHandler.replaceWithMarkupProcessable;
 
-                queue.addQueue(this.cdataSectionStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
+                queue.addMarkup(this.cdataSectionStructureHandler.replaceWithMarkupValue, true); // we need to clone the queue!
 
                 structureRemoved = true;
 
@@ -853,7 +853,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     return;
 
-                } else if (this.elementStructureHandler.setBodyQueue) {
+                } else if (this.elementStructureHandler.setBodyMarkup) {
 
                     queue.reset(); // Remove any previous results on the queue
 
@@ -865,7 +865,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     closeTag.resetAsCloneOf(standaloneElementTag);
 
                     // Prepare the queue (that we will suspend)
-                    queue.addQueue(this.elementStructureHandler.setBodyQueueValue, true); // we need to clone the queue!
+                    queue.addMarkup(this.elementStructureHandler.setBodyMarkupValue, true); // we need to clone the queue!
 
                     // We are done with using the standalone buffers, so increase the index
                     this.standaloneTagBuffersIndex++;
@@ -873,7 +873,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
                     this.suspended = true;
                     this.suspensionSpec.allowedElementCountInBody = Integer.MAX_VALUE;
-                    this.suspensionSpec.queueProcessable = this.elementStructureHandler.setBodyQueueProcessable;
+                    this.suspensionSpec.queueProcessable = this.elementStructureHandler.setBodyMarkupProcessable;
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
@@ -908,12 +908,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     tagRemoved = true;
 
-                } else if (this.elementStructureHandler.replaceWithQueue) {
+                } else if (this.elementStructureHandler.replaceWithMarkup) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementStructureHandler.replaceWithQueueProcessable;
+                    queueProcessable = this.elementStructureHandler.replaceWithMarkupProcessable;
 
-                    queue.addQueue(this.elementStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
+                    queue.addMarkup(this.elementStructureHandler.replaceWithMarkupValue, true); // we need to clone the queue!
 
                     tagRemoved = true;
 
@@ -1171,12 +1171,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
-                } else if (this.elementStructureHandler.setBodyQueue) {
+                } else if (this.elementStructureHandler.setBodyMarkup) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementStructureHandler.setBodyQueueProcessable;
+                    queueProcessable = this.elementStructureHandler.setBodyMarkupProcessable;
 
-                    queue.addQueue(this.elementStructureHandler.setBodyQueueValue, true); // we need to clone the queue!
+                    queue.addMarkup(this.elementStructureHandler.setBodyMarkupValue, true); // we need to clone the queue!
 
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
@@ -1195,12 +1195,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
-                } else if (this.elementStructureHandler.replaceWithQueue) {
+                } else if (this.elementStructureHandler.replaceWithMarkup) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementStructureHandler.replaceWithQueueProcessable;
+                    queueProcessable = this.elementStructureHandler.replaceWithMarkupProcessable;
 
-                    queue.addQueue(this.elementStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
+                    queue.addMarkup(this.elementStructureHandler.replaceWithMarkupValue, true); // we need to clone the queue!
 
                     tagRemoved = true;
                     allowedElementCountInBody = 0;
@@ -1495,12 +1495,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
-                } else if (this.elementStructureHandler.setBodyQueue) {
+                } else if (this.elementStructureHandler.setBodyMarkup) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementStructureHandler.setBodyQueueProcessable;
+                    queueProcessable = this.elementStructureHandler.setBodyMarkupProcessable;
 
-                    queue.addQueue(this.elementStructureHandler.setBodyQueueValue, true); // we need to clone the queue!
+                    queue.addMarkup(this.elementStructureHandler.setBodyMarkupValue, true); // we need to clone the queue!
 
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
@@ -1519,12 +1519,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
-                } else if (this.elementStructureHandler.replaceWithQueue) {
+                } else if (this.elementStructureHandler.replaceWithMarkup) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementStructureHandler.replaceWithQueueProcessable;
+                    queueProcessable = this.elementStructureHandler.replaceWithMarkupProcessable;
 
-                    queue.addQueue(this.elementStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
+                    queue.addMarkup(this.elementStructureHandler.replaceWithMarkupValue, true); // we need to clone the queue!
 
                     tagRemoved = true;
                     allowedElementCountInBody = 0;
@@ -1869,12 +1869,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.docTypeProcessors[i].process(this.processingContext, idocType, this.docTypeStructureHandler);
 
-            if (this.docTypeStructureHandler.replaceWithQueue) {
+            if (this.docTypeStructureHandler.replaceWithMarkup) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.docTypeStructureHandler.replaceWithQueueProcessable;
+                queueProcessable = this.docTypeStructureHandler.replaceWithMarkupProcessable;
 
-                queue.addQueue(this.docTypeStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
+                queue.addMarkup(this.docTypeStructureHandler.replaceWithMarkupValue, true); // we need to clone the queue!
 
                 structureRemoved = true;
 
@@ -1965,12 +1965,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.xmlDeclarationProcessors[i].process(this.processingContext, ixmlDeclaration, this.xmlDeclarationStructureHandler);
 
-            if (this.xmlDeclarationStructureHandler.replaceWithQueue) {
+            if (this.xmlDeclarationStructureHandler.replaceWithMarkup) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.xmlDeclarationStructureHandler.replaceWithQueueProcessable;
+                queueProcessable = this.xmlDeclarationStructureHandler.replaceWithMarkupProcessable;
 
-                queue.addQueue(this.xmlDeclarationStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
+                queue.addMarkup(this.xmlDeclarationStructureHandler.replaceWithMarkupValue, true); // we need to clone the queue!
 
                 structureRemoved = true;
 
@@ -2060,12 +2060,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.processingInstructionProcessors[i].process(this.processingContext, iprocessingInstruction, this.processingInstructionStructureHandler);
 
-            if (this.processingInstructionStructureHandler.replaceWithQueue) {
+            if (this.processingInstructionStructureHandler.replaceWithMarkup) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.processingInstructionStructureHandler.replaceWithQueueProcessable;
+                queueProcessable = this.processingInstructionStructureHandler.replaceWithMarkupProcessable;
 
-                queue.addQueue(this.processingInstructionStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
+                queue.addMarkup(this.processingInstructionStructureHandler.replaceWithMarkupValue, true); // we need to clone the queue!
 
                 structureRemoved = true;
 

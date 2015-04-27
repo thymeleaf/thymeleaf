@@ -22,6 +22,7 @@ package org.thymeleaf.standard.processor;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
+import org.thymeleaf.engine.Markup;
 import org.thymeleaf.engine.TemplateHandlerEventQueue;
 import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IOpenElementTag;
@@ -53,16 +54,16 @@ public final class StandardReplaceTagProcessor extends AbstractStandardAttribute
 
         final IModelFactory modelFactory = processingContext.getModelFactory();
 
-        final TemplateHandlerEventQueue queue = new TemplateHandlerEventQueue();
+        final Markup markup = new Markup(processingContext.getConfiguration(), processingContext.getTemplateMode());
 
         final IOpenElementTag sectionOpenTag = modelFactory.createOpenElementTag("section");
         sectionOpenTag.getAttributes().setAttribute("class", "included");
 
-        queue.add(sectionOpenTag);
-        queue.add(modelFactory.createText("This is replaced text!"));
-        queue.add(modelFactory.createCloseElementTag("section"));
+        markup.add(sectionOpenTag);
+        markup.add(modelFactory.createText("This is replaced text!"));
+        markup.add(modelFactory.createCloseElementTag("section"));
 
-        structureHandler.replaceWith(queue, true);
+        structureHandler.replaceWith(markup, true);
 
     }
 

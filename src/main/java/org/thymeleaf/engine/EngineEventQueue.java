@@ -23,18 +23,6 @@ import java.util.Arrays;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IAutoCloseElementTag;
-import org.thymeleaf.model.IAutoOpenElementTag;
-import org.thymeleaf.model.ICDATASection;
-import org.thymeleaf.model.ICloseElementTag;
-import org.thymeleaf.model.IComment;
-import org.thymeleaf.model.IDocType;
-import org.thymeleaf.model.IOpenElementTag;
-import org.thymeleaf.model.IProcessingInstruction;
-import org.thymeleaf.model.IStandaloneElementTag;
-import org.thymeleaf.model.IText;
-import org.thymeleaf.model.IUnmatchedCloseElementTag;
-import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -149,105 +137,69 @@ final class EngineEventQueue {
     }
 
 
-    public void addQueue(final ITemplateHandlerEventQueue eventQueue, final boolean cloneAlways) {
-        insertQueue(this.queueSize, eventQueue, cloneAlways);
+    void addMarkup(final IMarkup imarkup, final boolean cloneAlways) {
+        insertMarkup(this.queueSize, imarkup, cloneAlways);
     }
 
 
-    public void insertQueue(final int pos, final ITemplateHandlerEventQueue eventQueue, final boolean cloneAlways) {
+    void insertMarkup(final int pos, final IMarkup imarkup, final boolean cloneAlways) {
 
         if (pos < 0 && pos >= this.queueSize) {
             throw new IndexOutOfBoundsException("Requested position " + pos + " of event queue with size " + this.queueSize);
         }
 
-        if (eventQueue == null) {
+        if (imarkup == null) {
             return;
         }
 
-        if (eventQueue instanceof TemplateHandlerEventQueue) {
-            // It's a known implementation - we can take some shortcuts
-
-            final TemplateHandlerEventQueue templateHandlerEventQueue = (TemplateHandlerEventQueue) eventQueue;
-
-            if (this.queue.length <= (this.queueSize + templateHandlerEventQueue.queueSize)) {
-                // We need to grow the queue!
-                final IEngineTemplateHandlerEvent[] newQueue = new IEngineTemplateHandlerEvent[this.queueSize + templateHandlerEventQueue.queueSize + Math.max(this.initialSize / 2, DEFAULT_INITIAL_SIZE)];
-                Arrays.fill(newQueue, null);
-                System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
-                this.queue = newQueue;
-            }
-
-            // Make room for the new events (if necessary because pos < this.queueSize)
-            System.arraycopy(this.queue, pos, this.queue, pos + templateHandlerEventQueue.queueSize, this.queueSize - pos);
-
-            // Copy the new events to their new position
-            int i = pos;
-            int n = templateHandlerEventQueue.queueSize;
-            while (n-- != 0) {
-                this.queue[i] = asEngineEvent(templateHandlerEventQueue.queue[i - pos], cloneAlways);
-                i++;
-            }
-
-            this.queueSize += templateHandlerEventQueue.queueSize;
-
-            return;
-
+        if (!this.configuration.equals(imarkup.getConfiguration())) {
+            throw new TemplateProcessingException(
+                    "Cannot add markup of class " + imarkup.getClass().getName() + " to the current template, as " +
+                    "it was created using a different Template Engine Configuration.");
         }
 
-        // We don't know this implementation, so we will do it using the interface's methods
-
-        final int eventQueueLen = eventQueue.size();
-        for (int i = 0 ; i < eventQueueLen; i++) {
-            insert(pos + i, asEngineEvent(eventQueue.get(i), cloneAlways));
+        if (this.templateMode != imarkup.getTemplateMode()) {
+            throw new TemplateProcessingException(
+                    "Cannot add markup of class " + imarkup.getClass().getName() + " to the current template, as " +
+                    "it was created using a different Template Mode: " + imarkup.getTemplateMode() + " instead of " +
+                    "the current " + this.templateMode);
         }
 
-    }
 
+        final Markup markup;
+        if (imarkup instanceof ParsedTemplateMarkup) {
+            markup = ((ParsedTemplateMarkup) imarkup).getMarkup();
+        } else if (imarkup instanceof ParsedFragmentMarkup) {
+            markup = ((ParsedFragmentMarkup) imarkup).getMarkup();
+        } else if (imarkup instanceof CacheableMarkup) {
+            // This implementation does not directly come from the parser, but it is immutable so we won't need to clone
+            markup = ((CacheableMarkup) imarkup).getMarkup();
+        } else if (imarkup instanceof Markup) {
+            // This implementation does not directly come from the parser nor is immutable, so we must clone its events
+            // to avoid interactions.
+            markup = (Markup) ((Markup) imarkup).cloneMarkup();
+        } else {
+            throw new TemplateProcessingException(
+                    "Unrecognized implementation of the " + IMarkup.class.getName() + " interface: " + imarkup.getClass().getName());
+        }
 
+        final EngineEventQueue markupQueue = markup.getEventQueue();
 
+        if (this.queue.length <= (this.queueSize + markupQueue.queueSize)) {
+            // We need to grow the queue!
+            final IEngineTemplateHandlerEvent[] newQueue = new IEngineTemplateHandlerEvent[this.queueSize + markupQueue.queueSize + Math.max(this.initialSize / 2, DEFAULT_INITIAL_SIZE)];
+            Arrays.fill(newQueue, null);
+            System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
+            this.queue = newQueue;
+        }
 
+        // Make room for the new events (if necessary because pos < this.queueSize)
+        System.arraycopy(this.queue, pos, this.queue, pos + markupQueue.queueSize, this.queueSize - pos);
 
+        // Copy the new events to their new position (no cloning needed here - if needed it would have been already done)
+        System.arraycopy(markupQueue.queue, 0, this.queue, pos, markupQueue.queueSize);
 
-    private IEngineTemplateHandlerEvent asEngineEvent(final ITemplateHandlerEvent event, final boolean cloneAlways) {
-
-        if (event instanceof IText) {
-            return Text.asEngineText(this.configuration, (IText)event, cloneAlways);
-        }
-        if (event instanceof IOpenElementTag) {
-            return OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, (IOpenElementTag)event, cloneAlways);
-        }
-        if (event instanceof ICloseElementTag) {
-            return CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, (ICloseElementTag)event, cloneAlways);
-        }
-        if (event instanceof IStandaloneElementTag) {
-            return StandaloneElementTag.asEngineStandaloneElementTag(this.templateMode, this.configuration, (IStandaloneElementTag)event, cloneAlways);
-        }
-        if (event instanceof IAutoOpenElementTag) {
-            return AutoOpenElementTag.asEngineAutoOpenElementTag(this.templateMode, this.configuration, (IAutoOpenElementTag)event, cloneAlways);
-        }
-        if (event instanceof IAutoCloseElementTag) {
-            return AutoCloseElementTag.asEngineAutoCloseElementTag(this.templateMode, this.configuration, (IAutoCloseElementTag)event, cloneAlways);
-        }
-        if (event instanceof IUnmatchedCloseElementTag) {
-            return UnmatchedCloseElementTag.asEngineUnmatchedCloseElementTag(this.templateMode, this.configuration, (IUnmatchedCloseElementTag)event, cloneAlways);
-        }
-        if (event instanceof IDocType) {
-            return DocType.asEngineDocType(this.configuration, (IDocType)event, cloneAlways);
-        }
-        if (event instanceof IComment) {
-            return Comment.asEngineComment(this.configuration, (IComment)event, cloneAlways);
-        }
-        if (event instanceof ICDATASection) {
-            return CDATASection.asEngineCDATASection(this.configuration, (ICDATASection)event, cloneAlways);
-        }
-        if (event instanceof IXMLDeclaration) {
-            return XMLDeclaration.asEngineXMLDeclaration(this.configuration, (IXMLDeclaration)event, cloneAlways);
-        }
-        if (event instanceof IProcessingInstruction) {
-            return ProcessingInstruction.asEngineProcessingInstruction(this.configuration, (IProcessingInstruction)event, cloneAlways);
-        }
-        throw new TemplateProcessingException(
-                "Cannot handle in queue event of type: " + event.getClass().getName());
+        this.queueSize += markupQueue.queueSize;
 
     }
 

@@ -24,7 +24,8 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.engine.Template;
+import org.thymeleaf.engine.ParsedFragmentMarkup;
+import org.thymeleaf.engine.ParsedTemplateMarkup;
 
 
 /**
@@ -97,7 +98,7 @@ public class StandardCacheManager extends AbstractCacheManager {
     /**
      * Default template cache validity checker: an instance of {@link StandardParsedTemplateEntryValidator}.
      */
-    public static final ICacheEntryValidityChecker<String,Template> DEFAULT_TEMPLATE_CACHE_VALIDITY_CHECKER = new StandardParsedTemplateEntryValidator();
+    public static final ICacheEntryValidityChecker<String,ParsedTemplateMarkup> DEFAULT_TEMPLATE_CACHE_VALIDITY_CHECKER = new StandardParsedTemplateEntryValidator();
 
     
     
@@ -129,7 +130,7 @@ public class StandardCacheManager extends AbstractCacheManager {
     /**
      * Default fragment cache validity checker: null
      */
-    public static final ICacheEntryValidityChecker<String,Template> DEFAULT_FRAGMENT_CACHE_VALIDITY_CHECKER = null;
+    public static final ICacheEntryValidityChecker<String,ParsedFragmentMarkup> DEFAULT_FRAGMENT_CACHE_VALIDITY_CHECKER = new StandardParsedFragmentEntryValidator();
    
 
     
@@ -202,14 +203,14 @@ public class StandardCacheManager extends AbstractCacheManager {
     private int templateCacheMaxSize = DEFAULT_TEMPLATE_CACHE_MAX_SIZE;
     private boolean templateCacheUseSoftReferences = DEFAULT_TEMPLATE_CACHE_USE_SOFT_REFERENCES;
     private String templateCacheLoggerName = DEFAULT_TEMPLATE_CACHE_LOGGER_NAME;
-    private ICacheEntryValidityChecker<String,Template> templateCacheValidityChecker = DEFAULT_TEMPLATE_CACHE_VALIDITY_CHECKER;
+    private ICacheEntryValidityChecker<String,ParsedTemplateMarkup> templateCacheValidityChecker = DEFAULT_TEMPLATE_CACHE_VALIDITY_CHECKER;
     
     private String fragmentCacheName = DEFAULT_FRAGMENT_CACHE_NAME;
     private int fragmentCacheInitialSize = DEFAULT_FRAGMENT_CACHE_INITIAL_SIZE;
     private int fragmentCacheMaxSize = DEFAULT_FRAGMENT_CACHE_MAX_SIZE;
     private boolean fragmentCacheUseSoftReferences = DEFAULT_FRAGMENT_CACHE_USE_SOFT_REFERENCES;
     private String fragmentCacheLoggerName = DEFAULT_FRAGMENT_CACHE_LOGGER_NAME;
-    private ICacheEntryValidityChecker<String,Template> fragmentCacheValidityChecker = DEFAULT_FRAGMENT_CACHE_VALIDITY_CHECKER;
+    private ICacheEntryValidityChecker<String,ParsedFragmentMarkup> fragmentCacheValidityChecker = DEFAULT_FRAGMENT_CACHE_VALIDITY_CHECKER;
    
     private String messageCacheName = DEFAULT_MESSAGE_CACHE_NAME;
     private int messageCacheInitialSize = DEFAULT_MESSAGE_CACHE_INITIAL_SIZE;
@@ -234,24 +235,24 @@ public class StandardCacheManager extends AbstractCacheManager {
     
     
     @Override
-    protected final ICache<String, Template> initializeTemplateCache() {
+    protected final ICache<String, ParsedTemplateMarkup> initializeTemplateCache() {
         final int maxSize = getTemplateCacheMaxSize();
         if (maxSize == 0) {
             return null;
         }
-        return new StandardCache<String, Template>(
+        return new StandardCache<String, ParsedTemplateMarkup>(
                 getTemplateCacheName(), getTemplateCacheUseSoftReferences(), 
                 getTemplateCacheInitialSize(), maxSize, 
                 getTemplateCacheValidityChecker(), getTemplateCacheLogger());
     }
     
     @Override
-    protected final ICache<String, Template> initializeFragmentCache() {
+    protected final ICache<String, ParsedFragmentMarkup> initializeFragmentCache() {
         final int maxSize = getFragmentCacheMaxSize();
         if (maxSize == 0) {
             return null;
         }
-        return new StandardCache<String, Template>(
+        return new StandardCache<String, ParsedFragmentMarkup>(
                 getFragmentCacheName(), getFragmentCacheUseSoftReferences(), 
                 getFragmentCacheInitialSize(), maxSize, 
                 getFragmentCacheValidityChecker(), getFragmentCacheLogger());
@@ -306,7 +307,7 @@ public class StandardCacheManager extends AbstractCacheManager {
         return this.templateCacheLoggerName;
     }
     
-    public ICacheEntryValidityChecker<String,Template> getTemplateCacheValidityChecker() {
+    public ICacheEntryValidityChecker<String,ParsedTemplateMarkup> getTemplateCacheValidityChecker() {
         return this.templateCacheValidityChecker;
     }
     
@@ -341,7 +342,7 @@ public class StandardCacheManager extends AbstractCacheManager {
         return this.fragmentCacheLoggerName;
     }
     
-    public ICacheEntryValidityChecker<String,Template> getFragmentCacheValidityChecker() {
+    public ICacheEntryValidityChecker<String,ParsedFragmentMarkup> getFragmentCacheValidityChecker() {
         return this.fragmentCacheValidityChecker;
     }
     
@@ -447,7 +448,7 @@ public class StandardCacheManager extends AbstractCacheManager {
         this.templateCacheLoggerName = templateCacheLoggerName;
     }
 
-    public void setTemplateCacheValidityChecker(final ICacheEntryValidityChecker<String, Template> templateCacheValidityChecker) {
+    public void setTemplateCacheValidityChecker(final ICacheEntryValidityChecker<String, ParsedTemplateMarkup> templateCacheValidityChecker) {
         this.templateCacheValidityChecker = templateCacheValidityChecker;
     }
 
@@ -473,7 +474,7 @@ public class StandardCacheManager extends AbstractCacheManager {
         this.fragmentCacheLoggerName = fragmentCacheLoggerName;
     }
     
-    public void setFragmentCacheValidityChecker(final ICacheEntryValidityChecker<String, Template> fragmentCacheValidityChecker) {
+    public void setFragmentCacheValidityChecker(final ICacheEntryValidityChecker<String, ParsedFragmentMarkup> fragmentCacheValidityChecker) {
         this.fragmentCacheValidityChecker = fragmentCacheValidityChecker;
     }
 

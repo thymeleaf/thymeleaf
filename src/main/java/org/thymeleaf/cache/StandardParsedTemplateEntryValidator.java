@@ -20,7 +20,7 @@
 package org.thymeleaf.cache;
 
 
-import org.thymeleaf.engine.Template;
+import org.thymeleaf.engine.ParsedTemplateMarkup;
 
 /**
  * 
@@ -30,17 +30,17 @@ import org.thymeleaf.engine.Template;
  * @since 2.0.0
  *
  */
-public final class StandardParsedTemplateEntryValidator 
-        implements ICacheEntryValidityChecker<String,Template> {
+public final class StandardParsedTemplateEntryValidator
+        implements ICacheEntryValidityChecker<String,ParsedTemplateMarkup> {
     
-    private static final long serialVersionUID = -5853535204141790247L;
+    private static final long serialVersionUID = -185355204140990247L;
 
     public StandardParsedTemplateEntryValidator() {
         super();
     }
 
     public boolean checkIsValueStillValid(
-            final String key, final Template value, final long entryCreationTimestamp) {
+            final String key, final ParsedTemplateMarkup value, final long entryCreationTimestamp) {
         return value.getTemplateResolution().getValidity().isCacheStillValid();
     }
     

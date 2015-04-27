@@ -20,7 +20,6 @@
 package org.thymeleaf.engine;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.model.IAutoCloseElementTag;
 import org.thymeleaf.model.IAutoOpenElementTag;
 import org.thymeleaf.model.ICDATASection;
@@ -43,12 +42,11 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public final class TemplateBuilderTemplateHandler extends AbstractTemplateHandler {
+public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler {
 
-
-    private IEngineConfiguration configuration;
-    private TemplateMode templateMode;
-    private Template template;
+    private final Markup markup;
+    private final IEngineConfiguration configuration;
+    private final TemplateMode templateMode;
 
 
 
@@ -57,36 +55,30 @@ public final class TemplateBuilderTemplateHandler extends AbstractTemplateHandle
      *   Creates a new instance of this handler.
      * </p>
      */
-    public TemplateBuilderTemplateHandler() {
+    public MarkupBuilderTemplateHandler(final Markup markup) {
         super();
+        Validate.notNull(markup, "Markup cannot be null");
+        Validate.notNull(markup.getConfiguration(), "Engine Configuration returned by Markup cannot be null");
+        Validate.notNull(markup.getTemplateMode(), "Template Mode returned by Markup cannot be null");
+        this.markup = markup;
+        this.configuration = markup.getConfiguration();
+        this.templateMode = markup.getTemplateMode();
     }
 
 
 
-    public Template getTemplate() {
-        return this.template;
+    public Markup getMarkup() {
+        return this.markup;
     }
 
 
-
-    @Override
-    public void setProcessingContext(final ITemplateProcessingContext processingContext) {
-        Validate.notNull(processingContext, "Processing Context cannot be null");
-        Validate.notNull(processingContext.getConfiguration(), "Engine Configuration returned by Processing Context cannot be null");
-        Validate.notNull(processingContext.getTemplateMode(), "Template Mode returned by Processing Context cannot be null");
-        super.setProcessingContext(processingContext);
-        this.configuration = processingContext.getConfiguration();
-        this.templateMode = processingContext.getTemplateMode();
-        this.template = new Template(processingContext);
-    }
-
-
-
+    // Note we are NOT implementing the setProcessingContext method, because we don't need it at all when just using
+    // this handler for parsing (we are not processing anything!)
 
 
     @Override
     public void handleText(final IText text) {
-        this.template.add(Text.asEngineText(this.configuration, text, true));
+        this.markup.add(Text.asEngineText(this.configuration, text, true));
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleText(text);
     }
@@ -95,15 +87,15 @@ public final class TemplateBuilderTemplateHandler extends AbstractTemplateHandle
 
     @Override
     public void handleComment(final IComment comment) {
-        this.template.add(Comment.asEngineComment(this.configuration, comment, true));
+        this.markup.add(Comment.asEngineComment(this.configuration, comment, true));
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleComment(comment);
     }
 
-    
+
     @Override
     public void handleCDATASection(final ICDATASection cdataSection) {
-        this.template.add(CDATASection.asEngineCDATASection(this.configuration, cdataSection, true));
+        this.markup.add(CDATASection.asEngineCDATASection(this.configuration, cdataSection, true));
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleCDATASection(cdataSection);
     }
@@ -113,7 +105,7 @@ public final class TemplateBuilderTemplateHandler extends AbstractTemplateHandle
 
     @Override
     public void handleStandaloneElement(final IStandaloneElementTag standaloneElementTag) {
-        this.template.add(StandaloneElementTag.asEngineStandaloneElementTag(this.templateMode, this.configuration, standaloneElementTag, true));
+        this.markup.add(StandaloneElementTag.asEngineStandaloneElementTag(this.templateMode, this.configuration, standaloneElementTag, true));
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleStandaloneElement(standaloneElementTag);
     }
@@ -121,7 +113,7 @@ public final class TemplateBuilderTemplateHandler extends AbstractTemplateHandle
 
     @Override
     public void handleOpenElement(final IOpenElementTag openElementTag) {
-        this.template.add(OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, openElementTag, true));
+        this.markup.add(OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, openElementTag, true));
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleOpenElement(openElementTag);
     }
@@ -129,7 +121,7 @@ public final class TemplateBuilderTemplateHandler extends AbstractTemplateHandle
 
     @Override
     public void handleAutoOpenElement(final IAutoOpenElementTag autoOpenElementTag) {
-        this.template.add(AutoOpenElementTag.asEngineAutoOpenElementTag(this.templateMode, this.configuration, autoOpenElementTag, true));
+        this.markup.add(AutoOpenElementTag.asEngineAutoOpenElementTag(this.templateMode, this.configuration, autoOpenElementTag, true));
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleAutoOpenElement(autoOpenElementTag);
     }
@@ -137,7 +129,7 @@ public final class TemplateBuilderTemplateHandler extends AbstractTemplateHandle
 
     @Override
     public void handleCloseElement(final ICloseElementTag closeElementTag) {
-        this.template.add(CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, closeElementTag, true));
+        this.markup.add(CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, closeElementTag, true));
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleCloseElement(closeElementTag);
     }
@@ -145,7 +137,7 @@ public final class TemplateBuilderTemplateHandler extends AbstractTemplateHandle
 
     @Override
     public void handleAutoCloseElement(final IAutoCloseElementTag autoCloseElementTag) {
-        this.template.add(AutoCloseElementTag.asEngineAutoCloseElementTag(this.templateMode, this.configuration, autoCloseElementTag, true));
+        this.markup.add(AutoCloseElementTag.asEngineAutoCloseElementTag(this.templateMode, this.configuration, autoCloseElementTag, true));
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleAutoCloseElement(autoCloseElementTag);
     }
@@ -153,7 +145,7 @@ public final class TemplateBuilderTemplateHandler extends AbstractTemplateHandle
 
     @Override
     public void handleUnmatchedCloseElement(final IUnmatchedCloseElementTag unmatchedCloseElementTag) {
-        this.template.add(UnmatchedCloseElementTag.asEngineUnmatchedCloseElementTag(this.templateMode, this.configuration, unmatchedCloseElementTag, true));
+        this.markup.add(UnmatchedCloseElementTag.asEngineUnmatchedCloseElementTag(this.templateMode, this.configuration, unmatchedCloseElementTag, true));
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleUnmatchedCloseElement(unmatchedCloseElementTag);
     }
@@ -163,17 +155,17 @@ public final class TemplateBuilderTemplateHandler extends AbstractTemplateHandle
 
     @Override
     public void handleDocType(final IDocType docType) {
-        this.template.add(DocType.asEngineDocType(this.configuration, docType, true));
+        this.markup.add(DocType.asEngineDocType(this.configuration, docType, true));
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleDocType(docType);
     }
 
-    
-    
-    
+
+
+
     @Override
     public void handleXMLDeclaration(final IXMLDeclaration xmlDeclaration) {
-        this.template.add(XMLDeclaration.asEngineXMLDeclaration(this.configuration, xmlDeclaration, true));
+        this.markup.add(XMLDeclaration.asEngineXMLDeclaration(this.configuration, xmlDeclaration, true));
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleXMLDeclaration(xmlDeclaration);
     }
@@ -183,7 +175,7 @@ public final class TemplateBuilderTemplateHandler extends AbstractTemplateHandle
 
     @Override
     public void handleProcessingInstruction(final IProcessingInstruction processingInstruction) {
-        this.template.add(ProcessingInstruction.asEngineProcessingInstruction(this.configuration, processingInstruction, true));
+        this.markup.add(ProcessingInstruction.asEngineProcessingInstruction(this.configuration, processingInstruction, true));
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleProcessingInstruction(processingInstruction);
     }

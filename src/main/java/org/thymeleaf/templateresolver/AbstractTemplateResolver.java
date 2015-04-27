@@ -22,6 +22,7 @@ package org.thymeleaf.templateresolver;
 import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.cache.ICacheEntryValidity;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -310,7 +311,7 @@ public abstract class AbstractTemplateResolver
      * @param templateName the name of the template to be resolved.
      * @return the validity
      */
-    protected abstract ITemplateResolutionValidity computeValidity(
+    protected abstract ICacheEntryValidity computeValidity(
             final IEngineConfiguration configuration, final IContext context, final String templateName);
     
     

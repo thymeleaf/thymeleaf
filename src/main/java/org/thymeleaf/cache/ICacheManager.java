@@ -22,7 +22,8 @@ package org.thymeleaf.cache;
 import java.util.List;
 import java.util.Properties;
 
-import org.thymeleaf.engine.Template;
+import org.thymeleaf.engine.ParsedFragmentMarkup;
+import org.thymeleaf.engine.ParsedTemplateMarkup;
 
 
 /**
@@ -82,7 +83,7 @@ public interface ICacheManager {
      * 
      * @return the cache of parsed templates.
      */
-    public ICache<String,Template> getTemplateCache();
+    public ICache<String,ParsedTemplateMarkup> getTemplateCache();
     
     /**
      * <p>
@@ -99,16 +100,12 @@ public interface ICacheManager {
      * </p>
      * <p>
      *   Keys in this cache are the String representation of fragments themselves along with
-     *   the template mode used for such parsing (like 
-     *   <tt>"{HTML5}Welcome to the &lt;i&gt;fruit market&lt;/i&gt;"</tt>).
+     *   the name of the template they come from.
      * </p>
-     * <p>
-     *   Important: this fragments are <i>not</i> related to <tt>th:fragment</tt> processors. 
-     * </p>
-     * 
+     *
      * @return the cache of parsed template code fragments
      */
-    public ICache<String,Template> getFragmentCache();
+    public ICache<String,ParsedFragmentMarkup> getFragmentCache();
     
     /**
      * <p>

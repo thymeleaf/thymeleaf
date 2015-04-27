@@ -45,6 +45,7 @@ import org.thymeleaf.standard.processor.StandardAttrappendTagProcessor;
 import org.thymeleaf.standard.processor.StandardAttrprependTagProcessor;
 import org.thymeleaf.standard.processor.StandardClassappendTagProcessor;
 import org.thymeleaf.standard.processor.StandardConditionalFixedValueTagProcessor;
+import org.thymeleaf.standard.processor.StandardDOMEventAttributeTagProcessor;
 import org.thymeleaf.standard.processor.StandardEachTagProcessor;
 import org.thymeleaf.standard.processor.StandardHrefTagProcessor;
 import org.thymeleaf.standard.processor.StandardIfTagProcessor;
@@ -57,6 +58,7 @@ import org.thymeleaf.standard.processor.StandardSrcTagProcessor;
 import org.thymeleaf.standard.processor.StandardStyleappendTagProcessor;
 import org.thymeleaf.standard.processor.StandardTextTagProcessor;
 import org.thymeleaf.standard.processor.StandardUnlessTagProcessor;
+import org.thymeleaf.standard.processor.StandardUtextTagProcessor;
 import org.thymeleaf.standard.processor.StandardValueTagProcessor;
 import org.thymeleaf.standard.processor.StandardWithTagProcessor;
 import org.thymeleaf.util.Validate;
@@ -281,12 +283,16 @@ public class StandardDialect
          */
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
         processors.add(new StandardTextTagProcessor());
+        processors.add(new StandardUtextTagProcessor());
         processors.add(new StandardWithTagProcessor());
         for (final String attrName : StandardRemovableAttributeTagProcessor.ATTR_NAMES) {
             processors.add(new StandardRemovableAttributeTagProcessor(attrName));
         }
         for (final String attrName : StandardNonRemovableAttributeTagProcessor.ATTR_NAMES) {
             processors.add(new StandardNonRemovableAttributeTagProcessor(attrName));
+        }
+        for (final String attrName : StandardDOMEventAttributeTagProcessor.ATTR_NAMES) {
+            processors.add(new StandardRemovableAttributeTagProcessor(attrName));
         }
         for (final String attrName : StandardConditionalFixedValueTagProcessor.ATTR_NAMES) {
             processors.add(new StandardConditionalFixedValueTagProcessor(attrName));

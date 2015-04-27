@@ -25,6 +25,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.cache.AlwaysValidCacheEntryValidity;
+import org.thymeleaf.cache.ICacheEntryValidity;
+import org.thymeleaf.cache.NonCacheableCacheEntryValidity;
+import org.thymeleaf.cache.TTLCacheEntryValidity;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -46,9 +50,9 @@ import org.thymeleaf.util.Validate;
  *   template resolutions:
  * </p>
  * <ul>
- *   <li>If not cacheable: {@link NonCacheableTemplateResolutionValidity}.</li>
- *   <li>If cacheable and TTL not set: {@link AlwaysValidTemplateResolutionValidity}.</li>
- *   <li>If cacheable and TTL set: {@link TTLTemplateResolutionValidity}.</li>
+ *   <li>If not cacheable: {@link NonCacheableCacheEntryValidity}.</li>
+ *   <li>If cacheable and TTL not set: {@link AlwaysValidCacheEntryValidity}.</li>
+ *   <li>If cacheable and TTL set: {@link TTLCacheEntryValidity}.</li>
  * </ul>
  * 
  * @author Daniel Fern&aacute;ndez
@@ -1028,26 +1032,26 @@ public class TemplateResolver
     
 
     @Override
-    protected ITemplateResolutionValidity computeValidity(
+    protected ICacheEntryValidity computeValidity(
             final IEngineConfiguration configuration, final IContext context, final String templateName) {
 
         if (this.cacheablePatternSpec.matches(templateName)) {
             if (this.cacheTTLMs != null) {
-                return new TTLTemplateResolutionValidity(this.cacheTTLMs.longValue());
+                return new TTLCacheEntryValidity(this.cacheTTLMs.longValue());
             }
-            return AlwaysValidTemplateResolutionValidity.INSTANCE;
+            return AlwaysValidCacheEntryValidity.INSTANCE;
         }
         if (this.nonCacheablePatternSpec.matches(templateName)) {
-            return NonCacheableTemplateResolutionValidity.INSTANCE;
+            return NonCacheableCacheEntryValidity.INSTANCE;
         }
         
         if (isCacheable()) {
             if (this.cacheTTLMs != null) {
-                return new TTLTemplateResolutionValidity(this.cacheTTLMs.longValue());
+                return new TTLCacheEntryValidity(this.cacheTTLMs.longValue());
             }
-            return AlwaysValidTemplateResolutionValidity.INSTANCE;
+            return AlwaysValidCacheEntryValidity.INSTANCE;
         }
-        return NonCacheableTemplateResolutionValidity.INSTANCE;
+        return NonCacheableCacheEntryValidity.INSTANCE;
         
     }
 
