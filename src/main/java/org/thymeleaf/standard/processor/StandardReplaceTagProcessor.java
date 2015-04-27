@@ -23,7 +23,6 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.engine.Markup;
-import org.thymeleaf.engine.TemplateHandlerEventQueue;
 import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessableElementTag;

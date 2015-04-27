@@ -19,25 +19,9 @@
  */
 package org.thymeleaf.engine;
 
-import java.io.StringWriter;
-
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IAutoCloseElementTag;
-import org.thymeleaf.model.IAutoOpenElementTag;
-import org.thymeleaf.model.ICDATASection;
-import org.thymeleaf.model.ICloseElementTag;
-import org.thymeleaf.model.IComment;
-import org.thymeleaf.model.IDocType;
-import org.thymeleaf.model.IOpenElementTag;
-import org.thymeleaf.model.IProcessingInstruction;
-import org.thymeleaf.model.IStandaloneElementTag;
-import org.thymeleaf.model.IText;
-import org.thymeleaf.model.IUnmatchedCloseElementTag;
-import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.TemplateResolution;
-import org.thymeleaf.util.Validate;
 
 
 /**

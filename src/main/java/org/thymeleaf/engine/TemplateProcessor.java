@@ -574,7 +574,7 @@ public final class TemplateProcessor {
 
     // TODO In the case of utext fragments, there must be a better way to compute a cache key than using the fragment
     // itself as a part of it. Its hashCode operation, not being the String itself internalizable is going to be slow...
-    
+
     
     private static String computeFragmentCacheKey(final ITextRepository textRepository, final String templateName, final String fragment) {
         // We will try to avoid the creation of too many strings when computing these keys by creating a StringBuilder
