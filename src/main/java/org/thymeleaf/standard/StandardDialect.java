@@ -55,6 +55,7 @@ import org.thymeleaf.standard.processor.StandardInsertTagProcessor;
 import org.thymeleaf.standard.processor.StandardLangXmlLangTagProcessor;
 import org.thymeleaf.standard.processor.StandardMethodTagProcessor;
 import org.thymeleaf.standard.processor.StandardNonRemovableAttributeTagProcessor;
+import org.thymeleaf.standard.processor.StandardObjectTagProcessor;
 import org.thymeleaf.standard.processor.StandardRemovableAttributeTagProcessor;
 import org.thymeleaf.standard.processor.StandardRemoveTagProcessor;
 import org.thymeleaf.standard.processor.StandardReplaceTagProcessor;
@@ -330,8 +331,8 @@ public class StandardDialect
         processors.add(new StandardXmlBaseTagProcessor());
         processors.add(new StandardXmlLangTagProcessor());
         processors.add(new StandardXmlSpaceTagProcessor());
+        processors.add(new StandardObjectTagProcessor());
 //        processors.add(new StandardDefaultAttributesTagProcessor());
-//        processors.add(new StandardObjectTagProcessor());
 //        processors.add(new StandardInlineTagProcessor());
 //        processors.add(new StandardInliningTextProcessor());
         return processors;
