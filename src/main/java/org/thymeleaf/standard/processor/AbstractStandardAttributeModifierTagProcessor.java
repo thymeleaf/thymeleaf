@@ -39,10 +39,18 @@ public abstract class AbstractStandardAttributeModifierTagProcessor extends Abst
 
 
     private final boolean removeIfEmpty;
+    private final String targetAttrName;
 
 
-    protected AbstractStandardAttributeModifierTagProcessor(final String attrName, final int precedence, final boolean removeIfEmpty) {
+    protected AbstractStandardAttributeModifierTagProcessor(
+            final String attrName, final int precedence, final boolean removeIfEmpty) {
+        this(attrName, null, precedence, removeIfEmpty);
+    }
+
+    protected AbstractStandardAttributeModifierTagProcessor(
+            final String attrName, final String targetAttrName, final int precedence, final boolean removeIfEmpty) {
         super(attrName, precedence);
+        this.targetAttrName = targetAttrName;
         this.removeIfEmpty = removeIfEmpty;
     }
 
@@ -61,15 +69,17 @@ public abstract class AbstractStandardAttributeModifierTagProcessor extends Abst
 
         final Object result = expression.execute(processingContext);
 
+        final String newAttributeName =
+                (this.targetAttrName == null? attributeName.getAttributeName() : this.targetAttrName);
         final String newAttributeValue = (result == null? null : result.toString());
 
         // These attributes might be "removable if empty", in which case we would simply remove the target attribute...
         if (this.removeIfEmpty && (newAttributeValue == null || newAttributeValue.length() == 0)) {
             // We are removing the equivalent attribute name, without the prefix...
-            tag.getAttributes().removeAttribute(attributeName.getAttributeName());
+            tag.getAttributes().removeAttribute(newAttributeName);
         } else {
             // We are setting the equivalent attribute name, without the prefix...
-            tag.getAttributes().setAttribute(attributeName.getAttributeName(), newAttributeValue);
+            tag.getAttributes().setAttribute(newAttributeName, newAttributeValue);
         }
 
     }
