@@ -37,11 +37,11 @@ final class TemplateFragmentMarkupReferenceResolver implements IMarkupSelectorRe
     private static final TemplateFragmentMarkupReferenceResolver XML_INSTANCE_NO_PREFIX;
     private static final ConcurrentHashMap<String,TemplateFragmentMarkupReferenceResolver> XML_INSTANCES_BY_PREFIX;
 
-    private static final String HTML_FORMAT_WITHOUT_PREFIX = "/[fragment='%s' or data-fragment='%s']";
-    private static final String HTML_FORMAT_WITH_PREFIX = "/[%s:fragment='%%s' or data-%s-fragment='%%s']";
+    private static final String HTML_FORMAT_WITHOUT_PREFIX = "/[fragment='%1$s' or data-fragment='%1$s' or fragment^='%1$s(' or data-fragment^='%1$s(' or fragment^='%1$s (' or data-fragment^='%1$s (']";
+    private static final String HTML_FORMAT_WITH_PREFIX = "/[%1$s:fragment='%%1$s' or data-%1$s-fragment='%%1$s' or %1$s:fragment^='%%1$s(' or data-%1$s-fragment^='%%1$s(' or %1$s:fragment^='%%1$s (' or data-%1$s-fragment^='%%1$s (']";
 
-    private static final String XML_FORMAT_WITHOUT_PREFIX = "/[fragment='%s']";
-    private static final String XML_FORMAT_WITH_PREFIX = "/[%s:fragment='%%s']";
+    private static final String XML_FORMAT_WITHOUT_PREFIX = "/[fragment='%1$s']";
+    private static final String XML_FORMAT_WITH_PREFIX = "/[%1$s:fragment='%%1$s' or %1$s:fragment^='%%1$s(' or %1$s:fragment^='%%1$s (']";
 
 
     private final ConcurrentHashMap<String,String> selectorsByReference = new ConcurrentHashMap<String, String>(20);
@@ -102,8 +102,8 @@ final class TemplateFragmentMarkupReferenceResolver implements IMarkupSelectorRe
             this.resolverFormat = (html? HTML_FORMAT_WITHOUT_PREFIX : XML_FORMAT_WITHOUT_PREFIX);
         } else {
             this.resolverFormat =
-                    (html? String.format(HTML_FORMAT_WITH_PREFIX, standardDialectPrefix, standardDialectPrefix) :
-                           String.format(XML_FORMAT_WITH_PREFIX, standardDialectPrefix, standardDialectPrefix));
+                    (html? String.format(HTML_FORMAT_WITH_PREFIX, standardDialectPrefix) :
+                           String.format(XML_FORMAT_WITH_PREFIX, standardDialectPrefix));
         }
     }
 
@@ -114,7 +114,7 @@ final class TemplateFragmentMarkupReferenceResolver implements IMarkupSelectorRe
         if (selector != null) {
             return selector;
         }
-        final String newSelector = String.format(this.resolverFormat, reference, reference);
+        final String newSelector = String.format(this.resolverFormat, reference);
         this.selectorsByReference.put(reference, newSelector);
         return newSelector;
     }

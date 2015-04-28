@@ -53,6 +53,7 @@ import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ITemplateResolver;
+import org.thymeleaf.util.StringUtils;
 
 /**
  * 
@@ -81,7 +82,15 @@ final class ConfigurationPrinterHelper {
         final Set<ITemplateResolver> templateResolvers = configuration.getTemplateResolvers();
         final Set<IMessageResolver> messageResolvers = configuration.getMessageResolvers();
 
+        logBuilder.line("Initializing Thymeleaf Template engine configuration...");
         logBuilder.line("[THYMELEAF] TEMPLATE ENGINE CONFIGURATION:");
+        if (!StringUtils.isEmptyOrWhitespace(TemplateEngine.THYMELEAF_VERSION)) {
+            if (!StringUtils.isEmptyOrWhitespace(TemplateEngine.THYMELEAF_BUILD_TIMESTAMP)) {
+                logBuilder.line("[THYMELEAF] * Thymeleaf version: {} (built {})", TemplateEngine.THYMELEAF_VERSION, TemplateEngine.THYMELEAF_BUILD_TIMESTAMP);
+            } else {
+                logBuilder.line("[THYMELEAF] * Thymeleaf version: {}", TemplateEngine.THYMELEAF_VERSION);
+            }
+        }
         logBuilder.line("[THYMELEAF] * Cache Manager implementation: {}", (cacheManager == null? "[no caches]" : cacheManager.getClass().getName()));
         logBuilder.line("[THYMELEAF] * Template resolvers:");
         for (final ITemplateResolver templateResolver : templateResolvers) {

@@ -19,6 +19,7 @@
  */
 package org.thymeleaf;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
@@ -27,6 +28,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -47,6 +49,7 @@ import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.text.TextRepositories;
+import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -216,6 +219,9 @@ public final class TemplateEngine implements ITemplateEngine {
 
     private static final int NANOS_IN_SECOND = 1000000;
 
+    public static final String THYMELEAF_VERSION;
+    public static final String THYMELEAF_BUILD_TIMESTAMP;
+
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
     private final Set<DialectConfiguration> dialectConfigurations = new LinkedHashSet<DialectConfiguration>(3);
@@ -233,6 +239,25 @@ public final class TemplateEngine implements ITemplateEngine {
 
 
     
+
+
+    static {
+        String version = null;
+        String buildTimestamp = null;
+        try {
+            final ClassLoader cl = ClassLoaderUtils.getClassLoader(TemplateEngine.class);
+            final Properties properties = new Properties();
+            properties.load(cl.getResourceAsStream("org/thymeleaf/thymeleaf.properties"));
+            version = properties.getProperty("version");
+            buildTimestamp = properties.getProperty("build.date");
+        } catch (final Exception ignored) {
+            // Ignored: we don't have such information, might be due to IDE configuration
+        }
+        THYMELEAF_VERSION = version;
+        THYMELEAF_BUILD_TIMESTAMP = buildTimestamp;
+    }
+
+
 
     /**
      * <p>

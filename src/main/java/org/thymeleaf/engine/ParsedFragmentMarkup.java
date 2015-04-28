@@ -30,9 +30,8 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-public final class ParsedFragmentMarkup implements IMarkup {
+public final class ParsedFragmentMarkup extends ImmutableMarkup {
 
-    private final Markup markup;
     private final ICacheEntryValidity validity;
 
 
@@ -42,52 +41,14 @@ public final class ParsedFragmentMarkup implements IMarkup {
     // object, not this.
     ParsedFragmentMarkup(final IEngineConfiguration configuration, final TemplateMode templateMode,
                          final ICacheEntryValidity validity) {
-        super();
+        super(configuration, templateMode);
         // Validity CAN be null
-        this.markup = new Markup(configuration, templateMode);
         this.validity = validity;
-    }
-
-
-    public final IEngineConfiguration getConfiguration() {
-        return this.markup.getConfiguration();
-    }
-
-
-    public final TemplateMode getTemplateMode() {
-        return this.markup.getTemplateMode();
     }
 
 
     public final ICacheEntryValidity getValidity() {
         return this.validity;
-    }
-
-
-
-    // We don't want anyone to have direct access to the underlying Markup object from outside the engine.
-    // This will effectively turn our ParsedFragmentMarkup into immutable (though not really) and therefore allow us
-    // to confidently cache these objects without worrying that anyone can modify them
-    final Markup getInternalMarkup() {
-        return this.markup;
-    }
-
-
-
-    public final String computeMarkup() {
-        return this.markup.computeMarkup();
-    }
-
-
-    public Markup cloneMarkup() {
-        return this.markup.cloneMarkup();
-    }
-
-
-
-    @Override
-    public String toString() {
-        return computeMarkup();
     }
 
     

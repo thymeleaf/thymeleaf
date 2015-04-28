@@ -167,24 +167,11 @@ final class EngineEventQueue {
 
 
         final Markup markup;
-        if (imarkup instanceof ParsedTemplateMarkup) {
+        if (imarkup instanceof ImmutableMarkup) {
             if (cloneAlways) {
-                markup = ((ParsedTemplateMarkup) imarkup).getInternalMarkup().cloneMarkup();
+                markup = ((ImmutableMarkup) imarkup).getInternalMarkup().cloneMarkup();
             } else {
-                markup = ((ParsedTemplateMarkup) imarkup).getInternalMarkup();
-            }
-        } else if (imarkup instanceof ParsedFragmentMarkup) {
-            if (cloneAlways) {
-                markup = ((ParsedFragmentMarkup) imarkup).getInternalMarkup().cloneMarkup();
-            } else {
-                markup = ((ParsedFragmentMarkup) imarkup).getInternalMarkup();
-            }
-        } else if (imarkup instanceof CacheableMarkup) {
-            // This implementation does not directly come from the parser, but it is immutable so we won't need to clone
-            if (cloneAlways) {
-                markup = ((CacheableMarkup) imarkup).getInternalMarkup().cloneMarkup();
-            } else {
-                markup = ((CacheableMarkup) imarkup).getInternalMarkup();
+                markup = ((ImmutableMarkup) imarkup).getInternalMarkup();
             }
         } else if (imarkup instanceof Markup) {
             // This implementation does not directly come from the parser nor is immutable, so we must clone its events

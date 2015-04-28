@@ -20,8 +20,8 @@
 package org.thymeleaf.engine;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.TemplateResolution;
+import org.thymeleaf.util.Validate;
 
 
 /**
@@ -30,9 +30,8 @@ import org.thymeleaf.templateresolver.TemplateResolution;
  * @since 3.0.0
  *
  */
-public class ParsedTemplateMarkup implements IMarkup {
+public class ParsedTemplateMarkup extends ImmutableMarkup {
 
-    private final Markup markup;
     private TemplateResolution templateResolution;
 
 
@@ -42,52 +41,14 @@ public class ParsedTemplateMarkup implements IMarkup {
     // If a processor (be it standard or custom-made) wants to create a piece of markup, that should be a Markup
     // object, not this.
     ParsedTemplateMarkup(final IEngineConfiguration configuration, final TemplateResolution templateResolution) {
-        super();
-        // Validity CAN be null
-        this.markup = new Markup(configuration, templateResolution.getTemplateMode());
+        super(configuration, (templateResolution == null? null : templateResolution.getTemplateMode()));
+        Validate.notNull(templateResolution, "Template Resolution cannot be null");
         this.templateResolution = templateResolution;
-    }
-
-
-
-
-    public final IEngineConfiguration getConfiguration() {
-        return this.markup.getConfiguration();
-    }
-
-
-    public final TemplateMode getTemplateMode() {
-        return this.markup.getTemplateMode();
     }
 
 
     public final TemplateResolution getTemplateResolution() {
         return this.templateResolution;
-    }
-
-
-    // We don't want anyone to have direct access to the underlying Markup object from outside the engine.
-    // This will effectively turn our ParsedFragmentMarkup into immutable (though not really) and therefore allow us
-    // to confidently cache these objects without worrying that anyone can modify them
-    final Markup getInternalMarkup() {
-        return this.markup;
-    }
-
-
-
-    public final String computeMarkup() {
-        return this.markup.computeMarkup();
-    }
-
-
-    public Markup cloneMarkup() {
-        return this.markup.cloneMarkup();
-    }
-
-
-    @Override
-    public String toString() {
-        return computeMarkup();
     }
 
 

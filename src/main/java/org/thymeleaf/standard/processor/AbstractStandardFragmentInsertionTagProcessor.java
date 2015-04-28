@@ -26,14 +26,24 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
+import org.thymeleaf.engine.ITemplateHandler;
+import org.thymeleaf.engine.ITemplateHandlerEvent;
+import org.thymeleaf.engine.ImmutableMarkup;
+import org.thymeleaf.engine.Markup;
 import org.thymeleaf.engine.ParsedFragmentMarkup;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.ICloseElementTag;
+import org.thymeleaf.model.IElementAttributes;
+import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.FragmentSelection;
 import org.thymeleaf.standard.expression.FragmentSelectionUtils;
+import org.thymeleaf.standard.expression.FragmentSignature;
+import org.thymeleaf.standard.expression.FragmentSignatureUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.util.StringUtils;
 
 /**
  *
@@ -46,6 +56,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
     private static final String TEMPLATE_NAME_CURRENT_TEMPLATE = "this";
+    private static final String FRAGMENT_ATTR_NAME = "fragment";
 
 
     private final boolean replaceHost;
@@ -68,6 +79,9 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
             final AttributeName attributeName, final String attributeValue,
             final IElementStructureHandler structureHandler) {
 
+        /*
+         * PARSE THE FRAGMENT SELECTION SPEC and resolve each of its components
+         */
         final FragmentSelection fragmentSelection =
                 FragmentSelectionUtils.parseFragmentSelection(processingContext, attributeValue);
 
@@ -91,11 +105,19 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
             templateName = null;
         }
 
-        // Resolve fragment parameters, if specified (null if not)
-        final Map<String,Object> fragmentParameters =
+
+        /*
+         * RESOLVE FRAGMENT PARAMETERS if specified (null if not)
+         */
+        Map<String,Object> fragmentParameters =
                 resolveFragmentParameters(processingContext, fragmentSelection.getParameters());
 
-        final ParsedFragmentMarkup parsedFragment;
+
+        /*
+         * OBTAIN THE FRAGMENT MARKUP from the TemplateProcessor. This means the fragment will be parsed and maybe
+         * cached, and we will be returned an immutable markup object (specifically a ParsedFragmentMarkup)
+         */
+        ImmutableMarkup parsedFragment;
         if (fragmentSelection.hasFragmentSelector()) {
 
             final Object fragmentSelectorObject =
@@ -118,7 +140,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
             parsedFragment =
                     processingContext.getTemplateProcessor().parseTemplateFragment(
-                            processingContext, templateName, new String[] { fragmentSelector }, this.insertOnlyContents);
+                            processingContext, templateName, new String[] { fragmentSelector });
 
         } else {
 
@@ -127,6 +149,74 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                             processingContext, templateName, null); // insertOnlyContents would make no sense here
 
         }
+
+
+        /*
+         * ONCE WE HAVE THE FRAGMENT MARKUP (its events, in fact), CHECK THE FRAGMENT SIGNATURE which might
+         * affect the way we apply the parameters to the fragment
+         */
+        final int parsedFragmentLen = parsedFragment.size();
+        final ITemplateHandlerEvent firstEvent = (parsedFragmentLen >= 1? parsedFragment.get(0) : null);
+
+        // We need to examine the first event just in case it contains a th:fragment matching the one we were looking
+        if (firstEvent instanceof IProcessableElementTag) {
+
+            final IElementAttributes elementAttributes = ((IProcessableElementTag)firstEvent).getAttributes();
+            if (elementAttributes.hasAttribute(getDialectPrefix(), FRAGMENT_ATTR_NAME)) {
+                // The selected fragment actually has a "th:fragment" attribute, so we should process its signature
+
+                final String fragmentSignatureSpec = elementAttributes.getValue(getDialectPrefix(), FRAGMENT_ATTR_NAME);
+                if (!StringUtils.isEmptyOrWhitespace(fragmentSignatureSpec)) {
+
+                    final FragmentSignature fragmentSignature =
+                            FragmentSignatureUtils.parseFragmentSignature(processingContext.getConfiguration(), fragmentSignatureSpec);
+                    if (fragmentSignature != null) {
+
+                        // Reshape the fragment parameters into the ones that we will actually use, according to the signature
+                        fragmentParameters = FragmentSignatureUtils.processParameters(fragmentSignature, fragmentParameters);
+
+                    }
+
+                }
+
+            }
+
+        }
+
+
+        /*
+         * APPLY THE FRAGMENT PARAMETERS AS LOCAL VARIABLES, perhaps after reshaping it according to the fragment signature
+         */
+        if (fragmentParameters != null && fragmentParameters.size() > 0) {
+            for (final Map.Entry<String,Object> fragmentParameterEntry : fragmentParameters.entrySet()) {
+                structureHandler.setLocalVariable(fragmentParameterEntry.getKey(), fragmentParameterEntry.getValue());
+            }
+        }
+
+
+        /*
+         * IF WE ARE ASKING ONLY FOR CONTENTS (th:include), THEN REMOVE THE CONTAINER BLOCK
+         */
+        if (this.insertOnlyContents && fragmentSelection.hasFragmentSelector()) {
+
+            final ITemplateHandlerEvent lastEvent = (parsedFragmentLen >= 2? parsedFragment.get(parsedFragmentLen - 1) : null);
+
+            if (firstEvent != null && lastEvent != null && firstEvent instanceof IOpenElementTag && lastEvent instanceof ICloseElementTag) {
+
+                // We will now remove the first and last events. Note we have to clone to a mutable markup object, and
+                // therefore we will be performing a bit worse (because of the node cloning) than if we just inserted
+                // the whole fragment without any modifications
+                final Markup mutableMarkup = parsedFragment.asMutable();
+                mutableMarkup.remove(parsedFragmentLen - 1);
+                mutableMarkup.remove(0);
+
+                parsedFragment = mutableMarkup.asImmutable();
+
+            }
+
+
+        }
+
 
         if (this.replaceHost) {
             structureHandler.replaceWith(parsedFragment, true);
@@ -144,7 +234,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
             final IProcessingContext processingContext,
             final AssignationSequence parameters) {
 
-        if (parameters == null) {
+        if (parameters == null || parameters.size() == 0) {
             return null;
         }
 

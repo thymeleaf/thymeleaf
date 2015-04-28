@@ -36,8 +36,6 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.context.TemplateProcessingContext;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.ICloseElementTag;
-import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.resource.IResource;
 import org.thymeleaf.resource.StringResource;
 import org.thymeleaf.resourceresolver.IResourceResolver;
@@ -290,28 +288,13 @@ public final class TemplateProcessor {
     public ParsedFragmentMarkup parseTemplateFragment(
             final ITemplateProcessingContext processingContext, final String templateName, final String[] markupSelectors) {
         return parseTemplateFragment(
-                processingContext.getConfiguration(), processingContext.getVariablesMap(), templateName, markupSelectors, false);
+                processingContext.getConfiguration(), processingContext.getVariablesMap(), templateName, markupSelectors);
     }
 
 
     public ParsedFragmentMarkup parseTemplateFragment(
             final IEngineConfiguration configuration, final IContext context,
             final String templateName, final String[] markupSelectors) {
-        return parseTemplateFragment(configuration, context, templateName, markupSelectors, false);
-    }
-
-
-    public ParsedFragmentMarkup parseTemplateFragment(
-            final ITemplateProcessingContext processingContext, final String templateName, final String[] markupSelectors,
-            final boolean onlyContents) {
-        return parseTemplateFragment(
-                processingContext.getConfiguration(), processingContext.getVariablesMap(), templateName, markupSelectors, onlyContents);
-    }
-
-
-    public ParsedFragmentMarkup parseTemplateFragment(
-            final IEngineConfiguration configuration, final IContext context,
-            final String templateName, final String[] markupSelectors, final boolean onlyContents) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(context, "Context cannot be null");
@@ -320,7 +303,7 @@ public final class TemplateProcessor {
 
         final String cacheKey =
                 computeFragmentCacheKey(configuration.getTextRepository(), templateName,
-                computeCacheKeyFragmentIdentifierForMarkupSelectors(markupSelectors, onlyContents));
+                computeCacheKeyFragmentIdentifierForMarkupSelectors(markupSelectors));
 
         /*
          * First look at the cache - it might be already cached
@@ -354,23 +337,6 @@ public final class TemplateProcessor {
         processTemplateAsResource(
                 configuration, resolution.templateResolution.getTemplateMode(),
                 resolution.resource, markupSelectors, builderHandler);
-
-
-        /*
-         * EXTRACT ITS CONTENTS IF NEEDED
-         */
-        if (onlyContents) {
-            // Note it is very important that we do this low-level modifications on the markup BEFORE caching the fragment
-            final Markup markup = parsedFragment.getInternalMarkup();
-            final ITemplateHandlerEvent firstEvent = markup.get(0);
-            final ITemplateHandlerEvent lastEvent = markup.get(markup.size() - 1);
-
-            if (firstEvent instanceof IOpenElementTag && lastEvent instanceof ICloseElementTag) {
-                markup.remove(markup.size() - 1);
-                markup.remove(0);
-            }
-
-        }
 
 
         /*
@@ -732,8 +698,7 @@ public final class TemplateProcessor {
     }
 
 
-    private static CharSequence computeCacheKeyFragmentIdentifierForMarkupSelectors(
-            final String[] fragmentIdentifiers, final boolean onlyContents) {
+    private static CharSequence computeCacheKeyFragmentIdentifierForMarkupSelectors(final String[] fragmentIdentifiers) {
 
         if (fragmentIdentifiers == null) {
             return ""; // 'onlyContents' has no influence in this case
@@ -742,24 +707,13 @@ public final class TemplateProcessor {
             if (fragmentIdentifiers[0] == null) {
                 return ""; // 'onlyContents' has no influence in this case
             }
-            if (!onlyContents) {
-                return fragmentIdentifiers[0];
-            }
-            final StringBuilder strBuilder = new StringBuilder(40);
-            strBuilder.append(fragmentIdentifiers[0]);
-            strBuilder.append(',');
-            strBuilder.append("(contents)");
-            return strBuilder;
+            return fragmentIdentifiers[0];
         }
         final StringBuilder strBuilder = new StringBuilder(40);
         strBuilder.append(fragmentIdentifiers[0] != null? fragmentIdentifiers[0] : "");
         for (int i = 1; i < fragmentIdentifiers.length; i++) {
             strBuilder.append(',');
             strBuilder.append(fragmentIdentifiers[i] != null? fragmentIdentifiers[i] : "");
-        }
-        if (onlyContents) {
-            strBuilder.append(',');
-            strBuilder.append("(contents)");
         }
         return strBuilder;
 

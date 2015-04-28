@@ -47,6 +47,7 @@ import org.thymeleaf.standard.processor.StandardClassappendTagProcessor;
 import org.thymeleaf.standard.processor.StandardConditionalFixedValueTagProcessor;
 import org.thymeleaf.standard.processor.StandardDOMEventAttributeTagProcessor;
 import org.thymeleaf.standard.processor.StandardEachTagProcessor;
+import org.thymeleaf.standard.processor.StandardFragmentTagProcessor;
 import org.thymeleaf.standard.processor.StandardHrefTagProcessor;
 import org.thymeleaf.standard.processor.StandardIfTagProcessor;
 import org.thymeleaf.standard.processor.StandardIncludeTagProcessor;
@@ -322,6 +323,7 @@ public class StandardDialect
         processors.add(new StandardReplaceTagProcessor());
         processors.add(new StandardIncludeTagProcessor());
         processors.add(new StandardSubstituteByTagProcessor());
+        processors.add(new StandardFragmentTagProcessor());
 //        processors.add(new StandardDefaultAttributesTagProcessor());
 //        processors.add(new StandardObjectTagProcessor());
 //        processors.add(new StandardInlineTagProcessor());

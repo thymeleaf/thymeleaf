@@ -100,6 +100,9 @@
     <attoparser.version>2.0.0.BETA2</attoparser.version>
     <unbescape.version>1.1.0.RELEASE</unbescape.version>
     <slf4j.version>1.6.6</slf4j.version>
+    <!-- These are needed for showing the build timestamp correctly at the thymeleaf.properties file -->
+    <timestamp>${maven.build.timestamp}</timestamp>
+    <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
   </properties>
 
   <repositories>
@@ -120,6 +123,17 @@
 
       <resource>
         <directory>src/main/resources</directory>
+        <excludes>
+          <exclude>org/thymeleaf/thymeleaf.properties</exclude>
+        </excludes>
+      </resource>
+
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>org/thymeleaf/thymeleaf.properties</include>
+        </includes>
+        <filtering>true</filtering>
       </resource>
 
       <resource>

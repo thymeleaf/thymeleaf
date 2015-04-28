@@ -161,8 +161,8 @@ public final class Markup implements IMarkup {
 
 
 
-    public CacheableMarkup cloneAsCacheable() {
-        return new CacheableMarkup(this);
+    public ImmutableMarkup asImmutable() {
+        return new ImmutableMarkup(this);
     }
 
 
