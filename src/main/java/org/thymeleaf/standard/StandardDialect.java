@@ -43,6 +43,7 @@ import org.thymeleaf.standard.processor.StandardAssertTagProcessor;
 import org.thymeleaf.standard.processor.StandardAttrTagProcessor;
 import org.thymeleaf.standard.processor.StandardAttrappendTagProcessor;
 import org.thymeleaf.standard.processor.StandardAttrprependTagProcessor;
+import org.thymeleaf.standard.processor.StandardCaseTagProcessor;
 import org.thymeleaf.standard.processor.StandardClassappendTagProcessor;
 import org.thymeleaf.standard.processor.StandardConditionalFixedValueTagProcessor;
 import org.thymeleaf.standard.processor.StandardDOMEventAttributeTagProcessor;
@@ -62,6 +63,7 @@ import org.thymeleaf.standard.processor.StandardReplaceTagProcessor;
 import org.thymeleaf.standard.processor.StandardSrcTagProcessor;
 import org.thymeleaf.standard.processor.StandardStyleappendTagProcessor;
 import org.thymeleaf.standard.processor.StandardSubstituteByTagProcessor;
+import org.thymeleaf.standard.processor.StandardSwitchTagProcessor;
 import org.thymeleaf.standard.processor.StandardTextTagProcessor;
 import org.thymeleaf.standard.processor.StandardUnlessTagProcessor;
 import org.thymeleaf.standard.processor.StandardUtextTagProcessor;
@@ -332,8 +334,11 @@ public class StandardDialect
         processors.add(new StandardXmlLangTagProcessor());
         processors.add(new StandardXmlSpaceTagProcessor());
         processors.add(new StandardObjectTagProcessor());
+        processors.add(new StandardSwitchTagProcessor());
+        processors.add(new StandardCaseTagProcessor());
+        // TODO case + switch
+        // TODO inline
 //        processors.add(new StandardDefaultAttributesTagProcessor());
-//        processors.add(new StandardInlineTagProcessor());
 //        processors.add(new StandardInliningTextProcessor());
         return processors;
     }
