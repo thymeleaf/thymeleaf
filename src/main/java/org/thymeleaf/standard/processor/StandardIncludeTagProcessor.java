@@ -19,22 +19,6 @@
  */
 package org.thymeleaf.standard.processor;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.IElementStructureHandler;
-import org.thymeleaf.engine.ParsedFragmentMarkup;
-import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.standard.expression.Assignation;
-import org.thymeleaf.standard.expression.AssignationSequence;
-import org.thymeleaf.standard.expression.FragmentSelection;
-import org.thymeleaf.standard.expression.FragmentSelectionUtils;
-import org.thymeleaf.standard.expression.IStandardExpression;
-
 /**
  *
  * @author Daniel Fern&aacute;ndez
