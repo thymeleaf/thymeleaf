@@ -25,7 +25,6 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.context.IVariablesMap;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.standard.expression.EqualsExpression;

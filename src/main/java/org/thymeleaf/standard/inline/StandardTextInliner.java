@@ -17,13 +17,10 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.templateparser;
+package org.thymeleaf.standard.inline;
 
-import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.engine.ITemplateHandler;
-import org.thymeleaf.resource.IResource;
-import org.thymeleaf.templatemode.TemplateMode;
-
+import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.inline.ITextInliner;
 
 /**
  *
@@ -31,22 +28,37 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  * 
  */
-public interface ITemplateParser {
+public final class StandardTextInliner implements ITextInliner {
+
+    public static final StandardTextInliner INSTANCE = new StandardTextInliner();
 
 
-    public void parseTemplate(
-                      final IEngineConfiguration configuration,
-                      final TemplateMode templateMode,
-                      final IResource templateResource,
-                      final String[] selectors,
-                      final ITemplateHandler handler);
+    private StandardTextInliner() {
+        super();
+    }
+
+    public String getName() {
+        return "STANDARDTEXT";
+    }
 
 
-    public void parseFragment(
-                      final IEngineConfiguration configuration,
-                      final TemplateMode templateMode,
-                      final IResource templateResource,
-                      final String[] selectors,
-                      final ITemplateHandler handler);
+    public CharSequence inline(final IProcessingContext context, final CharSequence text) {
+
+        boolean candidate = false;
+        int n = text.length();
+        while (n-- != 0) {
+            if (text.charAt(n) == '}') {
+                candidate = true;
+            }
+        }
+
+        if (candidate) {
+            System.out.println("INLINING CANDIDATE: " + text.toString());
+        }
+
+        return text;
+
+    }
+
 
 }

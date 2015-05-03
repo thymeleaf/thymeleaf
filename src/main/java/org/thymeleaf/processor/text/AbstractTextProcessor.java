@@ -43,7 +43,6 @@ public abstract class AbstractTextProcessor
     }
 
 
-    // Default implementation - meant to be overridden by subclasses if needed
     public final void process(final ITemplateProcessingContext processingContext, final IText text,
                         final ITextStructureHandler structureHandler) {
 

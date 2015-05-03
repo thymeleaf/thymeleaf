@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.engine;
 
+import org.thymeleaf.inline.ITextInliner;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -35,7 +37,7 @@ public interface IElementStructureHandler {
 
     public void setSelectionTarget(final Object selectionTarget);
 
-    public void setTextInliningActive(final boolean active);
+    public void setTextInliner(final ITextInliner textInliner);
 
     public void setBody(final String text, final boolean processable);
     public void setBody(final IMarkup markup, final boolean processable);

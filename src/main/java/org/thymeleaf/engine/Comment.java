@@ -135,9 +135,9 @@ final class Comment
 
     public char charAt(final int index) {
 
-        if (index < 0 || index >= this.commentLength) {
-            throw new IndexOutOfBoundsException("Index out of range: " + index);
-        }
+        // no need to perform index bounds checking: it would slow down traversing operations a lot, and
+        // it would be exactly the same exception we'd obtain by basically trying to access that index, so let's do
+        // it directly instead
 
         if (this.buffer != null) {
             return this.buffer[this.offset + index];
@@ -147,6 +147,25 @@ final class Comment
             return this.comment.charAt(index);
         }
         return getComment().charAt(index); // Force the computation of the comment property
+
+    }
+
+
+    public CharSequence subSequence(final int start, final int end) {
+
+        // no need to perform index bounds checking: it would slow down traversing operations a lot, and
+        // it would be exactly the same exception we'd obtain by basically trying to access that index, so let's do
+        // it directly instead
+
+        if (this.comment != null) {
+            return this.comment.subSequence(start, end);
+        }
+
+        int subLen = end - start;
+        if (start == 0 && subLen == this.commentLength) {
+            return getComment();
+        }
+        return this.textRepository.getText(this.buffer, this.offset + start, subLen);
 
     }
 

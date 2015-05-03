@@ -52,6 +52,8 @@ import org.thymeleaf.standard.processor.StandardFragmentTagProcessor;
 import org.thymeleaf.standard.processor.StandardHrefTagProcessor;
 import org.thymeleaf.standard.processor.StandardIfTagProcessor;
 import org.thymeleaf.standard.processor.StandardIncludeTagProcessor;
+import org.thymeleaf.standard.processor.StandardInlineTagProcessor;
+import org.thymeleaf.standard.processor.StandardInliningTextProcessor;
 import org.thymeleaf.standard.processor.StandardInsertTagProcessor;
 import org.thymeleaf.standard.processor.StandardLangXmlLangTagProcessor;
 import org.thymeleaf.standard.processor.StandardMethodTagProcessor;
@@ -293,53 +295,61 @@ public class StandardDialect
          * to allow specific instances to be directly linked with their owner dialect.
          */
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
-        processors.add(new StandardTextTagProcessor());
-        processors.add(new StandardUtextTagProcessor());
-        processors.add(new StandardWithTagProcessor());
-        for (final String attrName : StandardRemovableAttributeTagProcessor.ATTR_NAMES) {
-            processors.add(new StandardRemovableAttributeTagProcessor(attrName));
-        }
-        for (final String attrName : StandardNonRemovableAttributeTagProcessor.ATTR_NAMES) {
-            processors.add(new StandardNonRemovableAttributeTagProcessor(attrName));
-        }
-        for (final String attrName : StandardDOMEventAttributeTagProcessor.ATTR_NAMES) {
-            processors.add(new StandardRemovableAttributeTagProcessor(attrName));
-        }
-        for (final String attrName : StandardConditionalFixedValueTagProcessor.ATTR_NAMES) {
-            processors.add(new StandardConditionalFixedValueTagProcessor(attrName));
-        }
+
+        /*
+         * ELEMENT PROCESSORS
+         */
         processors.add(new StandardActionTagProcessor());
-        processors.add(new StandardHrefTagProcessor());
-        processors.add(new StandardSrcTagProcessor());
-        processors.add(new StandardValueTagProcessor());
-        processors.add(new StandardMethodTagProcessor());
-        processors.add(new StandardEachTagProcessor());
-        processors.add(new StandardRemoveTagProcessor());
-        processors.add(new StandardIfTagProcessor());
-        processors.add(new StandardUnlessTagProcessor());
         processors.add(new StandardAltTitleTagProcessor());
-        processors.add(new StandardLangXmlLangTagProcessor());
         processors.add(new StandardAssertTagProcessor());
         processors.add(new StandardAttrTagProcessor());
         processors.add(new StandardAttrappendTagProcessor());
         processors.add(new StandardAttrprependTagProcessor());
+        processors.add(new StandardCaseTagProcessor());
         processors.add(new StandardClassappendTagProcessor());
-        processors.add(new StandardStyleappendTagProcessor());
-        processors.add(new StandardInsertTagProcessor());
-        processors.add(new StandardReplaceTagProcessor());
-        processors.add(new StandardIncludeTagProcessor());
-        processors.add(new StandardSubstituteByTagProcessor());
+        for (final String attrName : StandardConditionalFixedValueTagProcessor.ATTR_NAMES) {
+            processors.add(new StandardConditionalFixedValueTagProcessor(attrName));
+        }
+        for (final String attrName : StandardDOMEventAttributeTagProcessor.ATTR_NAMES) {
+            processors.add(new StandardRemovableAttributeTagProcessor(attrName));
+        }
+        processors.add(new StandardEachTagProcessor());
         processors.add(new StandardFragmentTagProcessor());
+        processors.add(new StandardHrefTagProcessor());
+        processors.add(new StandardIfTagProcessor());
+        processors.add(new StandardIncludeTagProcessor());
+        processors.add(new StandardInlineTagProcessor());
+        processors.add(new StandardInsertTagProcessor());
+        processors.add(new StandardLangXmlLangTagProcessor());
+        processors.add(new StandardMethodTagProcessor());
+        for (final String attrName : StandardNonRemovableAttributeTagProcessor.ATTR_NAMES) {
+            processors.add(new StandardNonRemovableAttributeTagProcessor(attrName));
+        }
+        processors.add(new StandardObjectTagProcessor());
+        for (final String attrName : StandardRemovableAttributeTagProcessor.ATTR_NAMES) {
+            processors.add(new StandardRemovableAttributeTagProcessor(attrName));
+        }
+        processors.add(new StandardRemoveTagProcessor());
+        processors.add(new StandardReplaceTagProcessor());
+        processors.add(new StandardSrcTagProcessor());
+        processors.add(new StandardStyleappendTagProcessor());
+        processors.add(new StandardSubstituteByTagProcessor());
+        processors.add(new StandardSwitchTagProcessor());
+        processors.add(new StandardTextTagProcessor());
+        processors.add(new StandardUnlessTagProcessor());
+        processors.add(new StandardUtextTagProcessor());
+        processors.add(new StandardValueTagProcessor());
+        processors.add(new StandardWithTagProcessor());
         processors.add(new StandardXmlBaseTagProcessor());
         processors.add(new StandardXmlLangTagProcessor());
         processors.add(new StandardXmlSpaceTagProcessor());
-        processors.add(new StandardObjectTagProcessor());
-        processors.add(new StandardSwitchTagProcessor());
-        processors.add(new StandardCaseTagProcessor());
-        // TODO case + switch
-        // TODO inline
 //        processors.add(new StandardDefaultAttributesTagProcessor());
-//        processors.add(new StandardInliningTextProcessor());
+
+        /*
+         * TEXT PROCESSORS
+         */
+        processors.add(new StandardInliningTextProcessor());
+
         return processors;
     }
 

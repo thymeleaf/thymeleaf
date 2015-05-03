@@ -25,7 +25,7 @@ import java.util.Map;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.engine.IMarkupFactory;
 import org.thymeleaf.engine.StandardMarkupFactory;
-import org.thymeleaf.engine.TemplateProcessor;
+import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.util.Validate;
@@ -40,7 +40,7 @@ public abstract class AbstractTemplateProcessingContext
             extends AbstractProcessingContext
             implements ITemplateProcessingContext {
 
-    private final TemplateProcessor templateProcessor;
+    private final TemplateManager templateManager;
     private final TemplateResolution templateResolution;
     private final TemplateMode templateMode;
     private final IMarkupFactory markupFactory;
@@ -50,49 +50,49 @@ public abstract class AbstractTemplateProcessingContext
 
     public AbstractTemplateProcessingContext(
             final IEngineConfiguration configuration,
-            final TemplateProcessor templateProcessor,
+            final TemplateManager templateManager,
             final TemplateResolution templateResolution,
             final IContext context) {
 
         super(configuration, context);
 
-        Validate.notNull(templateProcessor, "Template Processor cannot be null");
+        Validate.notNull(templateManager, "Template Processor cannot be null");
         Validate.notNull(templateResolution, "Template Resolution cannot be null");
 
-        this.templateProcessor = templateProcessor;
+        this.templateManager = templateManager;
         this.templateResolution = templateResolution;
         this.templateMode = this.templateResolution.getTemplateMode();
         this.markupFactory =
                 new StandardMarkupFactory(
-                        getConfiguration(), this.templateMode, this.templateResolution.getTemplateName(), this.templateProcessor);
+                        getConfiguration(), this.templateMode, this.templateResolution.getTemplateName(), this.templateManager);
         this.identifierSequences = new IdentifierSequences();
 
     }
 
     public AbstractTemplateProcessingContext(
             final IEngineConfiguration configuration,
-            final TemplateProcessor templateProcessor,
+            final TemplateManager templateManager,
             final TemplateResolution templateResolution,
             final Locale locale, final Map<String, Object> variables) {
 
         super(configuration, locale, variables);
 
-        Validate.notNull(templateProcessor, "Template Processor cannot be null");
+        Validate.notNull(templateManager, "Template Processor cannot be null");
         Validate.notNull(templateResolution, "Template Resolution cannot be null");
 
-        this.templateProcessor = templateProcessor;
+        this.templateManager = templateManager;
         this.templateResolution = templateResolution;
         this.templateMode = this.templateResolution.getTemplateMode();
         this.markupFactory =
                 new StandardMarkupFactory(
-                        getConfiguration(), this.templateMode, this.templateResolution.getTemplateName(), this.templateProcessor);
+                        getConfiguration(), this.templateMode, this.templateResolution.getTemplateName(), this.templateManager);
         this.identifierSequences = new IdentifierSequences();
 
     }
 
 
-    public final TemplateProcessor getTemplateProcessor() {
-        return this.templateProcessor;
+    public final TemplateManager getTemplateManager() {
+        return this.templateManager;
     }
 
     public final TemplateResolution getTemplateResolution() {

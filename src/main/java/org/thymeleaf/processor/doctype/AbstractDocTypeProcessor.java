@@ -43,7 +43,6 @@ public abstract class AbstractDocTypeProcessor
     }
 
 
-    // Default implementation - meant to be overridden by subclasses if needed
     public final void process(final ITemplateProcessingContext processingContext, final IDocType docType,
                         final IDocTypeStructureHandler structureHandler) {
 

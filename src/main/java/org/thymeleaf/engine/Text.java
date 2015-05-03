@@ -113,6 +113,23 @@ final class Text
     }
 
 
+    public CharSequence subSequence(final int start, final int end) {
+
+        // no need to perform index bounds checking: it would slow down traversing operations a lot, and
+        // it would be exactly the same exception we'd obtain by basically trying to access that index, so let's do
+        // it directly instead
+
+        if (this.text != null) {
+            return this.text.subSequence(start, end);
+        }
+
+        int subLen = end - start;
+        if (start == 0 && subLen == this.length) {
+            return getText();
+        }
+        return this.textRepository.getText(this.buffer, this.offset + start, subLen);
+
+    }
 
 
     void reset(final char[] buffer,

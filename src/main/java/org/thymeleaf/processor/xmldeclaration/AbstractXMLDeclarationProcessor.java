@@ -43,7 +43,6 @@ public abstract class AbstractXMLDeclarationProcessor
     }
 
 
-    // Default implementation - meant to be overridden by subclasses if needed
     public final void process(final ITemplateProcessingContext processingContext, final IXMLDeclaration xmlDeclaration,
                         final IXMLDeclarationStructureHandler structureHandler) {
 

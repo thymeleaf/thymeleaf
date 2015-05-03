@@ -17,13 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.templateparser;
+package org.thymeleaf.model;
 
-import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.engine.ITemplateHandler;
-import org.thymeleaf.resource.IResource;
-import org.thymeleaf.templatemode.TemplateMode;
-
+import org.thymeleaf.engine.ITemplateHandlerEvent;
 
 /**
  *
@@ -31,22 +27,13 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  * 
  */
-public interface ITemplateParser {
+public interface IDocumentStart extends ITemplateHandlerEvent {
 
+    public long getStartTimeNanos();
+    public String getTemplateName();
+    public int getLine();
+    public int getCol();
 
-    public void parseTemplate(
-                      final IEngineConfiguration configuration,
-                      final TemplateMode templateMode,
-                      final IResource templateResource,
-                      final String[] selectors,
-                      final ITemplateHandler handler);
-
-
-    public void parseFragment(
-                      final IEngineConfiguration configuration,
-                      final TemplateMode templateMode,
-                      final IResource templateResource,
-                      final String[] selectors,
-                      final ITemplateHandler handler);
+    public IDocumentStart cloneEvent();
 
 }

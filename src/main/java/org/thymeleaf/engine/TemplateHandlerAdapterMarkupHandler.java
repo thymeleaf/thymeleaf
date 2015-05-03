@@ -38,11 +38,15 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
     private static final String ATTRIBUTE_EQUALS_OPERATOR = "=";
 
     private final String templateName;
+    private final boolean topLevelTemplate;
     private final ITemplateHandler templateHandler;
     private final ITextRepository textRepository;
     private final ElementDefinitions elementDefinitions;
     private final AttributeDefinitions attributeDefinitions;
     private final TemplateMode templateMode;
+
+    private final DocumentStart documentStart;
+    private final DocumentEnd documentEnd;
 
     private final Text text;
     private final Comment comment;
@@ -62,6 +66,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
     
     public TemplateHandlerAdapterMarkupHandler(final String templateName,
+                                               final boolean topLevelTemplate,
                                                final ITemplateHandler templateHandler,
                                                final ITextRepository textRepository,
                                                final ElementDefinitions elementDefinitions,
@@ -76,6 +81,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         Validate.notNull(templateMode, "Template mode cannot be null");
 
         this.templateName = templateName;
+        this.topLevelTemplate = topLevelTemplate;
 
         this.templateHandler = templateHandler;
 
@@ -88,6 +94,9 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.templateMode = templateMode;
 
         // We will be using these as objectual buffers in order to avoid creating too many objects
+        this.documentStart = new DocumentStart();
+        this.documentEnd = new DocumentEnd();
+
         this.text = new Text(this.textRepository);
         this.comment = new Comment(this.textRepository);
         this.cdataSection = new CDATASection(this.textRepository);
@@ -113,7 +122,21 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
     public void handleDocumentStart(
             final long startTimeNanos, final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleDocumentStart(startTimeNanos, line, col);
+
+        // We will only be issuing document start/end events on the top level templates, and never on the fragments
+        // being parsed as a part of a th:insert/th:replace etc. in order to add their markup to the top level template.
+        // The reason for this is that it would make no sense to have these events suspended during DOM-tree caching,
+        // or iterations, or any similar processing mechanism, given the fact that these document start/end events do
+        // not model nodes, nor any part of any type of node.
+        // IMPORTANT: note that partial renderings of templates (like e.g. a Spring controller returning "home :: main"
+        // as a template name) are indeed top level templates. These are simply templates that have been applied a
+        // markup selector, but they are not fragments meant to be included in other higher-level templates being
+        // processed.
+        if (this.topLevelTemplate) {
+            this.documentStart.reset(startTimeNanos, this.templateName, line, col);
+            this.templateHandler.handleDocumentStart(this.documentStart);
+        }
+
     }
 
 
@@ -121,7 +144,21 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
     public void handleDocumentEnd(
             final long endTimeNanos, final long totalTimeNanos, final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleDocumentEnd(endTimeNanos, totalTimeNanos, line, col);
+
+        // We will only be issuing document start/end events on the top level templates, and never on the fragments
+        // being parsed as a part of a th:insert/th:replace etc. in order to add their markup to the top level template.
+        // The reason for this is that it would make no sense to have these events suspended during DOM-tree caching,
+        // or iterations, or any similar processing mechanism, given the fact that these document start/end events do
+        // not model nodes, nor any part of any type of node.
+        // IMPORTANT: note that partial renderings of templates (like e.g. a Spring controller returning "home :: main"
+        // as a template name) are indeed top level templates. These are simply templates that have been applied a
+        // markup selector, but they are not fragments meant to be included in other higher-level templates being
+        // processed.
+        if (this.topLevelTemplate) {
+            this.documentEnd.reset(endTimeNanos, totalTimeNanos, this.templateName, line, col);
+            this.templateHandler.handleDocumentEnd(this.documentEnd);
+        }
+
     }
 
 

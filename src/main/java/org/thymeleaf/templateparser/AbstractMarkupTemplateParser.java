@@ -76,26 +76,39 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
 
 
-    public final void parse(
+    public final void parseTemplate(
             final IEngineConfiguration configuration,
             final TemplateMode templateMode,
             final IResource templateResource,
+            final String[] selectors,
             final ITemplateHandler templateHandler) {
-        parse(configuration, templateMode, templateResource, null, templateHandler);
+        parse(configuration, templateMode, templateResource, true, selectors, templateHandler);
+    }
+
+
+    public final void parseFragment(
+            final IEngineConfiguration configuration,
+            final TemplateMode templateMode,
+            final IResource templateResource,
+            final String[] selectors,
+            final ITemplateHandler templateHandler) {
+        parse(configuration, templateMode, templateResource, false, selectors, templateHandler);
     }
 
 
 
-    public final void parse(
+    private void parse(
             final IEngineConfiguration configuration,
             final TemplateMode templateMode,
             final IResource templateResource,
+            final boolean topLevel,
             final String[] selectors,
             final ITemplateHandler templateHandler) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(templateMode, "Template Mode cannot be null");
         Validate.notNull(templateResource, "Template Resource cannot be null");
+        // Selectors CAN be null
         Validate.notNull(templateHandler, "Template Handler cannot be null");
 
         if (templateMode.isHTML()) {
@@ -116,6 +129,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             IMarkupHandler handler =
                         new TemplateHandlerAdapterMarkupHandler(
                                 templateResourceName,
+                                topLevel,
                                 templateHandler,
                                 configuration.getTextRepository(),
                                 configuration.getElementDefinitions(),

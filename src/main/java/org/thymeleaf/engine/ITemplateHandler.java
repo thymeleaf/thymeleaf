@@ -26,6 +26,8 @@ import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
+import org.thymeleaf.model.IDocumentEnd;
+import org.thymeleaf.model.IDocumentStart;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
@@ -47,10 +49,9 @@ public interface ITemplateHandler {
     public void setProcessingContext(final ITemplateProcessingContext processingContext);
 
 
-    public void handleDocumentStart(final long startTimeNanos, final int line, final int col);
+    public void handleDocumentStart(final IDocumentStart documentStart);
 
-    public void handleDocumentEnd(
-            final long endTimeNanos, final long totalTimeNanos, final int line, final int col);
+    public void handleDocumentEnd(final IDocumentEnd documentEnd);
 
 
     public void handleXMLDeclaration(final IXMLDeclaration xmlDeclaration);

@@ -17,13 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.templateparser;
+package org.thymeleaf.engine;
 
-import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.engine.ITemplateHandler;
-import org.thymeleaf.resource.IResource;
-import org.thymeleaf.templatemode.TemplateMode;
-
+import org.thymeleaf.inline.ITextInliner;
 
 /**
  *
@@ -31,22 +27,19 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  * 
  */
-public interface ITemplateParser {
+public interface IDocumentStructureHandler {
 
+    public void reset();
 
-    public void parseTemplate(
-                      final IEngineConfiguration configuration,
-                      final TemplateMode templateMode,
-                      final IResource templateResource,
-                      final String[] selectors,
-                      final ITemplateHandler handler);
+    public void setLocalVariable(final String name, final Object value);
+    public void removeLocalVariable(final String name);
 
+    public void setSelectionTarget(final Object selectionTarget);
 
-    public void parseFragment(
-                      final IEngineConfiguration configuration,
-                      final TemplateMode templateMode,
-                      final IResource templateResource,
-                      final String[] selectors,
-                      final ITemplateHandler handler);
+    public void setTextInliner(final ITextInliner textInliner);
+
+    public void insert(final String text, final boolean processable);
+    public void insert(final IMarkup markup, final boolean processable);
 
 }
+

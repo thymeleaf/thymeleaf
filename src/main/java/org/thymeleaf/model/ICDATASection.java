@@ -25,13 +25,10 @@ package org.thymeleaf.model;
  * @since 3.0.0
  * 
  */
-public interface ICDATASection extends INode {
+public interface ICDATASection extends INode, CharSequence {
 
     public String getCDATASection();
     public String getContent();
-
-    public int length();
-    public char charAt(final int index);
 
     public void setContent(final String content);
 

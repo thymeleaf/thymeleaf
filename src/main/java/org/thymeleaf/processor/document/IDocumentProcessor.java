@@ -17,13 +17,13 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.templateparser;
+package org.thymeleaf.processor.document;
 
-import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.engine.ITemplateHandler;
-import org.thymeleaf.resource.IResource;
-import org.thymeleaf.templatemode.TemplateMode;
-
+import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.engine.IDocumentStructureHandler;
+import org.thymeleaf.model.IDocumentEnd;
+import org.thymeleaf.model.IDocumentStart;
+import org.thymeleaf.processor.IProcessor;
 
 /**
  *
@@ -31,22 +31,16 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  * 
  */
-public interface ITemplateParser {
+public interface IDocumentProcessor extends IProcessor {
 
+    public void processDocumentStart(
+            final ITemplateProcessingContext processingContext,
+            final IDocumentStart documentStart,
+            final IDocumentStructureHandler structureHandler);
 
-    public void parseTemplate(
-                      final IEngineConfiguration configuration,
-                      final TemplateMode templateMode,
-                      final IResource templateResource,
-                      final String[] selectors,
-                      final ITemplateHandler handler);
-
-
-    public void parseFragment(
-                      final IEngineConfiguration configuration,
-                      final TemplateMode templateMode,
-                      final IResource templateResource,
-                      final String[] selectors,
-                      final ITemplateHandler handler);
+    public void processDocumentEnd(
+            final ITemplateProcessingContext processingContext,
+            final IDocumentEnd documentEnd,
+            final IDocumentStructureHandler structureHandler);
 
 }

@@ -20,7 +20,7 @@
 package org.thymeleaf.context;
 
 import org.thymeleaf.engine.IMarkupFactory;
-import org.thymeleaf.engine.TemplateProcessor;
+import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.TemplateResolution;
 
@@ -33,7 +33,7 @@ import org.thymeleaf.templateresolver.TemplateResolution;
  */
 public interface ITemplateProcessingContext extends IProcessingContext {
 
-    public TemplateProcessor getTemplateProcessor();
+    public TemplateManager getTemplateManager();
 
     public TemplateMode getTemplateMode();
 

@@ -17,13 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.templateparser;
+package org.thymeleaf.inline;
 
-import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.engine.ITemplateHandler;
-import org.thymeleaf.resource.IResource;
-import org.thymeleaf.templatemode.TemplateMode;
-
+import org.thymeleaf.context.IProcessingContext;
 
 /**
  *
@@ -31,22 +27,10 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  * 
  */
-public interface ITemplateParser {
+public interface ITextInliner {
 
+    public String getName();
 
-    public void parseTemplate(
-                      final IEngineConfiguration configuration,
-                      final TemplateMode templateMode,
-                      final IResource templateResource,
-                      final String[] selectors,
-                      final ITemplateHandler handler);
-
-
-    public void parseFragment(
-                      final IEngineConfiguration configuration,
-                      final TemplateMode templateMode,
-                      final IResource templateResource,
-                      final String[] selectors,
-                      final ITemplateHandler handler);
+    public CharSequence inline(final IProcessingContext context, final CharSequence text);
 
 }

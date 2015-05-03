@@ -27,6 +27,8 @@ import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
+import org.thymeleaf.model.IDocumentEnd;
+import org.thymeleaf.model.IDocumentStart;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
@@ -133,26 +135,24 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
 
 
-    public void handleDocumentStart(
-            final long startTimeNanos, final int line, final int col) {
+    public void handleDocumentStart(final IDocumentStart documentStart) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleDocumentStart(startTimeNanos, line, col);
+        this.next.handleDocumentStart(documentStart);
 
     }
 
 
-    public void handleDocumentEnd(
-            final long endTimeNanos, final long totalTimeNanos, final int line, final int col) {
+    public void handleDocumentEnd(final IDocumentEnd documentEnd) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleDocumentEnd(endTimeNanos, totalTimeNanos, line, col);
+        this.next.handleDocumentEnd(documentEnd);
 
     }
 

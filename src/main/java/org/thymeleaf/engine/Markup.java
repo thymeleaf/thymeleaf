@@ -29,6 +29,8 @@ import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
+import org.thymeleaf.model.IDocumentEnd;
+import org.thymeleaf.model.IDocumentStart;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
@@ -93,18 +95,18 @@ public final class Markup implements IMarkup {
     }
 
 
-    public void addMarkup(final IMarkup markup) {
-        this.queue.addMarkup(markup, true);
-    }
-
-
     public void insert(final int pos, final ITemplateHandlerEvent event) {
         this.queue.insert(pos, asEngineEvent(this.configuration, this.templateMode, event, true), false);
     }
 
 
+    public void addMarkup(final IMarkup markup) {
+        this.queue.addMarkup(markup);
+    }
+
+
     public void insertMarkup(final int pos, final IMarkup markup) {
-        this.queue.insertMarkup(pos, markup, true);
+        this.queue.insertMarkup(pos, markup);
     }
 
 
@@ -183,37 +185,43 @@ public final class Markup implements IMarkup {
             return Text.asEngineText(configuration, (IText)event, cloneAlways);
         }
         if (event instanceof IOpenElementTag) {
-            return OpenElementTag.asEngineOpenElementTag(templateMode, configuration, (IOpenElementTag)event, cloneAlways);
+            return OpenElementTag.asEngineOpenElementTag(templateMode, configuration, (IOpenElementTag) event, cloneAlways);
         }
         if (event instanceof ICloseElementTag) {
-            return CloseElementTag.asEngineCloseElementTag(templateMode, configuration, (ICloseElementTag)event, cloneAlways);
+            return CloseElementTag.asEngineCloseElementTag(templateMode, configuration, (ICloseElementTag) event, cloneAlways);
         }
         if (event instanceof IStandaloneElementTag) {
-            return StandaloneElementTag.asEngineStandaloneElementTag(templateMode, configuration, (IStandaloneElementTag)event, cloneAlways);
+            return StandaloneElementTag.asEngineStandaloneElementTag(templateMode, configuration, (IStandaloneElementTag) event, cloneAlways);
         }
         if (event instanceof IAutoOpenElementTag) {
-            return AutoOpenElementTag.asEngineAutoOpenElementTag(templateMode, configuration, (IAutoOpenElementTag)event, cloneAlways);
+            return AutoOpenElementTag.asEngineAutoOpenElementTag(templateMode, configuration, (IAutoOpenElementTag) event, cloneAlways);
         }
         if (event instanceof IAutoCloseElementTag) {
-            return AutoCloseElementTag.asEngineAutoCloseElementTag(templateMode, configuration, (IAutoCloseElementTag)event, cloneAlways);
+            return AutoCloseElementTag.asEngineAutoCloseElementTag(templateMode, configuration, (IAutoCloseElementTag) event, cloneAlways);
         }
         if (event instanceof IUnmatchedCloseElementTag) {
-            return UnmatchedCloseElementTag.asEngineUnmatchedCloseElementTag(templateMode, configuration, (IUnmatchedCloseElementTag)event, cloneAlways);
+            return UnmatchedCloseElementTag.asEngineUnmatchedCloseElementTag(templateMode, configuration, (IUnmatchedCloseElementTag) event, cloneAlways);
         }
         if (event instanceof IDocType) {
-            return DocType.asEngineDocType(configuration, (IDocType)event, cloneAlways);
+            return DocType.asEngineDocType(configuration, (IDocType) event, cloneAlways);
         }
         if (event instanceof IComment) {
-            return Comment.asEngineComment(configuration, (IComment)event, cloneAlways);
+            return Comment.asEngineComment(configuration, (IComment) event, cloneAlways);
         }
         if (event instanceof ICDATASection) {
-            return CDATASection.asEngineCDATASection(configuration, (ICDATASection)event, cloneAlways);
+            return CDATASection.asEngineCDATASection(configuration, (ICDATASection) event, cloneAlways);
         }
         if (event instanceof IXMLDeclaration) {
-            return XMLDeclaration.asEngineXMLDeclaration(configuration, (IXMLDeclaration)event, cloneAlways);
+            return XMLDeclaration.asEngineXMLDeclaration(configuration, (IXMLDeclaration) event, cloneAlways);
         }
         if (event instanceof IProcessingInstruction) {
-            return ProcessingInstruction.asEngineProcessingInstruction(configuration, (IProcessingInstruction)event, cloneAlways);
+            return ProcessingInstruction.asEngineProcessingInstruction(configuration, (IProcessingInstruction) event, cloneAlways);
+        }
+        if (event instanceof IDocumentStart) {
+            return DocumentStart.asEngineDocumentStart((IDocumentStart) event, cloneAlways);
+        }
+        if (event instanceof IDocumentEnd) {
+            return DocumentEnd.asEngineDocumentEnd((IDocumentEnd) event, cloneAlways);
         }
         throw new TemplateProcessingException(
                 "Cannot handle in queue event of type: " + event.getClass().getName());

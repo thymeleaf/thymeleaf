@@ -58,7 +58,7 @@ public class ImmutableMarkup implements IMarkup {
 
 
     // Package-protected constructor, because we don't want anyone creating these objects from outside the engine.
-    // Specifically, there will only be created from the TemplateProcessor.
+    // Specifically, they will only be created from the TemplateManager.
     // If a processor (be it standard or custom-made) wants to create a piece of markup, that should be a Markup
     // object, not this.
     protected ImmutableMarkup(final IEngineConfiguration configuration, final TemplateMode templateMode) {
@@ -233,6 +233,10 @@ public class ImmutableMarkup implements IMarkup {
             return this.wrapped.charAt(index);
         }
 
+        public CharSequence subSequence(final int start, final int end) {
+            return this.wrapped.subSequence(start, end);
+        }
+
         public void setText(final String text) {
             ImmutableMarkup.immutableException();
         }
@@ -261,6 +265,10 @@ public class ImmutableMarkup implements IMarkup {
 
         public char charAt(final int index) {
             return this.wrapped.charAt(index);
+        }
+
+        public CharSequence subSequence(final int start, final int end) {
+            return this.wrapped.subSequence(start, end);
         }
 
         public String getCDATASection() {
@@ -299,6 +307,10 @@ public class ImmutableMarkup implements IMarkup {
 
         public char charAt(final int index) {
             return this.wrapped.charAt(index);
+        }
+
+        public CharSequence subSequence(final int start, final int end) {
+            return this.wrapped.subSequence(start, end);
         }
 
         public String getComment() {

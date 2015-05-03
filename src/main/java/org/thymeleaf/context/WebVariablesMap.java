@@ -32,6 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.thymeleaf.inline.ITextInliner;
+import org.thymeleaf.inline.NoOpTextInliner;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -224,12 +226,12 @@ public final class WebVariablesMap
 
 
 
-    public boolean isTextInliningActive() {
-        return this.requestAttributesVariablesMap.isTextInliningActive();
+    public ITextInliner getTextInliner() {
+        return this.requestAttributesVariablesMap.getTextInliner();
     }
 
-    public void setTextInliningActive(final boolean active) {
-        this.requestAttributesVariablesMap.setTextInliningActive(active);
+    public void setTextInliner(final ITextInliner textInliner) {
+        this.requestAttributesVariablesMap.setTextInliner(textInliner);
     }
 
 
@@ -313,8 +315,8 @@ public final class WebVariablesMap
             return null;
         }
 
-        public boolean isTextInliningActive() {
-            return false;
+        public ITextInliner getTextInliner() {
+            return null;
         }
 
     }
@@ -365,8 +367,8 @@ public final class WebVariablesMap
             return null;
         }
 
-        public boolean isTextInliningActive() {
-            return false;
+        public ITextInliner getTextInliner() {
+            return null;
         }
 
     }
@@ -409,8 +411,8 @@ public final class WebVariablesMap
             return null;
         }
 
-        public boolean isTextInliningActive() {
-            return false;
+        public ITextInliner getTextInliner() {
+            return null;
         }
 
     }
@@ -436,7 +438,7 @@ public final class WebVariablesMap
         private Object[][] newValues;
         private int[] levelSizes;
         private SelectionTarget[] selectionTargets;
-        private Boolean[] textInliningActivations;
+        private ITextInliner[] textInliners;
 
         private static final Object NON_EXISTING = new Object() {
             @Override
@@ -459,16 +461,15 @@ public final class WebVariablesMap
             this.newValues = new Object[DEFAULT_LEVELS_SIZE][];
             this.levelSizes = new int[DEFAULT_LEVELS_SIZE];
             this.selectionTargets = new SelectionTarget[DEFAULT_LEVELS_SIZE];
-            this.textInliningActivations = new Boolean[DEFAULT_LEVELS_SIZE];
+            this.textInliners = new ITextInliner[DEFAULT_LEVELS_SIZE];
             Arrays.fill(this.levels, Integer.MAX_VALUE);
             Arrays.fill(this.names, null);
             Arrays.fill(this.oldValues, null);
             Arrays.fill(this.newValues, null);
             Arrays.fill(this.levelSizes, 0);
             Arrays.fill(this.selectionTargets, null);
-            Arrays.fill(this.textInliningActivations, null);
+            Arrays.fill(this.textInliners, null);
             this.levels[0] = 0;
-            this.textInliningActivations[0] = Boolean.TRUE; // Active by default
 
             if (variables != null) {
                 putAll(variables);
@@ -656,22 +657,25 @@ public final class WebVariablesMap
 
 
 
-        public boolean isTextInliningActive() {
+        public ITextInliner getTextInliner() {
             int n = this.index + 1;
             while (n-- != 0) {
-                if (this.textInliningActivations[n] != null) {
-                    return this.textInliningActivations[n].booleanValue();
+                if (this.textInliners[n] != null) {
+                    if (this.textInliners[n] == NoOpTextInliner.INSTANCE) {
+                        return null;
+                    }
+                    return this.textInliners[n];
                 }
             }
-            return false;
+            return null;
         }
 
 
-        public void setTextInliningActive(final boolean active) {
+        public void setTextInliner(final ITextInliner textInliner) {
             ensureLevelInitialized();
-            this.textInliningActivations[this.index] = Boolean.valueOf(active);
+            // We use NoOpTexInliner.INSTACE in order to signal when inlining has actually been disabled
+            this.textInliners[this.index] = (textInliner == null? NoOpTextInliner.INSTANCE : textInliner);
         }
-
 
 
 
@@ -691,28 +695,28 @@ public final class WebVariablesMap
                     final Object[][] newOldValues = new Object[this.oldValues.length + DEFAULT_LEVELS_SIZE][];
                     final int[] newLevelSizes = new int[this.levelSizes.length + DEFAULT_LEVELS_SIZE];
                     final SelectionTarget[] newSelectionTargets = new SelectionTarget[this.selectionTargets.length + DEFAULT_LEVELS_SIZE];
-                    final Boolean[] newTextInliningActivations = new Boolean[this.textInliningActivations.length + DEFAULT_LEVELS_SIZE];
+                    final ITextInliner[] newTextInliners = new ITextInliner[this.textInliners.length + DEFAULT_LEVELS_SIZE];
                     Arrays.fill(newLevels, Integer.MAX_VALUE);
                     Arrays.fill(newNames, null);
                     Arrays.fill(newNewValues, null);
                     Arrays.fill(newOldValues, null);
                     Arrays.fill(newLevelSizes, 0);
                     Arrays.fill(newSelectionTargets, null);
-                    Arrays.fill(newTextInliningActivations, null);
+                    Arrays.fill(newTextInliners, null);
                     System.arraycopy(this.levels, 0, newLevels, 0, this.levels.length);
                     System.arraycopy(this.names, 0, newNames, 0, this.names.length);
                     System.arraycopy(this.newValues, 0, newNewValues, 0, this.newValues.length);
                     System.arraycopy(this.oldValues, 0, newOldValues, 0, this.oldValues.length);
                     System.arraycopy(this.levelSizes, 0, newLevelSizes, 0, this.levelSizes.length);
                     System.arraycopy(this.selectionTargets, 0, newSelectionTargets, 0, this.selectionTargets.length);
-                    System.arraycopy(this.textInliningActivations, 0, newTextInliningActivations, 0, this.textInliningActivations.length);
+                    System.arraycopy(this.textInliners, 0, newTextInliners, 0, this.textInliners.length);
                     this.levels = newLevels;
                     this.names = newNames;
                     this.newValues = newNewValues;
                     this.oldValues = newOldValues;
                     this.levelSizes = newLevelSizes;
                     this.selectionTargets = newSelectionTargets;
-                    this.textInliningActivations = newTextInliningActivations;
+                    this.textInliners = newTextInliners;
                 }
 
                 this.levels[this.index] = this.level;
@@ -792,7 +796,7 @@ public final class WebVariablesMap
                 }
 
                 this.selectionTargets[this.index] = null;
-                this.textInliningActivations[this.index] = null;
+                this.textInliners[this.index] = null;
 
                 this.index--;
 
@@ -843,7 +847,7 @@ public final class WebVariablesMap
                         oldValuesSum.put(name, oldValue);
                     }
                 }
-                if (!levelVars.isEmpty() || this.selectionTargets[n] != null || this.textInliningActivations[n] != null) {
+                if (!levelVars.isEmpty() || this.selectionTargets[n] != null || this.textInliners[n] != null) {
                     if (strBuilder.length() > 1) {
                         strBuilder.append(',');
                     }
@@ -854,8 +858,8 @@ public final class WebVariablesMap
                     if (this.selectionTargets[n] != null) {
                         strBuilder.append("<" + this.selectionTargets[n].selectionTarget + ">");
                     }
-                    if (this.textInliningActivations[n] != null) {
-                        strBuilder.append("[" + this.textInliningActivations[n] + "]");
+                    if (this.textInliners[n] != null) {
+                        strBuilder.append("[" + this.textInliners[n].getName() + "]");
                     }
                 }
             }
@@ -890,8 +894,8 @@ public final class WebVariablesMap
             if (this.selectionTargets[0] != null) {
                 strBuilder.append("<" + this.selectionTargets[0].selectionTarget + ">");
             }
-            if (this.textInliningActivations[0] != null) {
-                strBuilder.append("[" + this.textInliningActivations[0] + "]");
+            if (this.textInliners[0] != null) {
+                strBuilder.append("[" + this.textInliners[0].getName() + "]");
             }
             strBuilder.append("}[");
             strBuilder.append(this.level);
@@ -912,7 +916,8 @@ public final class WebVariablesMap
                 final String name = attributeNamesEnum.nextElement();
                 equivalentMap.put(name, this.request.getAttribute(name));
             }
-            return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "") + "[" + isTextInliningActive() + "]";
+            final String textInliningStr = (getTextInliner() != null? "[" + getTextInliner().getName() + "]" : "" );
+            return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "") + textInliningStr;
 
         }
 

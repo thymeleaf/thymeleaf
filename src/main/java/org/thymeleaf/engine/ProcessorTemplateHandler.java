@@ -40,6 +40,8 @@ import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
+import org.thymeleaf.model.IDocumentEnd;
+import org.thymeleaf.model.IDocumentStart;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
@@ -49,6 +51,7 @@ import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.processor.comment.ICommentProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeProcessor;
+import org.thymeleaf.processor.document.IDocumentProcessor;
 import org.thymeleaf.processor.element.IElementNodeProcessor;
 import org.thymeleaf.processor.element.IElementProcessor;
 import org.thymeleaf.processor.element.IElementTagProcessor;
@@ -75,6 +78,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     // do things with the processed structures themselves (things that cannot be directly done from the processors like
     // removing structures or iterating elements)
     private final ElementStructureHandler elementStructureHandler;
+    private final DocumentStructureHandler documentStructureHandler;
     private final CDATASectionStructureHandler cdataSectionStructureHandler;
     private final CommentStructureHandler commentStructureHandler;
     private final DocTypeStructureHandler docTypeStructureHandler;
@@ -88,6 +92,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     private ILocalVariableAwareVariablesMap variablesMap;
 
+    private boolean hasDocumentProcessors = false;
     private boolean hasCDATASectionProcessors = false;
     private boolean hasCommentProcessors = false;
     private boolean hasDocTypeProcessors = false;
@@ -109,6 +114,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     // processors. This is done so because non-element processors will not change during the execution of the engine
     // (whereas element processors can). And they are kept in the form of an array because they will be faster to
     // iterate than asking every time the configuration object for the Set of processors and creating an iterator for it
+    private IDocumentProcessor[] documentProcessors = null;
     private ICDATASectionProcessor[] cdataSectionProcessors = null;
     private ICommentProcessor[] commentProcessors = null;
     private IDocTypeProcessor[] docTypeProcessors = null;
@@ -122,8 +128,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     // These structures will be indexed by the handlerExecLevel, which allows structures to be used across different levels of nesting
     private EngineEventQueue[] eventQueues = null;
 
-    // Replacing a body with a text is so common we want to avoid creating too many objects for that
-    private Text textBodyReplacementBuffer = null;
+    // Putting a text node to the queue for immediate execution is so common we will have a common buffer object for that
+    private Text textBuffer = null;
 
     // Used for suspending the execution of a tag and replacing it for a different event (perhaps after building a
     // queue) or iterating the suspended event and its body.
@@ -162,6 +168,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         Arrays.fill(this.allowedNonElementStructuresByMarkupLevel, true);
 
         this.elementStructureHandler = new ElementStructureHandler();
+        this.documentStructureHandler = new DocumentStructureHandler();
         this.cdataSectionStructureHandler = new CDATASectionStructureHandler();
         this.commentStructureHandler = new CommentStructureHandler();
         this.docTypeStructureHandler = new DocTypeStructureHandler();
@@ -202,7 +209,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         // Buffer used for text-shaped body replacement in tags (very common operation)
-        this.textBodyReplacementBuffer = new Text(this.configuration.getTextRepository());
+        this.textBuffer = new Text(this.configuration.getTextRepository());
 
         // Specs containing all the info required for suspending the execution of a processor in order to e.g. change
         // handling method (standalone -> open) or start caching an iteration
@@ -210,6 +217,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         this.iterationSpec = new IterationSpec(this.templateMode, this.configuration);
 
         // Flags used for quickly determining if a non-element structure might have to be processed or not
+        this.hasDocumentProcessors = !this.configuration.getDocumentProcessors(this.templateMode).isEmpty();
         this.hasCDATASectionProcessors = !this.configuration.getCDATASectionProcessors(this.templateMode).isEmpty();
         this.hasCommentProcessors = !this.configuration.getCommentProcessors(this.templateMode).isEmpty();
         this.hasDocTypeProcessors = !this.configuration.getDocTypeProcessors(this.templateMode).isEmpty();
@@ -218,12 +226,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         this.hasXMLDeclarationProcessors = !this.configuration.getXMLDeclarationProcessors(this.templateMode).isEmpty();
 
         // Initialize arrays containing the processors for all the non-element structures (do not change during execution)
+        final Set<IDocumentProcessor> documentProcessorSet = this.configuration.getDocumentProcessors(this.templateMode);
         final Set<ICDATASectionProcessor> cdataSectionProcessorSet = this.configuration.getCDATASectionProcessors(this.templateMode);
         final Set<ICommentProcessor> commentProcessorSet = this.configuration.getCommentProcessors(this.templateMode);
         final Set<IDocTypeProcessor> docTypeProcessorSet = this.configuration.getDocTypeProcessors(this.templateMode);
         final Set<IProcessingInstructionProcessor> processingInstructionProcessorSet = this.configuration.getProcessingInstructionProcessors(this.templateMode);
         final Set<ITextProcessor> textProcessorSet = this.configuration.getTextProcessors(this.templateMode);
         final Set<IXMLDeclarationProcessor> xmlDeclarationProcessorSet = this.configuration.getXMLDeclarationProcessors(this.templateMode);
+        this.documentProcessors = documentProcessorSet.toArray(new IDocumentProcessor[documentProcessorSet.size()]);
         this.cdataSectionProcessors = cdataSectionProcessorSet.toArray(new ICDATASectionProcessor[cdataSectionProcessorSet.size()]);
         this.commentProcessors = commentProcessorSet.toArray(new ICommentProcessor[commentProcessorSet.size()]);
         this.docTypeProcessors = docTypeProcessorSet.toArray(new IDocTypeProcessor[docTypeProcessorSet.size()]);
@@ -339,18 +349,212 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleDocumentStart(final long startTimeNanos, final int line, final int col) {
-        super.handleDocumentStart(startTimeNanos, line, col);
+    public void handleDocumentStart(final IDocumentStart idocumentStart) {
+
+        /*
+         * FAIL FAST in case this structure has no associated processors.
+         */
+        if (!this.hasDocumentProcessors) {
+            super.handleDocumentStart(idocumentStart);
+            increaseHandlerExecLevel(); // Handling document start will always increase the handler exec level
+            return;
+        }
+
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
+
+
+        /*
+         * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
+         */
         increaseHandlerExecLevel();
+        final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * EXECUTE PROCESSORS
+         */
+        final int processorsLen = this.documentProcessors.length;
+        for (int i = 0; i < processorsLen; i++) {
+
+            this.documentStructureHandler.reset();
+
+            this.documentProcessors[i].processDocumentStart(
+                    this.processingContext, idocumentStart, this.documentStructureHandler);
+
+            if (this.documentStructureHandler.setLocalVariable) {
+                if (this.variablesMap != null) {
+                    this.variablesMap.putAll(this.documentStructureHandler.addedLocalVariables);
+                }
+            }
+
+            if (this.documentStructureHandler.removeLocalVariable) {
+                if (this.variablesMap != null) {
+                    for (final String variableName : this.documentStructureHandler.removedLocalVariableNames) {
+                        this.variablesMap.remove(variableName);
+                    }
+                }
+            }
+
+            if (this.documentStructureHandler.setSelectionTarget) {
+                if (this.variablesMap != null) {
+                    this.variablesMap.setSelectionTarget(this.documentStructureHandler.selectionTargetObject);
+                }
+            }
+
+            if (this.documentStructureHandler.setTextInliner) {
+                if (this.variablesMap != null) {
+                    this.variablesMap.setTextInliner(this.documentStructureHandler.setTextInlinerValue);
+                }
+            }
+
+            if (this.documentStructureHandler.insertText) {
+
+                queue.reset(); // Remove any previous results on the queue
+                queueProcessable = this.documentStructureHandler.insertTextProcessable;
+
+                this.textBuffer.setText(this.documentStructureHandler.insertTextValue);
+                queue.add(this.textBuffer, false);
+
+            } else if (this.documentStructureHandler.insertMarkup) {
+
+                queue.reset(); // Remove any previous results on the queue
+                queueProcessable = this.documentStructureHandler.insertMarkupProcessable;
+
+                // Markup will be automatically cloned if mutable
+                queue.addMarkup(this.documentStructureHandler.insertMarkupValue);
+
+            }
+
+        }
+
+
+        /*
+         * PROCESS THE REST OF THE HANDLER CHAIN
+         */
+        super.handleDocumentStart(idocumentStart);
+
+
+        /*
+         * PROCESS THE QUEUE, launching all the queued events
+         */
+        queue.process(queueProcessable ? this : getNext(), true);
+
+
+        /*
+         * HANDLER EXEC LEVEL WILL NOT BE DECREASED until the "documentEnd" event
+         */
+
     }
 
 
 
 
     @Override
-    public void handleDocumentEnd(final long endTimeNanos, final long totalTimeNanos, final int line, final int col) {
+    public void handleDocumentEnd(final IDocumentEnd idocumentEnd) {
+
+        /*
+         * FAIL FAST in case this structure has no associated processors.
+         */
+        if (!this.hasDocumentProcessors) {
+            decreaseHandlerExecLevel(); // Decrease the level increased during document start
+            super.handleDocumentEnd(idocumentEnd);
+            return;
+        }
+
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
+
+
+        /*
+         * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
+         */
+        increaseHandlerExecLevel();
+        final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * EXECUTE PROCESSORS
+         */
+        final int processorsLen = this.documentProcessors.length;
+        for (int i = 0; i < processorsLen; i++) {
+
+            this.documentStructureHandler.reset();
+
+            this.documentProcessors[i].processDocumentEnd(
+                    this.processingContext, idocumentEnd, this.documentStructureHandler);
+
+            if (this.documentStructureHandler.setLocalVariable) {
+                if (this.variablesMap != null) {
+                    this.variablesMap.putAll(this.documentStructureHandler.addedLocalVariables);
+                }
+            }
+
+            if (this.documentStructureHandler.removeLocalVariable) {
+                if (this.variablesMap != null) {
+                    for (final String variableName : this.documentStructureHandler.removedLocalVariableNames) {
+                        this.variablesMap.remove(variableName);
+                    }
+                }
+            }
+
+            if (this.documentStructureHandler.setSelectionTarget) {
+                if (this.variablesMap != null) {
+                    this.variablesMap.setSelectionTarget(this.documentStructureHandler.selectionTargetObject);
+                }
+            }
+
+            if (this.documentStructureHandler.setTextInliner) {
+                if (this.variablesMap != null) {
+                    this.variablesMap.setTextInliner(this.documentStructureHandler.setTextInlinerValue);
+                }
+            }
+
+            if (this.documentStructureHandler.insertText) {
+
+                queue.reset(); // Remove any previous results on the queue
+                queueProcessable = this.documentStructureHandler.insertTextProcessable;
+
+                this.textBuffer.setText(this.documentStructureHandler.insertTextValue);
+                queue.add(this.textBuffer, false);
+
+            } else if (this.documentStructureHandler.insertMarkup) {
+
+                queue.reset(); // Remove any previous results on the queue
+                queueProcessable = this.documentStructureHandler.insertMarkupProcessable;
+
+                // Markup will be automatically cloned if mutable
+                queue.addMarkup(this.documentStructureHandler.insertMarkupValue);
+
+            }
+
+        }
+
+
+        /*
+         * PROCESS THE QUEUE, launching all the queued events (BEFORE DELEGATING)
+         */
+        queue.process(queueProcessable ? this : getNext(), true);
+
+
+        /*
+         * DECREASE THE HANDLER EXEC LEVEL
+         */
         decreaseHandlerExecLevel();
-        super.handleDocumentEnd(endTimeNanos, totalTimeNanos, line, col);
+
+
+        /*
+         * PROCESS THE REST OF THE HANDLER CHAIN. This is the only case in which it really is the last operation
+         */
+        super.handleDocumentEnd(idocumentEnd);
+
+
     }
 
 
@@ -405,6 +609,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final int processorsLen = this.textProcessors.length;
         for (int i = 0; !structureRemoved && i < processorsLen; i++) {
 
+            this.textStructureHandler.reset();
+
             this.textProcessors[i].process(this.processingContext, itext, this.textStructureHandler);
 
             if (this.textStructureHandler.replaceWithMarkup) {
@@ -412,7 +618,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 queue.reset(); // Remove any previous results on the queue
                 queueProcessable = this.textStructureHandler.replaceWithMarkupProcessable;
 
-                queue.addMarkup(this.textStructureHandler.replaceWithMarkupValue, true); // we need to clone the queue!
+                // Markup will be automatically cloned if mutable
+                queue.addMarkup(this.textStructureHandler.replaceWithMarkupValue);
 
                 structureRemoved = true;
 
@@ -499,6 +706,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final int processorsLen = this.commentProcessors.length;
         for (int i = 0; !structureRemoved && i < processorsLen; i++) {
 
+            this.commentStructureHandler.reset();
+
             this.commentProcessors[i].process(this.processingContext, icomment, this.commentStructureHandler);
 
             if (this.commentStructureHandler.replaceWithMarkup) {
@@ -506,7 +715,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 queue.reset(); // Remove any previous results on the queue
                 queueProcessable = this.commentStructureHandler.replaceWithMarkupProcessable;
 
-                queue.addMarkup(this.commentStructureHandler.replaceWithMarkupValue, true); // we need to clone the queue!
+                // Markup will be automatically cloned if mutable
+                queue.addMarkup(this.commentStructureHandler.replaceWithMarkupValue);
 
                 structureRemoved = true;
 
@@ -592,6 +802,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final int processorsLen = this.cdataSectionProcessors.length;
         for (int i = 0; !structureRemoved && i < processorsLen; i++) {
 
+            this.cdataSectionStructureHandler.reset();
+
             this.cdataSectionProcessors[i].process(this.processingContext, icdataSection, this.cdataSectionStructureHandler);
 
             if (this.cdataSectionStructureHandler.replaceWithMarkup) {
@@ -599,7 +811,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 queue.reset(); // Remove any previous results on the queue
                 queueProcessable = this.cdataSectionStructureHandler.replaceWithMarkupProcessable;
 
-                queue.addMarkup(this.cdataSectionStructureHandler.replaceWithMarkupValue, true); // we need to clone the queue!
+                // Markup will be automatically cloned if mutable
+                queue.addMarkup(this.cdataSectionStructureHandler.replaceWithMarkupValue);
 
                 structureRemoved = true;
 
@@ -760,9 +973,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     }
                 }
 
-                if (this.elementStructureHandler.setTextInliningActive) {
+                if (this.elementStructureHandler.setTextInliner) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.setTextInliningActive(this.elementStructureHandler.setTextInliningActiveValue);
+                        this.variablesMap.setTextInliner(this.elementStructureHandler.setTextInlinerValue);
                     }
                 }
 
@@ -815,7 +1028,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // Prepare the text node that will be added to the queue, that we will suspend
                     // Note we are using a specific buffer for these cases, because we want to avoid cloning, and
-                    // we cannot use the normal 'textBodyReplacementBuffer' because it might be needed too during
+                    // we cannot use the normal 'textBuffer' because it might be needed too during
                     // the handling of the open/close events or any of its sub-events (e.g. nested queues). So the
                     // best option is take one from our own, specialized standalone-oriented buffer in order to limit
                     // the amount of objects created in these cases
@@ -865,9 +1078,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     closeTag.resetAsCloneOf(standaloneElementTag);
 
                     // Prepare the queue (that we will suspend)
-                    // We will add to the queue setting "cloneAlways" to false so that nodes are not cloned if this
-                    // block of markup is an immutable structure (in which case we are not in danger of side effects)
-                    queue.addMarkup(this.elementStructureHandler.setBodyMarkupValue, false);
+                    // Markup will be automatically cloned if mutable
+                    queue.addMarkup(this.elementStructureHandler.setBodyMarkupValue);
 
                     // We are done with using the standalone buffers, so increase the index
                     this.standaloneTagBuffersIndex++;
@@ -905,8 +1117,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
-                    this.textBodyReplacementBuffer.setText(this.elementStructureHandler.replaceWithTextValue);
-                    queue.add(this.textBodyReplacementBuffer, false);
+                    this.textBuffer.setText(this.elementStructureHandler.replaceWithTextValue);
+                    queue.add(this.textBuffer, false);
 
                     tagRemoved = true;
 
@@ -915,9 +1127,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     queue.reset(); // Remove any previous results on the queue
                     queueProcessable = this.elementStructureHandler.replaceWithMarkupProcessable;
 
-                    // We will add to the queue setting "cloneAlways" to false so that nodes are not cloned if this
-                    // block of markup is an immutable structure (in which case we are not in danger of side effects)
-                    queue.addMarkup(this.elementStructureHandler.replaceWithMarkupValue, false);
+                    // Markup will be automatically cloned if mutable
+                    queue.addMarkup(this.elementStructureHandler.replaceWithMarkupValue);
 
                     tagRemoved = true;
 
@@ -1113,9 +1324,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     }
                 }
 
-                if (this.elementStructureHandler.setTextInliningActive) {
+                if (this.elementStructureHandler.setTextInliner) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.setTextInliningActive(this.elementStructureHandler.setTextInliningActiveValue);
+                        this.variablesMap.setTextInliner(this.elementStructureHandler.setTextInlinerValue);
                     }
                 }
 
@@ -1132,10 +1343,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Before suspending the queue, we have to check if it is the result of a "setBodyText", in
                     // which case it will contain only one non-cloned node: the text buffer. And we will need
                     // to clone that buffer before suspending the queue to avoid nasty interactions during iteration
-                    if (queue.size() == 1 && queue.get(0) == this.textBodyReplacementBuffer) {
+                    if (queue.size() == 1 && queue.get(0) == this.textBuffer) {
                         // Replace the text buffer with a clone
                         queue.reset();
-                        queue.add(this.textBodyReplacementBuffer, true);
+                        queue.add(this.textBuffer, true);
                     }
 
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
@@ -1169,8 +1380,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // the most common case (th:text) and this will save us a good number of Text nodes. But note that
                     // if this element is iterated AFTER we set this, we will need to clone this node before suspending
                     // the queue, or we might have nasting interactions with each of the subsequent iterations
-                    this.textBodyReplacementBuffer.setText(this.elementStructureHandler.setBodyTextValue);
-                    queue.add(this.textBodyReplacementBuffer, false);
+                    this.textBuffer.setText(this.elementStructureHandler.setBodyTextValue);
+                    queue.add(this.textBuffer, false);
 
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
@@ -1180,9 +1391,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     queue.reset(); // Remove any previous results on the queue
                     queueProcessable = this.elementStructureHandler.setBodyMarkupProcessable;
 
-                    // We will add to the queue setting "cloneAlways" to false so that nodes are not cloned if this
-                    // block of markup is an immutable structure (in which case we are not in danger of side effects)
-                    queue.addMarkup(this.elementStructureHandler.setBodyMarkupValue, false);
+                    // Markup will be automatically cloned if mutable
+                    queue.addMarkup(this.elementStructureHandler.setBodyMarkupValue);
 
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
@@ -1194,8 +1404,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
-                    this.textBodyReplacementBuffer.setText(this.elementStructureHandler.replaceWithTextValue);
-                    queue.add(this.textBodyReplacementBuffer, false);
+                    this.textBuffer.setText(this.elementStructureHandler.replaceWithTextValue);
+                    queue.add(this.textBuffer, false);
 
                     tagRemoved = true;
                     allowedElementCountInBody = 0;
@@ -1206,9 +1416,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     queue.reset(); // Remove any previous results on the queue
                     queueProcessable = this.elementStructureHandler.replaceWithMarkupProcessable;
 
-                    // We will add to the queue setting "cloneAlways" to false so that nodes are not cloned if this
-                    // block of markup is an immutable structure (in which case we are not in danger of side effects)
-                    queue.addMarkup(this.elementStructureHandler.replaceWithMarkupValue, false);
+                    // Markup will be automatically cloned if mutable
+                    queue.addMarkup(this.elementStructureHandler.replaceWithMarkupValue);
 
                     tagRemoved = true;
                     allowedElementCountInBody = 0;
@@ -1441,9 +1650,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     }
                 }
 
-                if (this.elementStructureHandler.setTextInliningActive) {
+                if (this.elementStructureHandler.setTextInliner) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.setTextInliningActive(this.elementStructureHandler.setTextInliningActiveValue);
+                        this.variablesMap.setTextInliner(this.elementStructureHandler.setTextInlinerValue);
                     }
                 }
 
@@ -1460,10 +1669,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Before suspending the queue, we have to check if it is the result of a "setBodyText", in
                     // which case it will contain only one non-cloned node: the text buffer. And we will need
                     // to clone that buffer before suspending the queue to avoid nasty interactions during iteration
-                    if (queue.size() == 1 && queue.get(0) == this.textBodyReplacementBuffer) {
+                    if (queue.size() == 1 && queue.get(0) == this.textBuffer) {
                         // Replace the text buffer with a clone
                         queue.reset();
-                        queue.add(this.textBodyReplacementBuffer, true);
+                        queue.add(this.textBuffer, true);
                     }
 
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
@@ -1497,8 +1706,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // the most common case (th:text) and this will save us a good number of Text nodes. But note that
                     // if this element is iterated AFTER we set this, we will need to clone this node before suspending
                     // the queue, or we might have nasting interactions with each of the subsequent iterations
-                    this.textBodyReplacementBuffer.setText(this.elementStructureHandler.setBodyTextValue);
-                    queue.add(this.textBodyReplacementBuffer, false);
+                    this.textBuffer.setText(this.elementStructureHandler.setBodyTextValue);
+                    queue.add(this.textBuffer, false);
 
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
@@ -1508,9 +1717,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     queue.reset(); // Remove any previous results on the queue
                     queueProcessable = this.elementStructureHandler.setBodyMarkupProcessable;
 
-                    // We will add to the queue setting "cloneAlways" to false so that nodes are not cloned if this
-                    // block of markup is an immutable structure (in which case we are not in danger of side effects)
-                    queue.addMarkup(this.elementStructureHandler.setBodyMarkupValue, false);
+                    // Markup will be automatically cloned if mutable
+                    queue.addMarkup(this.elementStructureHandler.setBodyMarkupValue);
 
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
@@ -1522,8 +1730,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
-                    this.textBodyReplacementBuffer.setText(this.elementStructureHandler.replaceWithTextValue);
-                    queue.add(this.textBodyReplacementBuffer, false);
+                    this.textBuffer.setText(this.elementStructureHandler.replaceWithTextValue);
+                    queue.add(this.textBuffer, false);
 
                     tagRemoved = true;
                     allowedElementCountInBody = 0;
@@ -1534,9 +1742,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     queue.reset(); // Remove any previous results on the queue
                     queueProcessable = this.elementStructureHandler.replaceWithMarkupProcessable;
 
-                    // We will add to the queue setting "cloneAlways" to false so that nodes are not cloned if this
-                    // block of markup is an immutable structure (in which case we are not in danger of side effects)
-                    queue.addMarkup(this.elementStructureHandler.replaceWithMarkupValue, false);
+                    // Markup will be automatically cloned if mutable
+                    queue.addMarkup(this.elementStructureHandler.replaceWithMarkupValue);
 
                     tagRemoved = true;
                     allowedElementCountInBody = 0;
@@ -1879,6 +2086,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final int processorsLen = this.docTypeProcessors.length;
         for (int i = 0; !structureRemoved && i < processorsLen; i++) {
 
+            this.docTypeStructureHandler.reset();
+
             this.docTypeProcessors[i].process(this.processingContext, idocType, this.docTypeStructureHandler);
 
             if (this.docTypeStructureHandler.replaceWithMarkup) {
@@ -1886,7 +2095,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 queue.reset(); // Remove any previous results on the queue
                 queueProcessable = this.docTypeStructureHandler.replaceWithMarkupProcessable;
 
-                queue.addMarkup(this.docTypeStructureHandler.replaceWithMarkupValue, true); // we need to clone the queue!
+                // Markup will be automatically cloned if mutable
+                queue.addMarkup(this.docTypeStructureHandler.replaceWithMarkupValue);
 
                 structureRemoved = true;
 
@@ -1975,6 +2185,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final int processorsLen = this.xmlDeclarationProcessors.length;
         for (int i = 0; !structureRemoved && i < processorsLen; i++) {
 
+            this.xmlDeclarationStructureHandler.reset();
+
             this.xmlDeclarationProcessors[i].process(this.processingContext, ixmlDeclaration, this.xmlDeclarationStructureHandler);
 
             if (this.xmlDeclarationStructureHandler.replaceWithMarkup) {
@@ -1982,7 +2194,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 queue.reset(); // Remove any previous results on the queue
                 queueProcessable = this.xmlDeclarationStructureHandler.replaceWithMarkupProcessable;
 
-                queue.addMarkup(this.xmlDeclarationStructureHandler.replaceWithMarkupValue, true); // we need to clone the queue!
+                // Markup will be automatically cloned if mutable
+                queue.addMarkup(this.xmlDeclarationStructureHandler.replaceWithMarkupValue);
 
                 structureRemoved = true;
 
@@ -2070,6 +2283,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final int processorsLen = this.processingInstructionProcessors.length;
         for (int i = 0; !structureRemoved && i < processorsLen; i++) {
 
+            this.processingInstructionStructureHandler.reset();
+
             this.processingInstructionProcessors[i].process(this.processingContext, iprocessingInstruction, this.processingInstructionStructureHandler);
 
             if (this.processingInstructionStructureHandler.replaceWithMarkup) {
@@ -2077,7 +2292,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 queue.reset(); // Remove any previous results on the queue
                 queueProcessable = this.processingInstructionStructureHandler.replaceWithMarkupProcessable;
 
-                queue.addMarkup(this.processingInstructionStructureHandler.replaceWithMarkupValue, true); // we need to clone the queue!
+                // Markup will be automatically cloned if mutable
+                queue.addMarkup(this.processingInstructionStructureHandler.replaceWithMarkupValue);
 
                 structureRemoved = true;
 

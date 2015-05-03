@@ -24,6 +24,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.thymeleaf.inline.ITextInliner;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -68,8 +69,8 @@ final class ElementStructureHandler implements IElementStructureHandler {
     boolean setSelectionTarget;
     Object selectionTargetObject;
 
-    boolean setTextInliningActive;
-    boolean setTextInliningActiveValue;
+    boolean setTextInliner;
+    ITextInliner setTextInlinerValue;
 
     boolean iterateElement;
     String iterVariableName;
@@ -167,9 +168,9 @@ final class ElementStructureHandler implements IElementStructureHandler {
     }
 
 
-    public void setTextInliningActive(final boolean active) {
-        this.setTextInliningActive = true;
-        this.setTextInliningActiveValue = active;
+    public void setTextInliner(final ITextInliner textInliner) {
+        this.setTextInliner = true;
+        this.setTextInlinerValue = textInliner;
     }
 
 
@@ -200,8 +201,8 @@ final class ElementStructureHandler implements IElementStructureHandler {
         this.setSelectionTarget = false;
         this.selectionTargetObject = null;
 
-        this.setTextInliningActive = false;
-        this.setTextInliningActiveValue = false;
+        this.setTextInliner = false;
+        this.setTextInlinerValue = null;
 
     }
 

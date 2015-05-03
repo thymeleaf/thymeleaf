@@ -21,7 +21,8 @@ package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.IElementStructureHandler;
+import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.inline.ITextInliner;
 import org.thymeleaf.model.IProcessableElementTag;
 
 /**
@@ -31,10 +32,18 @@ import org.thymeleaf.model.IProcessableElementTag;
  * @since 3.0.0
  *
  */
-public final class StandardInlineTagProcessor extends AbstractStandardAttributeTagProcessor {
+public final class StandardInlineTagProcessor extends AbstractStandardTextInlineSettingTagProcessor {
 
     public static final int PRECEDENCE = 1000;
     public static final String ATTR_NAME = "inline";
+
+
+    public static final String TEXT_INLINE = "text";
+    public static final String JAVASCRIPT_INLINE = "javascript";
+    public static final String DART_INLINE = "dart";
+    public static final String NONE_INLINE = "none";
+
+
 
     public StandardInlineTagProcessor() {
         super(ATTR_NAME, PRECEDENCE);
@@ -42,15 +51,31 @@ public final class StandardInlineTagProcessor extends AbstractStandardAttributeT
 
 
 
-    protected void doProcess(
-            final ITemplateProcessingContext processingContext,
-            final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue,
-            final IElementStructureHandler structureHandler) {
+    @Override
+    protected ITextInliner getTextInliner(
+            final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue) {
 
-        structureHandler.setTextInliningActive(Boolean.valueOf(tag.getAttributes().getValue(attributeName)));
+        // TODO Implement the different inliners and link them here!
+
+        if (attributeValue != null) {
+            if (JAVASCRIPT_INLINE.equals(attributeValue.toLowerCase())) {
+                throw new UnsupportedOperationException("JAVASCRIPT INLINING IS NOT IMPLEMENTED YET!");
+            } else if (DART_INLINE.equals(attributeValue.toLowerCase())) {
+                throw new UnsupportedOperationException("JAVASCRIPT INLINING IS NOT IMPLEMENTED YET!");
+            } else if (TEXT_INLINE.equals(attributeValue.toLowerCase())) {
+                throw new UnsupportedOperationException("JAVASCRIPT INLINING IS NOT IMPLEMENTED YET!");
+            }
+        }
+
+        throw new TemplateProcessingException(
+                "Cannot recognize value for \"" + attributeName + "\". Allowed values are " +
+                        "\"" + TEXT_INLINE + "\", \"" + JAVASCRIPT_INLINE + "\", " +
+                        "\"" + DART_INLINE + "\" and \"" + NONE_INLINE + "\"");
 
     }
+
+
 
 
 }

@@ -17,13 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.templateparser;
+package org.thymeleaf.inline;
 
-import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.engine.ITemplateHandler;
-import org.thymeleaf.resource.IResource;
-import org.thymeleaf.templatemode.TemplateMode;
-
+import org.thymeleaf.context.IProcessingContext;
 
 /**
  *
@@ -31,22 +27,23 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  * 
  */
-public interface ITemplateParser {
+public final class NoOpTextInliner implements ITextInliner {
+
+    public static final NoOpTextInliner INSTANCE = new NoOpTextInliner();
 
 
-    public void parseTemplate(
-                      final IEngineConfiguration configuration,
-                      final TemplateMode templateMode,
-                      final IResource templateResource,
-                      final String[] selectors,
-                      final ITemplateHandler handler);
+    private NoOpTextInliner() {
+        super();
+    }
+
+    public String getName() {
+        return "NOOP";
+    }
 
 
-    public void parseFragment(
-                      final IEngineConfiguration configuration,
-                      final TemplateMode templateMode,
-                      final IResource templateResource,
-                      final String[] selectors,
-                      final ITemplateHandler handler);
+    public CharSequence inline(final IProcessingContext context, final CharSequence text) {
+        // Nothing to do. Anyway, this should never end up being executed...
+        return text;
+    }
 
 }

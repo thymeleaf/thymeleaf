@@ -23,7 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.engine.TemplateProcessor;
+import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.templateresolver.TemplateResolution;
 
 /**
@@ -38,18 +38,18 @@ public final class TemplateProcessingContext extends AbstractTemplateProcessingC
 
     public TemplateProcessingContext(
             final IEngineConfiguration configuration,
-            final TemplateProcessor templateProcessor,
+            final TemplateManager templateManager,
             final TemplateResolution templateResolution,
             final Locale locale, final Map<String, Object> variables) {
-        super(configuration, templateProcessor, templateResolution, locale, variables);
+        super(configuration, templateManager, templateResolution, locale, variables);
     }
 
     public TemplateProcessingContext(
             final IEngineConfiguration configuration,
-            final TemplateProcessor templateProcessor,
+            final TemplateManager templateManager,
             final TemplateResolution templateResolution,
             final IContext context) {
-        super(configuration, templateProcessor, templateResolution, context);
+        super(configuration, templateManager, templateResolution, context);
     }
 
 }

@@ -26,6 +26,8 @@ import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
+import org.thymeleaf.model.IDocumentEnd;
+import org.thymeleaf.model.IDocumentStart;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
@@ -44,6 +46,7 @@ import org.thymeleaf.util.Validate;
  */
 public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler {
 
+    private final boolean fragment;
     private final Markup markup;
     private final IEngineConfiguration configuration;
     private final TemplateMode templateMode;
@@ -55,11 +58,12 @@ public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler 
      *   Creates a new instance of this handler.
      * </p>
      */
-    public MarkupBuilderTemplateHandler(final Markup markup) {
+    public MarkupBuilderTemplateHandler(final boolean fragment, final Markup markup) {
         super();
         Validate.notNull(markup, "Markup cannot be null");
         Validate.notNull(markup.getConfiguration(), "Engine Configuration returned by Markup cannot be null");
         Validate.notNull(markup.getTemplateMode(), "Template Mode returned by Markup cannot be null");
+        this.fragment = fragment;
         this.markup = markup;
         this.configuration = markup.getConfiguration();
         this.templateMode = markup.getTemplateMode();
@@ -76,9 +80,33 @@ public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler 
     // this handler for parsing (we are not processing anything!)
 
 
+
+    @Override
+    public void handleDocumentStart(final IDocumentStart documentStart) {
+        if (!this.fragment) {
+            this.markup.add(documentStart);
+            // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
+        }
+        super.handleDocumentStart(documentStart);
+    }
+
+
+    @Override
+    public void handleDocumentEnd(final IDocumentEnd documentEnd) {
+        if (!this.fragment) {
+            this.markup.add(documentEnd);
+            // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
+        }
+        super.handleDocumentEnd(documentEnd);
+    }
+
+
+
+
+
     @Override
     public void handleText(final IText text) {
-        this.markup.add(Text.asEngineText(this.configuration, text, true));
+        this.markup.add(text);
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleText(text);
     }
@@ -87,7 +115,7 @@ public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler 
 
     @Override
     public void handleComment(final IComment comment) {
-        this.markup.add(Comment.asEngineComment(this.configuration, comment, true));
+        this.markup.add(comment);
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleComment(comment);
     }
@@ -95,7 +123,7 @@ public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler 
 
     @Override
     public void handleCDATASection(final ICDATASection cdataSection) {
-        this.markup.add(CDATASection.asEngineCDATASection(this.configuration, cdataSection, true));
+        this.markup.add(cdataSection);
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleCDATASection(cdataSection);
     }
@@ -105,7 +133,7 @@ public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler 
 
     @Override
     public void handleStandaloneElement(final IStandaloneElementTag standaloneElementTag) {
-        this.markup.add(StandaloneElementTag.asEngineStandaloneElementTag(this.templateMode, this.configuration, standaloneElementTag, true));
+        this.markup.add(standaloneElementTag);
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleStandaloneElement(standaloneElementTag);
     }
@@ -113,7 +141,7 @@ public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler 
 
     @Override
     public void handleOpenElement(final IOpenElementTag openElementTag) {
-        this.markup.add(OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, openElementTag, true));
+        this.markup.add(openElementTag);
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleOpenElement(openElementTag);
     }
@@ -121,7 +149,7 @@ public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler 
 
     @Override
     public void handleAutoOpenElement(final IAutoOpenElementTag autoOpenElementTag) {
-        this.markup.add(AutoOpenElementTag.asEngineAutoOpenElementTag(this.templateMode, this.configuration, autoOpenElementTag, true));
+        this.markup.add(autoOpenElementTag);
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleAutoOpenElement(autoOpenElementTag);
     }
@@ -129,7 +157,7 @@ public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler 
 
     @Override
     public void handleCloseElement(final ICloseElementTag closeElementTag) {
-        this.markup.add(CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, closeElementTag, true));
+        this.markup.add(closeElementTag);
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleCloseElement(closeElementTag);
     }
@@ -137,7 +165,7 @@ public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler 
 
     @Override
     public void handleAutoCloseElement(final IAutoCloseElementTag autoCloseElementTag) {
-        this.markup.add(AutoCloseElementTag.asEngineAutoCloseElementTag(this.templateMode, this.configuration, autoCloseElementTag, true));
+        this.markup.add(autoCloseElementTag);
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleAutoCloseElement(autoCloseElementTag);
     }
@@ -145,7 +173,7 @@ public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler 
 
     @Override
     public void handleUnmatchedCloseElement(final IUnmatchedCloseElementTag unmatchedCloseElementTag) {
-        this.markup.add(UnmatchedCloseElementTag.asEngineUnmatchedCloseElementTag(this.templateMode, this.configuration, unmatchedCloseElementTag, true));
+        this.markup.add(unmatchedCloseElementTag);
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleUnmatchedCloseElement(unmatchedCloseElementTag);
     }
@@ -155,7 +183,7 @@ public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler 
 
     @Override
     public void handleDocType(final IDocType docType) {
-        this.markup.add(DocType.asEngineDocType(this.configuration, docType, true));
+        this.markup.add(docType);
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleDocType(docType);
     }
@@ -165,7 +193,7 @@ public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler 
 
     @Override
     public void handleXMLDeclaration(final IXMLDeclaration xmlDeclaration) {
-        this.markup.add(XMLDeclaration.asEngineXMLDeclaration(this.configuration, xmlDeclaration, true));
+        this.markup.add(xmlDeclaration);
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleXMLDeclaration(xmlDeclaration);
     }
@@ -175,7 +203,7 @@ public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler 
 
     @Override
     public void handleProcessingInstruction(final IProcessingInstruction processingInstruction) {
-        this.markup.add(ProcessingInstruction.asEngineProcessingInstruction(this.configuration, processingInstruction, true));
+        this.markup.add(processingInstruction);
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleProcessingInstruction(processingInstruction);
     }

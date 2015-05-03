@@ -51,14 +51,14 @@ public class StandardMarkupFactory implements IMarkupFactory {
     private final ElementDefinitions elementDefinitions;
     private final TemplateMode templateMode;
     private final String templateName;
-    private final TemplateProcessor templateProcessor;
+    private final TemplateManager templateManager;
 
 
 
 
     public StandardMarkupFactory(
             final IEngineConfiguration configuration, final TemplateMode templateMode,
-            final String templateName, final TemplateProcessor templateProcessor) {
+            final String templateName, final TemplateManager templateManager) {
 
         super();
 
@@ -68,7 +68,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
         Validate.notNull(configuration.getAttributeDefinitions(), "Attribute Definitions returned by Engine Configuration cannot be null");
         Validate.notNull(configuration.getElementDefinitions(), "Element Definitions returned by Engine Configuration cannot be null");
         Validate.notNull(templateName, "Template Name cannot be null");
-        Validate.notNull(templateProcessor, "Template Processor cannot be null");
+        Validate.notNull(templateManager, "Template Processor cannot be null");
 
         this.configuration = configuration;
         this.textRepository = this.configuration.getTextRepository();
@@ -76,7 +76,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
         this.elementDefinitions = this.configuration.getElementDefinitions();
         this.templateMode = templateMode;
         this.templateName = templateName;
-        this.templateProcessor = templateProcessor;
+        this.templateManager = templateManager;
 
     }
 
@@ -90,7 +90,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
     public IMarkup createMarkup(final String markup) {
-        return this.templateProcessor.parseTextualFragment(this.configuration, this.templateMode, this.templateName, markup);
+        return this.templateManager.parseTextualFragment(this.configuration, this.templateMode, this.templateName, markup);
     }
 
 

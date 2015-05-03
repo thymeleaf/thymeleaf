@@ -29,5 +29,8 @@ package org.thymeleaf.fragment;
 public interface IFragmentSpec {
 
 
+    // TODO This interface is not really needed now... shouldn't we remove it? Check the repercusions of this on the APIs
+    // and on legacy support...
+
 
 }

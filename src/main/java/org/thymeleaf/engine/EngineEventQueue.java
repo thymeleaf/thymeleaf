@@ -51,6 +51,9 @@ final class EngineEventQueue {
     private final IEngineConfiguration configuration;
     private final int initialSize;
 
+    private DocumentStart documentStartBuffer = null;
+    private DocumentEnd documentEndBuffer = null;
+
     private Text textBuffer = null;
     private Comment commentBuffer = null;
     private CDATASection cdataSectionBuffer = null;
@@ -137,12 +140,12 @@ final class EngineEventQueue {
     }
 
 
-    void addMarkup(final IMarkup imarkup, final boolean cloneAlways) {
-        insertMarkup(this.queueSize, imarkup, cloneAlways);
+    void addMarkup(final IMarkup imarkup) {
+        insertMarkup(this.queueSize, imarkup);
     }
 
 
-    void insertMarkup(final int pos, final IMarkup imarkup, final boolean cloneAlways) {
+    void insertMarkup(final int pos, final IMarkup imarkup) {
 
         if (pos < 0 && pos >= this.queueSize) {
             throw new IndexOutOfBoundsException("Requested position " + pos + " of event queue with size " + this.queueSize);
@@ -167,12 +170,15 @@ final class EngineEventQueue {
 
 
         final Markup markup;
-        if (imarkup instanceof ImmutableMarkup) {
-            if (cloneAlways) {
-                markup = ((ImmutableMarkup) imarkup).getInternalMarkup().cloneMarkup();
-            } else {
-                markup = ((ImmutableMarkup) imarkup).getInternalMarkup();
-            }
+        if (imarkup instanceof ParsedTemplateMarkup) {
+            // This is forbidden - we cannot add something that is not a fragment, but an entire, top level template
+            throw new TemplateProcessingException(
+                    "Cannot add as fragment an entire, top-level template. The specified object should have been " +
+                    "parsed as fragment instead of template");
+        } else if (imarkup instanceof ImmutableMarkup) {
+            // No need to clone - argument is an immutable piece of markup and therefore using it without cloning will
+            // produce no side/undesired effects
+            markup = ((ImmutableMarkup) imarkup).getInternalMarkup();
         } else if (imarkup instanceof Markup) {
             // This implementation does not directly come from the parser nor is immutable, so we must clone its events
             // to avoid interactions.
@@ -257,6 +263,10 @@ final class EngineEventQueue {
                 handler.handleXMLDeclaration(bufferize((XMLDeclaration) event));
             } else if (event instanceof ProcessingInstruction) {
                 handler.handleProcessingInstruction(bufferize((ProcessingInstruction) event));
+            } else if (event instanceof DocumentStart) {
+                handler.handleDocumentStart(bufferize((DocumentStart) event));
+            } else if (event instanceof DocumentEnd) {
+                handler.handleDocumentEnd(bufferize((DocumentEnd) event));
             } else {
                 throw new TemplateProcessingException(
                         "Cannot handle in queue event of type: " + event.getClass().getName());
@@ -399,6 +409,26 @@ final class EngineEventQueue {
 
 
 
+    DocumentStart bufferize(final DocumentStart event) {
+        if (this.documentStartBuffer == null) {
+            this.documentStartBuffer = new DocumentStart();
+        }
+        this.documentStartBuffer.resetAsCloneOf(event);
+        return this.documentStartBuffer;
+    }
+
+
+
+    DocumentEnd bufferize(final DocumentEnd event) {
+        if (this.documentEndBuffer == null) {
+            this.documentEndBuffer = new DocumentEnd();
+        }
+        this.documentEndBuffer.resetAsCloneOf(event);
+        return this.documentEndBuffer;
+    }
+
+
+
 
 
     void reset() {
@@ -462,6 +492,10 @@ final class EngineEventQueue {
             return ((CDATASection)event).cloneNode();
         } else if (event instanceof ProcessingInstruction) {
             return ((ProcessingInstruction)event).cloneNode();
+        } else if (event instanceof DocumentStart) {
+            return ((DocumentStart)event).cloneEvent();
+        } else if (event instanceof DocumentEnd) {
+            return ((DocumentEnd)event).cloneEvent();
         }
 
         throw new TemplateProcessingException(

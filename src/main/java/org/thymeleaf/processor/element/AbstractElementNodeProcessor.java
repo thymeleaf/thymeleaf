@@ -92,7 +92,6 @@ public abstract class AbstractElementNodeProcessor
 
 
 
-    // Default implementation - meant to be overridden by subclasses if needed
     public final List<INode> process(final ITemplateProcessingContext processingContext, final INode node) {
 
         try {

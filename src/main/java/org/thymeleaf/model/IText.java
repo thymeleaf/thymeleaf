@@ -25,12 +25,9 @@ package org.thymeleaf.model;
  * @since 3.0.0
  * 
  */
-public interface IText extends INode {
+public interface IText extends INode, CharSequence {
 
     public String getText();
-
-    public int length();
-    public char charAt(final int index);
 
     public void setText(final String text);
 

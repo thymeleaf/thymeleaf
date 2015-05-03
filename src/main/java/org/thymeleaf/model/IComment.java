@@ -25,13 +25,10 @@ package org.thymeleaf.model;
  * @since 3.0.0
  * 
  */
-public interface IComment extends INode {
+public interface IComment extends INode, CharSequence {
 
     public String getComment();
     public String getContent();
-
-    public int length();
-    public char charAt(final int index);
 
     public void setContent(final String content);
 

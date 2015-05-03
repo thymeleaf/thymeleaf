@@ -37,7 +37,7 @@ import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.cache.StandardCacheManager;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.engine.TemplateProcessor;
+import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.exceptions.TemplateEngineException;
 import org.thymeleaf.exceptions.TemplateOutputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -233,7 +233,7 @@ public final class TemplateEngine implements ITemplateEngine {
 
 
     private IEngineConfiguration configuration = null;
-    private TemplateProcessor templateProcessor = null;
+    private TemplateManager templateManager = null;
 
 
 
@@ -322,7 +322,7 @@ public final class TemplateEngine implements ITemplateEngine {
 
                     this.configuration =
                             new EngineConfiguration(this.templateResolvers, this.messageResolvers, this.dialectConfigurations, this.cacheManager, this.textRepository);
-                    this.templateProcessor = new TemplateProcessor(this.configuration);
+                    this.templateManager = new TemplateManager(this.configuration);
 
                     initializeSpecific();
 
@@ -394,11 +394,11 @@ public final class TemplateEngine implements ITemplateEngine {
      *
      * @return the template processor
      */
-    public TemplateProcessor getTemplateProcessor() {
+    public TemplateManager getTemplateManager() {
         if (!this.initialized.get()) {
             initialize();
         }
-        return this.templateProcessor;
+        return this.templateManager;
     }
 
     
@@ -817,7 +817,7 @@ public final class TemplateEngine implements ITemplateEngine {
         if (!this.initialized.get()) {
             initialize();
         }
-        this.templateProcessor.clearTemplateCache();
+        this.templateManager.clearTemplateCache();
     }
 
 
@@ -838,7 +838,7 @@ public final class TemplateEngine implements ITemplateEngine {
         if (!this.initialized.get()) {
             initialize();
         }
-        this.templateProcessor.clearTemplateCacheFor(templateName);
+        this.templateManager.clearTemplateCacheFor(templateName);
     }
     
     
@@ -982,7 +982,7 @@ public final class TemplateEngine implements ITemplateEngine {
                 logger.debug("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH LOCALE {}", new Object[] {TemplateEngine.threadIndex(), templateName, context.getLocale()});
             }
             
-            this.templateProcessor.processTemplate(this.configuration, context, templateName, writer);
+            this.templateManager.processTemplate(this.configuration, context, templateName, writer);
 
             final long endNanos = System.nanoTime();
             

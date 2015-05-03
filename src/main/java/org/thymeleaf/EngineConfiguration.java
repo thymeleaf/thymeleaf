@@ -37,6 +37,7 @@ import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.processor.comment.ICommentProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeProcessor;
+import org.thymeleaf.processor.document.IDocumentProcessor;
 import org.thymeleaf.processor.element.IElementProcessor;
 import org.thymeleaf.processor.processinginstruction.IProcessingInstructionProcessor;
 import org.thymeleaf.processor.text.ITextProcessor;
@@ -139,6 +140,10 @@ public class EngineConfiguration implements IEngineConfiguration {
         return this.dialectSetConfiguration.getAttributeDefinitions();
     }
 
+
+    public Set<IDocumentProcessor> getDocumentProcessors(final TemplateMode templateMode) {
+        return this.dialectSetConfiguration.getDocumentProcessors(templateMode);
+    }
 
     public Set<ICDATASectionProcessor> getCDATASectionProcessors(final TemplateMode templateMode) {
         return this.dialectSetConfiguration.getCDATASectionProcessors(templateMode);

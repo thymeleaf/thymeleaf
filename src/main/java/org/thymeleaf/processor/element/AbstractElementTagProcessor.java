@@ -91,7 +91,6 @@ public abstract class AbstractElementTagProcessor
 
 
 
-    // Default implementation, meant to take care of adequate error handling
     public final void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,

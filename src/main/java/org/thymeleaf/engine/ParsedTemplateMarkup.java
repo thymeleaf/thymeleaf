@@ -37,7 +37,7 @@ public class ParsedTemplateMarkup extends ImmutableMarkup {
 
 
     // Package-protected constructor, because we don't want anyone creating these objects from outside the engine.
-    // Specifically, there will only be created from the TemplateProcessor.
+    // Specifically, they will only be created from the TemplateManager.
     // If a processor (be it standard or custom-made) wants to create a piece of markup, that should be a Markup
     // object, not this.
     ParsedTemplateMarkup(final IEngineConfiguration configuration, final TemplateResolution templateResolution) {
