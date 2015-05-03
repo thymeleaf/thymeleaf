@@ -96,6 +96,7 @@
     <servlet-api.version>2.5</servlet-api.version>
     <nekohtml.version>1.9.21</nekohtml.version>
     <ognl.version>3.0.11</ognl.version>
+    <mvel.version>2.2.4.Final</mvel.version>
     <javassist.version>3.16.1-GA</javassist.version>
     <attoparser.version>2.0.0-SNAPSHOT</attoparser.version>
     <unbescape.version>1.1.0.RELEASE</unbescape.version>
@@ -279,6 +280,13 @@
       <version>${servlet-api.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mvel</groupId>
+      <artifactId>mvel2</artifactId>
+      <version>${mvel.version}</version>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
