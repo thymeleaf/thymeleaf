@@ -45,11 +45,6 @@ import org.thymeleaf.context.IVariablesMap;
  */
 public final class OGNLVariablesMapPropertyAccessor implements PropertyAccessor {
 
-    /*
-     * This class supports OGNL-specific needs for the IVariablesMap implementations, in order to avoid problems like
-     * e.g. the existence of a context variable named 'size'.
-     */
-
     public static final String RESTRICT_REQUEST_PARAMETERS = "%RESTRICT_REQUEST_PARAMETERS%";
 
 
