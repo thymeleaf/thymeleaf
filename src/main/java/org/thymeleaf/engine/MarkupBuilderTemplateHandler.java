@@ -53,11 +53,6 @@ public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler 
 
 
 
-    /**
-     * <p>
-     *   Creates a new instance of this handler.
-     * </p>
-     */
     public MarkupBuilderTemplateHandler(final boolean fragment, final Markup markup) {
         super();
         Validate.notNull(markup, "Markup cannot be null");

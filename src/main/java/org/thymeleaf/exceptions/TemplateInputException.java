@@ -47,6 +47,11 @@ public class TemplateInputException extends TemplateProcessingException {
     /**
      *
      * @since 3.0.0
+     *
+     * @param message The message of the exception
+     * @param templateName The name of the template for which the exception is thrown
+     * @param line line position of the event that caused the exception
+     * @param col columns position of the event that caused the exception
      */
     public TemplateInputException(final String message, final String templateName, final int line, final int col) {
         super(message, templateName, line, col);
@@ -55,6 +60,12 @@ public class TemplateInputException extends TemplateProcessingException {
     /**
      *
      * @since 3.0.0
+     *
+     * @param message The message of the exception
+     * @param templateName The name of the template for which the exception is thrown
+     * @param line line position of the event that caused the exception
+     * @param col columns position of the event that caused the exception
+     * @param cause cause to be nested inside the exception
      */
     public TemplateInputException(final String message, final String templateName, final int line, final int col, final Throwable cause) {
         super(message, templateName, line, col, cause);

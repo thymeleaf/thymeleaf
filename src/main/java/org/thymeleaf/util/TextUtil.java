@@ -22,7 +22,7 @@ package org.thymeleaf.util;
 
 /**
  * <p>
- *   Utility class for <kbd>char[]</kbd> operations (mainly matching/comparing)
+ *   Utility class for <tt>char[]</tt> operations (mainly matching/comparing)
  * </p>
  *
  * @author Daniel Fern&aacute;ndez

@@ -27,11 +27,11 @@ import org.thymeleaf.util.TextUtil;
 
 /**
  * <p>
- *     Repository of text (<kbd>String</kbd>) instances created by the markup parser or document model.
+ *     Repository of text (<tt>String</tt>) instances created by the markup parser or document model.
  * </p>
  * <p>
  *     This repository works in a similar way to {@link String#intern()}, except that it allows the
- *     <em>interning</em> of texts without the need to previously have a <kbd>String</kbd> instance,
+ *     <em>interning</em> of texts without the need to previously have a <tt>String</tt> instance,
  *     and that it allows setting a maximum size for the entire repository in chars (and therefore
  *     in bytes too).
  * </p>

@@ -26,7 +26,7 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 
 /**
  * <p>
- *   Execution info (<kbd>execInfo</kbd>) expression utility object providing useful information about the template
+ *   Execution info (<tt>execInfo</tt>) expression utility object providing useful information about the template
  *   being processed.
  * </p>
  * 
