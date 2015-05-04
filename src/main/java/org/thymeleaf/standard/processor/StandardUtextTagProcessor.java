@@ -63,6 +63,14 @@ public final class StandardUtextTagProcessor extends AbstractStandardAttributeTa
 
         final String unescapedText = (result == null ? "" : result.toString());
 
+        // If this text contains no markup structures, there would be no need to parse it or treat it as markup!
+        if (!mightContainStructures(unescapedText)) {
+
+            structureHandler.setBody(unescapedText, false);
+            return;
+
+        }
+
         final ParsedFragmentMarkup parsedFragment =
                 processingContext.getTemplateManager().parseTextualFragment(
                         processingContext.getConfiguration(), processingContext.getTemplateMode(),
@@ -72,6 +80,23 @@ public final class StandardUtextTagProcessor extends AbstractStandardAttributeTa
         // which in turn avoids code injection.
         structureHandler.setBody(parsedFragment, false);
 
+    }
+
+
+    /*
+     * This method will be used for determining if we actually need to apply a parser to the unescaped text that we
+     * are going to use a a result of this th:utext execution. If there is no '>' character in it, then it is
+     * nothing but a piece of text, and applying the parser would be overkill
+     */
+    private static boolean mightContainStructures(final String unescapedText) {
+        int n = unescapedText.length();
+        while (n-- != 0) {
+            if (unescapedText.charAt(n) == '>') {
+                // Might be the end of a structure!
+                return true;
+            }
+        }
+        return false;
     }
 
 
