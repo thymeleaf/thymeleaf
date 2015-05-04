@@ -31,7 +31,7 @@ import org.thymeleaf.context.IVariablesMap;
 /**
  * <p>
  *   Implementation of {@code PropertyAccessor} that allows OGNL to access the contents of {@link IVariablesMap}
- *   implementations as if it were a Map.
+ *   implementations as if they were a Map.
  * </p>
  * <p>
  *   Note this accessor also has to take care of variable access restrictions (like e.g. forbidding access to
@@ -86,7 +86,7 @@ public final class OGNLVariablesMapPropertyAccessor implements PropertyAccessor 
         // what is done at MapPropertyAccessor#getSourceAccessor() method, removing all the parts related to indexed
         // access, which do not apply to IVariablesMap implementations.
 
-        context.setCurrentAccessor(Map.class);
+        context.setCurrentAccessor(IVariablesMap.class);
         context.setCurrentType(Object.class);
 
         return ".getVariable(" + index + ")";

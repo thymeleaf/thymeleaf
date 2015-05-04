@@ -19,13 +19,18 @@
  */
 package org.thymeleaf.standard.expression;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.LoaderClassPath;
-import ognl.Ognl;
 import ognl.OgnlException;
 import ognl.OgnlRuntime;
 import org.slf4j.Logger;
@@ -57,6 +62,11 @@ public final class OGNLVariableExpressionEvaluator
     public static final OGNLVariableExpressionEvaluator INSTANCE = new OGNLVariableExpressionEvaluator();
     private static final String OGNL_CACHE_PREFIX = "{ognl}";
 
+
+    private static Map<String,Object> CONTEXT_VARIABLES_MAP_NOEXPOBJECTS_RESTRICTIONS =
+            (Map<String,Object>) (Map<?,?>)Collections.singletonMap(
+                    OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS,
+                    OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
 
     private static boolean booleanFixApplied = false;
 
@@ -102,45 +112,61 @@ public final class OGNLVariableExpressionEvaluator
 
             final IEngineConfiguration configuration = processingContext.getConfiguration();
             
-            Object expressionTree = null;
+            Object parsedExpression = null;
             ICache<String, Object> cache = null;
-            
+
             if (configuration != null) {
                 final ICacheManager cacheManager = configuration.getCacheManager();
                 if (cacheManager != null) {
                     cache = cacheManager.getExpressionCache();
                     if (cache != null) {
-                        expressionTree = cache.get(OGNL_CACHE_PREFIX + expression);
+                        parsedExpression = cache.get(OGNL_CACHE_PREFIX + expression);
                     }
                 }
             }
-            
-            if (expressionTree == null) {
-                expressionTree = ognl.Ognl.parseExpression(expression);
-                if (cache != null && null != expressionTree) {
-                    cache.put(OGNL_CACHE_PREFIX + expression, expressionTree);
+
+            if (parsedExpression == null) {
+                // The result of parsing might be an OGNL expression AST or a ShortcutOGNLExpression (for simple cases)
+                parsedExpression = parseExpression(expression);
+                if (cache != null && null != parsedExpression) {
+                    cache.put(OGNL_CACHE_PREFIX + expression, parsedExpression);
                 }
             }
 
-            // The IExpressionObjects implementation returned by processing contexts that include the Standard
-            // Dialects will be lazy in the creation of expression objects (i.e. they won't be created until really
-            // needed). But unfortunately, OGNL resolves ALL of the context variables from the specified map when
-            // creating the OgnlContext, so even if we have the capacity of not creating the expression objects until
-            // we really need them, OGNL will not allow us to do so. Anyway, at least the StandardExpressionObjects
-            // implementation will take care of reusing almost all of the objects (except those that depend on the
-            // selection target), so that they are not created for each expression -- only for each template.
-            final IExpressionObjects contextVariables = processingContext.getExpressionObjects();
-            final Map<String,Object> contextVariablesMap = contextVariables.buildMap();
+            final Map<String,Object> contextVariablesMap;
+            if (mightNeedExpressionObjects(expression)) {
 
-            // We might need to apply restrictions on the request parameters. In the case of OGNL, the only way we
-            // can actually communicate with the PropertyAccessor, (OGNLVariablesMapPropertyAccessor), which is the
-            // agent in charge of applying such restrictions, is by adding a context variable that the property accessor
-            // can later lookup during evaluation.
-            if (expContext.getForbidRequestParameters()) {
-                contextVariablesMap.put(OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS, OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
+                // The IExpressionObjects implementation returned by processing contexts that include the Standard
+                // Dialects will be lazy in the creation of expression objects (i.e. they won't be created until really
+                // needed). But unfortunately, OGNL resolves ALL of the context variables from the specified map when
+                // creating the OgnlContext, so even if we have the capacity of not creating the expression objects until
+                // we really need them, OGNL will not allow us to do so. Anyway, at least the StandardExpressionObjects
+                // implementation will take care of reusing almost all of the objects (except those that depend on the
+                // selection target), so that they are not created for each expression -- only for each template.
+
+                final IExpressionObjects contextVariables = processingContext.getExpressionObjects();
+                contextVariablesMap = contextVariables.buildMap();
+
+                // We might need to apply restrictions on the request parameters. In the case of OGNL, the only way we
+                // can actually communicate with the PropertyAccessor, (OGNLVariablesMapPropertyAccessor), which is the
+                // agent in charge of applying such restrictions, is by adding a context variable that the property accessor
+                // can later lookup during evaluation.
+                if (expContext.getForbidRequestParameters()) {
+                    contextVariablesMap.put(OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS, OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
+                } else {
+                    contextVariablesMap.remove(OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
+                }
+
             } else {
-                contextVariablesMap.remove(OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
+
+                if (expContext.getForbidRequestParameters()) {
+                    contextVariablesMap = CONTEXT_VARIABLES_MAP_NOEXPOBJECTS_RESTRICTIONS;
+                } else {
+                    contextVariablesMap = Collections.EMPTY_MAP;
+                }
+
             }
+
 
             // The root object on which we will evaluate expressions will depend on whether a selection target is
             // active or not...
@@ -150,7 +176,7 @@ public final class OGNLVariableExpressionEvaluator
                             processingContext.getVariablesMap());
 
             // Execute the expression!
-            final Object result = Ognl.getValue(expressionTree, contextVariablesMap, evaluationRoot);
+            final Object result = executeExpression(parsedExpression, contextVariablesMap, evaluationRoot);
 
             if (!expContext.getPerformTypeConversion()) {
                 return result;
@@ -161,7 +187,7 @@ public final class OGNLVariableExpressionEvaluator
 
             return conversionService.convert(processingContext, result, String.class);
             
-        } catch (final OgnlException e) {
+        } catch (final Exception e) {
             throw new TemplateProcessingException(
                     "Exception evaluating OGNL expression: \"" + expression + "\"", e);
         }
@@ -262,5 +288,181 @@ public final class OGNLVariableExpressionEvaluator
         return EvaluationUtil.evaluateAsBoolean(value);
     }
     
-    
+
+
+
+
+
+
+
+    private Object parseExpression(final String expression) throws OgnlException {
+        final String[] parsedExpression = ShortcutOGNLExpression.parseExpr(expression);
+        if (parsedExpression == null) {
+            return ognl.Ognl.parseExpression(expression);
+        }
+        return new ShortcutOGNLExpression(parsedExpression);
+    }
+
+
+
+    private Object executeExpression(
+            final Object parsedExpression, final Map<String,Object> context, final Object root)
+            throws Exception {
+
+        if (parsedExpression instanceof ShortcutOGNLExpression) {
+            return ((ShortcutOGNLExpression) parsedExpression).evaluate(root);
+        }
+
+        return ognl.Ognl.getValue(parsedExpression, context, root);
+
+    }
+
+
+
+
+    private static boolean mightNeedExpressionObjects(final String expression) {
+        int n = expression.length();
+        while (n-- != 0) {
+            if (expression.charAt(n) == '#') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    private static final class ShortcutOGNLExpression {
+
+        private static final ConcurrentHashMap<Class<?>,ConcurrentHashMap<String,Method>> METHOD_CACHE;
+
+        private final String[] items;
+
+        static {
+            METHOD_CACHE = new ConcurrentHashMap<Class<?>, ConcurrentHashMap<String, Method>>(10);
+        }
+
+        private ShortcutOGNLExpression(final String[] items) {
+            super();
+            this.items = items;
+        }
+
+
+
+        private Object evaluate(final Object root) throws Exception {
+
+            Object curr = root;
+            for (final String item : this.items) {
+
+                if (curr == null) {
+                    throw new NullPointerException();
+                } else if (curr instanceof IVariablesMap){
+                    curr = ((IVariablesMap) curr).getVariable(item);
+                } else {
+
+                    final Class<?> currClass = curr.getClass();
+
+                    ConcurrentHashMap<String,Method> methodsByPropertyName = METHOD_CACHE.get(currClass);
+                    if (methodsByPropertyName == null) {
+                        methodsByPropertyName = new ConcurrentHashMap<String, Method>(10);
+                        METHOD_CACHE.putIfAbsent(currClass, methodsByPropertyName);
+                        methodsByPropertyName = METHOD_CACHE.get(currClass);
+                    }
+
+                    Method readMethod = methodsByPropertyName.get(item);
+                    if (readMethod == null) {
+                        BeanInfo beanInfo = Introspector.getBeanInfo(currClass);
+                        final PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+                        for (final PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+                            if (propertyDescriptor.getName().equals(item)) {
+                                final Method method = propertyDescriptor.getReadMethod();
+                                methodsByPropertyName.putIfAbsent(item, method);
+                                readMethod = methodsByPropertyName.get(item);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (readMethod == null) {
+                        throw new IllegalArgumentException("No property \"" + item + "\" in class " + currClass);
+                    }
+
+                    curr = readMethod.invoke(curr);
+                }
+
+            }
+
+            return curr;
+
+        }
+
+
+        private static String[] parseExpr(final String expression) {
+            return doParseExpr(expression, 0, 0, expression.length());
+        }
+
+
+
+        private static String[] doParseExpr(final String expression, final int level, final int offset, final int len) {
+
+            char c;
+            int codepoint;
+            int i = offset;
+            boolean firstChar = true;
+
+            while (i < len) {
+
+                c = expression.charAt(i);
+
+                if (c == '.') {
+                    break;
+                } else if (c < Character.MIN_HIGH_SURROGATE) { // shortcut: U+D800 is the lower limit of high-surrogate chars.
+                    codepoint = (int) c;
+                } else if (Character.isHighSurrogate(c) && i + 1 < len) { // i has already been increased
+                    final char c1 = expression.charAt(i + 1);
+                    if (Character.isLowSurrogate(c1)) {
+                        codepoint = Character.toCodePoint(c, c1);
+                        i++;
+                    } else {
+                        codepoint = (int) c;
+                    }
+                } else { // just a normal, single-char, high-valued codepoint
+                    codepoint = (int) c;
+                }
+
+                if (firstChar) {
+                    if (!Character.isJavaIdentifierStart(codepoint)) {
+                        return null;
+                    }
+                    firstChar = false;
+                } else {
+                    if (!Character.isJavaIdentifierPart(codepoint)) {
+                        return null;
+                    }
+                }
+
+                i++;
+
+            }
+
+            final String[] result;
+            if (i < len) {
+                result = doParseExpr(expression, level + 1, i + 1, len);
+                if (result == null) {
+                    return null;
+                }
+            } else {
+                result = new String[level + 1];
+            }
+
+            result[level] = expression.substring(offset, i);
+
+            return result;
+
+        }
+
+
+    }
+
+
 }
