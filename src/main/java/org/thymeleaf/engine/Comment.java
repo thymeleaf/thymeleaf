@@ -36,8 +36,8 @@ import org.thymeleaf.util.Validate;
 final class Comment
             implements IComment, IEngineTemplateHandlerEvent {
 
-    private static final char[] COMMENT_PREFIX = "<!--".toCharArray();
-    private static final char[] COMMENT_SUFFIX = "-->".toCharArray();
+    private static final String COMMENT_PREFIX = "<!--";
+    private static final String COMMENT_SUFFIX = "-->";
 
     private final ITextRepository textRepository;
 
@@ -94,12 +94,7 @@ final class Comment
             if (this.content == null) {
                 this.comment = this.textRepository.getText(this.buffer, this.offset, this.commentLength);
             } else {
-                final StringBuilder strBuilder =
-                        new StringBuilder(this.contentLength + COMMENT_PREFIX.length + COMMENT_SUFFIX.length);
-                strBuilder.append(COMMENT_PREFIX);
-                strBuilder.append(this.content);
-                strBuilder.append(COMMENT_SUFFIX);
-                this.comment = this.textRepository.getText(strBuilder);
+                this.comment = this.textRepository.getText(COMMENT_PREFIX, this.content, COMMENT_SUFFIX);
             }
         }
 
@@ -117,7 +112,7 @@ final class Comment
             // underlying char[])
 
             this.content =
-                    getComment().substring(COMMENT_PREFIX.length, (this.comment.length() - COMMENT_SUFFIX.length));
+                    getComment().substring(COMMENT_PREFIX.length(), (this.comment.length() - COMMENT_SUFFIX.length()));
 
         }
 
@@ -183,7 +178,7 @@ final class Comment
         this.offset = outerOffset;
 
         this.commentLength = outerLen;
-        this.contentLength = this.commentLength - COMMENT_PREFIX.length - COMMENT_SUFFIX.length;
+        this.contentLength = this.commentLength - COMMENT_PREFIX.length() - COMMENT_SUFFIX.length();
 
         this.comment = null;
         this.content = null;
@@ -207,7 +202,7 @@ final class Comment
         this.comment = null;
 
         this.contentLength = content.length();
-        this.commentLength = COMMENT_PREFIX.length + this.contentLength + COMMENT_SUFFIX.length;
+        this.commentLength = COMMENT_PREFIX.length() + this.contentLength + COMMENT_SUFFIX.length();
 
         this.buffer = null;
         this.offset = -1;

@@ -295,7 +295,7 @@ public final class LinkExpression extends SimpleExpression {
          */
         final int questionMarkPosition = linkBase.indexOf('?');
         
-        final StringBuilder parametersBuilder = new StringBuilder();
+        final StringBuilder parametersBuilder = new StringBuilder(24);
         
         for (final Map.Entry<String,List<Object>> parameterEntry : parameters.entrySet()) {
             
@@ -554,7 +554,7 @@ public final class LinkExpression extends SimpleExpression {
             if (basePath.contains(template)) {
 
                 usedParams.add(paramName);
-                final StringBuilder strBuilder = new StringBuilder();
+                final StringBuilder strBuilder = new StringBuilder(paramValues.size() * 16);
                 for (final Object parameterObjectValue : paramValues) {
                     final String parameterValue = (parameterObjectValue == null? "" : parameterObjectValue.toString());
                     if (!URL_PARAM_NO_VALUE.equals(parameterValue)) {
@@ -569,7 +569,7 @@ public final class LinkExpression extends SimpleExpression {
             } else if (baseQuery != null && baseQuery.contains(template)) {
 
                 usedParams.add(paramName);
-                final StringBuilder strBuilder = new StringBuilder();
+                final StringBuilder strBuilder = new StringBuilder(paramValues.size() * 16);
                 for (final Object parameterObjectValue : paramValues) {
                     final String parameterValue = (parameterObjectValue == null? "" : parameterObjectValue.toString());
                     if (!URL_PARAM_NO_VALUE.equals(parameterValue)) {

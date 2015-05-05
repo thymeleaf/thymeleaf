@@ -112,20 +112,31 @@ public final class TextLiteralExpression extends SimpleExpression {
             return null;
         }
 
-        final StringBuilder strBuilder = new StringBuilder(str.length() + 5);
+        int n = str.length();
+        while (n-- != 0) {
 
-        strBuilder.append('\'');
-        final int strLen = str.length();
-        for (int i = 0; i < strLen; i++) {
-            final char c = str.charAt(i);
-            if (c == '\'') {
-                strBuilder.append('\\');
+            if (str.charAt(n) == '\'') {
+
+                final StringBuilder strBuilder = new StringBuilder(str.length() + 5);
+
+                strBuilder.append('\'');
+                final int strLen = str.length();
+                for (int i = 0; i < strLen; i++) {
+                    final char c = str.charAt(i);
+                    if (c == '\'') {
+                        strBuilder.append('\\');
+                    }
+                    strBuilder.append(c);
+                }
+                strBuilder.append('\'');
+
+                return strBuilder.toString();
+
             }
-            strBuilder.append(c);
-        }
-        strBuilder.append('\'');
 
-        return strBuilder.toString();
+        }
+
+        return '\'' + str + '\'';
 
     }
 

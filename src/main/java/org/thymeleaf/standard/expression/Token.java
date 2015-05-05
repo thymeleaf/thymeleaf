@@ -206,9 +206,10 @@ public abstract class Token extends SimpleExpression {
 
         public static String trace(final String input) {
 
-            final StringBuilder strBuilder = new StringBuilder();
-
             final int inputLen = input.length();
+
+            final StringBuilder strBuilder = new StringBuilder(inputLen + 1);
+
             for (int i = 0; i < inputLen; i++) {
                 if (isTokenChar(input, i)) {
                     strBuilder.append(TOKEN_SUBSTITUTE);

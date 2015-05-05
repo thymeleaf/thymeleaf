@@ -133,8 +133,6 @@ public final class StandardCache<K, V> implements ICache<K,V> {
     
     public void put(final K key, final V value) {
 
-        incrementReportEntity(this.putCount);
-        
         final CacheEntry<V> entry = new CacheEntry<V>(value, this.useSoftReferences);
         
         // newSize will be -1 if traceExecution is false
@@ -144,10 +142,11 @@ public final class StandardCache<K, V> implements ICache<K,V> {
             this.logger.trace(
                     "[THYMELEAF][{}][{}][CACHE_ADD][{}] Adding cache entry in cache \"{}\" for key \"{}\". New size is {}.", 
                     new Object[] {TemplateEngine.threadIndex(), this.name, Integer.valueOf(newSize), this.name, key, Integer.valueOf(newSize)});
+            incrementReportEntity(this.putCount);
+            outputReportIfNeeded();
         }
         
-        outputReportIfNeeded();
-        
+
     }
     
 
@@ -160,18 +159,17 @@ public final class StandardCache<K, V> implements ICache<K,V> {
     
     public V get(final K key, final ICacheEntryValidityChecker<? super K, ? super V> validityChecker) {
         
-        incrementReportEntity(this.getCount);
-        
         final CacheEntry<V> resultEntry = this.dataContainer.get(key);
         
         if (resultEntry == null) {
-            incrementReportEntity(this.missCount);
             if (this.traceExecution) {
                 this.logger.trace(
                         "[THYMELEAF][{}][{}][CACHE_MISS] Cache miss in cache \"{}\" for key \"{}\".", 
                         new Object[] {TemplateEngine.threadIndex(), this.name, this.name, key});
+                incrementReportEntity(this.getCount);
+                incrementReportEntity(this.missCount);
+                outputReportIfNeeded();
             }
-            outputReportIfNeeded();
             return null;
         }
 
@@ -186,9 +184,10 @@ public final class StandardCache<K, V> implements ICache<K,V> {
                 this.logger.trace(
                         "[THYMELEAF][{}][{}][CACHE_MISS] Cache miss in cache \"{}\" for key \"{}\".", 
                         new Object[] {TemplateEngine.threadIndex(), this.name, this.name, key});
+                incrementReportEntity(this.getCount);
+                incrementReportEntity(this.missCount);
+                outputReportIfNeeded();
             }
-            incrementReportEntity(this.missCount);
-            outputReportIfNeeded();
             return null;
         }
         
@@ -196,10 +195,11 @@ public final class StandardCache<K, V> implements ICache<K,V> {
             this.logger.trace(
                     "[THYMELEAF][{}][{}][CACHE_HIT] Cache hit in cache \"{}\" for key \"{}\".", 
                     new Object[] {TemplateEngine.threadIndex(), this.name, this.name, key});
+            incrementReportEntity(this.getCount);
+            incrementReportEntity(this.hitCount);
+            outputReportIfNeeded();
         }
-        
-        incrementReportEntity(this.hitCount);
-        outputReportIfNeeded();
+
         return resultValue;
         
     }
@@ -279,35 +279,29 @@ public final class StandardCache<K, V> implements ICache<K,V> {
 
     
     private void incrementReportEntity(final AtomicLong entity) {
-        if (this.traceExecution) {
-            entity.incrementAndGet();
-        }
+        entity.incrementAndGet();
     }
 
     
     private void outputReportIfNeeded() {
         
-        if (this.traceExecution) { // fail fast
-            
-            final long currentTime = System.currentTimeMillis();
-            if ((currentTime - this.lastExecution) >= REPORT_INTERVAL) { // first check without need to sync
-                synchronized (this) {
-                    if ((currentTime - this.lastExecution) >= REPORT_INTERVAL) {
-                        this.logger.trace(
-                                String.format(REPORT_FORMAT,
-                                        Integer.valueOf(size()),
-                                        Long.valueOf(this.putCount.get()),
-                                        Long.valueOf(this.getCount.get()),
-                                        Long.valueOf(this.hitCount.get()),
-                                        Long.valueOf(this.missCount.get()),
-                                        this.name));
-                        this.lastExecution = currentTime;
-                    }
+        final long currentTime = System.currentTimeMillis();
+        if ((currentTime - this.lastExecution) >= REPORT_INTERVAL) { // first check without need to sync
+            synchronized (this) {
+                if ((currentTime - this.lastExecution) >= REPORT_INTERVAL) {
+                    this.logger.trace(
+                            String.format(REPORT_FORMAT,
+                                    Integer.valueOf(size()),
+                                    Long.valueOf(this.putCount.get()),
+                                    Long.valueOf(this.getCount.get()),
+                                    Long.valueOf(this.hitCount.get()),
+                                    Long.valueOf(this.missCount.get()),
+                                    this.name));
+                    this.lastExecution = currentTime;
                 }
             }
-            
         }
-        
+
     }
     
     

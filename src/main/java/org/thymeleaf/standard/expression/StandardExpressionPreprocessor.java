@@ -61,7 +61,7 @@ final class StandardExpressionPreprocessor {
         
         if (matcher.find()) {
 
-            final StringBuilder strBuilder = new StringBuilder();
+            final StringBuilder strBuilder = new StringBuilder(input.length() + 24);
             int curr = 0;
             
             do {
@@ -131,7 +131,7 @@ final class StandardExpressionPreprocessor {
 
 
         state = 0; // 1 = \, 2 = _, 3 = \, 4 = _
-        final StringBuilder strBuilder = new StringBuilder();
+        final StringBuilder strBuilder = new StringBuilder(inputLen + 6);
         for (int i = 0; i < inputLen; i++) {
             final char c = input.charAt(i);
             if (c == '\\' && (state == 0 || state == 2)) {

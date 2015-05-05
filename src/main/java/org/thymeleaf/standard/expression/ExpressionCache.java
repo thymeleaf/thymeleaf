@@ -32,12 +32,12 @@ import org.thymeleaf.cache.ICacheManager;
  */
 final class ExpressionCache {
 
-    private static final String EXPRESSION_CACHE_PREFIX = "{expression}";
-    private static final String ASSIGNATION_SEQUENCE_CACHE_PREFIX = "{assignation_sequence}";
-    private static final String EXPRESSION_SEQUENCE_CACHE_PREFIX = "{expression_sequence}";
-    private static final String EACH_CACHE_PREFIX = "{each}";
-    private static final String FRAGMENT_SELECTION_CACHE_PREFIX = "{fragment_selection}";
-    private static final String FRAGMENT_SIGNATURE_CACHE_PREFIX = "{fragment_signature}";
+    private static final String EXPRESSION_CACHE_PREFIX = "expr|";
+    private static final String ASSIGNATION_SEQUENCE_CACHE_PREFIX = "aseq|";
+    private static final String EXPRESSION_SEQUENCE_CACHE_PREFIX = "eseq|";
+    private static final String EACH_CACHE_PREFIX = "each|";
+    private static final String FRAGMENT_SELECTION_CACHE_PREFIX = "fsel|";
+    private static final String FRAGMENT_SIGNATURE_CACHE_PREFIX = "fsig|";
 
     
     
@@ -47,24 +47,24 @@ final class ExpressionCache {
     
 
     
-    private static Object getFromCache(final IEngineConfiguration configuration, final String input, final String prefix) {
+    static Object getFromCache(final IEngineConfiguration configuration, final String input, final String prefix) {
         final ICacheManager cacheManager = configuration.getCacheManager();
         if (cacheManager != null) {
             final ICache<String,Object> cache = cacheManager.getExpressionCache();
             if (cache != null) {
-                return cache.get(prefix + input);
+                return cache.get(configuration.getTextRepository().getText(prefix, input));
             }
         }
         return null;
     }
 
     
-    private static <V> void putIntoCache(final IEngineConfiguration configuration, final String input, final V value, final String prefix) {
+    static <V> void putIntoCache(final IEngineConfiguration configuration, final String input, final V value, final String prefix) {
         final ICacheManager cacheManager = configuration.getCacheManager();
         if (cacheManager != null) {
             final ICache<String,Object> cache = cacheManager.getExpressionCache();
             if (cache != null) {
-                cache.put(prefix + input, value);
+                cache.put(configuration.getTextRepository().getText(prefix, input), value);
             }
         }
     }

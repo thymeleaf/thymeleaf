@@ -113,50 +113,6 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
 
 
 
-    public String getText(final CharSequence text) {
-
-        if (text == null) {
-            return null;
-        }
-
-        final int hashCode = TextUtil.hashCode(text);
-
-        this.readLock.lock();
-
-        try {
-
-            final int[] ids = this.textMap[Math.abs(hashCode) % TEXT_MAP_LEN];
-
-            if (ids != null) {
-
-                // Now we need to iterate the array of ids looking for the target text
-                for (int i = 0; i < ids.length; i++) {
-                    final String candidate = this.texts[ids[i]];
-                    if (checkResult(text, candidate)) {
-                        // We will return the stored instance, maybe allowing the 'text' arg to be eaten by the GC
-                        return candidate;
-                    }
-                }
-
-            }
-
-        } finally {
-            this.readLock.unlock();
-        }
-
-        /*
-         * NOT FOUND. We need to obtain a write lock and store the text
-         */
-        this.writeLock.lock();
-        try {
-            return storeText(text.toString());
-        } finally {
-            this.writeLock.unlock();
-        }
-
-    }
-
-
     public String getText(final char[] text, final int offset, final int len) {
 
         if (text == null) {
@@ -201,8 +157,216 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
     }
 
 
+    public String getText(final CharSequence text) {
+
+        if (text == null) {
+            return null;
+        }
+
+        final int hashCode = TextUtil.hashCode(text);
+
+        this.readLock.lock();
+
+        try {
+
+            final int[] ids = this.textMap[Math.abs(hashCode) % TEXT_MAP_LEN];
+
+            if (ids != null) {
+
+                // Now we need to iterate the array of ids looking for the target text
+                for (int i = 0; i < ids.length; i++) {
+                    final String candidate = this.texts[ids[i]];
+                    if (checkResult(text, candidate)) {
+                        // We will return the stored instance, maybe allowing the 'text' arg to be eaten by the GC
+                        return candidate;
+                    }
+                }
+
+            }
+
+        } finally {
+            this.readLock.unlock();
+        }
+
+        /*
+         * NOT FOUND. We need to obtain a write lock and store the text
+         */
+        this.writeLock.lock();
+        try {
+            return storeText(text.toString());
+        } finally {
+            this.writeLock.unlock();
+        }
+
+    }
 
 
+    public String getText(final CharSequence text0, final CharSequence text1) {
+
+        if (text0 == null) {
+            return getText(text1);
+        }
+        if (text1 == null) {
+            return getText(text0);
+        }
+
+        final int hashCode = TextUtil.hashCode(text0, text1);
+
+        this.readLock.lock();
+
+        try {
+
+            final int[] ids = this.textMap[Math.abs(hashCode) % TEXT_MAP_LEN];
+
+            if (ids != null) {
+
+                // Now we need to iterate the array of ids looking for the target text
+                for (int i = 0; i < ids.length; i++) {
+                    final String candidate = this.texts[ids[i]];
+                    if (checkResult(text0, text1, candidate)) {
+                        // We will return the stored instance, maybe allowing the 'text' arg to be eaten by the GC
+                        return candidate;
+                    }
+                }
+
+            }
+
+        } finally {
+            this.readLock.unlock();
+        }
+
+        /*
+         * NOT FOUND. We need to obtain a write lock and store the text
+         */
+        this.writeLock.lock();
+        try {
+            return storeText(text0.toString() + text1.toString());
+        } finally {
+            this.writeLock.unlock();
+        }
+
+    }
+
+
+    public String getText(final CharSequence text0, final CharSequence text1, final CharSequence text2) {
+
+        if (text0 == null) {
+            return getText(text1, text2);
+        }
+        if (text1 == null) {
+            return getText(text0, text2);
+        }
+        if (text2 == null) {
+            return getText(text0, text1);
+        }
+
+        final int hashCode = TextUtil.hashCode(text0, text1, text2);
+
+        this.readLock.lock();
+
+        try {
+
+            final int[] ids = this.textMap[Math.abs(hashCode) % TEXT_MAP_LEN];
+
+            if (ids != null) {
+
+                // Now we need to iterate the array of ids looking for the target text
+                for (int i = 0; i < ids.length; i++) {
+                    final String candidate = this.texts[ids[i]];
+                    if (checkResult(text0, text1, text2, candidate)) {
+                        // We will return the stored instance, maybe allowing the 'text' arg to be eaten by the GC
+                        return candidate;
+                    }
+                }
+
+            }
+
+        } finally {
+            this.readLock.unlock();
+        }
+
+        /*
+         * NOT FOUND. We need to obtain a write lock and store the text
+         */
+        this.writeLock.lock();
+        try {
+            return storeText(text0.toString() + text1.toString() + text2.toString());
+        } finally {
+            this.writeLock.unlock();
+        }
+
+    }
+
+
+    public String getText(final CharSequence text0, final CharSequence text1, final CharSequence text2, final CharSequence text3) {
+
+        if (text0 == null) {
+            return getText(text1, text2, text3);
+        }
+        if (text1 == null) {
+            return getText(text0, text2, text3);
+        }
+        if (text2 == null) {
+            return getText(text0, text1, text3);
+        }
+        if (text3 == null) {
+            return getText(text0, text1, text2);
+        }
+
+        final int hashCode = TextUtil.hashCode(text0, text1, text2, text3);
+
+        this.readLock.lock();
+
+        try {
+
+            final int[] ids = this.textMap[Math.abs(hashCode) % TEXT_MAP_LEN];
+
+            if (ids != null) {
+
+                // Now we need to iterate the array of ids looking for the target text
+                for (int i = 0; i < ids.length; i++) {
+                    final String candidate = this.texts[ids[i]];
+                    if (checkResult(text0, text1, text2, text3, candidate)) {
+                        // We will return the stored instance, maybe allowing the 'text' arg to be eaten by the GC
+                        return candidate;
+                    }
+                }
+
+            }
+
+        } finally {
+            this.readLock.unlock();
+        }
+
+        /*
+         * NOT FOUND. We need to obtain a write lock and store the text
+         */
+        this.writeLock.lock();
+        try {
+            return storeText(text0.toString() + text1.toString() + text2.toString() + text3.toString());
+        } finally {
+            this.writeLock.unlock();
+        }
+
+    }
+
+
+
+
+
+
+    private static boolean checkResult(final char[] input, final int offset, final int len, final String result) {
+        if (result.length() != len) {
+            return false;
+        }
+        int j = 0;
+        for (; j < len; j++) {
+            if (result.charAt(j) != input[offset+j]) {
+                break;
+            }
+        }
+        return(j >= len);
+    }
 
 
     private static boolean checkResult(final CharSequence input, final String result) {
@@ -227,18 +391,93 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
     }
 
 
-    private static boolean checkResult(final char[] input, final int offset, final int len, final String result) {
-        if (result.length() != len) {
-            return false;
+    private static boolean checkResult(final CharSequence input0, final CharSequence input1, final String result) {
+
+        if (input0 == null) {
+            return checkResult(input1, result);
         }
-        int j = 0;
-        for (; j < len; j++) {
-            if (result.charAt(j) != input[offset+j]) {
-                break;
-            }
+        if (input1 == null) {
+            return checkResult(input0, result);
         }
-        return(j >= len);
+
+        return checkResultPart(checkResultPart(0, input0, result), input1, result) != -1;
+
     }
+
+
+    private static boolean checkResult(final CharSequence input0, final CharSequence input1, final CharSequence input2, final String result) {
+
+        if (input0 == null) {
+            return checkResult(input1, input2, result);
+        }
+        if (input1 == null) {
+            return checkResult(input0, input2, result);
+        }
+        if (input2 == null) {
+            return checkResult(input0, input1, result);
+        }
+
+        return checkResultPart(checkResultPart(checkResultPart(0, input0, result), input1, result), input2, result) != -1;
+
+    }
+
+
+    private static boolean checkResult(final CharSequence input0, final CharSequence input1, final CharSequence input2, final CharSequence input3, final String result) {
+
+        if (input0 == null) {
+            return checkResult(input1, input2, input3, result);
+        }
+        if (input1 == null) {
+            return checkResult(input0, input2, input3, result);
+        }
+        if (input2 == null) {
+            return checkResult(input0, input1, input3, result);
+        }
+        if (input3 == null) {
+            return checkResult(input0, input1, input2, result);
+        }
+
+        return checkResultPart(checkResultPart(checkResultPart(checkResultPart(0, input0, result), input1, result), input2, result), input3, result) != -1;
+
+    }
+
+
+
+
+    private static int checkResultPart(final int i, final CharSequence input, final String result) {
+
+        if (i == -1) {
+            return i;
+        }
+
+        final int inputLen = input.length();
+
+        if (input instanceof String) {
+            if (result.startsWith((String)input, i)) {
+                return i + inputLen;
+            }
+            return -1; // doesn't match!
+        }
+
+        if (i + inputLen > result.length()) {
+            return -1; // wouldn't fit :(
+        }
+
+        int x = i;
+        int n = inputLen;
+        while (n-- != 0) {
+            if (input.charAt(x-i) != result.charAt(x)) {
+                return -1;
+            }
+            x++;
+        }
+
+        return i + inputLen;
+
+    }
+
+
+
 
 
 

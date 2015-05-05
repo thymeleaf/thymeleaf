@@ -205,8 +205,18 @@ abstract class AbstractProcessableElementTag
         } else {
             this.elementAttributes.resetAsCloneOf(original.elementAttributes); // not the same as cloning the ElementAttributes object, because we want
         }
-        this.associatedProcessors =
-                (original.associatedProcessors == null ? null : new ArrayList<IElementProcessor>(original.associatedProcessors)); // It's mutable, so we have to copy the list
+        if (original.associatedProcessors == null) {
+            if (this.associatedProcessors != null) {
+                this.associatedProcessors.clear();
+            }
+        } else {
+            if (this.associatedProcessors == null) {
+                this.associatedProcessors = new ArrayList<IElementProcessor>(original.associatedProcessors);
+            } else {
+                this.associatedProcessors.clear();
+                this.associatedProcessors.addAll(original.associatedProcessors);
+            }
+        }
         this.associatedProcessorsAttributesVersion = original.associatedProcessorsAttributesVersion;
     }
 

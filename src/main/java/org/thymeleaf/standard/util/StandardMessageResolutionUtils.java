@@ -25,6 +25,7 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
@@ -56,7 +57,7 @@ public final class StandardMessageResolutionUtils {
     private static final String HTM_SUFFIX = ".htm";
     private static final String JSP_SUFFIX = ".jsp";
     
-    private static final String TEMPLATE_CACHE_PREFIX = "{template_msg}";
+    private static final String TEMPLATE_CACHE_PREFIX = "tmsg|";
 
     
     
@@ -68,16 +69,17 @@ public final class StandardMessageResolutionUtils {
         Validate.notNull(processingContext, "Processing Context cannot be null");
         Validate.notNull(processingContext.getLocale(), "Locale returned by Processing Context cannot be null");
         Validate.notNull(key, "Message key cannot be null");
-        
+
+        final IEngineConfiguration configuration = processingContext.getConfiguration();
         final Locale locale = processingContext.getLocale();
 
         final String templateName = processingContext.getTemplateResolution().getTemplateName();
-        final String cacheKey = TEMPLATE_CACHE_PREFIX + templateName + '_' + locale.toString();
+        final String cacheKey = configuration.getTextRepository().getText(TEMPLATE_CACHE_PREFIX, templateName, "_", locale.toString());
 
         Properties properties = null;
         ICache<String,Properties> messagesCache = null;
         
-        final ICacheManager cacheManager = processingContext.getConfiguration().getCacheManager();
+        final ICacheManager cacheManager = configuration.getCacheManager();
         if (cacheManager != null) {
             messagesCache = cacheManager.getMessageCache();
             if (messagesCache != null) {

@@ -112,8 +112,8 @@ final class ExpressionParsingUtil {
             return state;
         }
 
-        final StringBuilder decomposedInput = new StringBuilder();
-        final StringBuilder currentFragment = new StringBuilder();
+        final StringBuilder decomposedInput = new StringBuilder(24);
+        final StringBuilder currentFragment = new StringBuilder(24);
         int currentIndex = 1;
 
         int expLevel = 0;
@@ -436,8 +436,8 @@ final class ExpressionParsingUtil {
 
         final String input = state.get(nodeIndex).getInput();
 
-        final StringBuilder decomposedString = new StringBuilder();
-        final StringBuilder currentFragment = new StringBuilder();
+        final StringBuilder decomposedString = new StringBuilder(24);
+        final StringBuilder currentFragment = new StringBuilder(24);
         int currentIndex = state.size();
         final List<Integer> nestedInputs = new ArrayList<Integer>(6);
 

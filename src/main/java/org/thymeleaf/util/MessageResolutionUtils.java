@@ -64,7 +64,7 @@ public final class MessageResolutionUtils {
     private static final String SUFFIX_FOR_DEFAULT = "";
     private static final Pattern CLASS_NAME_SEPARATOR_PATTERN = Pattern.compile("\\.");
 
-    private static final String CLASS_CACHE_PREFIX = "{class_msg}";
+    private static final String CLASS_CACHE_PREFIX = "cmsg|";
 
     
     public static String resolveMessageForTemplate(
@@ -129,7 +129,7 @@ public final class MessageResolutionUtils {
         Validate.notNull(messageKey, "Message key cannot be null");
 
         final String className = targetClass.getName();
-        final String cacheKey = CLASS_CACHE_PREFIX + className + "_" + locale.toString();
+        final String cacheKey = configuration.getTextRepository().getText(CLASS_CACHE_PREFIX, className, "_", locale.toString());
         
         ICache<String,Properties> messagesCache = null;
         Properties properties = null;

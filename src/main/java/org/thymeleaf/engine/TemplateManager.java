@@ -175,10 +175,7 @@ public final class TemplateManager {
         // Markup Selectors CAN be null
 
 
-        final String cacheKey =
-                computeCacheKey(
-                        configuration.getTextRepository(), templateName, false,
-                        computeCacheKeyFragmentIdentifierForMarkupSelectors(markupSelectors));
+        final String cacheKey = computeCacheKey(configuration.getTextRepository(), templateName, markupSelectors);
 
 
         /*
@@ -246,8 +243,7 @@ public final class TemplateManager {
         Validate.notNull(textualFragment, "Textual Fragment cannot be null");
 
 
-        final String cacheKey =
-                computeCacheKey(configuration.getTextRepository(), templateName, true, textualFragment);
+        final String cacheKey = computeCacheKey(configuration.getTextRepository(), templateName, textualFragment);
 
         /*
          * First look at the cache - it might be already cached
@@ -318,9 +314,7 @@ public final class TemplateManager {
         Validate.notNull(templateName, "Template Name cannot be null");
         // markupSelectors CAN be null (selecting the whole template as a fragment...
 
-        final String cacheKey =
-                computeCacheKey(configuration.getTextRepository(), templateName, true,
-                        computeCacheKeyFragmentIdentifierForMarkupSelectors(markupSelectors));
+        final String cacheKey = computeCacheKey(configuration.getTextRepository(), templateName, markupSelectors);
 
         /*
          * First look at the cache - it might be already cached
@@ -392,9 +386,7 @@ public final class TemplateManager {
         Validate.notNull(templateName, "Template Name cannot be null");
         // Markup Selectors CAN be null
 
-        final String cacheKey =
-                computeCacheKey(configuration.getTextRepository(), templateName, false,
-                        computeCacheKeyFragmentIdentifierForMarkupSelectors(markupSelectors));
+        final String cacheKey = computeCacheKey(configuration.getTextRepository(), templateName, markupSelectors);
 
 
         /*
@@ -702,64 +694,45 @@ public final class TemplateManager {
 
 
 
-    // TODO In the case of utext fragments, there must be a better way to compute a cache key than using the fragment
-    // itself as a part of it. Its hashCode operation, not being the String itself internalizable is going to be slow...
-
 
 
     private static String computeCacheKey(
-            final ITextRepository textRepository, final String templateName, final boolean fragment, final CharSequence fragmentIdentifier) {
+            final ITextRepository textRepository, final String templateName, final String textualFragment) {
 
-        if (fragmentIdentifier == null || fragmentIdentifier.length() == 0) {
-            if (fragment) {
-                final StringBuilder strBuilder = new StringBuilder(templateName.length() + 10);
-                strBuilder.append("{frag}");
-                strBuilder.append(templateName);
-                if (textRepository == null) {
-                    return strBuilder.toString();
-                }
-                return textRepository.getText(strBuilder);
-            }
+        if (textualFragment == null) {
             return templateName;
         }
-
-        // We will try to avoid the creation of too many strings when computing these keys by creating a StringBuilder
-        // and then passing it to the Text Repository in order to find the canonical String representing it. Given
-        // the StringBuilder implements CharSequence and it doesn't build a String with the different appended parts
-        // until calling 'toString()', which we won't call, this should save us from creating the resulting String.
-        final StringBuilder strBuilder = new StringBuilder(fragmentIdentifier.length() + 10);
-        if (fragment) {
-            strBuilder.append("{frag}");
-        }
-        strBuilder.append(templateName);
-        strBuilder.append("::");
-        strBuilder.append(fragmentIdentifier);
-        if (textRepository == null) {
-            return strBuilder.toString();
-        }
-        return textRepository.getText(strBuilder);
-
+        return textRepository.getText(templateName, "##", textualFragment);
     }
 
 
-    private static CharSequence computeCacheKeyFragmentIdentifierForMarkupSelectors(final String[] fragmentIdentifiers) {
+    private static String computeCacheKey(
+            final ITextRepository textRepository, final String templateName, final String[] markupSelectors) {
 
-        if (fragmentIdentifiers == null) {
-            return null;
+        if (markupSelectors == null || markupSelectors.length == 0) {
+            return templateName;
         }
-        if (fragmentIdentifiers.length == 1) {
-            if (fragmentIdentifiers[0] == null) {
-                return null;
+        final String markupSelectorsKeyFragment = computeMarkupSelectorsKeyFragment(markupSelectors);
+        return textRepository.getText(templateName, "::", markupSelectorsKeyFragment);
+    }
+
+
+    private static String computeMarkupSelectorsKeyFragment(final String[] markupSelectors) {
+
+        if (markupSelectors.length == 1) {
+            if (markupSelectors[0] == null) {
+                return "";
             }
-            return fragmentIdentifiers[0];
+            return markupSelectors[0];
         }
-        final StringBuilder strBuilder = new StringBuilder(40);
-        strBuilder.append(fragmentIdentifiers[0] != null? fragmentIdentifiers[0] : "");
-        for (int i = 1; i < fragmentIdentifiers.length; i++) {
-            strBuilder.append(',');
-            strBuilder.append(fragmentIdentifiers[i] != null? fragmentIdentifiers[i] : "");
+        final StringBuilder strBuilder = new StringBuilder(markupSelectors.length * 16);
+        for (int i = 0; i < markupSelectors.length; i++) {
+            if (strBuilder.length() > 0) {
+                strBuilder.append(',');
+            }
+            strBuilder.append(markupSelectors[i] != null? markupSelectors[i] : "");
         }
-        return strBuilder;
+        return strBuilder.toString();
 
     }
     

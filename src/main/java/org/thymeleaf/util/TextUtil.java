@@ -2156,11 +2156,31 @@ public final class TextUtil {
 
 
     public static int hashCode(final CharSequence text) {
+        return hashCodePart(0, text);
+    }
+
+
+    public static int hashCode(final CharSequence text0, final CharSequence text1) {
+        return hashCodePart(hashCodePart(0, text0), text1);
+    }
+
+
+    public static int hashCode(final CharSequence text0, final CharSequence text1, final CharSequence text2) {
+        return hashCodePart(hashCodePart(hashCodePart(0, text0), text1), text2);
+    }
+
+
+    public static int hashCode(final CharSequence text0, final CharSequence text1, final CharSequence text2, final CharSequence text3) {
+        return hashCodePart(hashCodePart(hashCodePart(hashCodePart(0, text0), text1), text2), text3);
+    }
+
+
+
+    private static int hashCodePart(final int h, final CharSequence text) {
         // This basically mimics what the String.hashCode() method does, without the need to
         // convert the CharSequence into a new String object (unless it is a String already,
-        // in which case String.hashCode() is used directly.
-        // If the text to compute was already a String, it would be better to directly call
-        // its 'hashCode()' method, because Strings cache their hash codes.
+        // in which case String.hashCode() is used directly because hashCode might be cached
+        // inside the String)
         // ---------------------------------------
         // NOTE: Even if relying on the specific implementation of String.hashCode() might seem
         //       a potential issue for cross-platform compatibility, the fact is that the
@@ -2168,15 +2188,15 @@ public final class TextUtil {
         //       since Java 1.2, and its internal workings are explained in the JavaDoc for the
         //       String.hashCode() method.
         // ---------------------------------------
-        if (text instanceof String) {
+        if (h == 0 && text instanceof String) {
             return text.hashCode();
         }
-        int h = 0;
+        int hh = h;
         final int textLen = text.length();
         for (int i = 0; i < textLen; i++) {
-            h = 31*h + text.charAt(i);
+            hh = 31*hh + text.charAt(i);
         }
-        return h;
+        return hh;
     }
 
 

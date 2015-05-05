@@ -82,7 +82,7 @@ final class LiteralSubstitutionUtil {
             if (c == LITERAL_SUBSTITUTION_DELIMITER && !inLiteralSubstitution && inNothing) {
 
                 if (strBuilder == null) {
-                    strBuilder = new StringBuilder(inputLen + 10);
+                    strBuilder = new StringBuilder(inputLen + 20);
                     strBuilder.append(input.substring(0,i));
                 }
                 inLiteralSubstitution = true;

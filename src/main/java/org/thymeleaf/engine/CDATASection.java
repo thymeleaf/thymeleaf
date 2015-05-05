@@ -36,8 +36,8 @@ import org.thymeleaf.util.Validate;
 final class CDATASection
             implements ICDATASection, IEngineTemplateHandlerEvent {
 
-    private static final char[] CDATA_PREFIX = "<![CDATA[".toCharArray();
-    private static final char[] CDATA_SUFFIX = "]]>".toCharArray();
+    private static final String CDATA_PREFIX = "<![CDATA[";
+    private static final String CDATA_SUFFIX = "]]>";
 
     private final ITextRepository textRepository;
 
@@ -93,12 +93,7 @@ final class CDATASection
             if (this.content == null) {
                 this.cdataSection = this.textRepository.getText(this.buffer, this.offset, this.cdataSectionLength);
             } else {
-                final StringBuilder strBuilder =
-                        new StringBuilder(this.contentLength + CDATA_PREFIX.length + CDATA_SUFFIX.length);
-                strBuilder.append(CDATA_PREFIX);
-                strBuilder.append(this.content);
-                strBuilder.append(CDATA_SUFFIX);
-                this.cdataSection = this.textRepository.getText(strBuilder);
+                this.cdataSection = this.textRepository.getText(CDATA_PREFIX, this.content, CDATA_SUFFIX);
             }
         }
 
@@ -116,7 +111,7 @@ final class CDATASection
             // underlying char[])
 
             this.content =
-                    getCDATASection().substring(CDATA_PREFIX.length, (this.cdataSection.length() - CDATA_SUFFIX.length));
+                    getCDATASection().substring(CDATA_PREFIX.length(), (this.cdataSection.length() - CDATA_SUFFIX.length()));
 
         }
 
@@ -181,7 +176,7 @@ final class CDATASection
         this.offset = outerOffset;
 
         this.cdataSectionLength = outerLen;
-        this.contentLength = this.cdataSectionLength - CDATA_PREFIX.length - CDATA_SUFFIX.length;
+        this.contentLength = this.cdataSectionLength - CDATA_PREFIX.length() - CDATA_SUFFIX.length();
 
         this.cdataSection = null;
         this.content = null;
@@ -205,7 +200,7 @@ final class CDATASection
         this.cdataSection = null;
 
         this.contentLength = content.length();
-        this.cdataSectionLength = CDATA_PREFIX.length + this.contentLength + CDATA_SUFFIX.length;
+        this.cdataSectionLength = CDATA_PREFIX.length() + this.contentLength + CDATA_SUFFIX.length();
 
         this.buffer = null;
         this.offset = -1;
