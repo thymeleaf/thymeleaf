@@ -20,20 +20,28 @@
 package org.thymeleaf.standard.expression;
 
 import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ognl.ArrayPropertyAccessor;
+import ognl.EnumerationPropertyAccessor;
+import ognl.IteratorPropertyAccessor;
+import ognl.ListPropertyAccessor;
+import ognl.MapPropertyAccessor;
+import ognl.ObjectPropertyAccessor;
+import ognl.OgnlException;
 import ognl.OgnlRuntime;
+import ognl.PropertyAccessor;
+import ognl.SetPropertyAccessor;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
@@ -69,32 +77,63 @@ final class OGNLShortcutExpression {
         final ICacheManager cacheManager = configuration.getCacheManager();
         final ICache<String, Object> expressionCache = (cacheManager == null? null : cacheManager.getExpressionCache());
 
-        Object curr = root;
+        Object target = root;
         for (final String propertyName : this.expressionLevels) {
 
-            if (curr == null) {
-                throw new NullPointerException();
-            } else if (curr instanceof IVariablesMap) {
-                curr = getVariablesMapProperty(propertyName, curr);
-            } else if (curr instanceof Map<?,?>) {
-                curr = getMapProperty(propertyName, (Map<?,?>)curr);
-            } else if (curr instanceof List<?>) {
-                curr = getListProperty(textRepository, expressionCache, propertyName, (List<?>)curr);
-            } else if (curr instanceof Set<?>) {
-                curr = getSetProperty(textRepository, expressionCache, propertyName, (Set<?>) curr);
-            } else if (curr instanceof Iterator<?>) {
-                curr = getIteratorProperty(textRepository, expressionCache, propertyName, (Iterator<?>) curr);
-            } else if (curr instanceof Enumeration<?>) {
-                curr = getEnumerationProperty(textRepository, expressionCache, propertyName, (Enumeration<?>) curr);
-            } else if (curr instanceof Object[]) {
-                curr = getArrayProperty(textRepository, expressionCache, propertyName, (Object[]) curr);
+            // If target is null, we will mimic what OGNL does in these cases...
+            if (target == null) {
+                throw new OgnlException("source is null for getProperty(null, \"" + propertyName + "\")");
+            }
+
+            // For the best integration possible, we will ask OGNL which property accessor it would use for
+            // this target object, and then depending on the result apply our equivalent or just default to
+            // OGNL evaluation if it is a custom property accessor we do not implement.
+            final Class<?> targetClass = OgnlRuntime.getTargetClass(target);
+            final PropertyAccessor ognlPropertyAccessor = OgnlRuntime.getPropertyAccessor(targetClass);
+
+            // Depending on the returned OGNL property accessor, we will try to apply ours
+            if (OGNLVariablesMapPropertyAccessor.class.equals(ognlPropertyAccessor.getClass())) {
+
+                target = getVariablesMapProperty(propertyName, target);
+
+            } else if (ObjectPropertyAccessor.class.equals(ognlPropertyAccessor.getClass())) {
+
+                target = getObjectProperty(textRepository, expressionCache, propertyName, target);
+
+            } else if (MapPropertyAccessor.class.equals(ognlPropertyAccessor.getClass())) {
+
+                target = getMapProperty(propertyName, (Map<?, ?>) target);
+
+            } else if (ListPropertyAccessor.class.equals(ognlPropertyAccessor.getClass())) {
+
+                target = getListProperty(textRepository, expressionCache, propertyName, (List<?>) target);
+
+            } else if (SetPropertyAccessor.class.equals(ognlPropertyAccessor.getClass())) {
+
+                target = getSetProperty(textRepository, expressionCache, propertyName, (Set<?>) target);
+
+            } else if (IteratorPropertyAccessor.class.equals(ognlPropertyAccessor.getClass())) {
+
+                target = getIteratorProperty(textRepository, expressionCache, propertyName, (Iterator<?>) target);
+
+            } else if (EnumerationPropertyAccessor.class.equals(ognlPropertyAccessor.getClass())) {
+
+                target = getEnumerationProperty(textRepository, expressionCache, propertyName, (Enumeration<?>) target);
+
+            } else if (ArrayPropertyAccessor.class.equals(ognlPropertyAccessor.getClass())) {
+
+                target = getArrayProperty(textRepository, expressionCache, propertyName, (Object[]) target);
+
             } else {
-                curr = getObjectProperty(textRepository, expressionCache, propertyName, curr);
+                // OGNL would like to apply a different property accessor (probably a custom one we do not know). In
+                // these cases, we must signal the problem with this exception and let the expression evaluator
+                // default to normal OGNL evaluation.
+                throw new OGNLShortcutExpressionNotApplicableException();
             }
 
         }
 
-        return curr;
+        return target;
 
     }
 
@@ -111,8 +150,7 @@ final class OGNLShortcutExpression {
 
     private static Object getObjectProperty(
             final ITextRepository textRepository, final ICache<String,Object> expressionCache,
-            final String propertyName, final Object target)
-            throws Exception {
+            final String propertyName, final Object target) {
 
         final Class<?> currClass = OgnlRuntime.getTargetClass(target);
         final String cacheKey = computeMethodCacheKey(textRepository, currClass, propertyName);
@@ -124,30 +162,51 @@ final class OGNLShortcutExpression {
         }
 
         if (readMethod == null) {
-            BeanInfo beanInfo = Introspector.getBeanInfo(currClass);
+
+            final BeanInfo beanInfo;
+            try {
+                beanInfo = Introspector.getBeanInfo(currClass);
+            } catch (final IntrospectionException e) {
+                // Something went wrong during introspection - wash hands, just let OGNL decide what to do
+                throw new OGNLShortcutExpressionNotApplicableException();
+            }
+
             final PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
-            for (final PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-                if (propertyDescriptor.getName().equals(propertyName)) {
-                    readMethod = propertyDescriptor.getReadMethod();
-                    if (expressionCache != null) {
-                        expressionCache.put(cacheKey, readMethod);
+            if (propertyDescriptors != null) {
+                for (final PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+                    if (propertyDescriptor.getName().equals(propertyName)) {
+                        readMethod = propertyDescriptor.getReadMethod();
+                        if (readMethod != null && expressionCache != null) {
+                            expressionCache.put(cacheKey, readMethod);
+                        }
+                        break;
                     }
-                    break;
                 }
             }
+
         }
 
         if (readMethod == null) {
-            throw new IllegalArgumentException("No property \"" + propertyName + "\" in class " + currClass);
+            // The property name does not match any getter methods - better let OGNL decide what to do
+            throw new OGNLShortcutExpressionNotApplicableException();
         }
 
-        return readMethod.invoke(target, NO_PARAMS);
+        try {
+            return readMethod.invoke(target, NO_PARAMS);
+        } catch (final IllegalAccessException e) {
+            // Oops! we better let OGNL take care of this its own way...
+            throw new OGNLShortcutExpressionNotApplicableException();
+        } catch (final InvocationTargetException e) {
+            // Oops! we better let OGNL take care of this its own way...
+            throw new OGNLShortcutExpressionNotApplicableException();
+        }
 
     }
 
 
 
-    private static Object getMapProperty(final String propertyName, final Map<?,?> map) throws Exception {
+
+    private static Object getMapProperty(final String propertyName, final Map<?,?> map) {
 
         /*
          * This method will try to mimic the behaviour of the ognl.MapPropertyAccessor class, with the exception
@@ -181,8 +240,7 @@ final class OGNLShortcutExpression {
 
     public static Object getListProperty(
             final ITextRepository textRepository, final ICache<String,Object> expressionCache,
-            final String propertyName, final List<?> list)
-            throws Exception {
+            final String propertyName, final List<?> list) {
 
         /*
          * This method will try to mimic the behaviour of the ognl.ListPropertyAccessor class, with the exception
@@ -213,8 +271,7 @@ final class OGNLShortcutExpression {
 
     public static Object getArrayProperty(
             final ITextRepository textRepository, final ICache<String,Object> expressionCache,
-            final String propertyName, final Object[] array)
-            throws Exception {
+            final String propertyName, final Object[] array) {
 
         /*
          * This method will try to mimic the behaviour of the ognl.ArrayPropertyAccessor class, with the exception
@@ -239,8 +296,7 @@ final class OGNLShortcutExpression {
 
     public static Object getEnumerationProperty(
             final ITextRepository textRepository, final ICache<String,Object> expressionCache,
-            final String propertyName, final Enumeration enumeration)
-            throws Exception {
+            final String propertyName, final Enumeration enumeration) {
 
         /*
          * This method will try to mimic the behaviour of the ognl.EnumerationPropertyAccessor class, with the exception
@@ -264,8 +320,7 @@ final class OGNLShortcutExpression {
 
     public static Object getIteratorProperty(
             final ITextRepository textRepository, final ICache<String,Object> expressionCache,
-            final String propertyName, final Iterator<?> iterator)
-            throws Exception {
+            final String propertyName, final Iterator<?> iterator) {
 
         /*
          * This method will try to mimic the behaviour of the ognl.IteratorPropertyAccessor class, with the exception
@@ -289,8 +344,7 @@ final class OGNLShortcutExpression {
 
     public static Object getSetProperty(
             final ITextRepository textRepository, final ICache<String,Object> expressionCache,
-            final String propertyName, final Set<?> set)
-            throws Exception {
+            final String propertyName, final Set<?> set) {
 
         /*
          * This method will try to mimic the behaviour of the ognl.IteratorPropertyAccessor class, with the exception
@@ -391,46 +445,23 @@ final class OGNLShortcutExpression {
 
 
 
+    /*
+     * This exception signals that the OGNLShortcutExpression mechanism is not applicable for the current
+     * expression, and therefore the OGNLVariableExpressionEvaluator should default to standard pure-OGNL
+     * evaluation.
+     *
+     * Most common reason for this is the existance of a custom property accessor registered in OGNL for accessing
+     * the properties of one of the objects involved in the expression, which behaviour (the custom property accessor's)
+     * cannot be replicated by OGNLShortcutExpressions.
+     */
+    static class OGNLShortcutExpressionNotApplicableException extends RuntimeException {
 
-    public static void main(String[] args) throws Exception {
-
-        final List<String> list = new ArrayList<String>();
-        list.add("one value");
-
-        final Map<String,Object> root = new HashMap<String, Object>();
-        root.put("list", list);
-
-        final One one = new One("huey!");
-        root.put("salute", one);
-
-
-        System.out.println(ognl.Ognl.getValue("list[0]", root));
-        System.out.println(ognl.Ognl.getValue("salute.two", root));
-
-        System.out.println(OgnlRuntime.getPropertyAccessor(Map.class));
-        System.out.println(OgnlRuntime.getPropertyAccessor(List.class));
-        System.out.println(OgnlRuntime.getPropertyAccessor(One.class));
-        System.out.println(OgnlRuntime.getPropertyAccessor(Serializable.class));
-
-
-
-    }
-
-
-    public static class One {
-
-        private final String two;
-
-        public One(final String one) {
+        OGNLShortcutExpressionNotApplicableException() {
             super();
-            this.two = one;
-        }
-
-        public String getTwo() {
-            return this.two;
         }
 
     }
+
 
 
 }

@@ -52,8 +52,6 @@ public final class OGNLVariableExpressionEvaluator
     
     private static final Logger logger = LoggerFactory.getLogger(OGNLVariableExpressionEvaluator.class);
 
-    public static final OGNLVariableExpressionEvaluator INSTANCE = new OGNLVariableExpressionEvaluator();
-
     // The reason we will be using a prefix with the expression cache is in order to separate entries coming
     // from this VariableExpressionEvaluator and those coming from the parsing of assignation sequences,
     // each expressions, fragment selections, etc. See org.thymeleaf.standard.expression.ExpressionCache
@@ -68,14 +66,16 @@ public final class OGNLVariableExpressionEvaluator
     private static boolean booleanFixApplied = false;
 
 
+    private final boolean applyOGNLShortcuts;
 
 
 
 
-
-    private OGNLVariableExpressionEvaluator() {
+    public OGNLVariableExpressionEvaluator(final boolean applyOGNLShortcuts) {
 
         super();
+
+        this.applyOGNLShortcuts = applyOGNLShortcuts;
 
         /*
          * INITIALIZE AND REGISTER THE PROPERTY ACCESSOR
@@ -96,10 +96,19 @@ public final class OGNLVariableExpressionEvaluator
 
 
 
-
     public final Object evaluate(
             final IProcessingContext processingContext, final String expression,
             final StandardExpressionExecutionContext expContext, final boolean useSelectionAsRoot) {
+        return evaluate(processingContext, expression, expContext, useSelectionAsRoot, this.applyOGNLShortcuts);
+    }
+
+
+
+
+    private static Object evaluate(
+        final IProcessingContext processingContext, final String expression,
+        final StandardExpressionExecutionContext expContext, final boolean useSelectionAsRoot,
+        final boolean applyOGNLShortcuts) {
        
         try {
 
@@ -112,7 +121,7 @@ public final class OGNLVariableExpressionEvaluator
             Object parsedExpression = ExpressionCache.getFromCache(configuration, expression, OGNL_CACHE_PREFIX);
             if (parsedExpression == null) {
                 // The result of parsing might be an OGNL expression AST or a ShortcutOGNLExpression (for simple cases)
-                parsedExpression = parseExpression(expression);
+                parsedExpression = parseExpression(expression, applyOGNLShortcuts);
                 ExpressionCache.putIntoCache(configuration, expression, parsedExpression, OGNL_CACHE_PREFIX);
             }
 
@@ -126,6 +135,9 @@ public final class OGNLVariableExpressionEvaluator
                 // we really need them, OGNL will not allow us to do so. Anyway, at least the StandardExpressionObjects
                 // implementation will take care of reusing almost all of the objects (except those that depend on the
                 // selection target), so that they are not created for each expression -- only for each template.
+
+                // Note this will never happen with shortcut expressions, as the '#' character with which all
+                // expression object names start is not allowed by the OGNLShortcutExpression parser.
 
                 final IExpressionObjects contextVariables = processingContext.getExpressionObjects();
                 contextVariablesMap = contextVariables.buildMap();
@@ -159,7 +171,17 @@ public final class OGNLVariableExpressionEvaluator
                             processingContext.getVariablesMap());
 
             // Execute the expression!
-            final Object result = executeExpression(processingContext, parsedExpression, contextVariablesMap, evaluationRoot);
+            final Object result;
+            try {
+                result = executeExpression(processingContext, parsedExpression, contextVariablesMap, evaluationRoot);
+            } catch (final OGNLShortcutExpression.OGNLShortcutExpressionNotApplicableException notApplicable) {
+                // We tried to apply shortcuts, but it is not possible for this expression even if it parsed OK,
+                // so we need to empty the cache and try again disabling shortcuts. Once processed for the first time,
+                // an OGNL (non-shortcut) parsed expression will already be cached and this exception will not be
+                // thrown again
+                ExpressionCache.removeFromCache(configuration, expression, OGNL_CACHE_PREFIX);
+                return evaluate(processingContext, expression, expContext, useSelectionAsRoot, false);
+            }
 
             if (!expContext.getPerformTypeConversion()) {
                 return result;
@@ -278,17 +300,20 @@ public final class OGNLVariableExpressionEvaluator
 
 
 
-    private Object parseExpression(final String expression) throws OgnlException {
-        final String[] parsedExpression = OGNLShortcutExpression.parse(expression);
-        if (parsedExpression == null) {
-            return ognl.Ognl.parseExpression(expression);
+    private static Object parseExpression(final String expression, final boolean applyOGNLShortcuts)
+            throws OgnlException {
+        if (applyOGNLShortcuts) {
+            final String[] parsedExpression = OGNLShortcutExpression.parse(expression);
+            if (parsedExpression != null) {
+                return new OGNLShortcutExpression(parsedExpression);
+            }
         }
-        return new OGNLShortcutExpression(parsedExpression);
+        return ognl.Ognl.parseExpression(expression);
     }
 
 
 
-    private Object executeExpression(
+    private static Object executeExpression(
             final IProcessingContext processingContext, final Object parsedExpression,
             final Map<String,Object> context, final Object root)
             throws Exception {

@@ -68,7 +68,18 @@ final class ExpressionCache {
             }
         }
     }
-    
+
+
+    static <V> void removeFromCache(final IEngineConfiguration configuration, final String input, final String prefix) {
+        final ICacheManager cacheManager = configuration.getCacheManager();
+        if (cacheManager != null) {
+            final ICache<String,Object> cache = cacheManager.getExpressionCache();
+            if (cache != null) {
+                cache.clearKey(configuration.getTextRepository().getText(prefix, input));
+            }
+        }
+    }
+
     
     
     

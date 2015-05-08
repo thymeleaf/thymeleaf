@@ -130,7 +130,7 @@ public class StandardDialect
      */
     public IStandardVariableExpressionEvaluator getVariableExpressionEvaluator() {
         if (this.variableExpressionEvaluator == null) {
-            return OGNLVariableExpressionEvaluator.INSTANCE;
+            this.variableExpressionEvaluator = new OGNLVariableExpressionEvaluator(true);
         }
         return this.variableExpressionEvaluator;
     }
@@ -145,7 +145,7 @@ public class StandardDialect
      *   This is used for executing all ${...} and *{...} expressions in Thymeleaf Standard Expressions.
      * </p>
      * <p>
-     *   This will be {@link OGNLVariableExpressionEvaluator#INSTANCE} by default. When using the Spring Standard
+     *   This will be an {@link OGNLVariableExpressionEvaluator} by default. When using the Spring Standard
      *   Dialect, this will be a SpringEL-based implementation.
      * </p>
      * <p>
