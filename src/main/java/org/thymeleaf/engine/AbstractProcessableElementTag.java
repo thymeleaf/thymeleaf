@@ -20,6 +20,7 @@
 package org.thymeleaf.engine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,13 +40,14 @@ import org.thymeleaf.templatemode.TemplateMode;
 abstract class AbstractProcessableElementTag
         extends AbstractElementTag implements IProcessableElementTag {
 
+    private static final int DEFAULT_ASSOCIATED_PROCESSORS_LENGTH = 4;
 
     protected ElementAttributes elementAttributes;
 
-    // Should actually be a set, but given we will need to sort it very often, a list is more handy. Dialect constraints
-    // ensure anyway that we will never have duplicates here, because the same processor can never be applied to more than
-    // one attribute.
-    protected List<IElementProcessor> associatedProcessors = null;
+    // Dialect constraints ensure anyway that we will never have duplicates here, because the same processor can
+    // never be applied to more than one attribute.
+    protected IElementProcessor[] associatedProcessors = null;
+    protected int associatedProcessorsSize = 0;
     protected int associatedProcessorsAttributesVersion = Integer.MIN_VALUE; // This ensures a recompute will be performed immediately
 
 
@@ -111,7 +113,7 @@ abstract class AbstractProcessableElementTag
             recomputeProcessors();
             this.associatedProcessorsAttributesVersion = this.elementAttributes.version;
         }
-        return this.associatedProcessors != null && !this.associatedProcessors.isEmpty();
+        return this.associatedProcessors != null && this.associatedProcessorsSize > 0;
     }
 
 
@@ -120,7 +122,14 @@ abstract class AbstractProcessableElementTag
             recomputeProcessors();
             this.associatedProcessorsAttributesVersion = this.elementAttributes.version;
         }
-        return (this.associatedProcessors != null? this.associatedProcessors : Collections.EMPTY_LIST);
+        if (this.associatedProcessors == null || this.associatedProcessorsSize == 0) {
+            return Collections.EMPTY_LIST;
+        }
+        final List<IElementProcessor> associatedProcessorsList = new ArrayList<IElementProcessor>(this.associatedProcessorsSize + 1);
+        for (int i = 0; i < this.associatedProcessorsSize; i++) {
+            associatedProcessorsList.add(this.associatedProcessors[i]);
+        }
+        return associatedProcessorsList;
     }
 
 
@@ -130,17 +139,13 @@ abstract class AbstractProcessableElementTag
 
         // Something has changed (usually the processors associated with the attributes) so we need to recompute
 
-        if (this.associatedProcessors != null) {
-            this.associatedProcessors.clear();
-        }
+        this.associatedProcessorsSize = 0;
 
         if (this.elementDefinition.hasAssociatedProcessors) {
 
-            if (this.associatedProcessors == null) {
-                this.associatedProcessors = new ArrayList<IElementProcessor>(4);
+            for (final IElementProcessor processor : this.elementDefinition.associatedProcessors) {
+                addAssociatedProcessor(processor);
             }
-
-            this.associatedProcessors.addAll(this.elementDefinition.associatedProcessors);
 
         }
 
@@ -149,10 +154,6 @@ abstract class AbstractProcessableElementTag
 
             if (!this.elementAttributes.attributes[n].definition.hasAssociatedProcessors) {
                 continue;
-            }
-
-            if (this.associatedProcessors == null) {
-                this.associatedProcessors = new ArrayList<IElementProcessor>(4);
             }
 
             for (final IElementProcessor associatedProcessor : this.elementAttributes.attributes[n].definition.associatedProcessors) {
@@ -170,15 +171,37 @@ abstract class AbstractProcessableElementTag
                 }
 
                 // Just add the processor to the list
-                this.associatedProcessors.add(associatedProcessor);
+                addAssociatedProcessor(associatedProcessor);
 
             }
 
         }
 
         if (this.associatedProcessors != null) {
-            Collections.sort(this.associatedProcessors, PrecedenceProcessorComparator.INSTANCE);
+            if (this.associatedProcessorsSize > 1) {
+                Arrays.sort(this.associatedProcessors, 0, this.associatedProcessorsSize, PrecedenceProcessorComparator.INSTANCE);
+            }
         }
+
+    }
+
+
+    // We will use this method in the recomputing code instead of adding the new processors directly in order to take
+    // care of the length of the array (in case it has to be grown)
+    private void addAssociatedProcessor(final IElementProcessor elementProcessor) {
+
+        if (this.associatedProcessors == null || this.associatedProcessors.length == this.associatedProcessorsSize) {
+            // We need to grow the structures
+            final IElementProcessor[] newAssociatedProcessors =
+                    new IElementProcessor[this.associatedProcessorsSize + DEFAULT_ASSOCIATED_PROCESSORS_LENGTH];
+            if (this.associatedProcessors != null) {
+                System.arraycopy(this.associatedProcessors, 0, newAssociatedProcessors, 0, this.associatedProcessors.length);
+            }
+            this.associatedProcessors = newAssociatedProcessors;
+        }
+
+        this.associatedProcessors[this.associatedProcessorsSize] = elementProcessor;
+        this.associatedProcessorsSize++;
 
     }
 
@@ -205,16 +228,10 @@ abstract class AbstractProcessableElementTag
         } else {
             this.elementAttributes.resetAsCloneOf(original.elementAttributes); // not the same as cloning the ElementAttributes object, because we want
         }
-        if (original.associatedProcessors == null) {
-            if (this.associatedProcessors != null) {
-                this.associatedProcessors.clear();
-            }
-        } else {
-            if (this.associatedProcessors == null) {
-                this.associatedProcessors = new ArrayList<IElementProcessor>(original.associatedProcessors);
-            } else {
-                this.associatedProcessors.clear();
-                this.associatedProcessors.addAll(original.associatedProcessors);
+        this.associatedProcessorsSize = 0;
+        if (original.associatedProcessorsSize > 0) {
+            for (final IElementProcessor processor : original.associatedProcessors) {
+                addAssociatedProcessor(processor);
             }
         }
         this.associatedProcessorsAttributesVersion = original.associatedProcessorsAttributesVersion;

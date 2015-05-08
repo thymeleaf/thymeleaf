@@ -110,7 +110,7 @@ final class ElementProcessorIterator {
         }
 
 
-        if (tag.associatedProcessors == null || tag.associatedProcessors.isEmpty()) {
+        if (tag.associatedProcessorsSize == 0) {
             // After recompute, it seems we have no processors to be applied (we might have had before)
 
             if (this.processors != null) {
@@ -126,11 +126,11 @@ final class ElementProcessorIterator {
         if (this.processors == null) {
             // We had nothing precomputed, but there are associated processors now!
 
-            this.size = tag.associatedProcessors.size();
+            this.size = tag.associatedProcessorsSize;
             this.processors = new IElementProcessor[Math.max(this.size, 4)]; // minimum size = 4
             this.visited = new boolean[Math.max(this.size, 4)]; // minimum size = 4
 
-            tag.associatedProcessors.toArray(this.processors); // No need to assign to anything
+            System.arraycopy(tag.associatedProcessors, 0, this.processors, 0, this.size);
             Arrays.fill(this.visited, false);
 
             return;
@@ -140,14 +140,14 @@ final class ElementProcessorIterator {
         // Processors have changed since the last time we used the iterator (attributes changed),
         // so we need to use the 'aux' structures in order to recompute processors and then swap.
 
-        this.auxSize = tag.associatedProcessors.size();
+        this.auxSize = tag.associatedProcessorsSize;
         if (this.auxProcessors == null || this.auxSize > this.auxProcessors.length) {
             // We need new aux arrays (either don't exist, or they are too small)
             this.auxProcessors = new IElementProcessor[Math.max(this.auxSize, 4)];
             this.auxVisited = new boolean[Math.max(this.auxSize, 4)];
         }
 
-        tag.associatedProcessors.toArray(this.auxProcessors); // No need to assign to anything
+        System.arraycopy(tag.associatedProcessors, 0, this.auxProcessors, 0, this.auxSize);
         // No pre-initialization for the visited array -- we will do it position by position
 
         // Now we should check the matches between the new and the old iterator processors - we will build
