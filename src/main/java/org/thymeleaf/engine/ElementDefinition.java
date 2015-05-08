@@ -33,7 +33,8 @@ import org.thymeleaf.processor.element.IElementProcessor;
 public abstract class ElementDefinition {
 
     final ElementName elementName;
-    final Set<IElementProcessor> associatedProcessors;
+    private final Set<IElementProcessor> associatedProcessorsSet;
+    final IElementProcessor[] associatedProcessors; // The internal representation is an array for better performance
     final boolean hasAssociatedProcessors;
 
 
@@ -49,8 +50,13 @@ public abstract class ElementDefinition {
         }
 
         this.elementName = elementName;
-        this.associatedProcessors = Collections.unmodifiableSet(associatedProcessors);
-        this.hasAssociatedProcessors = this.associatedProcessors.size() > 0;
+        this.associatedProcessorsSet = Collections.unmodifiableSet(associatedProcessors);
+        this.associatedProcessors = new IElementProcessor[this.associatedProcessorsSet.size()];
+        int i = 0;
+        for (final IElementProcessor processor : this.associatedProcessorsSet) {
+            this.associatedProcessors[i++] = processor;
+        }
+        this.hasAssociatedProcessors = this.associatedProcessors.length > 0;
 
     }
 
@@ -69,7 +75,7 @@ public abstract class ElementDefinition {
 
 
     public Set<IElementProcessor> getAssociatedProcessors() {
-        return this.associatedProcessors;
+        return this.associatedProcessorsSet;
     }
 
 

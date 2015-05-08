@@ -143,8 +143,9 @@ abstract class AbstractProcessableElementTag
 
         if (this.elementDefinition.hasAssociatedProcessors) {
 
-            for (final IElementProcessor processor : this.elementDefinition.associatedProcessors) {
-                addAssociatedProcessor(processor);
+            final IElementProcessor[] elementAssociatedProcessors = this.elementDefinition.associatedProcessors;
+            for (int i = 0; i < elementAssociatedProcessors.length; i++) {
+                addAssociatedProcessor(elementAssociatedProcessors[i]);
             }
 
         }
@@ -156,7 +157,8 @@ abstract class AbstractProcessableElementTag
                 continue;
             }
 
-            for (final IElementProcessor associatedProcessor : this.elementAttributes.attributes[n].definition.associatedProcessors) {
+            final IElementProcessor[] attributeAssociatedProcessors = this.elementAttributes.attributes[n].definition.associatedProcessors;
+            for (int i = 0; i < attributeAssociatedProcessors.length; i++) {
 
                 // We should never have duplicates. The same attribute can never appear twice in an element (parser
                 // restrictions + the way this class's 'setAttribute' works), plus a specific processor instance can
@@ -165,13 +167,13 @@ abstract class AbstractProcessableElementTag
                 // Now for each processor, before adding it to the list, we must first determine whether it requires
                 // a specific element name and, if so, confirm that it is the same as the name of the element these
                 // attributes live at.
-                final MatchingElementName matchingElementName = associatedProcessor.getMatchingElementName();
+                final MatchingElementName matchingElementName = attributeAssociatedProcessors[i].getMatchingElementName();
                 if (matchingElementName != null && !matchingElementName.matches(this.elementDefinition.elementName)) {
                     continue;
                 }
 
                 // Just add the processor to the list
-                addAssociatedProcessor(associatedProcessor);
+                addAssociatedProcessor(attributeAssociatedProcessors[i]);
 
             }
 
