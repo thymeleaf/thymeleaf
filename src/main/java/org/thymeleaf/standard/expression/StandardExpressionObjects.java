@@ -20,9 +20,7 @@
 package org.thymeleaf.standard.expression;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.context.IProcessingContext;
@@ -130,8 +128,6 @@ public final class StandardExpressionObjects extends AbstractExpressionObjects {
 
     private final IProcessingContext processingContext;
 
-    private boolean allInitialized = false;
-
 
 
     
@@ -141,6 +137,14 @@ public final class StandardExpressionObjects extends AbstractExpressionObjects {
         Validate.notNull(processingContext, "Processing Context cannot be null");
         this.processingContext = processingContext;
 
+    }
+
+
+
+
+    @Override
+    public int size() {
+        return ALL_EXPRESSION_OBJECT_NAMES.size();
     }
 
 
@@ -293,37 +297,6 @@ public final class StandardExpressionObjects extends AbstractExpressionObjects {
 
         return null;
 
-    }
-
-
-
-
-    private void initializeAll() {
-        // By calling all objects, we will make sure every object is instanced
-        for (final String objectName : ALL_EXPRESSION_OBJECT_NAMES) {
-            getObject(objectName);
-        }
-        this.allInitialized = true;
-    }
-
-
-
-
-    public Map<String, Object> buildMap() {
-        // We need to make sure all objects have been created. Note how using this 'buildMap()' method
-        // invalidates the possibility to create all these expression objects lazily
-        if (!this.allInitialized) {
-            initializeAll();
-        }
-        // Then we create a new Map object, and we add to it all the objects, previously created
-        final Map<String,Object> map = new HashMap<String, Object>(super.getObjectsMap());
-        // There is one non-cachable object, which we consequently will be required to master.
-        if (this.processingContext.getVariablesMap().hasSelectionTarget()) {
-            map.put(SELECTION_TARGET_EXPRESSION_OBJECT_NAME, this.processingContext.getVariablesMap().getSelectionTarget());
-        } else {
-            map.put(SELECTION_TARGET_EXPRESSION_OBJECT_NAME, this.processingContext.getVariablesMap());
-        }
-        return map;
     }
 
 

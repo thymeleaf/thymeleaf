@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.expression;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.context.IProcessingContext;
@@ -41,10 +40,9 @@ import org.thymeleaf.context.IProcessingContext;
 public interface IExpressionObjects {
 
 
+    public int size();
     public boolean containsObject(final String name);
     public Set<String> getObjectNames();
     public Object getObject(final String name);
-
-    public Map<String,Object> buildMap();
 
 }

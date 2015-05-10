@@ -40,7 +40,7 @@ import org.thymeleaf.util.Validate;
  */
 public final class ElementAttributes implements IElementAttributes {
 
-    private static final int DEFAULT_ATTRIBUTES_SIZE = 3;
+    private static final int DEFAULT_ATTRIBUTES_SIZE = 4;
 
     private final TemplateMode templateMode;
     private final AttributeDefinitions attributeDefinitions;
@@ -712,16 +712,12 @@ public final class ElementAttributes implements IElementAttributes {
 
                 this.attributes = new ElementAttribute[Math.max(from.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
                 this.attributeNames = new AttributeName[Math.max(from.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
-                Arrays.fill(this.attributes, null);
-                Arrays.fill(this.attributeNames, null);
 
             } else if (this.attributes.length < from.attributesSize) {
                 // We need to adjust the size of our arrays
 
                 final ElementAttribute[] newAttributes = new ElementAttribute[from.attributesSize];
                 final AttributeName[] newAttributeNames = new AttributeName[from.attributesSize];
-                Arrays.fill(newAttributes, null);
-                Arrays.fill(newAttributeNames, null);
                 System.arraycopy(this.attributes, 0, newAttributes, 0, this.attributes.length);
                 // No need to copy the names - they're immutable (sort of)
                 this.attributes = newAttributes;
@@ -749,13 +745,11 @@ public final class ElementAttributes implements IElementAttributes {
                 // We need new arrays as the 'from' attributes wouldn't fit
 
                 this.innerWhiteSpaces = new InnerWhiteSpace[Math.max(from.innerWhiteSpacesSize, DEFAULT_ATTRIBUTES_SIZE)];
-                Arrays.fill(this.innerWhiteSpaces, null);
 
             } else if (this.innerWhiteSpaces.length < from.innerWhiteSpacesSize) {
                 // We need to adjust the size of our arrays
 
                 final InnerWhiteSpace[] newInnerWhiteSpaces = new InnerWhiteSpace[from.innerWhiteSpacesSize];
-                Arrays.fill(newInnerWhiteSpaces, null);
                 System.arraycopy(this.innerWhiteSpaces, 0, newInnerWhiteSpaces, 0, this.innerWhiteSpaces.length);
                 this.innerWhiteSpaces = newInnerWhiteSpaces;
 

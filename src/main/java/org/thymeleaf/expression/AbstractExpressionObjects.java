@@ -44,6 +44,12 @@ public abstract class AbstractExpressionObjects implements IExpressionObjects {
         super();
     }
 
+    public int size() {
+        if (this.objects == null) {
+            this.objects = new HashMap<String, Object>(30);
+        }
+        return this.objects.size();
+    }
 
     public boolean containsObject(final String name) {
         if (this.objects == null) {
@@ -85,11 +91,6 @@ public abstract class AbstractExpressionObjects implements IExpressionObjects {
             this.objects = new HashMap<String, Object>(30);
         }
         return this.objects;
-    }
-
-
-    public Map<String, Object> buildMap() {
-        return new HashMap<String, Object>(this.objects);
     }
 
 }

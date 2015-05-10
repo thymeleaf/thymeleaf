@@ -26,6 +26,7 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.LoaderClassPath;
+import ognl.OgnlContext;
 import ognl.OgnlException;
 import ognl.OgnlRuntime;
 import org.slf4j.Logger;
@@ -139,8 +140,8 @@ public final class OGNLVariableExpressionEvaluator
                 // Note this will never happen with shortcut expressions, as the '#' character with which all
                 // expression object names start is not allowed by the OGNLShortcutExpression parser.
 
-                final IExpressionObjects contextVariables = processingContext.getExpressionObjects();
-                contextVariablesMap = contextVariables.buildMap();
+                final IExpressionObjects expressionObjects = processingContext.getExpressionObjects();
+                contextVariablesMap = new OGNLContextExpressionObjectsWrapper(expressionObjects);
 
                 // We might need to apply restrictions on the request parameters. In the case of OGNL, the only way we
                 // can actually communicate with the PropertyAccessor, (OGNLVariablesMapPropertyAccessor), which is the
@@ -165,10 +166,8 @@ public final class OGNLVariableExpressionEvaluator
 
             // The root object on which we will evaluate expressions will depend on whether a selection target is
             // active or not...
-            final Object evaluationRoot =
-                    (useSelectionAsRoot?
-                            processingContext.getVariablesMap().getSelectionTarget() :
-                            processingContext.getVariablesMap());
+            final IVariablesMap variablesMap = processingContext.getVariablesMap();
+            final Object evaluationRoot = (useSelectionAsRoot? variablesMap.getSelectionTarget() : variablesMap);
 
             // Execute the expression!
             final Object result;
@@ -322,7 +321,10 @@ public final class OGNLVariableExpressionEvaluator
             return ((OGNLShortcutExpression) parsedExpression).evaluate(processingContext, root);
         }
 
-        return ognl.Ognl.getValue(parsedExpression, context, root);
+        // We create the OgnlContext here instead of just sending the Map as context because that prevents OGNL from
+        // creating the OgnlContext empty and then setting the context Map variables one by one
+        final OgnlContext ognlContext = new OgnlContext(context);
+        return ognl.Ognl.getValue(parsedExpression, ognlContext, root);
 
     }
 

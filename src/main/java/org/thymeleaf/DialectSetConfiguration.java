@@ -639,6 +639,14 @@ final class DialectSetConfiguration {
             }
 
 
+            public int size() {
+                int size = 0;
+                for (final IExpressionObjects expressionObjects : this.expressionObjectsList) {
+                    size += expressionObjects.size();
+                }
+                return size;
+            }
+
             public boolean containsObject(final String name) {
                 for (final IExpressionObjects expressionObjects : this.expressionObjectsList) {
                     if (expressionObjects.containsObject(name)) {
@@ -675,20 +683,6 @@ final class DialectSetConfiguration {
                     }
                 }
                 return null;
-            }
-
-            public Map<String, Object> buildMap() {
-                if (this.expressionObjectsList.size() == 0) {
-                    return new LinkedHashMap<String, Object>(3);
-                }
-                if (this.expressionObjectsList.size() == 1) {
-                    return this.expressionObjectsList.get(0).buildMap();
-                }
-                final Map<String,Object> map = new LinkedHashMap<String, Object>(30);
-                for (final IExpressionObjects expressionObjects : this.expressionObjectsList) {
-                    map.putAll(expressionObjects.buildMap());
-                }
-                return map;
             }
 
         }
