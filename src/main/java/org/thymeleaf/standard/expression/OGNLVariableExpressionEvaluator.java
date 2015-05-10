@@ -131,11 +131,9 @@ public final class OGNLVariableExpressionEvaluator
 
                 // The IExpressionObjects implementation returned by processing contexts that include the Standard
                 // Dialects will be lazy in the creation of expression objects (i.e. they won't be created until really
-                // needed). But unfortunately, OGNL resolves ALL of the context variables from the specified map when
-                // creating the OgnlContext, so even if we have the capacity of not creating the expression objects until
-                // we really need them, OGNL will not allow us to do so. Anyway, at least the StandardExpressionObjects
-                // implementation will take care of reusing almost all of the objects (except those that depend on the
-                // selection target), so that they are not created for each expression -- only for each template.
+                // needed). And in order for this behaviour to be accepted by OGNL, we will be wrapping this object
+                // inside an implementation of Map<String,Object>, which will afterwards be fed to the constructor
+                // of an OgnlContext object.
 
                 // Note this will never happen with shortcut expressions, as the '#' character with which all
                 // expression object names start is not allowed by the OGNLShortcutExpression parser.
