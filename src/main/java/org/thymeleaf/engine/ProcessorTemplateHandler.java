@@ -2523,7 +2523,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
 
-    private static class LevelArray {
+    private static final class LevelArray {
 
         private int[] array;
         private int size;
@@ -2568,7 +2568,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
 
-    private static class IterationSpec {
+    private static final class IterationSpec {
 
         private int fromMarkupLevel;
         private String iterVariableName;
@@ -2593,7 +2593,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     }
 
 
-    private static class SuspensionSpec {
+    private static final class SuspensionSpec {
 
         int allowedElementCountInBody;
         boolean allowedNonElementStructuresInBody;
@@ -2618,7 +2618,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     }
 
 
-    private static class IterationArtifacts {
+    private static final class IterationArtifacts {
 
         final EngineEventQueue iterationQueue;
         final EngineEventQueue suspendedQueue;

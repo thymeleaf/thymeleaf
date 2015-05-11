@@ -201,7 +201,7 @@ public class EngineConfiguration implements IEngineConfiguration {
 
 
 
-    private static class TemplateResolverComparator implements Comparator<ITemplateResolver> {
+    private static final class TemplateResolverComparator implements Comparator<ITemplateResolver> {
 
         private static TemplateResolverComparator INSTANCE = new TemplateResolverComparator();
 
@@ -224,7 +224,7 @@ public class EngineConfiguration implements IEngineConfiguration {
 
 
 
-    private static class MessageResolverComparator implements Comparator<IMessageResolver> {
+    private static final class MessageResolverComparator implements Comparator<IMessageResolver> {
 
         private static MessageResolverComparator INSTANCE = new MessageResolverComparator();
 

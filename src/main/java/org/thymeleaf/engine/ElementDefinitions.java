@@ -893,7 +893,7 @@ public final class ElementDefinitions {
 
 
 
-    private static class HTMLElementDefinitionSpec {
+    private static final class HTMLElementDefinitionSpec {
 
         static final List<HTMLElementDefinitionSpec> ALL_SPECS = new ArrayList<HTMLElementDefinitionSpec>();
 

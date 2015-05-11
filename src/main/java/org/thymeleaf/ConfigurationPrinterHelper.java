@@ -365,7 +365,7 @@ final class ConfigurationPrinterHelper {
 
     
     
-    private static class ConfigLogBuilder {
+    private static final class ConfigLogBuilder {
         
         private static final String PLACEHOLDER = "\\{\\}";
         private final StringBuilder strBuilder;
@@ -428,7 +428,7 @@ final class ConfigurationPrinterHelper {
 
 
 
-    private static class PrinterElementProcessorComparator implements Comparator<IElementProcessor> {
+    private static final class PrinterElementProcessorComparator implements Comparator<IElementProcessor> {
 
         private static PrinterElementProcessorComparator INSTANCE = new PrinterElementProcessorComparator();
 

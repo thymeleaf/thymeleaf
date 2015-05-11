@@ -392,7 +392,7 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
      * This class works as a wrapper for the selection target, in order to differentiate whether we
      * have set a selection target, we have not, or we have set it but it's null
      */
-    private static class SelectionTarget {
+    private static final class SelectionTarget {
 
         final Object selectionTarget;
 
