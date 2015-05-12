@@ -2160,6 +2160,11 @@ public final class TextUtil {
     }
 
 
+    public static int hashCode(final CharSequence text, final int beginIndex, final int endIndex) {
+        return hashCodePart(0, text, beginIndex, endIndex);
+    }
+
+
     public static int hashCode(final CharSequence text0, final CharSequence text1) {
         return hashCodePart(hashCodePart(0, text0), text1);
     }
@@ -2177,6 +2182,10 @@ public final class TextUtil {
 
 
     private static int hashCodePart(final int h, final CharSequence text) {
+        return hashCodePart(h, text, 0, text.length());
+    }
+
+    private static int hashCodePart(final int h, final CharSequence text, final int beginIndex, final int endIndex) {
         // This basically mimics what the String.hashCode() method does, without the need to
         // convert the CharSequence into a new String object (unless it is a String already,
         // in which case String.hashCode() is used directly because hashCode might be cached
@@ -2188,12 +2197,11 @@ public final class TextUtil {
         //       since Java 1.2, and its internal workings are explained in the JavaDoc for the
         //       String.hashCode() method.
         // ---------------------------------------
-        if (h == 0 && text instanceof String) {
+        if (h == 0 && beginIndex == 0 && endIndex == text.length() && text instanceof String) {
             return text.hashCode();
         }
         int hh = h;
-        final int textLen = text.length();
-        for (int i = 0; i < textLen; i++) {
+        for (int i = beginIndex; i < endIndex; i++) {
             hh = 31*hh + text.charAt(i);
         }
         return hh;

@@ -31,6 +31,7 @@ import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.resourceresolver.IResourceResolver;
+import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.MessageResolutionUtils;
 import org.thymeleaf.util.Validate;
 
@@ -123,7 +124,8 @@ public final class StandardMessageResolutionUtils {
         final IResourceResolver resourceResolver = processingContext.getTemplateResolution().getResourceResolver();
         final Locale locale = processingContext.getLocale();
         
-        final String templateBaseName = getTemplateFileNameBase(resourceName);
+        final String templateBaseName =
+                getTemplateFileNameBase(processingContext.getConfiguration().getTextRepository(), resourceName);
         
         return MessageResolutionUtils.loadCombinedMessagesFilesFromBaseName(
                 processingContext.getConfiguration(), processingContext.getVariablesMap(),
@@ -134,24 +136,24 @@ public final class StandardMessageResolutionUtils {
     
     
     
-    private static String getTemplateFileNameBase(final String templateFileName) {
+    private static String getTemplateFileNameBase(final ITextRepository textRepository, final String templateFileName) {
         if (templateFileName.endsWith(THYMELEAF_MARKUP_SUFFIX)) {
-            return templateFileName.substring(0, templateFileName.length() - THYMELEAF_MARKUP_SUFFIX.length());
+            return textRepository.getText(templateFileName, 0, templateFileName.length() - THYMELEAF_MARKUP_SUFFIX.length());
         }
         if (templateFileName.endsWith(HTML_SUFFIX)) {
-            return templateFileName.substring(0, templateFileName.length() - HTML_SUFFIX.length());
+            return textRepository.getText(templateFileName, 0, templateFileName.length() - HTML_SUFFIX.length());
         }
         if (templateFileName.endsWith(XHTML_SUFFIX)) {
-            return templateFileName.substring(0, templateFileName.length() - XHTML_SUFFIX.length());
+            return textRepository.getText(templateFileName, 0, templateFileName.length() - XHTML_SUFFIX.length());
         }
         if (templateFileName.endsWith(HTM_SUFFIX)) {
-            return templateFileName.substring(0, templateFileName.length() - HTM_SUFFIX.length());
+            return textRepository.getText(templateFileName, 0, templateFileName.length() - HTM_SUFFIX.length());
         }
         if (templateFileName.endsWith(XML_SUFFIX)) {
-            return templateFileName.substring(0, templateFileName.length() - XML_SUFFIX.length());
+            return textRepository.getText(templateFileName, 0, templateFileName.length() - XML_SUFFIX.length());
         }
         if (templateFileName.endsWith(JSP_SUFFIX)) {
-            return templateFileName.substring(0, templateFileName.length() - JSP_SUFFIX.length());
+            return textRepository.getText(templateFileName, 0, templateFileName.length() - JSP_SUFFIX.length());
         }
         return templateFileName;
     }

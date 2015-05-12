@@ -111,8 +111,10 @@ final class Comment
             // save some bytes in memory if we just return a substring of it (substrings don't duplicate the
             // underlying char[])
 
+            getComment(); // this will initialize this.comment if not initialized yet
             this.content =
-                    getComment().substring(COMMENT_PREFIX.length(), (this.comment.length() - COMMENT_SUFFIX.length()));
+                    this.textRepository.getText(
+                            this.comment, COMMENT_PREFIX.length(), (this.comment.length() - COMMENT_SUFFIX.length()));
 
         }
 

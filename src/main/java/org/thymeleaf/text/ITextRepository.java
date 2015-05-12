@@ -47,6 +47,20 @@ public interface ITextRepository {
 
     /**
      * <p>
+     *     Retrieve the stored version of the text passed as argument, which is a subsequence of the
+     *     {@link CharSequence} object starting in index <tt>beginIndex</tt> (inclusive) until index <tt>endIndex</tt>
+     *     (exclusive).
+     * </p>
+     *
+     * @param text the text to be retrieved.
+     * @param beginIndex the starting index (inclusive).
+     * @param endIndex the end index (exclusive).
+     * @return the stored text.
+     */
+    public String getText(final CharSequence text, int beginIndex, int endIndex);
+
+    /**
+     * <p>
      *     Retrieve the stored version of the text passed as argument (composed of more than one fragment).
      * </p>
      * <p>

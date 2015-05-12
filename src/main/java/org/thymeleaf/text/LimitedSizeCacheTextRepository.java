@@ -201,6 +201,50 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
     }
 
 
+    public String getText(final CharSequence text, final int beginIndex, final int endIndex) {
+
+        if (text == null) {
+            return null;
+        }
+
+        final int hashCode = TextUtil.hashCode(text, beginIndex, endIndex);
+
+        this.readLock.lock();
+
+        try {
+
+            final int[] ids = this.textMap[Math.abs(hashCode) % TEXT_MAP_LEN];
+
+            if (ids != null) {
+
+                // Now we need to iterate the array of ids looking for the target text
+                for (int i = 0; i < ids.length; i++) {
+                    final String candidate = this.texts[ids[i]];
+                    if (checkResult(text, beginIndex, endIndex, candidate)) {
+                        // We will return the stored instance, maybe allowing the 'text' arg to be eaten by the GC
+                        return candidate;
+                    }
+                }
+
+            }
+
+        } finally {
+            this.readLock.unlock();
+        }
+
+        /*
+         * NOT FOUND. We need to obtain a write lock and store the text
+         */
+        this.writeLock.lock();
+        try {
+            return storeText(text.subSequence(beginIndex, endIndex).toString());
+        } finally {
+            this.writeLock.unlock();
+        }
+
+    }
+
+
     public String getText(final CharSequence text0, final CharSequence text1) {
 
         if (text0 == null) {
@@ -382,6 +426,30 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
             int i = 0;
             while (n-- != 0) {
                 if (input.charAt(i) != result.charAt(i))
+                    return false;
+                i++;
+            }
+            return true;
+        }
+        return false;
+    }
+
+
+    private static boolean checkResult(final CharSequence input, final int beginIndex, final int endIndex, final String result) {
+
+        if (beginIndex == 0 && endIndex == result.length()) {
+            if (input == result) {
+                return true;
+            }
+            if (input instanceof String) {
+                return input.equals(result);
+            }
+        }
+        int n = endIndex - beginIndex;
+        if (n == result.length()) {
+            int i = 0;
+            while (n-- != 0) {
+                if (input.charAt(beginIndex + i) != result.charAt(i))
                     return false;
                 i++;
             }
@@ -678,9 +746,6 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
         return true;
 
     }
-
-
-
 
 
 

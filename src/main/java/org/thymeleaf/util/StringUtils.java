@@ -85,7 +85,10 @@ public final class StringUtils {
             return str;
         }
 
-        return str.substring(0, maxSize - 3) + "...";
+        final StringBuilder strBuilder = new StringBuilder(maxSize + 2);
+        strBuilder.append(str, 0, maxSize - 3);
+        strBuilder.append("...");
+        return strBuilder.toString();
 
     }
 
@@ -203,10 +206,8 @@ public final class StringUtils {
         final int len = str.length();
         Validate.isTrue(beginIndex >= 0 && beginIndex < len, "beginIndex must be >= 0 and < " + len);
 
-        // The String constructor is called on purpose to avoid problems from
-        // creating substrings out of large amounts of long Strings (creating
-        // a substring does not free the memory occupied by the original String).
-        return new String(str.substring(beginIndex));
+        // Note this might not free the original string's char[] if using Java < Java7u6
+        return str.substring(beginIndex);
     }
 
 
@@ -222,10 +223,8 @@ public final class StringUtils {
             return null;
         }
 
-        // The String constructor is called on purpose to avoid problems from
-        // creating substrings out of large amounts of long Strings (creating
-        // a substring does not free the memory occupied by the original String).
-        return new String(str.substring(index + substr.length()));
+        // Note this might not free the original string's char[] if using Java < Java7u6
+        return str.substring(index + substr.length());
 
     }
 

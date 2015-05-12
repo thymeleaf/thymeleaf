@@ -222,8 +222,7 @@ public final class AggregateString implements Serializable, CharSequence {
             }
         }
         if (n0 == n1) {
-            // The more cases that we can solve this way, the better, because String#substring will not duplicate the
-            // char[] values array underneath...
+            // Shortcut: let the String#substring method do the job...
             return this.values[n0].substring((beginIndex - this.offsets[n0]), (endIndex - this.offsets[n0]));
         }
         final char[] chars = new char[endIndex - beginIndex];

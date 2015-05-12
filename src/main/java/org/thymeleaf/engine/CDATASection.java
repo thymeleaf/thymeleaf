@@ -110,8 +110,10 @@ final class CDATASection
             // save some bytes in memory if we just return a substring of it (substrings don't duplicate the
             // underlying char[])
 
+            getCDATASection(); // this will initialize this.cdataSection if not initialized yet
             this.content =
-                    getCDATASection().substring(CDATA_PREFIX.length(), (this.cdataSection.length() - CDATA_SUFFIX.length()));
+                    this.textRepository.getText(
+                            this.cdataSection, CDATA_PREFIX.length(), (this.cdataSection.length() - CDATA_SUFFIX.length()));
 
         }
 
