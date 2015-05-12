@@ -21,10 +21,7 @@ package org.thymeleaf.standard.expression;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +36,7 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.context.IWebVariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 import org.unbescape.uri.UriEscape;
@@ -60,8 +58,10 @@ public final class LinkExpression extends SimpleExpression {
     static final char SELECTOR = '@';
     private static final char PARAMS_START_CHAR = '(';
     private static final char PARAMS_END_CHAR = ')';
-    private static final char URL_TEMPLATE_DELIMITER_PREFIX = '{';
-    private static final char URL_TEMPLATE_DELIMITER_SUFFIX = '}';
+
+    private static final char URL_TEMPLATE_DELIMITER_PREFIX_CHAR = '{';
+    private static final String URL_TEMPLATE_DELIMITER_PREFIX = "{";
+    private static final String URL_TEMPLATE_DELIMITER_SUFFIX = "}";
 
     private static final Pattern LINK_PATTERN = 
         Pattern.compile("^\\s*\\@\\{(.+?)\\}\\s*$", Pattern.DOTALL);
@@ -245,6 +245,8 @@ public final class LinkExpression extends SimpleExpression {
          *         or th:src end up not being processed.
          */
 
+        final ITextRepository textRepository = processingContext.getConfiguration().getTextRepository();
+
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating link: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
@@ -260,85 +262,148 @@ public final class LinkExpression extends SimpleExpression {
             base = "";
         }
 
-        String linkBase = (String) base;
-        
-        if (!processingContext.isWeb() && !isLinkBaseAbsolute(linkBase) && !isLinkBaseServerRelative(linkBase)) {
+        final boolean linkBaseAbsolute = isLinkBaseAbsolute((String)base);
+        final boolean linkBaseContextRelative = !linkBaseAbsolute && isLinkBaseContextRelative((String)base);
+        final boolean linkBaseServerRelative = !linkBaseAbsolute && !linkBaseContextRelative && isLinkBaseServerRelative((String) base);
+        final boolean linkBaseRelative = !linkBaseAbsolute && !linkBaseContextRelative && !linkBaseServerRelative;
+
+        if (!processingContext.isWeb() && !linkBaseAbsolute && !linkBaseServerRelative) {
             throw new TemplateProcessingException(
-                    "Link base \"" + linkBase + "\" cannot be context relative (/) or page relative unless the context " +
+                    "Link base \"" + base + "\" cannot be context relative (/) or page relative unless the context " +
                     "used for executing the engine implements the " + IWebContext.class.getName() + " interface");
         }
-        
-        @SuppressWarnings("unchecked")
-        final Map<String,List<Object>> parameters =
-            (expression.hasParameters()?
-                    resolveParameters(processingContext, expression, expContext) :
-                    (Map<String,List<Object>>) Collections.EMPTY_MAP);
-        
+
+
         /*
-         * Detect URL fragments (selectors after '#') so that they can be output at the end of 
+         * Resolve the parameters from the expression into a LinkParameters object.
+         * Note the parameters variable might be null if there are no parameters
+         */
+        final LinkParameters parameters = resolveParameters(processingContext, expression, expContext);
+
+
+        /*
+         * Compute URL fragments (selectors after '#') so that they can be output at the end of
          * the URL, after parameters.
          */
-        final int hashPosition = linkBase.indexOf('#');
+        final int hashPosition = findCharInSequence((String) base, '#');
+
+
+        /*
+         * Compute whether we might have variable templates (e.g. Spring Path Variables) inside this link base
+         * that we might need to resolve afterwards
+         */
+        final boolean mightHaveVariableTemplates =
+                findCharInSequence((String)base, URL_TEMPLATE_DELIMITER_PREFIX_CHAR) >= 0;
+
+
+        /*
+         * Precompute the context path, so that it can be afterwards used for determining if it has to be added to the
+         * URL (in case it is context-relative) or not
+         */
+        final String contextPath;
+        if (linkBaseContextRelative) {
+            // If it is context-relative, it has to be a web context
+            final IWebVariablesMap webVariablesMap = (IWebVariablesMap) processingContext.getVariablesMap();
+            final HttpServletRequest request = webVariablesMap.getRequest();
+            contextPath = request.getContextPath();
+        } else {
+            contextPath = null;
+        }
+        final boolean contextPathNotEmpty = contextPath != null && contextPath.length() > 0 && !contextPath.equals("/");
+
+
+        /*
+         * SHORTCUT - just before starting to work with StringBuilders, and in the case that we know: 1. That the URL is
+         *            absolute, relative or context-relative with no context; 2. That there are no parameters; and
+         *            3. That there are no URL fragments -> then just return the base URL String without further
+         *            processing (except HttpServletResponse-encoding, of course...)
+         */
+        if ((linkBaseAbsolute || linkBaseRelative || (linkBaseContextRelative && !contextPathNotEmpty)) &&
+                (parameters == null || parameters.size() == 0) && hashPosition < 0 && !mightHaveVariableTemplates) {
+
+            if (processingContext.isWeb()) {
+                final IWebVariablesMap webVariablesMap = (IWebVariablesMap) processingContext.getVariablesMap();
+                final HttpServletResponse response = webVariablesMap.getResponse();
+                return (response != null? response.encodeURL((String) base) : base);
+            }
+            // Processing context is not web, no need to HttpServletResponse-encode
+            return base;
+
+        }
+
+
+        /*
+         * Build the StringBuilder that will be used as a base for all URL-related operations from now on: variable
+         * templates, parameters, URL fragments...
+         */
+        StringBuilder linkBase = new StringBuilder((String) base);
+
+
+        /*
+         * Compute URL fragments (selectors after '#') so that they can be output at the end of
+         * the URL, after parameters.
+         */
         String urlFragment = "";
         // If hash position == 0 we will not consider it as marking an
         // URL fragment.
         if (hashPosition > 0) {
             // URL fragment String will include the # sign
             urlFragment = linkBase.substring(hashPosition);
-            linkBase = linkBase.substring(0, hashPosition);
+            linkBase.delete(hashPosition, linkBase.length());
         }
 
-        linkBase = replaceTemplateParamsInBase(linkBase, parameters);
 
         /*
-         * Check for the existence of a question mark symbol in the link base itself
+         * Replace those variable templates that might appear referenced in the path itself, as for example, Spring
+         * "Path Variables" (e.g. '/something/{variable}/othersomething')
          */
-        final int questionMarkPosition = linkBase.indexOf('?');
-        
-        final StringBuilder parametersBuilder = new StringBuilder(24);
-        
-        for (final Map.Entry<String,List<Object>> parameterEntry : parameters.entrySet()) {
-            
-            final String parameterName = parameterEntry.getKey();
-            final List<Object> parameterValues = parameterEntry.getValue();
-            
-            for (final Object parameterObjectValue : parameterValues) {
-
-                // Insert a separator with the previous parameter, if needed
-                if (parametersBuilder.length() == 0) {
-                    if (questionMarkPosition == -1) {
-                        parametersBuilder.append("?");
-                    } else {
-                        parametersBuilder.append("&");
-                    }
-                } else {
-                    parametersBuilder.append("&");
-                }
-
-                parametersBuilder.append(UriEscape.escapeUriQueryParam(parameterName));
-
-                final String parameterValue = (parameterObjectValue == null? "" : parameterObjectValue.toString());
-
-                if (!URL_PARAM_NO_VALUE.equals(parameterValue)) {
-                    parametersBuilder.append("=").append(UriEscape.escapeUriQueryParam(parameterValue));
-                }
-                
-            }
-            
+        if (mightHaveVariableTemplates) {
+            linkBase = replaceTemplateParamsInBase(textRepository, linkBase, parameters);
         }
 
-        
+
         /*
-         * Context is not web: URLs can only be absolute or server-relative
+         * Process parameters (those that have not already been processed as a result of replacing template
+         * parameters in base).
+         */
+        if (parameters != null && parameters.size() > 0) {
+
+            // Build the parameters query. The result will always start with '&'
+            final StringBuilder parametersBuilder = parameters.processAllRemainingParametersAsQueryParams();
+
+            // If there is no '?' in linkBase, we have to replace with first '&' with '?'
+            if (findCharInSequence(linkBase,'?') < 0) {
+                parametersBuilder.replace(0, 1, "?");
+            }
+
+            // Parameters have been processed, so just add them to the linkBase
+            linkBase.append(parametersBuilder);
+
+        }
+
+
+        /*
+         * Once parameters have been added (if there are parameters), we can add the URL fragment
+         */
+        if (urlFragment.length() > 0) {
+            linkBase.append(urlFragment);
+        }
+
+
+        /*
+         * If link base is server relative, we will delete now the leading '~' character so that it starts with '/'
+         */
+        if (linkBaseServerRelative) {
+            linkBase.delete(0,1);
+        }
+
+
+        /*
+         * Context is not web: URLs can only be absolute or server-relative and we will not be doing any
+         * HttpServletRespons#encodeURL(...) because there is no response object, of course...
          */
         if (!processingContext.isWeb()) {
-            
-            if (isLinkBaseAbsolute(linkBase)) {
-                return linkBase + parametersBuilder + urlFragment;
-            }
-            // isLinkBaseServerRelative(linkBase) == true
-            return linkBase.substring(1) + parametersBuilder + urlFragment;
-            
+            return linkBase.toString();
         }
         
 
@@ -347,63 +412,91 @@ public final class LinkExpression extends SimpleExpression {
          */
         
         final IWebVariablesMap webVariablesMap = (IWebVariablesMap) processingContext.getVariablesMap();
-        
-        final HttpServletRequest request = webVariablesMap.getRequest();
         final HttpServletResponse response = webVariablesMap.getResponse();
 
-        String url = null;
-        
-        if (isLinkBaseContextRelative(linkBase)) {
-            
-            url = request.getContextPath() + linkBase + parametersBuilder + urlFragment;
-            
-        } else if (isLinkBaseServerRelative(linkBase)) {
-            
-            // remove the "~" from the link base
-            url = linkBase.substring(1) + parametersBuilder + urlFragment;
-            
-        } else if (isLinkBaseAbsolute(linkBase)) {
-
-            url = linkBase + parametersBuilder + urlFragment;
-
-        } else {
-            // Link base is current-URL-relative
-            
-            url = linkBase + parametersBuilder + urlFragment;
-            
+        if (linkBaseContextRelative && contextPathNotEmpty) {
+            // Add the application's context path at the beginning
+            linkBase.insert(0, contextPath);
         }
 
-        return (response != null? response.encodeURL(url) : url);
+        return (response != null? response.encodeURL(linkBase.toString()) : linkBase.toString());
         
     }
-    
-    
 
     
-    private static boolean isLinkBaseAbsolute(final String linkBase) {
-        return (linkBase.contains("://") ||
-                linkBase.toLowerCase().startsWith("mailto:") || // Email URLs
-                linkBase.startsWith("//")); // protocol-relative URLs
+
+
+    private static int findCharInSequence(final CharSequence seq, final char character) {
+        int n = seq.length();
+        while (n-- != 0) {
+            final char c = seq.charAt(n);
+            if (c == character) {
+                return n;
+            }
+        }
+        return -1;
     }
 
 
-    private static boolean isLinkBaseContextRelative(final String linkBase) {
-        return linkBase.startsWith("/") && !linkBase.startsWith("//");
+
+    
+    private static boolean isLinkBaseAbsolute(final CharSequence linkBase) {
+        final int linkBaseLen = linkBase.length();
+        if (linkBaseLen < 2) {
+            return false;
+        }
+        final char c0 = linkBase.charAt(0);
+        if (c0 == 'm' || c0 == 'M') {
+            // Let's check for "mailto:"
+            if (linkBase.length() >= 7 &&
+                    Character.toLowerCase(linkBase.charAt(1)) == 'a' &&
+                    Character.toLowerCase(linkBase.charAt(2)) == 'i' &&
+                    Character.toLowerCase(linkBase.charAt(3)) == 'l' &&
+                    Character.toLowerCase(linkBase.charAt(4)) == 't' &&
+                    Character.toLowerCase(linkBase.charAt(5)) == 'o' &&
+                    Character.toLowerCase(linkBase.charAt(6)) == ':') {
+                return true;
+            }
+        } else if (c0 == '/' || c0 == '/') {
+            return linkBase.charAt(1) == '/'; // It starts with '//' -> true, any other '/x' -> false
+        }
+        for (int i = 0; i < (linkBaseLen - 2); i++) {
+            // Let's try to find the '://' sequence anywhere in the base --> true
+            if (linkBase.charAt(i) == ':' && linkBase.charAt(i + 1) == '/' && linkBase.charAt(i + 2) == '/') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    private static boolean isLinkBaseContextRelative(final CharSequence linkBase) {
+        // For this to be true, it should start with '/', but not with '//'
+        if (linkBase.length() == 0 || linkBase.charAt(0) != '/') {
+            return false;
+        }
+        return linkBase.length() == 1 || linkBase.charAt(1) != '/';
     }
 
     
-    private static boolean isLinkBaseServerRelative(final String linkBase) {
-        return linkBase.startsWith("~/");
+    private static boolean isLinkBaseServerRelative(final CharSequence linkBase) {
+        // For this to be true, it should start with '~/'
+        return (linkBase.length() >= 2 && linkBase.charAt(0) == '~' && linkBase.charAt(1) == '/');
     }
     
     
-    private static Map<String,List<Object>> resolveParameters(
+    private static LinkParameters resolveParameters(
             final IProcessingContext processingContext, final LinkExpression expression,
             final StandardExpressionExecutionContext expContext) {
 
+        if (!expression.hasParameters()) {
+            return null;
+        }
+
+        final LinkParameters parameters = new LinkParameters();
+
         final AssignationSequence assignationValues = expression.getParameters();
 
-        final Map<String,List<Object>> parameters = new LinkedHashMap<String,List<Object>>(assignationValues.size() + 1, 1.0f);
         for (final Assignation assignationValue : assignationValues) {
             
             final IStandardExpression parameterNameExpr = assignationValue.getLeft();
@@ -420,26 +513,22 @@ public final class LinkExpression extends SimpleExpression {
                         "\" evaluated as null or empty string.");
             }
 
-            List<Object> currentParameterValues = parameters.get(parameterName);
-            if (currentParameterValues == null) {
-                currentParameterValues = new ArrayList<Object>(4);
-                parameters.put(parameterName, currentParameterValues);
-            }
-            
+            final Object parameterValue;
             if (parameterValueExpr == null) {
                 // If this is null, it means we want to render the parameter without a value and
                 // also without an equals sign.
-                currentParameterValues.add(URL_PARAM_NO_VALUE);
+                parameterValue = URL_PARAM_NO_VALUE;
             } else {
-                final Object value =
-                        parameterValueExpr.execute(processingContext, expContext);
+                final Object value = parameterValueExpr.execute(processingContext, expContext);
                 if (value == null) {
                     // Not the same as not specifying a value!
-                    currentParameterValues.add("");
+                    parameterValue = "";
                 } else {
-                    currentParameterValues.addAll(convertParameterValueToList(LiteralValue.unwrap(value)));
+                    parameterValue = LiteralValue.unwrap(value);
                 }
             }
+
+            parameters.addSimpleParameter(parameterName, parameterValue);
             
         }
         return parameters;
@@ -449,79 +538,17 @@ public final class LinkExpression extends SimpleExpression {
     
     
     
-    private static List<Object> convertParameterValueToList(final Object parameterValue) {
-        
-        if (parameterValue instanceof Iterable<?>) {
-            final List<Object> result = new ArrayList<Object>(4);
-            for (final Object obj : (Iterable<?>) parameterValue) {
-                result.add(obj);
-            }
-            return result;
-        } else if (parameterValue.getClass().isArray()){
-            final List<Object> result = new ArrayList<Object>(4);
-            if (parameterValue instanceof byte[]) {
-                for (final byte obj : (byte[]) parameterValue) {
-                    result.add(Byte.valueOf(obj));
-                }
-            } else if (parameterValue instanceof short[]) {
-                for (final short obj : (short[]) parameterValue) {
-                    result.add(Short.valueOf(obj));
-                }
-            } else if (parameterValue instanceof int[]) {
-                for (final int obj : (int[]) parameterValue) {
-                    result.add(Integer.valueOf(obj));
-                }
-            } else if (parameterValue instanceof long[]) {
-                for (final long obj : (long[]) parameterValue) {
-                    result.add(Long.valueOf(obj));
-                }
-            } else if (parameterValue instanceof float[]) {
-                for (final float obj : (float[]) parameterValue) {
-                    result.add(Float.valueOf(obj));
-                }
-            } else if (parameterValue instanceof double[]) {
-                for (final double obj : (double[]) parameterValue) {
-                    result.add(Double.valueOf(obj));
-                }
-            } else if (parameterValue instanceof boolean[]) {
-                for (final boolean obj : (boolean[]) parameterValue) {
-                    result.add(Boolean.valueOf(obj));
-                }
-            } else if (parameterValue instanceof char[]) {
-                for (final char obj : (char[]) parameterValue) {
-                    result.add(Character.valueOf(obj));
-                }
-            } else {
-                final Object[] objParameterValue = (Object[]) parameterValue;
-                Collections.addAll(result, objParameterValue);
-            }
-            return result;
-        } else{
-            return Collections.singletonList(parameterValue);
-        }
-        
-    }
 
 
 
 
-    static String replaceTemplateParamsInBase(final String linkBase, final Map<String,List<Object>> parameters) {
+    static StringBuilder replaceTemplateParamsInBase(
+            final ITextRepository textRepository, final StringBuilder linkBase, final LinkParameters parameters) {
 
         /*
-         * Before trying to perform any matching operations for variable templates, we try to determine
-         * whether they would be really needed. If no '{' char is found in linkBase, then it is just returned
-         * back unchanged.
+         * If parameters is null, there's nothing to do
          */
-        final int linkBaseLen = linkBase.length();
-        boolean templateFound = false;
-        for (int i = 0; i < linkBaseLen; i++) {
-            final char c = linkBase.charAt(i);
-            if (c == URL_TEMPLATE_DELIMITER_PREFIX) {
-                templateFound = true;
-                break;
-            }
-        }
-        if (!templateFound) {
+        if (parameters == null) {
             return linkBase;
         }
 
@@ -532,70 +559,296 @@ public final class LinkExpression extends SimpleExpression {
          * char will be URL-path-encoded, whereas parameters after it will be URL-query-encoded.
          */
 
-        final int questionMarkPosition = linkBase.indexOf('?');
+        final int questionMarkPosition = findCharInSequence(linkBase, '?');
 
-        String basePath;
-        String baseQuery;
-        if (questionMarkPosition == -1) {
-            basePath = linkBase;
-            baseQuery = null;
-        } else {
-            basePath = linkBase.substring(0, questionMarkPosition);
-            baseQuery = linkBase.substring(questionMarkPosition);
-        }
+        int i = parameters.size();
+        while (i-- != 0) {
 
-        final Set<String> usedParams = new HashSet<String>(5);
-        for (final Map.Entry<String,List<Object>> param : parameters.entrySet()) {
+            // We will be (potentially) removing parameters as we process them, and by reverse iterating we will
+            // be able to modify the parameter arrays without this affecting iteration
 
-            final String paramName = param.getKey();
-            final List<Object> paramValues = param.getValue();
-            final String template = URL_TEMPLATE_DELIMITER_PREFIX + paramName + URL_TEMPLATE_DELIMITER_SUFFIX;
+            final String paramName = parameters.getParameterName(i);
 
-            if (basePath.contains(template)) {
+            // We use the text repository in order to avoid the unnecessary creation of too many instances of the same string
+            final String template =
+                    textRepository.getText(URL_TEMPLATE_DELIMITER_PREFIX, paramName, URL_TEMPLATE_DELIMITER_SUFFIX);
 
-                usedParams.add(paramName);
-                final StringBuilder strBuilder = new StringBuilder(paramValues.size() * 16);
-                for (final Object parameterObjectValue : paramValues) {
-                    final String parameterValue = (parameterObjectValue == null? "" : parameterObjectValue.toString());
-                    if (!URL_PARAM_NO_VALUE.equals(parameterValue)) {
-                        if (strBuilder.length() > 0) {
-                            strBuilder.append(',');
-                        }
-                        strBuilder.append(parameterValue);
-                    }
+            final int templateIndex = linkBase.indexOf(template); // not great, because StringBuilder.indexOf ends up calling template.toCharArray(), but...
+
+            if (templateIndex < 0) {
+                // This parameter is not one of those used in path variables
+                continue;
+            }
+
+            // Compute the replacement (unescaped!)
+            final String templateReplacement = parameters.popParameterValueAsUnescapedVariableTemplate(i);
+            final int templateReplacementLen = templateReplacement.length();
+
+            // We will now use a the StringBuilder itself for replacing all appearances of the variable template in
+            // the link base. Note we do this instead of using String#replace() because String#replace internally uses
+            // pattern matching and is very slow :-(
+            final int templateLen = template.length();
+            int start = templateIndex;
+            while (start > -1) {
+                // Depending on whether the template appeared before or after the ?, we will apply different escaping
+                final String escapedReplacement =
+                        (start < questionMarkPosition?
+                                UriEscape.escapeUriPath(templateReplacement) : UriEscape.escapeUriQueryParam(templateReplacement));
+                linkBase.replace(start, start + templateLen, escapedReplacement);
+                if (findCharInSequence(linkBase, URL_TEMPLATE_DELIMITER_PREFIX_CHAR) < 0) {
+                    // Just trying to save an additional StringBuilder#indexOfU() -which provokes a
+                    // template.toCharArray()-- in the most common case: only one variable template for a
+                    // variable that is not multivalued.
+                    return linkBase;
                 }
-                basePath = basePath.replace(template, UriEscape.escapeUriPath(strBuilder.toString()));
-
-            } else if (baseQuery != null && baseQuery.contains(template)) {
-
-                usedParams.add(paramName);
-                final StringBuilder strBuilder = new StringBuilder(paramValues.size() * 16);
-                for (final Object parameterObjectValue : paramValues) {
-                    final String parameterValue = (parameterObjectValue == null? "" : parameterObjectValue.toString());
-                    if (!URL_PARAM_NO_VALUE.equals(parameterValue)) {
-                        if (strBuilder.length() > 0) {
-                            strBuilder.append(',');
-                        }
-                        strBuilder.append(parameterValue);
-                    }
-                }
-                baseQuery = baseQuery.replace(template, UriEscape.escapeUriQueryParam(strBuilder.toString()));
-
+                start = linkBase.indexOf(template, start + templateReplacementLen);
             }
 
         }
 
-        /*
-         * Once parameters are applied as templates, we remove them from the parameters map so that they are not
-         * additionally added to the query string.
-         */
-        for (final String usedParam : usedParams) {
-            parameters.remove(usedParam);
-        }
-
-        return basePath + (baseQuery != null? baseQuery : "");
+        return linkBase;
 
     }
 
-    
+
+
+
+
+
+    private static final class LinkParameters {
+
+        private static final int DEFAULT_PARAMETERS_SIZE = 2;
+
+        private int parameterSize = 0;
+        private String[] parameterNames = null;
+        private Object[] parameterValues = null;
+
+
+        LinkParameters() {
+            super();
+        }
+
+
+        int size() {
+            return this.parameterSize;
+        }
+
+        String getParameterName(final int pos) {
+            return this.parameterNames[pos];
+        }
+
+
+        /*
+         * This method will return a String containing all the values for a specific parameter, separated with commas
+         * and suitable therefore to be used as variable template (path variables) replacements
+         */
+        String popParameterValueAsUnescapedVariableTemplate(final int pos) {
+            // Get the value
+            final Object value = this.parameterValues[pos];
+            // Remove the entry, moving all array positions since this one
+            if (pos + 1 < this.parameterSize) {
+                System.arraycopy(this.parameterNames, pos + 1, this.parameterNames, pos, (this.parameterSize - (pos + 1)));
+                System.arraycopy(this.parameterValues, pos + 1, this.parameterValues, pos, (this.parameterSize - (pos + 1)));
+                this.parameterSize--;
+            }
+            // If null or NO_VALUE, empty String
+            if (value == null || URL_PARAM_NO_VALUE.equals(value)) { // Values can never be null, but anyway
+                return "";
+            }
+            // If it is not multivalued (e.g. non-List) simply escape and return
+            if (!(value instanceof List<?>)) {
+                return value.toString();
+            }
+            // It is multivalued, so iterate and escape each item (no need to escape the comma separating them, it's an allowed char)
+            final List<?> values = (List<?>)value;
+            final int valuesLen = values.size();
+            final StringBuilder strBuilder = new StringBuilder(valuesLen * 16);
+            for (int i = 0; i < valuesLen; i++) {
+                final Object valueItem = values.get(i);
+                if (!URL_PARAM_NO_VALUE.equals(valueItem)) {
+                    if (strBuilder.length() > 0) {
+                        strBuilder.append(',');
+                    }
+                    strBuilder.append(valueItem == null? "" : valueItem.toString());
+                }
+            }
+            return strBuilder.toString();
+        }
+
+
+
+        StringBuilder processAllRemainingParametersAsQueryParams() {
+
+            final StringBuilder strBuilder = new StringBuilder(this.parameterSize * 16);
+            for (int i = 0; i < this.parameterSize; i++) {
+
+                final Object value = this.parameterValues[i];
+
+                if (value == null || URL_PARAM_NO_VALUE.equals(value)) {
+                    strBuilder.append('&');
+                    strBuilder.append(UriEscape.escapeUriQueryParam(this.parameterNames[i]));
+                    continue;
+                }
+
+                if (!(value instanceof List<?>)) {
+                    strBuilder.append('&');
+                    strBuilder.append(UriEscape.escapeUriQueryParam(this.parameterNames[i]));
+                    strBuilder.append('=');
+                    strBuilder.append(UriEscape.escapeUriQueryParam(value.toString())); // we know it's not null
+                    continue;
+                }
+
+                // It is multivalued, so iterate and process each value
+                final List<?> values = (List<?>)value;
+                final int valuesLen = values.size();
+                for (int j = 0; j < valuesLen; j++) {
+                    final Object valueItem = values.get(j);
+                    strBuilder.append('&');
+                    strBuilder.append(UriEscape.escapeUriQueryParam(this.parameterNames[i]));
+                    if (!URL_PARAM_NO_VALUE.equals(valueItem)) {
+                        strBuilder.append('=');
+                        strBuilder.append(valueItem == null ? "" : UriEscape.escapeUriQueryParam(value.toString()));
+                    }
+                }
+
+            }
+            return strBuilder;
+
+        }
+
+
+        void addSimpleParameter(final String parameterName, final Object parameterValue) {
+
+            int n = this.parameterSize;
+            while (n-- != 0) {
+                if (this.parameterNames[n].equalsIgnoreCase(parameterName)) {
+                    addSimpleParameter(n, true, parameterName, parameterValue);
+                    return;
+                }
+            }
+
+            if (this.parameterNames == null || this.parameterSize == this.parameterNames.length) {
+                // We need to grow the container structures
+                final String[] newParameterNames = new String[this.parameterSize + DEFAULT_PARAMETERS_SIZE];
+                final Object[] newParameterValues = new Object[this.parameterSize + DEFAULT_PARAMETERS_SIZE];
+                if (this.parameterNames != null) {
+                    System.arraycopy(this.parameterNames, 0, newParameterNames, 0, this.parameterSize);
+                    System.arraycopy(this.parameterValues, 0, newParameterValues, 0, this.parameterSize);
+                }
+                this.parameterNames = newParameterNames;
+                this.parameterValues = newParameterValues;
+            }
+
+            addSimpleParameter(this.parameterSize, false, parameterName, parameterValue);
+            this.parameterSize++;
+
+        }
+
+
+        private void addSimpleParameter(
+                final int pos, final boolean append, final String parameterName, final Object parameterValue) {
+
+            if (!append) {
+                this.parameterNames[pos] = parameterName;
+                this.parameterValues[pos] = processParameterValue(parameterValue); // -> arraylist or plain object
+                return;
+            }
+
+            // We are appending to an existing value
+
+            final Object currentValue = this.parameterValues[pos];
+
+            if (currentValue == null || !(currentValue instanceof List<?>)) {
+                this.parameterValues[pos] = new ArrayList<Object>(2);
+                ((List<Object>)this.parameterValues[pos]).add(currentValue);
+            }
+
+            // No need to perform any kind of parameter value processing: we know its a mutable arraylist
+            ((List<Object>)this.parameterValues[pos]).add(parameterValue);
+
+        }
+
+
+        private static Object processParameterValue(final Object parameterValue) {
+            // After calling this, all parameter values that are either arrays or iterables (e.g. collections) will
+            // be converted to a mutable ArrayList. All parameter values that are neither arrays nor iterables will
+            // be left unchanged. That should allow us save a lot of arraylists for single-valued parameters (which
+            // are the vast majority).
+
+            if (parameterValue == null) {
+                return null;
+            }
+
+
+            if (parameterValue instanceof Iterable<?>) {
+
+                if (parameterValue instanceof List<?>) {
+                    // faster than iterating as a generic Iterable<?>
+                    return new ArrayList<Object>((List<?>) parameterValue);
+                }
+                if (parameterValue instanceof Set<?>) {
+                    // faster than iterating as a generic Iterable<?>
+                    return new ArrayList<Object>((Set<?>)parameterValue);
+                }
+
+                final List<Object> result = new ArrayList<Object>(4);
+                for (final Object obj : (Iterable<?>) parameterValue) {
+                    result.add(obj);
+                }
+                return result;
+
+            }
+
+            if (parameterValue.getClass().isArray()){
+
+                final List<Object> result = new ArrayList<Object>(4);
+                if (parameterValue instanceof byte[]) {
+                    for (final byte obj : (byte[]) parameterValue) {
+                        result.add(Byte.valueOf(obj));
+                    }
+                } else if (parameterValue instanceof short[]) {
+                    for (final short obj : (short[]) parameterValue) {
+                        result.add(Short.valueOf(obj));
+                    }
+                } else if (parameterValue instanceof int[]) {
+                    for (final int obj : (int[]) parameterValue) {
+                        result.add(Integer.valueOf(obj));
+                    }
+                } else if (parameterValue instanceof long[]) {
+                    for (final long obj : (long[]) parameterValue) {
+                        result.add(Long.valueOf(obj));
+                    }
+                } else if (parameterValue instanceof float[]) {
+                    for (final float obj : (float[]) parameterValue) {
+                        result.add(Float.valueOf(obj));
+                    }
+                } else if (parameterValue instanceof double[]) {
+                    for (final double obj : (double[]) parameterValue) {
+                        result.add(Double.valueOf(obj));
+                    }
+                } else if (parameterValue instanceof boolean[]) {
+                    for (final boolean obj : (boolean[]) parameterValue) {
+                        result.add(Boolean.valueOf(obj));
+                    }
+                } else if (parameterValue instanceof char[]) {
+                    for (final char obj : (char[]) parameterValue) {
+                        result.add(Character.valueOf(obj));
+                    }
+                } else {
+                    final Object[] objParameterValue = (Object[]) parameterValue;
+                    Collections.addAll(result, objParameterValue);
+                }
+                return result;
+
+            }
+
+            // Just return the parameter value object - no list wrapper to be built
+            return parameterValue;
+
+        }
+
+
+    }
+
+
 }
