@@ -45,9 +45,12 @@ final class Text
 
     private int length;
 
+    private Boolean whitespace;
+
     private String templateName;
     private int line;
     private int col;
+
 
 
     /*
@@ -113,6 +116,20 @@ final class Text
     }
 
 
+    public boolean isWhitespace() {
+
+        if (this.whitespace == null) {
+            if (this.buffer != null) {
+                this.whitespace = Boolean.valueOf(computeIsWhitespace(this.buffer, this.offset, this.length));
+            } else {
+                this.whitespace = Boolean.valueOf(computeIsWhitespace(this.text));
+            }
+        }
+
+        return this.whitespace.booleanValue();
+    }
+
+
     public CharSequence subSequence(final int start, final int end) {
 
         // no need to perform index bounds checking: it would slow down traversing operations a lot, and
@@ -143,6 +160,8 @@ final class Text
 
         this.text = null;
 
+        this.whitespace = null;
+
         this.templateName = templateName;
         this.line = line;
         this.col = col;
@@ -164,6 +183,8 @@ final class Text
 
         this.buffer = null;
         this.offset = -1;
+
+        this.whitespace = null;
 
         this.templateName = null;
         this.line = -1;
@@ -228,6 +249,7 @@ final class Text
         this.offset = -1;
         this.text = original.getText(); // Need to call the method in order to force computing -- no buffer cloning!
         this.length = this.text.length();
+        this.whitespace = original.whitespace;
         this.templateName = original.templateName;
         this.line = original.line;
         this.col = original.col;
@@ -251,11 +273,53 @@ final class Text
         newInstance.offset = -1;
         newInstance.text = text.getText();
         newInstance.length = newInstance.text.length();
+        newInstance.whitespace = null;
         newInstance.templateName = text.getTemplateName();
         newInstance.line = text.getLine();
         newInstance.col = text.getCol();
         return newInstance;
 
+    }
+
+
+
+
+    private static boolean computeIsWhitespace(final String text) {
+        int n = text.length();
+        if (n == 0) {
+            return true;
+        }
+        final char c0 = text.charAt(0);
+        if ((c0 >= 'a' && c0 <= 'z') || (c0 >= 'A' && c0 <= 'Z')) {
+            // Fail fast, by quickly checking first char without executing Character.isWhitespace(...)
+            return false;
+        }
+        while (n-- != 0) {
+            if (!Character.isWhitespace(text.charAt(n))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    private static boolean computeIsWhitespace(final char[] buffer, final int off, final int len) {
+        int n = len;
+        if (n == 0) {
+            // empty texts are NOT whitespace
+            return false;
+        }
+        final char c0 = buffer[off];
+        if ((c0 >= 'a' && c0 <= 'z') || (c0 >= 'A' && c0 <= 'Z')) {
+            // Fail fast, by quickly checking first char without executing Character.isWhitespace(...)
+            return false;
+        }
+        while (n-- != 0) {
+            if (!Character.isWhitespace(buffer[off + n])) {
+                return false;
+            }
+        }
+        return true;
     }
 
 

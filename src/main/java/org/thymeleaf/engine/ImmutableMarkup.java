@@ -233,6 +233,10 @@ public class ImmutableMarkup implements IMarkup {
             return this.wrapped.charAt(index);
         }
 
+        public boolean isWhitespace() {
+            return this.wrapped.isWhitespace();
+        }
+
         public CharSequence subSequence(final int start, final int end) {
             return this.wrapped.subSequence(start, end);
         }

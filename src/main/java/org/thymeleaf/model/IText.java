@@ -33,4 +33,9 @@ public interface IText extends INode, CharSequence {
 
     public IText cloneNode();
 
+    /*
+     * Note empty texts are NOT considered whitespace
+     */
+    public boolean isWhitespace();
+
 }
