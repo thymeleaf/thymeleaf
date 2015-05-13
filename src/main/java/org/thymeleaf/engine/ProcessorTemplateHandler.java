@@ -2373,7 +2373,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         String iterStatusVariableName = this.iterationSpec.iterStatusVariableName;
         if (StringUtils.isEmptyOrWhitespace(iterStatusVariableName)) {
             // If no name has been specified for the status variable, we will use the same as the iter var + "Stat"
-            iterStatusVariableName = iterVariableName + DEFAULT_STATUS_VAR_SUFFIX;
+            iterStatusVariableName = this.configuration.getTextRepository().getText(iterVariableName, DEFAULT_STATUS_VAR_SUFFIX);
         }
         final Object iteratedObject = this.iterationSpec.iteratedObject;
         iterArtifacts.iterationQueue.resetAsCloneOf(this.iterationSpec.iterationQueue, false);
