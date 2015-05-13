@@ -42,23 +42,41 @@ public final class StandardTextInliner implements ITextInliner {
     }
 
 
-    public CharSequence inline(final IProcessingContext context, final CharSequence text) {
+    public CharSequence inline(final IProcessingContext context, final CharSequence text, final boolean textIsWhitespace) {
 
-        boolean candidate = false;
-        int n = text.length();
-        while (n-- != 0) {
-            if (text.charAt(n) == '}') {
-                candidate = true;
-            }
+        /*
+         * If all the text to be inlined is whitespace (we know this from the moment it was parsed), then just return,
+         * because there is no way we can do anything with just whitespace
+         */
+        if (textIsWhitespace) {
+            return text;
         }
 
-        if (candidate) {
-            System.out.println("INLINING CANDIDATE: " + text.toString());
+        /*
+         * Fail fast - if the text does not look as an 'inlining candidate' (it should contain at least one '}' symbol,
+         * then simply skup
+         */
+        if (!isInliningCandidate(text)) {
+            return text;
         }
 
-        return text;
+        return "[[[" + text.toString() + "]]]";
 
     }
 
+
+    /*
+     * This method quickly checks if a text looks like it would need inlining. At least a '}' should be contained for
+     * the text to be considered a 'candidate'
+     */
+    private static boolean isInliningCandidate(final CharSequence text) {
+        int n = text.length();
+        while (n-- != 0) {
+            if (text.charAt(n) == '}') {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

@@ -52,6 +52,7 @@ import org.thymeleaf.standard.processor.StandardFragmentTagProcessor;
 import org.thymeleaf.standard.processor.StandardHrefTagProcessor;
 import org.thymeleaf.standard.processor.StandardIfTagProcessor;
 import org.thymeleaf.standard.processor.StandardIncludeTagProcessor;
+import org.thymeleaf.standard.processor.StandardInlineEnablementDocumentProcessor;
 import org.thymeleaf.standard.processor.StandardInlineTagProcessor;
 import org.thymeleaf.standard.processor.StandardInliningTextProcessor;
 import org.thymeleaf.standard.processor.StandardInsertTagProcessor;
@@ -349,6 +350,11 @@ public class StandardDialect
          * TEXT PROCESSORS
          */
         processors.add(new StandardInliningTextProcessor());
+
+        /*
+         * DOCUMENT PROCESSORS
+         */
+        processors.add(new StandardInlineEnablementDocumentProcessor());
 
         return processors;
     }

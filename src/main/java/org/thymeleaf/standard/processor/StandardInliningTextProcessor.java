@@ -56,7 +56,7 @@ public final class StandardInliningTextProcessor extends AbstractTextProcessor {
         }
 
         // Execute the inliner directly passing the IText node (which is also a CharSequence)
-        final CharSequence result = textInliner.inline(processingContext, text);
+        final CharSequence result = textInliner.inline(processingContext, text, text.isWhitespace());
 
         if (result == text) {
             // Either there were no changes, or they were directly done on the IText node itself. Either way,
@@ -64,12 +64,8 @@ public final class StandardInliningTextProcessor extends AbstractTextProcessor {
             return;
         }
 
-        final IText resultText = processingContext.getMarkupFactory().createText(result.toString());
-        final Markup markup = processingContext.getMarkupFactory().createMarkup();
-        markup.add(resultText);
-
-        // TODO Create a version or replaceWith that simply expects a String instead of a whole markup object, and uses a ProcessorTemplateHandler internal buffer for it
-        structureHandler.replaceWith(markup, false);
+        // Text was changed, so we need to set it as the new text
+        text.setText(result.toString());
 
     }
 
