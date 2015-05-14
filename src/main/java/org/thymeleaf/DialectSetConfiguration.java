@@ -628,28 +628,55 @@ final class DialectSetConfiguration {
 
         static class AggregateExpressionObjects implements IExpressionObjects {
 
-            private final List<IExpressionObjects> expressionObjectsList = new ArrayList<IExpressionObjects>(2);
+            /*
+             * We will try to optimize a bit the fact that most times only one dialect will provide an
+             * IExpressionObjects implementation, so there should be no need to create a collection
+             */
+
+            private IExpressionObjects firstExpressionObject = null;
+            private List<IExpressionObjects> expressionObjectsList = null;
 
             AggregateExpressionObjects() {
                 super();
             }
 
             void addExpressionObjects(final IExpressionObjects expressionObjects) {
+                if (this.firstExpressionObject == null && this.expressionObjectsList == null) {
+                    this.firstExpressionObject = expressionObjects;
+                    return;
+                } else if (this.expressionObjectsList == null) {
+                    this.expressionObjectsList = new ArrayList<IExpressionObjects>(2);
+                    this.expressionObjectsList.add(this.firstExpressionObject);
+                    this.firstExpressionObject = null;
+                }
                 this.expressionObjectsList.add(expressionObjects);
             }
 
-
             public int size() {
+                if (this.firstExpressionObject != null) {
+                    return this.firstExpressionObject.size();
+                }
+                if (this.expressionObjectsList == null) {
+                    return 0;
+                }
                 int size = 0;
-                for (final IExpressionObjects expressionObjects : this.expressionObjectsList) {
-                    size += expressionObjects.size();
+                int n = this.expressionObjectsList.size();
+                while (n-- != 0) {
+                    size += this.expressionObjectsList.get(n).size();
                 }
                 return size;
             }
 
             public boolean containsObject(final String name) {
-                for (final IExpressionObjects expressionObjects : this.expressionObjectsList) {
-                    if (expressionObjects.containsObject(name)) {
+                if (this.firstExpressionObject != null) {
+                    return this.firstExpressionObject.containsObject(name);
+                }
+                if (this.expressionObjectsList == null) {
+                    return false;
+                }
+                int n = this.expressionObjectsList.size();
+                while (n-- != 0) {
+                    if (this.expressionObjectsList.get(n).containsObject(name)) {
                         return true;
                     }
                 }
@@ -657,29 +684,31 @@ final class DialectSetConfiguration {
             }
 
             public Set<String> getObjectNames() {
-                if (this.expressionObjectsList.size() == 0) {
+                if (this.firstExpressionObject != null) {
+                    return this.firstExpressionObject.getObjectNames();
+                }
+                if (this.expressionObjectsList == null) {
                     return Collections.EMPTY_SET;
                 }
-                if (this.expressionObjectsList.size() == 1) {
-                    return this.expressionObjectsList.get(0).getObjectNames();
-                }
                 final Set<String> objectNames = new LinkedHashSet<String>(30);
-                for (final IExpressionObjects expressionObjects : this.expressionObjectsList) {
-                    objectNames.addAll(expressionObjects.getObjectNames());
+                int n = this.expressionObjectsList.size();
+                while (n-- != 0) {
+                    objectNames.addAll(this.expressionObjectsList.get(0).getObjectNames());
                 }
                 return objectNames;
             }
 
             public Object getObject(final String name) {
-                if (this.expressionObjectsList.size() == 0) {
-                    return Collections.EMPTY_SET;
+                if (this.firstExpressionObject != null) {
+                    return this.firstExpressionObject.getObject(name);
                 }
-                if (this.expressionObjectsList.size() == 1) {
-                    return this.expressionObjectsList.get(0).getObject(name);
+                if (this.expressionObjectsList == null) {
+                    return null;
                 }
-                for (final IExpressionObjects expressionObjects : this.expressionObjectsList) {
-                    if (expressionObjects.containsObject(name)) {
-                        return expressionObjects.getObject(name);
+                int n = this.expressionObjectsList.size();
+                while (n-- != 0) {
+                    if (this.expressionObjectsList.get(n).containsObject(name)) {
+                        return this.expressionObjectsList.get(n).getObject(name);
                     }
                 }
                 return null;

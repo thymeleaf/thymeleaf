@@ -716,10 +716,10 @@ public final class ElementAttributes implements IElementAttributes {
             } else if (this.attributes.length < from.attributesSize) {
                 // We need to adjust the size of our arrays
 
-                final ElementAttribute[] newAttributes = new ElementAttribute[from.attributesSize];
-                final AttributeName[] newAttributeNames = new AttributeName[from.attributesSize];
+                final ElementAttribute[] newAttributes = new ElementAttribute[Math.max(from.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
+                final AttributeName[] newAttributeNames = new AttributeName[Math.max(from.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
                 System.arraycopy(this.attributes, 0, newAttributes, 0, this.attributes.length);
-                // No need to copy the names - they're immutable (sort of)
+                // No need to initialize the names - they're immutable (sort of) and will be assigned in the following block
                 this.attributes = newAttributes;
                 this.attributeNames = newAttributeNames;
 

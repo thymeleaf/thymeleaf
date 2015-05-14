@@ -21,7 +21,6 @@ package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.ITextStructureHandler;
-import org.thymeleaf.engine.Markup;
 import org.thymeleaf.inline.ITextInliner;
 import org.thymeleaf.inline.NoOpTextInliner;
 import org.thymeleaf.model.IText;

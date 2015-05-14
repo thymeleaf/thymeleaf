@@ -379,29 +379,16 @@ final class OGNLShortcutExpression {
 
     private static String[] doParseExpr(final String expression, final int level, final int offset, final int len) {
 
-        char c;
         int codepoint;
         int i = offset;
         boolean firstChar = true;
 
         while (i < len) {
 
-            c = expression.charAt(i);
+            codepoint = Character.codePointAt(expression, i);
 
-            if (c == '.') {
+            if (codepoint == '.') {
                 break;
-            } else if (c < Character.MIN_HIGH_SURROGATE) { // shortcut: U+D800 is the lower limit of high-surrogate chars.
-                codepoint = (int) c;
-            } else if (Character.isHighSurrogate(c) && i + 1 < len) { // i has already been increased
-                final char c1 = expression.charAt(i + 1);
-                if (Character.isLowSurrogate(c1)) {
-                    codepoint = Character.toCodePoint(c, c1);
-                    i++;
-                } else {
-                    codepoint = (int) c;
-                }
-            } else { // just a normal, single-char, high-valued codepoint
-                codepoint = (int) c;
             }
 
             if (firstChar) {
