@@ -162,9 +162,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         super();
 
-        this.allowedElementCountByMarkupLevel = new int[15];
+        this.allowedElementCountByMarkupLevel = new int[10];
         Arrays.fill(this.allowedElementCountByMarkupLevel, Integer.MAX_VALUE);
-        this.allowedNonElementStructuresByMarkupLevel = new boolean[15];
+        this.allowedNonElementStructuresByMarkupLevel = new boolean[10];
         Arrays.fill(this.allowedNonElementStructuresByMarkupLevel, true);
 
         this.elementStructureHandler = new ElementStructureHandler();
@@ -225,7 +225,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         this.hasTextProcessors = !this.configuration.getTextProcessors(this.templateMode).isEmpty();
         this.hasXMLDeclarationProcessors = !this.configuration.getXMLDeclarationProcessors(this.templateMode).isEmpty();
 
-        // Initialize arrays containing the processors for all the non-element structures (do not change during execution)
+        // Initialize arrays containing the processors for all the non-element structures (these do not change during execution)
         final Set<IDocumentProcessor> documentProcessorSet = this.configuration.getDocumentProcessors(this.templateMode);
         final Set<ICDATASectionProcessor> cdataSectionProcessorSet = this.configuration.getCDATASectionProcessors(this.templateMode);
         final Set<ICommentProcessor> commentProcessorSet = this.configuration.getCommentProcessors(this.templateMode);
@@ -2578,7 +2578,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         IterationSpec(final TemplateMode templateMode, final IEngineConfiguration configuration) {
             super();
-            this.iterationQueue = new EngineEventQueue(configuration, templateMode);
+            this.iterationQueue = new EngineEventQueue(configuration, templateMode, 50);
             reset();
         }
 
@@ -2603,7 +2603,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         SuspensionSpec(final TemplateMode templateMode, final IEngineConfiguration configuration) {
             super();
-            this.suspendedQueue = new EngineEventQueue(configuration, templateMode);
+            this.suspendedQueue = new EngineEventQueue(configuration, templateMode, 5); // 5 events will probably be enough
             this.suspendedIterator = new ElementProcessorIterator();
         }
 
@@ -2626,8 +2626,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         IterationArtifacts(final TemplateMode templateMode, final IEngineConfiguration configuration) {
             super();
-            this.iterationQueue = new EngineEventQueue(configuration, templateMode);
-            this.suspendedQueue = new EngineEventQueue(configuration, templateMode);
+            this.iterationQueue = new EngineEventQueue(configuration, templateMode, 50);
+            this.suspendedQueue = new EngineEventQueue(configuration, templateMode, 5);
             this.suspendedElementProcessorIterator = new ElementProcessorIterator();
         }
 
