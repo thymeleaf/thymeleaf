@@ -19,8 +19,8 @@
  */
 package org.thymeleaf.engine;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,10 +45,10 @@ final class DocumentStructureHandler implements IDocumentStructureHandler {
     boolean insertMarkupProcessable;
 
     boolean setLocalVariable;
-    Map<String,Object> addedLocalVariables = new LinkedHashMap<String, Object>(3);
+    Map<String,Object> addedLocalVariables;
 
     boolean removeLocalVariable;
-    Set<String> removedLocalVariableNames = new LinkedHashSet<String>(3);
+    Set<String> removedLocalVariableNames;
 
     boolean setSelectionTarget;
     Object selectionTargetObject;
@@ -87,6 +87,9 @@ final class DocumentStructureHandler implements IDocumentStructureHandler {
     public void removeLocalVariable(final String name) {
         // Can be combined with others, no need to reset
         this.removeLocalVariable = true;
+        if (this.removedLocalVariableNames == null) {
+            this.removedLocalVariableNames = new HashSet<String>(3);
+        }
         this.removedLocalVariableNames.add(name);
     }
 
@@ -94,6 +97,9 @@ final class DocumentStructureHandler implements IDocumentStructureHandler {
     public void setLocalVariable(final String name, final Object value) {
         // Can be combined with others, no need to reset
         this.setLocalVariable = true;
+        if (this.addedLocalVariables == null) {
+            this.addedLocalVariables = new HashMap<String, Object>(3);
+        }
         this.addedLocalVariables.put(name, value);
     }
 
@@ -118,10 +124,14 @@ final class DocumentStructureHandler implements IDocumentStructureHandler {
         resetAllButLocalVariables();
 
         this.setLocalVariable = false;
-        this.addedLocalVariables.clear();
+        if (this.addedLocalVariables != null) {
+            this.addedLocalVariables.clear();
+        }
 
         this.removeLocalVariable = false;
-        this.removedLocalVariableNames.clear();
+        if (this.removedLocalVariableNames != null) {
+            this.removedLocalVariableNames.clear();
+        }
 
         this.setSelectionTarget = false;
         this.selectionTargetObject = null;
