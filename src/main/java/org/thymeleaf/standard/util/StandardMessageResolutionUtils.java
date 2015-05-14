@@ -66,16 +66,19 @@ public final class StandardMessageResolutionUtils {
     public static String resolveMessageForTemplate(
             final ITemplateProcessingContext processingContext, final String key, final Object[] messageParameters,
             final Properties defaultMessages) {
-        
+
         Validate.notNull(processingContext, "Processing Context cannot be null");
         Validate.notNull(processingContext.getLocale(), "Locale returned by Processing Context cannot be null");
         Validate.notNull(key, "Message key cannot be null");
 
         final IEngineConfiguration configuration = processingContext.getConfiguration();
+        final ITextRepository textRepository = configuration.getTextRepository();
         final Locale locale = processingContext.getLocale();
 
         final String templateName = processingContext.getTemplateResolution().getTemplateName();
-        final String cacheKey = configuration.getTextRepository().getText(TEMPLATE_CACHE_PREFIX, templateName, "_", locale.toString());
+        final String cacheKey =
+                configuration.getTextRepository().getText(
+                        TEMPLATE_CACHE_PREFIX, templateName, "_", computeLocaleToString(textRepository, locale));
 
         Properties properties = null;
         ICache<String,Properties> messagesCache = null;
@@ -108,13 +111,58 @@ public final class StandardMessageResolutionUtils {
             return null;
         }
 
+        // Most times messages will not contain parameters, and we avoid the expensive MessageFormat operation
+        if (!isFormatCandidate(messageValue)) {
+            return messageValue;
+        }
+
         final MessageFormat messageFormat = new MessageFormat(messageValue, locale);
         return messageFormat.format((messageParameters != null? messageParameters : EMPTY_MESSAGE_PARAMETERS));
 
     }
-    
-    
-    
+
+
+    /*
+     * This will allow us determine whether a message might actually contain parameter placeholders.
+     */
+    private static boolean isFormatCandidate(final String message) {
+        char c;
+        int n = message.length();
+        while (n-- != 0) {
+            c = message.charAt(n);
+            if (c == '}' || c == '\'') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    // Calling locale.toString is surprisingly expensive, so we will try to us some shortcuts
+    // NOTE there is one like this at MessageResolutionUtils. It's private and duplicated because it is
+    //      a low-level implementation detail
+    private static String computeLocaleToString(final ITextRepository textRepository, final Locale locale) {
+        String localeStr = locale.getLanguage();
+        final String country = locale.getCountry();
+        final String variant = locale.getVariant();
+        if (country.length() > 0) {
+            if (localeStr.length() > 0) {
+                localeStr = textRepository.getText(localeStr, "_", country);
+            } else {
+                localeStr = country;
+            }
+        }
+        if (variant.length() > 0) {
+            if (localeStr.length() > 0) {
+                localeStr = textRepository.getText(localeStr, "_", variant);
+            } else {
+                localeStr = variant;
+            }
+        }
+        return localeStr;
+    }
+
+
     
     
     private static Properties loadMessagesForTemplate(
