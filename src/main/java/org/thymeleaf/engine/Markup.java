@@ -138,9 +138,11 @@ public final class Markup implements IMarkup {
         // (which are part of the state of the EngineEventQueue object) will be used for firing the events, and those
         // can be modified during processing. So not queuing the queue and therefore not creating a new ser of buffers
         // could result in pretty bad interactions between template executions...
-        final EngineEventQueue eventQueue = this.queue.cloneEventQueue(false);
+        final EngineEventQueue eventQueue = this.queue.cloneEventQueue(false, false);
 
         // Process the new, cloned queue
+        // NOTE It is VERY important that 'reset' is here set to FALSE, because we will be sharing the actual
+        // event array with the original (cached) event queue!
         eventQueue.process(templateHandler, false);
 
     }

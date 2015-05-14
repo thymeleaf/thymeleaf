@@ -42,14 +42,13 @@ final class EngineEventQueue {
      * This queue WILL ONLY CONTAIN ENGINE-BASED IMPLEMENTATIONS of the ITemplateHandlerEvent interface
      */
 
-    private static final int DEFAULT_INITIAL_SIZE = 20;
+    private static final int DEFAULT_INITIAL_SIZE = 50;
 
     private int queueSize = 0;
     private IEngineTemplateHandlerEvent[] queue; // We use the interface, but not all implementations will be allowed
 
     private final TemplateMode templateMode;
     private final IEngineConfiguration configuration;
-    private final int initialSize;
 
     private DocumentStart documentStartBuffer = null;
     private DocumentEnd documentEndBuffer = null;
@@ -79,10 +78,11 @@ final class EngineEventQueue {
 
         super();
 
-        this.queue = new IEngineTemplateHandlerEvent[initialSize];
-        Arrays.fill(this.queue, null);
+        if (initialSize > 0) {
+            this.queue = new IEngineTemplateHandlerEvent[initialSize];
+            Arrays.fill(this.queue, null);
+        }
 
-        this.initialSize = initialSize;
         this.templateMode = templateMode;
         this.configuration = configuration;
 
@@ -123,7 +123,7 @@ final class EngineEventQueue {
 
         if (this.queue.length == this.queueSize) {
             // We need to grow the queue!
-            final IEngineTemplateHandlerEvent[] newQueue = new IEngineTemplateHandlerEvent[this.queue.length + Math.max(this.initialSize / 2, DEFAULT_INITIAL_SIZE)];
+            final IEngineTemplateHandlerEvent[] newQueue = new IEngineTemplateHandlerEvent[Math.min(this.queue.length + 25, this.queue.length * 2)];
             Arrays.fill(newQueue, null);
             System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
             this.queue = newQueue;
@@ -192,7 +192,7 @@ final class EngineEventQueue {
 
         if (this.queue.length <= (this.queueSize + markupQueue.queueSize)) {
             // We need to grow the queue!
-            final IEngineTemplateHandlerEvent[] newQueue = new IEngineTemplateHandlerEvent[this.queueSize + markupQueue.queueSize + Math.max(this.initialSize / 2, DEFAULT_INITIAL_SIZE)];
+            final IEngineTemplateHandlerEvent[] newQueue = new IEngineTemplateHandlerEvent[Math.max(this.queueSize + markupQueue.queueSize, this.queue.length + 25)];
             Arrays.fill(newQueue, null);
             System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
             this.queue = newQueue;
@@ -438,19 +438,44 @@ final class EngineEventQueue {
 
 
 
-    EngineEventQueue cloneEventQueue(final boolean cloneEvents) {
-        final EngineEventQueue clone = new EngineEventQueue(this.configuration, this.templateMode, this.queueSize);
-        clone.resetAsCloneOf(this, cloneEvents);
+    EngineEventQueue cloneEventQueue(final boolean cloneEvents, final boolean cloneEventArray) {
+
+        if (cloneEvents && !cloneEventArray) {
+            throw new IllegalArgumentException("Cannot clone events if the event array is not cloned too");
+        }
+
+        final EngineEventQueue clone;
+        if (!cloneEventArray) {
+            // We will use queue size 0 so that a new event array is not created
+            clone = new EngineEventQueue(this.configuration, this.templateMode, 0);
+        } else {
+            clone = new EngineEventQueue(this.configuration, this.templateMode, this.queueSize);
+        }
+
+        clone.resetAsCloneOf(this, cloneEvents, cloneEventArray);
+
         return clone;
+
     }
 
 
     void resetAsCloneOf(final EngineEventQueue original, final boolean cloneEvents) {
+        // When only resetting, we will always clone the event array because it makes not sense to discard an already-created array
+        resetAsCloneOf(original, cloneEvents, true);
+    }
+
+
+    private void resetAsCloneOf(final EngineEventQueue original, final boolean cloneEvents, final boolean cloneEventArray) {
 
         this.queueSize = original.queueSize;
 
+        if (!cloneEventArray) {
+            this.queue = original.queue;
+            return;
+        }
+
         if (this.queue.length < original.queueSize) {
-            this.queue = new IEngineTemplateHandlerEvent[original.queueSize];
+            this.queue = new IEngineTemplateHandlerEvent[Math.max(DEFAULT_INITIAL_SIZE, original.queueSize)];
         }
 
         if (!cloneEvents) {
