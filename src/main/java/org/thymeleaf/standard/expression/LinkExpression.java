@@ -267,9 +267,9 @@ public final class LinkExpression extends SimpleExpression {
         final boolean linkBaseServerRelative = !linkBaseAbsolute && !linkBaseContextRelative && isLinkBaseServerRelative((String) base);
         final boolean linkBaseRelative = !linkBaseAbsolute && !linkBaseContextRelative && !linkBaseServerRelative;
 
-        if (!processingContext.isWeb() && !linkBaseAbsolute && !linkBaseServerRelative) {
+        if (!processingContext.isWeb() && linkBaseContextRelative) {
             throw new TemplateProcessingException(
-                    "Link base \"" + base + "\" cannot be context relative (/) or page relative unless the context " +
+                    "Link base \"" + base + "\" cannot be context relative (/...) unless the context " +
                     "used for executing the engine implements the " + IWebContext.class.getName() + " interface");
         }
 
@@ -309,7 +309,7 @@ public final class LinkExpression extends SimpleExpression {
         } else {
             contextPath = null;
         }
-        final boolean contextPathNotEmpty = contextPath != null && contextPath.length() > 0 && !contextPath.equals("/");
+        final boolean contextPathEmpty = contextPath != null && contextPath.length() > 0 && !contextPath.equals("/");
 
 
         /*
@@ -318,7 +318,7 @@ public final class LinkExpression extends SimpleExpression {
          *            3. That there are no URL fragments -> then just return the base URL String without further
          *            processing (except HttpServletResponse-encoding, of course...)
          */
-        if ((linkBaseAbsolute || linkBaseRelative || (linkBaseContextRelative && !contextPathNotEmpty)) &&
+        if (contextPathEmpty && !linkBaseServerRelative &&
                 (parameters == null || parameters.size() == 0) && hashPosition < 0 && !mightHaveVariableTemplates) {
 
             if (processingContext.isWeb()) {
@@ -414,7 +414,7 @@ public final class LinkExpression extends SimpleExpression {
         final IWebVariablesMap webVariablesMap = (IWebVariablesMap) processingContext.getVariablesMap();
         final HttpServletResponse response = webVariablesMap.getResponse();
 
-        if (linkBaseContextRelative && contextPathNotEmpty) {
+        if (linkBaseContextRelative && !contextPathEmpty) {
             // Add the application's context path at the beginning
             linkBase.insert(0, contextPath);
         }
