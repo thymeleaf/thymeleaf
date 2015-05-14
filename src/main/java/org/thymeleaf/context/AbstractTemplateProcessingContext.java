@@ -32,6 +32,11 @@ import org.thymeleaf.util.Validate;
 
 /**
  *
+ * <p>
+ *   Note these implementations do not have to be thread-safe, and in fact should not be shared by different threads
+ *   or template executions. They are meant to be local to a specific template engine execution.
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
@@ -44,7 +49,7 @@ public abstract class AbstractTemplateProcessingContext
     private final TemplateResolution templateResolution;
     private final TemplateMode templateMode;
     private final IMarkupFactory markupFactory;
-    private final IdentifierSequences identifierSequences;
+    private IdentifierSequences identifierSequences;
 
 
 
@@ -65,7 +70,8 @@ public abstract class AbstractTemplateProcessingContext
         this.markupFactory =
                 new StandardMarkupFactory(
                         getConfiguration(), this.templateMode, this.templateResolution.getTemplateName(), this.templateManager);
-        this.identifierSequences = new IdentifierSequences();
+        // Most templates will not need this, so we will initialize it lazily
+        this.identifierSequences = null;
 
     }
 
@@ -108,6 +114,11 @@ public abstract class AbstractTemplateProcessingContext
     }
 
     public IdentifierSequences getIdentifierSequences() {
+        // No problem in lazily initializing this here, as IProcessingContext objects should not be used by
+        // multiple threads.
+        if (this.identifierSequences == null) {
+            this.identifierSequences = new IdentifierSequences();
+        }
         return this.identifierSequences;
     }
 
