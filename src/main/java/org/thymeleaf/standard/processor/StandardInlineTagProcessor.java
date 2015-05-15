@@ -62,9 +62,9 @@ public final class StandardInlineTagProcessor extends AbstractStandardTextInline
             if (JAVASCRIPT_INLINE.equals(attributeValue.toLowerCase())) {
                 throw new UnsupportedOperationException("JAVASCRIPT INLINING IS NOT IMPLEMENTED YET!");
             } else if (DART_INLINE.equals(attributeValue.toLowerCase())) {
-                throw new UnsupportedOperationException("JAVASCRIPT INLINING IS NOT IMPLEMENTED YET!");
+                throw new UnsupportedOperationException("DART INLINING IS NOT IMPLEMENTED YET!");
             } else if (TEXT_INLINE.equals(attributeValue.toLowerCase())) {
-                throw new UnsupportedOperationException("JAVASCRIPT INLINING IS NOT IMPLEMENTED YET!");
+                throw new UnsupportedOperationException("TEXT INLINING IS NOT IMPLEMENTED YET!");
             }
         }
 

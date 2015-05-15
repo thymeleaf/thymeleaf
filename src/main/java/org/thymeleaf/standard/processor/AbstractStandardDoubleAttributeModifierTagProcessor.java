@@ -27,6 +27,7 @@ import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
+import org.unbescape.html.HtmlEscape;
 
 /**
  *
@@ -67,7 +68,7 @@ public abstract class AbstractStandardDoubleAttributeModifierTagProcessor extend
 
         final Object result = expression.execute(processingContext);
 
-        final String newAttributeValue = (result == null? null : result.toString());
+        final String newAttributeValue = HtmlEscape.escapeHtml4Xml(result == null ? null : result.toString());
 
         // These attributes might be "removable if empty", in which case we would simply remove the target attributes...
         if (this.removeIfEmpty && (newAttributeValue == null || newAttributeValue.length() == 0)) {

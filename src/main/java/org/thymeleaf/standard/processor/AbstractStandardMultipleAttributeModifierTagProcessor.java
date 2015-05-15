@@ -31,6 +31,7 @@ import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.util.ArrayUtils;
 import org.thymeleaf.util.EvaluationUtil;
 import org.thymeleaf.util.StringUtils;
+import org.unbescape.html.HtmlEscape;
 
 /**
  *
@@ -100,7 +101,7 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
             } else {
                 // Attribute is a "normal" attribute, not a fixed-value conditional one - or we are not just replacing
 
-                final String newAttributeValue = (rightValue == null? null : rightValue.toString());
+                final String newAttributeValue = HtmlEscape.escapeHtml4Xml(rightValue == null ? null : rightValue.toString());
                 if (newAttributeValue == null || newAttributeValue.length() == 0) {
 
                     if (this.modificationType == ModificationType.SUBSTITUTION) {

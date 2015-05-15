@@ -25,6 +25,7 @@ import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
+import org.unbescape.html.HtmlEscape;
 
 /**
  *
@@ -52,7 +53,7 @@ public abstract class AbstractStandardAttributeTagProcessor extends AbstractAttr
         try {
 
             attributeName = getMatchingAttributeName().getMatchingAttributeName();
-            final String attributeValue = tag.getAttributes().getValue(attributeName);
+            final String attributeValue = HtmlEscape.unescapeHtml(tag.getAttributes().getValue(attributeName));
 
             doProcess(processingContext, tag, attributeName, attributeValue, structureHandler);
 

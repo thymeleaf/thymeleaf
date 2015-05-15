@@ -27,6 +27,7 @@ import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
+import org.unbescape.html.HtmlEscape;
 
 /**
  *
@@ -59,7 +60,7 @@ public final class StandardTextTagProcessor extends AbstractStandardAttributeTag
 
         final Object result = expression.execute(processingContext);
 
-        structureHandler.setBody(result == null ? "" : result.toString(), false);
+        structureHandler.setBody(result == null ? "" : HtmlEscape.escapeHtml4Xml(result.toString()), false);
 
     }
 

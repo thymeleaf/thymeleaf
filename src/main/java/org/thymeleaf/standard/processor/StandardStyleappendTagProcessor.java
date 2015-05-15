@@ -27,6 +27,7 @@ import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
+import org.unbescape.html.HtmlEscape;
 
 /**
  *
@@ -62,7 +63,7 @@ public final class StandardStyleappendTagProcessor extends AbstractStandardAttri
 
         final Object result = expression.execute(processingContext);
 
-        final String newAttributeValue = (result == null? null : result.toString());
+        final String newAttributeValue = HtmlEscape.escapeHtml4Xml(result == null ? null : result.toString());
 
         // If we are not adding anything, we'll just leave it untouched
         if (newAttributeValue != null && newAttributeValue.length() > 0) {

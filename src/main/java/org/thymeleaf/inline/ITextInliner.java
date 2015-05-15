@@ -31,6 +31,7 @@ public interface ITextInliner {
 
     public String getName();
 
+    // TODO include in javadoc the fact that it is the inliner the one that should unescape/escape (if in HTML/XML)
     public CharSequence inline(final IProcessingContext context, final CharSequence text, final boolean textIsWhitespace);
 
 }

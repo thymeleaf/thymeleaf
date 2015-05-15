@@ -60,6 +60,8 @@ public final class StandardTextInliner implements ITextInliner {
             return text;
         }
 
+        // TODO Check processingContext.getTemplateMode() and, if !isText(), UNESCAPE, process, and finally ESCAPE
+
         return "[[[" + text.toString() + "]]]";
 
     }
