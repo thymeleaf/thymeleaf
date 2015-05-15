@@ -63,12 +63,32 @@ public final class StandardUtextTagProcessor extends AbstractStandardAttributeTa
 
         final String unescapedText = (result == null ? "" : result.toString());
 
-        // If this text contains no markup structures, there would be no need to parse it or treat it as markup!
-        if (!mightContainStructures(unescapedText)) {
-
+        /*
+         * We will check if there are configured post processors or not. The reason we do this is because output
+         * inserted as a result of a th:utext attribute, even if it might be markup, will never be considered as
+         * 'processable', i.e. no other processors/inliner will ever be able to act on it. The main reason for this
+         * is to protect against code injection.
+         *
+         * So the only other agents that would be able to modify these th:utext results are POST-PROCESSORS. And
+         * they will indeed need markup to have been parsed in order to separate text from structures, so that's why
+         * we check if there actually are any post-processors and, if not (most common case), simply output the
+         * expression result as if it were a mere (unescaped) text node.
+         */
+        if (!configuration.hasPostProcessors()) {
             structureHandler.setBody(unescapedText, false);
             return;
+        }
 
+
+        /*
+         * We have post-processors, so from here one we will have to decide whether we need to parse the unescaped
+         * text or not...
+         */
+
+        if (!mightContainStructures(unescapedText)) {
+            // If this text contains no markup structures, there would be no need to parse it or treat it as markup!
+            structureHandler.setBody(unescapedText, false);
+            return;
         }
 
         final ParsedFragmentMarkup parsedFragment =

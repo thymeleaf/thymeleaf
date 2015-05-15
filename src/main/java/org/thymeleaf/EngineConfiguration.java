@@ -173,8 +173,16 @@ public class EngineConfiguration implements IEngineConfiguration {
         return this.dialectSetConfiguration.getXMLDeclarationProcessors(templateMode);
     }
 
+    public boolean hasPreProcessors() {
+        return this.dialectSetConfiguration.hasPreProcessors();
+    }
+
     public List<Class<? extends ITemplateHandler>> getPreProcessors() {
         return this.dialectSetConfiguration.getPreProcessors();
+    }
+
+    public boolean hasPostProcessors() {
+        return this.dialectSetConfiguration.hasPostProcessors();
     }
 
     public List<Class<? extends ITemplateHandler>> getPostProcessors() {

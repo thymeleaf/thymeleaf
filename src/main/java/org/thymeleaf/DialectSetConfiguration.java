@@ -83,7 +83,10 @@ final class DialectSetConfiguration {
     private final EnumMap<TemplateMode,Set<ITextProcessor>> textProcessorsByTemplateMode;
     private final EnumMap<TemplateMode,Set<IXMLDeclarationProcessor>> xmlDeclarationProcessorsByTemplateMode;
 
+    private boolean hasPreProcessors;
     private final List<Class<? extends ITemplateHandler>> preProcessors;
+
+    private boolean hasPostProcessors;
     private final List<Class<? extends ITemplateHandler>> postProcessors;
 
 
@@ -455,7 +458,9 @@ final class DialectSetConfiguration {
         this.textProcessorsByTemplateMode = textProcessorsByTemplateMode;
         this.xmlDeclarationProcessorsByTemplateMode = xmlDeclarationProcessorsByTemplateMode;
         this.preProcessors = preProcessors;
+        this.hasPreProcessors = this.preProcessors != null && this.preProcessors.size() > 0;
         this.postProcessors = postProcessors;
+        this.hasPostProcessors = this.postProcessors != null && this.postProcessors.size() > 0;
 
     }
 
@@ -566,10 +571,18 @@ final class DialectSetConfiguration {
     }
 
 
+    public boolean hasPreProcessors() {
+        return this.hasPreProcessors;
+    }
+
     public List<Class<? extends ITemplateHandler>> getPreProcessors() {
         return this.preProcessors;
     }
 
+
+    public boolean hasPostProcessors() {
+        return this.hasPostProcessors;
+    }
 
     public List<Class<? extends ITemplateHandler>> getPostProcessors() {
         return this.postProcessors;

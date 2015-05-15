@@ -73,7 +73,10 @@ public interface IEngineConfiguration {
     public Set<IProcessingInstructionProcessor> getProcessingInstructionProcessors(final TemplateMode templateMode);
     public Set<IXMLDeclarationProcessor> getXMLDeclarationProcessors(final TemplateMode templateMode);
 
+    public boolean hasPreProcessors();
     public List<Class<? extends ITemplateHandler>> getPreProcessors();
+
+    public boolean hasPostProcessors();
     public List<Class<? extends ITemplateHandler>> getPostProcessors();
 
     public Map<String,Object> getExecutionAttributes();
