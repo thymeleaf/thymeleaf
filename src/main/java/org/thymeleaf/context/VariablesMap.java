@@ -20,8 +20,8 @@
 package org.thymeleaf.context;
 
 import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -53,7 +53,7 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
     private int level = 0;
     private int index = 0;
     private int[] levels;
-    private LinkedHashMap<String,Object>[] maps;
+    private HashMap<String,Object>[] maps;
     private SelectionTarget[] selectionTargets;
     private ITextInliner[] textInliners;
 
@@ -79,7 +79,7 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
         this.locale = locale;
 
         this.levels = new int[DEFAULT_LEVELS_SIZE];
-        this.maps = (LinkedHashMap<String, Object>[]) new LinkedHashMap<?,?>[DEFAULT_LEVELS_SIZE];
+        this.maps = (HashMap<String, Object>[]) new HashMap<?,?>[DEFAULT_LEVELS_SIZE];
         this.selectionTargets = new SelectionTarget[DEFAULT_LEVELS_SIZE];
         this.textInliners = new ITextInliner[DEFAULT_LEVELS_SIZE];
         Arrays.fill(this.levels, Integer.MAX_VALUE);
@@ -130,7 +130,7 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
     public Set<String> getVariableNames() {
 
-        final Set<String> variableNames = new LinkedHashSet<String>();
+        final Set<String> variableNames = new HashSet<String>();
         int n = this.index + 1;
         int i = 0;
         while (n-- != 0) {
@@ -251,7 +251,7 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
             if (this.levels.length == this.index) {
                 final int[] newLevels = new int[this.levels.length + DEFAULT_LEVELS_SIZE];
-                final LinkedHashMap<String,Object>[] newMaps = (LinkedHashMap<String, Object>[]) new LinkedHashMap<?,?>[this.maps.length + DEFAULT_LEVELS_SIZE];
+                final HashMap<String,Object>[] newMaps = (HashMap<String, Object>[]) new HashMap<?,?>[this.maps.length + DEFAULT_LEVELS_SIZE];
                 final SelectionTarget[] newSelectionTargets = new SelectionTarget[this.selectionTargets.length + DEFAULT_LEVELS_SIZE];
                 final ITextInliner[] newTextInliners = new ITextInliner[this.textInliners.length + DEFAULT_LEVELS_SIZE];
                 Arrays.fill(newLevels, Integer.MAX_VALUE);
@@ -274,7 +274,7 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
         if (this.maps[this.index] == null) {
             // The map for this level has not yet been created
-            this.maps[this.index] = new LinkedHashMap<String,Object>(requiredSize, 1.0f);
+            this.maps[this.index] = new HashMap<String,Object>(requiredSize, 1.0f);
         }
 
     }
@@ -313,7 +313,7 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
         strBuilder.append('{');
         int n = this.index + 1;
         while (n-- != 0) {
-            final Map<String,Object> levelVars = new LinkedHashMap<String, Object>();
+            final Map<String,Object> levelVars = new HashMap<String, Object>();
             if (this.maps[n] != null) {
                 for (final Map.Entry<String,Object> mapEntry : this.maps[n].entrySet()) {
                     final String name = mapEntry.getKey();
@@ -363,7 +363,7 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
     @Override
     public String toString() {
 
-        final Map<String,Object> equivalentMap = new LinkedHashMap<String, Object>();
+        final Map<String,Object> equivalentMap = new HashMap<String, Object>();
         int n = this.index + 1;
         int i = 0;
         while (n-- != 0) {

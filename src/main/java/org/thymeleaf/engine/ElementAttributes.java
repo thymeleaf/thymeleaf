@@ -749,7 +749,7 @@ public final class ElementAttributes implements IElementAttributes {
             } else if (this.innerWhiteSpaces.length < from.innerWhiteSpacesSize) {
                 // We need to adjust the size of our arrays
 
-                final InnerWhiteSpace[] newInnerWhiteSpaces = new InnerWhiteSpace[from.innerWhiteSpacesSize];
+                final InnerWhiteSpace[] newInnerWhiteSpaces = new InnerWhiteSpace[Math.max(from.innerWhiteSpacesSize, DEFAULT_ATTRIBUTES_SIZE)];
                 System.arraycopy(this.innerWhiteSpaces, 0, newInnerWhiteSpaces, 0, this.innerWhiteSpaces.length);
                 this.innerWhiteSpaces = newInnerWhiteSpaces;
 

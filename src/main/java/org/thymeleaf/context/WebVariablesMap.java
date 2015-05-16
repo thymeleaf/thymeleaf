@@ -21,8 +21,8 @@ package org.thymeleaf.context;
 
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -298,7 +298,7 @@ public final class WebVariablesMap
 
         public Set<String> getVariableNames() {
 
-            final Set<String> variableNames = new LinkedHashSet<String>();
+            final Set<String> variableNames = new HashSet<String>();
             final Enumeration<String> attributeNamesEnum = this.session.getAttributeNames();
             while (attributeNamesEnum.hasMoreElements()) {
                 variableNames.add(attributeNamesEnum.nextElement());
@@ -350,7 +350,7 @@ public final class WebVariablesMap
 
         public Set<String> getVariableNames() {
 
-            final Set<String> variableNames = new LinkedHashSet<String>();
+            final Set<String> variableNames = new HashSet<String>();
             final Enumeration<String> attributeNamesEnum = this.servletContext.getAttributeNames();
             while (attributeNamesEnum.hasMoreElements()) {
                 variableNames.add(attributeNamesEnum.nextElement());
@@ -519,7 +519,7 @@ public final class WebVariablesMap
 
         public Set<String> getVariableNames() {
 
-            final Set<String> variableNames = new LinkedHashSet<String>();
+            final Set<String> variableNames = new HashSet<String>();
             final Enumeration<String> attributeNamesEnum = this.request.getAttributeNames();
             while (attributeNamesEnum.hasMoreElements()) {
                 variableNames.add(attributeNamesEnum.nextElement());
@@ -811,10 +811,10 @@ public final class WebVariablesMap
 
             final StringBuilder strBuilder = new StringBuilder();
             strBuilder.append('{');
-            final Map<String,Object> oldValuesSum = new LinkedHashMap<String, Object>();
+            final Map<String,Object> oldValuesSum = new HashMap<String, Object>();
             int n = this.index + 1;
             while (n-- != 1) {
-                final Map<String,Object> levelVars = new LinkedHashMap<String, Object>();
+                final Map<String,Object> levelVars = new HashMap<String, Object>();
                 if (this.names[n] != null && this.levelSizes[n] > 0) {
                     for (int i = 0; i < this.levelSizes[n]; i++) {
                         final String name = this.names[n][i];
@@ -863,7 +863,7 @@ public final class WebVariablesMap
                     }
                 }
             }
-            final Map<String,Object> requestAttributes = new LinkedHashMap<String, Object>();
+            final Map<String,Object> requestAttributes = new HashMap<String, Object>();
             final Enumeration<String> attrNames = this.request.getAttributeNames();
             while (attrNames.hasMoreElements()) {
                 final String name = attrNames.nextElement();
@@ -910,7 +910,7 @@ public final class WebVariablesMap
         @Override
         public String toString() {
 
-            final Map<String,Object> equivalentMap = new LinkedHashMap<String, Object>();
+            final Map<String,Object> equivalentMap = new HashMap<String, Object>();
             final Enumeration<String> attributeNamesEnum = this.request.getAttributeNames();
             while (attributeNamesEnum.hasMoreElements()) {
                 final String name = attributeNamesEnum.nextElement();
