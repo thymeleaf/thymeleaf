@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.standard.processor;
 
+import java.util.List;
+
 import org.thymeleaf.context.ILocalVariableAwareVariablesMap;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.context.IVariablesMap;
@@ -75,7 +77,12 @@ public final class StandardWithTagProcessor extends AbstractStandardAttributeTag
             localVariableAwareVariablesMap = (ILocalVariableAwareVariablesMap) variablesMap;
         }
 
-        for (final Assignation assignation : assignations) {
+        final List<Assignation> assignationValues = assignations.getAssignations();
+        final int assignationValuesLen = assignationValues.size();
+
+        for (int i = 0; i < assignationValuesLen; i++) {
+
+            final Assignation assignation = assignationValues.get(i);
 
             final IStandardExpression leftExpr = assignation.getLeft();
             final Object leftValue = leftExpr.execute(processingContext);

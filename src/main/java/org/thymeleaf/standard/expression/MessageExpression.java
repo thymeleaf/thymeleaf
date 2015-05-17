@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.standard.expression;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,7 +47,8 @@ public final class MessageExpression extends SimpleExpression {
     private static final Logger logger = LoggerFactory.getLogger(MessageExpression.class);
     
     private static final long serialVersionUID = 8394399541792390735L;
-    
+
+    private static final Object[] NO_PARAMETERS = new Object[0];
     
     static final char SELECTOR = '#';
     
@@ -229,20 +231,28 @@ public final class MessageExpression extends SimpleExpression {
         if (messageKey != null && !(messageKey instanceof String)) {
             messageKey = messageKey.toString();
         }
-        if (StringUtils.isEmptyOrWhitespace((String)messageKey)) {
+        if (StringUtils.isEmptyOrWhitespace((String) messageKey)) {
             throw new TemplateProcessingException(
                     "Message key for message resolution must be a non-null and non-empty String");
         }
         
 
-        final Object[] messageParameters = 
-            new Object[(expression.hasParameters()? expression.getParameters().size() : 0)];
+        final Object[] messageParameters;
         if (expression.hasParameters()) {
-            int parIndex = 0;
-            for (final IStandardExpression parameter  : expression.getParameters()) {
-                final Object result = parameter.execute(templateProcessingContext, expContext);
-                messageParameters[parIndex++] = LiteralValue.unwrap(result);
+
+            final ExpressionSequence parameterExpressionSequence = expression.getParameters();
+            final List<IStandardExpression> parameterExpressionValues = parameterExpressionSequence.getExpressions();
+            final int parameterExpressionValuesLen = parameterExpressionValues.size();
+
+            messageParameters = new Object[parameterExpressionValuesLen];
+            for (int i = 0; i < parameterExpressionValuesLen; i++) {
+                final IStandardExpression parameterExpression = parameterExpressionValues.get(i);
+                final Object result = parameterExpression.execute(templateProcessingContext, expContext);
+                messageParameters[i] = LiteralValue.unwrap(result);
             }
+
+        } else {
+            messageParameters = NO_PARAMETERS;
         }
 
         return MessageResolutionUtils.resolveMessageForTemplate(

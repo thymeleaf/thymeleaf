@@ -495,9 +495,12 @@ public final class LinkExpression extends SimpleExpression {
 
         final LinkParameters parameters = new LinkParameters();
 
-        final AssignationSequence assignationValues = expression.getParameters();
+        final List<Assignation> assignationValues = expression.getParameters().getAssignations();
+        final int assignationValuesLen = assignationValues.size();
 
-        for (final Assignation assignationValue : assignationValues) {
+        for (int i = 0; i < assignationValuesLen; i++) {
+
+            final Assignation assignationValue = assignationValues.get(i);
             
             final IStandardExpression parameterNameExpr = assignationValue.getLeft();
             final IStandardExpression parameterValueExpr = assignationValue.getRight();
