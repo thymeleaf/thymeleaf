@@ -368,16 +368,17 @@ public final class LinkExpression extends SimpleExpression {
          */
         if (parameters != null && parameters.size() > 0) {
 
-            // Build the parameters query. The result will always start with '&'
-            final StringBuilder parametersBuilder = parameters.processAllRemainingParametersAsQueryParams();
+            final boolean linkBaseHasQuestionMark = findCharInSequence(linkBase,'?') >= 0;
 
             // If there is no '?' in linkBase, we have to replace with first '&' with '?'
-            if (findCharInSequence(linkBase,'?') < 0) {
-                parametersBuilder.replace(0, 1, "?");
+            if (linkBaseHasQuestionMark) {
+                linkBase.append('&');
+            } else {
+                linkBase.append('?');
             }
 
-            // Parameters have been processed, so just add them to the linkBase
-            linkBase.append(parametersBuilder);
+            // Build the parameters query. The result will always start with '&'
+            parameters.processAllRemainingParametersAsQueryParams(linkBase);
 
         }
 
@@ -680,21 +681,29 @@ public final class LinkExpression extends SimpleExpression {
 
 
 
-        StringBuilder processAllRemainingParametersAsQueryParams() {
+        void processAllRemainingParametersAsQueryParams(final StringBuilder strBuilder) {
 
-            final StringBuilder strBuilder = new StringBuilder(this.parameterSize * 16);
+            if (this.parameterSize <= 0) {
+                return;
+            }
+
+
             for (int i = 0; i < this.parameterSize; i++) {
 
                 final Object value = this.parameterValues[i];
 
                 if (value == null || URL_PARAM_NO_VALUE.equals(value)) {
-                    strBuilder.append('&');
+                    if (i > 0) {
+                        strBuilder.append('&');
+                    }
                     strBuilder.append(UriEscape.escapeUriQueryParam(this.parameterNames[i]));
                     continue;
                 }
 
                 if (!(value instanceof List<?>)) {
-                    strBuilder.append('&');
+                    if (i > 0) {
+                        strBuilder.append('&');
+                    }
                     strBuilder.append(UriEscape.escapeUriQueryParam(this.parameterNames[i]));
                     strBuilder.append('=');
                     strBuilder.append(UriEscape.escapeUriQueryParam(value.toString())); // we know it's not null
@@ -706,7 +715,9 @@ public final class LinkExpression extends SimpleExpression {
                 final int valuesLen = values.size();
                 for (int j = 0; j < valuesLen; j++) {
                     final Object valueItem = values.get(j);
-                    strBuilder.append('&');
+                    if (i > 0 || j > 0) {
+                        strBuilder.append('&');
+                    }
                     strBuilder.append(UriEscape.escapeUriQueryParam(this.parameterNames[i]));
                     if (!URL_PARAM_NO_VALUE.equals(valueItem)) {
                         strBuilder.append('=');
@@ -715,7 +726,6 @@ public final class LinkExpression extends SimpleExpression {
                 }
 
             }
-            return strBuilder;
 
         }
 
