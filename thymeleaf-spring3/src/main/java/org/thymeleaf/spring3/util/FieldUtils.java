@@ -31,8 +31,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.support.RequestContext;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.Configuration;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
@@ -49,7 +48,7 @@ import org.thymeleaf.util.Validate;
  * @author Daniel Fern&aacute;ndez
  * @author Tobias Gafner
  * 
- * @since 1.0
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
 public final class FieldUtils {
@@ -60,117 +59,56 @@ public final class FieldUtils {
     
     
 
-    public static boolean hasErrors(final Arguments arguments, final String field) {
-        return hasErrors(arguments.getConfiguration(), arguments, field);
+    public static boolean hasErrors(final IProcessingContext processingContext, final String field) {
+        return checkErrors(processingContext, convertToFieldExpression(field));
     }
     
-    /**
-     *
-     * @param arguments arguments
-     * @return the result
-     * @since 2.1.0
-     */
-    public static boolean hasAnyErrors(final Arguments arguments) {
-        return hasAnyErrors(arguments.getConfiguration(), arguments);
+    public static boolean hasAnyErrors(final IProcessingContext processingContext) {
+        return checkErrors(processingContext, ALL_EXPRESSION);
     }
     
-    /**
-     *
-     * @param arguments arguments
-     * @return the result
-     * @since 2.1.0
-     */
-    public static boolean hasGlobalErrors(final Arguments arguments) {
-        return hasGlobalErrors(arguments.getConfiguration(), arguments);
-    }
-    
-    public static boolean hasErrors(final Configuration configuration, 
-            final IProcessingContext processingContext, final String field) {
-
-	
-        return checkErrors(configuration, processingContext, convertToFieldExpression(field));
-        
-    }
-    
-    public static boolean hasAnyErrors(final Configuration configuration, 
-            final IProcessingContext processingContext) {
-
-        return checkErrors(configuration, processingContext, ALL_EXPRESSION);
-        
-    }
-    
-    public static boolean hasGlobalErrors(final Configuration configuration, 
-            final IProcessingContext processingContext) {
-        
-        return checkErrors(configuration, processingContext, GLOBAL_EXPRESSION);
-        
+    public static boolean hasGlobalErrors(final IProcessingContext processingContext) {
+        return checkErrors(processingContext, GLOBAL_EXPRESSION);
     }
     
     
 
-    public static List<String> errors(final Arguments arguments, final String field) {
-        return computeErrors(arguments.getConfiguration(), arguments, field);
+    public static List<String> errors(final IProcessingContext processingContext, final String field) {
+        return computeErrors(processingContext, convertToFieldExpression(field));
     }
+    
+    public static List<String> errors(final IProcessingContext processingContext) {
+        return computeErrors(processingContext, ALL_EXPRESSION);
+    }
+    
+    public static List<String> globalErrors(final IProcessingContext processingContext) {
+        return computeErrors(processingContext, GLOBAL_EXPRESSION);
+    }
+    
+    private static List<String> computeErrors(final IProcessingContext processingContext, final String fieldExpression) {
 
-    public static List<String> errors(final Configuration configuration,
-            final IProcessingContext processingContext, final String field) {
-        return computeErrors(configuration, processingContext, convertToFieldExpression(field));
-    }
-    
-    public static List<String> errors(final Configuration configuration,
-            final IProcessingContext processingContext) {
-        return computeErrors(configuration, processingContext, ALL_EXPRESSION);
-    }
-    
-    public static List<String> globalErrors(final Configuration configuration,
-            final IProcessingContext processingContext) {
-        return computeErrors(configuration, processingContext, GLOBAL_EXPRESSION);
-    }
-    
-    private static List<String> computeErrors(final Configuration configuration,
-            final IProcessingContext processingContext, final String fieldExpression) {
-
-        final BindStatus bindStatus = 
-            FieldUtils.getBindStatus(configuration, processingContext, fieldExpression);
+        final BindStatus bindStatus = FieldUtils.getBindStatus(processingContext, fieldExpression);
         if (bindStatus == null) {
             return Collections.EMPTY_LIST;
         }
 
         final String[] errorCodes = bindStatus.getErrorMessages();
         return Arrays.asList(errorCodes);
-        
+
     }
 
 
-    /**
-     *
-     * @param configuration configuration
-     * @param processingContext processingContext
-     * @return the result
-     * @since 2.1.2
-     */
-    public static List<DetailedError> detailedErrors(
-            final Configuration configuration, final IProcessingContext processingContext) {
-        return computeDetailedErrors(configuration, processingContext, ALL_EXPRESSION, true, true);
+    public static List<DetailedError> detailedErrors(final IProcessingContext processingContext) {
+        return computeDetailedErrors(processingContext, ALL_EXPRESSION, true, true);
     }
 
 
-    /**
-     *
-     * @param configuration configuration
-     * @param processingContext processingContext
-     * @param fieldExpression fieldExpression
-     * @param includeGlobalErrors includeGlobalErrors
-     * @param includeFieldErrors includeFieldErrors
-     * @return the result
-     * @since 2.1.2
-     */
     private static List<DetailedError> computeDetailedErrors(
-            final Configuration configuration, final IProcessingContext processingContext, final String fieldExpression,
+            final IProcessingContext processingContext, final String fieldExpression,
             final boolean includeGlobalErrors, final boolean includeFieldErrors) {
 
         final BindStatus bindStatus =
-                FieldUtils.getBindStatus(configuration, processingContext, fieldExpression);
+                FieldUtils.getBindStatus(processingContext, fieldExpression);
         if (bindStatus == null) {
             return Collections.EMPTY_LIST;
         }
@@ -181,7 +119,7 @@ public final class FieldUtils {
         }
 
         final RequestContext requestContext =
-                (RequestContext) processingContext.getContext().getVariables().get(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+                (RequestContext) processingContext.getVariablesMap().getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
         if (requestContext == null) {
             return Collections.EMPTY_LIST;
         }
@@ -238,80 +176,33 @@ public final class FieldUtils {
 
 
 
-    private static boolean checkErrors(final Configuration configuration, 
-            final IProcessingContext processingContext, final String expression) {
-        final BindStatus bindStatus =
-                FieldUtils.getBindStatus(configuration, processingContext, expression);
+    private static boolean checkErrors(final IProcessingContext processingContext, final String expression) {
+        final BindStatus bindStatus = FieldUtils.getBindStatus(processingContext, expression);
         return bindStatus.isError();
     }
 
 
-    /**
-     *
-     * @param arguments arguments
-     * @param expression expression
-     * @param allowAllFields allowAllFields
-     * @return the result
-     * @deprecated Deprecated in 2.1.0.
-     *             Use {@link #getBindStatusFromParsedExpression(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, boolean, String)}
-     *             or {@link #getBindStatus(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String)}
-     *             instead. Will be removed in 3.0.
-     */
-    @Deprecated
+
+
+    public static BindStatus getBindStatus(final IProcessingContext processingContext, final String expression) {
+        return getBindStatus(processingContext, false, expression);
+    }
+
+
     public static BindStatus getBindStatus(
-            final Arguments arguments, final String expression, final boolean allowAllFields) {
-        return getBindStatus(arguments.getConfiguration(), arguments, expression);
-    }
-
-
-    /**
-     *
-     * @param configuration configuration
-     * @param processingContext processingContext
-     * @param expression expression
-     * @param allowAllFields allowAllFields
-     * @return the result
-     * @deprecated Deprecated in 2.1.0.
-     *             Use {@link #getBindStatusFromParsedExpression(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, boolean, String)}
-     *             or {@link #getBindStatus(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String)}
-     *             instead. Will be removed in 3.0.
-     */
-    @Deprecated
-    public static BindStatus getBindStatus(final Configuration configuration,
-            final IProcessingContext processingContext, final String expression, final boolean allowAllFields) {
-        return getBindStatus(configuration, processingContext, expression);
-    }
-
-
-
-    public static BindStatus getBindStatus(final Configuration configuration,
-           final IProcessingContext processingContext, final String expression) {
-        return getBindStatus(configuration, processingContext, false, expression);
-    }
-
-
-    /**
-     *
-     * @param configuration configuration
-     * @param processingContext processingContext
-     * @param optional optional
-     * @param expression expression
-     * @return the result
-     * @since 2.1.1
-     */
-    public static BindStatus getBindStatus(final Configuration configuration,
             final IProcessingContext processingContext, final boolean optional, final String expression) {
 
         Validate.notNull(expression, "Expression cannot be null");
 
         if (GLOBAL_EXPRESSION.equals(expression) || ALL_EXPRESSION.equals(expression) || ALL_FIELDS.equals(expression)) {
             // If "global", "all" or "*" are used without prefix, they must be inside a form, so we add *{...}
-            return getBindStatus(configuration, processingContext, "*{" + expression + "}");
+            return getBindStatus(processingContext, optional, "*{" + expression + "}");
         }
 
+        final IEngineConfiguration configuration = processingContext.getConfiguration();
+
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        final IStandardExpression expressionObj =
-                expressionParser.parseExpression(configuration, processingContext, expression);
+        final IStandardExpression expressionObj = expressionParser.parseExpression(processingContext, expression);
 
         if (expressionObj == null) {
             throw new TemplateProcessingException(
@@ -320,12 +211,12 @@ public final class FieldUtils {
 
         if (expressionObj instanceof SelectionVariableExpression) {
             final String bindExpression = ((SelectionVariableExpression)expressionObj).getExpression();
-            return getBindStatusFromParsedExpression(configuration, processingContext, optional, true, bindExpression);
+            return getBindStatusFromParsedExpression(processingContext, optional, true, bindExpression);
         }
 
         if (expressionObj instanceof VariableExpression) {
             final String bindExpression = ((VariableExpression)expressionObj).getExpression();
-            return getBindStatusFromParsedExpression(configuration, processingContext, optional, false, bindExpression);
+            return getBindStatusFromParsedExpression(processingContext, optional, false, bindExpression);
         }
 
         throw new TemplateProcessingException(
@@ -336,38 +227,19 @@ public final class FieldUtils {
 
 
 
-    /**
-     * 
-     * @param configuration configuration
-     * @param processingContext processingContext
-     * @param useSelectionAsRoot useSelectionAsRoot
-     * @param expression expression
-     * @return the result
-     * @since 2.1.0
-     */
     public static BindStatus getBindStatusFromParsedExpression(
-            final Configuration configuration, final IProcessingContext processingContext,
+            final IProcessingContext processingContext,
             final boolean useSelectionAsRoot, final String expression) {
 
         return getBindStatusFromParsedExpression(
-                configuration, processingContext, false, useSelectionAsRoot, expression);
+                processingContext, false, useSelectionAsRoot, expression);
 
     }
 
 
 
-    /**
-     * 
-     * @param configuration configuration
-     * @param processingContext processingContext
-     * @param optional optional
-     * @param useSelectionAsRoot useSelectionAsRoot
-     * @param expression expression
-     * @return the result
-     * @since 2.1.1
-     */
     public static BindStatus getBindStatusFromParsedExpression(
-            final Configuration configuration, final IProcessingContext processingContext,
+            final IProcessingContext processingContext,
             final boolean optional, final boolean useSelectionAsRoot, final String expression) {
 
         /*
@@ -379,7 +251,7 @@ public final class FieldUtils {
         // This method will return null if no binding is found and optional == true
 
         final RequestContext requestContext =
-                (RequestContext) processingContext.getContext().getVariables().get(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+                (RequestContext) processingContext.getVariablesMap().getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
         if (requestContext == null) {
             return null;
         }
@@ -424,12 +296,7 @@ public final class FieldUtils {
         if (useSelectionAsRoot) {
 
             VariableExpression boundObjectValue =
-                    (VariableExpression) processingContext.getLocalVariable(SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION);
-            if (boundObjectValue == null) {
-                // Try the deprecated name, to avoid legacy issues
-                boundObjectValue =
-                        (VariableExpression) processingContext.getLocalVariable(SpringContextVariableNames.SPRING_FORM_COMMAND_VALUE);
-            }
+                    (VariableExpression) processingContext.getVariablesMap().getVariable(SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION);
 
             final String boundObjectExpression =
                     (boundObjectValue == null? null : boundObjectValue.getExpression());
