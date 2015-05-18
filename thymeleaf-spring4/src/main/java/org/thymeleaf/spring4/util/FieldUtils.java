@@ -48,7 +48,7 @@ import org.thymeleaf.util.Validate;
  * @author Daniel Fern&aacute;ndez
  * @author Tobias Gafner
  * 
- * @since 1.0
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
 public final class FieldUtils {
