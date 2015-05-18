@@ -17,48 +17,49 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring3.expression;
+package org.thymeleaf.spring4.expression;
 
 import org.springframework.expression.AccessException;
 import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.PropertyAccessor;
 import org.springframework.expression.TypedValue;
-import org.springframework.expression.spel.support.ReflectivePropertyAccessor;
-import org.thymeleaf.context.VariablesMap;
+import org.thymeleaf.context.IVariablesMap;
 
 /**
  * <p>
  *   Property accessor used for allowing Spring EL expression evaluators
- *   treat {@link VariablesMap} objects correctly (map keys will be accessible
+ *   treat {@link IVariablesMap} objects correctly (map keys will be accessible
  *   as object properties).
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.1
+ * @since 1.1 (reimplemented in 3.0.0)
  *
  */
-public final class VariablesMapPropertyAccessor extends ReflectivePropertyAccessor {
-    
-    private static final Class<?>[] TARGET_CLASSES = new Class<?>[] { VariablesMap.class };
-    
-    
-    public static final VariablesMapPropertyAccessor INSTANCE = new VariablesMapPropertyAccessor();
-    
-    
-    
-    public VariablesMapPropertyAccessor() {
+public final class SPELVariablesMapPropertyAccessor implements PropertyAccessor {
+
+    static final SPELVariablesMapPropertyAccessor INSTANCE = new SPELVariablesMapPropertyAccessor();
+
+    private static final Class<?>[] TARGET_CLASSES = new Class<?>[] { IVariablesMap.class };
+
+    public static final String RESTRICT_REQUEST_PARAMETERS = "%RESTRICT_REQUEST_PARAMETERS%";
+
+
+    // TODO Actually control request parameter restrictions!
+
+
+    SPELVariablesMapPropertyAccessor() {
         super();
     }
 
     
-    @Override
     public Class<?>[] getSpecificTargetClasses() {
         return TARGET_CLASSES;
     }
 
 
     
-    @Override
     public boolean canRead(final EvaluationContext context, final Object target, final String name)
             throws AccessException {
         return target != null;
@@ -66,53 +67,38 @@ public final class VariablesMapPropertyAccessor extends ReflectivePropertyAccess
 
     
 
-    @Override
-    @SuppressWarnings("unchecked")
     public TypedValue read(final EvaluationContext context, final Object target, final String name)
             throws AccessException {
         if (target == null) {
             throw new AccessException("Cannot read property of null target");
         }
-        if (!(target instanceof VariablesMap)) {
+        if (!(target instanceof IVariablesMap)) {
             // This can happen simply because we're applying the same
             // AST tree on a different class (Spring internally caches property accessors).
             // So this exception might be considered "normal" by Spring AST evaluator and
             // just use it to refresh the property accessor cache.
             throw new AccessException("Cannot read target of class " + target.getClass().getName());
         }
-        return new TypedValue(((VariablesMap<String,?>)target).get(name));
+        return new TypedValue(((IVariablesMap)target).getVariable(name));
     }
 
 
     
-    @Override
     public boolean canWrite(
             final EvaluationContext context, final Object target, final String name) 
             throws AccessException {
-        return target != null;
+        // There should never be a need to write on a VariablesMap during a template execution
+        return false;
     }
 
     
 
-    @Override
-    @SuppressWarnings("unchecked")
     public void write(
             final EvaluationContext context, final Object target, final String name, final Object newValue) 
             throws AccessException {
-        if (target == null) {
-            throw new AccessException("Cannot write property of null target");
-        }
-        if (!(target instanceof VariablesMap)) {
-            // This can happen simply because we're applying the same
-            // AST tree on a different class (Spring internally caches property accessors).
-            // So this exception might be considered "normal" by Spring AST evaluator and
-            // just use it to refresh the property accessor cache.
-            throw new AccessException("Cannot write target of class " + target.getClass().getName());
-        }
-        ((VariablesMap<String,Object>)target).put(name, newValue);
+        // There should never be a need to write on a VariablesMap during a template execution
+        throw new AccessException("Cannot write to " + IVariablesMap.class.getName());
     }
 
-    
-    
     
 }

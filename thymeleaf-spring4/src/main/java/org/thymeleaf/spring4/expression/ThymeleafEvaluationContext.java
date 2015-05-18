@@ -72,8 +72,7 @@ public final class ThymeleafEvaluationContext extends StandardEvaluationContext 
             this.setTypeConverter(new StandardTypeConverter(conversionService));
         }
 
-        this.addPropertyAccessor(VariablesMapPropertyAccessor.INSTANCE);
-        this.addPropertyAccessor(BeansPropertyAccessor.INSTANCE);
+        this.addPropertyAccessor(SPELVariablesMapPropertyAccessor.INSTANCE);
         this.addPropertyAccessor(MAP_ACCESSOR_INSTANCE);
 
     }
