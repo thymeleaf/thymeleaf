@@ -483,6 +483,19 @@ public final class WebVariablesMap
 
         public boolean containsVariable(final String name) {
 
+            // --------------------------
+            // Note this method relies on HttpServletRequest#getAttributeNames(), which is an extremely slow and
+            // inefficient method in implementations like Apache Tomcat's. So the uses of this method should be
+            // very controlled and reduced to the minimum. Specifically, any call that executes e.g. for every
+            // expression evaluation should be disallowed. Only sporadic uses like e.g. from the put() method should
+            // be done.
+            // Note also it would not be a good idea to cache the attribute names coming from the request if we
+            // want to keep complete independence of the HttpServletRequest object, so that it can be modified
+            // from the outside (e.g. from other libraries like Tiles) with Thymeleaf perfectly integrating with
+            // those modifications.
+            // --------------------------
+
+
             // For most implementations of HttpServletRequest, trying to get a value instead of iterating the
             // keys Enumeration seems faster as a way to know if something exists (in the cases when we are checking
             // for existing keys a good % of the total times).
