@@ -61,7 +61,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public final class StandardExpressionObjects extends AbstractExpressionObjects {
+public class StandardExpressionObjects extends AbstractExpressionObjects {
 
     /*
      * Any new objects added here should also be added to the "ALL_EXPRESSION_OBJECT_NAMES" Set below.
@@ -96,7 +96,7 @@ public final class StandardExpressionObjects extends AbstractExpressionObjects {
     public static final String EXECUTION_INFO_OBJECT_NAME = "execInfo";
 
 
-    private static final Set<String> ALL_EXPRESSION_OBJECT_NAMES =
+    public static final Set<String> ALL_EXPRESSION_OBJECT_NAMES =
             Collections.unmodifiableSet(new HashSet<String>(java.util.Arrays.asList(
                     new String[] {
                             CONTEXT_EXPRESSION_OBJECT_NAME,
@@ -132,11 +132,9 @@ public final class StandardExpressionObjects extends AbstractExpressionObjects {
 
     
     public StandardExpressionObjects(final IProcessingContext processingContext) {
-
         super();
         Validate.notNull(processingContext, "Processing Context cannot be null");
         this.processingContext = processingContext;
-
     }
 
 

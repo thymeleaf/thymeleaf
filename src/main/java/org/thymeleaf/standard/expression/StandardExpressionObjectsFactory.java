@@ -36,7 +36,7 @@ import org.thymeleaf.expression.IExpressionObjectsFactory;
  * @since 3.0.0
  *
  */
-public final class StandardExpressionObjectsFactory implements IExpressionObjectsFactory {
+public class StandardExpressionObjectsFactory implements IExpressionObjectsFactory {
 
 
 

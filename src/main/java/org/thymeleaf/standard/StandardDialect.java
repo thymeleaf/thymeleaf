@@ -81,8 +81,6 @@ import org.thymeleaf.util.Validate;
  *
  * @author Daniel Fern&aacute;ndez
  *
- * @author Daniel Fern&aacute;ndez
- *
  * @since 1.0 (reimplemented in 3.0.0)
  *
  */
@@ -92,6 +90,9 @@ public class StandardDialect
 
     private static final String NAME = "Standard";
     private static final String PREFIX = "th";
+
+
+    private final IExpressionObjectsFactory STANDARD_EXPRESSION_OBJECTS_FACTORY = new StandardExpressionObjectsFactory();
 
 
     // We will avoid setting this variableExpressionEvaluator variable to "OgnlVariableExprtessionEvalutator.INSTANCE"
@@ -108,6 +109,15 @@ public class StandardDialect
 
     public StandardDialect() {
         super(NAME, PREFIX, createStandardProcessorsSet());
+    }
+
+
+    /*
+     * Meant to be overridden by dialects that do almost the same as this, changing bits here and there
+     * (e.g. SpringStandardDialect)
+     */
+    protected StandardDialect(final String name, final String prefix, final Set<IProcessor> processors) {
+        super(name, prefix, processors);
     }
 
 
@@ -274,7 +284,7 @@ public class StandardDialect
 
 
     public IExpressionObjectsFactory getExpressionObjectsFactory() {
-        return new StandardExpressionObjectsFactory();
+        return STANDARD_EXPRESSION_OBJECTS_FACTORY;
     }
 
 
@@ -288,7 +298,7 @@ public class StandardDialect
      *
      * @return the set of Standard processors.
      */
-    private static Set<IProcessor> createStandardProcessorsSet() {
+    public static Set<IProcessor> createStandardProcessorsSet() {
         /*
          * It is important that we create new instances here because, if there are
          * several dialects in the TemplateEngine that extend StandardDialect, they should
