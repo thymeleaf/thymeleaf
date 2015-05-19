@@ -19,16 +19,10 @@
  */
 package org.thymeleaf.spring4;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
-import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.spring4.dialect.SpringStandardDialect;
 import org.thymeleaf.spring4.messageresolver.SpringMessageResolver;
 
@@ -64,17 +58,17 @@ public class SpringTemplateEngine
         extends TemplateEngine 
         implements MessageSourceAware, InitializingBean {
 
-    
+
     private static final SpringStandardDialect SPRINGSTANDARD_DIALECT = new SpringStandardDialect();
-    
+
     private MessageSource messageSource = null;
     private MessageSource templateEngineMessageSource = null;
-    
-    
+
+
     public SpringTemplateEngine() {
         super();
-        super.clearDialects();
-        super.addDialect(SPRINGSTANDARD_DIALECT);
+        // This will set the StandardMessageResolver and StandardDialect, which we will override later
+        super.setDialect(SPRINGSTANDARD_DIALECT);
     }
 
 
@@ -87,14 +81,14 @@ public class SpringTemplateEngine
      *   this template engine.
      * </p>
      * <p>
-     *   If several {@link MessageSource} implementation beans exist, Spring will inject here 
+     *   If several {@link MessageSource} implementation beans exist, Spring will inject here
      *   the one with id <tt>"messageSource"</tt>.
      * </p>
      * <p>
-     *   This property <b>should not be set manually</b> in most scenarios (see 
+     *   This property <b>should not be set manually</b> in most scenarios (see
      *   {@link #setTemplateEngineMessageSource(MessageSource)} instead).
      * </p>
-     * 
+     *
      * @param messageSource the message source to be used by the message resolver
      */
     public void setMessageSource(final MessageSource messageSource) {
@@ -107,58 +101,26 @@ public class SpringTemplateEngine
      * <p>
      *   Convenience method for setting the message source that will
      *   be used by this template engine, overriding the one automatically set by
-     *   Spring at the {@link #setMessageSource(MessageSource)} method. 
+     *   Spring at the {@link #setMessageSource(MessageSource)} method.
      * </p>
-     * 
+     *
      * @param templateEngineMessageSource the message source to be used by the message resolver
      * @since 2.0.15
      */
     public void setTemplateEngineMessageSource(final MessageSource templateEngineMessageSource) {
         this.templateEngineMessageSource = templateEngineMessageSource;
     }
-    
+
+
+
 
     public void afterPropertiesSet() throws Exception {
         final SpringMessageResolver springMessageResolver = new SpringMessageResolver();
         springMessageResolver.setMessageSource(
                 this.templateEngineMessageSource == null ? this.messageSource : this.templateEngineMessageSource);
-        super.setDefaultMessageResolvers(Collections.singleton(springMessageResolver));
-    }
-    
-
-
-
-
-    
-    @Override
-    protected final void initializeSpecific() {
-        
-        final Configuration configuration = getConfiguration();
-        final Map<String,IDialect> dialects = configuration.getDialects();
-        for (final IDialect dialect : dialects.values()) {
-            if (dialect instanceof SpringStandardDialect) {
-                initializeSpringSpecific();
-                return;
-            }
-        }
-        throw new ConfigurationException(
-                "When using " + SpringTemplateEngine.class.getSimpleName() + 
-                ", at least one of the configured dialects must be or extend " + 
-                SpringStandardDialect.class.getName() + ".");
-        
+        super.setMessageResolver(springMessageResolver);
     }
 
-    
-    
-    /**
-     * <p>
-     *   Called during initialization of this Template Engine. Meant to be
-     *   overridden by subclasses.
-     * </p>
-     */
-    protected void initializeSpringSpecific() {
-        // Nothing to be executed here. Meant for extension
-    }
-    
-    
+
+
 }

@@ -19,16 +19,11 @@
  */
 package org.thymeleaf.spring3;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
-import org.thymeleaf.Configuration;
+import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.spring3.dialect.SpringStandardDialect;
 import org.thymeleaf.spring3.messageresolver.SpringMessageResolver;
 
@@ -37,10 +32,9 @@ import org.thymeleaf.spring3.messageresolver.SpringMessageResolver;
 
 /**
  * <p>
- *   Subclass of {@link TemplateEngine} meant for Spring MVC applications,
+ *   Implementation of {@link ITemplateEngine} meant for Spring MVC applications,
  *   that establishes by default an instance of {@link SpringStandardDialect} 
- *   as a dialect (instead of an instance of {@link org.thymeleaf.standard.StandardDialect}, 
- *   which is the default in {@link TemplateEngine}.
+ *   as a dialect (instead of an instance of {@link org.thymeleaf.standard.StandardDialect}.
  * </p>
  * <p>
  *   It also configures a {@link SpringMessageResolver} as message resolver, and
@@ -50,31 +44,26 @@ import org.thymeleaf.spring3.messageresolver.SpringMessageResolver;
  *   needs to be overridden, the {@link #setTemplateEngineMessageSource(MessageSource)} can
  *   be used. 
  * </p>
- * <p>
- *   Note that this class will validate during initialization that at least one of the
- *   configured dialects is {@link SpringStandardDialect} or a subclass of it.  
- * </p>
- * 
+ *
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 1.0
  *
  */
-public class SpringTemplateEngine 
-        extends TemplateEngine 
+public class SpringTemplateEngine extends TemplateEngine
         implements MessageSourceAware, InitializingBean {
 
     
     private static final SpringStandardDialect SPRINGSTANDARD_DIALECT = new SpringStandardDialect();
-    
+
     private MessageSource messageSource = null;
     private MessageSource templateEngineMessageSource = null;
     
     
     public SpringTemplateEngine() {
         super();
-        super.clearDialects();
-        super.addDialect(SPRINGSTANDARD_DIALECT);
+        // This will set the StandardMessageResolver and StandardDialect, which we will override later
+        super.setDialect(SPRINGSTANDARD_DIALECT);
     }
 
 
@@ -118,47 +107,15 @@ public class SpringTemplateEngine
     }
     
 
+
+
     public void afterPropertiesSet() throws Exception {
         final SpringMessageResolver springMessageResolver = new SpringMessageResolver();
         springMessageResolver.setMessageSource(
                 this.templateEngineMessageSource == null ? this.messageSource : this.templateEngineMessageSource);
-        super.setDefaultMessageResolvers(Collections.singleton(springMessageResolver));
+        super.setMessageResolver(springMessageResolver);
     }
     
 
-
-
-
-    
-    @Override
-    protected final void initializeSpecific() {
-        
-        final Configuration configuration = getConfiguration();
-        final Map<String,IDialect> dialects = configuration.getDialects();
-        for (final IDialect dialect : dialects.values()) {
-            if (dialect instanceof SpringStandardDialect) {
-                initializeSpringSpecific();
-                return;
-            }
-        }
-        throw new ConfigurationException(
-                "When using " + SpringTemplateEngine.class.getSimpleName() + 
-                ", at least one of the configured dialects must be or extend " + 
-                SpringStandardDialect.class.getName() + ".");
-        
-    }
-
-    
-    
-    /**
-     * <p>
-     *   Called during initialization of this Template Engine. Meant to be
-     *   overridden by subclasses.
-     * </p>
-     */
-    protected void initializeSpringSpecific() {
-        // Nothing to be executed here. Meant for extension
-    }
-    
     
 }
