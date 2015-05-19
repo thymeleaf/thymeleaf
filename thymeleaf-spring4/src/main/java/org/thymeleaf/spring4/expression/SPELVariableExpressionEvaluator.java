@@ -31,6 +31,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
+import org.thymeleaf.context.ILocalVariableAwareVariablesMap;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IVariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -219,15 +220,23 @@ public class SPELVariableExpressionEvaluator
 
 
     private static boolean isLocalVariableOverriding(final IProcessingContext processingContext, final String expression) {
-        if (!processingContext.hasLocalVariables()) {
+
+        final IVariablesMap variablesMap = processingContext.getVariablesMap();
+        if (!(variablesMap instanceof ILocalVariableAwareVariablesMap)) {
+            // We don't even have support for local variables!
             return false;
         }
+        final ILocalVariableAwareVariablesMap localVariableAwareVariablesMap = (ILocalVariableAwareVariablesMap) variablesMap;
+
         final int dotPos = expression.indexOf('.');
         if (dotPos == -1) {
             return false;
         }
-        final String expressionFirstComponent = expression.substring(0,dotPos);
-        return processingContext.hasLocalVariable(expressionFirstComponent);
+        // Once we extract the first part of the expression, we check whether it is a local variable...
+        final String expressionFirstComponent =
+                processingContext.getConfiguration().getTextRepository().getText(expression, 0, dotPos);
+        return localVariableAwareVariablesMap.isVariableLocal(expressionFirstComponent);
+
     }
 
 
