@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.io.Serializable;
+import java.util.Map;
 
 import org.thymeleaf.util.StringUtils;
 
@@ -28,67 +28,60 @@ import org.thymeleaf.util.StringUtils;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.1
+ * @since 3.0.0
  *
  */
-public final class FragmentSelection implements Serializable {
+public final class ProcessedFragmentSelection {
 
-    
-    private static final long serialVersionUID = -5310313871594922690L;
 
-    
-    private final IStandardExpression templateName;
-    private final IStandardExpression fragmentSelector;
-    private final AssignationSequence parameters;
 
-    
-    
-    public FragmentSelection(
-            final IStandardExpression templateName, final IStandardExpression fragmentSelector,
-            final AssignationSequence parameters) {
-        super();
-        // templateName can be null if fragment is to be executed on the current template
+    private final String templateName;
+    private final String fragmentSelector;
+    private final Map<String,Object> fragmentParameters;
+
+
+    public ProcessedFragmentSelection(
+            final String templateName, final String fragmentSelector, final Map<String, Object> fragmentParameters) {
         this.templateName = templateName;
         this.fragmentSelector = fragmentSelector;
-        this.parameters = parameters;
+        this.fragmentParameters = fragmentParameters;
     }
 
-    
-    
-    public IStandardExpression getTemplateName() {
-        return this.templateName;
+
+    public String getTemplateName() {
+        return templateName;
     }
 
-    public IStandardExpression getFragmentSelector() {
-        return this.fragmentSelector;
-    }
-    
     public boolean hasFragmentSelector() {
-        return this.fragmentSelector != null;
+        return this.fragmentSelector != null && this.fragmentSelector.length() > 0;
     }
 
-    public AssignationSequence getParameters() {
-        return this.parameters;
+    public String getFragmentSelector() {
+        return fragmentSelector;
+    }
+
+    public Map<String, Object> getFragmentParameters() {
+        return fragmentParameters;
     }
 
     public boolean hasParameters() {
-        return this.parameters != null && this.parameters.size() > 0;
+        return this.fragmentParameters != null && this.fragmentParameters.size() > 0;
     }
 
 
     public String getStringRepresentation() {
 
         final String templateNameStringRepresentation =
-                (this.templateName != null? this.templateName.getStringRepresentation() : "");
+                (this.templateName != null? this.templateName : "");
 
         final String templateSelectionParameters;
-        if (this.parameters == null || this.parameters.size() > 0) {
+        if (this.fragmentParameters == null || this.fragmentParameters.size() > 0) {
             templateSelectionParameters = "";
         } else {
             final StringBuilder paramBuilder = new StringBuilder();
             paramBuilder.append(' ');
             paramBuilder.append('(');
-            paramBuilder.append(StringUtils.join(this.parameters.getAssignations(), ','));
+            paramBuilder.append(StringUtils.join(this.fragmentParameters.entrySet(), ','));
             paramBuilder.append(')');
             templateSelectionParameters = paramBuilder.toString();
         }
@@ -97,7 +90,7 @@ public final class FragmentSelection implements Serializable {
             return templateNameStringRepresentation + templateSelectionParameters;
         }
         return templateNameStringRepresentation + " :: " +
-                this.fragmentSelector.getStringRepresentation() + templateSelectionParameters;
+                this.fragmentSelector + templateSelectionParameters;
     }
 
 

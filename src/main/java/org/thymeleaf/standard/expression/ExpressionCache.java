@@ -124,11 +124,11 @@ final class ExpressionCache {
 
 
 
-    static FragmentSelection getFragmentSelectionFromCache(final IEngineConfiguration configuration, final String input) {
-        return (FragmentSelection) getFromCache(configuration, input, FRAGMENT_SELECTION_CACHE_PREFIX);
+    static ParsedFragmentSelection getFragmentSelectionFromCache(final IEngineConfiguration configuration, final String input) {
+        return (ParsedFragmentSelection) getFromCache(configuration, input, FRAGMENT_SELECTION_CACHE_PREFIX);
     }
 
-    static void putFragmentSelectionIntoCache(final IEngineConfiguration configuration, final String input, final FragmentSelection value) {
+    static void putFragmentSelectionIntoCache(final IEngineConfiguration configuration, final String input, final ParsedFragmentSelection value) {
         putIntoCache(configuration, input, value, FRAGMENT_SELECTION_CACHE_PREFIX);
     }
 

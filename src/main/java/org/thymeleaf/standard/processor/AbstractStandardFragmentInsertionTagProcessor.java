@@ -19,10 +19,8 @@
  */
 package org.thymeleaf.standard.processor;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
@@ -34,13 +32,11 @@ import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.standard.expression.Assignation;
-import org.thymeleaf.standard.expression.AssignationSequence;
-import org.thymeleaf.standard.expression.FragmentSelection;
 import org.thymeleaf.standard.expression.FragmentSelectionUtils;
 import org.thymeleaf.standard.expression.FragmentSignature;
 import org.thymeleaf.standard.expression.FragmentSignatureUtils;
-import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.standard.expression.ParsedFragmentSelection;
+import org.thymeleaf.standard.expression.ProcessedFragmentSelection;
 import org.thymeleaf.util.StringUtils;
 import org.unbescape.html.HtmlEscape;
 
@@ -54,7 +50,6 @@ import org.unbescape.html.HtmlEscape;
 public abstract class AbstractStandardFragmentInsertionTagProcessor extends AbstractStandardAttributeTagProcessor {
 
 
-    private static final String TEMPLATE_NAME_CURRENT_TEMPLATE = "this";
     private static final String FRAGMENT_ATTR_NAME = "fragment";
 
 
@@ -81,38 +76,21 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         /*
          * PARSE THE FRAGMENT SELECTION SPEC and resolve each of its components
          */
-        final FragmentSelection fragmentSelection =
+        final ParsedFragmentSelection parsedFragmentSelection =
                 FragmentSelectionUtils.parseFragmentSelection(processingContext, attributeValue);
-        if (fragmentSelection == null) {
+        if (parsedFragmentSelection == null) {
             throw new TemplateProcessingException("Could not parse as fragment selection: \"" + attributeValue + "\"");
-        }
-
-        final IStandardExpression templateNameExpression = fragmentSelection.getTemplateName();
-        final String templateName;
-        if (templateNameExpression != null) {
-            final Object templateNameObject = templateNameExpression.execute(processingContext);
-            if (templateNameObject == null) {
-                throw new TemplateProcessingException(
-                        "Evaluation of template name from spec \"" + attributeValue + "\" returned null.");
-            }
-            final String evaluatedTemplateName = templateNameObject.toString();
-            if (TEMPLATE_NAME_CURRENT_TEMPLATE.equals(evaluatedTemplateName)) {
-                // Template name is "this" and therefore we are including a fragment from the same template.
-                templateName = null;
-            } else {
-                templateName = templateNameObject.toString();
-            }
-        } else {
-            // If template name expression is null, we will execute the fragment on the "current" template
-            templateName = null;
         }
 
 
         /*
-         * RESOLVE FRAGMENT PARAMETERS if specified (null if not)
+         * PROCESS THE PARSED FRAGMENT SELECTION
          */
-        Map<String,Object> fragmentParameters =
-                resolveFragmentParameters(processingContext, fragmentSelection.getParameters());
+        final ProcessedFragmentSelection processedFragmentSelection =
+                FragmentSelectionUtils.processFragmentSelection(processingContext, parsedFragmentSelection);
+
+        final String templateName = processedFragmentSelection.getTemplateName();
+        Map<String,Object> fragmentParameters = processedFragmentSelection.getFragmentParameters();
 
 
         /*
@@ -120,36 +98,14 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          * cached, and we will be returned an immutable markup object (specifically a ParsedFragmentMarkup)
          */
         ImmutableMarkup parsedFragment;
-        if (fragmentSelection.hasFragmentSelector()) {
-
-            final Object fragmentSelectorObject =
-                    fragmentSelection.getFragmentSelector().execute(processingContext);
-            if (fragmentSelectorObject == null) {
-                throw new TemplateProcessingException(
-                        "Evaluation of fragment selector from spec \"" + attributeValue + "\" " +
-                                "returned null.");
-            }
-
-            String fragmentSelector = fragmentSelectorObject.toString();
-
-            if (fragmentSelector.length() > 3 &&
-                    fragmentSelector.charAt(0) == '[' && fragmentSelector.charAt(fragmentSelector.length() - 1) == ']' &&
-                    fragmentSelector.charAt(fragmentSelector.length() - 2) != '\'') {
-                // For legacy compatibility reasons, we allow fragment DOM Selector expressions to be specified
-                // between brackets. Just remove them.
-                fragmentSelector = fragmentSelector.substring(1, fragmentSelector.length() - 1);
-            }
-
+        if (processedFragmentSelection.hasFragmentSelector()) {
             parsedFragment =
                     processingContext.getTemplateManager().parseTemplateFragment(
-                            processingContext, templateName, new String[] { fragmentSelector });
-
+                            processingContext, templateName, new String[] { processedFragmentSelection.getFragmentSelector() });
         } else {
-
             parsedFragment =
                     processingContext.getTemplateManager().parseTemplateFragment(
                             processingContext, templateName, null); // insertOnlyContents would make no sense here
-
         }
 
 
@@ -199,7 +155,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         /*
          * IF WE ARE ASKING ONLY FOR CONTENTS (th:include), THEN REMOVE THE CONTAINER BLOCK
          */
-        if (this.insertOnlyContents && fragmentSelection.hasFragmentSelector()) {
+        if (this.insertOnlyContents && parsedFragmentSelection.hasFragmentSelector()) {
 
             final ITemplateHandlerEvent lastEvent = (parsedFragmentLen >= 2? parsedFragment.get(parsedFragmentLen - 1) : null);
 
@@ -229,35 +185,6 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
     }
 
 
-
-
-
-    private static Map<String,Object> resolveFragmentParameters(
-            final IProcessingContext processingContext,
-            final AssignationSequence parameters) {
-
-        if (parameters == null || parameters.size() == 0) {
-            return null;
-        }
-
-        final Map<String,Object> parameterValues = new HashMap<String, Object>(parameters.size() + 2);
-        for (final Assignation assignation : parameters.getAssignations()) {
-
-            final IStandardExpression parameterNameExpr = assignation.getLeft();
-            final Object parameterNameValue = parameterNameExpr.execute(processingContext);
-
-            final String parameterName = (parameterNameValue == null? null : parameterNameValue.toString());
-
-            final IStandardExpression parameterValueExpr = assignation.getRight();
-            final Object parameterValueValue = parameterValueExpr.execute(processingContext);
-
-            parameterValues.put(parameterName, parameterValueValue);
-
-        }
-
-        return parameterValues;
-
-    }
 
 
 }

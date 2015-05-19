@@ -20,8 +20,10 @@
 package org.thymeleaf.standard.expression;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
@@ -41,15 +43,15 @@ import org.thymeleaf.util.Validate;
 public final class FragmentSelectionUtils {
 
 
+    private static final String TEMPLATE_NAME_CURRENT_TEMPLATE = "this";
     private static final String OPERATOR = "::";
-
     private static final String UNNAMED_PARAMETERS_PREFIX = "_arg";
 
 
 
 
     public static boolean hasSyntheticParameters(
-            final FragmentSelection fragmentSelection,
+            final ParsedFragmentSelection fragmentSelection,
             final IProcessingContext processingContext,
             final StandardExpressionExecutionContext expContext) {
 
@@ -81,7 +83,7 @@ public final class FragmentSelectionUtils {
 
 
 
-    public static FragmentSelection parseFragmentSelection(
+    public static ParsedFragmentSelection parseFragmentSelection(
             final IProcessingContext processingContext, final String input) {
 
         Validate.notNull(processingContext, "Processing Context cannot be null");
@@ -93,14 +95,14 @@ public final class FragmentSelectionUtils {
                 StandardExpressionPreprocessor.preprocess(processingContext, input);
 
         if (configuration != null) {
-            final FragmentSelection cachedFragmentSelection =
+            final ParsedFragmentSelection cachedFragmentSelection =
                     ExpressionCache.getFragmentSelectionFromCache(configuration, preprocessedInput);
             if (cachedFragmentSelection != null) {
                 return cachedFragmentSelection;
             }
         }
 
-        final FragmentSelection fragmentSelection =
+        final ParsedFragmentSelection fragmentSelection =
                 FragmentSelectionUtils.internalParseFragmentSelection(preprocessedInput.trim());
 
         if (fragmentSelection == null) {
@@ -118,7 +120,7 @@ public final class FragmentSelectionUtils {
 
 
 
-    static FragmentSelection internalParseFragmentSelection(final String input) {
+    static ParsedFragmentSelection internalParseFragmentSelection(final String input) {
 
         if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
@@ -206,7 +208,7 @@ public final class FragmentSelectionUtils {
                     AssignationUtils.internalParseAssignationSequence(parametersStr, false);
 
             if (parametersAsSeq != null) {
-                return new FragmentSelection(templateNameExpression, fragmentSpecExpression, parametersAsSeq);
+                return new ParsedFragmentSelection(templateNameExpression, fragmentSpecExpression, parametersAsSeq);
             }
 
             // Parameters wheren't parseable as an assignation sequence. So we should try parsing as Expression
@@ -219,7 +221,7 @@ public final class FragmentSelectionUtils {
             if (parametersExpSeq != null) {
                 final AssignationSequence parametersAsSeqFromExp =
                         createSyntheticallyNamedParameterSequence(parametersExpSeq);
-                return new FragmentSelection(templateNameExpression, fragmentSpecExpression, parametersAsSeqFromExp);
+                return new ParsedFragmentSelection(templateNameExpression, fragmentSpecExpression, parametersAsSeqFromExp);
             }
 
             // The parameters str is not parsable neither as an assignation sequence nor as an expression sequence,
@@ -229,7 +231,7 @@ public final class FragmentSelectionUtils {
 
         }
 
-        return new FragmentSelection(templateNameExpression, fragmentSpecExpression, null);
+        return new ParsedFragmentSelection(templateNameExpression, fragmentSpecExpression, null);
 
     }
 
@@ -343,7 +345,112 @@ public final class FragmentSelectionUtils {
 
 
 
+
+
+
+    public static ProcessedFragmentSelection processFragmentSelection(
+            final IProcessingContext processingContext, final ParsedFragmentSelection fragmentSelection) {
+
+        Validate.notNull(processingContext, "Processing Context cannot be null");
+        Validate.notNull(fragmentSelection, "Fragment Selection cannot be null");
+
+        /*
+         * COMPUTE THE TEMPLATE NAME
+         */
+        final IStandardExpression templateNameExpression = fragmentSelection.getTemplateName();
+        final String templateName;
+        if (templateNameExpression != null) {
+            final Object templateNameObject = templateNameExpression.execute(processingContext);
+            if (templateNameObject == null) {
+                throw new TemplateProcessingException(
+                        "Evaluation of template name from spec \"" + fragmentSelection.getStringRepresentation() + "\" returned null.");
+            }
+            final String evaluatedTemplateName = templateNameObject.toString();
+            if (TEMPLATE_NAME_CURRENT_TEMPLATE.equals(evaluatedTemplateName)) {
+                // Template name is "this" and therefore we are including a fragment from the same template.
+                templateName = null;
+            } else {
+                templateName = templateNameObject.toString();
+            }
+        } else {
+            // If template name expression is null, we will execute the fragment on the "current" template
+            templateName = null;
+        }
+
+
+        /*
+         * RESOLVE FRAGMENT PARAMETERS if specified (null if not)
+         */
+        final Map<String, Object> fragmentParameters =
+                resolveProcessedFragmentParameters(processingContext, fragmentSelection.getParameters());
+
+        /*
+         * COMPUTE THE FRAGMENT SELECTOR
+         */
+        String fragmentSelector = null;
+        if (fragmentSelection.hasFragmentSelector()) {
+
+            final Object fragmentSelectorObject =
+                    fragmentSelection.getFragmentSelector().execute(processingContext);
+            if (fragmentSelectorObject == null) {
+                throw new TemplateProcessingException(
+                        "Evaluation of fragment selector from spec \"" + fragmentSelection + "\" returned null.");
+            }
+
+            fragmentSelector = fragmentSelectorObject.toString();
+
+            if (fragmentSelector.length() > 3 &&
+                    fragmentSelector.charAt(0) == '[' && fragmentSelector.charAt(fragmentSelector.length() - 1) == ']' &&
+                    fragmentSelector.charAt(fragmentSelector.length() - 2) != '\'') {
+                // For legacy compatibility reasons, we allow fragment DOM Selector expressions to be specified
+                // between brackets. Just remove them.
+                fragmentSelector = fragmentSelector.substring(1, fragmentSelector.length() - 1).trim();
+            }
+
+        }
+
+        return new ProcessedFragmentSelection(templateName, fragmentSelector, fragmentParameters);
+
+    }
+
+
+
+    private static Map<String,Object> resolveProcessedFragmentParameters(
+            final IProcessingContext processingContext, final AssignationSequence parameters) {
+
+        if (parameters == null || parameters.size() == 0) {
+            return null;
+        }
+
+        final Map<String,Object> parameterValues = new HashMap<String, Object>(parameters.size() + 2);
+        final List<Assignation> assignationValues = parameters.getAssignations();
+        final int assignationValuesLen = assignationValues.size();
+
+        for (int i = 0; i < assignationValuesLen; i++) {
+
+            final Assignation assignation = assignationValues.get(i);
+
+            final IStandardExpression parameterNameExpr = assignation.getLeft();
+            final Object parameterNameValue = parameterNameExpr.execute(processingContext);
+
+            final String parameterName = (parameterNameValue == null? null : parameterNameValue.toString());
+
+            final IStandardExpression parameterValueExpr = assignation.getRight();
+            final Object parameterValueValue = parameterValueExpr.execute(processingContext);
+
+            parameterValues.put(parameterName, parameterValueValue);
+
+        }
+
+        return parameterValues;
+
+    }
+
+
+
     private FragmentSelectionUtils() {
         super();
     }
+
+
 }

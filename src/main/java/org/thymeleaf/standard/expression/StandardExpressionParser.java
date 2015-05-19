@@ -107,7 +107,7 @@ public final class StandardExpressionParser implements IStandardExpressionParser
      * @return the result
      * @since 3.0.0
      */
-    public FragmentSelection parseFragmentSelection(final IProcessingContext processingContext, final String input) {
+    public ParsedFragmentSelection parseFragmentSelection(final IProcessingContext processingContext, final String input) {
         return FragmentSelectionUtils.parseFragmentSelection(processingContext, input);
     }
 
