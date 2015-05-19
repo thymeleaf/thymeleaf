@@ -33,6 +33,8 @@ import org.thymeleaf.context.IContext;
  */
 public interface ITemplateEngine {
 
+    public IEngineConfiguration getConfiguration();
+
     public String process(final String templateName, final IContext context);
     public String process(final String templateName, final String[] markupSelectors, final IContext context);
 
