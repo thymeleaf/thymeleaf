@@ -34,7 +34,7 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractCachingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceView;
 import org.springframework.web.servlet.view.RedirectView;
-import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.ITemplateEngine;
 
 
 /**
@@ -101,7 +101,7 @@ public class ThymeleafViewResolver
     private String contentType = null;
     private String characterEncoding = null;
     
-    private SpringTemplateEngine templateEngine;
+    private ITemplateEngine templateEngine;
 
 
 
@@ -159,15 +159,10 @@ public class ThymeleafViewResolver
      *   Returns the Thymeleaf template engine instance to be used for the 
      *   execution of templates.
      * </p>
-     * <p>
-     *   Template engine instances to be used for this view resolver should be of a
-     *   subclass of {@link org.thymeleaf.TemplateEngine} including 
-     *   specific Spring integrations: {@link SpringTemplateEngine}.
-     * </p>
-     * 
+     *
      * @return the template engine being used for processing templates.
      */
-    public SpringTemplateEngine getTemplateEngine() {
+    public ITemplateEngine getTemplateEngine() {
         return this.templateEngine;
     }
 
@@ -177,15 +172,10 @@ public class ThymeleafViewResolver
      *   Sets the Template Engine instance to be used for processing
      *   templates.
      * </p>
-     * <p>
-     *   Template engine instances to be used for this view resolver should be of a
-     *   subclass of {@link org.thymeleaf.TemplateEngine} including 
-     *   specific Spring integrations: {@link SpringTemplateEngine}.
-     * </p>
-     * 
+     *
      * @param templateEngine the template engine to be used
      */
-    public void setTemplateEngine(final SpringTemplateEngine templateEngine) {
+    public void setTemplateEngine(final ITemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
     

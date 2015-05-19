@@ -30,6 +30,7 @@ import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
+import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
 
@@ -68,7 +69,7 @@ public abstract class AbstractThymeleafView
     private String contentType = DEFAULT_CONTENT_TYPE;
     private boolean contentTypeSet = false;
     private String characterEncoding = null;
-    private SpringTemplateEngine templateEngine = null;
+    private ITemplateEngine templateEngine = null;
 	private String templateName = null;
     private Locale locale = null;
     private Map<String, Object> staticVariables = null;
@@ -298,7 +299,7 @@ public abstract class AbstractThymeleafView
      * 
      * @return the template engine instance
      */
-    protected SpringTemplateEngine getTemplateEngine() {
+    protected ITemplateEngine getTemplateEngine() {
         return this.templateEngine;
     }
 
@@ -311,7 +312,7 @@ public abstract class AbstractThymeleafView
      * 
      * @param templateEngine the template engine instance to be used
      */
-    protected void setTemplateEngine(final SpringTemplateEngine templateEngine) {
+    protected void setTemplateEngine(final ITemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
 

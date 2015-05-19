@@ -20,6 +20,7 @@
 package org.thymeleaf.spring3.view;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -33,21 +34,15 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
-import org.thymeleaf.Configuration;
-import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.ProcessingContext;
-import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.exceptions.ConfigurationException;
-import org.thymeleaf.fragment.ChainedFragmentSpec;
-import org.thymeleaf.fragment.IFragmentSpec;
-import org.thymeleaf.spring3.context.SpringWebContext;
-import org.thymeleaf.spring3.dialect.SpringStandardDialect;
+import org.thymeleaf.context.WebContext;
 import org.thymeleaf.spring3.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.FragmentSelectionUtils;
-import org.thymeleaf.standard.fragment.StandardFragment;
-import org.thymeleaf.standard.fragment.StandardFragmentProcessor;
-import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
+import org.thymeleaf.standard.expression.ParsedFragmentSelection;
+import org.thymeleaf.standard.expression.ProcessedFragmentSelection;
 
 
 /**
@@ -78,7 +73,7 @@ public class ThymeleafView
      */
     private static final String pathVariablesSelector;
     
-    private IFragmentSpec fragmentSpec = null;
+    private String markupSelector = null;
 
 
     
@@ -132,11 +127,11 @@ public class ThymeleafView
     
     /**
      * <p>
-     *   Returns the fragment specification ({@link IFragmentSpec}) defining the part
-     *   of the template that should be processed.
+     *   Returns the markup selector defining the part of the template that should
+     *   be processed.
      * </p>
      * <p>
-     *   This fragment spec will be used for selecting the section of the template
+     *   This selector will be used for selecting the section of the template
      *   that should be processed, discarding the rest of the template. If null,
      *   the whole template will be processed.
      * </p>
@@ -145,24 +140,24 @@ public class ThymeleafView
      *   disallowing the processing of template fragments.
      * </p>
      * 
-     * @return the fragment spec currently set, or null of no fragment has been
+     * @return the markup selector currently set, or null of no fragment has been
      *         specified yet.
-     * 
-     * @since 2.0.11
+     *
+     * @since 3.0.0
      */
-    public IFragmentSpec getFragmentSpec() {
-        return this.fragmentSpec;
+    public String getMarkupSelector() {
+        return this.markupSelector;
     }
 
     
 
     /**
      * <p>
-     *   Sets the fragment specification ({@link IFragmentSpec}) defining the part
-     *   of the template that should be processed.
+     *   Sets the markup selector defining the part of the template that should
+     *   be processed.
      * </p>
      * <p>
-     *   This fragment spec will be used for selecting the section of the template
+     *   This selector will be used for selecting the section of the template
      *   that should be processed, discarding the rest of the template. If null,
      *   the whole template will be processed.
      * </p>
@@ -171,12 +166,12 @@ public class ThymeleafView
      *   disallowing the processing of template fragments.
      * </p>
      * 
-     * @param fragmentSpec the fragment specification to be set.
+     * @param markupSelector the markup selector to be set.
      *        
-     * @since 2.0.11
+     * @since 3.0.0
      */
-    public void setFragmentSpec(final IFragmentSpec fragmentSpec) {
-        this.fragmentSpec = fragmentSpec;
+    public void setMarkupSelector(final String markupSelector) {
+        this.markupSelector = markupSelector;
     }
 
     
@@ -192,16 +187,13 @@ public class ThymeleafView
 	
 
 
-    protected void renderFragment(final IFragmentSpec fragmentSpecToRender, final Map<String, ?> model, final HttpServletRequest request, 
+    protected void renderFragment(final String markupSelectorToRender, final Map<String, ?> model, final HttpServletRequest request,
             final HttpServletResponse response) 
             throws Exception {
 
         final ServletContext servletContext = getServletContext() ;
         final String viewTemplateName = getTemplateName();
-        final TemplateEngine viewTemplateEngine = getTemplateEngine();
-        if (!viewTemplateEngine.isInitialized()) {
-            viewTemplateEngine.initialize();
-        }
+        final ITemplateEngine viewTemplateEngine = getTemplateEngine();
 
         if (viewTemplateName == null) {
             throw new IllegalArgumentException("Property 'templateName' is required");
@@ -249,37 +241,35 @@ public class ThymeleafView
         mergedModel.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
 
         
-        final SpringWebContext context =
-                new SpringWebContext(request, response, servletContext, getLocale(), mergedModel, getApplicationContext());
+        final WebContext context = new WebContext(request, response, servletContext, getLocale(), mergedModel);
 
 
         final String templateName;
-        final IFragmentSpec nameFragmentSpec;
+        final String[] markupSelectors;
         if (!viewTemplateName.contains("::")) {
             // No fragment specified at the template name
 
             templateName = viewTemplateName;
-            nameFragmentSpec = null;
+            markupSelectors = null;
 
         } else {
             // Template name contains a fragment name, so we should parse it as such
 
-            final Configuration configuration = viewTemplateEngine.getConfiguration();
-            final ProcessingContext processingContext = new ProcessingContext(context);
+            final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
+            final ProcessingContext processingContext = new ProcessingContext(configuration, context);
 
-            final String dialectPrefix = getStandardDialectPrefix(configuration);
-
-            final StandardFragment fragment =
-                    StandardFragmentProcessor.computeStandardFragmentSpec(
-                            configuration, processingContext, viewTemplateName, dialectPrefix, StandardFragmentAttrProcessor.ATTR_NAME);
-
-            if (fragment == null) {
+            final ParsedFragmentSelection parsedFragmentSelection =
+                    FragmentSelectionUtils.parseFragmentSelection(processingContext, viewTemplateName);
+            if (parsedFragmentSelection == null) {
                 throw new IllegalArgumentException("Invalid template name specification: '" + viewTemplateName + "'");
             }
 
-            templateName = fragment.getTemplateName();
-            nameFragmentSpec = fragment.getFragmentSpec();
-            final Map<String,Object> nameFragmentParameters = fragment.getParameters();
+            final ProcessedFragmentSelection processedFragmentSelection =
+                    FragmentSelectionUtils.processFragmentSelection(processingContext, parsedFragmentSelection);
+
+            templateName = processedFragmentSelection.getTemplateName();
+            markupSelectors = new String[] {processedFragmentSelection.getFragmentSelector()};
+            final Map<String,Object> nameFragmentParameters = processedFragmentSelection.getFragmentParameters();
 
             if (nameFragmentParameters != null) {
 
@@ -301,26 +291,24 @@ public class ThymeleafView
         final String templateContentType = getContentType();
         final Locale templateLocale = getLocale();
         final String templateCharacterEncoding = getCharacterEncoding();
-        
-        IFragmentSpec templateFragmentSpec = fragmentSpecToRender;
-        final IFragmentSpec viewFragmentSpec = getFragmentSpec();
-        if (viewFragmentSpec != null) {
-            if (templateFragmentSpec == null) {
-                templateFragmentSpec = viewFragmentSpec;
+
+
+        final String[] processMarkupSelectors;
+        if (markupSelectors != null && markupSelectors.length > 0) {
+            if (markupSelectorToRender != null && markupSelectorToRender.length() > 0) {
+                throw new IllegalArgumentException(
+                        "A markup selector has been specified (" + Arrays.asList(markupSelectors) + ") for a view " +
+                        "that already had a markup selector specified as a bean configuration (" + markupSelectorToRender + ")");
+            }
+            processMarkupSelectors = markupSelectors;
+        } else {
+            if (markupSelectorToRender != null && markupSelectorToRender.length() > 0) {
+                processMarkupSelectors = new String[] { markupSelectorToRender };
             } else {
-                templateFragmentSpec =
-                    new ChainedFragmentSpec(viewFragmentSpec, templateFragmentSpec);
+                processMarkupSelectors = null;
             }
         }
-        if (nameFragmentSpec != null) {
-            if (templateFragmentSpec == null) {
-                templateFragmentSpec = nameFragmentSpec;
-            } else {
-                templateFragmentSpec =
-                        new ChainedFragmentSpec(nameFragmentSpec, templateFragmentSpec);
-            }
-        }
-        
+
 
         response.setLocale(templateLocale);
         if (templateContentType != null) {
@@ -332,26 +320,8 @@ public class ThymeleafView
             response.setCharacterEncoding(templateCharacterEncoding);
         }
         
-        viewTemplateEngine.process(templateName, context, templateFragmentSpec, response.getWriter());
+        viewTemplateEngine.process(templateName, processMarkupSelectors, context, response.getWriter());
         
-    }
-
-
-
-
-    static String getStandardDialectPrefix(final Configuration configuration) {
-
-        for (final Map.Entry<String,IDialect> dialectByPrefix : configuration.getDialects().entrySet()) {
-            final IDialect dialect = dialectByPrefix.getValue();
-            if (SpringStandardDialect.class.isAssignableFrom(dialect.getClass())) {
-                return dialectByPrefix.getKey();
-            }
-        }
-
-        throw new ConfigurationException(
-                "StandardDialect dialect has not been found. In order to use AjaxThymeleafView, you should configure " +
-                        "the " + SpringStandardDialect.class.getName() + " dialect at your Template Engine");
-
     }
 
 
