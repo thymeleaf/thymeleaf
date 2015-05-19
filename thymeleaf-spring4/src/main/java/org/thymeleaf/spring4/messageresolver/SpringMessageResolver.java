@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.context.NoSuchMessageException;
-import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.messageresolver.AbstractMessageResolver;
 import org.thymeleaf.messageresolver.MessageResolution;
@@ -42,51 +42,43 @@ import org.thymeleaf.util.Validate;
  *   This resolution is done by means of using the available Spring-configured
  *   {@link MessageSource} objects.  
  * </p>
- * <p>
- *   This message resolver will consider you are using a
- *   non-reloadable ResourceBundleMessageSource in your Spring
- *   configuration and thus will be considered Cacheable
- * </p>
- * 
+ *
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
 public final class SpringMessageResolver
         extends AbstractMessageResolver 
         implements MessageSourceAware {
-    
+
 
     private static final Logger logger = LoggerFactory.getLogger(SpringMessageResolver.class);
 
-    
+
     private MessageSource messageSource;
-    
+
 
     public SpringMessageResolver() {
         super();
     }
-    
-    
-    
 
-    
-    @Override
-    protected final void initializeSpecific() {
-        
-        /*
-         * Check the application context has been set.
-         */
+
+
+
+
+    /*
+     * Check the message source has been set.
+     */
+    private void checkMessageSourceInitialized() {
         if (this.messageSource == null) {
             throw new ConfigurationException(
-                    "Cannot initialize " + SpringMessageResolver.class.getSimpleName() + 
-                    ": MessageSource has not been set. Either define this object as " +
-                    "a Spring bean (which will automatically set the MessageSource) or, " +
-                    "if you instance it directly, set the MessageSource manually using its "+
-                    "corresponding setter method.");
+                    "Cannot initialize " + SpringMessageResolver.class.getSimpleName() +
+                            ": MessageSource has not been set. Either define this object as " +
+                            "a Spring bean (which will automatically set the MessageSource) or, " +
+                            "if you instance it directly, set the MessageSource manually using its "+
+                            "corresponding setter method.");
         }
-
     }
 
 
@@ -98,23 +90,10 @@ public final class SpringMessageResolver
      *   Returns the message source ({@link MessageSource}) to be
      *   used for message resolution.
      * </p>
-     * 
+     *
      * @return the message source
      */
     public final MessageSource getMessageSource() {
-        checkInitialized();
-        return this.messageSource;
-    }
-
-
-    /**
-     * <p>
-     *   Uninitialized method meant for use by subclasses.
-     * </p>
-     * 
-     * @return the message source
-     */
-    protected final MessageSource unsafeGetMessageSource() {
         return this.messageSource;
     }
 
@@ -123,44 +102,46 @@ public final class SpringMessageResolver
      * <p>
      *   Sets the message source to be used for message resolution
      * </p>
-     * 
+     *
      * @param messageSource the message source
      */
     public final void setMessageSource(final MessageSource messageSource) {
-        checkNotInitialized();
         this.messageSource = messageSource;
     }
-    
-    
+
+
 
 
 
     public MessageResolution resolveMessage(
-            final Arguments arguments, final String key, final Object[] messageParameters) {
-        
-        Validate.notNull(arguments, "Arguments cannot be null");
-        Validate.notNull(arguments.getContext().getLocale(), "Locale in context cannot be null");
+            final ITemplateProcessingContext processingContext, final String key, final Object[] messageParameters) {
+
+        Validate.notNull(processingContext, "Processing Context cannot be null");
+        Validate.notNull(processingContext.getLocale(), "Locale in context cannot be null");
         Validate.notNull(key, "Message key cannot be null");
 
+        checkMessageSourceInitialized();
+
         if (logger.isTraceEnabled()) {
-            logger.trace("[THYMELEAF][{}] Resolving message with key \"{}\" for template \"{}\" and locale \"{}\". Messages will be retrieved from Spring's MessageSource infrastructure.", new Object[] {TemplateEngine.threadIndex(), key, arguments.getTemplateName(), arguments.getContext().getLocale()});
+            logger.trace(
+                    "[THYMELEAF][{}] Resolving message with key \"{}\" for template \"{}\" and locale \"{}\". " +
+                            "Messages will be retrieved from Spring's MessageSource infrastructure.",
+                    new Object[] {TemplateEngine.threadIndex(), key, processingContext.getTemplateResolution().getTemplateName(), processingContext.getLocale()});
         }
-        
+
         try {
-            
+
             final String resolvedMessage =
-                this.messageSource.getMessage(key, messageParameters, arguments.getContext().getLocale());
-            
+                    this.messageSource.getMessage(key, messageParameters, processingContext.getLocale());
+
             return new MessageResolution(resolvedMessage);
-            
+
         } catch (NoSuchMessageException e) {
             return null;
         }
-        
+
     }
-    
-    
-    
+
 
 
 }
