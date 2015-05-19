@@ -19,8 +19,9 @@
  */
 package org.thymeleaf.spring4.resourceresolver;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +29,14 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.Resource;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.TemplateProcessingParameters;
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.exceptions.TemplateInputException;
+import org.thymeleaf.resource.IResource;
+import org.thymeleaf.resource.ReaderResource;
 import org.thymeleaf.resourceresolver.IResourceResolver;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -46,7 +52,7 @@ import org.thymeleaf.util.Validate;
  *
  * @author Daniel Fern&aacute;ndez
  *
- * @since 2.1.0
+ * @since 2.1.0 (reimplemented in 3.0.0)
  *
  */
 public final class SpringResourceResourceResolver
@@ -66,21 +72,23 @@ public final class SpringResourceResourceResolver
 
 
     public String getName() {
-        return NAME; 
+        return NAME;
     }
 
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
-    
-    public InputStream getResourceAsStream(
-            final TemplateProcessingParameters templateProcessingParameters, final String resourceName) {
+
+
+    public IResource getResource(
+            final IEngineConfiguration configuration, final IContext context,
+            final String resourceName, final String characterEncoding) {
 
         Validate.notNull(resourceName, "Resource name cannot be null");
         Validate.notNull(this.applicationContext,
                 "ApplicationContext has not been initialized in resource resolver. TemplateResolver or " +
-                "ResourceResolver might not have been correctly configured by the Spring Application Context.");
+                        "ResourceResolver might not have been correctly configured by the Spring Application Context.");
 
         try {
 
@@ -89,36 +97,53 @@ public final class SpringResourceResourceResolver
                 return null;
             }
 
-            return resource.getInputStream();
-
-        } catch (final IOException e) {
-
-            if (logger.isDebugEnabled()) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace(
-                            String.format(
-                                    "[THYMELEAF][%s][%s] Resource \"%s\" could not be resolved. This can be normal as " +
-                                            "maybe this resource is not intended to be resolved by this resolver. " +
-                                            "Exception is provided for tracing purposes: ",
-                                    TemplateEngine.threadIndex(), templateProcessingParameters.getTemplateName(),
-                                    resourceName),
-                            e);
-                } else {
-                    logger.debug(
-                            String.format(
-                                    "[THYMELEAF][%s][%s] Resource \"%s\" could not be resolved. This can be normal as " +
-                                            "maybe this resource is not intended to be resolved by this resolver. " +
-                                            "Exception message is provided: %s: %s",
-                                    TemplateEngine.threadIndex(), templateProcessingParameters.getTemplateName(),
-                                    resourceName, e.getClass().getName(), e.getMessage()));
-                }
+            final InputStream inputStream = resource.getInputStream();
+            if (inputStream == null) {
+                return null;
             }
 
-            return null;
+            final InputStreamReader reader;
+            if (!StringUtils.isEmptyOrWhitespace(characterEncoding)) {
+                reader = new InputStreamReader(inputStream, characterEncoding);
+            } else {
+                reader = new InputStreamReader(inputStream);
+            }
 
+            return new ReaderResource(resourceName, reader);
+
+        } catch (final UnsupportedEncodingException e) {
+            throw new TemplateInputException("Exception reading resource: " + resourceName, e);
+        } catch (final Throwable t) {
+            showException(resourceName, t);
+            return null;
         }
 
     }
 
-    
+
+
+    private static void showException(final String resourceName, final Throwable t) {
+        if (logger.isDebugEnabled()) {
+            if (logger.isTraceEnabled()) {
+                logger.trace(
+                        String.format(
+                                "[THYMELEAF][%s] Resource \"%s\" could not be resolved. This can be normal as " +
+                                        "maybe this resource is not intended to be resolved by this resolver. " +
+                                        "Exception is provided for tracing purposes: ",
+                                TemplateEngine.threadIndex(), resourceName),
+                        t);
+            } else {
+                logger.debug(
+                        String.format(
+                                "[THYMELEAF][%s] Resource \"%s\" could not be resolved. This can be normal as " +
+                                        "maybe this resource is not intended to be resolved by this resolver. " +
+                                        "Exception message is provided (set the log to TRACE for the entire trace): " +
+                                        "%s: %s",
+                                TemplateEngine.threadIndex(), resourceName,
+                                t.getClass().getName(), t.getMessage()));
+            }
+        }
+    }
+
+
 }
