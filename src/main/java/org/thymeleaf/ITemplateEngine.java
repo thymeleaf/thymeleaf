@@ -22,7 +22,6 @@ package org.thymeleaf;
 import java.io.Writer;
 
 import org.thymeleaf.context.IContext;
-import org.thymeleaf.fragment.IFragmentSpec;
 
 
 /**
@@ -35,10 +34,9 @@ import org.thymeleaf.fragment.IFragmentSpec;
 public interface ITemplateEngine {
 
     public String process(final String templateName, final IContext context);
-    public String process(final String templateName, final IContext context, final IFragmentSpec fragmentSpec);
+    public String process(final String templateName, final String[] markupSelectors, final IContext context);
 
     public void process(final String templateName, final IContext context, final Writer writer);
-    public void process(final String templateName, final IContext context,
-                        final IFragmentSpec fragmentSpec, final Writer writer);
+    public void process(final String templateName, final String[] markupSelectors, final IContext context, final Writer writer);
 
 }

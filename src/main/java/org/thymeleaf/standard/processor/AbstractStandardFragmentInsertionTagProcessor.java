@@ -83,6 +83,9 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          */
         final FragmentSelection fragmentSelection =
                 FragmentSelectionUtils.parseFragmentSelection(processingContext, attributeValue);
+        if (fragmentSelection == null) {
+            throw new TemplateProcessingException("Could not parse as fragment selection: \"" + attributeValue + "\"");
+        }
 
         final IStandardExpression templateNameExpression = fragmentSelection.getTemplateName();
         final String templateName;

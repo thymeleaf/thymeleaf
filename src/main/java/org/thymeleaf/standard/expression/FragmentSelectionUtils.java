@@ -104,7 +104,7 @@ public final class FragmentSelectionUtils {
                 FragmentSelectionUtils.internalParseFragmentSelection(preprocessedInput.trim());
 
         if (fragmentSelection == null) {
-            throw new TemplateProcessingException("Could not parse as fragment selection: \"" + input + "\"");
+            return null;
         }
 
         if (configuration != null) {
