@@ -44,6 +44,10 @@ public interface ILocalVariableAwareVariablesMap extends IVariablesMap {
     public void putAll(final Map<String, Object> map);
     public void remove(final String key);
 
+    // These is meant to determine whether a specific variable was there from level 0 or was defined afterwards
+    // (e.g. in an iteration) - this info is needed when checking possible overrides of originally-bound variables.
+    public boolean isVariableLocal(final String name);
+
     public int level();
     public void increaseLevel();
     public void decreaseLevel();

@@ -207,6 +207,9 @@ public final class WebVariablesMap
     }
 
 
+    public boolean isVariableLocal(final String name) {
+        return this.requestAttributesVariablesMap.isVariableLocal(name);
+    }
 
 
     public boolean hasSelectionTarget() {
@@ -472,8 +475,6 @@ public final class WebVariablesMap
             this.levels[0] = 0;
 
             if (variables != null) {
-                // TODO Improve this - putAll calls put, and put calls contains. So for large variables maps, a
-                // lot of request.getAttributeNames() calls would be made
                 putAll(variables);
             }
 
@@ -534,7 +535,7 @@ public final class WebVariablesMap
 
         public Set<String> getVariableNames() {
 
-            final Set<String> variableNames = new HashSet<String>();
+            final Set<String> variableNames = new HashSet<String>(10);
             final Enumeration<String> attributeNamesEnum = this.request.getAttributeNames();
             while (attributeNamesEnum.hasMoreElements()) {
                 variableNames.add(attributeNamesEnum.nextElement());
@@ -544,18 +545,18 @@ public final class WebVariablesMap
         }
 
 
-        private int searchName(final String name) {
-            int n = this.levelSizes[this.index];
+        private int searchNameInIndex(final String name, final int idx) {
+            int n = this.levelSizes[idx];
             if (name == null) {
                 while (n-- != 0) {
-                    if (this.names[this.index][n] == null) {
+                    if (this.names[idx][n] == null) {
                         return n;
                     }
                 }
                 return -1;
             }
             while (n-- != 0) {
-                if (name.equals(this.names[this.index][n])) {
+                if (name.equals(this.names[idx][n])) {
                     return n;
                 }
             }
@@ -566,14 +567,18 @@ public final class WebVariablesMap
 
 
         public void put(final String key, final Object value) {
+            put(key, value, null);
+        }
+
+        private void put(final String key, final Object value, final Set<String> alreadyContainedNames) {
 
             ensureLevelInitialized();
 
             if (this.level > 0) {
                 // We will only take care of new/old values if we are not on level 0
 
-                int levelIndex = searchName(key);
-                if (levelIndex != -1) {
+                int levelIndex = searchNameInIndex(key,this.index);
+                if (levelIndex >= 0) {
 
                     // There already is a registered movement for this key - we should modify it instead of creating a new one
                     this.newValues[this.index][levelIndex] = value;
@@ -601,7 +606,10 @@ public final class WebVariablesMap
                     levelIndex = this.levelSizes[this.index]; // We will add at the end
 
                     this.names[this.index][levelIndex] = key;
-                    if (containsVariable(key)) {
+                    // By checking the 'alreadyContainedNames' argument, we try to save calls to the very slow
+                    // HttpServletRequest#getAttributeNames() in the case we are calling this from putAll(...)
+                    if ((alreadyContainedNames == null && containsVariable(key)) ||
+                            (alreadyContainedNames != null && alreadyContainedNames.contains(key))) {
                         this.oldValues[this.index][levelIndex] = this.request.getAttribute(key);
                     } else {
                         this.oldValues[this.index][levelIndex] = NON_EXISTING;
@@ -624,11 +632,16 @@ public final class WebVariablesMap
 
 
         public void putAll(final Map<String, Object> map) {
-            if (map == null) {
+            if (map == null || map.isEmpty()) {
                 return;
             }
+            // By precomputing here a 'alreadyContainedNames' set, we try to save calls to the very slow
+            // HttpServletRequest#getAttributeNames() in our calls to put(), which has to determine whether a
+            // variable already exists or not (and would otherwise call "containsVariable()")
+            // Also note this is only required when level > 0
+            final Set<String> alreadyContainedNames = (this.level > 0? getVariableNames() : null);
             for (final Map.Entry<String,Object> entry : map.entrySet()) {
-                put(entry.getKey(), entry.getValue());
+                put(entry.getKey(), entry.getValue(), alreadyContainedNames);
             }
         }
 
@@ -637,6 +650,28 @@ public final class WebVariablesMap
             if (containsVariable(key)) {
                 put(key, NON_EXISTING);
             }
+        }
+
+
+
+
+        public boolean isVariableLocal(final String name) {
+
+            if (this.level == 0) {
+                // We are at level 0, so we cannot have local variables at all
+                return false;
+            }
+
+            int n = this.index + 1;
+            while (n-- > 1) { // variables at n == 0 are not local!
+                final int idx = searchNameInIndex(name, n);
+                if (idx >= 0) {
+                    return this.newValues[n][idx] != NON_EXISTING;
+                }
+            }
+
+            return false;
+
         }
 
 

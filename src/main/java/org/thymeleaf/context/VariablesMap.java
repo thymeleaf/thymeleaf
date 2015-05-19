@@ -187,6 +187,23 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
 
 
+    public boolean isVariableLocal(final String name) {
+        int n = this.index + 1;
+        while (n-- > 1) { // variables at n == 0 are not local!
+            if (this.maps[n] != null && this.maps[n].containsKey(name)) {
+                final Object result = this.maps[n].get(name);
+                if (result == NON_EXISTING) {
+                    return false; // We return false for "non existing"
+                }
+                return true;
+            }
+        }
+        return false; // We return false for "non existing"
+    }
+
+
+
+
     public boolean hasSelectionTarget() {
         int n = this.index + 1;
         while (n-- != 0) {
