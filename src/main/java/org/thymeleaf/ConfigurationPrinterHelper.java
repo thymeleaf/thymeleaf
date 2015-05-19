@@ -84,11 +84,11 @@ final class ConfigurationPrinterHelper {
 
         logBuilder.line("Initializing Thymeleaf Template engine configuration...");
         logBuilder.line("[THYMELEAF] TEMPLATE ENGINE CONFIGURATION:");
-        if (!StringUtils.isEmptyOrWhitespace(TemplateEngine.THYMELEAF_VERSION)) {
-            if (!StringUtils.isEmptyOrWhitespace(TemplateEngine.THYMELEAF_BUILD_TIMESTAMP)) {
-                logBuilder.line("[THYMELEAF] * Thymeleaf version: {} (built {})", TemplateEngine.THYMELEAF_VERSION, TemplateEngine.THYMELEAF_BUILD_TIMESTAMP);
+        if (!StringUtils.isEmptyOrWhitespace(Thymeleaf.VERSION)) {
+            if (!StringUtils.isEmptyOrWhitespace(Thymeleaf.BUILD_TIMESTAMP)) {
+                logBuilder.line("[THYMELEAF] * Thymeleaf version: {} (built {})", Thymeleaf.VERSION, Thymeleaf.BUILD_TIMESTAMP);
             } else {
-                logBuilder.line("[THYMELEAF] * Thymeleaf version: {}", TemplateEngine.THYMELEAF_VERSION);
+                logBuilder.line("[THYMELEAF] * Thymeleaf version: {}", Thymeleaf.VERSION);
             }
         }
         logBuilder.line("[THYMELEAF] * Cache Manager implementation: {}", (cacheManager == null? "[no caches]" : cacheManager.getClass().getName()));
