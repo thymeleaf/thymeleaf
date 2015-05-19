@@ -43,29 +43,27 @@ public final class SPELVariablesMapPropertyAccessor implements PropertyAccessor 
 
     private static final Class<?>[] TARGET_CLASSES = new Class<?>[] { IVariablesMap.class };
 
-    public static final String RESTRICT_REQUEST_PARAMETERS = "%RESTRICT_REQUEST_PARAMETERS%";
 
-
-    // TODO Actually control request parameter restrictions!
+    // TODO Actually control request parameter restrictions (the evaluationcontext wrapper will know)!
 
 
     SPELVariablesMapPropertyAccessor() {
         super();
     }
 
-    
+
     public Class<?>[] getSpecificTargetClasses() {
         return TARGET_CLASSES;
     }
 
 
-    
+
     public boolean canRead(final EvaluationContext context, final Object target, final String name)
             throws AccessException {
         return target != null;
     }
 
-    
+
 
     public TypedValue read(final EvaluationContext context, final Object target, final String name)
             throws AccessException {
@@ -83,22 +81,22 @@ public final class SPELVariablesMapPropertyAccessor implements PropertyAccessor 
     }
 
 
-    
+
     public boolean canWrite(
-            final EvaluationContext context, final Object target, final String name) 
+            final EvaluationContext context, final Object target, final String name)
             throws AccessException {
         // There should never be a need to write on a VariablesMap during a template execution
         return false;
     }
 
-    
+
 
     public void write(
-            final EvaluationContext context, final Object target, final String name, final Object newValue) 
+            final EvaluationContext context, final Object target, final String name, final Object newValue)
             throws AccessException {
         // There should never be a need to write on a VariablesMap during a template execution
         throw new AccessException("Cannot write to " + IVariablesMap.class.getName());
     }
 
-    
+
 }

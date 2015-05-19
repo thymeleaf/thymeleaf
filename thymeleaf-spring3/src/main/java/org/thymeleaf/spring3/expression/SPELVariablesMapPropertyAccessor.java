@@ -43,10 +43,8 @@ public final class SPELVariablesMapPropertyAccessor implements PropertyAccessor 
 
     private static final Class<?>[] TARGET_CLASSES = new Class<?>[] { IVariablesMap.class };
 
-    public static final String RESTRICT_REQUEST_PARAMETERS = "%RESTRICT_REQUEST_PARAMETERS%";
 
-
-    // TODO Actually control request parameter restrictions!
+    // TODO Actually control request parameter restrictions (the evaluationcontext wrapper will know)!
 
 
     SPELVariablesMapPropertyAccessor() {

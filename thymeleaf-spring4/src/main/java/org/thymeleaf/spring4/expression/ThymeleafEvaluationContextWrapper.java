@@ -35,20 +35,21 @@ import org.springframework.expression.TypeComparator;
 import org.springframework.expression.TypeConverter;
 import org.springframework.expression.TypeLocator;
 import org.springframework.expression.TypedValue;
+import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   Implementation of Spring's {@link org.springframework.expression.EvaluationContext}
+ *   Implementation of Spring's {@link EvaluationContext}
  *   interface designed to wrap around another delegated implementation of this same interface,
  *   adding (if needed) the Thymeleaf-required
- *   {@link org.springframework.expression.PropertyAccessor} implementations and (optionally)
+ *   {@link PropertyAccessor} implementations and (optionally)
  *   a series of variables to be accessed like <tt>#variableName</tt> during expression evaluation.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
- * @since 2.1.0
+ * @since 2.1.0 (reimplemented in 3.0.0)
  *
  */
 public final class ThymeleafEvaluationContextWrapper implements EvaluationContext {
@@ -56,16 +57,16 @@ public final class ThymeleafEvaluationContextWrapper implements EvaluationContex
 
     private final EvaluationContext delegate;
     private final List<PropertyAccessor> propertyAccessors;
-    private Map<String,Object> additionalVariables;
+    private final IExpressionObjects expressionObjects;
+    private final boolean restrictRequestParameters;
+    private Map<String,Object> additionalVariables = null;
+
 
     public static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
 
-    public ThymeleafEvaluationContextWrapper(final EvaluationContext delegate) {
-        this(delegate, null);
-    }
 
-
-    public ThymeleafEvaluationContextWrapper(final EvaluationContext delegate, final Map<String,Object> additionalVariables) {
+    public ThymeleafEvaluationContextWrapper(
+            final EvaluationContext delegate, final IExpressionObjects expressionObjects, final boolean restrictRequestParameters) {
         
         super();
 
@@ -78,12 +79,12 @@ public final class ThymeleafEvaluationContextWrapper implements EvaluationContex
         } else {
             this.propertyAccessors = new ArrayList<PropertyAccessor>(5);
             this.propertyAccessors.addAll(this.delegate.getPropertyAccessors());
-            this.propertyAccessors.add(VariablesMapPropertyAccessor.INSTANCE);
-            this.propertyAccessors.add(BeansPropertyAccessor.INSTANCE);
+            this.propertyAccessors.add(SPELVariablesMapPropertyAccessor.INSTANCE);
             this.propertyAccessors.add(MAP_ACCESSOR_INSTANCE);
         }
 
-        this.additionalVariables = additionalVariables;
+        this.expressionObjects = expressionObjects;
+        this.restrictRequestParameters = restrictRequestParameters;
 
     }
 
@@ -132,6 +133,12 @@ public final class ThymeleafEvaluationContextWrapper implements EvaluationContex
     }
 
     public Object lookupVariable(final String name) {
+        if (this.expressionObjects != null && this.expressionObjects.containsObject(name)) {
+            final Object result = this.expressionObjects.getObject(name);
+            if (result != null) {
+                return result;
+            }
+        }
         if (this.additionalVariables != null && this.additionalVariables.containsKey(name)) {
             final Object result = this.additionalVariables.get(name);
             if (result != null) {
@@ -141,5 +148,9 @@ public final class ThymeleafEvaluationContextWrapper implements EvaluationContex
         // fail back to delegate
         return this.delegate.lookupVariable(name);
     }
-    
+
+    public boolean isRestrictRequestParameters() {
+        return this.restrictRequestParameters;
+    }
+
 }
