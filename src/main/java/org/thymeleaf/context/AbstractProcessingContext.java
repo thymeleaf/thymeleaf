@@ -27,7 +27,6 @@ import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.expression.IExpressionObjects;
-import org.thymeleaf.expression.IExpressionObjectsFactory;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -41,7 +40,7 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     private final IEngineConfiguration configuration;
     private final IVariablesMap variablesMap;
     private final boolean web;
-    private final IExpressionObjects expressionObjects;
+    private IExpressionObjects expressionObjects;
 
 
 
@@ -56,9 +55,6 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
         this.configuration = configuration;
         this.variablesMap = new VariablesMap(locale, variables);
         this.web = false;
-
-        final IExpressionObjectsFactory expressionObjectFactory = getConfiguration().getExpressionObjectFactory();
-        this.expressionObjects = expressionObjectFactory.buildExpressionObjects(this);
 
     }
 
@@ -76,9 +72,6 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
         this.variablesMap = buildVariablesMap(context);
         this.web = this.variablesMap instanceof IWebVariablesMap;
 
-        final IExpressionObjectsFactory expressionObjectFactory = getConfiguration().getExpressionObjectFactory();
-        this.expressionObjects = expressionObjectFactory.buildExpressionObjects(this);
-
     }
 
 
@@ -90,6 +83,9 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
 
 
     public IExpressionObjects getExpressionObjects() {
+        if (this.expressionObjects == null) {
+            this.expressionObjects = this.configuration.getExpressionObjectFactory().buildExpressionObjects(this);
+        }
         return this.expressionObjects;
     }
 
