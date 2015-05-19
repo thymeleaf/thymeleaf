@@ -472,6 +472,8 @@ public final class WebVariablesMap
             this.levels[0] = 0;
 
             if (variables != null) {
+                // TODO Improve this - putAll calls put, and put calls contains. So for large variables maps, a
+                // lot of request.getAttributeNames() calls would be made
                 putAll(variables);
             }
 
