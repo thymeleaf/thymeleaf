@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring3.processor.attr;
+package org.thymeleaf.spring4.processor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +26,7 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.spring3.naming.SpringContextVariableNames;
+import org.thymeleaf.spring4.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
@@ -38,9 +38,9 @@ import org.thymeleaf.standard.processor.attr.AbstractStandardSelectionAttrProces
  * Specifies an object to use on a &lt;form&gt;
  * 
  * @author Daniel Fern&aacute;ndez
- * @since 1.0
+ * @since 3.0.0
  */
-public final class SpringObjectAttrProcessor 
+public final class SpringObjectTagProcessor
         extends AbstractStandardSelectionAttrProcessor {
 
     
@@ -49,7 +49,7 @@ public final class SpringObjectAttrProcessor
     
     
     
-    public SpringObjectAttrProcessor() {
+    public SpringObjectTagProcessor() {
         super(ATTR_NAME);
     }
 

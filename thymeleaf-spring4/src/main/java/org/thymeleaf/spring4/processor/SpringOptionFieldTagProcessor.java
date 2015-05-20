@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring4.processor.attr;
+package org.thymeleaf.spring4.processor;
 
 import java.util.Map;
 
@@ -33,17 +33,17 @@ import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
 /**
  * 
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 1.0
+ *
+ * @since 3.0.0
  *
  */
-public final class SpringOptionFieldAttrProcessor 
-        extends AbstractSpringFieldAttrProcessor {
+public final class SpringOptionFieldTagProcessor
+        extends AbstractSpringFieldTagProcessor {
 
     
 
     
-    public SpringOptionFieldAttrProcessor() {
+    public SpringOptionFieldTagProcessor() {
         super(ATTR_NAME,
               OPTION_TAG_NAME);
     }

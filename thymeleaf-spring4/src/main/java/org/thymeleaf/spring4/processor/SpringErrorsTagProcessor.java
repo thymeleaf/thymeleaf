@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring4.processor.attr;
+package org.thymeleaf.spring4.processor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,9 +38,9 @@ import org.unbescape.html.HtmlEscape;
  * the given field name, separated by a &lt;br/&gt;
  * 
  * @author Daniel Fern&aacute;ndez
- * @since 1.0
+ * @since 3.0.0
  */
-public final class SpringErrorsAttrProcessor 
+public final class SpringErrorsTagProcessor
         extends AbstractAttrProcessor {
 
     private static final String ERROR_DELIMITER = "<br />";
@@ -52,7 +52,7 @@ public final class SpringErrorsAttrProcessor
 
     
     
-    public SpringErrorsAttrProcessor() {
+    public SpringErrorsTagProcessor() {
         super(ATTR_NAME);
     }
 

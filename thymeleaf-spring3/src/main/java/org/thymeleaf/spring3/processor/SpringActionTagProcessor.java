@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring3.processor.attr;
+package org.thymeleaf.spring3.processor;
 
 import java.util.Map;
 
@@ -30,11 +30,11 @@ import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModi
 /**
  * 
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 2.1.0
+ *
+ * @since 3.0.0
  *
  */
-public final class SpringActionAttrProcessor
+public final class SpringActionTagProcessor
         extends AbstractStandardSingleAttributeModifierAttrProcessor {
 
 
@@ -43,7 +43,7 @@ public final class SpringActionAttrProcessor
 
 
 
-    public SpringActionAttrProcessor() {
+    public SpringActionTagProcessor() {
         super(ATTR_NAME);
     }
 

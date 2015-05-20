@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring3.processor.attr;
+package org.thymeleaf.spring4.processor;
 
 import java.util.List;
 import java.util.Map;
@@ -30,23 +30,23 @@ import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
-import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
+import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
 
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 1.0
+ *
+ * @since 3.0.0
  *
  */
-public final class SpringSelectFieldAttrProcessor 
-        extends AbstractSpringFieldAttrProcessor {
+public final class SpringSelectFieldTagProcessor
+        extends AbstractSpringFieldTagProcessor {
 
     
 
     
-    public SpringSelectFieldAttrProcessor() {
+    public SpringSelectFieldTagProcessor() {
         super(ATTR_NAME,
               SELECT_TAG_NAME);
     }

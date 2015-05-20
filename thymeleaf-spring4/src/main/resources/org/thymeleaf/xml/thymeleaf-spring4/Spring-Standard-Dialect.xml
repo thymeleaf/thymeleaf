@@ -31,7 +31,7 @@
 
 	<attribute-processor
 		name="field"
-		class="org.thymeleaf.spring4.processor.attr.AbstractSpringFieldAttrProcessor">
+		class="org.thymeleaf.spring4.processor.AbstractSpringFieldTagProcessor">
 		<documentation
 			reference="Thymeleaf + Spring 3 section 6 on Creating a Form"/>
 		<restrictions
@@ -40,7 +40,7 @@
 
 	<attribute-processor
 		name="errorclass"
-		class="org.thymeleaf.spring4.processor.attr.SpringErrorClassAttrProcessor">
+		class="org.thymeleaf.spring4.processor.SpringErrorClassTagProcessor">
 		<documentation
 			see-also="fields.hasErrors"
 			reference="Thymeleaf + Spring 3 section 7 on Validation and Error Messages"/>
@@ -48,7 +48,7 @@
 
 	<attribute-processor
 		name="errors"
-		class="org.thymeleaf.spring4.processor.attr.SpringErrorsAttrProcessor">
+		class="org.thymeleaf.spring4.processor.SpringErrorsTagProcessor">
 		<documentation
 			see-also="fields.errors"
 			reference="Thymeleaf + Spring 3 section 7 on Validation and Error Messages"/>
@@ -56,7 +56,7 @@
 
 	<attribute-processor
 		name="object"
-		class="org.thymeleaf.spring4.processor.attr.SpringObjectAttrProcessor">
+		class="org.thymeleaf.spring4.processor.SpringObjectTagProcessor">
 		<documentation
 			reference="Thymeleaf + Spring 3 section 6 on Creating a Form"/>
 	</attribute-processor>
@@ -67,23 +67,23 @@
 
 	<attribute-processor
 		name="action"
-		class="org.thymeleaf.spring4.processor.attr.SpringActionAttrProcessor"/>
+		class="org.thymeleaf.spring4.processor.SpringActionTagProcessor"/>
 
 	<attribute-processor
 		name="href"
-		class="org.thymeleaf.spring4.processor.attr.SpringHrefAttrProcessor"/>
+		class="org.thymeleaf.spring4.processor.SpringHrefTagProcessor"/>
 
 	<attribute-processor
 		name="method"
-		class="org.thymeleaf.spring4.processor.attr.SpringMethodAttrProcessor"/>
+		class="org.thymeleaf.spring4.processor.SpringMethodTagProcessor"/>
 
 	<attribute-processor
 		name="src"
-		class="org.thymeleaf.spring4.processor.attr.SpringSrcAttrProcessor"/>
+		class="org.thymeleaf.spring4.processor.SpringSrcTagProcessor"/>
 
 	<attribute-processor
 		name="value"
-		class="org.thymeleaf.spring4.processor.attr.SpringValueAttrProcessor"/>
+		class="org.thymeleaf.spring4.processor.SpringValueTagProcessor"/>
 
 
 	<!-- General field attribute processors -->

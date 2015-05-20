@@ -17,22 +17,22 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring4.processor.attr;
+package org.thymeleaf.spring3.processor;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
+import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
 import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModifierAttrProcessor;
 
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 2.1.0
+ *
+ * @since 3.0.0
  *
  */
-public final class SpringSrcAttrProcessor
+public final class SpringSrcTagProcessor
         extends AbstractStandardSingleAttributeModifierAttrProcessor {
 
 
@@ -41,7 +41,7 @@ public final class SpringSrcAttrProcessor
 
 
 
-    public SpringSrcAttrProcessor() {
+    public SpringSrcTagProcessor() {
         super(ATTR_NAME);
     }
 

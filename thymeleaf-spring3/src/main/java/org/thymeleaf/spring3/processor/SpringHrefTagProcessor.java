@@ -17,33 +17,31 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring4.processor.attr;
+package org.thymeleaf.spring3.processor;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
+import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
 import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModifierAttrProcessor;
 
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 2.1.0
+ *
+ * @since 3.0.0
  *
  */
-public final class SpringValueAttrProcessor
+public final class SpringHrefTagProcessor
         extends AbstractStandardSingleAttributeModifierAttrProcessor {
 
 
-    // This is 1010 in order to make sure it is executed after "name" and "type"
-    public static final int ATTR_PRECEDENCE = 1010;
-    public static final String ATTR_NAME = "value";
+    public static final int ATTR_PRECEDENCE = 1000;
+    public static final String ATTR_NAME = "href";
 
 
 
-    public SpringValueAttrProcessor() {
+    public SpringHrefTagProcessor() {
         super(ATTR_NAME);
     }
 
@@ -67,19 +65,11 @@ public final class SpringValueAttrProcessor
     @Override
     protected String getTargetAttributeValue(
             final Arguments arguments, final Element element, final String attributeName) {
-
         final String attributeValue = super.getTargetAttributeValue(arguments, element, attributeName);
-        if (element.hasNormalizedAttribute(Attribute.getPrefixFromAttributeName(attributeName), AbstractSpringFieldAttrProcessor.ATTR_NAME)) {
-            // There still is a th:field to be executed, so better not process the value ourselves (let's let th:field do it)
-            return attributeValue;
-        }
-
-        final String name = element.getAttributeValueFromNormalizedName("name");
-        final String type = element.getAttributeValueFromNormalizedName("type");
-        return RequestDataValueProcessorUtils.processFormFieldValue(
-                arguments.getConfiguration(), arguments, name, attributeValue, type);
-
+        return RequestDataValueProcessorUtils.processUrl(arguments.getConfiguration(), arguments, attributeValue);
     }
+
+
 
     
     @Override

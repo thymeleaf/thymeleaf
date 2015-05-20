@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring3.processor.attr;
+package org.thymeleaf.spring3.processor;
 
 import java.util.Arrays;
 
@@ -38,9 +38,9 @@ import org.thymeleaf.util.StringUtils;
  * with a <tt>${#fields.hasErrors()}</tt> expression.
  * 
  * @author Daniel Fern&aacute;ndez
- * @since 2.1.0
+ * @since 3.0.0
  */
-public final class SpringErrorClassAttrProcessor
+public final class SpringErrorClassTagProcessor
         extends AbstractStandardSingleAttributeModifierAttrProcessor {
 
     public static final int ATTR_PRECEDENCE = 1500;
@@ -49,7 +49,7 @@ public final class SpringErrorClassAttrProcessor
 
 
 
-    public SpringErrorClassAttrProcessor() {
+    public SpringErrorClassTagProcessor() {
         super(ATTR_NAME);
     }
 
@@ -79,7 +79,7 @@ public final class SpringErrorClassAttrProcessor
         if (bindStatus == null) {
             final String[] fieldProcessorNames =
                     Attribute.applyPrefixToAttributeName(
-                            AbstractSpringFieldAttrProcessor.ATTR_NAME, Attribute.getPrefixFromAttributeName(attributeName));
+                            AbstractSpringFieldTagProcessor.ATTR_NAME, Attribute.getPrefixFromAttributeName(attributeName));
             throw new TemplateProcessingException(
                     "Cannot apply \"" + attributeName + "\": this attribute requires the existence of " +
                             "a \"name\" (or " + Arrays.asList(fieldProcessorNames) + ") attribute with non-empty " +

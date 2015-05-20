@@ -17,15 +17,15 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring3.processor.attr;
+package org.thymeleaf.spring3.processor;
 
 import java.util.Map;
 
 import org.springframework.web.servlet.support.BindStatus;
-import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
+import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.dom.Text;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
 
@@ -33,19 +33,19 @@ import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
 /**
  * 
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 1.0
+ *
+ * @since 3.0.0
  *
  */
-public final class SpringTextareaFieldAttrProcessor 
-        extends AbstractSpringFieldAttrProcessor {
+public final class SpringOptionFieldTagProcessor
+        extends AbstractSpringFieldTagProcessor {
 
     
 
     
-    public SpringTextareaFieldAttrProcessor() {
+    public SpringOptionFieldTagProcessor() {
         super(ATTR_NAME,
-              TEXTAREA_TAG_NAME);
+              OPTION_TAG_NAME);
     }
 
 
@@ -55,28 +55,34 @@ public final class SpringTextareaFieldAttrProcessor
     protected ProcessorResult doProcess(final Arguments arguments, final Element element,
             final String attributeName, final String attributeValue, final BindStatus bindStatus,
             final Map<String, Object> localVariables) {
-        
+
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
-        
-        final String id = computeId(arguments, element, name, false);
-        
-        final String value = ValueFormatterWrapper.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), false);
 
-        final String processedValue =
+        final String value = element.getAttributeValue("value");
+        if (value == null) {
+            throw new TemplateProcessingException(
+                    "Attribute \"value\" is required in \"option\" tags");
+        }
+        
+        final boolean selected = 
+            SelectedValueComparatorWrapper.isSelected(bindStatus, value);
+
+        element.setAttribute("value", value);
+        element.setAttribute(
+                "value",
                 RequestDataValueProcessorUtils.processFormFieldValue(
-                        arguments.getConfiguration(), arguments, name, value, "textarea");
+                        arguments.getConfiguration(), arguments, name, value, "option"));
 
-        element.setAttribute("id", id);
-        element.setAttribute("name", name);
-        
-        final Text text = new Text(processedValue == null? "" : processedValue);
-
-        element.clearChildren();
-        element.addChild(text);
+        if (selected) {
+            element.setAttribute("selected", "selected");
+        } else {
+            element.removeAttribute("selected");
+        }
         element.removeAttribute(attributeName);
         
-        return ProcessorResult.setLocalVariables(localVariables);         
+        
+        return ProcessorResult.setLocalVariables(localVariables);
         
     }
 

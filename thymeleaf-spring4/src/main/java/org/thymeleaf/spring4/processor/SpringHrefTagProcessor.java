@@ -17,9 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring4.processor.attr;
-
-import java.util.Map;
+package org.thymeleaf.spring4.processor;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
@@ -30,20 +28,20 @@ import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModi
 /**
  * 
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 2.1.0
+ *
+ * @since 3.0.0
  *
  */
-public final class SpringActionAttrProcessor
+public final class SpringHrefTagProcessor
         extends AbstractStandardSingleAttributeModifierAttrProcessor {
 
 
     public static final int ATTR_PRECEDENCE = 1000;
-    public static final String ATTR_NAME = "action";
+    public static final String ATTR_NAME = "href";
 
 
 
-    public SpringActionAttrProcessor() {
+    public SpringHrefTagProcessor() {
         super(ATTR_NAME);
     }
 
@@ -68,10 +66,9 @@ public final class SpringActionAttrProcessor
     protected String getTargetAttributeValue(
             final Arguments arguments, final Element element, final String attributeName) {
         final String attributeValue = super.getTargetAttributeValue(arguments, element, attributeName);
-        final String httpMethod = element.getAttributeValueFromNormalizedName("method");
-        return RequestDataValueProcessorUtils.processAction(
-                arguments.getConfiguration(), arguments, attributeValue, httpMethod);
+        return RequestDataValueProcessorUtils.processUrl(arguments.getConfiguration(), arguments, attributeValue);
     }
+
 
 
     
@@ -89,38 +86,5 @@ public final class SpringActionAttrProcessor
         return false;
     }
 
-
-
-
-
-    @Override
-    protected void doAdditionalProcess(
-            final Arguments arguments, final Element element, final String attributeName) {
-
-        if ("form".equals(element.getNormalizedName())) {
-
-            final Map<String,String> extraHiddenFields =
-                    RequestDataValueProcessorUtils.getExtraHiddenFields(arguments.getConfiguration(), arguments);
-
-            if (extraHiddenFields != null && extraHiddenFields.size() > 0) {
-
-                for (final Map.Entry<String,String> extraHiddenField : extraHiddenFields.entrySet()) {
-
-                    final Element extraHiddenElement = new Element("input");
-                    extraHiddenElement.setAttribute("type", "hidden");
-                    extraHiddenElement.setAttribute("name", extraHiddenField.getKey());
-                    extraHiddenElement.setAttribute("value", extraHiddenField.getValue()); // no need to re-apply the processor here
-
-                    element.insertChild(element.numChildren(), extraHiddenElement);
-
-                }
-
-            }
-
-        }
-
-    }
-
-
-
+    
 }

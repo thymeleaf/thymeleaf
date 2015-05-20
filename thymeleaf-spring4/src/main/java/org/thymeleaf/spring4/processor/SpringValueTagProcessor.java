@@ -17,23 +17,23 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring3.processor.attr;
+package org.thymeleaf.spring4.processor;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
+import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
 import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModifierAttrProcessor;
 
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 2.1.0
+ *
+ * @since 3.0.0
  *
  */
-public final class SpringValueAttrProcessor
+public final class SpringValueTagProcessor
         extends AbstractStandardSingleAttributeModifierAttrProcessor {
 
 
@@ -43,7 +43,7 @@ public final class SpringValueAttrProcessor
 
 
 
-    public SpringValueAttrProcessor() {
+    public SpringValueTagProcessor() {
         super(ATTR_NAME);
     }
 
@@ -69,7 +69,7 @@ public final class SpringValueAttrProcessor
             final Arguments arguments, final Element element, final String attributeName) {
 
         final String attributeValue = super.getTargetAttributeValue(arguments, element, attributeName);
-        if (element.hasNormalizedAttribute(Attribute.getPrefixFromAttributeName(attributeName), AbstractSpringFieldAttrProcessor.ATTR_NAME)) {
+        if (element.hasNormalizedAttribute(Attribute.getPrefixFromAttributeName(attributeName), AbstractSpringFieldTagProcessor.ATTR_NAME)) {
             // There still is a th:field to be executed, so better not process the value ourselves (let's let th:field do it)
             return attributeValue;
         }

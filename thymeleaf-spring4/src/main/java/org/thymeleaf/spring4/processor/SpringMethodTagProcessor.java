@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring4.processor.attr;
+package org.thymeleaf.spring4.processor;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
@@ -28,11 +28,11 @@ import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModi
 /**
  * 
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 2.0.3
+ *
+ * @since 3.0.0
  *
  */
-public final class SpringMethodAttrProcessor 
+public final class SpringMethodTagProcessor
         extends AbstractStandardSingleAttributeModifierAttrProcessor {
 
     
@@ -41,7 +41,7 @@ public final class SpringMethodAttrProcessor
     
     
     
-    public SpringMethodAttrProcessor() {
+    public SpringMethodTagProcessor() {
         super(ATTR_NAME);
     }
 
