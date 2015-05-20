@@ -17,26 +17,23 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring4.processor.attr;
-
-import java.util.Map;
+package org.thymeleaf.spring3.processor;
 
 import org.springframework.web.servlet.support.BindStatus;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Element;
-import org.thymeleaf.processor.ProcessorResult;
-
+import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.IElementStructureHandler;
+import org.thymeleaf.model.IProcessableElementTag;
 
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 1.0
+ *
+ * @since 3.0.0
  *
  */
-public final class SpringInputFileFieldAttrProcessor 
-        extends AbstractSpringFieldAttrProcessor {
+public final class SpringInputFileFieldTagProcessor extends AbstractSpringFieldTagProcessor {
 
     
     public static final String FILE_INPUT_TYPE_ATTR_VALUE = "file";
@@ -44,34 +41,26 @@ public final class SpringInputFileFieldAttrProcessor
 
 
     
-    public SpringInputFileFieldAttrProcessor() {
-        super(ATTR_NAME,
-              INPUT_TAG_NAME,
-              INPUT_TYPE_ATTR_NAME,
-              FILE_INPUT_TYPE_ATTR_VALUE);
+    public SpringInputFileFieldTagProcessor() {
+        super(INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { FILE_INPUT_TYPE_ATTR_VALUE });
     }
 
 
 
 
-
     @Override
-    protected ProcessorResult doProcess(final Arguments arguments,
-            final Element element, final String attributeName, 
-            final String attributeValue, final BindStatus bindStatus,
-            final Map<String, Object> localVariables) {
-        
+    protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+                             final AttributeName attributeName, final String attributeValue,
+                             final BindStatus bindStatus, final IElementStructureHandler structureHandler) {
+
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
-        
-        final String id = computeId(arguments, element, name, false);
-        
-        element.setAttribute("id", id);
-        element.setAttribute("name", name);
-        element.removeAttribute(attributeName);
-        
-        return ProcessorResult.setLocalVariables(localVariables);         
-        
+
+        final String id = computeId(processingContext, tag, name, false);
+
+        tag.getAttributes().setAttribute("id", id);
+        tag.getAttributes().setAttribute("name", name);
+
     }
 
     

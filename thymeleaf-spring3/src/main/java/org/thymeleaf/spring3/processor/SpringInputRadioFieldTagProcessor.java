@@ -17,28 +17,26 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring3.processor.attr;
-
-import java.util.Map;
+package org.thymeleaf.spring3.processor;
 
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Element;
+import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.processor.ProcessorResult;
+import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
 
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 1.0
+ *
+ * @since 3.0.0
  *
  */
-public final class SpringInputRadioFieldAttrProcessor 
-        extends AbstractSpringFieldAttrProcessor {
+public final class SpringInputRadioFieldTagProcessor extends AbstractSpringFieldTagProcessor {
 
     
     public static final String RADIO_INPUT_TYPE_ATTR_VALUE = "radio";
@@ -46,52 +44,44 @@ public final class SpringInputRadioFieldAttrProcessor
 
 
     
-    public SpringInputRadioFieldAttrProcessor() {
-        super(ATTR_NAME,
-              INPUT_TAG_NAME,
-              INPUT_TYPE_ATTR_NAME,
-              RADIO_INPUT_TYPE_ATTR_VALUE);
+    public SpringInputRadioFieldTagProcessor() {
+        super(INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { RADIO_INPUT_TYPE_ATTR_VALUE });
     }
 
 
 
 
     @Override
-    protected ProcessorResult doProcess(final Arguments arguments, final Element element,
-            final String attributeName, final String attributeValue, final BindStatus bindStatus,
-            final Map<String, Object> localVariables) {
-        
+    protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+                             final AttributeName attributeName, final String attributeValue,
+                             final BindStatus bindStatus, final IElementStructureHandler structureHandler) {
+
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
-        
-        final String id = computeId(arguments, element, name, true);
-        
-        final String value = element.getAttributeValue("value");
+
+        final String id = computeId(processingContext, tag, name, true);
+
+        final String value = tag.getAttributes().getValue("value");
         if (value == null) {
             throw new TemplateProcessingException(
                     "Attribute \"value\" is required in \"input(radio)\" tags");
         }
-        
-        final boolean checked = 
-            SelectedValueComparatorWrapper.isSelected(bindStatus, value);
-        
-        
-        element.setAttribute("id", id);
-        element.setAttribute("name", name);
-        element.setAttribute(
-                "value",
-                RequestDataValueProcessorUtils.processFormFieldValue(
-                        arguments.getConfiguration(), arguments, name, value, "radio"));
+
+        final boolean checked =
+                SelectedValueComparatorWrapper.isSelected(bindStatus, value);
+
+
+        tag.getAttributes().setAttribute("id", id);
+        tag.getAttributes().setAttribute("name", name);
+        tag.getAttributes().setAttribute(
+                "value", RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, value, "radio"));
 
         if (checked) {
-            element.setAttribute("checked", "checked");
+            tag.getAttributes().setAttribute("checked", "checked");
         } else {
-            element.removeAttribute("checked");
+            tag.getAttributes().removeAttribute("checked");
         }
-        element.removeAttribute(attributeName);
-        
-        return ProcessorResult.setLocalVariables(localVariables);         
-        
+
     }
 
     
