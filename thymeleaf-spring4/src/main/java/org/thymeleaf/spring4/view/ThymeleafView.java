@@ -73,7 +73,7 @@ public class ThymeleafView
      */
     private static final String pathVariablesSelector;
 
-    private String markupSelector = null;
+    private String[] markupSelectors = null;
 
 
 
@@ -146,7 +146,7 @@ public class ThymeleafView
      * @since 3.0.0
      */
     public String getMarkupSelector() {
-        return this.markupSelector;
+        return (this.markupSelectors == null || this.markupSelectors.length == 0? null : this.markupSelectors[0]);
     }
 
 
@@ -171,7 +171,8 @@ public class ThymeleafView
      * @since 3.0.0
      */
     public void setMarkupSelector(final String markupSelector) {
-        this.markupSelector = markupSelector;
+        this.markupSelectors =
+                (markupSelector == null || markupSelector.trim().length() == 0? null : new String[] { markupSelector.trim() });
     }
 
 
@@ -182,12 +183,12 @@ public class ThymeleafView
 
     public void render(final Map<String, ?> model, final HttpServletRequest request, final HttpServletResponse response)
             throws Exception {
-        renderFragment(null, model, request, response);
+        renderFragment(this.markupSelectors, model, request, response);
     }
 
 
 
-    protected void renderFragment(final String markupSelectorToRender, final Map<String, ?> model, final HttpServletRequest request,
+    protected void renderFragment(final String[] markupSelectorsToRender, final Map<String, ?> model, final HttpServletRequest request,
                                   final HttpServletResponse response)
             throws Exception {
 
@@ -295,15 +296,16 @@ public class ThymeleafView
 
         final String[] processMarkupSelectors;
         if (markupSelectors != null && markupSelectors.length > 0) {
-            if (markupSelectorToRender != null && markupSelectorToRender.length() > 0) {
+            if (markupSelectorsToRender != null && markupSelectorsToRender.length > 0) {
                 throw new IllegalArgumentException(
                         "A markup selector has been specified (" + Arrays.asList(markupSelectors) + ") for a view " +
-                                "that already had a markup selector specified as a bean configuration (" + markupSelectorToRender + ")");
+                        "that was already being executed as a fragment (" + Arrays.asList(markupSelectorsToRender) + "). " +
+                        "Only one fragment selection is allowed.");
             }
             processMarkupSelectors = markupSelectors;
         } else {
-            if (markupSelectorToRender != null && markupSelectorToRender.length() > 0) {
-                processMarkupSelectors = new String[] { markupSelectorToRender };
+            if (markupSelectorsToRender != null && markupSelectorsToRender.length > 0) {
+                processMarkupSelectors = markupSelectorsToRender;
             } else {
                 processMarkupSelectors = null;
             }

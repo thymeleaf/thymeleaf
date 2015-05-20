@@ -28,14 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.util.StringUtils;
-import org.thymeleaf.Configuration;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.exceptions.ConfigurationException;
-import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
-import org.thymeleaf.fragment.IFragmentSpec;
-import org.thymeleaf.standard.fragment.StandardFragmentSignatureNodeReferenceChecker;
-import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
 
 
 /**
@@ -49,48 +42,37 @@ import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
  *   instructions (though not only).
  * </p>
  * <p>
- *   This view searches for a comma-separated list of <i>fragment names</i> in a request
- *   parameter called <tt>fragments</tt>, and for each of them:
+ *   This view searches for a comma-separated list of <i>markup selectors</i> in a request
+ *   parameter called <tt>fragments</tt>.
  * </p>
- * <ul>
- *   <li>If it is not a DOM selector, a <tt>th:fragment</tt> attribute will be used
- *       for designing the fragment to be rendered.</li>
- *   <li>If it is a DOM selector, it will be used for selecting the fragment to be rendered,
- *       without looking for any attributes. DOM Selectors are specified between brackets, 
- *       like <tt>[//div[@class='changeit']]</tt></li>
- * </ul>
-*
-* @author Daniel Fern&aacute;ndez
-* 
-* @since 2.0.11
-*
-*/
+ *
+ * @author Daniel Fern&aacute;ndez
+ *
+ * @since 2.0.11
+ *
+ */
 public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView {
 
-    
     private static final Logger vlogger = LoggerFactory.getLogger(AjaxThymeleafView.class);
 
-    
     private static final String FRAGMENTS_PARAM = "fragments";
-    
+
 
     private AjaxHandler ajaxHandler = null;
 
 
 
-    
     public AjaxThymeleafView() {
         super();
     }
-    
-    
-    
+
+
 
     public AjaxHandler getAjaxHandler() {
         return this.ajaxHandler;
     }
 
-    
+
     public void setAjaxHandler(final AjaxHandler ajaxHandler) {
         this.ajaxHandler = ajaxHandler;
     }
@@ -99,23 +81,22 @@ public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView 
 
 
     @Override
-    public void render(
-            final Map<String, ?> model, final HttpServletRequest request, final HttpServletResponse response) 
+    public void render(final Map<String, ?> model, final HttpServletRequest request, final HttpServletResponse response)
             throws Exception {
-        
+
 
         final AjaxHandler templateAjaxHandler = getAjaxHandler();
-        
+
         if (templateAjaxHandler == null) {
             throw new ConfigurationException("[THYMELEAF] AJAX Handler set into " +
                     AjaxThymeleafView.class.getSimpleName() + " instance for template " +
                     getTemplateName() + " is null.");
         }
-        
+
         if (templateAjaxHandler.isAjaxRequest(request, response)) {
-            
+
             final String[] fragmentsToRender = getRenderFragments(model, request, response);
-            if (fragmentsToRender.length == 0) {
+            if (fragmentsToRender == null || fragmentsToRender.length == 0) {
                 vlogger.warn("[THYMELEAF] An Ajax request was detected, but no fragments were specified to be re-rendered.  "
                         + "Falling back to full page render.  This can cause unpredictable results when processing "
                         + "the ajax response on the client.");
@@ -123,53 +104,18 @@ public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView 
                 return;
             }
 
-            if (getTemplateEngine() == null) {
-                throw new IllegalArgumentException("Property 'templateEngine' is required");
-            }
+            super.renderFragment(fragmentsToRender, model, request, response);
 
-            final TemplateEngine templateEngine = getTemplateEngine();
-            final Configuration configuration = templateEngine.getConfiguration();
-
-            final String dialectPrefix = getStandardDialectPrefix(configuration);
-            final String fragmentSignatureAttributeName = StandardFragmentAttrProcessor.ATTR_NAME;
-
-            final DOMSelector.INodeReferenceChecker nodeReferenceChecker =
-                    new StandardFragmentSignatureNodeReferenceChecker(configuration, dialectPrefix, fragmentSignatureAttributeName);
-
-            for (final String fragmentToRender : fragmentsToRender) {
-                
-                if (fragmentToRender != null) {
-
-                    String fragmentSelector = fragmentToRender;
-
-                    if (fragmentSelector.length() > 3 &&
-                            fragmentSelector.charAt(0) == '[' && fragmentSelector.charAt(fragmentSelector.length() - 1) == ']' &&
-                            fragmentSelector.charAt(fragmentSelector.length() - 2) != '\'') {
-                        // For legacy compatibility reasons, we allow fragment DOM Selector expressions to be specified
-                        // between brackets. Just remove them.
-                        fragmentSelector = fragmentSelector.substring(1, fragmentSelector.length() - 1);
-                    }
-
-
-                    final IFragmentSpec fragmentSpec = new DOMSelectorFragmentSpec(fragmentSelector, nodeReferenceChecker);
-
-                    super.renderFragment(fragmentSpec, model, request, response);
-                    
-                }
-                
-            }
-            
         } else {
-            
+
             super.render(model, request, response);
-            
+
         }
-        
+
     }
-    
-    
-    
-    
+
+
+
 
     @SuppressWarnings({ "rawtypes", "unused" })
     protected String[] getRenderFragments(
@@ -178,9 +124,7 @@ public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView 
         final String[] renderFragments = StringUtils.commaDelimitedListToStringArray(fragmentsParam);
         return StringUtils.trimArrayElements(renderFragments);
     }
-    
-    
-    
+
 
 
 }
