@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.spring3.dialect;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.thymeleaf.expression.IExpressionObjectsFactory;
@@ -26,9 +27,32 @@ import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.spring3.expression.SPELVariableExpressionEvaluator;
 import org.thymeleaf.spring3.expression.SpringStandardConversionService;
 import org.thymeleaf.spring3.expression.SpringStandardExpressionObjectsFactory;
+import org.thymeleaf.spring3.processor.SpringActionTagProcessor;
+import org.thymeleaf.spring3.processor.SpringErrorClassTagProcessor;
+import org.thymeleaf.spring3.processor.SpringErrorsTagProcessor;
+import org.thymeleaf.spring3.processor.SpringHrefTagProcessor;
+import org.thymeleaf.spring3.processor.SpringInputCheckboxFieldTagProcessor;
+import org.thymeleaf.spring3.processor.SpringInputFileFieldTagProcessor;
+import org.thymeleaf.spring3.processor.SpringInputGeneralFieldTagProcessor;
+import org.thymeleaf.spring3.processor.SpringInputPasswordFieldTagProcessor;
+import org.thymeleaf.spring3.processor.SpringInputRadioFieldTagProcessor;
+import org.thymeleaf.spring3.processor.SpringMethodTagProcessor;
+import org.thymeleaf.spring3.processor.SpringObjectTagProcessor;
+import org.thymeleaf.spring3.processor.SpringOptionFieldTagProcessor;
+import org.thymeleaf.spring3.processor.SpringOptionInSelectFieldTagProcessor;
+import org.thymeleaf.spring3.processor.SpringSelectFieldTagProcessor;
+import org.thymeleaf.spring3.processor.SpringSrcTagProcessor;
+import org.thymeleaf.spring3.processor.SpringTextareaFieldTagProcessor;
+import org.thymeleaf.spring3.processor.SpringValueTagProcessor;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
+import org.thymeleaf.standard.processor.StandardActionTagProcessor;
+import org.thymeleaf.standard.processor.StandardHrefTagProcessor;
+import org.thymeleaf.standard.processor.StandardMethodTagProcessor;
+import org.thymeleaf.standard.processor.StandardObjectTagProcessor;
+import org.thymeleaf.standard.processor.StandardSrcTagProcessor;
+import org.thymeleaf.standard.processor.StandardValueTagProcessor;
 
 /**
  *
@@ -94,40 +118,42 @@ public class SpringStandardDialect extends StandardDialect {
          */
         
         final Set<IProcessor> standardProcessors = StandardDialect.createStandardProcessorsSet();
-return standardProcessors;
-//        final Set<IProcessor> processors = new LinkedHashSet<IProcessor>(40);
-//
-//        for (final IProcessor standardProcessor : standardProcessors) {
-//            // There are several processors we need to remove from the Standard Dialect set
-//            if (!(standardProcessor instanceof StandardObjectAttrProcessor) &&
-//                !(standardProcessor instanceof StandardActionAttrProcessor) &&
-//                !(standardProcessor instanceof StandardHrefAttrProcessor) &&
-//                !(standardProcessor instanceof StandardMethodAttrProcessor) &&
-//                !(standardProcessor instanceof StandardSrcAttrProcessor) &&
-//
-//                !(standardProcessor instanceof StandardValueAttrProcessor)) {
-//                processors.add(standardProcessor);
-//            }
-//        }
-//
-//        processors.add(new SpringActionAttrProcessor());
-//        processors.add(new SpringHrefAttrProcessor());
-//        processors.add(new SpringMethodAttrProcessor());
-//        processors.add(new SpringSrcAttrProcessor());
-//        processors.add(new SpringValueAttrProcessor());
-//        processors.add(new SpringObjectAttrProcessor());
-//        processors.add(new SpringErrorsAttrProcessor());
-//        processors.addAll(Arrays.asList(SpringInputGeneralFieldAttrProcessor.PROCESSORS));
-//        processors.add(new SpringInputPasswordFieldAttrProcessor());
-//        processors.add(new SpringInputCheckboxFieldAttrProcessor());
-//        processors.add(new SpringInputRadioFieldAttrProcessor());
-//        processors.add(new SpringInputFileFieldAttrProcessor());
-//        processors.add(new SpringSelectFieldAttrProcessor());
-//        processors.add(new SpringOptionFieldAttrProcessor());
-//        processors.add(new SpringTextareaFieldAttrProcessor());
-//        processors.add(new SpringErrorClassAttrProcessor());
-//
-//        return processors;
+
+        final Set<IProcessor> processors = new LinkedHashSet<IProcessor>(40);
+
+        for (final IProcessor standardProcessor : standardProcessors) {
+            // There are several processors we need to remove from the Standard Dialect set
+            if (!(standardProcessor instanceof StandardObjectTagProcessor) &&
+                !(standardProcessor instanceof StandardActionTagProcessor) &&
+                !(standardProcessor instanceof StandardHrefTagProcessor) &&
+                !(standardProcessor instanceof StandardMethodTagProcessor) &&
+                !(standardProcessor instanceof StandardSrcTagProcessor) &&
+                !(standardProcessor instanceof StandardValueTagProcessor)) {
+
+                processors.add(standardProcessor);
+
+            }
+        }
+
+        processors.add(new SpringActionTagProcessor());
+        processors.add(new SpringHrefTagProcessor());
+        processors.add(new SpringMethodTagProcessor());
+        processors.add(new SpringSrcTagProcessor());
+        processors.add(new SpringValueTagProcessor());
+        processors.add(new SpringObjectTagProcessor());
+        processors.add(new SpringErrorsTagProcessor());
+        processors.add(new SpringInputGeneralFieldTagProcessor());
+        processors.add(new SpringInputPasswordFieldTagProcessor());
+        processors.add(new SpringInputCheckboxFieldTagProcessor());
+        processors.add(new SpringInputRadioFieldTagProcessor());
+        processors.add(new SpringInputFileFieldTagProcessor());
+        processors.add(new SpringSelectFieldTagProcessor());
+        processors.add(new SpringOptionInSelectFieldTagProcessor());
+        processors.add(new SpringOptionFieldTagProcessor());
+        processors.add(new SpringTextareaFieldTagProcessor());
+        processors.add(new SpringErrorClassTagProcessor());
+
+        return processors;
         
     }
 
