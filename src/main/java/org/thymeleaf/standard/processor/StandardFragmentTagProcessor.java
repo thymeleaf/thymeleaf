@@ -23,7 +23,8 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
+import org.thymeleaf.processor.element.AbstractElementTagProcessor;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  *
@@ -32,7 +33,7 @@ import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
  * @since 3.0.0
  *
  */
-public final class StandardFragmentTagProcessor extends AbstractAttributeTagProcessor {
+public final class StandardFragmentTagProcessor extends AbstractElementTagProcessor {
 
     public static final int PRECEDENCE = 1500;
     public static final String ATTR_NAME = "fragment";
@@ -42,7 +43,7 @@ public final class StandardFragmentTagProcessor extends AbstractAttributeTagProc
 
 
     public StandardFragmentTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE);
+        super(TemplateMode.HTML, null, false, ATTR_NAME, true, PRECEDENCE);
     }
 
 
