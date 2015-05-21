@@ -20,6 +20,7 @@
 package org.thymeleaf.spring4.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -55,8 +56,8 @@ public final class SpringOptionInSelectFieldTagProcessor extends AbstractElement
             final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
             final IElementStructureHandler structureHandler) {
 
-        final String selectAttrNameToAdd =
-                (String) processingContext.getVariablesMap().getVariable(SpringSelectFieldTagProcessor.OPTION_IN_SELECT_ATTR_NAME);
+        final AttributeName selectAttrNameToAdd =
+                (AttributeName) processingContext.getVariablesMap().getVariable(SpringSelectFieldTagProcessor.OPTION_IN_SELECT_ATTR_NAME);
         if (selectAttrNameToAdd == null) {
             // Nothing to do
             return;
@@ -76,7 +77,7 @@ public final class SpringOptionInSelectFieldTagProcessor extends AbstractElement
             }
         }
 
-        tag.getAttributes().setAttribute(selectAttrNameToAdd, selectAttrValueToAdd);
+        tag.getAttributes().setAttribute(selectAttrNameToAdd.getCompleteAttributeNames()[0], selectAttrValueToAdd);
 
     }
 
