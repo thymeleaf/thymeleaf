@@ -19,17 +19,14 @@
  */
 package org.thymeleaf.spring3.processor;
 
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.servlet.support.BindStatus;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Element;
-import org.thymeleaf.dom.NestableNode;
-import org.thymeleaf.dom.Node;
-import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.processor.ProcessorResult;
+import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.IElementStructureHandler;
+import org.thymeleaf.engine.Markup;
+import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
 
 
@@ -40,122 +37,70 @@ import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
  * @since 3.0.0
  *
  */
-public final class SpringSelectFieldTagProcessor
-        extends AbstractSpringFieldTagProcessor {
+public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagProcessor {
 
-    
 
-    
+    static final String OPTION_IN_SELECT_ATTR_NAME = "%%OPTION_IN_SELECT_ATTR_NAME%%";
+    static final String OPTION_IN_SELECT_ATTR_VALUE = "%%OPTION_IN_SELECT_ATTR_VALUE%%";
+
+
+
     public SpringSelectFieldTagProcessor() {
-        super(ATTR_NAME,
-              SELECT_TAG_NAME);
+        super(SELECT_TAG_NAME, null, null);
     }
-
 
 
 
     @Override
-    protected ProcessorResult doProcess(final Arguments arguments, final Element element,
-            final String attributeName, final String attributeValue, final BindStatus bindStatus,
-            final Map<String, Object> localVariables) {
-        
+    protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+                             final AttributeName attributeName, final String attributeValue,
+                             final BindStatus bindStatus, final IElementStructureHandler structureHandler) {
+
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
-        
-        final String id = computeId(arguments, element, name, false);
 
-        final boolean multiple = element.hasAttribute("multiple");
-        
-        final NestableNode parent = element.getParent();
-        
-        final Element inputElement = (Element) element.cloneNode(parent, false);
-        inputElement.removeAttribute(attributeName);
-        
-        inputElement.setAttribute("id", id);
-        inputElement.setAttribute("name", name);
-        inputElement.setAllNodeLocalVariables(localVariables);
+        final String id = computeId(processingContext, tag, name, false);
 
-        processOptionChildren(inputElement, attributeName, attributeValue);
-        
-        parent.insertBefore(element, inputElement);
-        parent.removeChild(element);
-        
+        final boolean multiple = tag.getAttributes().hasAttribute("multiple");
 
-        if (multiple && !isDisabled(inputElement)) {
+        tag.getAttributes().setAttribute("id", id);
+        tag.getAttributes().setAttribute("name", name);
+
+        structureHandler.setLocalVariable(OPTION_IN_SELECT_ATTR_NAME, attributeName);
+        structureHandler.setLocalVariable(OPTION_IN_SELECT_ATTR_VALUE, attributeValue);
+
+        tag.getAttributes().removeAttribute(attributeName); // We need to remove it here before being cloned
+
+        if (multiple && !isDisabled(tag)) {
+
+            final Markup replacement = processingContext.getMarkupFactory().createMarkup();
 
             final String hiddenName = WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name;
-            final Element hiddenElement = new Element("input");
-            hiddenElement.setAttribute("type", "hidden");
-            hiddenElement.setAttribute("name", hiddenName);
-            hiddenElement.setAttribute(
-                    "value",
-                    RequestDataValueProcessorUtils.processFormFieldValue(
-                            arguments.getConfiguration(), arguments, hiddenName, "1", "hidden"));
+            final String type = "hidden";
+            final String value =
+                    RequestDataValueProcessorUtils.processFormFieldValue(processingContext, hiddenName, "1", type);
 
-            hiddenElement.setAllNodeLocalVariables(localVariables);
-            
-            parent.insertAfter(inputElement, hiddenElement);
-            
+            final IStandaloneElementTag hiddenMethodElementTag =
+                    processingContext.getMarkupFactory().createStandaloneElementTag("input", true);
+            hiddenMethodElementTag.getAttributes().setAttribute("type", type);
+            hiddenMethodElementTag.getAttributes().setAttribute("name", hiddenName);
+            hiddenMethodElementTag.getAttributes().setAttribute("value", value);
+
+            replacement.add(hiddenMethodElementTag);
+
+            replacement.add(tag); // Note in this case, given <select> is an OPEN element, we add the hidden BEFORE the select
+
+            structureHandler.replaceWith(replacement, true);
+
         }
-        
-        
-        return ProcessorResult.OK;
-        
+
     }
 
 
-    
-    private void processOptionChildren(
-            final Element inputTag, final String selectAttrName, final String selectAttrValue) {
-        
-        final List<Node> children = inputTag.getChildren();
-        
-        for (final Node child : children) {
-            
-            if (child != null && child instanceof Element) {
-                
-                final Element childTag = (Element) child;
-                final String childTagName = childTag.getNormalizedName();
 
-                childTag.setProcessable(true);
-                
-                if ("option".equals(childTagName)) {
-                    
-                    if (childTag.hasAttribute(selectAttrName)) { // has attribute
-                        
-                        final String selectAttrInChildValue = childTag.getAttributeValue(selectAttrName);
-                        
-                        if (selectAttrInChildValue != null) {
-                            if (!selectAttrValue.equals(selectAttrInChildValue)) {
-                                throw new TemplateProcessingException(
-                                        "If specified (which is not required), attribute " +
-                                        "\"" + selectAttrName + "\" in \"option\" tag must have " +
-                                        "exactly the same value as in its containing \"select\" " +
-                                        "tag");
-                            }
-                        }
-                        
-                    } else {
-                        childTag.setAttribute(selectAttrName, selectAttrValue);
-                        childTag.setRecomputeProcessorsImmediately(true);
-                    }
-                    
-                } else if ("optgroup".equals(childTagName)) {
-
-                    processOptionChildren(childTag, selectAttrName, selectAttrValue);
-                    
-                }
-                
-            }
-            
-        }
-        
-    }
-
-
-    private static final boolean isDisabled(final Element inputElement) {
+    private static final boolean isDisabled(final IProcessableElementTag tag) {
         // Disabled = attribute "disabled" exists
-        return inputElement.hasNormalizedAttribute("disabled");
+        return tag.getAttributes().hasAttribute("disabled");
     }
 
 

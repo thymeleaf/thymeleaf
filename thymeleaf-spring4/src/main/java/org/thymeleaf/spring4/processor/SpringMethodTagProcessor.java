@@ -19,10 +19,15 @@
  */
 package org.thymeleaf.spring4.processor;
 
-import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Element;
+import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.IElementStructureHandler;
+import org.thymeleaf.engine.Markup;
+import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
-import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModifierAttrProcessor;
+import org.thymeleaf.standard.processor.AbstractStandardExpressionAttributeTagProcessor;
+import org.unbescape.html.HtmlEscape;
 
 
 /**
@@ -32,89 +37,73 @@ import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModi
  * @since 3.0.0
  *
  */
-public final class SpringMethodTagProcessor
-        extends AbstractStandardSingleAttributeModifierAttrProcessor {
+public final class SpringMethodTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
 
     
     public static final int ATTR_PRECEDENCE = 990;
     public static final String ATTR_NAME = "method";
-    
-    
-    
+
+
+
     public SpringMethodTagProcessor() {
-        super(ATTR_NAME);
-    }
-
-    
-    
-    @Override
-    public int getPrecedence() {
-        return ATTR_PRECEDENCE;
+        super(ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 
 
     @Override
-    protected String getTargetAttributeName(
-            final Arguments arguments, final Element element, final String attributeName) {
-        return ATTR_NAME;
-    }
+    protected final void doProcess(
+            final ITemplateProcessingContext processingContext,
+            final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
+            final IElementStructureHandler structureHandler) {
 
-    
-    @Override
-    protected ModificationType getModificationType(
-            final Arguments arguments, final Element element, final String attributeName, final String newAttributeName) {
-        return ModificationType.SUBSTITUTION;
-    }
+        final String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? null : expressionResult.toString());
 
+        // Set the 'method' attribute, or remove it if evaluated to null
+        if (newAttributeValue == null || newAttributeValue.length() == 0) {
+            tag.getAttributes().removeAttribute(ATTR_NAME);
+        } else {
+            tag.getAttributes().setAttribute(ATTR_NAME, newAttributeValue);
+        }
 
+        tag.getAttributes().removeAttribute(attributeName); // We need to remove it here before being cloned
 
-    @Override
-    protected boolean removeAttributeIfEmpty(
-            final Arguments arguments, final Element element, final String attributeName, final String newAttributeName) {
-        return true;
-    }
+        // If this th:action is in a <form> tag, we might need to add a hidden field for non-supported HTTP methods
+        if ("form".equalsIgnoreCase(tag.getElementName())) {
 
+            final String methodValue = tag.getAttributes().getValue("method");
 
-    
+            if (!isMethodBrowserSupported(methodValue)) {
 
-
-    
-
-    @Override
-    protected void doAdditionalProcess(
-            final Arguments arguments, final Element element, final String attributeName) {
-        
-        if ("form".equals(element.getNormalizedName())) {
-
-            final String method = element.getAttributeValue("method");
-            
-            if (!isMethodBrowserSupported(method)) {
-                
                 // Browsers only support HTTP GET and POST. If a different method
                 // has been specified, then Spring MVC allows us to specify it
                 // using a hidden input with name '_method' and set 'post' for the
                 // <form> tag.
 
+                final Markup replacement = processingContext.getMarkupFactory().createMarkup();
+
+                replacement.add(tag); // First add the <input> tag itself (will be cloned)
+
                 final String type = "hidden";
                 final String name = "_method";
                 final String value =
-                        RequestDataValueProcessorUtils.processFormFieldValue(
-                                arguments.getConfiguration(), arguments, name, method, type);
+                        RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, methodValue, type);
 
-                final Element hiddenMethodElement = new Element("input");
-                hiddenMethodElement.setAttribute("type", type);
-                hiddenMethodElement.setAttribute("name", name);
-                hiddenMethodElement.setAttribute("value", value);
+                final IStandaloneElementTag hiddenMethodElementTag =
+                        processingContext.getMarkupFactory().createStandaloneElementTag("input", true);
+                hiddenMethodElementTag.getAttributes().setAttribute("type", type);
+                hiddenMethodElementTag.getAttributes().setAttribute("name", name);
+                hiddenMethodElementTag.getAttributes().setAttribute("value", value);
 
-                element.insertChild(0, hiddenMethodElement);
-                
-                element.setAttribute("method", "post");
-                
+                replacement.add(hiddenMethodElementTag);
+
+                structureHandler.replaceWith(replacement, true);
+
             }
-            
+
         }
-        
+
     }
 
 

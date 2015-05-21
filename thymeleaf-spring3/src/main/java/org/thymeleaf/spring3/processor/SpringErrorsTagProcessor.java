@@ -19,18 +19,16 @@
  */
 package org.thymeleaf.spring3.processor;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Element;
-import org.thymeleaf.dom.Macro;
-import org.thymeleaf.processor.ProcessorResult;
-import org.thymeleaf.processor.attr.AbstractAttrProcessor;
+import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.IElementStructureHandler;
+import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.spring3.util.FieldUtils;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.unbescape.html.HtmlEscape;
 
 /**
@@ -40,8 +38,7 @@ import org.unbescape.html.HtmlEscape;
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  */
-public final class SpringErrorsTagProcessor
-        extends AbstractAttrProcessor {
+public final class SpringErrorsTagProcessor extends AbstractAttributeTagProcessor {
 
     private static final String ERROR_DELIMITER = "<br />";
     
@@ -53,64 +50,45 @@ public final class SpringErrorsTagProcessor
     
     
     public SpringErrorsTagProcessor() {
-        super(ATTR_NAME);
+        super(TemplateMode.HTML, null, false, ATTR_NAME, true, ATTR_PRECEDENCE);
     }
 
 
-    @Override
-    public int getPrecedence() {
-        return ATTR_PRECEDENCE;
-    }
 
-    
 
     @Override
-    public ProcessorResult processAttribute(
-            final Arguments arguments, final Element element, final String attributeName) {
-        
-        final String attributeValue = element.getAttributeValue(attributeName);
-        
-        final BindStatus bindStatus = 
-            FieldUtils.getBindStatus(arguments.getConfiguration(), arguments, attributeValue);
-        
+    protected void doProcess(
+            final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue,
+            final IElementStructureHandler structureHandler) {
+
+        final BindStatus bindStatus = FieldUtils.getBindStatus(processingContext, attributeValue);
+
         if (bindStatus.isError()) {
-            
-            final Map<String,Object> localVariables = new HashMap<String,Object>(2, 1.0f);
-            localVariables.put(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS, bindStatus);
-            
+
             final StringBuilder strBuilder = new StringBuilder();
             final String[] errorMsgs = bindStatus.getErrorMessages();
-            
+
             for (int i = 0; i < errorMsgs.length; i++) {
                 if (i > 0) {
                     strBuilder.append(ERROR_DELIMITER);
                 }
-                final String displayString = 
-                        ValueFormatterWrapper.getDisplayString(errorMsgs[i], false);
+                final String displayString = ValueFormatterWrapper.getDisplayString(errorMsgs[i], false);
                 strBuilder.append(HtmlEscape.escapeHtml4Xml(displayString));
             }
-            
-            // Remove previous element children
-            element.clearChildren();
 
-            final Macro errorsNode = new Macro(strBuilder.toString());
-            errorsNode.setProcessable(false);
+            structureHandler.setBody(strBuilder.toString(), false);
 
-            element.addChild(errorsNode);
+            // Just in case we also have a th:errorclass in this tag
+            structureHandler.setLocalVariable(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS, bindStatus);
 
-            element.removeAttribute(attributeName);
-            
-            return ProcessorResult.setLocalVariables(localVariables);
+            tag.getAttributes().removeAttribute(attributeName);
 
         }
-        
-        element.getParent().removeChild(element);
-        
-        return ProcessorResult.OK;
-        
+
+        structureHandler.removeElement();
+
     }
 
-        
-    
 
 }

@@ -19,19 +19,17 @@
  */
 package org.thymeleaf.spring3.processor;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
-import org.thymeleaf.Arguments;
-import org.thymeleaf.Configuration;
-import org.thymeleaf.dom.Element;
+import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.IStandardExpression;
-import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.expression.VariableExpression;
-import org.thymeleaf.standard.processor.attr.AbstractStandardSelectionAttrProcessor;
+import org.thymeleaf.standard.processor.AbstractStandardTargetSelectionTagProcessor;
 
 
 /**
@@ -40,8 +38,7 @@ import org.thymeleaf.standard.processor.attr.AbstractStandardSelectionAttrProces
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  */
-public final class SpringObjectTagProcessor
-        extends AbstractStandardSelectionAttrProcessor {
+public final class SpringObjectTagProcessor extends AbstractStandardTargetSelectionTagProcessor {
 
     
     public static final int ATTR_PRECEDENCE = 500;
@@ -50,23 +47,20 @@ public final class SpringObjectTagProcessor
     
     
     public SpringObjectTagProcessor() {
-        super(ATTR_NAME);
+        super(ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 
     
 
-    @Override
-    public int getPrecedence() {
-        return ATTR_PRECEDENCE;
-    }
 
-    
     
 
     @Override
-    protected void validateSelectionValue(final Arguments arguments, final Element element,
-            final String attributeName, final String attributeValue, final IStandardExpression expression) {
+    protected void validateSelectionValue(final ITemplateProcessingContext processingContext,
+                                          final IProcessableElementTag tag,
+                                          final AttributeName attributeName, final String attributeValue,
+                                          final IStandardExpression expression) {
 
         if (expression == null || !(expression instanceof VariableExpression)) {
 
@@ -85,29 +79,14 @@ public final class SpringObjectTagProcessor
     
 
     @Override
-    protected Map<String, Object> getAdditionalLocalVariables(
-            final Arguments arguments, final Element element, final String attributeName) {
+    protected Map<String, Object> computeAdditionalLocalVariables(
+            final ITemplateProcessingContext processingContext,
+            final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue,
+            final IStandardExpression expression) {
 
-        final Map<String, Object> previousAdditionalLocalVariables =
-                super.getAdditionalLocalVariables(arguments, element, attributeName);
-
-        final Map<String,Object> additionalLocalVariables =
-                new HashMap<String, Object>(previousAdditionalLocalVariables.size() + 3);
-        additionalLocalVariables.putAll(previousAdditionalLocalVariables);
-
-        final String attributeValue = element.getAttributeValue(attributeName);
-
-        final Configuration configuration = arguments.getConfiguration();
-        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-
-        final VariableExpression varExpression =
-            (VariableExpression) expressionParser.parseExpression(arguments.getConfiguration(), arguments, attributeValue);
-
-        additionalLocalVariables.put(SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION, varExpression);
-        // Added also with the deprecated name, for backwards compatibility
-        additionalLocalVariables.put(SpringContextVariableNames.SPRING_FORM_COMMAND_VALUE, varExpression);
-
-        return additionalLocalVariables;
+        // We set the (parsed) expression itself as a local variable because we might use it at the expression evaluator
+        return Collections.singletonMap(SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION, (Object)expression);
         
     }
 

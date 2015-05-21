@@ -82,6 +82,8 @@ public final class SpringInputRadioFieldTagProcessor extends AbstractSpringField
             tag.getAttributes().removeAttribute("checked");
         }
 
+        tag.getAttributes().removeAttribute(attributeName);
+
     }
 
     

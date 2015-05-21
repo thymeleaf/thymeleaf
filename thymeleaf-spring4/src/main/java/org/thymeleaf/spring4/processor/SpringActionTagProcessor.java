@@ -21,10 +21,15 @@ package org.thymeleaf.spring4.processor;
 
 import java.util.Map;
 
-import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Element;
+import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.IElementStructureHandler;
+import org.thymeleaf.engine.Markup;
+import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
-import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModifierAttrProcessor;
+import org.thymeleaf.standard.processor.AbstractStandardExpressionAttributeTagProcessor;
+import org.unbescape.html.HtmlEscape;
 
 
 /**
@@ -34,8 +39,7 @@ import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModi
  * @since 3.0.0
  *
  */
-public final class SpringActionTagProcessor
-        extends AbstractStandardSingleAttributeModifierAttrProcessor {
+public final class SpringActionTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
 
 
     public static final int ATTR_PRECEDENCE = 1000;
@@ -44,76 +48,59 @@ public final class SpringActionTagProcessor
 
 
     public SpringActionTagProcessor() {
-        super(ATTR_NAME);
-    }
-
-    
-    
-    @Override
-    public int getPrecedence() {
-        return ATTR_PRECEDENCE;
+        super(ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 
 
     @Override
-    protected String getTargetAttributeName(
-            final Arguments arguments, final Element element, final String attributeName) {
-        return ATTR_NAME;
-    }
+    protected final void doProcess(
+            final ITemplateProcessingContext processingContext,
+            final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
+            final IElementStructureHandler structureHandler) {
 
+        String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? "" : expressionResult.toString());
 
+        // But before setting the 'action' attribute, we need to verify the 'method' attribute and let the
+        // RequestDataValueProcessor act on it.
+        final String httpMethod = tag.getAttributes().getValue("method");
 
-    @Override
-    protected String getTargetAttributeValue(
-            final Arguments arguments, final Element element, final String attributeName) {
-        final String attributeValue = super.getTargetAttributeValue(arguments, element, attributeName);
-        final String httpMethod = element.getAttributeValueFromNormalizedName("method");
-        return RequestDataValueProcessorUtils.processAction(
-                arguments.getConfiguration(), arguments, attributeValue, httpMethod);
-    }
+        // Let RequestDataValueProcessor modify the attribute value if needed
+        newAttributeValue = RequestDataValueProcessorUtils.processAction(processingContext, newAttributeValue, httpMethod);
 
+        // Set the 'action' attribute
+        tag.getAttributes().setAttribute(ATTR_NAME, newAttributeValue);
 
-    
-    @Override
-    protected ModificationType getModificationType(
-            final Arguments arguments, final Element element, final String attributeName, final String newAttributeName) {
-        return ModificationType.SUBSTITUTION;
-    }
+        // We need to remove it here in case it is cloned
+        tag.getAttributes().removeAttribute(attributeName);
 
-
-
-    @Override
-    protected boolean removeAttributeIfEmpty(
-            final Arguments arguments, final Element element, final String attributeName, final String newAttributeName) {
-        return false;
-    }
-
-
-
-
-
-    @Override
-    protected void doAdditionalProcess(
-            final Arguments arguments, final Element element, final String attributeName) {
-
-        if ("form".equals(element.getNormalizedName())) {
+        // If this th:action is in a <form> tag, we might need to add a hidden field (depending on Spring configuration)
+        if ("form".equalsIgnoreCase(tag.getElementName())) {
 
             final Map<String,String> extraHiddenFields =
-                    RequestDataValueProcessorUtils.getExtraHiddenFields(arguments.getConfiguration(), arguments);
+                    RequestDataValueProcessorUtils.getExtraHiddenFields(processingContext);
 
             if (extraHiddenFields != null && extraHiddenFields.size() > 0) {
 
+                final Markup replacement = processingContext.getMarkupFactory().createMarkup();
+
+                replacement.add(tag); // First add the <input> tag itself (cloned)
+
                 for (final Map.Entry<String,String> extraHiddenField : extraHiddenFields.entrySet()) {
 
-                    final Element extraHiddenElement = new Element("input");
-                    extraHiddenElement.setAttribute("type", "hidden");
-                    extraHiddenElement.setAttribute("name", extraHiddenField.getKey());
-                    extraHiddenElement.setAttribute("value", extraHiddenField.getValue()); // no need to re-apply the processor here
+                    final IStandaloneElementTag extraHiddenElementTag =
+                            processingContext.getMarkupFactory().createStandaloneElementTag("input", true);
 
-                    element.insertChild(element.numChildren(), extraHiddenElement);
+                    extraHiddenElementTag.getAttributes().setAttribute("type", "hidden");
+                    extraHiddenElementTag.getAttributes().setAttribute("name", extraHiddenField.getKey());
+                    extraHiddenElementTag.getAttributes().setAttribute("value", extraHiddenField.getValue()); // no need to re-apply the processor here
+
+                    replacement.add(extraHiddenElementTag);
 
                 }
+
+                structureHandler.replaceWith(replacement, true);
 
             }
 

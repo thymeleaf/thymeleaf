@@ -19,11 +19,13 @@
  */
 package org.thymeleaf.spring4.processor;
 
-import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Attribute;
-import org.thymeleaf.dom.Element;
+import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.IElementStructureHandler;
+import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
-import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModifierAttrProcessor;
+import org.thymeleaf.standard.processor.AbstractStandardExpressionAttributeTagProcessor;
+import org.unbescape.html.HtmlEscape;
 
 
 /**
@@ -33,8 +35,7 @@ import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModi
  * @since 3.0.0
  *
  */
-public final class SpringValueTagProcessor
-        extends AbstractStandardSingleAttributeModifierAttrProcessor {
+public final class SpringValueTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
 
 
     // This is 1010 in order to make sure it is executed after "name" and "type"
@@ -44,56 +45,38 @@ public final class SpringValueTagProcessor
 
 
     public SpringValueTagProcessor() {
-        super(ATTR_NAME);
-    }
-
-    
-    
-    @Override
-    public int getPrecedence() {
-        return ATTR_PRECEDENCE;
+        super(ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 
 
     @Override
-    protected String getTargetAttributeName(
-            final Arguments arguments, final Element element, final String attributeName) {
-        return ATTR_NAME;
-    }
+    protected final void doProcess(
+            final ITemplateProcessingContext processingContext,
+            final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
+            final IElementStructureHandler structureHandler) {
 
+        String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? "" : expressionResult.toString());
 
+        // Let RequestDataValueProcessor modify the attribute value if needed, but only in the case we don't also have
+        // a 'th:field' - in such case, we will let th:field do its job
+        if (!tag.getAttributes().hasAttribute(getDialectPrefix(), AbstractSpringFieldTagProcessor.ATTR_NAME)) {
 
-    @Override
-    protected String getTargetAttributeValue(
-            final Arguments arguments, final Element element, final String attributeName) {
+            // We will need to know the 'name' and 'type' attribute values in order to (potentially) modify the 'value'
+            final String nameValue = tag.getAttributes().getValue("name");
+            final String typeValue = tag.getAttributes().getValue("type");
 
-        final String attributeValue = super.getTargetAttributeValue(arguments, element, attributeName);
-        if (element.hasNormalizedAttribute(Attribute.getPrefixFromAttributeName(attributeName), AbstractSpringFieldTagProcessor.ATTR_NAME)) {
-            // There still is a th:field to be executed, so better not process the value ourselves (let's let th:field do it)
-            return attributeValue;
+            newAttributeValue =
+                    RequestDataValueProcessorUtils.processFormFieldValue(processingContext, nameValue, newAttributeValue, typeValue);
+
         }
 
-        final String name = element.getAttributeValueFromNormalizedName("name");
-        final String type = element.getAttributeValueFromNormalizedName("type");
-        return RequestDataValueProcessorUtils.processFormFieldValue(
-                arguments.getConfiguration(), arguments, name, attributeValue, type);
+        // Set the 'value' attribute
+        tag.getAttributes().setAttribute(ATTR_NAME, newAttributeValue);
 
-    }
+        tag.getAttributes().removeAttribute(attributeName);
 
-    
-    @Override
-    protected ModificationType getModificationType(
-            final Arguments arguments, final Element element, final String attributeName, final String newAttributeName) {
-        return ModificationType.SUBSTITUTION;
-    }
-
-
-
-    @Override
-    protected boolean removeAttributeIfEmpty(
-            final Arguments arguments, final Element element, final String attributeName, final String newAttributeName) {
-        return false;
     }
 
     

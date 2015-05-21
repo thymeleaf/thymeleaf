@@ -24,7 +24,6 @@ import java.util.Locale;
 
 import org.springframework.ui.context.Theme;
 import org.springframework.web.servlet.support.RequestContext;
-import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring4.naming.SpringContextVariableNames;

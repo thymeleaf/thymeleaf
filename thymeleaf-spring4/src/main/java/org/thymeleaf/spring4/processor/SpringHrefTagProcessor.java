@@ -19,10 +19,13 @@
  */
 package org.thymeleaf.spring4.processor;
 
-import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Element;
+import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.IElementStructureHandler;
+import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
-import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModifierAttrProcessor;
+import org.thymeleaf.standard.processor.AbstractStandardExpressionAttributeTagProcessor;
+import org.unbescape.html.HtmlEscape;
 
 
 /**
@@ -32,8 +35,7 @@ import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModi
  * @since 3.0.0
  *
  */
-public final class SpringHrefTagProcessor
-        extends AbstractStandardSingleAttributeModifierAttrProcessor {
+public final class SpringHrefTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
 
 
     public static final int ATTR_PRECEDENCE = 1000;
@@ -42,48 +44,28 @@ public final class SpringHrefTagProcessor
 
 
     public SpringHrefTagProcessor() {
-        super(ATTR_NAME);
-    }
-
-    
-    
-    @Override
-    public int getPrecedence() {
-        return ATTR_PRECEDENCE;
+        super(ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 
 
     @Override
-    protected String getTargetAttributeName(
-            final Arguments arguments, final Element element, final String attributeName) {
-        return ATTR_NAME;
-    }
+    protected final void doProcess(
+            final ITemplateProcessingContext processingContext,
+            final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
+            final IElementStructureHandler structureHandler) {
 
+        String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? "" : expressionResult.toString());
 
+        // Let RequestDataValueProcessor modify the attribute value if needed
+        newAttributeValue = RequestDataValueProcessorUtils.processUrl(processingContext, newAttributeValue);
 
-    @Override
-    protected String getTargetAttributeValue(
-            final Arguments arguments, final Element element, final String attributeName) {
-        final String attributeValue = super.getTargetAttributeValue(arguments, element, attributeName);
-        return RequestDataValueProcessorUtils.processUrl(arguments.getConfiguration(), arguments, attributeValue);
-    }
+        // Set the real, non prefixed attribute
+        tag.getAttributes().setAttribute(ATTR_NAME, newAttributeValue);
 
+        tag.getAttributes().removeAttribute(attributeName);
 
-
-    
-    @Override
-    protected ModificationType getModificationType(
-            final Arguments arguments, final Element element, final String attributeName, final String newAttributeName) {
-        return ModificationType.SUBSTITUTION;
-    }
-
-
-
-    @Override
-    protected boolean removeAttributeIfEmpty(
-            final Arguments arguments, final Element element, final String attributeName, final String newAttributeName) {
-        return false;
     }
 
     

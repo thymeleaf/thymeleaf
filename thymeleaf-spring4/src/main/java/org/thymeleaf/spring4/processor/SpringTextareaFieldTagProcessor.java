@@ -19,14 +19,12 @@
  */
 package org.thymeleaf.spring4.processor;
 
-import java.util.Map;
-
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Element;
-import org.thymeleaf.dom.Text;
-import org.thymeleaf.processor.ProcessorResult;
+import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.IElementStructureHandler;
+import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
 
 
@@ -37,49 +35,39 @@ import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
  * @since 3.0.0
  *
  */
-public final class SpringTextareaFieldTagProcessor
-        extends AbstractSpringFieldTagProcessor {
+public final class SpringTextareaFieldTagProcessor extends AbstractSpringFieldTagProcessor {
 
-    
 
-    
+
     public SpringTextareaFieldTagProcessor() {
-        super(ATTR_NAME,
-              TEXTAREA_TAG_NAME);
+        super(TEXTAREA_TAG_NAME, null, null);
     }
-
 
 
 
     @Override
-    protected ProcessorResult doProcess(final Arguments arguments, final Element element,
-            final String attributeName, final String attributeValue, final BindStatus bindStatus,
-            final Map<String, Object> localVariables) {
-        
+    protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+                             final AttributeName attributeName, final String attributeValue,
+                             final BindStatus bindStatus, final IElementStructureHandler structureHandler) {
+
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
-        
-        final String id = computeId(arguments, element, name, false);
-        
+
+        final String id = computeId(processingContext, tag, name, false);
+
         final String value = ValueFormatterWrapper.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), false);
 
         final String processedValue =
-                RequestDataValueProcessorUtils.processFormFieldValue(
-                        arguments.getConfiguration(), arguments, name, value, "textarea");
+                RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, value, "textarea");
 
-        element.setAttribute("id", id);
-        element.setAttribute("name", name);
-        
-        final Text text = new Text(processedValue == null? "" : processedValue);
+        tag.getAttributes().setAttribute("id", id);
+        tag.getAttributes().setAttribute("name", name);
 
-        element.clearChildren();
-        element.addChild(text);
-        element.removeAttribute(attributeName);
-        
-        return ProcessorResult.setLocalVariables(localVariables);         
-        
+        structureHandler.setBody((processedValue == null? "" : processedValue), false);
+
+        tag.getAttributes().removeAttribute(attributeName);
+
     }
 
-    
 
 }

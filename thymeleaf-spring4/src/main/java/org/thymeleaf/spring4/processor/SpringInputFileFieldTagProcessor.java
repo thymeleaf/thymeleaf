@@ -61,6 +61,8 @@ public final class SpringInputFileFieldTagProcessor extends AbstractSpringFieldT
         tag.getAttributes().setAttribute("id", id);
         tag.getAttributes().setAttribute("name", name);
 
+        tag.getAttributes().removeAttribute(attributeName);
+
     }
 
     

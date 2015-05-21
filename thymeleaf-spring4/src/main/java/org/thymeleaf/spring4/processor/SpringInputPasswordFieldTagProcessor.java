@@ -67,6 +67,8 @@ public final class SpringInputPasswordFieldTagProcessor extends AbstractSpringFi
         tag.getAttributes().setAttribute(
                 "value", RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, "", "password"));
 
+        tag.getAttributes().removeAttribute(attributeName);
+
     }
 
     

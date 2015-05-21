@@ -24,13 +24,11 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.processor.element.AbstractElementTagProcessor;
+import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.spring3.util.FieldUtils;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.unbescape.html.HtmlEscape;
 
 /**
  * Binds an input property with the value in the form's backing bean.
@@ -42,7 +40,7 @@ import org.unbescape.html.HtmlEscape;
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  */
-public abstract class AbstractSpringFieldTagProcessor extends AbstractElementTagProcessor {
+public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeTagProcessor {
 
     
     public static final int ATTR_PRECEDENCE = 1200;
@@ -91,8 +89,11 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractElementTag
 
 
     @Override
-    protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
-                             final IElementStructureHandler structureHandler) {
+    protected void doProcess(
+            final ITemplateProcessingContext processingContext,
+            final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue,
+            final IElementStructureHandler structureHandler) {
 
         /*
          * First thing to check is whether this processor really matches, because so far we have asked the engine only
@@ -102,44 +103,18 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractElementTag
          * and on <input type="checkbox" th:field="*{a}"/>
          */
         if (!matchesDiscriminator(tag)) {
+            // Note in this case we do not have to remove the th:field attribute because the correct processor is still
+            // to be executed!
             return;
         }
 
-        AttributeName attributeName = null;
-        try {
+        final BindStatus bindStatus = FieldUtils.getBindStatus(processingContext, attributeValue);
 
-            attributeName = getMatchingAttributeName().getMatchingAttributeName();
-            final String attributeValue = HtmlEscape.unescapeHtml(tag.getAttributes().getValue(attributeName));
+        // We set the BindStatus into a local variable just in case we have more BindStatus-related processors to
+        // be applied for the same tag, like for example a th:errorclass
+        structureHandler.setLocalVariable(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS, bindStatus);
 
-            final BindStatus bindStatus = FieldUtils.getBindStatus(processingContext, attributeValue);
-
-            doProcess(processingContext, tag, attributeName, attributeValue, bindStatus, structureHandler);
-
-            structureHandler.setLocalVariable(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS, bindStatus);
-
-            tag.getAttributes().removeAttribute(attributeName);
-
-        } catch (final TemplateProcessingException e) {
-            // This is a nice moment to check whether the execution raised an error and, if so, add location information
-            if (!e.hasTemplateName()) {
-                e.setTemplateName(tag.getTemplateName());
-            }
-            if (!e.hasLineAndCol()) {
-                if (attributeName != null) {
-                    final int line = tag.getAttributes().getLine(attributeName);
-                    final int col = tag.getAttributes().getCol(attributeName);
-                    e.setLineAndCol(line, col);
-                } else {
-                    // We don't have info about the specific attribute provoking the error
-                    e.setLineAndCol(tag.getLine(), tag.getCol());
-                }
-            }
-            throw e;
-        } catch (final Exception e) {
-            throw new TemplateProcessingException(
-                    "Error during execution of processor '" + this.getClass().getName() + "'",
-                    tag.getTemplateName(), tag.getLine(), tag.getCol(), e);
-        }
+        doProcess(processingContext, tag, attributeName, attributeValue, bindStatus, structureHandler);
 
     }
 
@@ -158,8 +133,8 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractElementTag
     
     
     
-    // This method is designed to be overridable
-    protected String computeId(
+    // This method is designed to be called from the diverse subclasses
+    protected final String computeId(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final String name, final boolean sequence) {

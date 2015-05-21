@@ -114,6 +114,8 @@ public final class SpringInputGeneralFieldTagProcessor
         tag.getAttributes().setAttribute(
                 "value", RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, value, type));
 
+        tag.getAttributes().removeAttribute(attributeName);
+
     }
 
 

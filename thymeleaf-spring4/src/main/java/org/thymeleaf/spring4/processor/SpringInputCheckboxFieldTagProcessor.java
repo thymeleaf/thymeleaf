@@ -94,12 +94,6 @@ public final class SpringInputCheckboxFieldTagProcessor
 
         }
 
-
-        final Markup replacement = processingContext.getMarkupFactory().createMarkup();
-
-
-        tag.getAttributes().removeAttribute(attributeName);
-
         tag.getAttributes().setAttribute("id", id);
         tag.getAttributes().setAttribute("name", name);
         tag.getAttributes().setAttribute(
@@ -110,10 +104,21 @@ public final class SpringInputCheckboxFieldTagProcessor
             tag.getAttributes().removeAttribute("checked");
         }
 
-        replacement.add(tag);
+        tag.getAttributes().removeAttribute(attributeName); // We need to remove it here before being cloned
 
 
         if (!isDisabled(tag)) {
+
+            /*
+             * Non-disabled checkboxes need an additional <input type="hidden"> in order to note their presence in
+             * the HTML document. Given unchecked checkboxes are not sent by browsers as a result of form submission,
+             * this is the only way to differentiate between a checkbox that is unchecked and a checkbox that was
+             * never displayed or is disabled.
+             */
+
+            final Markup replacement = processingContext.getMarkupFactory().createMarkup();
+
+            replacement.add(tag); // We add first the tag we were already processing (will be cloned)
 
             final ITextRepository textRepository = processingContext.getConfiguration().getTextRepository();
 
@@ -129,10 +134,10 @@ public final class SpringInputCheckboxFieldTagProcessor
 
             replacement.add(hiddenTag);
 
+            structureHandler.replaceWith(replacement, true);
+
         }
 
-
-        structureHandler.replaceWith(replacement, true);
 
     }
 

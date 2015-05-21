@@ -19,14 +19,13 @@
  */
 package org.thymeleaf.spring4.processor;
 
-import java.util.Map;
-
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Element;
+import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.processor.ProcessorResult;
+import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
 
 
@@ -37,55 +36,46 @@ import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
  * @since 3.0.0
  *
  */
-public final class SpringOptionFieldTagProcessor
-        extends AbstractSpringFieldTagProcessor {
+public final class SpringOptionFieldTagProcessor extends AbstractSpringFieldTagProcessor {
 
-    
 
-    
+
+
     public SpringOptionFieldTagProcessor() {
-        super(ATTR_NAME,
-              OPTION_TAG_NAME);
+        super(OPTION_TAG_NAME, null, null);
     }
-
 
 
 
     @Override
-    protected ProcessorResult doProcess(final Arguments arguments, final Element element,
-            final String attributeName, final String attributeValue, final BindStatus bindStatus,
-            final Map<String, Object> localVariables) {
+    protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+                             final AttributeName attributeName, final String attributeValue,
+                             final BindStatus bindStatus, final IElementStructureHandler structureHandler) {
 
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
 
-        final String value = element.getAttributeValue("value");
+        final String value = tag.getAttributes().getValue("value");
         if (value == null) {
             throw new TemplateProcessingException(
                     "Attribute \"value\" is required in \"option\" tags");
         }
-        
-        final boolean selected = 
-            SelectedValueComparatorWrapper.isSelected(bindStatus, value);
 
-        element.setAttribute("value", value);
-        element.setAttribute(
-                "value",
-                RequestDataValueProcessorUtils.processFormFieldValue(
-                        arguments.getConfiguration(), arguments, name, value, "option"));
+        final boolean selected =  SelectedValueComparatorWrapper.isSelected(bindStatus, value);
+
+        tag.getAttributes().setAttribute("value", value);
+        tag.getAttributes().setAttribute(
+                "value", RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, value, "option"));
 
         if (selected) {
-            element.setAttribute("selected", "selected");
+            tag.getAttributes().setAttribute("selected", "selected");
         } else {
-            element.removeAttribute("selected");
+            tag.getAttributes().removeAttribute("selected");
         }
-        element.removeAttribute(attributeName);
-        
-        
-        return ProcessorResult.setLocalVariables(localVariables);
-        
+
+        tag.getAttributes().removeAttribute(attributeName);
+
     }
 
-    
 
 }
