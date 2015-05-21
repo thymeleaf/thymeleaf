@@ -64,7 +64,7 @@ public abstract class AbstractStandardTargetSelectionTagProcessor extends Abstra
         final Object newSelectionTarget = expression.execute(processingContext);
 
         final Map<String,Object> additionalLocalVariables =
-                computeAdditionalLocalVariables(processingContext, tag, attributeName, attributeValue);
+                computeAdditionalLocalVariables(processingContext, tag, attributeName, attributeValue, expression);
         if (additionalLocalVariables != null && additionalLocalVariables.size() > 0) {
             for (final Map.Entry<String,Object> variableEntry : additionalLocalVariables.entrySet()) {
                 structureHandler.setLocalVariable(variableEntry.getKey(), variableEntry.getValue());
@@ -93,7 +93,8 @@ public abstract class AbstractStandardTargetSelectionTagProcessor extends Abstra
     protected Map<String,Object> computeAdditionalLocalVariables(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue) {
+            final AttributeName attributeName, final String attributeValue,
+            final IStandardExpression expression) {
         // This method is meant to be overriden. By default, no local variables
         // will be set.
         return null;
