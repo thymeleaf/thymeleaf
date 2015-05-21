@@ -20,7 +20,6 @@
 package org.thymeleaf.spring4.expression;
 
 import org.thymeleaf.exceptions.ConfigurationException;
-import org.thymeleaf.spring4.dialect.SpringStandardDialect;
 import org.thymeleaf.spring4.util.SpringVersionUtils;
 import org.thymeleaf.util.ClassLoaderUtils;
 
@@ -53,7 +52,7 @@ public class Mvc {
         } catch (final Exception e) {
             throw new ConfigurationException(
                     "Thymeleaf could not initialize a delegate of class \"" + delegateClassName + "\" for taking " +
-                    "care of the " + SpringStandardDialect.MVC_EXPRESSION_OBJECT_NAME + " expression utility object", e);
+                    "care of the " + SpringStandardExpressionObjects.MVC_EXPRESSION_OBJECT_NAME + " expression utility object", e);
         }
 
     }

@@ -44,9 +44,6 @@ public class SpringStandardDialect extends StandardDialect {
 
 
 
-    public static final String MVC_EXPRESSION_OBJECT_NAME = "mvc";
-
-
     private final IExpressionObjectsFactory SPRING_STANDARD_EXPRESSION_OBJECTS_FACTORY = new SpringStandardExpressionObjectsFactory();
     private final IStandardConversionService SPRING_STANDARD_CONVERSION_SERVICE = new SpringStandardConversionService();
     

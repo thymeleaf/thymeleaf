@@ -34,7 +34,7 @@ import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
  *
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
 public class SpringStandardDialect extends StandardDialect {
@@ -44,15 +44,12 @@ public class SpringStandardDialect extends StandardDialect {
 
 
 
-    public static final String MVC_EXPRESSION_OBJECT_NAME = "mvc";
-
-
     private final IExpressionObjectsFactory SPRING_STANDARD_EXPRESSION_OBJECTS_FACTORY = new SpringStandardExpressionObjectsFactory();
     private final IStandardConversionService SPRING_STANDARD_CONVERSION_SERVICE = new SpringStandardConversionService();
-
-
-
-
+    
+    
+    
+    
     public SpringStandardDialect() {
         super(NAME, PREFIX, createSpringStandardProcessorsSet());
     }
@@ -85,7 +82,7 @@ public class SpringStandardDialect extends StandardDialect {
      * <p>
      *   Create a the set of SpringStandard processors, all of them freshly instanced.
      * </p>
-     *
+     * 
      * @return the set of SpringStandard processors.
      */
     public static Set<IProcessor> createSpringStandardProcessorsSet() {
@@ -95,7 +92,7 @@ public class SpringStandardDialect extends StandardDialect {
          * not be returning the exact same instances for their processors in order
          * to allow specific instances to be directly linked with their owner dialect.
          */
-
+        
         final Set<IProcessor> standardProcessors = StandardDialect.createStandardProcessorsSet();
 return standardProcessors;
 //        final Set<IProcessor> processors = new LinkedHashSet<IProcessor>(40);
@@ -131,7 +128,7 @@ return standardProcessors;
 //        processors.add(new SpringErrorClassAttrProcessor());
 //
 //        return processors;
-
+        
     }
 
 
