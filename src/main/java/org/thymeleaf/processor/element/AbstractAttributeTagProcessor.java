@@ -17,14 +17,14 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.standard.processor;
+package org.thymeleaf.processor.element;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.unbescape.html.HtmlEscape;
 
 /**
@@ -34,16 +34,20 @@ import org.unbescape.html.HtmlEscape;
  * @since 3.0.0
  *
  */
-public abstract class AbstractStandardAttributeTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
+public abstract class AbstractAttributeTagProcessor extends AbstractElementTagProcessor {
 
 
-
-    protected AbstractStandardAttributeTagProcessor(final String attrName, final int precedence) {
-        super(attrName, precedence);
+    protected AbstractAttributeTagProcessor(
+            final TemplateMode templateMode,
+            final String elementName, final boolean prefixElementName,
+            final String attributeName, final boolean prefixAttributeName,
+            final int precedence) {
+        super(templateMode, elementName, prefixElementName, attributeName, prefixAttributeName, precedence);
     }
 
 
 
+    @Override
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
@@ -56,8 +60,6 @@ public abstract class AbstractStandardAttributeTagProcessor extends AbstractAttr
             final String attributeValue = HtmlEscape.unescapeHtml(tag.getAttributes().getValue(attributeName));
 
             doProcess(processingContext, tag, attributeName, attributeValue, structureHandler);
-
-            tag.getAttributes().removeAttribute(attributeName);
 
         } catch (final TemplateProcessingException e) {
             // This is a nice moment to check whether the execution raised an error and, if so, add location information
@@ -90,6 +92,7 @@ public abstract class AbstractStandardAttributeTagProcessor extends AbstractAttr
             final AttributeName attributeName,
             final String attributeValue,
             final IElementStructureHandler structureHandler);
+
 
 
 }

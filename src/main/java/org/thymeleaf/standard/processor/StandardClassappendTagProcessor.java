@@ -19,14 +19,10 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.standard.expression.IStandardExpression;
-import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressions;
 import org.unbescape.html.HtmlEscape;
 
 /**
@@ -36,7 +32,7 @@ import org.unbescape.html.HtmlEscape;
  * @since 3.0.0
  *
  */
-public final class StandardClassappendTagProcessor extends AbstractStandardAttributeTagProcessor {
+public final class StandardClassappendTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
 
     public static final int PRECEDENCE = 1100;
     public static final String ATTR_NAME = "classappend";
@@ -50,20 +46,14 @@ public final class StandardClassappendTagProcessor extends AbstractStandardAttri
 
 
 
+    @Override
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue,
+            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
             final IElementStructureHandler structureHandler) {
 
-        final IEngineConfiguration configuration = processingContext.getConfiguration();
-        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-
-        final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
-
-        final Object result = expression.execute(processingContext);
-
-        final String newAttributeValue = HtmlEscape.escapeHtml4Xml(result == null ? null : result.toString());
+        final String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? null : expressionResult.toString());
 
         // If we are not adding anything, we'll just leave it untouched
         if (newAttributeValue != null && newAttributeValue.length() > 0) {
@@ -78,6 +68,8 @@ public final class StandardClassappendTagProcessor extends AbstractStandardAttri
             }
 
         }
+
+        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

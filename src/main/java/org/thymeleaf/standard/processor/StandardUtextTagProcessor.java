@@ -19,16 +19,11 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.engine.ParsedFragmentMarkup;
 import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.standard.expression.IStandardExpression;
-import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
-import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
  *
@@ -37,7 +32,7 @@ import org.thymeleaf.standard.expression.StandardExpressions;
  * @since 3.0.0
  *
  */
-public final class StandardUtextTagProcessor extends AbstractStandardAttributeTagProcessor {
+public final class StandardUtextTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
 
     public static final int PRECEDENCE = 1400;
     public static final String ATTR_NAME = "utext";
@@ -48,20 +43,14 @@ public final class StandardUtextTagProcessor extends AbstractStandardAttributeTa
 
 
 
+    @Override
     protected void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue,
+            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
             final IElementStructureHandler structureHandler) {
 
-        final IEngineConfiguration configuration = processingContext.getConfiguration();
-        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-
-        final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
-
-        final Object result = expression.execute(processingContext, StandardExpressionExecutionContext.UNESCAPED_EXPRESSION);
-
-        final String unescapedText = (result == null ? "" : result.toString());
+        final String unescapedText = (expressionResult == null ? "" : expressionResult.toString());
 
         /*
          * We will check if there are configured post processors or not. The reason we do this is because output
@@ -74,8 +63,9 @@ public final class StandardUtextTagProcessor extends AbstractStandardAttributeTa
          * we check if there actually are any post-processors and, if not (most common case), simply output the
          * expression result as if it were a mere (unescaped) text node.
          */
-        if (!configuration.hasPostProcessors()) {
+        if (!processingContext.getConfiguration().hasPostProcessors()) {
             structureHandler.setBody(unescapedText, false);
+            tag.getAttributes().removeAttribute(attributeName);
             return;
         }
 
@@ -88,6 +78,7 @@ public final class StandardUtextTagProcessor extends AbstractStandardAttributeTa
         if (!mightContainStructures(unescapedText)) {
             // If this text contains no markup structures, there would be no need to parse it or treat it as markup!
             structureHandler.setBody(unescapedText, false);
+            tag.getAttributes().removeAttribute(attributeName);
             return;
         }
 
@@ -99,6 +90,8 @@ public final class StandardUtextTagProcessor extends AbstractStandardAttributeTa
         // Setting 'processable' to false avoiding text inliners processing already generated text,
         // which in turn avoids code injection.
         structureHandler.setBody(parsedFragment, false);
+
+        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

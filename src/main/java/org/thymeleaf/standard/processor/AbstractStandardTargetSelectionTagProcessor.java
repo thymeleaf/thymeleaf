@@ -25,9 +25,11 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  *
@@ -36,15 +38,16 @@ import org.thymeleaf.standard.expression.StandardExpressions;
  * @since 3.0.0
  *
  */
-public abstract class AbstractStandardTargetSelectionTagProcessor extends AbstractStandardAttributeTagProcessor {
+public abstract class AbstractStandardTargetSelectionTagProcessor extends AbstractAttributeTagProcessor {
 
 
     protected AbstractStandardTargetSelectionTagProcessor(final String attrName, final int precedence) {
-        super(attrName, precedence);
+        super(TemplateMode.HTML, null, false, attrName, true, precedence);
     }
 
 
 
+    @Override
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
@@ -69,6 +72,8 @@ public abstract class AbstractStandardTargetSelectionTagProcessor extends Abstra
         }
 
         structureHandler.setSelectionTarget(newSelectionTarget);
+
+        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

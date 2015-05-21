@@ -19,14 +19,10 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.standard.expression.IStandardExpression;
-import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressions;
 import org.unbescape.html.HtmlEscape;
 
 /**
@@ -36,7 +32,7 @@ import org.unbescape.html.HtmlEscape;
  * @since 3.0.0
  *
  */
-public abstract class AbstractStandardAttributeModifierTagProcessor extends AbstractStandardAttributeTagProcessor {
+public abstract class AbstractStandardAttributeModifierTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
 
 
     private final boolean removeIfEmpty;
@@ -57,22 +53,16 @@ public abstract class AbstractStandardAttributeModifierTagProcessor extends Abst
 
 
 
+    @Override
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue,
+            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
             final IElementStructureHandler structureHandler) {
-
-        final IEngineConfiguration configuration = processingContext.getConfiguration();
-        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-
-        final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
-
-        final Object result = expression.execute(processingContext);
 
         final String newAttributeName =
                 (this.targetAttrName == null? attributeName.getAttributeName() : this.targetAttrName);
-        final String newAttributeValue = HtmlEscape.escapeHtml4Xml(result == null ? null : result.toString());
+        final String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? null : expressionResult.toString());
 
         // These attributes might be "removable if empty", in which case we would simply remove the target attribute...
         if (this.removeIfEmpty && (newAttributeValue == null || newAttributeValue.length() == 0)) {
@@ -82,6 +72,8 @@ public abstract class AbstractStandardAttributeModifierTagProcessor extends Abst
             // We are setting the equivalent attribute name, without the prefix...
             tag.getAttributes().setAttribute(newAttributeName, newAttributeValue);
         }
+
+        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

@@ -26,9 +26,11 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateAssertionException;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.standard.expression.ExpressionSequence;
 import org.thymeleaf.standard.expression.ExpressionSequenceUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EvaluationUtil;
 import org.thymeleaf.util.StringUtils;
 
@@ -39,16 +41,17 @@ import org.thymeleaf.util.StringUtils;
  * @since 3.0.0
  *
  */
-public abstract class AbstractStandardAssertionTagProcessor extends AbstractStandardAttributeTagProcessor {
+public abstract class AbstractStandardAssertionTagProcessor extends AbstractAttributeTagProcessor {
 
 
 
     protected AbstractStandardAssertionTagProcessor(final String attrName, final int precedence) {
-        super(attrName, precedence);
+        super(TemplateMode.HTML, null, false, attrName, true, precedence);
     }
 
 
 
+    @Override
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
@@ -75,6 +78,7 @@ public abstract class AbstractStandardAssertionTagProcessor extends AbstractStan
             }
         }
 
+        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

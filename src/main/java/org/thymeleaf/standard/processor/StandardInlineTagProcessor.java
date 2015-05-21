@@ -54,24 +54,26 @@ public final class StandardInlineTagProcessor extends AbstractStandardTextInline
     @Override
     protected ITextInliner getTextInliner(
             final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue) {
+            final AttributeName attributeName, final String attributeValue, final Object expressionResult) {
 
         // TODO Implement the different inliners and link them here!
 
-        if (attributeValue != null) {
-            if (JAVASCRIPT_INLINE.equals(attributeValue.toLowerCase())) {
+        final String inliner = (expressionResult == null? null : expressionResult.toString().toLowerCase());
+
+        if (inliner != null) {
+            if (JAVASCRIPT_INLINE.equals(inliner)) {
                 throw new UnsupportedOperationException("JAVASCRIPT INLINING IS NOT IMPLEMENTED YET!");
-            } else if (DART_INLINE.equals(attributeValue.toLowerCase())) {
+            } else if (DART_INLINE.equals(inliner)) {
                 throw new UnsupportedOperationException("DART INLINING IS NOT IMPLEMENTED YET!");
-            } else if (TEXT_INLINE.equals(attributeValue.toLowerCase())) {
+            } else if (TEXT_INLINE.equals(inliner)) {
                 throw new UnsupportedOperationException("TEXT INLINING IS NOT IMPLEMENTED YET!");
             }
         }
 
         throw new TemplateProcessingException(
                 "Cannot recognize value for \"" + attributeName + "\". Allowed values are " +
-                        "\"" + TEXT_INLINE + "\", \"" + JAVASCRIPT_INLINE + "\", " +
-                        "\"" + DART_INLINE + "\" and \"" + NONE_INLINE + "\"");
+                "\"" + TEXT_INLINE + "\", \"" + JAVASCRIPT_INLINE + "\", " +
+                "\"" + DART_INLINE + "\" and \"" + NONE_INLINE + "\"");
 
     }
 

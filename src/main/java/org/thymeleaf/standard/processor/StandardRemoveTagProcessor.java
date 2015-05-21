@@ -24,9 +24,6 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.standard.expression.IStandardExpression;
-import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
  *
@@ -35,7 +32,7 @@ import org.thymeleaf.standard.expression.StandardExpressions;
  * @since 3.0.0
  *
  */
-public final class StandardRemoveTagProcessor extends AbstractStandardAttributeTagProcessor {
+public final class StandardRemoveTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
 
     public static final int PRECEDENCE = 1600;
     public static final String ATTR_NAME = "remove";
@@ -53,22 +50,16 @@ public final class StandardRemoveTagProcessor extends AbstractStandardAttributeT
 
 
 
+    @Override
     protected void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue,
+            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
             final IElementStructureHandler structureHandler) {
 
-        final IStandardExpressionParser expressionParser =
-                StandardExpressions.getExpressionParser(processingContext.getConfiguration());
+        if (expressionResult != null) {
 
-        final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
-
-        final Object result = expression.execute(processingContext);
-
-        if (result != null) {
-
-            final String resultStr = result.toString();
+            final String resultStr = expressionResult.toString();
 
             if (VALUE_ALL.equalsIgnoreCase(resultStr)) {
                 structureHandler.removeElement();
@@ -85,6 +76,8 @@ public final class StandardRemoveTagProcessor extends AbstractStandardAttributeT
             }
 
         }
+
+        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

@@ -32,11 +32,13 @@ import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.standard.expression.FragmentSelectionUtils;
 import org.thymeleaf.standard.expression.FragmentSignature;
 import org.thymeleaf.standard.expression.FragmentSignatureUtils;
 import org.thymeleaf.standard.expression.ParsedFragmentSelection;
 import org.thymeleaf.standard.expression.ProcessedFragmentSelection;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.StringUtils;
 import org.unbescape.html.HtmlEscape;
 
@@ -47,7 +49,7 @@ import org.unbescape.html.HtmlEscape;
  * @since 3.0.0
  *
  */
-public abstract class AbstractStandardFragmentInsertionTagProcessor extends AbstractStandardAttributeTagProcessor {
+public abstract class AbstractStandardFragmentInsertionTagProcessor extends AbstractAttributeTagProcessor {
 
 
     private static final String FRAGMENT_ATTR_NAME = "fragment";
@@ -60,13 +62,14 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
     protected AbstractStandardFragmentInsertionTagProcessor(
             final String attrName, final int precedence, final boolean replaceHost, final boolean insertOnlyContents) {
-        super(attrName, precedence);
+        super(TemplateMode.HTML, null, false, attrName, true, precedence);
         this.replaceHost = replaceHost;
         this.insertOnlyContents = insertOnlyContents;
     }
 
 
 
+    @Override
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
@@ -181,6 +184,8 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         } else {
             structureHandler.setBody(parsedFragment, true);
         }
+
+        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

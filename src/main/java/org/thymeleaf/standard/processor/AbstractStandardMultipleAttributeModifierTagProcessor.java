@@ -26,10 +26,12 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.AssignationUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.ArrayUtils;
 import org.thymeleaf.util.EvaluationUtil;
 import org.thymeleaf.util.StringUtils;
@@ -42,7 +44,7 @@ import org.unbescape.html.HtmlEscape;
  * @since 3.0.0
  *
  */
-public abstract class AbstractStandardMultipleAttributeModifierTagProcessor extends AbstractStandardAttributeTagProcessor {
+public abstract class AbstractStandardMultipleAttributeModifierTagProcessor extends AbstractAttributeTagProcessor {
 
 
     protected enum ModificationType { SUBSTITUTION, APPEND, PREPEND, APPEND_WITH_SPACE, PREPEND_WITH_SPACE }
@@ -53,13 +55,14 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
 
     protected AbstractStandardMultipleAttributeModifierTagProcessor(
             final String attrName, final int precedence, final ModificationType modificationType) {
-        super(attrName, precedence);
+        super(TemplateMode.HTML, null, false, attrName, true, precedence);
         this.modificationType = modificationType;
     }
 
 
 
 
+    @Override
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
@@ -142,6 +145,8 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
             }
 
         }
+
+        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

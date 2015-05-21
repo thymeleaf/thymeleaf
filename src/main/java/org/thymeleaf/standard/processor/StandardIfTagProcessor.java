@@ -45,6 +45,7 @@ public final class StandardIfTagProcessor extends AbstractStandardConditionalVis
 
 
 
+    @Override
     protected boolean isVisible(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,

@@ -28,10 +28,12 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.AssignationUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.StringUtils;
 
 /**
@@ -41,17 +43,18 @@ import org.thymeleaf.util.StringUtils;
  * @since 3.0.0
  *
  */
-public final class StandardWithTagProcessor extends AbstractStandardAttributeTagProcessor {
+public final class StandardWithTagProcessor extends AbstractAttributeTagProcessor {
 
     public static final int PRECEDENCE = 600;
     public static final String ATTR_NAME = "with";
 
     public StandardWithTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE);
+        super(TemplateMode.HTML, null, false, ATTR_NAME, true, PRECEDENCE);
     }
 
 
 
+    @Override
     protected void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
@@ -104,6 +107,8 @@ public final class StandardWithTagProcessor extends AbstractStandardAttributeTag
             }
 
         }
+
+        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

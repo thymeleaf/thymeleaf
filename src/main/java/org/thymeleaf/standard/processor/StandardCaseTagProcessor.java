@@ -63,6 +63,13 @@ public final class StandardCaseTagProcessor extends AbstractStandardConditionalV
             final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue) {
 
+        /*
+         * Note the th:case processors must admit the concept of SHORTCUT inside the enclosing th:switch, which means
+         * that once one th:case has evaluated to true, no other th:case should be evaluated at all. It is because
+         * of this that this class should not extend from any other that evaluates the attributeValue before calling
+         * this code.
+         */
+
         final IVariablesMap variablesMap = processingContext.getVariablesMap();
 
         final StandardSwitchTagProcessor.SwitchStructure switchStructure =

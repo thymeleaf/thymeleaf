@@ -32,7 +32,7 @@ import org.thymeleaf.model.IProcessableElementTag;
  * @since 3.0.0
  *
  */
-public abstract class AbstractStandardTextInlineSettingTagProcessor extends AbstractStandardAttributeTagProcessor {
+public abstract class AbstractStandardTextInlineSettingTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
 
 
     public static final String TEXT_INLINE = "text";
@@ -48,14 +48,17 @@ public abstract class AbstractStandardTextInlineSettingTagProcessor extends Abst
 
 
 
+    @Override
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue,
+            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
             final IElementStructureHandler structureHandler) {
 
-        final ITextInliner inliner = getTextInliner(processingContext, tag, attributeName, attributeValue);
+        final ITextInliner inliner = getTextInliner(processingContext, tag, attributeName, attributeValue, expressionResult);
         structureHandler.setTextInliner(inliner);
+
+        tag.getAttributes().removeAttribute(attributeName);
 
     }
 
@@ -66,7 +69,7 @@ public abstract class AbstractStandardTextInlineSettingTagProcessor extends Abst
     protected abstract ITextInliner getTextInliner(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue);
+            final AttributeName attributeName, final String attributeValue, final Object expressionResult);
 
 
 

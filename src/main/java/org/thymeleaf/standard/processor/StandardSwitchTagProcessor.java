@@ -23,9 +23,11 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  *
@@ -34,16 +36,16 @@ import org.thymeleaf.standard.expression.StandardExpressions;
  * @since 3.0.0
  *
  */
-public final class StandardSwitchTagProcessor extends AbstractStandardAttributeTagProcessor {
+public final class StandardSwitchTagProcessor extends AbstractAttributeTagProcessor {
 
     public static final int PRECEDENCE = 250;
     public static final String ATTR_NAME = "switch";
 
-    public static final String SWITCH_VARIABLE_NAME = "[%SWITCH_EXPR%]";
+    public static final String SWITCH_VARIABLE_NAME = "%%SWITCH_EXPR%%";
 
 
     public StandardSwitchTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE);
+        super(TemplateMode.HTML, null, false, ATTR_NAME, true, PRECEDENCE);
     }
 
 
@@ -59,6 +61,8 @@ public final class StandardSwitchTagProcessor extends AbstractStandardAttributeT
         final IStandardExpression switchExpression = expressionParser.parseExpression(processingContext, attributeValue);
 
         structureHandler.setLocalVariable(SWITCH_VARIABLE_NAME, new SwitchStructure(switchExpression));
+
+        tag.getAttributes().removeAttribute(attributeName);
 
     }
 
