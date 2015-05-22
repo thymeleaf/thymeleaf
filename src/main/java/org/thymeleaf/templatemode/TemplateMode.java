@@ -33,7 +33,60 @@ import org.thymeleaf.TemplateEngine;
 public enum TemplateMode {
 
 
-    HTML(true, false, false), XML(false, true, false), TEXT(false, false, true);
+    HTML(true, false, false), XML(false, true, false), TEXT(false, false, true),
+
+
+    /**
+     * Provided only for legacy compatibility reasons for old XML-based configurations (e.g. Spring).
+     * <strong>Never</strong> use this value directly. Only to be used internally at
+     * {@link org.thymeleaf.templateresolver.TemplateResolver} implementations.
+     *
+     * @deprecated Deprecated in 3.0.0. Use {@link #HTML} instead. Will be REMOVED in 3.1
+     */
+    @Deprecated
+    HTML5(true, false, false),
+
+    /**
+     * Provided only for legacy compatibility reasons for old XML-based configurations (e.g. Spring).
+     * <strong>Never</strong> use this value directly. Only to be used internally at
+     * {@link org.thymeleaf.templateresolver.TemplateResolver} implementations.
+     *
+     * @deprecated Deprecated in 3.0.0. Use {@link #HTML} instead. Will be REMOVED in 3.1
+     */
+    @Deprecated
+    LEGACYHTML5(true, false, false),
+
+    /**
+     * Provided only for legacy compatibility reasons for old XML-based configurations (e.g. Spring).
+     * <strong>Never</strong> use this value directly. Only to be used internally at
+     * {@link org.thymeleaf.templateresolver.TemplateResolver} implementations.
+     *
+     * @deprecated Deprecated in 3.0.0. Use {@link #HTML} instead. Will be REMOVED in 3.1
+     */
+    @Deprecated
+    XHTML(true, false, false),
+
+    /**
+     * Provided only for legacy compatibility reasons for old XML-based configurations (e.g. Spring).
+     * <strong>Never</strong> use this value directly. Only to be used internally at
+     * {@link org.thymeleaf.templateresolver.TemplateResolver} implementations.
+     *
+     * @deprecated Deprecated in 3.0.0. Use {@link #HTML} instead. Will be REMOVED in 3.1
+     */
+    @Deprecated
+    VALIDXHTML(true, false, false),
+
+    /**
+     * Provided only for legacy compatibility reasons for old XML-based configurations (e.g. Spring).
+     * <strong>Never</strong> use this value directly. Only to be used internally at
+     * {@link org.thymeleaf.templateresolver.TemplateResolver} implementations.
+     *
+     * @deprecated Deprecated in 3.0.0. Use {@link #XML} instead. Will be REMOVED in 3.1
+     */
+    @Deprecated
+    VALIDXML(false, true, false);
+
+
 
 
 
@@ -92,7 +145,8 @@ public enum TemplateMode {
             return XML;
         }
         logger.warn(
-                "[THYMELEAF][{}] Unknown Template Mode '{}'. Using default Template Mode '{}'.",
+                "[THYMELEAF][{}] Unknown Template Mode '{}'. Must be one of: 'HTML', 'XML', 'TEXT'. " +
+                "Using default Template Mode '{}'.",
                 new Object[]{TemplateEngine.threadIndex(), mode, HTML});
         return HTML;
     }

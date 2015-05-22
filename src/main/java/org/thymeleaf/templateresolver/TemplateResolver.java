@@ -223,7 +223,8 @@ public class TemplateResolver
      */
     public void setTemplateMode(final TemplateMode templateMode) {
         Validate.notNull(templateMode, "Cannot set a null template mode value");
-        this.templateMode = templateMode;
+        // We re-parse the specified template mode so that we make sure we get rid of deprecated values
+        this.templateMode = TemplateMode.parse(templateMode.toString());
     }
 
 
@@ -243,6 +244,9 @@ public class TemplateResolver
      * @param templateMode the template mode.
      */
     public void setTemplateMode(final String templateMode) {
+        // Setter overload actually goes against the JavaBeans spec, but having this one is good for legacy
+        // compatibility reasons. Besides, given the getter returns TemplateMode, intelligent frameworks like
+        // Spring will recognized the property as TemplateMode-typed and simply ignore this setter.
         Validate.notNull(templateMode, "Cannot set a null template mode value");
         this.templateMode = TemplateMode.parse(templateMode);
     }
