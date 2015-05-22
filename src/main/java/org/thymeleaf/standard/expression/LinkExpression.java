@@ -309,7 +309,7 @@ public final class LinkExpression extends SimpleExpression {
         } else {
             contextPath = null;
         }
-        final boolean contextPathEmpty = contextPath != null && contextPath.length() > 0 && !contextPath.equals("/");
+        final boolean contextPathEmpty = contextPath == null || contextPath.length() == 0 || contextPath.equals("/");
 
 
         /*
