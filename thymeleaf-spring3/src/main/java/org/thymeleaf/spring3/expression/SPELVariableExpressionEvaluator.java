@@ -135,8 +135,25 @@ public class SPELVariableExpressionEvaluator
                             getVariable(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME);
 
             if (baseEvaluationContext == null) {
+
                 // Using a standard one as base: we are losing bean resolution and conversion service!!
+                //
+                // The ideal scenario is that this is created before processing the page, e.g. at the ThymeleafView
+                // class, but it can happen that no ThymeleafView is ever called if we are using the Spring-integrated
+                // template engine on a standalone (non-web) scenario...
+                //
+                // Also, note Spring's EvaluationContexts are NOT THREAD-SAFE (in exchange for SpelExpressions being
+                // thread-safe). That's why we need to create a new EvaluationContext for each request / template
+                // execution, even if it is quite expensive to create because of requiring the initialization of
+                // several ConcurrentHashMaps.
                 baseEvaluationContext = new StandardEvaluationContext();
+
+                final IVariablesMap variablesMap = processingContext.getVariablesMap();
+                if (variablesMap instanceof ILocalVariableAwareVariablesMap) {
+                    ((ILocalVariableAwareVariablesMap)variablesMap).put(
+                            ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, baseEvaluationContext);
+                }
+
             }
 
 

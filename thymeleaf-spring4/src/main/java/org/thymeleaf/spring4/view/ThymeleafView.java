@@ -235,6 +235,10 @@ public class ThymeleafView
 
 
         // Expose Thymeleaf's own evaluation context as a model variable
+        //
+        // Note Spring's EvaluationContexts are NOT THREAD-SAFE (in exchange for SpelExpressions being thread-safe).
+        // That's why we need to create a new EvaluationContext for each request / template execution, even if it is
+        // quite expensive to create because of requiring the initialization of several ConcurrentHashMaps.
         final ConversionService conversionService =
                 (ConversionService) request.getAttribute(ConversionService.class.getName()); // might be null!
         final ThymeleafEvaluationContext evaluationContext =
