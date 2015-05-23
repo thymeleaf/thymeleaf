@@ -31,8 +31,6 @@ import org.thymeleaf.expression.IExpressionObjects;
  */
 public interface IThymeleafEvaluationContext extends EvaluationContext {
 
-    public static final String THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME = "thymeleafEvaluationContext";
-
     public boolean isRequestParametersRestricted();
     public void setRequestParametersRestricted(final boolean restricted);
 

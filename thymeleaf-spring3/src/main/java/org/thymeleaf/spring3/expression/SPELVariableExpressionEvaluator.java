@@ -146,8 +146,17 @@ public class SPELVariableExpressionEvaluator
                 // thread-safe). That's why we need to create a new EvaluationContext for each request / template
                 // execution, even if it is quite expensive to create because of requiring the initialization of
                 // several ConcurrentHashMaps.
-                evaluationContext =
-                        new ThymeleafEvaluationContextWrapper(new StandardEvaluationContext());
+                evaluationContext = new ThymeleafEvaluationContextWrapper(new StandardEvaluationContext());
+
+                final IVariablesMap variablesMap = processingContext.getVariablesMap();
+                if (variablesMap instanceof ILocalVariableAwareVariablesMap) {
+                    ((ILocalVariableAwareVariablesMap)variablesMap).put(
+                            ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
+                }
+
+            } else if (!(evaluationContext instanceof  IThymeleafEvaluationContext)) {
+
+                evaluationContext = new ThymeleafEvaluationContextWrapper(evaluationContext);
 
                 final IVariablesMap variablesMap = processingContext.getVariablesMap();
                 if (variablesMap instanceof ILocalVariableAwareVariablesMap) {
@@ -159,16 +168,12 @@ public class SPELVariableExpressionEvaluator
 
 
             /*
-             * IF STILL NEEDED, WRAP THE EVALUATION CONTEXT INTO A IThymeleafEvaluationContext
+             * AT THIS POINT, WE ARE SURE IT IS AN IThymeleafEvaluationContext
+             *
              * This is needed in order to be sure we can modify the 'requestParametersRestricted' flag and also the
              * expression objects.
              */
-            final IThymeleafEvaluationContext thymeleafEvaluationContext;
-            if (evaluationContext instanceof IThymeleafEvaluationContext) {
-                thymeleafEvaluationContext = (IThymeleafEvaluationContext) evaluationContext;
-            } else {
-                thymeleafEvaluationContext = new ThymeleafEvaluationContextWrapper(evaluationContext);
-            }
+            final IThymeleafEvaluationContext thymeleafEvaluationContext = (IThymeleafEvaluationContext) evaluationContext;
 
 
             /*
