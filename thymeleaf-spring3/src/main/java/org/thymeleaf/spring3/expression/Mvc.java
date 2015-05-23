@@ -20,7 +20,6 @@
 package org.thymeleaf.spring3.expression;
 
 import org.thymeleaf.exceptions.ConfigurationException;
-import org.thymeleaf.spring3.dialect.SpringStandardDialect;
 import org.thymeleaf.util.ClassLoaderUtils;
 
 /**

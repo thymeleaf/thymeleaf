@@ -25,12 +25,13 @@ import org.springframework.context.expression.MapAccessor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.expression.spel.support.StandardTypeConverter;
+import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   Thymeleaf's basic implementation of Spring's {@link org.springframework.expression.EvaluationContext}
- *   interface.
+ *   Thymeleaf's basic implementation of the {@link IThymeleafEvaluationContext} interface, which in turn extends
+ *   from Spring's {@link org.springframework.expression.EvaluationContext} interface.
  * </p>
  * <p>
  *   This implementation adds Thymeleaf's own property accessors
@@ -54,11 +55,19 @@ import org.thymeleaf.util.Validate;
  * @since 2.1.0
  *
  */
-public final class ThymeleafEvaluationContext extends StandardEvaluationContext {
+public final class ThymeleafEvaluationContext
+            extends StandardEvaluationContext
+            implements IThymeleafEvaluationContext {
 
-    public static final String THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME = "thymeleafEvaluationContext";
 
-    public static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
+    private static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
+
+
+    private IExpressionObjects expressionObjects = null;
+    private boolean requestParametersRestricted = false;
+
+
+
 
     public ThymeleafEvaluationContext(final BeanFactory beanFactory, final ConversionService conversionService) {
         
@@ -76,5 +85,38 @@ public final class ThymeleafEvaluationContext extends StandardEvaluationContext 
         this.addPropertyAccessor(MAP_ACCESSOR_INSTANCE);
 
     }
+
+
+    @Override
+    public Object lookupVariable(final String name) {
+        if (this.expressionObjects != null && this.expressionObjects.containsObject(name)) {
+            final Object result = this.expressionObjects.getObject(name);
+            if (result != null) {
+                return result;
+            }
+        }
+        // fall back to superclass
+        return super.lookupVariable(name);
+    }
+
+
+
+
+    public boolean isRequestParametersRestricted() {
+        return this.requestParametersRestricted;
+    }
+
+    public void setRequestParametersRestricted(final boolean restricted) {
+        this.requestParametersRestricted = restricted;
+    }
+
+    public IExpressionObjects getExpressionObjects() {
+        return this.expressionObjects;
+    }
+
+    public void setExpressionObjects(final IExpressionObjects expressionObjects) {
+        this.expressionObjects = expressionObjects;
+    }
+
 
 }

@@ -130,13 +130,13 @@ public class SPELVariableExpressionEvaluator
             /*
              * CREATE/OBTAIN THE SPEL EVALUATION CONTEXT OBJECT
              */
-            EvaluationContext baseEvaluationContext =
+            EvaluationContext evaluationContext =
                     (EvaluationContext) processingContext.getVariablesMap().
                             getVariable(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME);
 
-            if (baseEvaluationContext == null) {
+            if (evaluationContext == null) {
 
-                // Using a standard one as base: we are losing bean resolution and conversion service!!
+                // Using a StandardEvaluationContext one as base: we are losing bean resolution and conversion service!!
                 //
                 // The ideal scenario is that this is created before processing the page, e.g. at the ThymeleafView
                 // class, but it can happen that no ThymeleafView is ever called if we are using the Spring-integrated
@@ -146,24 +146,39 @@ public class SPELVariableExpressionEvaluator
                 // thread-safe). That's why we need to create a new EvaluationContext for each request / template
                 // execution, even if it is quite expensive to create because of requiring the initialization of
                 // several ConcurrentHashMaps.
-                baseEvaluationContext = new StandardEvaluationContext();
+                evaluationContext =
+                        new ThymeleafEvaluationContextWrapper(new StandardEvaluationContext());
 
                 final IVariablesMap variablesMap = processingContext.getVariablesMap();
                 if (variablesMap instanceof ILocalVariableAwareVariablesMap) {
                     ((ILocalVariableAwareVariablesMap)variablesMap).put(
-                            ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, baseEvaluationContext);
+                            ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
                 }
 
             }
 
 
             /*
-             * WRAP THE EVALUATION CONTEXT INTO A STRUCTURE THAT WILL ALLOW US TO RESOLVE VARIABLES
+             * IF STILL NEEDED, WRAP THE EVALUATION CONTEXT INTO A IThymeleafEvaluationContext
+             * This is needed in order to be sure we can modify the 'requestParametersRestricted' flag and also the
+             * expression objects.
              */
-            // TODO IS this needed? if we don't have variables... why not use directly the baseEvaluationContext?
-            final ThymeleafEvaluationContextWrapper evaluationContext =
-                    new ThymeleafEvaluationContextWrapper(
-                            baseEvaluationContext, expressionObjects, expContext.getForbidRequestParameters());
+            final IThymeleafEvaluationContext thymeleafEvaluationContext;
+            if (evaluationContext instanceof IThymeleafEvaluationContext) {
+                thymeleafEvaluationContext = (IThymeleafEvaluationContext) evaluationContext;
+            } else {
+                thymeleafEvaluationContext = new ThymeleafEvaluationContextWrapper(evaluationContext);
+            }
+
+
+            /*
+             * CONFIGURE THE IThymeleafEvaluationContext INSTANCE: expression objects and restrictions
+             *
+             * NOTE this is possible even if the evaluation context object is shared for the whole template execution
+             * because evaluation contexts are not thread-safe and are only used in a single template execution
+             */
+            thymeleafEvaluationContext.setExpressionObjects(expressionObjects);
+            thymeleafEvaluationContext.setRequestParametersRestricted(expContext.getForbidRequestParameters());
 
 
             /*
@@ -177,7 +192,7 @@ public class SPELVariableExpressionEvaluator
              * If no conversion is to be made, JUST RETURN
              */
             if (!expContext.getPerformTypeConversion()) {
-                return exp.getValue(evaluationContext, evaluationRoot);
+                return exp.getValue(thymeleafEvaluationContext, evaluationRoot);
             }
 
 
@@ -191,12 +206,12 @@ public class SPELVariableExpressionEvaluator
                 // The conversion service is a mere bridge with the Spring ConversionService, therefore
                 // this makes use of the complete Spring type conversion infrastructure, without needing
                 // to manually execute the conversion.
-                return exp.getValue(evaluationContext, evaluationRoot, String.class);
+                return exp.getValue(thymeleafEvaluationContext, evaluationRoot, String.class);
             }
 
             // We need type conversion, but conversion service is not a mere bridge to the Spring one,
             // so we need manual execution.
-            final Object result = exp.getValue(evaluationContext, evaluationRoot);
+            final Object result = exp.getValue(thymeleafEvaluationContext, evaluationRoot);
             return conversionService.convert(processingContext, result, String.class);
 
 

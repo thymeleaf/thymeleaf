@@ -41,10 +41,9 @@ import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   Implementation of Spring's {@link EvaluationContext}
- *   interface designed to wrap around another delegated implementation of this same interface,
- *   adding (if needed) the Thymeleaf-required
- *   {@link PropertyAccessor} implementations and (optionally)
+ *   Implementation of Thymeleaf's {@link IThymeleafEvaluationContext} interface designed to wrap around a
+ *   delegated implementation of {@link EvaluationContext}, adding the
+ *   Thymeleaf-required {@link PropertyAccessor} implementations and (optionally)
  *   a series of variables to be accessed like <tt>#variableName</tt> during expression evaluation.
  * </p>
  *
@@ -53,21 +52,23 @@ import org.thymeleaf.util.Validate;
  * @since 2.1.0 (reimplemented in 3.0.0)
  *
  */
-public final class ThymeleafEvaluationContextWrapper implements EvaluationContext {
+public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvaluationContext {
+
+
+    private static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
 
 
     private final EvaluationContext delegate;
     private final List<PropertyAccessor> propertyAccessors; // can be initialized to null if we can delegate
-    private final IExpressionObjects expressionObjects;
-    private final boolean restrictRequestParameters;
+
+    private IExpressionObjects expressionObjects = null;
+    private boolean requestParametersRestricted = false;
     private Map<String,Object> additionalVariables = null;
 
 
-    public static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
 
 
-    public ThymeleafEvaluationContextWrapper(
-            final EvaluationContext delegate, final IExpressionObjects expressionObjects, final boolean restrictRequestParameters) {
+    public ThymeleafEvaluationContextWrapper(final EvaluationContext delegate) {
         
         super();
 
@@ -95,9 +96,6 @@ public final class ThymeleafEvaluationContextWrapper implements EvaluationContex
             this.propertyAccessors.add(MAP_ACCESSOR_INSTANCE);
 
         }
-
-        this.expressionObjects = expressionObjects;
-        this.restrictRequestParameters = restrictRequestParameters;
 
     }
 
@@ -158,12 +156,26 @@ public final class ThymeleafEvaluationContextWrapper implements EvaluationContex
                 return result;
             }
         }
-        // fail back to delegate
+        // fall back to delegate
         return this.delegate.lookupVariable(name);
     }
 
-    public boolean isRestrictRequestParameters() {
-        return this.restrictRequestParameters;
+
+    public boolean isRequestParametersRestricted() {
+        return this.requestParametersRestricted;
     }
+
+    public void setRequestParametersRestricted(final boolean restricted) {
+        this.requestParametersRestricted = restricted;
+    }
+
+    public IExpressionObjects getExpressionObjects() {
+        return this.expressionObjects;
+    }
+
+    public void setExpressionObjects(final IExpressionObjects expressionObjects) {
+        this.expressionObjects = expressionObjects;
+    }
+
 
 }

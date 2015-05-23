@@ -44,7 +44,7 @@ public final class SPELVariablesMapPropertyAccessor implements PropertyAccessor 
     private static final Class<?>[] TARGET_CLASSES = new Class<?>[] { IVariablesMap.class };
 
 
-    // TODO Actually control request parameter restrictions (the evaluationcontext wrapper will know)!
+    // TODO Actually control request parameter restrictions (the IThymeleafEvaluationContext implementations will know)!
 
 
     SPELVariablesMapPropertyAccessor() {
