@@ -70,14 +70,16 @@ public final class SPELVariablesMapPropertyAccessor implements PropertyAccessor 
         if (target == null) {
             throw new AccessException("Cannot read property of null target");
         }
-        if (!(target instanceof IVariablesMap)) {
+        try {
+            final IVariablesMap variablesMap = (IVariablesMap) target;
+            return new TypedValue(variablesMap.getVariable(name));
+        } catch (final ClassCastException e) {
             // This can happen simply because we're applying the same
             // AST tree on a different class (Spring internally caches property accessors).
             // So this exception might be considered "normal" by Spring AST evaluator and
             // just use it to refresh the property accessor cache.
             throw new AccessException("Cannot read target of class " + target.getClass().getName());
         }
-        return new TypedValue(((IVariablesMap)target).getVariable(name));
     }
 
 
