@@ -35,6 +35,7 @@ import org.springframework.expression.TypeComparator;
 import org.springframework.expression.TypeConverter;
 import org.springframework.expression.TypeLocator;
 import org.springframework.expression.TypedValue;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.util.Validate;
 
@@ -56,7 +57,7 @@ public final class ThymeleafEvaluationContextWrapper implements EvaluationContex
 
 
     private final EvaluationContext delegate;
-    private final List<PropertyAccessor> propertyAccessors;
+    private final List<PropertyAccessor> propertyAccessors; // can be initialized to null if we can delegate
     private final IExpressionObjects expressionObjects;
     private final boolean restrictRequestParameters;
     private Map<String,Object> additionalVariables = null;
@@ -74,13 +75,25 @@ public final class ThymeleafEvaluationContextWrapper implements EvaluationContex
 
         this.delegate = delegate;
 
-        if (this.delegate instanceof ThymeleafEvaluationContext) {
-            this.propertyAccessors = this.delegate.getPropertyAccessors();
+        if ((this.delegate instanceof ThymeleafEvaluationContext)) {
+
+            this.propertyAccessors = null; // No need to initialize our own list
+
+        } else if (this.delegate instanceof StandardEvaluationContext) {
+
+            ((StandardEvaluationContext) this.delegate).addPropertyAccessor(SPELVariablesMapPropertyAccessor.INSTANCE);
+            ((StandardEvaluationContext) this.delegate).addPropertyAccessor(MAP_ACCESSOR_INSTANCE);
+            this.propertyAccessors = null; // No need to initialize our own list
+
         } else {
+
+            // We don't know the specific EvaluationContext implementation, so we need to initialize our own PA list
+
             this.propertyAccessors = new ArrayList<PropertyAccessor>(5);
             this.propertyAccessors.addAll(this.delegate.getPropertyAccessors());
             this.propertyAccessors.add(SPELVariablesMapPropertyAccessor.INSTANCE);
             this.propertyAccessors.add(MAP_ACCESSOR_INSTANCE);
+
         }
 
         this.expressionObjects = expressionObjects;
@@ -102,7 +115,7 @@ public final class ThymeleafEvaluationContextWrapper implements EvaluationContex
     }
 
     public List<PropertyAccessor> getPropertyAccessors() {
-        return this.propertyAccessors;
+        return this.propertyAccessors == null ? this.delegate.getPropertyAccessors() : this.propertyAccessors;
     }
 
     public TypeLocator getTypeLocator() {
