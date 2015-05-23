@@ -22,7 +22,10 @@ package org.thymeleaf.spring4;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
+import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.messageresolver.IMessageResolver;
+import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.spring4.dialect.SpringStandardDialect;
 import org.thymeleaf.spring4.messageresolver.SpringMessageResolver;
 
@@ -31,10 +34,9 @@ import org.thymeleaf.spring4.messageresolver.SpringMessageResolver;
 
 /**
  * <p>
- *   Subclass of {@link TemplateEngine} meant for Spring MVC applications,
- *   that establishes by default an instance of {@link SpringStandardDialect} 
- *   as a dialect (instead of an instance of {@link org.thymeleaf.standard.StandardDialect}, 
- *   which is the default in {@link TemplateEngine}.
+ *   Implementation of {@link ITemplateEngine} meant for Spring MVC applications,
+ *   that establishes by default an instance of {@link SpringStandardDialect}
+ *   as a dialect (instead of an instance of {@link org.thymeleaf.standard.StandardDialect}.
  * </p>
  * <p>
  *   It also configures a {@link SpringMessageResolver} as message resolver, and
@@ -44,11 +46,7 @@ import org.thymeleaf.spring4.messageresolver.SpringMessageResolver;
  *   needs to be overridden, the {@link #setTemplateEngineMessageSource(MessageSource)} can
  *   be used. 
  * </p>
- * <p>
- *   Note that this class will validate during initialization that at least one of the
- *   configured dialects is {@link SpringStandardDialect} or a subclass of it.  
- * </p>
- * 
+ *
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 1.0
@@ -115,10 +113,21 @@ public class SpringTemplateEngine
 
 
     public void afterPropertiesSet() throws Exception {
-        final SpringMessageResolver springMessageResolver = new SpringMessageResolver();
-        springMessageResolver.setMessageSource(
-                this.templateEngineMessageSource == null ? this.messageSource : this.templateEngineMessageSource);
-        super.setMessageResolver(springMessageResolver);
+
+        final MessageSource messageSource =
+                this.templateEngineMessageSource == null ? this.messageSource : this.templateEngineMessageSource;
+
+        final IMessageResolver messageResolver;
+        if (messageSource != null) {
+            final SpringMessageResolver springMessageResolver = new SpringMessageResolver();
+            springMessageResolver.setMessageSource(messageSource);
+            messageResolver = springMessageResolver;
+        } else {
+            messageResolver = new StandardMessageResolver();
+        }
+
+        super.setMessageResolver(messageResolver);
+
     }
 
 

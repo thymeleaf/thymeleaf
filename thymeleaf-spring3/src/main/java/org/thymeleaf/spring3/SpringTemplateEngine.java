@@ -24,6 +24,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.messageresolver.IMessageResolver;
+import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.spring3.dialect.SpringStandardDialect;
 import org.thymeleaf.spring3.messageresolver.SpringMessageResolver;
 
@@ -110,10 +112,21 @@ public class SpringTemplateEngine extends TemplateEngine
 
 
     public void afterPropertiesSet() throws Exception {
-        final SpringMessageResolver springMessageResolver = new SpringMessageResolver();
-        springMessageResolver.setMessageSource(
-                this.templateEngineMessageSource == null ? this.messageSource : this.templateEngineMessageSource);
-        super.setMessageResolver(springMessageResolver);
+
+        final MessageSource messageSource =
+                this.templateEngineMessageSource == null ? this.messageSource : this.templateEngineMessageSource;
+
+        final IMessageResolver messageResolver;
+        if (messageSource != null) {
+            final SpringMessageResolver springMessageResolver = new SpringMessageResolver();
+            springMessageResolver.setMessageSource(messageSource);
+            messageResolver = springMessageResolver;
+        } else {
+            messageResolver = new StandardMessageResolver();
+        }
+
+        super.setMessageResolver(messageResolver);
+
     }
     
 
