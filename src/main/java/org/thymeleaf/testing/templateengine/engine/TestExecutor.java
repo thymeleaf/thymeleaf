@@ -360,7 +360,8 @@ public final class TestExecutor {
         
         this.reporter.testStart(executionId, context.getNestingLevel(), test, testName);
         
-        final IFragmentSpec fragmentSpec = test.getFragmentSpec();
+        final String fragmentSpec = test.getFragmentSpec();
+        final String[] markupSelectors = fragmentSpec == null? null : new String[] { fragmentSpec };
         
         final IProcessingContext processingContext = this.processingContextBuilder.build(test);
         
@@ -372,7 +373,7 @@ public final class TestExecutor {
         long endTimeNanos;
         try {
             
-            templateEngine.process(testName, processingContext, fragmentSpec, writer);
+            templateEngine.process(testName, markupSelectors, processingContext, writer);
             endTimeNanos = System.nanoTime();
             
             final String result = writer.toString();

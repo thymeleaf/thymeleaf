@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.messages.ITestMessages;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
@@ -93,7 +92,7 @@ public class StandardTest extends Test {
     }
 
     @Override
-    public final void setFragmentSpec(final IFragmentSpec fragmentSpec) {
+    public final void setFragmentSpec(final String fragmentSpec) {
         setFragmentSpec(fragmentSpec, DEFAULT_VALUE_TYPE);
     }
 
@@ -164,7 +163,7 @@ public class StandardTest extends Test {
         this.templateModeValueType = valueType;
     }
 
-    public void setFragmentSpec(final IFragmentSpec fragmentSpec, final StandardTestValueType valueType) {
+    public void setFragmentSpec(final String fragmentSpec, final StandardTestValueType valueType) {
         Validate.notNull(valueType, "Value type cannot be null");
         super.setFragmentSpec(fragmentSpec);
         this.fragmentValueType = valueType;

@@ -21,7 +21,6 @@ package org.thymeleaf.testing.templateengine.testable;
 
 import java.util.Map;
 
-import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.messages.ITestMessages;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
@@ -34,7 +33,7 @@ public interface ITest extends ITestable {
     public ITestMessages getMessages();
     
     public boolean hasFragmentSpec();
-    public IFragmentSpec getFragmentSpec();
+    public String getFragmentSpec();
     
     public String getTemplateMode();
     public ITestResource getInput();

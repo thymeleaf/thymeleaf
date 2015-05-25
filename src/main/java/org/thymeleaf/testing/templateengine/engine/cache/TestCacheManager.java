@@ -22,11 +22,11 @@ package org.thymeleaf.testing.templateengine.engine.cache;
 import java.util.List;
 import java.util.Properties;
 
-import org.thymeleaf.Template;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.cache.StandardCacheManager;
-import org.thymeleaf.dom.Node;
+import org.thymeleaf.engine.ParsedFragmentMarkup;
+import org.thymeleaf.engine.ParsedTemplateMarkup;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 
 
@@ -47,13 +47,13 @@ public final class TestCacheManager implements ICacheManager {
     }
 
 
-    public ICache<String, Template> getTemplateCache() {
-        return new TestCache<Template>(this.cacheManager.getTemplateCache());
+    public ICache<String, ParsedTemplateMarkup> getTemplateCache() {
+        return new TestCache<ParsedTemplateMarkup>(this.cacheManager.getTemplateCache());
     }
 
 
-    public ICache<String, List<Node>> getFragmentCache() {
-        return new TestCache<List<Node>>(this.cacheManager.getFragmentCache());
+    public ICache<String, ParsedFragmentMarkup> getFragmentCache() {
+        return new TestCache<ParsedFragmentMarkup>(this.cacheManager.getFragmentCache());
     }
 
 

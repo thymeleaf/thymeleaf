@@ -19,9 +19,6 @@
  */
 package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
 
-import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
-import org.thymeleaf.fragment.IFragmentSpec;
-import org.thymeleaf.fragment.WholeFragmentSpec;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.resource.ITestResourceResolver;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
@@ -31,11 +28,10 @@ public class DefaultFragmentStandardTestFieldEvaluator extends AbstractStandardT
 
     
     public static final DefaultFragmentStandardTestFieldEvaluator INSTANCE = new DefaultFragmentStandardTestFieldEvaluator();
-    public static final IFragmentSpec DEFAULT_VALUE = WholeFragmentSpec.INSTANCE; 
 
     
     private DefaultFragmentStandardTestFieldEvaluator() {
-        super(IFragmentSpec.class);
+        super(String.class);
     }
 
 
@@ -45,10 +41,10 @@ public class DefaultFragmentStandardTestFieldEvaluator extends AbstractStandardT
             final String fieldName, final String fieldQualifier, final String fieldValue) {
 
         if (fieldValue == null || fieldValue.trim().equals("")) {
-            return StandardTestEvaluatedField.forDefaultValue(DEFAULT_VALUE);
+            return StandardTestEvaluatedField.forNoValue();
         }
         
-        return StandardTestEvaluatedField.forSpecifiedValue(new DOMSelectorFragmentSpec(fieldValue.trim()));
+        return StandardTestEvaluatedField.forSpecifiedValue(fieldValue.trim());
         
     }
     

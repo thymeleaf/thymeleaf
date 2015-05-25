@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.messages.ITestMessages;
@@ -160,7 +159,7 @@ public class StandardTestBuilder implements IStandardTestBuilder {
         }
         
         if (fragmentSpec != null && fragmentSpec.hasValue()) {
-            test.setFragmentSpec((IFragmentSpec)fragmentSpec.getValue(), fragmentSpec.getValueType());
+            test.setFragmentSpec((String)fragmentSpec.getValue(), fragmentSpec.getValueType());
         }
         
         if (mainInput != null && mainInput.hasValue()) {

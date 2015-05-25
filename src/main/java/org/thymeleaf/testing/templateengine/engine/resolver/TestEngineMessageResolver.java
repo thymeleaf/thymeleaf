@@ -21,7 +21,7 @@ package org.thymeleaf.testing.templateengine.engine.resolver;
 
 import java.util.Locale;
 
-import org.thymeleaf.Arguments;
+import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.messageresolver.AbstractMessageResolver;
 import org.thymeleaf.messageresolver.MessageResolution;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
@@ -38,16 +38,14 @@ public class TestEngineMessageResolver extends AbstractMessageResolver {
     }
 
     public MessageResolution resolveMessage(
-            final Arguments arguments, final String key, final Object[] messageParameters) {
+            final ITemplateProcessingContext processingContext, final String key, final Object[] messageParameters) {
 
-        checkInitialized();
-
-        Validate.notNull(arguments, "Arguments cannot be null");
+        Validate.notNull(processingContext, "Processing Context cannot be null");
         Validate.notNull(key, "Key cannot be null");
 
         final ITest test = TestExecutor.getThreadTest(); 
 
-        final Locale locale = arguments.getContext().getLocale();
+        final Locale locale = processingContext.getLocale();
         final ITestMessages messages = test.getMessages();
         if (messages == null) {
             throw new TestEngineExecutionException(
