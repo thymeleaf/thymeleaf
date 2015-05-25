@@ -40,6 +40,7 @@ import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.SelectionVariableExpression;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.expression.VariableExpression;
+import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.Validate;
 
 
@@ -60,7 +61,7 @@ public final class FieldUtils {
 
 
     public static boolean hasErrors(final IProcessingContext processingContext, final String field) {
-        return checkErrors(processingContext, convertToFieldExpression(field));
+        return checkErrors(processingContext, convertToFieldExpression(processingContext.getConfiguration(), field));
     }
 
     public static boolean hasAnyErrors(final IProcessingContext processingContext) {
@@ -74,7 +75,7 @@ public final class FieldUtils {
 
 
     public static List<String> errors(final IProcessingContext processingContext, final String field) {
-        return computeErrors(processingContext, convertToFieldExpression(field));
+        return computeErrors(processingContext, convertToFieldExpression(processingContext.getConfiguration(), field));
     }
 
     public static List<String> errors(final IProcessingContext processingContext) {
@@ -93,6 +94,10 @@ public final class FieldUtils {
         }
 
         final String[] errorCodes = bindStatus.getErrorMessages();
+        if (errorCodes == null || errorCodes.length == 0) {
+            // If we don't need a new object, we avoid creating it
+            return Collections.EMPTY_LIST;
+        }
         return Arrays.asList(errorCodes);
 
     }
@@ -124,8 +129,8 @@ public final class FieldUtils {
             return Collections.EMPTY_LIST;
         }
 
-        final List<DetailedError> errorObjects = new ArrayList<DetailedError>(errors.getErrorCount() + 2);
-
+        // We will try to avoid creating the List if we don't need it
+        List<DetailedError> errorObjects = null;
 
         if (includeGlobalErrors) {
             final List<ObjectError> globalErrors = errors.getGlobalErrors();
@@ -133,6 +138,9 @@ public final class FieldUtils {
                 final String message = requestContext.getMessage(globalError, false);
                 final DetailedError errorObject =
                         new DetailedError(globalError.getCode(), globalError.getArguments(), message);
+                if (errorObjects == null) {
+                    errorObjects = new ArrayList<DetailedError>(errors.getErrorCount() + 2);
+                }
                 errorObjects.add(errorObject);
             }
         }
@@ -143,10 +151,16 @@ public final class FieldUtils {
                 final String message = requestContext.getMessage(fieldError, false);
                 final DetailedError errorObject =
                         new DetailedError(fieldError.getField(), fieldError.getCode(), fieldError.getArguments(), message);
+                if (errorObjects == null) {
+                    errorObjects = new ArrayList<DetailedError>(errors.getErrorCount() + 2);
+                }
                 errorObjects.add(errorObject);
             }
         }
 
+        if (errorObjects == null) {
+            return Collections.EMPTY_LIST;
+        }
         return errorObjects;
 
     }
@@ -159,19 +173,19 @@ public final class FieldUtils {
 
 
 
-    private static String convertToFieldExpression(final String field) {
+    private static String convertToFieldExpression(final IEngineConfiguration configuration, final String field) {
         if (field == null) {
             return null;
         }
-        if (field.trim().startsWith("*") || field.trim().startsWith("$")) {
+        final String trimmedField = field.trim();
+        if (trimmedField.length() == 0) {
+            return null;
+        }
+        final char firstc = trimmedField.charAt(0);
+        if (firstc == '*' || firstc == '$') {
             return field;
         }
-        final StringBuilder strBuilder = new StringBuilder(20);
-        strBuilder.append('*');
-        strBuilder.append('{');
-        strBuilder.append(field);
-        strBuilder.append('}');
-        return strBuilder.toString();
+        return configuration.getTextRepository().getText("*{", field, "}");
     }
 
 
@@ -196,7 +210,9 @@ public final class FieldUtils {
 
         if (GLOBAL_EXPRESSION.equals(expression) || ALL_EXPRESSION.equals(expression) || ALL_FIELDS.equals(expression)) {
             // If "global", "all" or "*" are used without prefix, they must be inside a form, so we add *{...}
-            return getBindStatus(processingContext, optional, "*{" + expression + "}");
+            final String completeExpression =
+                    processingContext.getConfiguration().getTextRepository().getText("*{", expression, "}");
+            return getBindStatus(processingContext, optional, completeExpression);
         }
 
         final IEngineConfiguration configuration = processingContext.getConfiguration();
@@ -221,7 +237,7 @@ public final class FieldUtils {
 
         throw new TemplateProcessingException(
                 "Expression \"" + expression + "\" is not valid: only variable expressions ${...} or " +
-                        "selection expressions *{...} are allowed in Spring field bindings");
+                "selection expressions *{...} are allowed in Spring field bindings");
 
     }
 
@@ -269,7 +285,7 @@ public final class FieldUtils {
         }
 
 
-        if (isBound(requestContext, expression, completeExpression)) {
+        if (isBound(processingContext.getConfiguration(), requestContext, expression, completeExpression)) {
             // Creating an instance of BindStatus for an unbound object results in an (expensive) exception,
             // so we avoid it by checking first. Because the check is a simplification, we still handle the exception.
             try {
@@ -295,6 +311,8 @@ public final class FieldUtils {
 
         if (useSelectionAsRoot) {
 
+            final ITextRepository textRepository = processingContext.getConfiguration().getTextRepository();
+
             VariableExpression boundObjectValue =
                     (VariableExpression) processingContext.getVariablesMap().getVariable(SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION);
 
@@ -313,14 +331,14 @@ public final class FieldUtils {
                 if (boundObjectExpression == null) {
                     return null;
                 }
-                return boundObjectExpression + '.' + ALL_FIELDS;
+                return textRepository.getText(boundObjectExpression, ".", ALL_FIELDS);
             }
 
             if (boundObjectExpression == null) {
                 return expression;
             }
 
-            return boundObjectExpression + '.' + expression;
+            return textRepository.getText(boundObjectExpression, ".", expression);
 
         }
 
@@ -332,20 +350,23 @@ public final class FieldUtils {
 
 
     private static boolean isBound(
-            final RequestContext requestContext, final String expression, final String completeExpression) {
+            final IEngineConfiguration configuration, final RequestContext requestContext,
+            final String expression, final String completeExpression) {
 
         final int dotPos = completeExpression.indexOf('.');
         if (dotPos == -1) { // Spring only allows second-level binding for conversions! ("x.y", not "x")
             return false;
         }
 
+        final ITextRepository textRepository = configuration.getTextRepository();
+
         // The bound bean name is everything before the first dot (or everything, if no dot present)
-        final String beanName = completeExpression.substring(0, dotPos);
+        final String beanName = textRepository.getText(completeExpression, 0, dotPos);
 
         // The getErrors() method is not extremely efficient, but it has a cache map, so it should be fine
         final boolean beanValid = requestContext.getErrors(beanName, false) != null;
         if (beanValid && completeExpression.length() > dotPos) {
-            final CharSequence path = completeExpression.subSequence(dotPos + 1, completeExpression.length() - 1);
+            final String path = textRepository.getText(completeExpression, dotPos + 1, completeExpression.length() - 1);
             // We will validate the rest of the expression as a bean property identifier or a bean property expression.
             return validateBeanPath(path);
         }
