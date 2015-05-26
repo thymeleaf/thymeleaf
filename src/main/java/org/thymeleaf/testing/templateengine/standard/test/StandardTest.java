@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.messages.ITestMessages;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
@@ -87,7 +88,7 @@ public class StandardTest extends Test {
     }
 
     @Override
-    public final void setTemplateMode(final String templateMode) {
+    public final void setTemplateMode(final TemplateMode templateMode) {
         setTemplateMode(templateMode, DEFAULT_VALUE_TYPE);
     }
 
@@ -157,7 +158,7 @@ public class StandardTest extends Test {
         this.messagesValueType = valueType;
     }
 
-    public void setTemplateMode(final String templateMode, final StandardTestValueType valueType) {
+    public void setTemplateMode(final TemplateMode templateMode, final StandardTestValueType valueType) {
         Validate.notNull(valueType, "Value type cannot be null");
         super.setTemplateMode(templateMode);
         this.templateModeValueType = valueType;

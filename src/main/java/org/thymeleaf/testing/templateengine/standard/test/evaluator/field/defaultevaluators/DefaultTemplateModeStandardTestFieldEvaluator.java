@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
 
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.resource.ITestResourceResolver;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
@@ -33,7 +34,7 @@ public class DefaultTemplateModeStandardTestFieldEvaluator extends AbstractStand
     
     public static final DefaultTemplateModeStandardTestFieldEvaluator INSTANCE = 
             new DefaultTemplateModeStandardTestFieldEvaluator();
-    public static final String DEFAULT_VALUE = "HTML5"; 
+    public static final TemplateMode DEFAULT_VALUE = TemplateMode.HTML;
 
     
     private DefaultTemplateModeStandardTestFieldEvaluator() {
@@ -49,8 +50,9 @@ public class DefaultTemplateModeStandardTestFieldEvaluator extends AbstractStand
         if (fieldValue == null || fieldValue.trim().equals("")) {
             return StandardTestEvaluatedField.forDefaultValue(DEFAULT_VALUE);
         }
-        
-        return StandardTestEvaluatedField.forSpecifiedValue(fieldValue.trim());
+
+        final TemplateMode templateMode = TemplateMode.parse(fieldValue.trim());
+        return StandardTestEvaluatedField.forSpecifiedValue(templateMode);
         
     }
     

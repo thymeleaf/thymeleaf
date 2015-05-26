@@ -44,9 +44,8 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IWebContext;
-import org.thymeleaf.context.ProcessingContext;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.testing.templateengine.context.IProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.context.ITestContext;
@@ -76,7 +75,7 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
     
     
     @SuppressWarnings("unchecked")
-    public final IProcessingContext build(final ITest test) {
+    public final IContext build(final ITest test) {
         
         if (test == null) {
             return null;
@@ -156,7 +155,7 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         final IWebContext context =
                 doCreateWebContextInstance(test, request, response, servletContext, locale, variables);
         
-        return new ProcessingContext(context);
+        return context;
         
     }
 

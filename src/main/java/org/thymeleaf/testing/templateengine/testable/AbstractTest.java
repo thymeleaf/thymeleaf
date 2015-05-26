@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.context.TestContext;
 import org.thymeleaf.testing.templateengine.messages.ITestMessages;
@@ -38,14 +39,14 @@ public abstract class AbstractTest
         extends AbstractTestable
         implements ITest {
     
-    public static String DEFAULT_TEMPLATE_MODE = "HTML5";
+    public static TemplateMode DEFAULT_TEMPLATE_MODE = TemplateMode.HTML;
     public static String DEFAULT_FRAGMENT_SPEC = null;
     public static boolean DEFAULT_INPUT_CACHEABLE = true;
     
 
     private ITestContext context = new TestContext();
     private ITestMessages messages = new TestMessages();
-    private String templateMode = DEFAULT_TEMPLATE_MODE; 
+    private TemplateMode templateMode = DEFAULT_TEMPLATE_MODE;
     private String fragmentSpec = DEFAULT_FRAGMENT_SPEC;
     private ITestResource input = null;
     private boolean inputCacheable = DEFAULT_INPUT_CACHEABLE;
@@ -84,11 +85,11 @@ public abstract class AbstractTest
     
     
     
-    public void setTemplateMode(final String templateMode) {
+    public void setTemplateMode(final TemplateMode templateMode) {
         this.templateMode = templateMode;
     }
     
-    public String getTemplateMode() {
+    public TemplateMode getTemplateMode() {
         return this.templateMode;
     }
     

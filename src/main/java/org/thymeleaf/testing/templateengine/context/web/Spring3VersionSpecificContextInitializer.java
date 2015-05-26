@@ -31,7 +31,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.thymeleaf.context.IWebContext;
-import org.thymeleaf.spring3.context.SpringWebContext;
+import org.thymeleaf.context.WebContext;
 import org.thymeleaf.spring3.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 
@@ -66,7 +66,7 @@ final class Spring3VersionSpecificContextInitializer implements ISpringVersionSp
             final HttpServletResponse response, final ServletContext servletContext,
             final Locale locale, final Map<String, Object> variables) {
 
-        return new SpringWebContext(request, response, servletContext, locale, variables, applicationContext);
+        return new WebContext(request, response, servletContext, locale, variables);
 
     }
 

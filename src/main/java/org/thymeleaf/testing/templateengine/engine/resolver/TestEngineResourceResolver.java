@@ -21,15 +21,20 @@ package org.thymeleaf.testing.templateengine.engine.resolver;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.thymeleaf.TemplateProcessingParameters;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.resource.IResource;
+import org.thymeleaf.resource.ReaderResource;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.resource.ITestResourceItem;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -72,12 +77,12 @@ public class TestEngineResourceResolver implements IResourceResolver {
         Validate.notNull(resourceName, "Resource name cannot be null");
         return this.resources.get(resourceName);
     }
-    
 
-    
-    public InputStream getResourceAsStream(
-            final TemplateProcessingParameters templateProcessingParameters,
-            final String resourceName) {
+
+
+    public IResource getResource(
+            final IEngineConfiguration configuration, final IContext context,
+            final String resourceName, final String characterEncoding) {
 
         try {
             
@@ -96,7 +101,21 @@ public class TestEngineResourceResolver implements IResourceResolver {
                 return null;
             }
             
-            return new ByteArrayInputStream(input.getBytes(this.characterEncoding));
+            final InputStream inputStream = new ByteArrayInputStream(input.getBytes(this.characterEncoding));
+
+            if (inputStream == null) {
+                return null;
+            }
+
+            final InputStreamReader reader;
+            if (!StringUtils.isEmptyOrWhitespace(characterEncoding)) {
+                reader = new InputStreamReader(inputStream, characterEncoding);
+            } else {
+                reader = new InputStreamReader(inputStream);
+            }
+
+            return new ReaderResource(resourceName, reader);
+
             
         } catch (final TestEngineExecutionException e) {
             throw e;

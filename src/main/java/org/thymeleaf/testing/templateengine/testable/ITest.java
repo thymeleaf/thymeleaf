@@ -21,6 +21,7 @@ package org.thymeleaf.testing.templateengine.testable;
 
 import java.util.Map;
 
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.messages.ITestMessages;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
@@ -35,7 +36,7 @@ public interface ITest extends ITestable {
     public boolean hasFragmentSpec();
     public String getFragmentSpec();
     
-    public String getTemplateMode();
+    public TemplateMode getTemplateMode();
     public ITestResource getInput();
     public Map<String,ITestResource> getAdditionalInputs();
     public boolean isInputCacheable();

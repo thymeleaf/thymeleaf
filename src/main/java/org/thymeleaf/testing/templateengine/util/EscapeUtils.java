@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.testing.templateengine.util;
 
-import org.thymeleaf.util.ClassLoaderUtils;
-
 /**
  * 
  * @author Daniel Fern&aacute;ndez

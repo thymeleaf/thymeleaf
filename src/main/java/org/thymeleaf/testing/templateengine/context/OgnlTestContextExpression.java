@@ -32,13 +32,13 @@ import org.thymeleaf.expression.Arrays;
 import org.thymeleaf.expression.Bools;
 import org.thymeleaf.expression.Calendars;
 import org.thymeleaf.expression.Dates;
-import org.thymeleaf.expression.ExpressionEvaluatorObjects;
 import org.thymeleaf.expression.Lists;
 import org.thymeleaf.expression.Maps;
 import org.thymeleaf.expression.Numbers;
 import org.thymeleaf.expression.Objects;
 import org.thymeleaf.expression.Sets;
 import org.thymeleaf.expression.Strings;
+import org.thymeleaf.standard.expression.StandardExpressionObjects;
 import org.thymeleaf.util.Validate;
 
 
@@ -92,18 +92,18 @@ public final class OgnlTestContextExpression implements ITestContextExpression {
             objects = new HashMap<String, Object>(30);
 
             if (locale != null) {
-                objects.put(ExpressionEvaluatorObjects.CALENDARS_EVALUATION_VARIABLE_NAME, new Calendars(locale));
-                objects.put(ExpressionEvaluatorObjects.DATES_EVALUATION_VARIABLE_NAME, new Dates(locale));
-                objects.put(ExpressionEvaluatorObjects.NUMBERS_EVALUATION_VARIABLE_NAME, new Numbers(locale));
-                objects.put(ExpressionEvaluatorObjects.STRINGS_EVALUATION_VARIABLE_NAME, new Strings(locale));
+                objects.put(StandardExpressionObjects.CALENDARS_EXPRESSION_OBJECT_NAME, new Calendars(locale));
+                objects.put(StandardExpressionObjects.DATES_EXPRESSION_OBJECT_NAME, new Dates(locale));
+                objects.put(StandardExpressionObjects.NUMBERS_EXPRESSION_OBJECT_NAME, new Numbers(locale));
+                objects.put(StandardExpressionObjects.STRINGS_EXPRESSION_OBJECT_NAME, new Strings(locale));
             }
-            objects.put(ExpressionEvaluatorObjects.BOOLS_EVALUATION_VARIABLE_NAME, new Bools());
-            objects.put(ExpressionEvaluatorObjects.OBJECTS_EVALUATION_VARIABLE_NAME, new Objects());
-            objects.put(ExpressionEvaluatorObjects.ARRAYS_EVALUATION_VARIABLE_NAME, new Arrays());
-            objects.put(ExpressionEvaluatorObjects.LISTS_EVALUATION_VARIABLE_NAME, new Lists());
-            objects.put(ExpressionEvaluatorObjects.SETS_EVALUATION_VARIABLE_NAME, new Sets());
-            objects.put(ExpressionEvaluatorObjects.MAPS_EVALUATION_VARIABLE_NAME, new Maps());
-            objects.put(ExpressionEvaluatorObjects.AGGREGATES_EVALUATION_VARIABLE_NAME, new Aggregates());
+            objects.put(StandardExpressionObjects.BOOLS_EXPRESSION_OBJECT_NAME, new Bools());
+            objects.put(StandardExpressionObjects.OBJECTS_EXPRESSION_OBJECT_NAME, new Objects());
+            objects.put(StandardExpressionObjects.ARRAYS_EXPRESSION_OBJECT_NAME, new Arrays());
+            objects.put(StandardExpressionObjects.LISTS_EXPRESSION_OBJECT_NAME, new Lists());
+            objects.put(StandardExpressionObjects.SETS_EXPRESSION_OBJECT_NAME, new Sets());
+            objects.put(StandardExpressionObjects.MAPS_EXPRESSION_OBJECT_NAME, new Maps());
+            objects.put(StandardExpressionObjects.AGGREGATES_EXPRESSION_OBJECT_NAME, new Aggregates());
 
             EXPRESSION_EVALUATION_UTILITY_OBJECTS_BY_LOCALE.put(locale, objects);
 

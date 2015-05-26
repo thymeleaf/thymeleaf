@@ -24,19 +24,19 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.PatternSpec;
-import org.thymeleaf.TemplateProcessingParameters;
-import org.thymeleaf.exceptions.AlreadyInitializedException;
-import org.thymeleaf.exceptions.NotInitializedException;
-import org.thymeleaf.templateresolver.AlwaysValidTemplateResolutionValidity;
-import org.thymeleaf.templateresolver.ITemplateResolutionValidity;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.cache.AlwaysValidCacheEntryValidity;
+import org.thymeleaf.cache.ICacheEntryValidity;
+import org.thymeleaf.cache.NonCacheableCacheEntryValidity;
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ITemplateResolver;
-import org.thymeleaf.templateresolver.NonCacheableTemplateResolutionValidity;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.testable.ITest;
+import org.thymeleaf.util.PatternSpec;
 import org.thymeleaf.util.Validate;
 
 
@@ -51,132 +51,29 @@ public class TestEngineTemplateResolver implements ITemplateResolver {
     
     private static final Logger logger = LoggerFactory.getLogger(TestEngineTemplateResolver.class);
 
-    
-    private String name = null;
+
+    private String name = this.getClass().getName();
     private Integer order = null;
 
     private final PatternSpec resolvablePatternSpec = new PatternSpec();
     
 
-    private volatile boolean initialized;
-    
-                   
+
+
     public TestEngineTemplateResolver() {
         super();
-        this.initialized = false;
     }
 
-    
-    protected final boolean isInitialized() {
-        return this.initialized;
-    }
-
-    
-    /**
-     * <p>
-     *   Initialize this template resolver.
-     * </p>
-     * <p>
-     *   Once initialized the configuration parameters of this template resolvers
-     *   cannot be changed.
-     * </p>
-     * <p>
-     *   Initialization is automatically triggered by the Template Engine before
-     *   processing the first template.
-     * </p>
-     */
-    public final synchronized void initialize() {
-        
-        if (!isInitialized()) {
-            
-            if (this.name == null) {
-                this.name = this.getClass().getName();
-            }
-            
-            logger.info("[THYMELEAF] INITIALIZING TEMPLATE RESOLVER: " + this.name);
-            
-            /*
-             *  Initialize pattern specs to avoid further modifications
-             */
-            this.resolvablePatternSpec.initialize();
-            
-            initializeSpecific();
-            
-            this.initialized = true;
-
-            logger.info("[THYMELEAF] TEMPLATE RESOLVER INITIALIZED OK");
-            
-        }
-        
-    }
-    
-    
-    /**
-     * <p>
-     *   Initialize specific aspects of a subclass. This method is called during initialization
-     *   of TemplateResolver ({@link #initialize()}) and is meant for being overridden by subclasses. 
-     * </p>
-     */
-    protected void initializeSpecific() {
-        // Nothing to be executed here. Meant for extension
-    }
-    
-
-    /**
-     * <p>
-     *   Check the template resolver is not initialized, and throw an exception if it is.
-     * </p>
-     * <p>
-     *   Calling this method allows to protect calls to methods that change the configuration,
-     *   ensuring the template resolver has not been initialized yet.
-     * </p>
-     */
-    protected final void checkNotInitialized() {
-        if (isInitialized()) {
-            throw new AlreadyInitializedException(
-                    "Cannot modify template resolver when it has already been initialized");
-        }
-    }
-    
-    
-    /**
-     * <p>
-     *   Check the template resolver is initialized, and throw an exception if it is not.
-     * </p>
-     * <p>
-     *   Calling this method allows to protect calls to methods that need the template
-     *   resolver to be already initialized.
-     * </p>
-     */
-    protected final void checkInitialized() {
-        if (!isInitialized()) {
-            throw new NotInitializedException("Template Resolver has not been initialized");
-        }
-    }
-    
 
 
     /**
      * <p>
      *   Returns the name of the template resolver
      * </p>
-     * 
+     *
      * @return the name of the template resolver
      */
     public String getName() {
-        checkInitialized();
-        return this.name;
-    }
-
-    
-    /**
-     * <p>
-     *   Uninitialized method <b>meant only for use by subclasses</b>. 
-     * </p>
-     * 
-     * @return the name
-     */
-    protected String unsafeGetName() {
         return this.name;
     }
 
@@ -185,15 +82,14 @@ public class TestEngineTemplateResolver implements ITemplateResolver {
      * <p>
      *   Sets a new name for the Template Resolver.
      * </p>
-     * 
+     *
      * @param name the new name
      */
     public void setName(final String name) {
-        checkNotInitialized();
         this.name = name;
     }
-    
-    
+
+
     /**
      * <p>
      *   Returns the order in which this template resolver will be asked to resolve
@@ -202,23 +98,10 @@ public class TestEngineTemplateResolver implements ITemplateResolver {
      * <p>
      *   Order should start with 1.
      * </p>
-     * 
+     *
      * @return the order in which this template resolver will be called in the chain.
      */
     public Integer getOrder() {
-        checkInitialized();
-        return this.order;
-    }
-
-    
-    /**
-     * <p>
-     *   Unsynchronized method <b>meant only for use by subclasses</b>. 
-     * </p>
-     * 
-     * @return the order
-     */
-    protected Integer unsafeGetOrder() {
         return this.order;
     }
 
@@ -227,31 +110,28 @@ public class TestEngineTemplateResolver implements ITemplateResolver {
      * <p>
      *   Sets a new order for the template engine in the chain. Order should start with 1.
      * </p>
-     * 
+     *
      * @param order the new order.
      */
     public void setOrder(final Integer order) {
-        checkNotInitialized();
         this.order = order;
     }
 
 
 
-    
-    
-    
-    public TemplateResolution resolveTemplate(
-            final TemplateProcessingParameters templateProcessingParameters) {
 
-        checkInitialized();
-        
-        Validate.notNull(templateProcessingParameters, "Template Processing Parameters cannot be null");
+
+
+    public TemplateResolution resolveTemplate(
+            final IEngineConfiguration configuration, final IContext context, final String templateName) {
+
+        Validate.notNull(configuration, "Configuration cannot be null");
 
         final ITest test = TestExecutor.getThreadTest(); 
         final String testName = TestExecutor.getThreadTestName();
 
         // Check template mode
-        final String templateMode = test.getTemplateMode();
+        final TemplateMode templateMode = test.getTemplateMode();
         if (templateMode == null) {
             throw new TestEngineExecutionException(
                     "Template mode is null for test \"" + testName + "\", which is forbidden");
@@ -278,17 +158,17 @@ public class TestEngineTemplateResolver implements ITemplateResolver {
                 new TestEngineResourceResolver(allInputs, TEST_TEMPLATE_CONVERSION_CHARSET);
         
         // Compute validity according to the "inputCacheable" property established at the test
-        final ITemplateResolutionValidity validity =
-                (test.isInputCacheable()? 
-                        AlwaysValidTemplateResolutionValidity.INSTANCE :
-                        NonCacheableTemplateResolutionValidity.INSTANCE);
+        final ICacheEntryValidity validity =
+                (test.isInputCacheable()?
+                        AlwaysValidCacheEntryValidity.INSTANCE :
+                        NonCacheableCacheEntryValidity.INSTANCE);
                 
         
         
         // Create the template resolution object with all the gathered info
         return new TemplateResolution(
-                templateProcessingParameters.getTemplateName(), 
-                templateProcessingParameters.getTemplateName(), 
+                templateName,
+                templateName,
                 resourceResolver, 
                 TEST_TEMPLATE_CONVERSION_CHARSET, 
                 templateMode, 

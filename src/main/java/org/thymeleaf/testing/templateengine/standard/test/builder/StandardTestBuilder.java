@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.messages.ITestMessages;
@@ -134,7 +135,7 @@ public class StandardTestBuilder implements IStandardTestBuilder {
         }
         
         if (templateMode != null && templateMode.hasValue()) {
-            test.setTemplateMode((String)templateMode.getValue(), templateMode.getValueType());
+            test.setTemplateMode((TemplateMode)templateMode.getValue(), templateMode.getValueType());
         }
         
         if (context != null && context.hasValue()) {

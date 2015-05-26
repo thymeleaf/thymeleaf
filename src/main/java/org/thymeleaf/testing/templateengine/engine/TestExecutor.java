@@ -31,9 +31,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.testing.templateengine.context.IProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.context.web.WebProcessingContextBuilder;
@@ -363,7 +362,7 @@ public final class TestExecutor {
         final String fragmentSpec = test.getFragmentSpec();
         final String[] markupSelectors = fragmentSpec == null? null : new String[] { fragmentSpec };
         
-        final IProcessingContext processingContext = this.processingContextBuilder.build(test);
+        final IContext processingContext = this.processingContextBuilder.build(test);
         
         final StringWriter writer = new StringWriter();
 
