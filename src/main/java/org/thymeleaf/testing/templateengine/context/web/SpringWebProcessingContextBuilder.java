@@ -54,11 +54,6 @@ import org.thymeleaf.testing.templateengine.testable.ITest;
 
 public class SpringWebProcessingContextBuilder extends WebProcessingContextBuilder {
 
-    /**
-     * @deprecated Not needed anymore. All candidate objects in model will now be automatically bound.
-     */
-    @Deprecated
-    public final static String DEFAULT_BINDING_VARIABLE_NAME = "binding";
 
     public final static String DEFAULT_BINDING_MODEL_VARIABLE_NAME = "model";
     
@@ -177,52 +172,6 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
 
     }
 
-
-
-    /**
-     * <p>
-     *   Returns the name of the variables that must be considered "binding models", usually
-     *   those that serve as form-backing beans.
-     * </p>
-     * <p>
-     *   Default behaviour is:
-     * </p>
-     * <ul>
-     *   <li>Look for a context variable called <tt>binding</tt>. If this variable exists,
-     *       it will be considered to contain the name (single-valued) or names (list) of
-     *       the binding variables (as literal/s).</li>
-     *   <li>If <tt>binding</tt> does not exist, look for a context variable called <tt>model</tt>.
-     *       The object contained in that variable will be considered to be the binding model itself.</li>
-     * </ul>
-     * 
-     * @return the binding variable names
-     * @deprecated Not needed anymore. All valid candidate objects in model will now be automatically bound.
-     */
-    @Deprecated
-    @SuppressWarnings("unused")
-    protected List<String> getBindingVariableNames(
-            final ITest test,
-            final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
-            final Locale locale, final Map<String,Object> variables) {
-        
-        final Object bindingObj = variables.get(DEFAULT_BINDING_VARIABLE_NAME);
-        
-        if (bindingObj == null) {
-            return Collections.singletonList(DEFAULT_BINDING_MODEL_VARIABLE_NAME);
-        }
-        
-        if (bindingObj instanceof List) {
-            final List<String> variableNames = new ArrayList<String>();
-            for (final Object bindingObjValue : ((List<?>)bindingObj)) {
-                variableNames.add(bindingObjValue != null? bindingObjValue.toString() : null);
-            }
-            return variableNames;
-        }
-        
-        return Collections.singletonList(bindingObj.toString());
-        
-    }
-    
     
     
     @SuppressWarnings("unused")
