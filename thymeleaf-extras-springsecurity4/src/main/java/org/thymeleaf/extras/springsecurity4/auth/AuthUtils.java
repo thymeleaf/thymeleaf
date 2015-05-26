@@ -20,7 +20,6 @@
 package org.thymeleaf.extras.springsecurity4.auth;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.FilterChain;
@@ -47,12 +46,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
-import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.util.Validate;
 
 
@@ -201,38 +198,16 @@ public final class AuthUtils {
          * This will allow SpringSecurity expressions to include any variables from
          * the IContext just by accessing them as properties of the "#vars" utility object.
          */
-        Map<String,Object> contextVariables = null;
-        if (processingContext instanceof Arguments) {
-            // Try to initialize the context variables by asking the SpEL expression
-            // evaluator object (which might be a subclass of the standard one) to create
-            // this variable map.
-            
-            final Arguments arguments = (Arguments) processingContext;
-            final IStandardVariableExpressionEvaluator expressionEvaluator =
-                    StandardExpressions.getVariableExpressionEvaluator(arguments.getConfiguration());
+        IExpressionObjects expressionObjects = processingContext.getExpressionObjects();
 
-            contextVariables =
-                    SpringVersionSpecificUtils.computeExpressionObjectsFromExpressionEvaluator(arguments, expressionEvaluator);
-
-        }
-        
-        if (contextVariables == null) {
-            // if we could not create it the more integrated way, just do it the hard-wired way
-            contextVariables = new HashMap<String, Object>();
-            
-            final Map<String,Object> expressionObjects = processingContext.getExpressionObjects();
-            if (expressionObjects != null) {
-                contextVariables.putAll(expressionObjects);
-            }
-            
-        }
-        
-        
         // We add Thymeleaf's wrapper on top of the SpringSecurity basic evaluation context
+        // We need to do this through a version-independent wrapper because the classes we will use for the
+        // EvaluationContext wrapper are in the org.thymeleaf.spring3.* or org.thymeleaf.spring4.* packages,
+        // depending on the version of Spring we are using.
         final EvaluationContext wrappedEvaluationContext =
-                SpringVersionSpecificUtils.wrapEvaluationContext(evaluationContext, contextVariables);
+                SpringVersionSpecificUtils.wrapEvaluationContext(evaluationContext, expressionObjects);
 
-        
+
         if (ExpressionUtils.evaluateAsBoolean(expressionObject, wrappedEvaluationContext)) {
 
             if (logger.isTraceEnabled()) {

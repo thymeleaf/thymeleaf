@@ -19,11 +19,8 @@
  */
 package org.thymeleaf.extras.springsecurity4.auth;
 
-import java.util.Map;
-
 import org.springframework.expression.EvaluationContext;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
+import org.thymeleaf.expression.IExpressionObjects;
 
 
 /**
@@ -36,9 +33,6 @@ import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
 interface ISpringVersionSpecificUtility {
 
     EvaluationContext wrapEvaluationContext(
-            final EvaluationContext evaluationContext, final Map<String,Object> contextVariables);
-
-    Map<String,Object> computeExpressionObjectsFromExpressionEvaluator(
-            final Arguments arguments, final IStandardVariableExpressionEvaluator expressionEvaluator);
+            final EvaluationContext evaluationContext, final IExpressionObjects expresionObjects);
 
 }

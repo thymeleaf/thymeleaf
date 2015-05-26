@@ -19,15 +19,12 @@
  */
 package org.thymeleaf.extras.springsecurity4.auth;
 
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.EvaluationContext;
-import org.thymeleaf.Arguments;
 import org.thymeleaf.exceptions.ConfigurationException;
+import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.extras.springsecurity4.util.SpringVersionUtils;
-import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
 import org.thymeleaf.util.ClassLoaderUtils;
 
 
@@ -99,37 +96,18 @@ final class SpringVersionSpecificUtils {
 
 
     static EvaluationContext wrapEvaluationContext(
-            final EvaluationContext evaluationContext, final Map<String,Object> contextVariables) {
+            final EvaluationContext evaluationContext, final IExpressionObjects expresionObjects) {
 
         if (spring4Delegate != null) {
-            return spring4Delegate.wrapEvaluationContext(evaluationContext, contextVariables);
+            return spring4Delegate.wrapEvaluationContext(evaluationContext, expresionObjects);
         }
         if (spring3Delegate != null) {
-            return spring3Delegate.wrapEvaluationContext(evaluationContext, contextVariables);
+            return spring3Delegate.wrapEvaluationContext(evaluationContext, expresionObjects);
         }
 
         throw new ConfigurationException(
                 "The authorization infrastructure could not create initializer for the specific version of Spring being" +
                 "used. Currently Spring 3.0, 3.1, 3.2 and 4.x are supported.");
-
-    }
-
-
-
-
-    static Map<String,Object> computeExpressionObjectsFromExpressionEvaluator(
-            final Arguments arguments, final IStandardVariableExpressionEvaluator expressionEvaluator) {
-
-        if (spring4Delegate != null) {
-            return spring4Delegate.computeExpressionObjectsFromExpressionEvaluator(arguments, expressionEvaluator);
-        }
-        if (spring3Delegate != null) {
-            return spring3Delegate.computeExpressionObjectsFromExpressionEvaluator(arguments, expressionEvaluator);
-        }
-
-        throw new ConfigurationException(
-                "The authorization infrastructure could not create initializer for the specific version of Spring being" +
-                        "used. Currently Spring 3.0, 3.1, 3.2 and 4.x are supported.");
 
     }
 

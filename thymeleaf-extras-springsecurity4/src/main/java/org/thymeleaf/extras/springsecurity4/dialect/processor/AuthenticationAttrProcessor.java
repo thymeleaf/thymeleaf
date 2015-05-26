@@ -20,10 +20,13 @@
 package org.thymeleaf.extras.springsecurity4.dialect.processor;
 
 import org.springframework.security.core.Authentication;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Element;
+import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.extras.springsecurity4.auth.AuthUtils;
-import org.thymeleaf.processor.attr.AbstractTextChildModifierAttrProcessor;
+import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  * Outputs a property of the authentication object, similar to the Spring
@@ -31,53 +34,46 @@ import org.thymeleaf.processor.attr.AbstractTextChildModifierAttrProcessor;
  * 
  * @author Daniel Fern&aacute;ndez
  */
-public class AuthenticationAttrProcessor
-        extends AbstractTextChildModifierAttrProcessor {
+public final class AuthenticationAttrProcessor extends AbstractAttributeTagProcessor {
 
     
     public static final int ATTR_PRECEDENCE = 1300;
     public static final String ATTR_NAME = "authentication";
-    
-    
-    
-    
+
+
+
+
     public AuthenticationAttrProcessor() {
-        super(ATTR_NAME);
+        super(TemplateMode.HTML, null, false, ATTR_NAME, true, ATTR_PRECEDENCE);
     }
 
-    
-    
+
+
+
     @Override
-    public int getPrecedence() {
-        return ATTR_PRECEDENCE;
-    }
-    
+    protected void doProcess(
+            final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue,
+            final IElementStructureHandler structureHandler) {
 
-    
-    
-    @Override
-    protected String getText(final Arguments arguments, final Element element,
-            final String attributeName) {
+        tag.getAttributes().removeAttribute(attributeName);
 
+        final String attrValue = (attributeValue == null? null : attributeValue.trim());
 
-        final String attributeValue = element.getAttributeValue(attributeName);
-
-        if (attributeValue == null || attributeValue.trim().equals("")) {
-            return null;
+        if (attrValue == null || attrValue.equals("")) {
+            return;
         }
-        
+
         final Authentication authentication = AuthUtils.getAuthenticationObject();
-        final Object authenticationProperty = 
-                AuthUtils.getAuthenticationProperty(authentication, attributeValue);
-        
-        if (authenticationProperty == null) {
-            return null;
-        }
-        
-        return authenticationProperty.toString();
-        
-    }
+        final Object authenticationProperty = AuthUtils.getAuthenticationProperty(authentication, attrValue);
 
+        if (authenticationProperty == null) {
+            return;
+        }
+
+        structureHandler.setBody(authenticationProperty.toString(), false);
+
+    }
 
     
 }

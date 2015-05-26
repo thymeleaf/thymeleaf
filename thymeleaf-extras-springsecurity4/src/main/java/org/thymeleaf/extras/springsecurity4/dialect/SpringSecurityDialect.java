@@ -30,10 +30,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.Authentication;
 import org.thymeleaf.context.IContext;
-import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.dialect.AbstractDialect;
-import org.thymeleaf.dialect.IExpressionEnhancingDialect;
+import org.thymeleaf.dialect.IExpressionObjectsDialect;
+import org.thymeleaf.dialect.IProcessorDialect;
+import org.thymeleaf.expression.IExpressionObjectsFactory;
 import org.thymeleaf.extras.springsecurity4.auth.AuthUtils;
 import org.thymeleaf.extras.springsecurity4.auth.Authorization;
 import org.thymeleaf.extras.springsecurity4.dialect.processor.AuthenticationAttrProcessor;
@@ -49,9 +50,8 @@ import org.thymeleaf.processor.IProcessor;
  * @author Daniel Fern&aacute;ndez
  *
  */
-public class SpringSecurityDialect 
-        extends AbstractDialect 
-        implements IExpressionEnhancingDialect {
+public class SpringSecurityDialect
+        extends AbstractDialect implements IProcessorDialect, IExpressionObjectsDialect {
 
     public static final String DEFAULT_PREFIX = "sec";
     
@@ -69,34 +69,28 @@ public class SpringSecurityDialect
         return DEFAULT_PREFIX;
     }
 
-    
-    public boolean isLenient() {
-        return false;
-    }
 
 
 
     
-    @Override
     public Set<IProcessor> getProcessors() {
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
         processors.add(new AuthenticationAttrProcessor());
-        processors.add(new AuthorizeAttrProcessor());
-        // synonym (sec:authorize = sec:authorize-expr) for similarity with 
+        // synonym (sec:authorize = sec:authorize-expr) for similarity with
         // "authorize-url" and "autorize-acl"
+        processors.add(new AuthorizeAttrProcessor(AuthorizeAttrProcessor.ATTR_NAME));
         processors.add(new AuthorizeAttrProcessor(AuthorizeAttrProcessor.ATTR_NAME_EXPR));
         processors.add(new AuthorizeUrlAttrProcessor());
         processors.add(new AuthorizeAclAttrProcessor());
         return processors;
     }
 
-    
 
-    
-    
-    public Map<String, Object> getAdditionalExpressionObjects(
-            final IProcessingContext processingContext) {
-        
+
+
+
+    public IExpressionObjectsFactory getExpressionObjectsFactory() {
+
         final IContext context = processingContext.getContext();
         final IWebContext webContext =
                 (context instanceof IWebContext? (IWebContext)context : null);

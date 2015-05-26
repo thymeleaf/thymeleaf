@@ -19,13 +19,10 @@
  */
 package org.thymeleaf.extras.springsecurity4.auth;
 
-import java.util.Map;
-
 import org.springframework.expression.EvaluationContext;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.spring3.expression.SpelVariableExpressionEvaluator;
+import org.thymeleaf.expression.IExpressionObjects;
+import org.thymeleaf.spring3.expression.IThymeleafEvaluationContext;
 import org.thymeleaf.spring3.expression.ThymeleafEvaluationContextWrapper;
-import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
 
 
 /**
@@ -47,21 +44,10 @@ final class Spring3VersionSpecificUtility implements ISpringVersionSpecificUtili
 
 
     public EvaluationContext wrapEvaluationContext(
-            final EvaluationContext evaluationContext, final Map<String,Object> contextVariables) {
-        return new ThymeleafEvaluationContextWrapper(evaluationContext, contextVariables);
-    }
-
-
-
-    public Map<String,Object> computeExpressionObjectsFromExpressionEvaluator(
-            final Arguments arguments, final IStandardVariableExpressionEvaluator expressionEvaluator) {
-
-        final SpelVariableExpressionEvaluator spelExprEval =
-                ((expressionEvaluator != null && expressionEvaluator instanceof SpelVariableExpressionEvaluator)?
-                        (SpelVariableExpressionEvaluator) expressionEvaluator :
-                        SpelVariableExpressionEvaluator.INSTANCE);
-        return  spelExprEval.computeExpressionObjects(arguments.getConfiguration(), arguments);
-
+            final EvaluationContext evaluationContext, final IExpressionObjects expresionObjects) {
+        final IThymeleafEvaluationContext thymeleafEvaluationContext = new ThymeleafEvaluationContextWrapper(evaluationContext);
+        thymeleafEvaluationContext.setExpressionObjects(expresionObjects);
+        return thymeleafEvaluationContext;
     }
 
 

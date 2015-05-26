@@ -23,21 +23,21 @@ import javax.servlet.ServletContext;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.Configuration;
-import org.thymeleaf.context.IContext;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.context.IWebContext;
-import org.thymeleaf.dom.Element;
+import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.extras.springsecurity3.auth.AclAuthUtils;
 import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
-import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
+import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.expression.TextLiteralExpression;
+import org.thymeleaf.standard.processor.AbstractStandardConditionalVisibilityTagProcessor;
 
 /**
  * Takes the form sec:authorize-acl="object :: permissions", renders the element
@@ -47,8 +47,7 @@ import org.thymeleaf.standard.expression.TextLiteralExpression;
  * 
  * @author Daniel Fern&aacute;ndez
  */
-public class AuthorizeAclAttrProcessor
-        extends AbstractConditionalVisibilityAttrProcessor {
+public final class AuthorizeAclAttrProcessor extends AbstractStandardConditionalVisibilityTagProcessor {
 
 
     public static final int ATTR_PRECEDENCE = 300;
@@ -60,69 +59,62 @@ public class AuthorizeAclAttrProcessor
     
     
     public AuthorizeAclAttrProcessor() {
-        super(ATTR_NAME);
-    }
-
-    
-    
-    @Override
-    public int getPrecedence() {
-        return ATTR_PRECEDENCE;
+        super(ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 
 
     @Override
-    protected boolean isVisible(final Arguments arguments, final Element element,
-            final String attributeName) {
+    protected boolean isVisible(
+            final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue) {
 
-        String attributeValue = element.getAttributeValue(attributeName);
-        
-        if (attributeValue == null || attributeValue.trim().equals("")) {
+        final String attrValue = (attributeValue == null? null : attributeValue.trim());
+
+        if (attrValue == null || attrValue.equals("")) {
             return false;
         }
-        attributeValue = attributeValue.trim();
 
-        final IContext context = arguments.getContext();
-        if (!(context instanceof IWebContext)) {
+        if (!processingContext.isWeb()) {
             throw new ConfigurationException(
                     "Thymeleaf execution context is not a web context (implementation of " +
-                    IWebContext.class.getName() + ". Spring Security integration can only be used in " +
-                    "web environements.");
+                    IWebContext.class.getName() + "). Spring Security integration can only be used in " +
+                    "web environments.");
         }
-        final IWebContext webContext = (IWebContext) context;
+
+        final IWebContext webContext = (IWebContext) processingContext.getVariablesMap();
         final ServletContext servletContext = webContext.getServletContext();
-        
+
         final Authentication authentication = AuthUtils.getAuthenticationObject();
         if (authentication == null) {
             return false;
         }
 
-        final ApplicationContext applicationContext = AuthUtils.getContext(servletContext);  
-        
-        final Configuration configuration = arguments.getConfiguration();
-        
-        final int separatorPos = attributeValue.lastIndexOf(VALUE_SEPARATOR);
+        final ApplicationContext applicationContext = AuthUtils.getContext(servletContext);
+
+        final IEngineConfiguration configuration = processingContext.getConfiguration();
+
+        final int separatorPos = attrValue.lastIndexOf(VALUE_SEPARATOR);
         if (separatorPos == -1) {
             throw new TemplateProcessingException(
-                    "Could not parse \"" + attributeValue + "\" as an access control list " + 
-                    "expression. Syntax should be \"[domain object expression] :: [permissions]\"");
+                    "Could not parse \"" + attributeValue + "\" as an access control list " +
+                            "expression. Syntax should be \"[domain object expression] :: [permissions]\"");
         }
-        
-        final String domainObjectExpression = attributeValue.substring(0,separatorPos).trim();
-        final String permissionsExpression = attributeValue.substring(separatorPos + 2).trim();
+
+        final String domainObjectExpression = attrValue.substring(0,separatorPos).trim();
+        final String permissionsExpression = attrValue.substring(separatorPos + 2).trim();
 
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
 
         final IStandardExpression domainObjectExpr =
-                getExpressionDefaultToLiteral(expressionParser, configuration, arguments, domainObjectExpression);
+                getExpressionDefaultToLiteral(expressionParser, processingContext, domainObjectExpression);
         final IStandardExpression permissionsExpr =
-                getExpressionDefaultToLiteral(expressionParser, configuration, arguments, permissionsExpression);
+                getExpressionDefaultToLiteral(expressionParser, processingContext, permissionsExpression);
 
-        final Object domainObject = domainObjectExpr.execute(configuration, arguments);
-        
-        final Object permissionsObject = permissionsExpr.execute(configuration, arguments);
-        final String permissionsStr = 
+        final Object domainObject = domainObjectExpr.execute(processingContext);
+
+        final Object permissionsObject = permissionsExpr.execute(processingContext);
+        final String permissionsStr =
                 (permissionsObject == null? null : permissionsObject.toString());
 
         return AclAuthUtils.authorizeUsingAccessControlList(
@@ -130,15 +122,14 @@ public class AuthorizeAclAttrProcessor
 
     }
 
+
+
     
     
-    
-    
-    protected static IStandardExpression getExpressionDefaultToLiteral(final IStandardExpressionParser expressionParser,
-            final Configuration configuration, final IProcessingContext processingContext, final String input) {
+    protected static IStandardExpression getExpressionDefaultToLiteral(
+            final IStandardExpressionParser expressionParser, final IProcessingContext processingContext, final String input) {
         
-        final IStandardExpression expression =
-                expressionParser.parseExpression(configuration, processingContext, input);
+        final IStandardExpression expression = expressionParser.parseExpression(processingContext, input);
         if (expression == null) {
             return new TextLiteralExpression(input);
         }

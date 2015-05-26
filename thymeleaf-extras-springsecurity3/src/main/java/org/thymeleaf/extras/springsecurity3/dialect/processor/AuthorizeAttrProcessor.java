@@ -24,13 +24,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.Authentication;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.context.IContext;
+import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.context.IWebContext;
-import org.thymeleaf.dom.Element;
+import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
-import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
+import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.standard.processor.AbstractStandardConditionalVisibilityTagProcessor;
 
 /**
  * Renders the element children (*tag content*) if the authenticated user is
@@ -39,8 +39,7 @@ import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
  * 
  * @author Daniel Fern&aacute;ndez
  */
-public class AuthorizeAttrProcessor
-        extends AbstractConditionalVisibilityAttrProcessor {
+public final class AuthorizeAttrProcessor extends AbstractStandardConditionalVisibilityTagProcessor {
 
     
     public static final int ATTR_PRECEDENCE = 300;
@@ -50,45 +49,36 @@ public class AuthorizeAttrProcessor
     
     
     
-    public AuthorizeAttrProcessor() {
-        super(ATTR_NAME);
-    }
-
-    
     public AuthorizeAttrProcessor(final String attrName) {
-        super(attrName);
-    }
-
-    
-    
-    @Override
-    public int getPrecedence() {
-        return ATTR_PRECEDENCE;
+        super(attrName, ATTR_PRECEDENCE);
     }
 
 
 
-    @Override
-    protected boolean isVisible(final Arguments arguments, final Element element,
-            final String attributeName) {
 
-        final String attributeValue = element.getAttributeValue(attributeName);
-        
-        if (attributeValue == null || attributeValue.trim().equals("")) {
+
+
+    @Override
+    protected boolean isVisible(
+            final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue) {
+
+        final String attrValue = (attributeValue == null? null : attributeValue.trim());
+
+        if (attrValue == null || attrValue.equals("")) {
             return false;
         }
-        
-        final IContext context = arguments.getContext();
-        if (!(context instanceof IWebContext)) {
+
+        if (!processingContext.isWeb()) {
             throw new ConfigurationException(
                     "Thymeleaf execution context is not a web context (implementation of " +
-                    IWebContext.class.getName() + ". Spring Security integration can only be used in " +
-                    "web environements.");
+                    IWebContext.class.getName() + "). Spring Security integration can only be used in " +
+                    "web environments.");
         }
-        final IWebContext webContext = (IWebContext) context;
+        final IWebContext webContext = (IWebContext) processingContext.getVariablesMap();
         
-        final HttpServletRequest request = webContext.getHttpServletRequest();
-        final HttpServletResponse response = webContext.getHttpServletResponse();
+        final HttpServletRequest request = webContext.getRequest();
+        final HttpServletResponse response = webContext.getResponse();
         final ServletContext servletContext = webContext.getServletContext();
         
         final Authentication authentication = AuthUtils.getAuthenticationObject();
@@ -98,7 +88,7 @@ public class AuthorizeAttrProcessor
         }
         
         return AuthUtils.authorizeUsingAccessExpression(
-                arguments, attributeValue, authentication, request, response, servletContext);
+                processingContext, attrValue, authentication, request, response, servletContext);
         
     }
     
