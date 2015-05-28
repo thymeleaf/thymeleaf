@@ -17,9 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.dialect;
+package org.thymeleaf.expression;
 
-import org.thymeleaf.expression.IExpressionObjectFactory;
+import org.thymeleaf.util.Validate;
 
 
 /**
@@ -28,8 +28,31 @@ import org.thymeleaf.expression.IExpressionObjectFactory;
  * @since 3.0.0
  *
  */
-public interface IExpressionObjectsDialect extends IDialect {
+public final class ExpressionObjectDefinition {
 
-    public IExpressionObjectFactory getExpressionObjectFactory();
+    private final String name;
+    private final String description;
+    private final boolean cacheable;
+
+
+    public ExpressionObjectDefinition(final String name, final String description, final boolean cacheable) {
+        super();
+        Validate.notEmpty(name, "Expression object name cannot be null or empty");
+        this.name = name;
+        this.description = description;
+        this.cacheable = cacheable;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public boolean isCacheable() {
+        return this.cacheable;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
 
 }

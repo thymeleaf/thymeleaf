@@ -36,7 +36,8 @@ import org.thymeleaf.dialect.IPostProcessorDialect;
 import org.thymeleaf.dialect.IPreProcessorDialect;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.ITemplateHandler;
-import org.thymeleaf.expression.IExpressionObjectsFactory;
+import org.thymeleaf.expression.ExpressionObjectDefinition;
+import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.processor.PrecedenceProcessorComparator;
@@ -195,14 +196,14 @@ final class ConfigurationPrinterHelper {
 
             final IExpressionObjectsDialect dialect = (IExpressionObjectsDialect)idialect;
 
-            final IExpressionObjectsFactory expressionObjectFactory = dialect.getExpressionObjectsFactory();
+            final IExpressionObjectFactory expressionObjectFactory = dialect.getExpressionObjectFactory();
             if (expressionObjectFactory != null) {
 
-                final Map<String,String> expressionObjectDefinitions = expressionObjectFactory.getObjectDefinitions();
+                final Map<String,ExpressionObjectDefinition> expressionObjectDefinitions = expressionObjectFactory.getObjectDefinitions();
                 if (expressionObjectDefinitions != null && !expressionObjectDefinitions.isEmpty()) {
                     logBuilder.line("[THYMELEAF]     * Expression Objects:");
-                    for (final Map.Entry<String,String> expressionObjectsEntry : expressionObjectDefinitions.entrySet()) {
-                        logBuilder.line("[THYMELEAF]         * \"{}\": {}", new Object[] {expressionObjectsEntry.getKey(), expressionObjectsEntry.getValue()});
+                    for (final Map.Entry<String,ExpressionObjectDefinition> expressionObjectsEntry : expressionObjectDefinitions.entrySet()) {
+                        logBuilder.line("[THYMELEAF]         * \"#{}\": {}", new Object[] {expressionObjectsEntry.getKey(), expressionObjectsEntry.getValue().getDescription()});
                     }
                 }
 

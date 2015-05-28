@@ -30,10 +30,10 @@ import org.thymeleaf.context.IProcessingContext;
  * @since 3.0.0
  *
  */
-public interface IExpressionObjectsFactory {
+public interface IExpressionObjectFactory {
 
-    public IExpressionObjects buildExpressionObjects(final IProcessingContext processingContext);
+    public Map<String,ExpressionObjectDefinition> getObjectDefinitions();
 
-    public Map<String,String> getObjectDefinitions();
+    public Object buildObject(final IProcessingContext processingContext, final String expressionObjectName);
 
 }

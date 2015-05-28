@@ -32,7 +32,7 @@ import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.ElementDefinitions;
 import org.thymeleaf.engine.ITemplateHandler;
-import org.thymeleaf.expression.IExpressionObjectsFactory;
+import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.processor.comment.ICommentProcessor;
@@ -196,7 +196,7 @@ public class EngineConfiguration implements IEngineConfiguration {
     }
 
 
-    public IExpressionObjectsFactory getExpressionObjectFactory() {
+    public IExpressionObjectFactory getExpressionObjectFactory() {
         return this.dialectSetConfiguration.getExpressionObjectFactory();
     }
 

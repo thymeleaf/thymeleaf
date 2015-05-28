@@ -27,14 +27,14 @@ import java.util.Set;
 import org.thymeleaf.dialect.AbstractProcessorDialect;
 import org.thymeleaf.dialect.IExecutionAttributesDialect;
 import org.thymeleaf.dialect.IExpressionObjectsDialect;
-import org.thymeleaf.expression.IExpressionObjectsFactory;
+import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.OGNLVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.StandardConversionService;
-import org.thymeleaf.standard.expression.StandardExpressionObjectsFactory;
+import org.thymeleaf.standard.expression.StandardExpressionObjectFactory;
 import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.processor.StandardActionTagProcessor;
@@ -92,7 +92,7 @@ public class StandardDialect
     private static final String PREFIX = "th";
 
 
-    private final IExpressionObjectsFactory STANDARD_EXPRESSION_OBJECTS_FACTORY = new StandardExpressionObjectsFactory();
+    private final IExpressionObjectFactory STANDARD_EXPRESSION_OBJECTS_FACTORY = new StandardExpressionObjectFactory();
 
 
     // We will avoid setting this variableExpressionEvaluator variable to "OgnlVariableExprtessionEvalutator.INSTANCE"
@@ -283,7 +283,7 @@ public class StandardDialect
 
 
 
-    public IExpressionObjectsFactory getExpressionObjectsFactory() {
+    public IExpressionObjectFactory getExpressionObjectFactory() {
         return STANDARD_EXPRESSION_OBJECTS_FACTORY;
     }
 

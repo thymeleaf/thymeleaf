@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.expression.ExpressionObjects;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.util.Validate;
 
@@ -84,7 +85,7 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
 
     public IExpressionObjects getExpressionObjects() {
         if (this.expressionObjects == null) {
-            this.expressionObjects = this.configuration.getExpressionObjectFactory().buildExpressionObjects(this);
+            this.expressionObjects = new ExpressionObjects(this, this.configuration.getExpressionObjectFactory());
         }
         return this.expressionObjects;
     }
