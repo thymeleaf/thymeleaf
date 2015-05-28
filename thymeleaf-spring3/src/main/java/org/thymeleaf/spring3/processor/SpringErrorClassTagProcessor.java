@@ -57,8 +57,8 @@ public final class SpringErrorClassTagProcessor extends AbstractAttributeTagProc
 
 
 
-    public SpringErrorClassTagProcessor() {
-        super(TemplateMode.HTML, null, false, ATTR_NAME, true,ATTR_PRECEDENCE);
+    public SpringErrorClassTagProcessor(final String dialectPrefix) {
+        super(TemplateMode.HTML, dialectPrefix, null, false, ATTR_NAME, true,ATTR_PRECEDENCE);
     }
 
 
@@ -74,7 +74,7 @@ public final class SpringErrorClassTagProcessor extends AbstractAttributeTagProc
         final BindStatus bindStatus = computeBindStatus(processingContext, tag);
         if (bindStatus == null) {
             final AttributeName fieldAttributeName =
-                    AttributeNames.forHTMLName(getDialectPrefix(), AbstractSpringFieldTagProcessor.ATTR_NAME);
+                    AttributeNames.forHTMLName(attributeName.getPrefix(), AbstractSpringFieldTagProcessor.ATTR_NAME);
             throw new TemplateProcessingException(
                     "Cannot apply \"" + attributeName + "\": this attribute requires the existence of " +
                     "a \"name\" (or " + Arrays.asList(fieldAttributeName.getCompleteAttributeNames()) + ") attribute " +

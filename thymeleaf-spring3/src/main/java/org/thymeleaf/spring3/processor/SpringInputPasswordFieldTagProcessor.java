@@ -44,8 +44,8 @@ public final class SpringInputPasswordFieldTagProcessor extends AbstractSpringFi
     
 
     
-    public SpringInputPasswordFieldTagProcessor() {
-        super(INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { PASSWORD_INPUT_TYPE_ATTR_VALUE });
+    public SpringInputPasswordFieldTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { PASSWORD_INPUT_TYPE_ATTR_VALUE });
     }
 
 

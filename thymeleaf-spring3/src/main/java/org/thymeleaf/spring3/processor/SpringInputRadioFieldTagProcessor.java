@@ -44,8 +44,8 @@ public final class SpringInputRadioFieldTagProcessor extends AbstractSpringField
 
 
     
-    public SpringInputRadioFieldTagProcessor() {
-        super(INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { RADIO_INPUT_TYPE_ATTR_VALUE });
+    public SpringInputRadioFieldTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { RADIO_INPUT_TYPE_ATTR_VALUE });
     }
 
 

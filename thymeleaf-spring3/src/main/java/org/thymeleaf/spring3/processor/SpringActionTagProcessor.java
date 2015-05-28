@@ -47,8 +47,8 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
 
 
 
-    public SpringActionTagProcessor() {
-        super(ATTR_NAME, ATTR_PRECEDENCE);
+    public SpringActionTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 

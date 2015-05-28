@@ -41,8 +41,8 @@ public final class SpringOptionFieldTagProcessor extends AbstractSpringFieldTagP
 
 
 
-    public SpringOptionFieldTagProcessor() {
-        super(OPTION_TAG_NAME, null, null);
+    public SpringOptionFieldTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, OPTION_TAG_NAME, null, null);
     }
 
 

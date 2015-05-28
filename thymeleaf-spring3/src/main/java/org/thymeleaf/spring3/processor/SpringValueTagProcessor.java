@@ -44,8 +44,8 @@ public final class SpringValueTagProcessor extends AbstractStandardExpressionAtt
 
 
 
-    public SpringValueTagProcessor() {
-        super(ATTR_NAME, ATTR_PRECEDENCE);
+    public SpringValueTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 
@@ -61,7 +61,7 @@ public final class SpringValueTagProcessor extends AbstractStandardExpressionAtt
 
         // Let RequestDataValueProcessor modify the attribute value if needed, but only in the case we don't also have
         // a 'th:field' - in such case, we will let th:field do its job
-        if (!tag.getAttributes().hasAttribute(getDialectPrefix(), AbstractSpringFieldTagProcessor.ATTR_NAME)) {
+        if (!tag.getAttributes().hasAttribute(attributeName.getPrefix(), AbstractSpringFieldTagProcessor.ATTR_NAME)) {
 
             // We will need to know the 'name' and 'type' attribute values in order to (potentially) modify the 'value'
             final String nameValue = tag.getAttributes().getValue("name");

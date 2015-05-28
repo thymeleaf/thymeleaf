@@ -44,8 +44,8 @@ public final class SpringOptionInSelectFieldTagProcessor extends AbstractElement
 
 
 
-    public SpringOptionInSelectFieldTagProcessor() {
-        super(TemplateMode.HTML, OPTION_TAG_NAME, false, null, false, ATTR_PRECEDENCE);
+    public SpringOptionInSelectFieldTagProcessor(final String dialectPrefix) {
+        super(TemplateMode.HTML, dialectPrefix, OPTION_TAG_NAME, false, null, false, ATTR_PRECEDENCE);
     }
 
 

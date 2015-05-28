@@ -48,8 +48,8 @@ public final class SpringInputCheckboxFieldTagProcessor
     
 
     
-    public SpringInputCheckboxFieldTagProcessor() {
-        super(INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { CHECKBOX_INPUT_TYPE_ATTR_VALUE });
+    public SpringInputCheckboxFieldTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { CHECKBOX_INPUT_TYPE_ATTR_VALUE });
     }
 
 

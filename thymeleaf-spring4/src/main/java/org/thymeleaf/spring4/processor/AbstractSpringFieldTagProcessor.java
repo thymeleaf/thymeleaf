@@ -60,8 +60,8 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
 
 
     public AbstractSpringFieldTagProcessor(
-            final String elementName, final String discriminatorAttrName, final String[] discriminatorAttrValues) {
-        super(TemplateMode.HTML, elementName, false, ATTR_NAME, true, ATTR_PRECEDENCE);
+            final String dialectPrefix, final String elementName, final String discriminatorAttrName, final String[] discriminatorAttrValues) {
+        super(TemplateMode.HTML, dialectPrefix, elementName, false, ATTR_NAME, true, ATTR_PRECEDENCE);
         this.discriminatorAttrName = discriminatorAttrName;
         this.discriminatorAttrValues = discriminatorAttrValues;
     }

@@ -49,8 +49,8 @@ public final class SpringErrorsTagProcessor extends AbstractAttributeTagProcesso
 
     
     
-    public SpringErrorsTagProcessor() {
-        super(TemplateMode.HTML, null, false, ATTR_NAME, true, ATTR_PRECEDENCE);
+    public SpringErrorsTagProcessor(final String dialectPrefix) {
+        super(TemplateMode.HTML, dialectPrefix, null, false, ATTR_NAME, true, ATTR_PRECEDENCE);
     }
 
 

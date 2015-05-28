@@ -43,8 +43,8 @@ public final class SpringSrcTagProcessor extends AbstractStandardExpressionAttri
 
 
 
-    public SpringSrcTagProcessor() {
-        super(ATTR_NAME, ATTR_PRECEDENCE);
+    public SpringSrcTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 

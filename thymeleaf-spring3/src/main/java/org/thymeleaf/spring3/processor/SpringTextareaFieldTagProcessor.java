@@ -39,8 +39,8 @@ public final class SpringTextareaFieldTagProcessor extends AbstractSpringFieldTa
 
 
 
-    public SpringTextareaFieldTagProcessor() {
-        super(TEXTAREA_TAG_NAME, null, null);
+    public SpringTextareaFieldTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, TEXTAREA_TAG_NAME, null, null);
     }
 
 

@@ -43,8 +43,8 @@ public final class SpringHrefTagProcessor extends AbstractStandardExpressionAttr
 
 
 
-    public SpringHrefTagProcessor() {
-        super(ATTR_NAME, ATTR_PRECEDENCE);
+    public SpringHrefTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 

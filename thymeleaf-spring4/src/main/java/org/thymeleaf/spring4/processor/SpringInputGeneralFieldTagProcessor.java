@@ -80,8 +80,8 @@ public final class SpringInputGeneralFieldTagProcessor
     
 
 
-    public SpringInputGeneralFieldTagProcessor() {
-        super(INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, ALL_TYPE_ATTR_VALUES);
+    public SpringInputGeneralFieldTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, ALL_TYPE_ATTR_VALUES);
     }
 
 

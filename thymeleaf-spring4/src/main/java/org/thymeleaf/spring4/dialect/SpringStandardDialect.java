@@ -75,7 +75,7 @@ public class SpringStandardDialect extends StandardDialect {
     
     
     public SpringStandardDialect() {
-        super(NAME, PREFIX, createSpringStandardProcessorsSet());
+        super(NAME, PREFIX);
     }
 
 
@@ -102,14 +102,22 @@ public class SpringStandardDialect extends StandardDialect {
 
 
 
+    @Override
+    public Set<IProcessor> getProcessors(final String dialectPrefix) {
+        return createSpringStandardProcessorsSet(dialectPrefix);
+    }
+
+
+
+
     /**
      * <p>
      *   Create a the set of SpringStandard processors, all of them freshly instanced.
      * </p>
-     * 
+     *
      * @return the set of SpringStandard processors.
      */
-    public static Set<IProcessor> createSpringStandardProcessorsSet() {
+    public static Set<IProcessor> createSpringStandardProcessorsSet(final String dialectPrefix) {
         /*
          * It is important that we create new instances here because, if there are
          * several dialects in the TemplateEngine that extend StandardDialect, they should
@@ -117,7 +125,7 @@ public class SpringStandardDialect extends StandardDialect {
          * to allow specific instances to be directly linked with their owner dialect.
          */
 
-        final Set<IProcessor> standardProcessors = StandardDialect.createStandardProcessorsSet();
+        final Set<IProcessor> standardProcessors = StandardDialect.createStandardProcessorsSet(dialectPrefix);
 
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>(40);
 
@@ -135,23 +143,23 @@ public class SpringStandardDialect extends StandardDialect {
             }
         }
 
-        processors.add(new SpringActionTagProcessor());
-        processors.add(new SpringHrefTagProcessor());
-        processors.add(new SpringMethodTagProcessor());
-        processors.add(new SpringSrcTagProcessor());
-        processors.add(new SpringValueTagProcessor());
-        processors.add(new SpringObjectTagProcessor());
-        processors.add(new SpringErrorsTagProcessor());
-        processors.add(new SpringInputGeneralFieldTagProcessor());
-        processors.add(new SpringInputPasswordFieldTagProcessor());
-        processors.add(new SpringInputCheckboxFieldTagProcessor());
-        processors.add(new SpringInputRadioFieldTagProcessor());
-        processors.add(new SpringInputFileFieldTagProcessor());
-        processors.add(new SpringSelectFieldTagProcessor());
-        processors.add(new SpringOptionInSelectFieldTagProcessor());
-        processors.add(new SpringOptionFieldTagProcessor());
-        processors.add(new SpringTextareaFieldTagProcessor());
-        processors.add(new SpringErrorClassTagProcessor());
+        processors.add(new SpringActionTagProcessor(dialectPrefix));
+        processors.add(new SpringHrefTagProcessor(dialectPrefix));
+        processors.add(new SpringMethodTagProcessor(dialectPrefix));
+        processors.add(new SpringSrcTagProcessor(dialectPrefix));
+        processors.add(new SpringValueTagProcessor(dialectPrefix));
+        processors.add(new SpringObjectTagProcessor(dialectPrefix));
+        processors.add(new SpringErrorsTagProcessor(dialectPrefix));
+        processors.add(new SpringInputGeneralFieldTagProcessor(dialectPrefix));
+        processors.add(new SpringInputPasswordFieldTagProcessor(dialectPrefix));
+        processors.add(new SpringInputCheckboxFieldTagProcessor(dialectPrefix));
+        processors.add(new SpringInputRadioFieldTagProcessor(dialectPrefix));
+        processors.add(new SpringInputFileFieldTagProcessor(dialectPrefix));
+        processors.add(new SpringSelectFieldTagProcessor(dialectPrefix));
+        processors.add(new SpringOptionInSelectFieldTagProcessor(dialectPrefix));
+        processors.add(new SpringOptionFieldTagProcessor(dialectPrefix));
+        processors.add(new SpringTextareaFieldTagProcessor(dialectPrefix));
+        processors.add(new SpringErrorClassTagProcessor(dialectPrefix));
 
         return processors;
 

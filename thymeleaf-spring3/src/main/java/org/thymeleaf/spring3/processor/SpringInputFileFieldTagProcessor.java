@@ -41,8 +41,8 @@ public final class SpringInputFileFieldTagProcessor extends AbstractSpringFieldT
 
 
     
-    public SpringInputFileFieldTagProcessor() {
-        super(INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { FILE_INPUT_TYPE_ATTR_VALUE });
+    public SpringInputFileFieldTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { FILE_INPUT_TYPE_ATTR_VALUE });
     }
 
 

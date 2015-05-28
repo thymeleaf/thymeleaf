@@ -45,8 +45,8 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
 
 
 
-    public SpringSelectFieldTagProcessor() {
-        super(SELECT_TAG_NAME, null, null);
+    public SpringSelectFieldTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, SELECT_TAG_NAME, null, null);
     }
 
 

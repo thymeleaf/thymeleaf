@@ -46,8 +46,8 @@ public final class SpringObjectTagProcessor extends AbstractStandardTargetSelect
     
     
     
-    public SpringObjectTagProcessor() {
-        super(ATTR_NAME, ATTR_PRECEDENCE);
+    public SpringObjectTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 
