@@ -60,7 +60,7 @@ public final class AuthenticationAttrProcessor extends AbstractAttributeTagProce
 
         final String attrValue = (attributeValue == null? null : attributeValue.trim());
 
-        if (attrValue == null || attrValue.equals("")) {
+        if (attrValue == null || attrValue.length() == 0) {
             return;
         }
 

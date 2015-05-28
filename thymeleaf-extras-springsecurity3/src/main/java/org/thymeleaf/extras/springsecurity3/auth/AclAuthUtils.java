@@ -206,7 +206,7 @@ public final class AclAuthUtils {
                     new Object[] {TemplateEngine.threadIndex(), permissionsString});
         }
         
-        if (permissionsString == null || permissionsString.trim().equals("")) {
+        if (permissionsString == null || permissionsString.trim().length() == 0) {
             return Collections.emptyList();
         }
         
