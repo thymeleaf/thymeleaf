@@ -38,7 +38,7 @@ import org.thymeleaf.expression.Numbers;
 import org.thymeleaf.expression.Objects;
 import org.thymeleaf.expression.Sets;
 import org.thymeleaf.expression.Strings;
-import org.thymeleaf.standard.expression.StandardExpressionObjects;
+import org.thymeleaf.standard.expression.StandardExpressionObjectFactory;
 import org.thymeleaf.util.Validate;
 
 
@@ -92,18 +92,18 @@ public final class OgnlTestContextExpression implements ITestContextExpression {
             objects = new HashMap<String, Object>(30);
 
             if (locale != null) {
-                objects.put(StandardExpressionObjects.CALENDARS_EXPRESSION_OBJECT_NAME, new Calendars(locale));
-                objects.put(StandardExpressionObjects.DATES_EXPRESSION_OBJECT_NAME, new Dates(locale));
-                objects.put(StandardExpressionObjects.NUMBERS_EXPRESSION_OBJECT_NAME, new Numbers(locale));
-                objects.put(StandardExpressionObjects.STRINGS_EXPRESSION_OBJECT_NAME, new Strings(locale));
+                objects.put(StandardExpressionObjectFactory.CALENDARS_EXPRESSION_OBJECT_NAME, new Calendars(locale));
+                objects.put(StandardExpressionObjectFactory.DATES_EXPRESSION_OBJECT_NAME, new Dates(locale));
+                objects.put(StandardExpressionObjectFactory.NUMBERS_EXPRESSION_OBJECT_NAME, new Numbers(locale));
+                objects.put(StandardExpressionObjectFactory.STRINGS_EXPRESSION_OBJECT_NAME, new Strings(locale));
             }
-            objects.put(StandardExpressionObjects.BOOLS_EXPRESSION_OBJECT_NAME, new Bools());
-            objects.put(StandardExpressionObjects.OBJECTS_EXPRESSION_OBJECT_NAME, new Objects());
-            objects.put(StandardExpressionObjects.ARRAYS_EXPRESSION_OBJECT_NAME, new Arrays());
-            objects.put(StandardExpressionObjects.LISTS_EXPRESSION_OBJECT_NAME, new Lists());
-            objects.put(StandardExpressionObjects.SETS_EXPRESSION_OBJECT_NAME, new Sets());
-            objects.put(StandardExpressionObjects.MAPS_EXPRESSION_OBJECT_NAME, new Maps());
-            objects.put(StandardExpressionObjects.AGGREGATES_EXPRESSION_OBJECT_NAME, new Aggregates());
+            objects.put(StandardExpressionObjectFactory.BOOLS_EXPRESSION_OBJECT_NAME, new Bools());
+            objects.put(StandardExpressionObjectFactory.OBJECTS_EXPRESSION_OBJECT_NAME, new Objects());
+            objects.put(StandardExpressionObjectFactory.ARRAYS_EXPRESSION_OBJECT_NAME, new Arrays());
+            objects.put(StandardExpressionObjectFactory.LISTS_EXPRESSION_OBJECT_NAME, new Lists());
+            objects.put(StandardExpressionObjectFactory.SETS_EXPRESSION_OBJECT_NAME, new Sets());
+            objects.put(StandardExpressionObjectFactory.MAPS_EXPRESSION_OBJECT_NAME, new Maps());
+            objects.put(StandardExpressionObjectFactory.AGGREGATES_EXPRESSION_OBJECT_NAME, new Aggregates());
 
             EXPRESSION_EVALUATION_UTILITY_OBJECTS_BY_LOCALE.put(locale, objects);
 
