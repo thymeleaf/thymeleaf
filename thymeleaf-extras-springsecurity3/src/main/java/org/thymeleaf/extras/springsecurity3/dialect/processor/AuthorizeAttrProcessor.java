@@ -49,8 +49,8 @@ public final class AuthorizeAttrProcessor extends AbstractStandardConditionalVis
     
     
     
-    public AuthorizeAttrProcessor(final String attrName) {
-        super(attrName, ATTR_PRECEDENCE);
+    public AuthorizeAttrProcessor(final String dialectPrefix, final String attrName) {
+        super(dialectPrefix, attrName, ATTR_PRECEDENCE);
     }
 
 

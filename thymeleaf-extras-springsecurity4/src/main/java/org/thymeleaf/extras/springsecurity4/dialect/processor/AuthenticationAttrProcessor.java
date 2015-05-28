@@ -43,8 +43,8 @@ public final class AuthenticationAttrProcessor extends AbstractAttributeTagProce
 
 
 
-    public AuthenticationAttrProcessor() {
-        super(TemplateMode.HTML, null, false, ATTR_NAME, true, ATTR_PRECEDENCE);
+    public AuthenticationAttrProcessor(final String dialectPrefix) {
+        super(TemplateMode.HTML, dialectPrefix,  null, false, ATTR_NAME, true, ATTR_PRECEDENCE);
     }
 
 

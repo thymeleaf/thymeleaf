@@ -58,8 +58,8 @@ public final class AuthorizeAclAttrProcessor extends AbstractStandardConditional
     
     
     
-    public AuthorizeAclAttrProcessor() {
-        super(ATTR_NAME, ATTR_PRECEDENCE);
+    public AuthorizeAclAttrProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 

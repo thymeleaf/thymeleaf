@@ -19,24 +19,14 @@
  */
 package org.thymeleaf.extras.springsecurity3.dialect;
 
-import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.security.core.Authentication;
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.dialect.AbstractDialect;
 import org.thymeleaf.dialect.IExpressionObjectsDialect;
 import org.thymeleaf.dialect.IProcessorDialect;
-import org.thymeleaf.expression.IExpressionObjectsFactory;
-import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
-import org.thymeleaf.extras.springsecurity3.auth.Authorization;
+import org.thymeleaf.expression.IExpressionObjectFactory;
+import org.thymeleaf.extras.springsecurity3.dialect.expression.SpringSecurityExpressionObjectFactory;
 import org.thymeleaf.extras.springsecurity3.dialect.processor.AuthenticationAttrProcessor;
 import org.thymeleaf.extras.springsecurity3.dialect.processor.AuthorizeAclAttrProcessor;
 import org.thymeleaf.extras.springsecurity3.dialect.processor.AuthorizeAttrProcessor;
@@ -55,12 +45,12 @@ public class SpringSecurityDialect
 
     public static final String DEFAULT_PREFIX = "sec";
     
-    public static final String AUTHENTICATION_EXPRESSION_OBJECT_NAME = "authentication";
-    public static final String AUTHORIZATION_EXPRESSION_OBJECT_NAME = "authorization";
-    
-    
+    public static final IExpressionObjectFactory EXPRESSION_OBJECT_FACTORY = new SpringSecurityExpressionObjectFactory();
+
+
+
     public SpringSecurityDialect() {
-        super();
+        super("SpringSecurity");
     }
 
     
@@ -74,15 +64,15 @@ public class SpringSecurityDialect
 
 
     
-    public Set<IProcessor> getProcessors() {
+    public Set<IProcessor> getProcessors(final String dialectPrefix) {
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
-        processors.add(new AuthenticationAttrProcessor());
+        processors.add(new AuthenticationAttrProcessor(dialectPrefix));
         // synonym (sec:authorize = sec:authorize-expr) for similarity with
         // "authorize-url" and "autorize-acl"
-        processors.add(new AuthorizeAttrProcessor(AuthorizeAttrProcessor.ATTR_NAME));
-        processors.add(new AuthorizeAttrProcessor(AuthorizeAttrProcessor.ATTR_NAME_EXPR));
-        processors.add(new AuthorizeUrlAttrProcessor());
-        processors.add(new AuthorizeAclAttrProcessor());
+        processors.add(new AuthorizeAttrProcessor(dialectPrefix, AuthorizeAttrProcessor.ATTR_NAME));
+        processors.add(new AuthorizeAttrProcessor(dialectPrefix, AuthorizeAttrProcessor.ATTR_NAME_EXPR));
+        processors.add(new AuthorizeUrlAttrProcessor(dialectPrefix));
+        processors.add(new AuthorizeAclAttrProcessor(dialectPrefix));
         return processors;
     }
 
@@ -90,38 +80,8 @@ public class SpringSecurityDialect
 
 
 
-    public IExpressionObjectsFactory getExpressionObjectsFactory() {
-
-        final IContext context = processingContext.getContext();
-        final IWebContext webContext =
-                (context instanceof IWebContext? (IWebContext)context : null);
-        
-        final Map<String,Object> objects = new HashMap<String, Object>(3, 1.0f);
-        
-        /*
-         * Create the #authentication and #authorization expression objects
-         */
-        if (webContext != null) {
-            
-            final HttpServletRequest request = webContext.getHttpServletRequest();
-            final HttpServletResponse response = webContext.getHttpServletResponse();
-            final ServletContext servletContext = webContext.getServletContext();
-            
-            if (request != null && response != null && servletContext != null) {
-                
-                final Authentication authentication = AuthUtils.getAuthenticationObject();
-                final Authorization authorization = 
-                        new Authorization(processingContext, authentication, request, response, servletContext); 
-                        
-                objects.put(AUTHENTICATION_EXPRESSION_OBJECT_NAME, authentication);
-                objects.put(AUTHORIZATION_EXPRESSION_OBJECT_NAME, authorization);
-                
-            }
-            
-        }
-       
-        return objects;
-        
+    public IExpressionObjectFactory getExpressionObjectFactory() {
+        return EXPRESSION_OBJECT_FACTORY;
     }
 
 

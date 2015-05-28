@@ -46,8 +46,8 @@ public final class AuthorizeUrlAttrProcessor extends AbstractStandardConditional
     
     
     
-    public AuthorizeUrlAttrProcessor() {
-        super(ATTR_NAME, ATTR_PRECEDENCE);
+    public AuthorizeUrlAttrProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 
