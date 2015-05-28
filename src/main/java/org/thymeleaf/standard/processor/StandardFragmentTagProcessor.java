@@ -42,8 +42,8 @@ public final class StandardFragmentTagProcessor extends AbstractElementTagProces
 
 
 
-    public StandardFragmentTagProcessor() {
-        super(TemplateMode.HTML, null, false, ATTR_NAME, true, PRECEDENCE);
+    public StandardFragmentTagProcessor(final String dialectPrefix) {
+        super(TemplateMode.HTML, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE);
     }
 
 

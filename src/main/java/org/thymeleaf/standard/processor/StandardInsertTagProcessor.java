@@ -35,8 +35,8 @@ public final class StandardInsertTagProcessor extends AbstractStandardFragmentIn
 
 
 
-    public StandardInsertTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE, false, false);
+    public StandardInsertTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE, false, false);
     }
 
 

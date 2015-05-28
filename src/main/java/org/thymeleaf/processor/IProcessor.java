@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.processor;
 
-import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -30,12 +29,6 @@ import org.thymeleaf.templatemode.TemplateMode;
  * 
  */
 public interface IProcessor {
-
-    public IDialect getDialect();
-    public String getDialectPrefix();
-
-    public void setDialect(final IDialect dialect);
-    public void setDialectPrefix(final String dialectPrefix);
 
     public TemplateMode getTemplateMode();
     public int getPrecedence();

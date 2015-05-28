@@ -38,8 +38,8 @@ public final class StandardTextTagProcessor extends AbstractStandardExpressionAt
     public static final String ATTR_NAME = "text";
 
 
-    public StandardTextTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE);
+    public StandardTextTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

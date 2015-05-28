@@ -31,8 +31,8 @@ public final class StandardSrcTagProcessor extends AbstractStandardAttributeModi
     public static final int PRECEDENCE = 1000;
     public static final String ATTR_NAME = "src";
 
-    public StandardSrcTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE, false);
+    public StandardSrcTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE, false);
     }
 
 

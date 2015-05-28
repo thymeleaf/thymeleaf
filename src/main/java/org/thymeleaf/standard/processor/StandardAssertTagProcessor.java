@@ -32,8 +32,8 @@ public final class StandardAssertTagProcessor extends AbstractStandardAssertionT
     public static final String ATTR_NAME = "assert";
 
 
-    public StandardAssertTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE);
+    public StandardAssertTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

@@ -39,8 +39,8 @@ public final class StandardIfTagProcessor extends AbstractStandardConditionalVis
     public static final int PRECEDENCE = 300;
     public static final String ATTR_NAME = "if";
 
-    public StandardIfTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE);
+    public StandardIfTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

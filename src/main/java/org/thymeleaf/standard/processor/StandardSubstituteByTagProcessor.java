@@ -35,8 +35,8 @@ public final class StandardSubstituteByTagProcessor extends AbstractStandardFrag
 
 
 
-    public StandardSubstituteByTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE, true, false);
+    public StandardSubstituteByTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE, true, false);
     }
 
 

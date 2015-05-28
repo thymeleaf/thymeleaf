@@ -42,8 +42,9 @@ public abstract class AbstractStandardTextInlineSettingTagProcessor extends Abst
 
 
 
-    protected AbstractStandardTextInlineSettingTagProcessor(final String attrName, final int precedence) {
-        super(attrName, precedence);
+    protected AbstractStandardTextInlineSettingTagProcessor(
+            final String dialectPrefix, final String attrName, final int precedence) {
+        super(dialectPrefix, attrName, precedence);
     }
 
 

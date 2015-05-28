@@ -40,13 +40,13 @@ public abstract class AbstractStandardAttributeModifierTagProcessor extends Abst
 
 
     protected AbstractStandardAttributeModifierTagProcessor(
-            final String attrName, final int precedence, final boolean removeIfEmpty) {
-        this(attrName, null, precedence, removeIfEmpty);
+            final String dialectPrefix, final String attrName, final int precedence, final boolean removeIfEmpty) {
+        this(dialectPrefix, attrName, null, precedence, removeIfEmpty);
     }
 
     protected AbstractStandardAttributeModifierTagProcessor(
-            final String attrName, final String targetAttrName, final int precedence, final boolean removeIfEmpty) {
-        super(attrName, precedence);
+            final String dialectPrefix, final String attrName, final String targetAttrName, final int precedence, final boolean removeIfEmpty) {
+        super(dialectPrefix, attrName, precedence);
         this.targetAttrName = targetAttrName;
         this.removeIfEmpty = removeIfEmpty;
     }

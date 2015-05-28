@@ -54,8 +54,8 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
 
 
     protected AbstractStandardMultipleAttributeModifierTagProcessor(
-            final String attrName, final int precedence, final ModificationType modificationType) {
-        super(TemplateMode.HTML, null, false, attrName, true, precedence);
+            final String dialectPrefix, final String attrName, final int precedence, final ModificationType modificationType) {
+        super(TemplateMode.HTML, dialectPrefix, null, false, attrName, true, precedence);
         this.modificationType = modificationType;
     }
 

@@ -32,8 +32,8 @@ public final class StandardXmlSpaceTagProcessor extends AbstractStandardAttribut
     public static final String ATTR_NAME = "xmlspace";
     public static final String TARGET_ATTR_NAME = "xml:space";
 
-    public StandardXmlSpaceTagProcessor() {
-        super(ATTR_NAME, TARGET_ATTR_NAME, PRECEDENCE, false);
+    public StandardXmlSpaceTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, TARGET_ATTR_NAME, PRECEDENCE, false);
     }
 
 

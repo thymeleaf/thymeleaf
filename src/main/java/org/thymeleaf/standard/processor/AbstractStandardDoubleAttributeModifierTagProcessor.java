@@ -41,9 +41,9 @@ public abstract class AbstractStandardDoubleAttributeModifierTagProcessor extend
 
 
     protected AbstractStandardDoubleAttributeModifierTagProcessor(
-            final String attrName, final int precedence, final String attributeOne, final String attributeTwo,
+            final String dialectPrefix, final String attrName, final int precedence, final String attributeOne, final String attributeTwo,
             final boolean removeIfEmpty) {
-        super(attrName, precedence);
+        super(dialectPrefix, attrName, precedence);
         this.removeIfEmpty = removeIfEmpty;
         this.attributeOne = attributeOne;
         this.attributeTwo = attributeTwo;

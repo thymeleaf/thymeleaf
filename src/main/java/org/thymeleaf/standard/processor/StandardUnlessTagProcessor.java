@@ -39,8 +39,8 @@ public final class StandardUnlessTagProcessor extends AbstractStandardConditiona
     public static final int PRECEDENCE = 400;
     public static final String ATTR_NAME = "unless";
 
-    public StandardUnlessTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE);
+    public StandardUnlessTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

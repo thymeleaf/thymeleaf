@@ -53,8 +53,8 @@ public final class StandardCaseTagProcessor extends AbstractStandardConditionalV
 
 
 
-    public StandardCaseTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE);
+    public StandardCaseTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

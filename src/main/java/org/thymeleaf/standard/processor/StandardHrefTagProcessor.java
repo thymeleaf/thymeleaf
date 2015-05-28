@@ -31,8 +31,8 @@ public final class StandardHrefTagProcessor extends AbstractStandardAttributeMod
     public static final int PRECEDENCE = 1000;
     public static final String ATTR_NAME = "href";
 
-    public StandardHrefTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE, false);
+    public StandardHrefTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE, false);
     }
 
 

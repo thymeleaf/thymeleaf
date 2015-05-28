@@ -34,6 +34,6 @@ public interface IProcessorDialect extends IDialect {
 
     public String getPrefix();
 
-    public Set<IProcessor> getProcessors();
+    public Set<IProcessor> getProcessors(final String dialectPrefix);
 
 }

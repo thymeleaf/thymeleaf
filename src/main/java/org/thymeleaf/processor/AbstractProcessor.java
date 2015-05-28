@@ -20,7 +20,6 @@
 package org.thymeleaf.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.MessageResolutionUtils;
 import org.thymeleaf.util.Validate;
@@ -36,10 +35,6 @@ public abstract class AbstractProcessor implements IProcessor {
 
     private final int precedence;
     private final TemplateMode templateMode;
-
-
-    private String dialectPrefix = null;
-    private IDialect dialect = null;
 
 
     // TODO Will probably need to handle exceptions in process() here, including logging the name of the template where the original node was, line, col...
@@ -65,26 +60,6 @@ public abstract class AbstractProcessor implements IProcessor {
 
     public int getPrecedence() {
         return this.precedence;
-    }
-
-
-    public void setDialect(final IDialect dialect) {
-        this.dialect = dialect;
-    }
-
-
-    public void setDialectPrefix(final String dialectPrefix) {
-        this.dialectPrefix = dialectPrefix;
-    }
-
-
-    public String getDialectPrefix() {
-        return dialectPrefix;
-    }
-
-
-    public IDialect getDialect() {
-        return dialect;
     }
 
 

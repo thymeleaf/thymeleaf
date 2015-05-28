@@ -37,8 +37,8 @@ public final class StandardUtextTagProcessor extends AbstractStandardExpressionA
     public static final int PRECEDENCE = 1400;
     public static final String ATTR_NAME = "utext";
 
-    public StandardUtextTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE);
+    public StandardUtextTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

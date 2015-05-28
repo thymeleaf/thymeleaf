@@ -49,8 +49,8 @@ public final class StandardConditionalFixedValueTagProcessor extends AbstractSta
 
 
 
-    public StandardConditionalFixedValueTagProcessor(final String attrName) {
-        super(attrName, PRECEDENCE);
+    public StandardConditionalFixedValueTagProcessor(final String dialectPrefix, final String attrName) {
+        super(dialectPrefix, attrName, PRECEDENCE);
     }
 
 

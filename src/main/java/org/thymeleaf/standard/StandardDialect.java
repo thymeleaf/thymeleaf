@@ -108,7 +108,7 @@ public class StandardDialect
 
 
     public StandardDialect() {
-        super(NAME, PREFIX, createStandardProcessorsSet());
+        super(NAME, PREFIX);
     }
 
 
@@ -116,8 +116,8 @@ public class StandardDialect
      * Meant to be overridden by dialects that do almost the same as this, changing bits here and there
      * (e.g. SpringStandardDialect)
      */
-    protected StandardDialect(final String name, final String prefix, final Set<IProcessor> processors) {
-        super(name, prefix, processors);
+    protected StandardDialect(final String name, final String prefix) {
+        super(name, prefix);
     }
 
 
@@ -290,6 +290,12 @@ public class StandardDialect
 
 
 
+    public Set<IProcessor> getProcessors(final String dialectPrefix) {
+        return createStandardProcessorsSet(dialectPrefix);
+    }
+
+
+
 
     /**
      * <p>
@@ -298,7 +304,7 @@ public class StandardDialect
      *
      * @return the set of Standard processors.
      */
-    public static Set<IProcessor> createStandardProcessorsSet() {
+    public static Set<IProcessor> createStandardProcessorsSet(final String dialectPrefix) {
         /*
          * It is important that we create new instances here because, if there are
          * several dialects in the TemplateEngine that extend StandardDialect, they should
@@ -310,50 +316,50 @@ public class StandardDialect
         /*
          * ELEMENT PROCESSORS
          */
-        processors.add(new StandardActionTagProcessor());
-        processors.add(new StandardAltTitleTagProcessor());
-        processors.add(new StandardAssertTagProcessor());
-        processors.add(new StandardAttrTagProcessor());
-        processors.add(new StandardAttrappendTagProcessor());
-        processors.add(new StandardAttrprependTagProcessor());
-        processors.add(new StandardCaseTagProcessor());
-        processors.add(new StandardClassappendTagProcessor());
+        processors.add(new StandardActionTagProcessor(dialectPrefix));
+        processors.add(new StandardAltTitleTagProcessor(dialectPrefix));
+        processors.add(new StandardAssertTagProcessor(dialectPrefix));
+        processors.add(new StandardAttrTagProcessor(dialectPrefix));
+        processors.add(new StandardAttrappendTagProcessor(dialectPrefix));
+        processors.add(new StandardAttrprependTagProcessor(dialectPrefix));
+        processors.add(new StandardCaseTagProcessor(dialectPrefix));
+        processors.add(new StandardClassappendTagProcessor(dialectPrefix));
         for (final String attrName : StandardConditionalFixedValueTagProcessor.ATTR_NAMES) {
-            processors.add(new StandardConditionalFixedValueTagProcessor(attrName));
+            processors.add(new StandardConditionalFixedValueTagProcessor(dialectPrefix, attrName));
         }
         for (final String attrName : StandardDOMEventAttributeTagProcessor.ATTR_NAMES) {
-            processors.add(new StandardRemovableAttributeTagProcessor(attrName));
+            processors.add(new StandardRemovableAttributeTagProcessor(dialectPrefix, attrName));
         }
-        processors.add(new StandardEachTagProcessor());
-        processors.add(new StandardFragmentTagProcessor());
-        processors.add(new StandardHrefTagProcessor());
-        processors.add(new StandardIfTagProcessor());
-        processors.add(new StandardIncludeTagProcessor());
-        processors.add(new StandardInlineTagProcessor());
-        processors.add(new StandardInsertTagProcessor());
-        processors.add(new StandardLangXmlLangTagProcessor());
-        processors.add(new StandardMethodTagProcessor());
+        processors.add(new StandardEachTagProcessor(dialectPrefix));
+        processors.add(new StandardFragmentTagProcessor(dialectPrefix));
+        processors.add(new StandardHrefTagProcessor(dialectPrefix));
+        processors.add(new StandardIfTagProcessor(dialectPrefix));
+        processors.add(new StandardIncludeTagProcessor(dialectPrefix));
+        processors.add(new StandardInlineTagProcessor(dialectPrefix));
+        processors.add(new StandardInsertTagProcessor(dialectPrefix));
+        processors.add(new StandardLangXmlLangTagProcessor(dialectPrefix));
+        processors.add(new StandardMethodTagProcessor(dialectPrefix));
         for (final String attrName : StandardNonRemovableAttributeTagProcessor.ATTR_NAMES) {
-            processors.add(new StandardNonRemovableAttributeTagProcessor(attrName));
+            processors.add(new StandardNonRemovableAttributeTagProcessor(dialectPrefix, attrName));
         }
-        processors.add(new StandardObjectTagProcessor());
+        processors.add(new StandardObjectTagProcessor(dialectPrefix));
         for (final String attrName : StandardRemovableAttributeTagProcessor.ATTR_NAMES) {
-            processors.add(new StandardRemovableAttributeTagProcessor(attrName));
+            processors.add(new StandardRemovableAttributeTagProcessor(dialectPrefix, attrName));
         }
-        processors.add(new StandardRemoveTagProcessor());
-        processors.add(new StandardReplaceTagProcessor());
-        processors.add(new StandardSrcTagProcessor());
-        processors.add(new StandardStyleappendTagProcessor());
-        processors.add(new StandardSubstituteByTagProcessor());
-        processors.add(new StandardSwitchTagProcessor());
-        processors.add(new StandardTextTagProcessor());
-        processors.add(new StandardUnlessTagProcessor());
-        processors.add(new StandardUtextTagProcessor());
-        processors.add(new StandardValueTagProcessor());
-        processors.add(new StandardWithTagProcessor());
-        processors.add(new StandardXmlBaseTagProcessor());
-        processors.add(new StandardXmlLangTagProcessor());
-        processors.add(new StandardXmlSpaceTagProcessor());
+        processors.add(new StandardRemoveTagProcessor(dialectPrefix));
+        processors.add(new StandardReplaceTagProcessor(dialectPrefix));
+        processors.add(new StandardSrcTagProcessor(dialectPrefix));
+        processors.add(new StandardStyleappendTagProcessor(dialectPrefix));
+        processors.add(new StandardSubstituteByTagProcessor(dialectPrefix));
+        processors.add(new StandardSwitchTagProcessor(dialectPrefix));
+        processors.add(new StandardTextTagProcessor(dialectPrefix));
+        processors.add(new StandardUnlessTagProcessor(dialectPrefix));
+        processors.add(new StandardUtextTagProcessor(dialectPrefix));
+        processors.add(new StandardValueTagProcessor(dialectPrefix));
+        processors.add(new StandardWithTagProcessor(dialectPrefix));
+        processors.add(new StandardXmlBaseTagProcessor(dialectPrefix));
+        processors.add(new StandardXmlLangTagProcessor(dialectPrefix));
+        processors.add(new StandardXmlSpaceTagProcessor(dialectPrefix));
 //        processors.add(new StandardDefaultAttributesTagProcessor());
 
         /*

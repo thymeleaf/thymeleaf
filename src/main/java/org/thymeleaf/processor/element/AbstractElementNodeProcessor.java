@@ -39,29 +39,38 @@ import org.thymeleaf.templatemode.TemplateMode;
 public abstract class AbstractElementNodeProcessor
         extends AbstractProcessor implements IElementNodeProcessor {
 
+    private final String dialectPrefix;
     private final String elementName;
     private final boolean prefixElementName;
     private final String attributeName;
     private final boolean prefixAttributeName;
-
-
-    private MatchingElementName matchingElementName = null;
-    private MatchingAttributeName matchingAttributeName = null;
+    private MatchingElementName matchingElementName;
+    private MatchingAttributeName matchingAttributeName;
 
 
 
     public AbstractElementNodeProcessor(
             final TemplateMode templateMode,
+            final String dialectPrefix,
             final String elementName, final boolean prefixElementName,
             final String attributeName, final boolean prefixAttributeName,
             final int precedence) {
 
         super(templateMode, precedence);
 
+        this.dialectPrefix = dialectPrefix;
+
         this.elementName = elementName;
         this.prefixElementName = prefixElementName;
         this.attributeName = attributeName;
         this.prefixAttributeName = prefixAttributeName;
+
+        this.matchingElementName =
+                MatchingElementName.forElementName(
+                        getTemplateMode(), ElementNames.forName(getTemplateMode(), (this.prefixElementName? this.dialectPrefix : null), this.elementName));
+        this.matchingAttributeName =
+                MatchingAttributeName.forAttributeName(
+                        getTemplateMode(), AttributeNames.forName(getTemplateMode(), (this.prefixAttributeName? this.dialectPrefix : null), this.attributeName));
 
     }
 
@@ -73,21 +82,6 @@ public abstract class AbstractElementNodeProcessor
 
     public final MatchingAttributeName getMatchingAttributeName() {
         return this.matchingAttributeName;
-    }
-
-
-    public final void setDialectPrefix(final String dialectPrefix) {
-        super.setDialectPrefix(dialectPrefix);
-        if (this.elementName != null) {
-            this.matchingElementName =
-                    MatchingElementName.forElementName(
-                            getTemplateMode(), ElementNames.forName(getTemplateMode(), (this.prefixElementName ? getDialectPrefix() : null), this.elementName));
-        }
-        if (this.attributeName != null) {
-            this.matchingAttributeName =
-                    MatchingAttributeName.forAttributeName(
-                            getTemplateMode(), AttributeNames.forName(getTemplateMode(), (this.prefixAttributeName ? getDialectPrefix() : null), this.attributeName));
-        }
     }
 
 

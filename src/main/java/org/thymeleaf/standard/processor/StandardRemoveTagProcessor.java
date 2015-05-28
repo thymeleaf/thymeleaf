@@ -44,8 +44,8 @@ public final class StandardRemoveTagProcessor extends AbstractStandardExpression
     public static final String VALUE_NONE = "none";
 
 
-    public StandardRemoveTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE);
+    public StandardRemoveTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

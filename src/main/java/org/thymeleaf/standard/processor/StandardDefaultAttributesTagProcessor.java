@@ -42,30 +42,23 @@ public final class StandardDefaultAttributesTagProcessor
     public static final int PRECEDENCE = Integer.MAX_VALUE;
 
 
-    private MatchingElementName matchingElementName = null;
-    private MatchingAttributeName matchingAttributeName = null;
+    private final MatchingAttributeName matchingAttributeName;
 
 
 
-    public StandardDefaultAttributesTagProcessor() {
+    public StandardDefaultAttributesTagProcessor(final String dialectPrefix) {
         super(TemplateMode.HTML, PRECEDENCE);
+        this.matchingAttributeName = MatchingAttributeName.forAllAttributesWithPrefix(getTemplateMode(), dialectPrefix);
     }
 
 
     public final MatchingElementName getMatchingElementName() {
-        return this.matchingElementName;
+        return null;
     }
 
 
     public final MatchingAttributeName getMatchingAttributeName() {
         return this.matchingAttributeName;
-    }
-
-
-    public final void setDialectPrefix(final String dialectPrefix) {
-        super.setDialectPrefix(dialectPrefix);
-        this.matchingElementName = null;
-        this.matchingAttributeName = MatchingAttributeName.forAllAttributesWithPrefix(getTemplateMode(), dialectPrefix);
     }
 
 

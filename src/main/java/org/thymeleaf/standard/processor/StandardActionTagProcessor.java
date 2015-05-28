@@ -31,8 +31,8 @@ public final class StandardActionTagProcessor extends AbstractStandardAttributeM
     public static final int PRECEDENCE = 1000;
     public static final String ATTR_NAME = "action";
 
-    public StandardActionTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE, false);
+    public StandardActionTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE, false);
     }
 
 

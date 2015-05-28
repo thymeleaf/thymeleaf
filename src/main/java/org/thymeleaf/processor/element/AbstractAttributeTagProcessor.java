@@ -38,11 +38,11 @@ public abstract class AbstractAttributeTagProcessor extends AbstractElementTagPr
 
 
     protected AbstractAttributeTagProcessor(
-            final TemplateMode templateMode,
+            final TemplateMode templateMode, final String dialectPrefix,
             final String elementName, final boolean prefixElementName,
             final String attributeName, final boolean prefixAttributeName,
             final int precedence) {
-        super(templateMode, elementName, prefixElementName, attributeName, prefixAttributeName, precedence);
+        super(templateMode, dialectPrefix, elementName, prefixElementName, attributeName, prefixAttributeName, precedence);
     }
 
 

@@ -40,8 +40,8 @@ public final class StandardClassappendTagProcessor extends AbstractStandardExpre
 
 
 
-    public StandardClassappendTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE);
+    public StandardClassappendTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

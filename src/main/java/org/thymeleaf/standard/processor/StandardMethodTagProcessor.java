@@ -32,8 +32,8 @@ public final class StandardMethodTagProcessor extends AbstractStandardAttributeM
     public static final String ATTR_NAME = "method";
 
 
-    public StandardMethodTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE, true);
+    public StandardMethodTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE, true);
     }
 
 

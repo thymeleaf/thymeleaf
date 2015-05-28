@@ -145,7 +145,7 @@ final class DialectSetConfiguration {
                     standardDialectPrefix = dialectPrefix;
                 }
 
-                final Set<IProcessor> dialectProcessors = ((IProcessorDialect) dialect).getProcessors();
+                final Set<IProcessor> dialectProcessors = ((IProcessorDialect) dialect).getProcessors(dialectPrefix);
                 if (dialectProcessors == null) {
                     throw new ConfigurationException("Dialect should not return null processor set: " + dialect.getClass().getName());
                 }
@@ -164,10 +164,6 @@ final class DialectSetConfiguration {
                                 "specified more than one (probably in different dialects). Processor instances should " +
                                 "be unique among all configured dialects.");
                     }
-
-                    // Initialize the processor
-                    dialectProcessor.setDialect(dialect);
-                    dialectProcessor.setDialectPrefix(dialectPrefix);
 
                     // Add the processor to the "all processors" set
                     allProcessors.add(dialectProcessor);

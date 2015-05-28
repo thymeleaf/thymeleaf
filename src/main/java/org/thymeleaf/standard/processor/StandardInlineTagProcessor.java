@@ -45,8 +45,8 @@ public final class StandardInlineTagProcessor extends AbstractStandardTextInline
 
 
 
-    public StandardInlineTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE);
+    public StandardInlineTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

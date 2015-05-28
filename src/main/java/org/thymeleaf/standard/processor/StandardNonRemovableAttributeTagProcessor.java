@@ -40,8 +40,8 @@ public final class StandardNonRemovableAttributeTagProcessor extends AbstractSta
             };
 
 
-    public StandardNonRemovableAttributeTagProcessor(final String attrName) {
-        super(attrName, PRECEDENCE, false);
+    public StandardNonRemovableAttributeTagProcessor(final String dialectPrefix, final String attrName) {
+        super(dialectPrefix, attrName, PRECEDENCE, false);
     }
 
 

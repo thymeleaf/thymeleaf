@@ -106,8 +106,8 @@ public final class StandardDOMEventAttributeTagProcessor extends AbstractStandar
             };
 
 
-    public StandardDOMEventAttributeTagProcessor(final String attrName) {
-        super(attrName, PRECEDENCE, true);
+    public StandardDOMEventAttributeTagProcessor(final String dialectPrefix, final String attrName) {
+        super(dialectPrefix, attrName, PRECEDENCE, true);
     }
 
 

@@ -61,8 +61,9 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
     protected AbstractStandardFragmentInsertionTagProcessor(
-            final String attrName, final int precedence, final boolean replaceHost, final boolean insertOnlyContents) {
-        super(TemplateMode.HTML, null, false, attrName, true, precedence);
+            final String dialectPrefix, final String attrName, final int precedence, final boolean replaceHost,
+            final boolean insertOnlyContents) {
+        super(TemplateMode.HTML, dialectPrefix, null, false, attrName, true, precedence);
         this.replaceHost = replaceHost;
         this.insertOnlyContents = insertOnlyContents;
     }
@@ -122,11 +123,13 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         // We need to examine the first event just in case it contains a th:fragment matching the one we were looking
         if (firstEvent instanceof IProcessableElementTag) {
 
+            final String dialectPrefix = attributeName.getPrefix();
+
             final IElementAttributes elementAttributes = ((IProcessableElementTag)firstEvent).getAttributes();
-            if (elementAttributes.hasAttribute(getDialectPrefix(), FRAGMENT_ATTR_NAME)) {
+            if (elementAttributes.hasAttribute(dialectPrefix, FRAGMENT_ATTR_NAME)) {
                 // The selected fragment actually has a "th:fragment" attribute, so we should process its signature
 
-                final String fragmentSignatureSpec = HtmlEscape.unescapeHtml(elementAttributes.getValue(getDialectPrefix(), FRAGMENT_ATTR_NAME));
+                final String fragmentSignatureSpec = HtmlEscape.unescapeHtml(elementAttributes.getValue(dialectPrefix, FRAGMENT_ATTR_NAME));
                 if (!StringUtils.isEmptyOrWhitespace(fragmentSignatureSpec)) {
 
                     final FragmentSignature fragmentSignature =

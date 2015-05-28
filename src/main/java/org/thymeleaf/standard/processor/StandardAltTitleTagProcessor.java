@@ -34,8 +34,8 @@ public final class StandardAltTitleTagProcessor extends AbstractStandardDoubleAt
     public static final String TARGET_ATTR_NAME_TWO = "title";
 
 
-    public StandardAltTitleTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE, TARGET_ATTR_NAME_ONE, TARGET_ATTR_NAME_TWO, true);
+    public StandardAltTitleTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE, TARGET_ATTR_NAME_ONE, TARGET_ATTR_NAME_TWO, true);
     }
 
 

@@ -19,14 +19,6 @@
  */
 package org.thymeleaf.dialect;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import org.thymeleaf.processor.IProcessor;
-import org.thymeleaf.util.Validate;
-
-
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -34,32 +26,20 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public class AbstractProcessorDialect extends AbstractDialect implements IProcessorDialect {
+public abstract class AbstractProcessorDialect extends AbstractDialect implements IProcessorDialect {
 
 
     private final String prefix;
-    private final Set<IProcessor> processors;
 
 
-    protected AbstractProcessorDialect(final String name, final String prefix, final Set<IProcessor> processors) {
-
+    protected AbstractProcessorDialect(final String name, final String prefix) {
         super(name);
-
-        // Prefix can be null
-        Validate.notNull(processors, "Processor set cannot be null");
-
         this.prefix = prefix;
-        this.processors = Collections.unmodifiableSet(new LinkedHashSet<IProcessor>(processors));
-
     }
 
 
     public String getPrefix() {
         return this.prefix;
-    }
-
-    public Set<IProcessor> getProcessors() {
-        return this.processors;
     }
 
 }

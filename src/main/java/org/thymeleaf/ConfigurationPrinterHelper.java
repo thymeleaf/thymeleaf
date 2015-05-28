@@ -110,26 +110,29 @@ final class ConfigurationPrinterHelper {
             }
         }
 
-        final Set<IDialect> dialects = configuration.getDialects();
+        final Set<DialectConfiguration> dialectConfigurations = configuration.getDialectConfigurations();
 
         int dialectIndex = 1;
-        final Integer totalDialects = Integer.valueOf(dialects.size());
+        final Integer totalDialects = Integer.valueOf(dialectConfigurations.size());
         
-        for (final IDialect dialect : dialects) {
+        for (final DialectConfiguration dialectConfiguration : dialectConfigurations) {
+
+            final IDialect dialect = dialectConfiguration.getDialect();
 
             if (totalDialects.intValue() > 1) {
-                logBuilder.line("[THYMELEAF] * Dialect [{} of {}]: {} ({})", new Object[] {Integer.valueOf(dialectIndex), totalDialects, dialect.getName(), dialect.getClass().getName()});
+                logBuilder.line("[THYMELEAF] * Dialect [{} of {}]: {} ({})", new Object[]{Integer.valueOf(dialectIndex), totalDialects, dialect.getName(), dialect.getClass().getName()});
             } else {
                 logBuilder.line("[THYMELEAF] * Dialect: {} ({})", dialect.getName(), dialect.getClass().getName());
             }
 
+            String dialectPrefix = null;
             if (dialect instanceof IProcessorDialect) {
-                final IProcessorDialect processorDialect = (IProcessorDialect)dialect;
-                logBuilder.line("[THYMELEAF]     * Prefix: \"{}\"", (processorDialect.getPrefix() != null ? processorDialect.getPrefix() : "(none)"));
+                dialectPrefix = (dialectConfiguration.isPrefixSpecified()? dialectConfiguration.getPrefix() : ((IProcessorDialect) dialect).getPrefix());
+                logBuilder.line("[THYMELEAF]     * Prefix: \"{}\"", (dialectPrefix != null ? dialectPrefix : "(none)"));
             }
 
             if (configLogger.isDebugEnabled()) {
-                printDebugConfiguration(logBuilder, dialect);
+                printDebugConfiguration(logBuilder, dialect, dialectPrefix);
             }
             
             dialectIndex++;
@@ -152,13 +155,13 @@ final class ConfigurationPrinterHelper {
     
     
     
-    private static void printDebugConfiguration(final ConfigLogBuilder logBuilder, final IDialect idialect) {
+    private static void printDebugConfiguration(final ConfigLogBuilder logBuilder, final IDialect idialect, final String dialectPrefix) {
 
         if (idialect instanceof IProcessorDialect) {
 
             final IProcessorDialect dialect = (IProcessorDialect)idialect;
 
-            final Set<IProcessor> processors = dialect.getProcessors();
+            final Set<IProcessor> processors = dialect.getProcessors(dialectPrefix);
             printProcessorsForTemplatrMode(logBuilder, processors, TemplateMode.HTML);
             printProcessorsForTemplatrMode(logBuilder, processors, TemplateMode.XML);
             printProcessorsForTemplatrMode(logBuilder, processors, TemplateMode.TEXT);

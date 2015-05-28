@@ -135,8 +135,8 @@ public final class StandardRemovableAttributeTagProcessor extends AbstractStanda
             };
 
 
-    public StandardRemovableAttributeTagProcessor(final String attrName) {
-        super(attrName, PRECEDENCE, true);
+    public StandardRemovableAttributeTagProcessor(final String dialectPrefix, final String attrName) {
+        super(dialectPrefix, attrName, PRECEDENCE, true);
     }
 
 

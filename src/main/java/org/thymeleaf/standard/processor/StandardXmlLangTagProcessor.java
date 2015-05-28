@@ -32,8 +32,8 @@ public final class StandardXmlLangTagProcessor extends AbstractStandardAttribute
     public static final String ATTR_NAME = "xmllang";
     public static final String TARGET_ATTR_NAME = "xml:lang";
 
-    public StandardXmlLangTagProcessor() {
-        super(ATTR_NAME, TARGET_ATTR_NAME, PRECEDENCE, false);
+    public StandardXmlLangTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, TARGET_ATTR_NAME, PRECEDENCE, false);
     }
 
 

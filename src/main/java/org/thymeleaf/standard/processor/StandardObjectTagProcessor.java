@@ -31,8 +31,8 @@ public final class StandardObjectTagProcessor extends AbstractStandardTargetSele
     public static final int PRECEDENCE = 500;
     public static final String ATTR_NAME = "object";
 
-    public StandardObjectTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE);
+    public StandardObjectTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

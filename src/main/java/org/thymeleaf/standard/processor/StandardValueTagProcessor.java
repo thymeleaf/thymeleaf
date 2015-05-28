@@ -32,8 +32,8 @@ public final class StandardValueTagProcessor extends AbstractStandardAttributeMo
     public static final String ATTR_NAME = "value";
 
 
-    public StandardValueTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE, true);
+    public StandardValueTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE, true);
     }
 
 

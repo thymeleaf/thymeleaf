@@ -32,8 +32,8 @@ public final class StandardAttrappendTagProcessor extends AbstractStandardMultip
     public static final String ATTR_NAME = "attrappend";
 
 
-    public StandardAttrappendTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE, ModificationType.APPEND);
+    public StandardAttrappendTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE, ModificationType.APPEND);
     }
 
 

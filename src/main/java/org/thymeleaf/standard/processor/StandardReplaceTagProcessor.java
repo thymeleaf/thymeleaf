@@ -35,8 +35,8 @@ public final class StandardReplaceTagProcessor extends AbstractStandardFragmentI
 
 
 
-    public StandardReplaceTagProcessor() {
-        super(ATTR_NAME, PRECEDENCE, true, false);
+    public StandardReplaceTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, ATTR_NAME, PRECEDENCE, true, false);
     }
 
 
