@@ -48,7 +48,7 @@ public class Mvc {
         } catch (final Exception e) {
             throw new ConfigurationException(
                     "Thymeleaf could not initialize a delegate of class \"" + delegateClassName + "\" for taking " +
-                    "care of the " + SpringStandardExpressionObjects.MVC_EXPRESSION_OBJECT_NAME + " expression utility object", e);
+                    "care of the " + SpringStandardExpressionObjectFactory.MVC_EXPRESSION_OBJECT_NAME + " expression utility object", e);
         }
 
     }

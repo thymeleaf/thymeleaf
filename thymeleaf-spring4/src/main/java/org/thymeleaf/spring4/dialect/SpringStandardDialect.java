@@ -22,11 +22,11 @@ package org.thymeleaf.spring4.dialect;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.thymeleaf.expression.IExpressionObjectsFactory;
+import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.spring4.expression.SPELVariableExpressionEvaluator;
 import org.thymeleaf.spring4.expression.SpringStandardConversionService;
-import org.thymeleaf.spring4.expression.SpringStandardExpressionObjectsFactory;
+import org.thymeleaf.spring4.expression.SpringStandardExpressionObjectFactory;
 import org.thymeleaf.spring4.processor.SpringActionTagProcessor;
 import org.thymeleaf.spring4.processor.SpringErrorClassTagProcessor;
 import org.thymeleaf.spring4.processor.SpringErrorsTagProcessor;
@@ -68,7 +68,7 @@ public class SpringStandardDialect extends StandardDialect {
 
 
 
-    private final IExpressionObjectsFactory SPRING_STANDARD_EXPRESSION_OBJECTS_FACTORY = new SpringStandardExpressionObjectsFactory();
+    private final IExpressionObjectFactory SPRING_STANDARD_EXPRESSION_OBJECTS_FACTORY = new SpringStandardExpressionObjectFactory();
     private final IStandardConversionService SPRING_STANDARD_CONVERSION_SERVICE = new SpringStandardConversionService();
     
     
@@ -95,7 +95,7 @@ public class SpringStandardDialect extends StandardDialect {
 
 
     @Override
-    public IExpressionObjectsFactory getExpressionObjectsFactory() {
+    public IExpressionObjectFactory getExpressionObjectFactory() {
         return SPRING_STANDARD_EXPRESSION_OBJECTS_FACTORY;
     }
 
