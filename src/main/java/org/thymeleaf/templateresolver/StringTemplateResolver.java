@@ -19,46 +19,39 @@
  */
 package org.thymeleaf.templateresolver;
 
-import java.util.regex.Pattern;
-
-import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.cache.ICacheEntryValidity;
-import org.thymeleaf.cache.NonCacheableCacheEntryValidity;
-import org.thymeleaf.context.IContext;
 import org.thymeleaf.exceptions.ConfigurationException;
+import org.thymeleaf.resourceresolver.ClassLoaderResourceResolver;
 import org.thymeleaf.resourceresolver.IResourceResolver;
-import org.thymeleaf.resourceresolver.UrlResourceResolver;
+import org.thymeleaf.resourceresolver.StringResourceResolver;
 
 /**
  * <p>
  *   Implementation of {@link ITemplateResolver} that extends {@link TemplateResolver}
- *   and uses a {@link UrlResourceResolver} for resource resolution.
+ *   and uses a {@link StringResourceResolver} for resource resolution.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 3.0.0
  *
  */
-public class UrlTemplateResolver
+public class StringTemplateResolver
         extends TemplateResolver {
 
-    private static final Pattern JSESSIONID_PATTERN = Pattern.compile("(.*?);jsessionid(.*?)");
-    
-    
-    public UrlTemplateResolver() {
+
+
+
+    public StringTemplateResolver() {
         super();
-        super.setResourceResolver(new UrlResourceResolver());
+        super.setResourceResolver(new StringResourceResolver());
     }
-    
-    
     
 
     
     /**
      * <p>
      *   This method <b>should not be called</b>, because the resource resolver is
-     *   fixed to be {@link UrlResourceResolver}. Every execution of this method
+     *   fixed to be {@link ClassLoaderResourceResolver}. Every execution of this method
      *   will result in an exception.
      * </p>
      * <p>
@@ -76,22 +69,6 @@ public class UrlTemplateResolver
                 "instead");
     }
 
-
-
-
-
-    @Override
-    protected ICacheEntryValidity computeValidity(
-            final IEngineConfiguration configuration, final IContext context, final String template) {
-        /*
-         * This check is made so that we don't fill the cache with entries for the same
-         * template with different jsessionid values.
-         */
-        if (JSESSIONID_PATTERN.matcher(template.toLowerCase()).matches()) {
-            return NonCacheableCacheEntryValidity.INSTANCE;
-        }
-        return super.computeValidity(configuration, context, template);
-    }
     
     
 }

@@ -69,14 +69,14 @@ public final class ClassLoaderResourceResolver
 
     public IResource getResource(
             final IEngineConfiguration configuration, final IContext context,
-            final String resourceName, final String characterEncoding) {
+            final String resource, final String characterEncoding) {
 
-        Validate.notNull(resourceName, "Resource name cannot be null");
+        Validate.notNull(resource, "Resource cannot be null");
 
         try {
 
             final InputStream inputStream =
-                    ClassLoaderUtils.getClassLoader(ClassLoaderResourceResolver.class).getResourceAsStream(resourceName);
+                    ClassLoaderUtils.getClassLoader(ClassLoaderResourceResolver.class).getResourceAsStream(resource);
             if (inputStream == null) {
                 return null;
             }
@@ -88,12 +88,12 @@ public final class ClassLoaderResourceResolver
                 reader = new InputStreamReader(inputStream);
             }
 
-            return new ReaderResource(resourceName, reader);
+            return new ReaderResource(resource, reader);
 
         } catch (final UnsupportedEncodingException e) {
-            throw new TemplateInputException("Exception reading resource: " + resourceName, e);
+            throw new TemplateInputException("Exception reading resource: " + resource, e);
         } catch (final Throwable t) {
-            showException(resourceName, t);
+            showException(resource, t);
             return null;
         }
 

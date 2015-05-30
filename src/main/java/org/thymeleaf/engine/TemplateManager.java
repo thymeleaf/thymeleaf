@@ -116,12 +116,12 @@ public final class TemplateManager {
      *   name at the template cache.
      * </p>
      * 
-     * @param templateName the name of the template whose entries have to be cleared.
+     * @param template the name of the template whose entries have to be cleared.
      */
-    public void clearTemplateCacheFor(final String templateName) {
+    public void clearTemplateCacheFor(final String template) {
         // TODO cache keys are more complex than this, this method doesn't really do its job alright
         if (this.templateCache != null) {
-            this.templateCache.clearKey(templateName);
+            this.templateCache.clearKey(template);
         }
     }
     
@@ -161,21 +161,21 @@ public final class TemplateManager {
 
 
     public ParsedTemplateMarkup parseTemplate(
-            final IEngineConfiguration configuration, final IContext context, final String templateName) {
-        return parseTemplate(configuration, context, templateName, null);
+            final IEngineConfiguration configuration, final IContext context, final String template) {
+        return parseTemplate(configuration, context, template, null);
     }
 
 
     public ParsedTemplateMarkup parseTemplate(
-            final IEngineConfiguration configuration, final IContext context, final String templateName, final String[] markupSelectors) {
+            final IEngineConfiguration configuration, final IContext context, final String template, final String[] markupSelectors) {
         
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(context, "Context cannot be null");
-        Validate.notNull(templateName, "Template Name cannot be null");
+        Validate.notNull(template, "Template cannot be null");
         // Markup Selectors CAN be null
 
-
-        final String cacheKey = computeCacheKey(configuration.getTextRepository(), templateName, markupSelectors);
+        // TODO Maybe cache keys should include the TemplateMode? (at least if we allow mixing modes in includes...)
+        final String cacheKey = computeCacheKey(configuration.getTextRepository(), template, markupSelectors);
 
 
         /*
@@ -192,7 +192,7 @@ public final class TemplateManager {
         /*
          * Resolve the template, obtain the IResource and its metadata (TemplateResolution)
          */
-        final TemplateAndResourceResolution resolution = resolveTemplate(configuration, context, templateName);
+        final TemplateAndResourceResolution resolution = resolveTemplate(configuration, context, template);
 
 
         /*
@@ -229,21 +229,22 @@ public final class TemplateManager {
 
 
     public ParsedFragmentMarkup parseTextualFragment(
-            final ITemplateProcessingContext processingContext, final String templateName, final String textualFragment) {
-        return parseTextualFragment(processingContext.getConfiguration(), processingContext.getTemplateMode(), templateName, textualFragment);
+            final ITemplateProcessingContext processingContext, final String template, final String textualFragment) {
+        return parseTextualFragment(processingContext.getConfiguration(), processingContext.getTemplateMode(), template, textualFragment);
     }
 
 
     public ParsedFragmentMarkup parseTextualFragment(
             final IEngineConfiguration configuration, final TemplateMode templateMode,
-            final String templateName, final String textualFragment) {
+            final String template, final String textualFragment) {
 
         Validate.notNull(configuration, "Configuration cannot be null");
         Validate.notNull(templateMode, "Template Mode cannot be null");
+        Validate.notNull(template, "Template cannot be null");
         Validate.notNull(textualFragment, "Textual Fragment cannot be null");
 
 
-        final String cacheKey = computeCacheKey(configuration.getTextRepository(), templateName, textualFragment);
+        final String cacheKey = computeCacheKey(configuration.getTextRepository(), template, textualFragment);
 
         /*
          * First look at the cache - it might be already cached
@@ -299,22 +300,22 @@ public final class TemplateManager {
 
 
     public ParsedFragmentMarkup parseTemplateFragment(
-            final ITemplateProcessingContext processingContext, final String templateName, final String[] markupSelectors) {
+            final ITemplateProcessingContext processingContext, final String template, final String[] markupSelectors) {
         return parseTemplateFragment(
-                processingContext.getConfiguration(), processingContext.getVariablesMap(), templateName, markupSelectors);
+                processingContext.getConfiguration(), processingContext.getVariablesMap(), template, markupSelectors);
     }
 
 
     public ParsedFragmentMarkup parseTemplateFragment(
             final IEngineConfiguration configuration, final IContext context,
-            final String templateName, final String[] markupSelectors) {
+            final String template, final String[] markupSelectors) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(context, "Context cannot be null");
-        Validate.notNull(templateName, "Template Name cannot be null");
+        Validate.notNull(template, "Template cannot be null");
         // markupSelectors CAN be null (selecting the whole template as a fragment...
 
-        final String cacheKey = computeCacheKey(configuration.getTextRepository(), templateName, markupSelectors);
+        final String cacheKey = computeCacheKey(configuration.getTextRepository(), template, markupSelectors);
 
         /*
          * First look at the cache - it might be already cached
@@ -331,7 +332,7 @@ public final class TemplateManager {
          * Resolve the template, obtain the IResource and its metadata (TemplateResolution)
          */
         final TemplateAndResourceResolution resolution =
-                resolveTemplate(configuration, context, templateName);
+                resolveTemplate(configuration, context, template);
 
 
         /*
@@ -373,20 +374,20 @@ public final class TemplateManager {
 
 
     public void processTemplate(final IEngineConfiguration configuration, final IContext context,
-                                final String templateName, final Writer writer) {
-        processTemplate(configuration, context, templateName, null, writer);
+                                final String template, final Writer writer) {
+        processTemplate(configuration, context, template, null, writer);
     }
 
 
     public void processTemplate(final IEngineConfiguration configuration, final IContext context,
-                                final String templateName, final String[] markupSelectors, final Writer writer) {
+                                final String template, final String[] markupSelectors, final Writer writer) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(context, "Context cannot be null");
-        Validate.notNull(templateName, "Template Name cannot be null");
+        Validate.notNull(template, "Template cannot be null");
         // Markup Selectors CAN be null
 
-        final String cacheKey = computeCacheKey(configuration.getTextRepository(), templateName, markupSelectors);
+        final String cacheKey = computeCacheKey(configuration.getTextRepository(), template, markupSelectors);
 
 
         /*
@@ -410,7 +411,7 @@ public final class TemplateManager {
         /*
          * Resolve the template, obtain the IResource and its metadata (TemplateResolution)
          */
-        final TemplateAndResourceResolution resolution = resolveTemplate(configuration, context, templateName);
+        final TemplateAndResourceResolution resolution = resolveTemplate(configuration, context, template);
 
 
         /*
@@ -465,7 +466,7 @@ public final class TemplateManager {
 
 
 
-    private static TemplateAndResourceResolution resolveTemplate(final IEngineConfiguration configuration, final IContext context, final String templateName) {
+    private static TemplateAndResourceResolution resolveTemplate(final IEngineConfiguration configuration, final IContext context, final String template) {
 
         final Set<ITemplateResolver> templateResolvers = configuration.getTemplateResolvers();
         TemplateResolution templateResolution = null;
@@ -473,7 +474,7 @@ public final class TemplateManager {
 
         for (final ITemplateResolver templateResolver : templateResolvers) {
 
-            templateResolution = templateResolver.resolveTemplate(configuration, context, templateName);
+            templateResolution = templateResolver.resolveTemplate(configuration, context, template);
 
             if (templateResolution != null) {
 
@@ -481,7 +482,7 @@ public final class TemplateManager {
                 final IResourceResolver resourceResolver = templateResolution.getResourceResolver();
 
                 if (logger.isTraceEnabled()) {
-                    logger.trace("[THYMELEAF][{}] Trying to resolve template \"{}\" as resource \"{}\" with resource resolver \"{}\"", new Object[] {TemplateEngine.threadIndex(), templateName, resourceName, resourceResolver.getName()});
+                    logger.trace("[THYMELEAF][{}] Trying to resolve template \"{}\" as resource \"{}\" with resource resolver \"{}\"", new Object[] {TemplateEngine.threadIndex(), template, resourceName, resourceResolver.getName()});
                 }
 
                 templateResource =
@@ -489,11 +490,11 @@ public final class TemplateManager {
 
                 if (templateResource == null) {
                     if (logger.isTraceEnabled()) {
-                        logger.trace("[THYMELEAF][{}] Template \"{}\" could not be resolved as resource \"{}\" with resource resolver \"{}\"", new Object[] {TemplateEngine.threadIndex(), templateName, resourceName, resourceResolver.getName()});
+                        logger.trace("[THYMELEAF][{}] Template \"{}\" could not be resolved as resource \"{}\" with resource resolver \"{}\"", new Object[] {TemplateEngine.threadIndex(), template, resourceName, resourceResolver.getName()});
                     }
                 } else {
                     if (logger.isDebugEnabled()) {
-                        logger.debug("[THYMELEAF][{}] Template \"{}\" was correctly resolved as resource \"{}\" in mode {} with resource resolver \"{}\"", new Object[] {TemplateEngine.threadIndex(), templateName, resourceName, templateResolution.getTemplateMode(), resourceResolver.getName()});
+                        logger.debug("[THYMELEAF][{}] Template \"{}\" was correctly resolved as resource \"{}\" in mode {} with resource resolver \"{}\"", new Object[] {TemplateEngine.threadIndex(), template, resourceName, templateResolution.getTemplateMode(), resourceResolver.getName()});
                     }
                     break;
                 }
@@ -501,7 +502,7 @@ public final class TemplateManager {
             } else {
 
                 if (logger.isTraceEnabled()) {
-                    logger.trace("[THYMELEAF][{}] Skipping template resolver \"{}\" for template \"{}\"", new Object[] {TemplateEngine.threadIndex(), templateResolver.getName(), templateName});
+                    logger.trace("[THYMELEAF][{}] Skipping template resolver \"{}\" for template \"{}\"", new Object[] {TemplateEngine.threadIndex(), templateResolver.getName(), template});
                 }
 
             }
@@ -510,7 +511,7 @@ public final class TemplateManager {
 
         if (templateResolution == null || templateResource == null) {
             throw new TemplateInputException(
-                    "Error resolving template \"" + templateName + "\", " +
+                    "Error resolving template \"" + template + "\", " +
                     "template might not exist or might not be accessible by " +
                     "any of the configured Template Resolvers");
         }
@@ -697,23 +698,23 @@ public final class TemplateManager {
 
 
     private static String computeCacheKey(
-            final ITextRepository textRepository, final String templateName, final String textualFragment) {
+            final ITextRepository textRepository, final String template, final String textualFragment) {
 
         if (textualFragment == null) {
-            return templateName;
+            return template;
         }
-        return textRepository.getText(templateName, "##", textualFragment);
+        return textRepository.getText(template, "##", textualFragment);
     }
 
 
     private static String computeCacheKey(
-            final ITextRepository textRepository, final String templateName, final String[] markupSelectors) {
+            final ITextRepository textRepository, final String template, final String[] markupSelectors) {
 
         if (markupSelectors == null || markupSelectors.length == 0) {
-            return templateName;
+            return template;
         }
         final String markupSelectorsKeyFragment = computeMarkupSelectorsKeyFragment(markupSelectors);
-        return textRepository.getText(templateName, "::", markupSelectorsKeyFragment);
+        return textRepository.getText(template, "::", markupSelectorsKeyFragment);
     }
 
 

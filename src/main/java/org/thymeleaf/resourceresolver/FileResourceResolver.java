@@ -77,13 +77,13 @@ public final class FileResourceResolver
 
     public IResource getResource(
             final IEngineConfiguration configuration, final IContext context,
-            final String resourceName, final String characterEncoding) {
+            final String resource, final String characterEncoding) {
 
-        Validate.notNull(resourceName, "Resource name cannot be null");
+        Validate.notNull(resource, "Resource cannot be null");
 
         try {
 
-            final File resourceFile = new File(resourceName);
+            final File resourceFile = new File(resource);
             if (!resourceFile.exists()) {
                 return null;
             }
@@ -97,10 +97,10 @@ public final class FileResourceResolver
                 reader = new InputStreamReader(inputStream);
             }
 
-            return new ReaderResource(resourceName, reader);
+            return new ReaderResource(resource, reader);
 
         } catch (final Throwable t) {
-            showException(resourceName, t);
+            showException(resource, t);
             return null;
         }
 

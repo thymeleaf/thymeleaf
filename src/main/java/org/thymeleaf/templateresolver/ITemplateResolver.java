@@ -28,12 +28,12 @@ import org.thymeleaf.templatemode.TemplateMode;
  *   Interface for all Template Resolvers.
  * </p>
  * <p>
- *   Template resolvers are in charge of resolving template names into 
+ *   Template resolvers are in charge of resolving templates (usually their names) into
  *   {@link TemplateResolution} objects that contain additional information related to
  *   the template like:
  * </p>
  * <ul>
- *   <li>Its corresponding <i>resource name</i>: the name that will be passed to the
+ *   <li>Its corresponding <i>resource</i> (usually its name), which will be passed to the
  *       returned Resource Resolver in order to read the template.</li>
  *   <li>The Resource Resolver (implementation of {@link org.thymeleaf.resourceresolver.IResourceResolver})
  *       to be used for trying to read this template.</li>
@@ -97,9 +97,9 @@ public interface ITemplateResolver {
      * </p>
      * <p>
      *   The method arguments contain all the info needed for trying to
-     *   resolve the template (esp. the <i>template name</i>). The Template Resolver
-     *   will apply its configuration (prefixes/suffixes, template mode patterns,
-     *   cache configurations, etc) and return a {@link TemplateResolution} object.
+     *   resolve the template. The Template Resolver will apply its configuration
+     *   (prefixes/suffixes, template mode patterns, cache configurations, etc) and
+     *   return a {@link TemplateResolution} object.
      * </p>
      * <p>
      *   This method can return null if the template resolver is completely certain
@@ -115,10 +115,10 @@ public interface ITemplateResolver {
      * 
      * @param configuration the engine configuration.
      * @param context the context being applied to the template execution.
-     * @param templateName the name of the template to be resolved.
+     * @param template the template to be resolved (usually its name)
      * @return a TemplateResolution object containing (maybe valid) resource resolution
      *         info for the template, or null.
      */
-    public TemplateResolution resolveTemplate(final IEngineConfiguration configuration, final IContext context, final String templateName);
+    public TemplateResolution resolveTemplate(final IEngineConfiguration configuration, final IContext context, final String template);
 
 }

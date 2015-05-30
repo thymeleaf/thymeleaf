@@ -79,10 +79,10 @@ public final class ServletContextResourceResolver
 
     public IResource getResource(
             final IEngineConfiguration configuration, final IContext context,
-            final String resourceName, final String characterEncoding) {
+            final String resource, final String characterEncoding) {
         
         Validate.notNull(context, "Context cannot be null");
-        Validate.notNull(resourceName, "Resource name cannot be null");
+        Validate.notNull(resource, "Resource cannot be null");
         
         if (!(context instanceof IWebContext)) {
             throw new TemplateProcessingException(
@@ -99,7 +99,7 @@ public final class ServletContextResourceResolver
 
         try {
 
-            final InputStream inputStream = servletContext.getResourceAsStream(resourceName);
+            final InputStream inputStream = servletContext.getResourceAsStream(resource);
             if (inputStream == null) {
                 return null;
             }
@@ -111,10 +111,10 @@ public final class ServletContextResourceResolver
                 reader = new InputStreamReader(inputStream);
             }
 
-            return new ReaderResource(resourceName, reader);
+            return new ReaderResource(resource, reader);
 
         } catch (final Throwable t) {
-            showException(resourceName, t);
+            showException(resource, t);
             return null;
         }
 

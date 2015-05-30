@@ -77,13 +77,13 @@ public final class UrlResourceResolver
 
     public IResource getResource(
             final IEngineConfiguration configuration, final IContext context,
-            final String resourceName, final String characterEncoding) {
+            final String resource, final String characterEncoding) {
 
-        Validate.notNull(resourceName, "Resource name cannot be null");
+        Validate.notNull(resource, "Resource cannot be null");
         
         try {
 
-            final URL url = new URL(resourceName);
+            final URL url = new URL(resource);
 
             final InputStream inputStream = url.openStream();
             if (inputStream == null) {
@@ -97,10 +97,10 @@ public final class UrlResourceResolver
                 reader = new InputStreamReader(inputStream);
             }
 
-            return new ReaderResource(resourceName, reader);
+            return new ReaderResource(resource, reader);
 
         } catch (final Throwable t) {
-            showException(resourceName, t);
+            showException(resource, t);
             return null;
         }
         

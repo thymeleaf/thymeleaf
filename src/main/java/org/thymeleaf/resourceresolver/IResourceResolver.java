@@ -31,7 +31,7 @@ import org.thymeleaf.resource.IResource;
  * <p>
  *   When a template is resolved by a Template Resolver (implementation of {@link org.thymeleaf.templateresolver.ITemplateResolver}),
  *   the resulting {@link org.thymeleaf.templateresolver.TemplateResolution} object includes
- *   both a Resource Resolver and a <i>resource name</i>. The Template Engine will then use the
+ *   both a Resource Resolver and a <i>resource</i>. The Template Engine will then use the
  *   resource resolver to try to resolve the template resource (e.g. read a file), and if the resource 
  *   cannot be resolved then the next Template Resolver in the chain will be asked to resolve it.
  * </p>
@@ -63,12 +63,12 @@ public interface IResourceResolver {
      *
      * @param configuration the engine configuration.
      * @param context the context being applied to the template execution.
-     * @param resourceName the name of the resource to be obtained (corresponding with the template name).
+     * @param resource the resource to be obtained (usually its name, corresponding with the template name).
      * @param characterEncoding the character encoding to be used for reading the resource.
      * @return an InputStream on the resource
      */
     public IResource getResource(
             final IEngineConfiguration configuration, final IContext context,
-            final String resourceName, final String characterEncoding);
+            final String resource, final String characterEncoding);
     
 }

@@ -989,13 +989,13 @@ public class TemplateResolver
     
     @Override
     protected String computeResourceName(
-            final IEngineConfiguration configuration, final IContext context, final String templateName) {
+            final IEngineConfiguration configuration, final IContext context, final String template) {
 
-        Validate.notNull(templateName, "Template name cannot be null");
+        Validate.notNull(template, "Template name cannot be null");
         
-        String unaliasedName = this.templateAliases.get(templateName);
+        String unaliasedName = this.templateAliases.get(template);
         if (unaliasedName == null) {
-            unaliasedName = templateName;
+            unaliasedName = template;
         }
         
         final StringBuilder resourceName = new StringBuilder();
@@ -1018,15 +1018,15 @@ public class TemplateResolver
 
     @Override
     protected TemplateMode computeTemplateMode(
-            final IEngineConfiguration configuration, final IContext context, final String templateName) {
+            final IEngineConfiguration configuration, final IContext context, final String template) {
     
-        if (this.xmlTemplateModePatternSpec.matches(templateName)) {
+        if (this.xmlTemplateModePatternSpec.matches(template)) {
             return TemplateMode.XML;
         }
-        if (this.htmlTemplateModePatternSpec.matches(templateName)) {
+        if (this.htmlTemplateModePatternSpec.matches(template)) {
             return TemplateMode.HTML;
         }
-        if (this.textTemplateModePatternSpec.matches(templateName)) {
+        if (this.textTemplateModePatternSpec.matches(template)) {
             return TemplateMode.TEXT;
         }
         return getTemplateMode();
@@ -1037,15 +1037,15 @@ public class TemplateResolver
 
     @Override
     protected ICacheEntryValidity computeValidity(
-            final IEngineConfiguration configuration, final IContext context, final String templateName) {
+            final IEngineConfiguration configuration, final IContext context, final String template) {
 
-        if (this.cacheablePatternSpec.matches(templateName)) {
+        if (this.cacheablePatternSpec.matches(template)) {
             if (this.cacheTTLMs != null) {
                 return new TTLCacheEntryValidity(this.cacheTTLMs.longValue());
             }
             return AlwaysValidCacheEntryValidity.INSTANCE;
         }
-        if (this.nonCacheablePatternSpec.matches(templateName)) {
+        if (this.nonCacheablePatternSpec.matches(template)) {
             return NonCacheableCacheEntryValidity.INSTANCE;
         }
         
@@ -1064,7 +1064,7 @@ public class TemplateResolver
     
     @Override
     protected IResourceResolver computeResourceResolver(
-            final IEngineConfiguration configuration, final IContext context, final String templateName) {
+            final IEngineConfiguration configuration, final IContext context, final String template) {
         return this.resourceResolver;
     }
 
@@ -1072,7 +1072,7 @@ public class TemplateResolver
 
     @Override
     protected String computeCharacterEncoding(
-            final IEngineConfiguration configuration, final IContext context, final String templateName) {
+            final IEngineConfiguration configuration, final IContext context, final String template) {
         return this.characterEncoding;
     }
     
