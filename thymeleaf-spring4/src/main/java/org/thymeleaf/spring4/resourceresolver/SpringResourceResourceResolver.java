@@ -81,7 +81,7 @@ public final class SpringResourceResourceResolver
 
 
 
-    public IResource getResource(
+    public IResource resolveResource(
             final IEngineConfiguration configuration, final IContext context,
             final String resource, final String characterEncoding) {
 
