@@ -83,21 +83,21 @@ public final class SpringResourceResourceResolver
 
     public IResource getResource(
             final IEngineConfiguration configuration, final IContext context,
-            final String resourceName, final String characterEncoding) {
+            final String resource, final String characterEncoding) {
 
-        Validate.notNull(resourceName, "Resource name cannot be null");
+        Validate.notNull(resource, "Resource cannot be null");
         Validate.notNull(this.applicationContext,
                 "ApplicationContext has not been initialized in resource resolver. TemplateResolver or " +
                 "ResourceResolver might not have been correctly configured by the Spring Application Context.");
 
         try {
 
-            final Resource resource = this.applicationContext.getResource(resourceName);
-            if (resource == null) {
+            final Resource resourceObject = this.applicationContext.getResource(resource);
+            if (resourceObject == null) {
                 return null;
             }
 
-            final InputStream inputStream = resource.getInputStream();
+            final InputStream inputStream = resourceObject.getInputStream();
             if (inputStream == null) {
                 return null;
             }
@@ -109,12 +109,12 @@ public final class SpringResourceResourceResolver
                 reader = new InputStreamReader(inputStream);
             }
 
-            return new ReaderResource(resourceName, reader);
+            return new ReaderResource(resource, reader);
 
         } catch (final UnsupportedEncodingException e) {
-            throw new TemplateInputException("Exception reading resource: " + resourceName, e);
+            throw new TemplateInputException("Exception reading resource: " + resource, e);
         } catch (final Throwable t) {
-            showException(resourceName, t);
+            showException(resource, t);
             return null;
         }
 
