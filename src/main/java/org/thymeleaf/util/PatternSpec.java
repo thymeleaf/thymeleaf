@@ -41,9 +41,10 @@ import java.util.regex.Pattern;
  */
 public final class PatternSpec {
 
+    private static final int DEFAULT_PATTERN_SET_SIZE = 3;
     
-    private final LinkedHashSet<String> patternStrs = new LinkedHashSet<String>(3);
-    private final LinkedHashSet<Pattern> patterns = new LinkedHashSet<Pattern>(3);
+    private LinkedHashSet<String> patternStrs;
+    private LinkedHashSet<Pattern> patterns;
 
     
     
@@ -54,38 +55,64 @@ public final class PatternSpec {
 
     
 
+    public boolean isEmpty() {
+        return this.patterns == null || this.patterns.size() == 0;
+    }
+
     
     public Set<String> getPatterns() {
+        if (this.patternStrs == null) {
+            return Collections.EMPTY_SET;
+        }
         return Collections.unmodifiableSet(this.patternStrs);
     }
 
 
     public void setPatterns(final Set<String> newPatterns) {
         if (newPatterns != null) {
+            if (this.patterns == null) {
+                this.patternStrs = new LinkedHashSet<String>(DEFAULT_PATTERN_SET_SIZE);
+                this.patterns = new LinkedHashSet<Pattern>(DEFAULT_PATTERN_SET_SIZE);
+            } else {
+                this.patternStrs.clear();
+                this.patterns.clear();
+            }
             this.patternStrs.addAll(newPatterns);
             for (final String pattern : newPatterns) {
                 this.patterns.add(PatternUtils.strPatternToPattern(pattern));
             }
+        } else if (this.patterns != null) {
+            this.patternStrs.clear();
+            this.patterns.clear();
         }
     }
     
     
     public void addPattern(final String pattern) {
         Validate.notEmpty(pattern, "Pattern cannot be null or empty");
+        if (this.patterns == null) {
+            this.patternStrs = new LinkedHashSet<String>(DEFAULT_PATTERN_SET_SIZE);
+            this.patterns = new LinkedHashSet<Pattern>(DEFAULT_PATTERN_SET_SIZE);
+        }
         this.patternStrs.add(pattern);
         this.patterns.add(PatternUtils.strPatternToPattern(pattern));
     }
 
     
     public void clearPatterns() {
-        this.patternStrs.clear();
-        this.patterns.clear();
+        if (this.patterns != null) {
+            this.patternStrs.clear();
+            this.patterns.clear();
+        }
     }
     
     
     
     
     public boolean matches(final String templateName) {
+        if (this.patterns == null) {
+            return false;
+        }
         for (final Pattern p : this.patterns) {
             if (p.matcher(templateName).matches()) {
                 return true;

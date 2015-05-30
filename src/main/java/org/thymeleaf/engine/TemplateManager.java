@@ -174,7 +174,8 @@ public final class TemplateManager {
         Validate.notNull(template, "Template cannot be null");
         // Markup Selectors CAN be null
 
-        // TODO Maybe cache keys should include the TemplateMode? (at least if we allow mixing modes in includes...)
+        // TODO Maybe cache keys should include the TemplateMode? (at least if we allow mixing modes in includes...) NOTE Its better if they don't include
+        // template mode because this allows us to use 'template' directly as key most of the times
         final String cacheKey = computeCacheKey(configuration.getTextRepository(), template, markupSelectors);
 
 

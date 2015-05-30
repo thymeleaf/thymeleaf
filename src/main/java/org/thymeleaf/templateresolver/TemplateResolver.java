@@ -997,18 +997,25 @@ public class TemplateResolver
         if (unaliasedName == null) {
             unaliasedName = template;
         }
-        
-        final StringBuilder resourceName = new StringBuilder();
-        if (!StringUtils.isEmptyOrWhitespace(this.prefix)) {
-            resourceName.append(this.prefix);
+
+        final boolean hasPrefix = !StringUtils.isEmptyOrWhitespace(this.prefix);
+        final boolean hasSuffix = !StringUtils.isEmptyOrWhitespace(this.suffix);
+
+        if (!hasPrefix && !hasSuffix){
+            return unaliasedName;
         }
-        resourceName.append(unaliasedName);
-        if (!StringUtils.isEmptyOrWhitespace(this.suffix)) {
-            resourceName.append(this.suffix);
+
+        if (!hasPrefix) { // hasSuffix
+            return configuration.getTextRepository().getText(unaliasedName, this.suffix);
         }
-        
-        return resourceName.toString();
-        
+
+        if (!hasSuffix) { // hasPrefix
+            return configuration.getTextRepository().getText(this.prefix, unaliasedName);
+        }
+
+        // hasPrefix && hasSuffix
+        return configuration.getTextRepository().getText(this.prefix, unaliasedName, this.suffix);
+
     }
     
     

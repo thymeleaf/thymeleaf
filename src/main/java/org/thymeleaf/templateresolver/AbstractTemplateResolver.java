@@ -224,7 +224,7 @@ public abstract class AbstractTemplateResolver
      */
     protected boolean computeResolvable(
             final IEngineConfiguration configuration, final IContext context, final String template) {
-        if (this.resolvablePatternSpec.getPatterns().isEmpty()) {
+        if (this.resolvablePatternSpec.isEmpty()) {
             return true;
         }
         return this.resolvablePatternSpec.matches(template);
