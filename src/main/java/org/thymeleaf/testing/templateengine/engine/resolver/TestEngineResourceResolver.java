@@ -82,21 +82,21 @@ public class TestEngineResourceResolver implements IResourceResolver {
 
     public IResource getResource(
             final IEngineConfiguration configuration, final IContext context,
-            final String resourceName, final String characterEncoding) {
+            final String resource, final String characterEncoding) {
 
         try {
             
-            final ITestResource resource = this.resources.get(resourceName);
-            if (resource == null) {
+            final ITestResource testResource = this.resources.get(resource);
+            if (testResource == null) {
                 return null;
             }
-            if (!(resource instanceof ITestResourceItem)) {
+            if (!(testResource instanceof ITestResourceItem)) {
                 throw new TestEngineExecutionException(
-                        "Test specifies an input \"" + resource.getName() + "\" which is a container, not an item " +
+                        "Test specifies an input \"" + testResource.getName() + "\" which is a container, not an item " +
                         "(maybe a folder?)");
             }
             
-            final String input = ((ITestResourceItem)resource).readAsText();
+            final String input = ((ITestResourceItem)testResource).readAsText();
             if (input == null) {
                 return null;
             }
@@ -114,14 +114,14 @@ public class TestEngineResourceResolver implements IResourceResolver {
                 reader = new InputStreamReader(inputStream);
             }
 
-            return new ReaderResource(resourceName, reader);
+            return new ReaderResource(resource, reader);
 
             
         } catch (final TestEngineExecutionException e) {
             throw e;
         } catch (final Exception e) {
             throw new TestEngineExecutionException(
-                    "Exception resolving test resource \"" + resourceName + "\"");
+                    "Exception resolving test resource \"" + resource + "\"");
         }
         
     }
