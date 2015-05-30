@@ -240,7 +240,7 @@ public final class MessageResolutionUtils {
         final List<Properties> messages = new ArrayList<Properties>(10);
         for (final String messageResourceName : messageResourceNames) {
             final IResource messageFileResource =
-                usedResourceResolver.getResource(configuration, context, messageResourceName, null);
+                usedResourceResolver.resolveResource(configuration, context, messageResourceName, null);
             if (messageFileResource != null) {
                 messages.add(loadMessages(messageFileResource));
                 if (logger.isDebugEnabled()) {

@@ -67,7 +67,7 @@ public interface IResourceResolver {
      * @param characterEncoding the character encoding to be used for reading the resource.
      * @return an InputStream on the resource
      */
-    public IResource getResource(
+    public IResource resolveResource(
             final IEngineConfiguration configuration, final IContext context,
             final String resource, final String characterEncoding);
     

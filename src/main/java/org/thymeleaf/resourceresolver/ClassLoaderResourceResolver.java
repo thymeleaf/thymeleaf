@@ -67,7 +67,7 @@ public final class ClassLoaderResourceResolver
     }
 
 
-    public IResource getResource(
+    public IResource resolveResource(
             final IEngineConfiguration configuration, final IContext context,
             final String resource, final String characterEncoding) {
 

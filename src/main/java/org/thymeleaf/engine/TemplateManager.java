@@ -487,7 +487,7 @@ public final class TemplateManager {
                 }
 
                 templateResource =
-                        resourceResolver.getResource(configuration, context, resourceName, templateResolution.getCharacterEncoding());
+                        resourceResolver.resolveResource(configuration, context, resourceName, templateResolution.getCharacterEncoding());
 
                 if (templateResource == null) {
                     if (logger.isTraceEnabled()) {
