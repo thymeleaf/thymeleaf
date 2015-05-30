@@ -67,7 +67,6 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
 
 
-
     @Override
     public void handleText(final IText text) {
         
@@ -75,8 +74,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             text.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
-                    text.getLine(), text.getCol(), e);
+                    "An error happened during template rendering",
+                    text.getTemplateName(), text.getLine(), text.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -93,8 +92,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             comment.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
-                    comment.getLine(), comment.getCol(), e);
+                    "An error happened during template rendering",
+                    comment.getTemplateName(), comment.getLine(), comment.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -110,8 +109,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             cdataSection.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
-                    cdataSection.getLine(), cdataSection.getCol(), e);
+                    "An error happened during template rendering",
+                    cdataSection.getTemplateName(), cdataSection.getLine(), cdataSection.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -129,8 +128,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             standaloneElementTag.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
-                    standaloneElementTag.getLine(), standaloneElementTag.getCol(), e);
+                    "An error happened during template rendering",
+                    standaloneElementTag.getTemplateName(), standaloneElementTag.getLine(), standaloneElementTag.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -146,8 +145,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             openElementTag.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
-                    openElementTag.getLine(), openElementTag.getCol(), e);
+                    "An error happened during template rendering",
+                    openElementTag.getTemplateName(), openElementTag.getLine(), openElementTag.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -163,8 +162,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             autoOpenElementTag.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
-                    autoOpenElementTag.getLine(), autoOpenElementTag.getCol(), e);
+                    "An error happened during template rendering",
+                    autoOpenElementTag.getTemplateName(), autoOpenElementTag.getLine(), autoOpenElementTag.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -180,8 +179,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             closeElementTag.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
-                    closeElementTag.getLine(), closeElementTag.getCol(), e);
+                    "An error happened during template rendering",
+                    closeElementTag.getTemplateName(), closeElementTag.getLine(), closeElementTag.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -197,8 +196,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             autoCloseElementTag.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
-                    autoCloseElementTag.getLine(), autoCloseElementTag.getCol(), e);
+                    "An error happened during template rendering",
+                    autoCloseElementTag.getTemplateName(), autoCloseElementTag.getLine(), autoCloseElementTag.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -214,8 +213,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             unmatchedCloseElementTag.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
-                    unmatchedCloseElementTag.getLine(), unmatchedCloseElementTag.getCol(), e);
+                    "An error happened during template rendering",
+                    unmatchedCloseElementTag.getTemplateName(), unmatchedCloseElementTag.getLine(), unmatchedCloseElementTag.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -233,8 +232,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             docType.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
-                    docType.getLine(), docType.getCol(), e);
+                    "An error happened during template rendering",
+                    docType.getTemplateName(), docType.getLine(), docType.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -252,8 +251,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             xmlDeclaration.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
-                    xmlDeclaration.getLine(), xmlDeclaration.getCol(), e);
+                    "An error happened during template rendering",
+                    xmlDeclaration.getTemplateName(), xmlDeclaration.getLine(), xmlDeclaration.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -273,8 +272,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             processingInstruction.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
-                    processingInstruction.getLine(), processingInstruction.getCol(), e);
+                    "An error happened during template rendering",
+                    processingInstruction.getTemplateName(), processingInstruction.getLine(), processingInstruction.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
