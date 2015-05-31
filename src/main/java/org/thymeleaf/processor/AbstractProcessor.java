@@ -53,12 +53,12 @@ public abstract class AbstractProcessor implements IProcessor {
     }
 
 
-    public TemplateMode getTemplateMode() {
+    public final TemplateMode getTemplateMode() {
         return this.templateMode;
     }
 
 
-    public int getPrecedence() {
+    public final int getPrecedence() {
         return this.precedence;
     }
 
@@ -81,7 +81,7 @@ public abstract class AbstractProcessor implements IProcessor {
      * @param messageParameters the (optional) message parameters
      * @return the resolved message
      */
-    protected String getMessage(
+    protected final String getMessage(
             final ITemplateProcessingContext processingContext, final String messageKey, final Object[] messageParameters) {
 
         final String templateMessage =
@@ -130,7 +130,7 @@ public abstract class AbstractProcessor implements IProcessor {
      * @param messageParameters the (optional) message parameters
      * @return the resolved message
      */
-    protected String getMessageForTemplate(
+    protected final String getMessageForTemplate(
             final ITemplateProcessingContext processingContext, final String messageKey, final Object[] messageParameters) {
         return MessageResolutionUtils.resolveMessageForTemplate(
                 processingContext, messageKey, messageParameters);
@@ -167,7 +167,7 @@ public abstract class AbstractProcessor implements IProcessor {
      * @param messageParameters the (optional) message parameters
      * @return the resolved message
      */
-    protected String getMessageForProcessor(
+    protected final String getMessageForProcessor(
             final ITemplateProcessingContext processingContext, final String messageKey, final Object[] messageParameters) {
         Validate.notNull(processingContext.getLocale(), "Locale in processing context cannot be null");
         return MessageResolutionUtils.resolveMessageForClass(
