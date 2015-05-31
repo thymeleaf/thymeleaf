@@ -41,7 +41,7 @@ public class AbstractDialect implements IDialect {
         this.name = name;
     }
 
-    public String getName() {
+    public final String getName() {
         return this.name;
     }
     

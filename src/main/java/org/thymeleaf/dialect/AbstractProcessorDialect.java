@@ -38,7 +38,7 @@ public abstract class AbstractProcessorDialect extends AbstractDialect implement
     }
 
 
-    public String getPrefix() {
+    public final String getPrefix() {
         return this.prefix;
     }
 
