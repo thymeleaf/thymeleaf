@@ -33,7 +33,7 @@ public final class StandardXmlBaseTagProcessor extends AbstractStandardAttribute
     public static final String TARGET_ATTR_NAME = "xml:base";
 
     public StandardXmlBaseTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, ATTR_NAME, TARGET_ATTR_NAME, PRECEDENCE, false);
+        super(dialectPrefix, ATTR_NAME, TARGET_ATTR_NAME, PRECEDENCE, true);
     }
 
 
