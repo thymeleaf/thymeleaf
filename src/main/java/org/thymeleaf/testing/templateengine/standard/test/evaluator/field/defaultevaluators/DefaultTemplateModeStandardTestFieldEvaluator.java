@@ -38,7 +38,7 @@ public class DefaultTemplateModeStandardTestFieldEvaluator extends AbstractStand
 
     
     private DefaultTemplateModeStandardTestFieldEvaluator() {
-        super(String.class);
+        super(TemplateMode.class);
     }
     
 
