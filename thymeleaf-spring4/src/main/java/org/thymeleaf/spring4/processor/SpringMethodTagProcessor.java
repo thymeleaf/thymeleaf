@@ -81,9 +81,7 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
                 // using a hidden input with name '_method' and set 'post' for the
                 // <form> tag.
 
-                final Markup replacement = processingContext.getMarkupFactory().createMarkup();
-
-                replacement.add(tag); // First add the <input> tag itself (will be cloned)
+                final Markup hiddenMethodMarkup = processingContext.getMarkupFactory().createMarkup();
 
                 final String type = "hidden";
                 final String name = "_method";
@@ -96,9 +94,9 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
                 hiddenMethodElementTag.getAttributes().setAttribute("name", name);
                 hiddenMethodElementTag.getAttributes().setAttribute("value", value);
 
-                replacement.add(hiddenMethodElementTag);
+                hiddenMethodMarkup.add(hiddenMethodElementTag);
 
-                structureHandler.replaceWith(replacement, true);
+                structureHandler.insertBeforeBody(hiddenMethodMarkup, false);
 
             }
 

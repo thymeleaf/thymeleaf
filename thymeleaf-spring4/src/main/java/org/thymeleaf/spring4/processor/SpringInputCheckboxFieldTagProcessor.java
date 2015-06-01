@@ -116,9 +116,7 @@ public final class SpringInputCheckboxFieldTagProcessor
              * never displayed or is disabled.
              */
 
-            final Markup replacement = processingContext.getMarkupFactory().createMarkup();
-
-            replacement.add(tag); // We add first the tag we were already processing (will be cloned)
+            final Markup hiddenTagMarkup = processingContext.getMarkupFactory().createMarkup();
 
             final ITextRepository textRepository = processingContext.getConfiguration().getTextRepository();
 
@@ -132,9 +130,9 @@ public final class SpringInputCheckboxFieldTagProcessor
             hiddenTag.getAttributes().setAttribute(
                     "value", RequestDataValueProcessorUtils.processFormFieldValue(processingContext, hiddenName, hiddenValue, "hidden"));
 
-            replacement.add(hiddenTag);
+            hiddenTagMarkup.add(hiddenTag);
 
-            structureHandler.replaceWith(replacement, true);
+            structureHandler.insertBeforeBody(hiddenTagMarkup, false);
 
         }
 

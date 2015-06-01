@@ -62,7 +62,7 @@ public final class SpringHrefTagProcessor extends AbstractStandardExpressionAttr
         newAttributeValue = RequestDataValueProcessorUtils.processUrl(processingContext, newAttributeValue);
 
         // Set the real, non prefixed attribute
-        tag.getAttributes().setAttribute(ATTR_NAME, newAttributeValue);
+        tag.getAttributes().setAttribute(ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
 
         tag.getAttributes().removeAttribute(attributeName);
 

@@ -70,7 +70,7 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
         newAttributeValue = RequestDataValueProcessorUtils.processAction(processingContext, newAttributeValue, httpMethod);
 
         // Set the 'action' attribute
-        tag.getAttributes().setAttribute(ATTR_NAME, newAttributeValue);
+        tag.getAttributes().setAttribute(ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
 
         // We need to remove it here in case it is cloned
         tag.getAttributes().removeAttribute(attributeName);
@@ -83,9 +83,7 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
 
             if (extraHiddenFields != null && extraHiddenFields.size() > 0) {
 
-                final Markup replacement = processingContext.getMarkupFactory().createMarkup();
-
-                replacement.add(tag); // First add the <input> tag itself (cloned)
+                final Markup extraHiddenElementTags = processingContext.getMarkupFactory().createMarkup();
 
                 for (final Map.Entry<String,String> extraHiddenField : extraHiddenFields.entrySet()) {
 
@@ -96,11 +94,11 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
                     extraHiddenElementTag.getAttributes().setAttribute("name", extraHiddenField.getKey());
                     extraHiddenElementTag.getAttributes().setAttribute("value", extraHiddenField.getValue()); // no need to re-apply the processor here
 
-                    replacement.add(extraHiddenElementTag);
+                    extraHiddenElementTags.add(extraHiddenElementTag);
 
                 }
 
-                structureHandler.replaceWith(replacement, true);
+                structureHandler.insertBeforeBody(extraHiddenElementTags, false);
 
             }
 
