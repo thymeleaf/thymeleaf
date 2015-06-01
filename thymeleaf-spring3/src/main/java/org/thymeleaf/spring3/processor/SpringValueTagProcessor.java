@@ -73,7 +73,7 @@ public final class SpringValueTagProcessor extends AbstractStandardExpressionAtt
         }
 
         // Set the 'value' attribute
-        tag.getAttributes().setAttribute(ATTR_NAME, newAttributeValue);
+        tag.getAttributes().setAttribute(ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
 
         tag.getAttributes().removeAttribute(attributeName);
 
