@@ -418,6 +418,10 @@ final class OGNLShortcutExpression {
 
         result[level] = expression.substring(offset, i);
 
+        if ("true".equalsIgnoreCase(result[level]) || "false".equalsIgnoreCase(result[level])) {
+            return null;
+        }
+
         return result;
 
     }
