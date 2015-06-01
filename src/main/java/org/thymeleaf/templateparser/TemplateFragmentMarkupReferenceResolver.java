@@ -40,7 +40,7 @@ final class TemplateFragmentMarkupReferenceResolver implements IMarkupSelectorRe
     private static final String HTML_FORMAT_WITHOUT_PREFIX = "/[fragment='%1$s' or data-fragment='%1$s' or fragment^='%1$s(' or data-fragment^='%1$s(' or fragment^='%1$s (' or data-fragment^='%1$s (']";
     private static final String HTML_FORMAT_WITH_PREFIX = "/[%1$s:fragment='%%1$s' or data-%1$s-fragment='%%1$s' or %1$s:fragment^='%%1$s(' or data-%1$s-fragment^='%%1$s(' or %1$s:fragment^='%%1$s (' or data-%1$s-fragment^='%%1$s (']";
 
-    private static final String XML_FORMAT_WITHOUT_PREFIX = "/[fragment='%1$s']";
+    private static final String XML_FORMAT_WITHOUT_PREFIX = "/[fragment='%1$s' or fragment^='%1$s(' or fragment^='%1$s (']";
     private static final String XML_FORMAT_WITH_PREFIX = "/[%1$s:fragment='%%1$s' or %1$s:fragment^='%%1$s(' or %1$s:fragment^='%%1$s (']";
 
 
