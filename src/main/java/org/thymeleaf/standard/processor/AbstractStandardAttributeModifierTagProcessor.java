@@ -70,7 +70,7 @@ public abstract class AbstractStandardAttributeModifierTagProcessor extends Abst
             tag.getAttributes().removeAttribute(newAttributeName);
         } else {
             // We are setting the equivalent attribute name, without the prefix...
-            tag.getAttributes().setAttribute(newAttributeName, newAttributeValue);
+            tag.getAttributes().setAttribute(newAttributeName, (newAttributeValue == null? "" : newAttributeValue));
         }
 
         tag.getAttributes().removeAttribute(attributeName);
