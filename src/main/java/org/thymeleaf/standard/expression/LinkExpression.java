@@ -721,7 +721,7 @@ public final class LinkExpression extends SimpleExpression {
                     strBuilder.append(UriEscape.escapeUriQueryParam(this.parameterNames[i]));
                     if (!URL_PARAM_NO_VALUE.equals(valueItem)) {
                         strBuilder.append('=');
-                        strBuilder.append(valueItem == null ? "" : UriEscape.escapeUriQueryParam(value.toString()));
+                        strBuilder.append(valueItem == null ? "" : UriEscape.escapeUriQueryParam(valueItem.toString()));
                     }
                 }
 
