@@ -45,6 +45,7 @@ import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.templateresolver.ITemplateResolver;
+import org.thymeleaf.templateresolver.StringTemplateResolver;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.text.TextRepositories;
 import org.thymeleaf.util.Validate;
@@ -295,6 +296,14 @@ public class TemplateEngine implements ITemplateEngine {
                 if (!this.initialized.get()) {
 
                     logger.info("[THYMELEAF] INITIALIZING TEMPLATE ENGINE");
+
+                    // If no template resolvers have been set at this point, use a StringTemplateResolver
+                    if (this.templateResolvers == null || this.templateResolvers.isEmpty()) {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("[THYMELEAF] No Template Resolver has been specified: using " + StringTemplateResolver.class.getName());
+                        }
+                        setTemplateResolver(new StringTemplateResolver());
+                    }
 
                     this.configuration =
                             new EngineConfiguration(this.templateResolvers, this.messageResolvers, this.dialectConfigurations, this.cacheManager, this.textRepository);
