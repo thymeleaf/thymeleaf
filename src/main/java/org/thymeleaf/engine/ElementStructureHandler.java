@@ -44,6 +44,14 @@ final class ElementStructureHandler implements IElementStructureHandler {
     IMarkup setBodyMarkupValue;
     boolean setBodyMarkupProcessable;
 
+    boolean insertBeforeBodyText;
+    String insertBeforeBodyTextValue;
+    boolean insertBeforeBodyTextProcessable;
+
+    boolean insertBeforeBodyMarkup;
+    IMarkup insertBeforeBodyMarkupValue;
+    boolean insertBeforeBodyMarkupProcessable;
+
     boolean replaceWithText;
     String replaceWithTextValue;
     boolean replaceWithTextProcessable;
@@ -102,6 +110,25 @@ final class ElementStructureHandler implements IElementStructureHandler {
         this.setBodyMarkup = true;
         this.setBodyMarkupValue = markup;
         this.setBodyMarkupProcessable = processable;
+    }
+
+
+
+    public void insertBeforeBody(final String text, final boolean processable) {
+        resetAllButLocalVariables();
+        Validate.notNull(text, "Text cannot be null");
+        this.insertBeforeBodyText = true;
+        this.insertBeforeBodyTextValue = text;
+        this.insertBeforeBodyTextProcessable = processable;
+    }
+
+
+    public void insertBeforeBody(final IMarkup markup, final boolean processable) {
+        resetAllButLocalVariables();
+        Validate.notNull(markup, "Markup cannot be null");
+        this.insertBeforeBodyMarkup = true;
+        this.insertBeforeBodyMarkupValue = markup;
+        this.insertBeforeBodyMarkupProcessable = processable;
     }
 
 
@@ -226,6 +253,14 @@ final class ElementStructureHandler implements IElementStructureHandler {
         this.setBodyMarkup = false;
         this.setBodyMarkupValue = null;
         this.setBodyMarkupProcessable = false;
+
+        this.insertBeforeBodyText = false;
+        this.insertBeforeBodyTextValue = null;
+        this.insertBeforeBodyTextProcessable = false;
+
+        this.insertBeforeBodyMarkup = false;
+        this.insertBeforeBodyMarkupValue = null;
+        this.insertBeforeBodyMarkupProcessable = false;
 
         this.replaceWithText = false;
         this.replaceWithTextValue = null;
