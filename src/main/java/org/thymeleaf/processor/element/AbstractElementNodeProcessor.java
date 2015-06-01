@@ -66,11 +66,15 @@ public abstract class AbstractElementNodeProcessor
         this.prefixAttributeName = prefixAttributeName;
 
         this.matchingElementName =
-                MatchingElementName.forElementName(
-                        getTemplateMode(), ElementNames.forName(getTemplateMode(), (this.prefixElementName? this.dialectPrefix : null), this.elementName));
+                (this.elementName == null?
+                    null :
+                    MatchingElementName.forElementName(
+                            getTemplateMode(), ElementNames.forName(getTemplateMode(), (this.prefixElementName? this.dialectPrefix : null), this.elementName)));
         this.matchingAttributeName =
-                MatchingAttributeName.forAttributeName(
-                        getTemplateMode(), AttributeNames.forName(getTemplateMode(), (this.prefixAttributeName? this.dialectPrefix : null), this.attributeName));
+                (this.attributeName == null?
+                    null :
+                    MatchingAttributeName.forAttributeName(
+                            getTemplateMode(), AttributeNames.forName(getTemplateMode(), (this.prefixAttributeName? this.dialectPrefix : null), this.attributeName)));
 
     }
 
