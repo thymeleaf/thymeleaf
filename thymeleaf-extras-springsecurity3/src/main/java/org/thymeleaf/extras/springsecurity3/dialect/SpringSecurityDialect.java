@@ -32,7 +32,7 @@ import org.thymeleaf.extras.springsecurity3.dialect.processor.AuthorizeAclAttrPr
 import org.thymeleaf.extras.springsecurity3.dialect.processor.AuthorizeAttrProcessor;
 import org.thymeleaf.extras.springsecurity3.dialect.processor.AuthorizeUrlAttrProcessor;
 import org.thymeleaf.processor.IProcessor;
-
+import org.thymeleaf.standard.processor.StandardXmlNsTagProcessor;
 
 
 /**
@@ -73,6 +73,7 @@ public class SpringSecurityDialect
         processors.add(new AuthorizeAttrProcessor(dialectPrefix, AuthorizeAttrProcessor.ATTR_NAME_EXPR));
         processors.add(new AuthorizeUrlAttrProcessor(dialectPrefix));
         processors.add(new AuthorizeAclAttrProcessor(dialectPrefix));
+        processors.add(new StandardXmlNsTagProcessor(dialectPrefix));
         return processors;
     }
 
