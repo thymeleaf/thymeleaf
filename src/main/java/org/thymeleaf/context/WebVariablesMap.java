@@ -347,6 +347,12 @@ public final class WebVariablesMap
         }
 
         public boolean containsVariable(final String name) {
+            // For most implementations of ServletContext, trying to get a value instead of iterating the
+            // names Enumeration seems faster as a way to know if something exists (in the cases when we are checking
+            // for existing keys a good % of the total times).
+            if (this.servletContext.getAttribute(name) != null) {
+                return true;
+            }
             return existsInEnumeration(this.servletContext.getAttributeNames(), name);
         }
 
@@ -395,14 +401,25 @@ public final class WebVariablesMap
         }
 
         public Object getVariable(final String key) {
-            return this.request.getAttribute(key);
+            // We will always be returning the String[] version of the parameters
+            return this.request.getParameterValues(key);
         }
 
         public boolean containsVariable(final String name) {
-            return existsInEnumeration(this.request.getAttributeNames(), name);
+            // For most implementations of HttpServletRequest, trying to get a value instead of iterating the
+            // names Enumeration or the ParameterMap keys (which might be locked but will be created each time if not)
+            // seems faster as a way to know if something exists (in the cases when we are checking
+            // for existing keys a good % of the total times).
+            if (this.request.getParameterValues(name) != null) {
+                return true;
+            }
+            // We can still be fast if this parameter map has been locked so that we don't receive a new instance
+            // each time we call it (see e.g. org.apache.catalina.connector.Request)
+            return this.request.getParameterMap().containsKey(name);
         }
 
         public Set<String> getVariableNames() {
+            // If the parameter map is locked (see e.g. org.apache.catalina.connector.Request) this can be quite fast
             return this.request.getParameterMap().keySet();
         }
 
@@ -500,30 +517,13 @@ public final class WebVariablesMap
 
 
             // For most implementations of HttpServletRequest, trying to get a value instead of iterating the
-            // keys Enumeration seems faster as a way to know if something exists (in the cases when we are checking
+            // names Enumeration seems faster as a way to know if something exists (in the cases when we are checking
             // for existing keys a good % of the total times).
             if (this.request.getAttribute(name) != null) {
                 return true;
             }
 
-            final Enumeration<String> attrNamesEnum = this.request.getAttributeNames();
-
-            if (name == null) {
-                while (attrNamesEnum.hasMoreElements()) {
-                    if (attrNamesEnum.nextElement() == null) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            while (attrNamesEnum.hasMoreElements()) {
-                if (name.equals(attrNamesEnum.nextElement())) {
-                    return true;
-                }
-            }
-
-            return false;
+            return existsInEnumeration(this.request.getAttributeNames(), name);
 
         }
 
