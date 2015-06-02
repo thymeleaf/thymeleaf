@@ -164,8 +164,9 @@ public final class OGNLVariableExpressionEvaluator
 
             // The root object on which we will evaluate expressions will depend on whether a selection target is
             // active or not...
-            final IVariablesMap variablesMap = processingContext.getVariablesMap();
-            final Object evaluationRoot = (useSelectionAsRoot? variablesMap.getSelectionTarget() : variablesMap);
+            final IVariablesMap variablesMap = processingContext.getVariables();
+            final Object evaluationRoot =
+                    (useSelectionAsRoot && variablesMap.hasSelectionTarget()? variablesMap.getSelectionTarget() : variablesMap);
 
             // Execute the expression!
             final Object result;
