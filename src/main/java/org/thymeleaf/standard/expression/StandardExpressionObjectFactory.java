@@ -285,17 +285,17 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
     public Object buildObject(final IProcessingContext processingContext, final String expressionObjectName) {
 
         if (SELECTION_TARGET_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            if (processingContext.getVariablesMap().hasSelectionTarget()) {
-                return processingContext.getVariablesMap().getSelectionTarget();
+            if (processingContext.getVariables().hasSelectionTarget()) {
+                return processingContext.getVariables().getSelectionTarget();
             }
-            return processingContext.getVariablesMap();
+            return processingContext.getVariables();
         }
 
         if (ROOT_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            return processingContext.getVariablesMap();
+            return processingContext.getVariables();
         }
         if (VARIABLES_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            return processingContext.getVariablesMap();
+            return processingContext.getVariables();
         }
         if (CONTEXT_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
             return processingContext;
@@ -305,13 +305,13 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
         }
         if (HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
             if (processingContext.isWeb()) {
-                return ((IWebVariablesMap) processingContext.getVariablesMap()).getRequest();
+                return ((IWebVariablesMap) processingContext.getVariables()).getRequest();
             }
             return null;
         }
         if (HTTP_SESSION_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
             if (processingContext.isWeb()) {
-                return ((IWebVariablesMap) processingContext.getVariablesMap()).getSession();
+                return ((IWebVariablesMap) processingContext.getVariables()).getSession();
             }
             return null;
         }

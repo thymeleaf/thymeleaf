@@ -48,6 +48,6 @@ public interface IProcessingContext {
 
     public Locale getLocale();
 
-    public IVariablesMap getVariablesMap();
+    public IVariablesMap getVariables();
 
 }

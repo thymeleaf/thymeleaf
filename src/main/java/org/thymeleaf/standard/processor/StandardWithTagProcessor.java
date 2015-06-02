@@ -74,7 +74,7 @@ public final class StandardWithTagProcessor extends AbstractAttributeTagProcesso
         // expression to be available for the next expressions, and that forces us to cast our Variables Map into
         // a more specific interface --which shouldn't be used directly except in this specific, special case-- and
         // put the local variables directly into it.
-        final IVariablesMap variablesMap = processingContext.getVariablesMap();
+        final IVariablesMap variablesMap = processingContext.getVariables();
         ILocalVariableAwareVariablesMap localVariableAwareVariablesMap = null;
         if (variablesMap instanceof ILocalVariableAwareVariablesMap) {
             localVariableAwareVariablesMap = (ILocalVariableAwareVariablesMap) variablesMap;

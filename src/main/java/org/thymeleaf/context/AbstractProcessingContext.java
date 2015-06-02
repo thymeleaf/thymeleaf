@@ -98,7 +98,7 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
         return this.web;
     }
 
-    public final IVariablesMap getVariablesMap() {
+    public final IVariablesMap getVariables() {
         return this.variablesMap;
     }
 

@@ -70,10 +70,10 @@ public final class StandardCaseTagProcessor extends AbstractStandardConditionalV
          * this code.
          */
 
-        final IVariablesMap variablesMap = processingContext.getVariablesMap();
+        final IVariablesMap variables = processingContext.getVariables();
 
         final StandardSwitchTagProcessor.SwitchStructure switchStructure =
-                (StandardSwitchTagProcessor.SwitchStructure) variablesMap.getVariable(StandardSwitchTagProcessor.SWITCH_VARIABLE_NAME);
+                (StandardSwitchTagProcessor.SwitchStructure) variables.getVariable(StandardSwitchTagProcessor.SWITCH_VARIABLE_NAME);
 
         if (switchStructure == null) {
             throw new TemplateProcessingException(

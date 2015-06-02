@@ -48,7 +48,7 @@ public final class StandardInliningTextProcessor extends AbstractTextProcessor {
                         final ITextStructureHandler structureHandler) {
 
 
-        final ITextInliner textInliner = processingContext.getVariablesMap().getTextInliner();
+        final ITextInliner textInliner = processingContext.getVariables().getTextInliner();
 
         if (textInliner == null || textInliner == NoOpTextInliner.INSTANCE) {
             return;

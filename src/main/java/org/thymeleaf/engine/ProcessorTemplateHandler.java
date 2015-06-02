@@ -198,7 +198,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         this.templateMode = this.processingContext.getTemplateMode(); // Just a way to avoid doing the call each time
 
-        final IVariablesMap variablesMap = processingContext.getVariablesMap();
+        final IVariablesMap variablesMap = processingContext.getVariables();
         Validate.notNull(variablesMap, "Variables Map returned by Processing Context cannot be null");
         if (variablesMap instanceof ILocalVariableAwareVariablesMap) {
             this.variablesMap = (ILocalVariableAwareVariablesMap) variablesMap;

@@ -303,7 +303,7 @@ public final class TemplateManager {
     public ParsedFragmentMarkup parseTemplateFragment(
             final ITemplateProcessingContext processingContext, final String template, final String[] markupSelectors) {
         return parseTemplateFragment(
-                processingContext.getConfiguration(), processingContext.getVariablesMap(), template, markupSelectors);
+                processingContext.getConfiguration(), processingContext.getVariables(), template, markupSelectors);
     }
 
 

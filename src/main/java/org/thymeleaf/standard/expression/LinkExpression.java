@@ -303,7 +303,7 @@ public final class LinkExpression extends SimpleExpression {
         final String contextPath;
         if (linkBaseContextRelative) {
             // If it is context-relative, it has to be a web context
-            final IWebVariablesMap webVariablesMap = (IWebVariablesMap) processingContext.getVariablesMap();
+            final IWebVariablesMap webVariablesMap = (IWebVariablesMap) processingContext.getVariables();
             final HttpServletRequest request = webVariablesMap.getRequest();
             contextPath = request.getContextPath();
         } else {
@@ -322,7 +322,7 @@ public final class LinkExpression extends SimpleExpression {
                 (parameters == null || parameters.size() == 0) && hashPosition < 0 && !mightHaveVariableTemplates) {
 
             if (processingContext.isWeb()) {
-                final IWebVariablesMap webVariablesMap = (IWebVariablesMap) processingContext.getVariablesMap();
+                final IWebVariablesMap webVariablesMap = (IWebVariablesMap) processingContext.getVariables();
                 final HttpServletResponse response = webVariablesMap.getResponse();
                 return (response != null? response.encodeURL((String) base) : base);
             }
@@ -412,7 +412,7 @@ public final class LinkExpression extends SimpleExpression {
          * Context is web 
          */
         
-        final IWebVariablesMap webVariablesMap = (IWebVariablesMap) processingContext.getVariablesMap();
+        final IWebVariablesMap webVariablesMap = (IWebVariablesMap) processingContext.getVariables();
         final HttpServletResponse response = webVariablesMap.getResponse();
 
         if (linkBaseContextRelative && !contextPathEmpty) {

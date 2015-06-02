@@ -176,7 +176,7 @@ public final class StandardMessageResolutionUtils {
                 getTemplateFileNameBase(processingContext.getConfiguration().getTextRepository(), resourceName);
         
         return MessageResolutionUtils.loadCombinedMessagesFilesFromBaseName(
-                processingContext.getConfiguration(), processingContext.getVariablesMap(),
+                processingContext.getConfiguration(), processingContext.getVariables(),
                 resourceResolver, templateBaseName, locale, defaultMessages);
         
     }

@@ -77,7 +77,7 @@ public final class MessageResolutionUtils {
             final boolean returnStringAlways) {
 
         Validate.notNull(processingContext, "Processing Context cannot be null");
-        Validate.notNull(processingContext.getVariablesMap(), "Variables Map returned by Processing Context cannot be null");
+        Validate.notNull(processingContext.getVariables(), "Variables Map returned by Processing Context cannot be null");
         Validate.notNull(messageKey, "Message key cannot be null");
         
         final Set<IMessageResolver> messageResolvers = 
