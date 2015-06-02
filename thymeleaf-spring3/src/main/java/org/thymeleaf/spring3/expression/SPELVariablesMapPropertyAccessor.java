@@ -71,6 +71,12 @@ public final class SPELVariablesMapPropertyAccessor implements PropertyAccessor 
             throw new AccessException("Cannot read property of null target");
         }
         try {
+            /*
+             * NOTE we do not check here whether we are being asked for the 'locale', 'request', 'response', etc.
+             * because there already are specific expression objects for the most important of them, which should
+             * be used instead: #locale, #httpServletRequest, #httpSession, etc.
+             * The variables maps should just be used as a map, without exposure of its more-internal methods...
+             */
             final IVariablesMap variablesMap = (IVariablesMap) target;
             return new TypedValue(variablesMap.getVariable(name));
         } catch (final ClassCastException e) {
