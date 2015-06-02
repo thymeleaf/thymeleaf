@@ -73,7 +73,7 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
 
         if (multiple && !isDisabled(tag)) {
 
-            final Markup replacement = processingContext.getMarkupFactory().createMarkup();
+            final Markup hiddenMethodElementMarkup = processingContext.getMarkupFactory().createMarkup();
 
             final String hiddenName = WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name;
             final String type = "hidden";
@@ -86,11 +86,12 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
             hiddenMethodElementTag.getAttributes().setAttribute("name", hiddenName);
             hiddenMethodElementTag.getAttributes().setAttribute("value", value);
 
-            replacement.add(hiddenMethodElementTag);
+            hiddenMethodElementMarkup.add(hiddenMethodElementTag);
 
-            replacement.add(tag); // Note in this case, given <select> is an OPEN element, we add the hidden BEFORE the select
-
-            structureHandler.replaceWith(replacement, true);
+            // We insert this hidden before because <select>'s are open element (with body), and if we insert it
+            // after the element, we would be inserting the <input type="hidden"> inside the <select>, which would
+            // incorrect...
+            structureHandler.insertBefore(hiddenMethodElementMarkup);
 
         }
 

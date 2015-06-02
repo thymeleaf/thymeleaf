@@ -98,7 +98,7 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
 
                 }
 
-                structureHandler.insertBeforeBody(extraHiddenElementTags, false);
+                structureHandler.insertAfter(extraHiddenElementTags, false);
 
             }
 
