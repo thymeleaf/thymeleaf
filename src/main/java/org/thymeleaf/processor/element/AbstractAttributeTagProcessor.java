@@ -63,6 +63,8 @@ public abstract class AbstractAttributeTagProcessor extends AbstractElementTagPr
 
         } catch (final TemplateProcessingException e) {
             // This is a nice moment to check whether the execution raised an error and, if so, add location information
+            // Note this is similar to what is done at the superclass AbstractElementTagProcessor, but we can be more
+            // specific because we know exactly what attribute was being executed and caused the error
             if (!e.hasTemplateName()) {
                 e.setTemplateName(tag.getTemplateName());
             }
@@ -78,9 +80,18 @@ public abstract class AbstractAttributeTagProcessor extends AbstractElementTagPr
             }
             throw e;
         } catch (final Exception e) {
+            final int line, col;
+            if (attributeName != null) {
+                line = tag.getAttributes().getLine(attributeName);
+                col = tag.getAttributes().getCol(attributeName);
+            } else {
+                // We don't have info about the specific attribute provoking the error
+                line = tag.getLine();
+                col = tag.getCol();
+            }
             throw new TemplateProcessingException(
                     "Error during execution of processor '" + this.getClass().getName() + "'",
-                    tag.getTemplateName(), tag.getLine(), tag.getCol(), e);
+                    tag.getTemplateName(), line, col, e);
         }
 
     }

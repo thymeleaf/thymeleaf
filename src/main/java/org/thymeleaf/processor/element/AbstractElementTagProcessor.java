@@ -94,6 +94,7 @@ public abstract class AbstractElementTagProcessor
             doProcess(processingContext, tag, structureHandler);
 
         } catch (final TemplateProcessingException e) {
+            // This is a nice moment to check whether the execution raised an error and, if so, add location information
             if (!e.hasTemplateName()) {
                 e.setTemplateName(tag.getTemplateName());
             }
