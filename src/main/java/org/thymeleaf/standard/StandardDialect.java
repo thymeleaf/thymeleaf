@@ -43,6 +43,7 @@ import org.thymeleaf.standard.processor.StandardAssertTagProcessor;
 import org.thymeleaf.standard.processor.StandardAttrTagProcessor;
 import org.thymeleaf.standard.processor.StandardAttrappendTagProcessor;
 import org.thymeleaf.standard.processor.StandardAttrprependTagProcessor;
+import org.thymeleaf.standard.processor.StandardBlockTagProcessor;
 import org.thymeleaf.standard.processor.StandardCaseTagProcessor;
 import org.thymeleaf.standard.processor.StandardClassappendTagProcessor;
 import org.thymeleaf.standard.processor.StandardConditionalFixedValueTagProcessor;
@@ -74,6 +75,7 @@ import org.thymeleaf.standard.processor.StandardValueTagProcessor;
 import org.thymeleaf.standard.processor.StandardWithTagProcessor;
 import org.thymeleaf.standard.processor.StandardXmlBaseTagProcessor;
 import org.thymeleaf.standard.processor.StandardXmlLangTagProcessor;
+import org.thymeleaf.standard.processor.StandardXmlNsTagProcessor;
 import org.thymeleaf.standard.processor.StandardXmlSpaceTagProcessor;
 import org.thymeleaf.util.Validate;
 
@@ -314,7 +316,7 @@ public class StandardDialect
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
 
         /*
-         * ELEMENT PROCESSORS
+         * ATTRIBUTE TAG PROCESSORS
          */
         processors.add(new StandardActionTagProcessor(dialectPrefix));
         processors.add(new StandardAltTitleTagProcessor(dialectPrefix));
@@ -360,7 +362,13 @@ public class StandardDialect
         processors.add(new StandardXmlBaseTagProcessor(dialectPrefix));
         processors.add(new StandardXmlLangTagProcessor(dialectPrefix));
         processors.add(new StandardXmlSpaceTagProcessor(dialectPrefix));
+        processors.add(new StandardXmlNsTagProcessor(dialectPrefix));
 //        processors.add(new StandardDefaultAttributesTagProcessor());
+
+        /*
+         * ELEMENT TAG PROCESSORS
+         */
+        processors.add(new StandardBlockTagProcessor(dialectPrefix));
 
         /*
          * TEXT PROCESSORS
