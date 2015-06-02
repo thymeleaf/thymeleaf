@@ -28,6 +28,8 @@ import org.thymeleaf.engine.ITemplateHandlerEvent;
 import org.thymeleaf.engine.ImmutableMarkup;
 import org.thymeleaf.engine.Markup;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.IAutoCloseElementTag;
+import org.thymeleaf.model.IAutoOpenElementTag;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IOpenElementTag;
@@ -170,21 +172,42 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          */
         if (this.insertOnlyContents && parsedFragmentSelection.hasFragmentSelector()) {
 
-            final ITemplateHandlerEvent lastEvent = (parsedFragmentLen >= 2? parsedFragment.get(parsedFragmentLen - 1) : null);
+            /*
+             * In the case of th:include, things get a bit complicated because we need to remove the "element envelopes"
+             * that contain what we really want to include (these envelopes' contents). So we will need to traverse
+             * the entire returned markup detecting those envelopes (open+close tags at markup level == 0) and remove
+             * them, along with anything else that is also at that level 0.
+             */
 
-            if (firstEvent != null && lastEvent != null && firstEvent instanceof IOpenElementTag && lastEvent instanceof ICloseElementTag) {
+            final Markup mutableMarkup = parsedFragment.asMutable();
+            int markupLevel = 0;
+            int n = mutableMarkup.size();
+            while (n-- != 0) { // We traverse backwards so that we can modify at the same time
 
-                // We will now remove the first and last events. Note we have to clone to a mutable markup object, and
-                // therefore we will be performing a bit worse (because of the node cloning) than if we just inserted
-                // the whole fragment without any modifications
-                final Markup mutableMarkup = parsedFragment.asMutable();
-                mutableMarkup.remove(parsedFragmentLen - 1);
-                mutableMarkup.remove(0);
+                final ITemplateHandlerEvent event = mutableMarkup.get(n);
 
-                parsedFragment = mutableMarkup.asImmutable();
+                if (event instanceof ICloseElementTag || event instanceof IAutoCloseElementTag) {
+                    if (markupLevel <= 0) {
+                        mutableMarkup.remove(n);
+                    }
+                    markupLevel++;
+                    continue;
+                }
+                if (event instanceof IOpenElementTag || event instanceof IAutoOpenElementTag) {
+                    markupLevel--;
+                    if (markupLevel <= 0) {
+                        mutableMarkup.remove(n);
+                    }
+                    continue;
+                }
+                if (markupLevel <= 0) {
+                    mutableMarkup.remove(n);
+                }
 
             }
 
+            // Once processed, we convert it to immutable (this way, it won't be cloned anymore)
+            parsedFragment = mutableMarkup.asImmutable();
 
         }
 
