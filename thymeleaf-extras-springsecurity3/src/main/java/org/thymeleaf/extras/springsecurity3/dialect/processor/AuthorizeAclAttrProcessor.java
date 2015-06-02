@@ -82,7 +82,7 @@ public final class AuthorizeAclAttrProcessor extends AbstractStandardConditional
                     "web environments.");
         }
 
-        final IWebContext webContext = (IWebContext) processingContext.getVariablesMap();
+        final IWebContext webContext = (IWebContext) processingContext.getVariables();
         final ServletContext servletContext = webContext.getServletContext();
 
         final Authentication authentication = AuthUtils.getAuthenticationObject();

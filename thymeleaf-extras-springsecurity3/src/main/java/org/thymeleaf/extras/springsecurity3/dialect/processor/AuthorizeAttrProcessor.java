@@ -75,7 +75,7 @@ public final class AuthorizeAttrProcessor extends AbstractStandardConditionalVis
                     IWebContext.class.getName() + "). Spring Security integration can only be used in " +
                     "web environments.");
         }
-        final IWebContext webContext = (IWebContext) processingContext.getVariablesMap();
+        final IWebContext webContext = (IWebContext) processingContext.getVariables();
         
         final HttpServletRequest request = webContext.getRequest();
         final HttpServletResponse response = webContext.getResponse();

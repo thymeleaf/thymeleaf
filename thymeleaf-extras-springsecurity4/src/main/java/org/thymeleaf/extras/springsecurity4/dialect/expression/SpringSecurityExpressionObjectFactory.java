@@ -123,7 +123,7 @@ public class SpringSecurityExpressionObjectFactory implements IExpressionObjectF
                 final Authentication authentication =
                         (Authentication) processingContext.getExpressionObjects().getObject(AUTHENTICATION_EXPRESSION_OBJECT_NAME);
 
-                final IWebVariablesMap webVariablesMap = (IWebVariablesMap)processingContext.getVariablesMap();
+                final IWebVariablesMap webVariablesMap = (IWebVariablesMap)processingContext.getVariables();
                 final HttpServletRequest request = webVariablesMap.getRequest();
                 final HttpServletResponse response = webVariablesMap.getResponse();
                 final ServletContext servletContext = webVariablesMap.getServletContext();
