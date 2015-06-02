@@ -953,18 +953,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 final IElementTagProcessor elementProcessor = ((IElementTagProcessor)processor);
                 elementProcessor.process(this.processingContext, standaloneElementTag, this.elementStructureHandler);
 
-                // This ifs are a normalization step - in a standalone element, an 'insert before body' is an exact
-                // equivalent of a 'set body', so there is no need to replicate code
-                if (this.elementStructureHandler.insertBeforeBodyText) {
-                    this.elementStructureHandler.setBody(
-                            this.elementStructureHandler.insertBeforeBodyTextValue,
-                            this.elementStructureHandler.insertBeforeBodyTextProcessable);
-                } else if (this.elementStructureHandler.insertBeforeBodyMarkup) {
-                    this.elementStructureHandler.setBody(
-                            this.elementStructureHandler.insertBeforeBodyMarkupValue,
-                            this.elementStructureHandler.insertBeforeBodyMarkupProcessable);
-                }
-
                 if (this.elementStructureHandler.setLocalVariable) {
                     if (this.variablesMap != null) {
                         this.variablesMap.putAll(this.elementStructureHandler.addedLocalVariables);
@@ -1025,6 +1013,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                         this.variablesMap.decreaseLevel();
                     }
 
+                    // Complete exit of the handler method: no more processing to do from here
                     return;
 
                 } else if (this.elementStructureHandler.setBodyText) {
@@ -1076,6 +1065,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                         this.variablesMap.decreaseLevel();
                     }
 
+                    // Complete exit of the handler method: no more processing to do from here
                     return;
 
                 } else if (this.elementStructureHandler.setBodyMarkup) {
@@ -1099,6 +1089,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
                     this.suspended = true;
                     this.suspensionSpec.allowedElementCountInBody = Integer.MAX_VALUE;
+                    this.suspensionSpec.allowedNonElementStructuresInBody = true;
                     this.suspensionSpec.queueProcessable = this.elementStructureHandler.setBodyMarkupProcessable;
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
@@ -1120,7 +1111,40 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                         this.variablesMap.decreaseLevel();
                     }
 
+                    // Complete exit of the handler method: no more processing to do from here
                     return;
+
+                } else if (this.elementStructureHandler.insertBeforeMarkup) {
+
+                    final IMarkup insertedMarkup = this.elementStructureHandler.insertBeforeMarkupValue;
+                    if (queue.size() == 0) {
+                        // The current queue object is empty, so we can use it to process this inserted markup
+
+                        queue.addMarkup(insertedMarkup);
+                        // Markup inserted BEFORE is never processable, so we will always use getNext() here
+                        queue.process(getNext(), true);
+
+                    } else {
+                        // The current queue object is not empty :-( so in order to process this inserted markup
+                        // we will need to use a new queue...
+
+                        final EngineEventQueue newQueue = new EngineEventQueue(this.configuration, this.templateMode, 5);
+                        newQueue.addMarkup(insertedMarkup);
+                        // Markup inserted BEFORE is never processable, so we will always use getNext() here
+                        newQueue.process(getNext(), true);
+
+                    }
+
+                } else if (this.elementStructureHandler.insertAfterMarkup) {
+
+                    // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
+                    // was already added to the body queue, simply adding our insertion at the beginning of it all
+                    queueProcessable = this.elementStructureHandler.insertAfterMarkupProcessable;
+
+                    // Markup will be automatically cloned if mutable
+                    queue.insertMarkup(0, this.elementStructureHandler.insertAfterMarkupValue);
+
+                    // No intervention on the body flags - we will not be removing the body, just inserting before it
 
                 } else if (this.elementStructureHandler.replaceWithText) {
 
@@ -1409,28 +1433,35 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
-                } else if (this.elementStructureHandler.insertBeforeBodyText) {
+                } else if (this.elementStructureHandler.insertBeforeMarkup) {
+
+                    final IMarkup insertedMarkup = this.elementStructureHandler.insertBeforeMarkupValue;
+                    if (queue.size() == 0) {
+                        // The current queue object is empty, so we can use it to process this inserted markup
+
+                        queue.addMarkup(insertedMarkup);
+                        // Markup inserted BEFORE is never processable, so we will always use getNext() here
+                        queue.process(getNext(), true);
+
+                    } else {
+                        // The current queue object is not empty :-( so in order to process this inserted markup
+                        // we will need to use a new queue...
+
+                        final EngineEventQueue newQueue = new EngineEventQueue(this.configuration, this.templateMode, 5);
+                        newQueue.addMarkup(insertedMarkup);
+                        // Markup inserted BEFORE is never processable, so we will always use getNext() here
+                        newQueue.process(getNext(), true);
+
+                    }
+
+                } else if (this.elementStructureHandler.insertAfterMarkup) {
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    queueProcessable = this.elementStructureHandler.insertBeforeBodyTextProcessable;
-
-                    // We will not be using the textBuffer because that would interfere the possibility that this
-                    // 'insert before body' action was executed twice...
-                    final Text insertedText =
-                            new Text(this.configuration.getTextRepository(), this.elementStructureHandler.insertBeforeBodyTextValue);
-                    queue.insert(0, insertedText, false);
-
-                    // No intervention on the body flags - we will not be removing the body, just inserting before it
-
-                } else if (this.elementStructureHandler.insertBeforeBodyMarkup) {
-
-                    // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
-                    // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    queueProcessable = this.elementStructureHandler.insertBeforeBodyMarkupProcessable;
+                    queueProcessable = this.elementStructureHandler.insertAfterMarkupProcessable;
 
                     // Markup will be automatically cloned if mutable
-                    queue.insertMarkup(0, this.elementStructureHandler.insertBeforeBodyMarkupValue);
+                    queue.insertMarkup(0, this.elementStructureHandler.insertAfterMarkupValue);
 
                     // No intervention on the body flags - we will not be removing the body, just inserting before it
 
@@ -1760,28 +1791,35 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
-                } else if (this.elementStructureHandler.insertBeforeBodyText) {
+                } else if (this.elementStructureHandler.insertBeforeMarkup) {
+
+                    final IMarkup insertedMarkup = this.elementStructureHandler.insertBeforeMarkupValue;
+                    if (queue.size() == 0) {
+                        // The current queue object is empty, so we can use it to process this inserted markup
+
+                        queue.addMarkup(insertedMarkup);
+                        // Markup inserted BEFORE is never processable, so we will always use getNext() here
+                        queue.process(getNext(), true);
+
+                    } else {
+                        // The current queue object is not empty :-( so in order to process this inserted markup
+                        // we will need to use a new queue...
+
+                        final EngineEventQueue newQueue = new EngineEventQueue(this.configuration, this.templateMode, 5);
+                        newQueue.addMarkup(insertedMarkup);
+                        // Markup inserted BEFORE is never processable, so we will always use getNext() here
+                        newQueue.process(getNext(), true);
+
+                    }
+
+                } else if (this.elementStructureHandler.insertAfterMarkup) {
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    queueProcessable = this.elementStructureHandler.insertBeforeBodyTextProcessable;
-
-                    // We will not be using the textBuffer because that would interfere the possibility that this
-                    // 'insert before body' action was executed twice...
-                    final Text insertedText =
-                            new Text(this.configuration.getTextRepository(), this.elementStructureHandler.insertBeforeBodyTextValue);
-                    queue.insert(0, insertedText, false);
-
-                    // No intervention on the body flags - we will not be removing the body, just inserting before it
-
-                } else if (this.elementStructureHandler.insertBeforeBodyMarkup) {
-
-                    // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
-                    // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    queueProcessable = this.elementStructureHandler.insertBeforeBodyMarkupProcessable;
+                    queueProcessable = this.elementStructureHandler.insertAfterMarkupProcessable;
 
                     // Markup will be automatically cloned if mutable
-                    queue.insertMarkup(0, this.elementStructureHandler.insertBeforeBodyMarkupValue);
+                    queue.insertMarkup(0, this.elementStructureHandler.insertAfterMarkupValue);
 
                     // No intervention on the body flags - we will not be removing the body, just inserting before it
 

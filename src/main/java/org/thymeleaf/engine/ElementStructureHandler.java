@@ -44,13 +44,13 @@ final class ElementStructureHandler implements IElementStructureHandler {
     IMarkup setBodyMarkupValue;
     boolean setBodyMarkupProcessable;
 
-    boolean insertBeforeBodyText;
-    String insertBeforeBodyTextValue;
-    boolean insertBeforeBodyTextProcessable;
+    boolean insertBeforeMarkup;
+    IMarkup insertBeforeMarkupValue;
+    // markup inserted before the current element CANNOT be processable
 
-    boolean insertBeforeBodyMarkup;
-    IMarkup insertBeforeBodyMarkupValue;
-    boolean insertBeforeBodyMarkupProcessable;
+    boolean insertAfterMarkup;
+    IMarkup insertAfterMarkupValue;
+    boolean insertAfterMarkupProcessable;
 
     boolean replaceWithText;
     String replaceWithTextValue;
@@ -113,22 +113,21 @@ final class ElementStructureHandler implements IElementStructureHandler {
     }
 
 
-
-    public void insertBeforeBody(final String text, final boolean processable) {
+    public void insertBefore(final IMarkup markup) {
         resetAllButLocalVariables();
-        Validate.notNull(text, "Text cannot be null");
-        this.insertBeforeBodyText = true;
-        this.insertBeforeBodyTextValue = text;
-        this.insertBeforeBodyTextProcessable = processable;
+        Validate.notNull(markup, "Markup cannot be null");
+        this.insertBeforeMarkup = true;
+        this.insertBeforeMarkupValue = markup;
+        // Markup inserted BEFORE can never be processable
     }
 
 
-    public void insertBeforeBody(final IMarkup markup, final boolean processable) {
+    public void insertAfter(final IMarkup markup, final boolean processable) {
         resetAllButLocalVariables();
         Validate.notNull(markup, "Markup cannot be null");
-        this.insertBeforeBodyMarkup = true;
-        this.insertBeforeBodyMarkupValue = markup;
-        this.insertBeforeBodyMarkupProcessable = processable;
+        this.insertAfterMarkup = true;
+        this.insertAfterMarkupValue = markup;
+        this.insertAfterMarkupProcessable = processable;
     }
 
 
@@ -254,13 +253,13 @@ final class ElementStructureHandler implements IElementStructureHandler {
         this.setBodyMarkupValue = null;
         this.setBodyMarkupProcessable = false;
 
-        this.insertBeforeBodyText = false;
-        this.insertBeforeBodyTextValue = null;
-        this.insertBeforeBodyTextProcessable = false;
+        this.insertBeforeMarkup = false;
+        this.insertBeforeMarkupValue = null;
+        // There is no 'insertBeforeMarkupProcessable'
 
-        this.insertBeforeBodyMarkup = false;
-        this.insertBeforeBodyMarkupValue = null;
-        this.insertBeforeBodyMarkupProcessable = false;
+        this.insertAfterMarkup = false;
+        this.insertAfterMarkupValue = null;
+        this.insertAfterMarkupProcessable = false;
 
         this.replaceWithText = false;
         this.replaceWithTextValue = null;

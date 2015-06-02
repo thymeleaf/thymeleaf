@@ -42,8 +42,8 @@ public interface IElementStructureHandler {
     public void setBody(final String text, final boolean processable);
     public void setBody(final IMarkup markup, final boolean processable);
 
-    public void insertBeforeBody(final String text, final boolean processable);
-    public void insertBeforeBody(final IMarkup markup, final boolean processable);
+    public void insertBefore(final IMarkup markup); // cannot be processable
+    public void insertAfter(final IMarkup markup, final boolean processable);
 
     public void replaceWith(final String text, final boolean processable);
     public void replaceWith(final IMarkup markup, final boolean processable);
