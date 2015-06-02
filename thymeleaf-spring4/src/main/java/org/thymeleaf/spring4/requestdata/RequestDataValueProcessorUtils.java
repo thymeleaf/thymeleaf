@@ -99,7 +99,7 @@ public final class RequestDataValueProcessorUtils {
             return action;
         }
 
-        final IWebVariablesMap variablesMap = (IWebVariablesMap) processingContext.getVariablesMap();
+        final IWebVariablesMap variablesMap = (IWebVariablesMap) processingContext.getVariables();
 
         final RequestContext requestContext =
                 (RequestContext) variablesMap.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
@@ -126,7 +126,7 @@ public final class RequestDataValueProcessorUtils {
             return value;
         }
 
-        final IWebVariablesMap variablesMap = (IWebVariablesMap) processingContext.getVariablesMap();
+        final IWebVariablesMap variablesMap = (IWebVariablesMap) processingContext.getVariables();
 
         final RequestContext requestContext =
                 (RequestContext) variablesMap.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
@@ -152,7 +152,7 @@ public final class RequestDataValueProcessorUtils {
             return null;
         }
 
-        final IWebVariablesMap variablesMap = (IWebVariablesMap) processingContext.getVariablesMap();
+        final IWebVariablesMap variablesMap = (IWebVariablesMap) processingContext.getVariables();
 
         final RequestContext requestContext =
                 (RequestContext) variablesMap.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
@@ -178,7 +178,7 @@ public final class RequestDataValueProcessorUtils {
             return url;
         }
 
-        final IWebVariablesMap variablesMap = (IWebVariablesMap) processingContext.getVariablesMap();
+        final IWebVariablesMap variablesMap = (IWebVariablesMap) processingContext.getVariables();
 
         final RequestContext requestContext =
                 (RequestContext) variablesMap.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);

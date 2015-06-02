@@ -50,7 +50,7 @@ public class Themes {
 
         super();
         this.locale = processingContext.getLocale();
-        final RequestContext requestContext = (RequestContext) processingContext.getVariablesMap()
+        final RequestContext requestContext = (RequestContext) processingContext.getVariables()
         		.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
         this.theme = requestContext != null ? requestContext.getTheme() : null;
     }

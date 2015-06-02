@@ -131,7 +131,7 @@ public class SPELVariableExpressionEvaluator
              * CREATE/OBTAIN THE SPEL EVALUATION CONTEXT OBJECT
              */
             EvaluationContext evaluationContext =
-                    (EvaluationContext) processingContext.getVariablesMap().
+                    (EvaluationContext) processingContext.getVariables().
                             getVariable(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME);
 
             if (evaluationContext == null) {
@@ -148,7 +148,7 @@ public class SPELVariableExpressionEvaluator
                 // several ConcurrentHashMaps.
                 evaluationContext = new ThymeleafEvaluationContextWrapper(new StandardEvaluationContext());
 
-                final IVariablesMap variablesMap = processingContext.getVariablesMap();
+                final IVariablesMap variablesMap = processingContext.getVariables();
                 if (variablesMap instanceof ILocalVariableAwareVariablesMap) {
                     ((ILocalVariableAwareVariablesMap)variablesMap).put(
                             ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
@@ -158,7 +158,7 @@ public class SPELVariableExpressionEvaluator
 
                 evaluationContext = new ThymeleafEvaluationContextWrapper(evaluationContext);
 
-                final IVariablesMap variablesMap = processingContext.getVariablesMap();
+                final IVariablesMap variablesMap = processingContext.getVariables();
                 if (variablesMap instanceof ILocalVariableAwareVariablesMap) {
                     ((ILocalVariableAwareVariablesMap)variablesMap).put(
                             ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
@@ -258,7 +258,7 @@ public class SPELVariableExpressionEvaluator
 
     private static boolean isLocalVariableOverriding(final IProcessingContext processingContext, final String expression) {
 
-        final IVariablesMap variablesMap = processingContext.getVariablesMap();
+        final IVariablesMap variablesMap = processingContext.getVariables();
         if (!(variablesMap instanceof ILocalVariableAwareVariablesMap)) {
             // We don't even have support for local variables!
             return false;

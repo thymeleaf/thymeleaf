@@ -96,7 +96,7 @@ public final class SpringStandardConversionService extends AbstractStandardConve
     private static TypeConverter getSpringConversionService(final IProcessingContext processingContext) {
 
         final EvaluationContext evaluationContext =
-                (EvaluationContext) processingContext.getVariablesMap().
+                (EvaluationContext) processingContext.getVariables().
                         getVariable(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME);
 
         if (evaluationContext != null) {

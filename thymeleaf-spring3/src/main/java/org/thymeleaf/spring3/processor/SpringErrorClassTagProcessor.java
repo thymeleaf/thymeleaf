@@ -127,7 +127,7 @@ public final class SpringErrorClassTagProcessor extends AbstractAttributeTagProc
          * in the same element.
          */
         final BindStatus bindStatus =
-                (BindStatus) processingContext.getVariablesMap().getVariable(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS);
+                (BindStatus) processingContext.getVariables().getVariable(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS);
         if (bindStatus != null) {
             return bindStatus;
         }
@@ -143,7 +143,7 @@ public final class SpringErrorClassTagProcessor extends AbstractAttributeTagProc
         }
 
         final VariableExpression boundExpression =
-                (VariableExpression) processingContext.getVariablesMap().getVariable(SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION);
+                (VariableExpression) processingContext.getVariables().getVariable(SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION);
 
         if (boundExpression == null) {
             // No bound expression, so just use the field name

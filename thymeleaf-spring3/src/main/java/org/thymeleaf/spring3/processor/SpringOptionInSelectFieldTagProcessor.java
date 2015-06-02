@@ -57,7 +57,7 @@ public final class SpringOptionInSelectFieldTagProcessor extends AbstractElement
             final IElementStructureHandler structureHandler) {
 
         final AttributeName selectAttrNameToAdd =
-                (AttributeName) processingContext.getVariablesMap().getVariable(SpringSelectFieldTagProcessor.OPTION_IN_SELECT_ATTR_NAME);
+                (AttributeName) processingContext.getVariables().getVariable(SpringSelectFieldTagProcessor.OPTION_IN_SELECT_ATTR_NAME);
         if (selectAttrNameToAdd == null) {
             // Nothing to do
             return;
@@ -67,7 +67,7 @@ public final class SpringOptionInSelectFieldTagProcessor extends AbstractElement
         // as a local variable the name and value of the attribute to be added
 
         final String selectAttrValueToAdd =
-                (String) processingContext.getVariablesMap().getVariable(SpringSelectFieldTagProcessor.OPTION_IN_SELECT_ATTR_VALUE);
+                (String) processingContext.getVariables().getVariable(SpringSelectFieldTagProcessor.OPTION_IN_SELECT_ATTR_VALUE);
 
         if (tag.getAttributes().hasAttribute(selectAttrNameToAdd)) {
             if (!selectAttrValueToAdd.equals(tag.getAttributes().getValue(selectAttrNameToAdd))) {

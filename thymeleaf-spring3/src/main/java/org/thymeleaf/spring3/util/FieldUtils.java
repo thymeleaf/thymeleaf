@@ -124,7 +124,7 @@ public final class FieldUtils {
         }
 
         final RequestContext requestContext =
-                (RequestContext) processingContext.getVariablesMap().getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+                (RequestContext) processingContext.getVariables().getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
         if (requestContext == null) {
             return Collections.EMPTY_LIST;
         }
@@ -267,7 +267,7 @@ public final class FieldUtils {
         // This method will return null if no binding is found and optional == true
 
         final RequestContext requestContext =
-                (RequestContext) processingContext.getVariablesMap().getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+                (RequestContext) processingContext.getVariables().getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
         if (requestContext == null) {
             return null;
         }
@@ -314,7 +314,7 @@ public final class FieldUtils {
             final ITextRepository textRepository = processingContext.getConfiguration().getTextRepository();
 
             VariableExpression boundObjectValue =
-                    (VariableExpression) processingContext.getVariablesMap().getVariable(SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION);
+                    (VariableExpression) processingContext.getVariables().getVariable(SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION);
 
             final String boundObjectExpression =
                     (boundObjectValue == null? null : boundObjectValue.getExpression());
