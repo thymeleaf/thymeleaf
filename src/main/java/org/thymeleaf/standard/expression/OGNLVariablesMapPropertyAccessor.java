@@ -61,9 +61,16 @@ public final class OGNLVariablesMapPropertyAccessor implements PropertyAccessor 
 
         if (!(target instanceof IVariablesMap)) {
             throw new IllegalStateException(
-                    "Wrong target type. This property accessor is only usable for IVariableMap implementations.");
+                    "Wrong target type. This property accessor is only usable for IVariableMap implementations, and " +
+                    "in this case the target object is " + (target == null? "null" : ("of class " + target.getClass().getName())));
         }
 
+        /*
+         * NOTE we do not check here whether we are being asked for the 'locale', 'request', 'response', etc.
+         * because there already are specific expression objects for the most important of them, which should
+         * be used instead: #locale, #httpServletRequest, #httpSession, etc.
+         * The variables maps should just be used as a map, without exposure of its more-internal methods...
+         */
         final IVariablesMap map = (IVariablesMap) target;
         return map.getVariable(name == null? null : name.toString());
 
