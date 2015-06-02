@@ -89,7 +89,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
 
-    public IMarkup createMarkup(final String markup) {
+    public IMarkup parseAsMarkup(final String markup) {
         return this.templateManager.parseTextualFragment(this.configuration, this.templateMode, this.templateName, markup);
     }
 

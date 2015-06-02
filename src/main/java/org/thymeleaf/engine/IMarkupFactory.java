@@ -43,7 +43,7 @@ public interface IMarkupFactory {
 
     public Markup createMarkup();
 
-    public IMarkup createMarkup(final String markup);
+    public IMarkup parseAsMarkup(final String markup);
 
     public ICDATASection createCDATASection(final String content);
 
