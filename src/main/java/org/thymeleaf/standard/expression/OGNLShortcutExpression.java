@@ -425,7 +425,7 @@ final class OGNLShortcutExpression {
 
         result[level] = expression.substring(offset, i);
 
-        if ("true".equalsIgnoreCase(result[level]) || "false".equalsIgnoreCase(result[level])) {
+        if ("true".equalsIgnoreCase(result[level]) || "false".equalsIgnoreCase(result[level]) || "null".equalsIgnoreCase(result[level])) {
             return null;
         }
 
