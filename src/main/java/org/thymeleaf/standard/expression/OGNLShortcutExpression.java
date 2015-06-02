@@ -92,7 +92,14 @@ final class OGNLShortcutExpression {
             final PropertyAccessor ognlPropertyAccessor = OgnlRuntime.getPropertyAccessor(targetClass);
 
             // Depending on the returned OGNL property accessor, we will try to apply ours
-            if (OGNLVariablesMapPropertyAccessor.class.equals(ognlPropertyAccessor.getClass())) {
+            if (target instanceof Class<?>) {
+
+                // Because of the way OGNL works, the "OgnlRuntime.getTargetClass(...)" of a Class object is the class
+                // object itself, so we might be trying to apply a PropertyAccessor to a Class instead of a real object,
+                // something we avoid by means of this shortcut
+                target = getObjectProperty(textRepository, expressionCache, propertyName, target);
+
+            } else if (OGNLVariablesMapPropertyAccessor.class.equals(ognlPropertyAccessor.getClass())) {
 
                 target = getVariablesMapProperty(propertyName, target);
 
