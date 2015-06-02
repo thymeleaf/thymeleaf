@@ -53,6 +53,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
     private static final String FRAGMENT_ATTR_NAME = "fragment";
+    private static final String TEMPLATE_NAME_CURRENT_TEMPLATE = "this";
 
 
     private final boolean replaceHost;
@@ -93,8 +94,14 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         final ProcessedFragmentSelection processedFragmentSelection =
                 FragmentSelectionUtils.processFragmentSelection(processingContext, parsedFragmentSelection);
 
-        final String templateName = processedFragmentSelection.getTemplateName();
+        String templateName = processedFragmentSelection.getTemplateName();
         Map<String,Object> fragmentParameters = processedFragmentSelection.getFragmentParameters();
+
+
+        if (StringUtils.isEmptyOrWhitespace(templateName) || TEMPLATE_NAME_CURRENT_TEMPLATE.equals(templateName)) {
+            // We will use the same templateName that the host tag comes from
+            templateName = tag.getTemplateName();
+        }
 
 
         /*
