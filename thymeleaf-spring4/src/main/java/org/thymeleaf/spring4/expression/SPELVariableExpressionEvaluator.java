@@ -189,8 +189,9 @@ public class SPELVariableExpressionEvaluator
             /*
              * RESOLVE THE EVALUATION ROOT
              */
-            final IVariablesMap variablesMap = processingContext.getVariablesMap();
-            final Object evaluationRoot = (useSelectionAsRoot? variablesMap.getSelectionTarget() : variablesMap);
+            final IVariablesMap variablesMap = processingContext.getVariables();
+            final Object evaluationRoot =
+                    (useSelectionAsRoot && variablesMap.hasSelectionTarget()? variablesMap.getSelectionTarget() : variablesMap);
 
 
             /*
