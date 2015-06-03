@@ -600,7 +600,7 @@ public final class LinkExpression extends SimpleExpression {
                                 UriEscape.escapeUriPath(templateReplacement) : UriEscape.escapeUriQueryParam(templateReplacement));
                 linkBase.replace(start, start + templateLen, escapedReplacement);
                 if (findCharInSequence(linkBase, URL_TEMPLATE_DELIMITER_PREFIX_CHAR) < 0) {
-                    // Just trying to save an additional StringBuilder#indexOfU() -which provokes a
+                    // Just trying to save an additional StringBuilder#indexOf() -which provokes a
                     // template.toCharArray()-- in the most common case: only one variable template for a
                     // variable that is not multivalued.
                     return linkBase;
@@ -653,8 +653,8 @@ public final class LinkExpression extends SimpleExpression {
             if (pos + 1 < this.parameterSize) {
                 System.arraycopy(this.parameterNames, pos + 1, this.parameterNames, pos, (this.parameterSize - (pos + 1)));
                 System.arraycopy(this.parameterValues, pos + 1, this.parameterValues, pos, (this.parameterSize - (pos + 1)));
-                this.parameterSize--;
             }
+            this.parameterSize--;
             // If null or NO_VALUE, empty String
             if (value == null || URL_PARAM_NO_VALUE.equals(value)) { // Values can never be null, but anyway
                 return "";
