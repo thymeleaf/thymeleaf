@@ -347,7 +347,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         this.autoOpenElementTag.reset(
                 this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, line, col);
-        this.currentElementAttributes = (ElementAttributes) this.openElementTag.getAttributes();
+        this.currentElementAttributes = (ElementAttributes) this.autoOpenElementTag.getAttributes();
 
     }
 
@@ -358,6 +358,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
+        // Precompute the associated processors - this might help performance, especially when using an event cache
+        this.autoOpenElementTag.precomputeAssociatedProcessors();
         // Call the template handler method with the gathered info
         this.templateHandler.handleAutoOpenElement(this.autoOpenElementTag);
         this.currentElementAttributes = null;
