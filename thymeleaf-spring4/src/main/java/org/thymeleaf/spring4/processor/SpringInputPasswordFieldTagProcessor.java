@@ -61,8 +61,8 @@ public final class SpringInputPasswordFieldTagProcessor extends AbstractSpringFi
 
         final String id = computeId(processingContext, tag, name, false);
 
-        tag.getAttributes().setAttribute("id", id);
-        tag.getAttributes().setAttribute("name", name);
+        tag.getAttributes().setAttribute("id", id); // No need to escape: this comes from an existing 'id' or from a token
+        tag.getAttributes().setAttribute("name", name); // No need to escape: this is a java-valid token
 
         tag.getAttributes().setAttribute(
                 "value", RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, "", "password"));

@@ -92,7 +92,7 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
                         processingContext.getMarkupFactory().createStandaloneElementTag("input", true);
                 hiddenMethodElementTag.getAttributes().setAttribute("type", type);
                 hiddenMethodElementTag.getAttributes().setAttribute("name", name);
-                hiddenMethodElementTag.getAttributes().setAttribute("value", value);
+                hiddenMethodElementTag.getAttributes().setAttribute("value", value); // no need to escape
 
                 hiddenMethodMarkup.add(hiddenMethodElementTag);
 

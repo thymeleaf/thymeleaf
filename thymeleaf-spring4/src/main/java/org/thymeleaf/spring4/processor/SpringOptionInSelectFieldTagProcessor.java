@@ -77,6 +77,9 @@ public final class SpringOptionInSelectFieldTagProcessor extends AbstractElement
             }
         }
 
+        // This attribute value does not need to be escaped, because we are just "transporting" the th:field in the
+        // container <select> to its <option>'s, without any modifications. It will be executed (and its results
+        // escaped) later...
         tag.getAttributes().setAttribute(selectAttrNameToAdd.getCompleteAttributeNames()[0], selectAttrValueToAdd);
 
     }

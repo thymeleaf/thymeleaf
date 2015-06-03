@@ -27,6 +27,7 @@ import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
+import org.unbescape.html.HtmlEscape;
 
 
 /**
@@ -68,11 +69,11 @@ public final class SpringInputRadioFieldTagProcessor extends AbstractSpringField
         }
 
         final boolean checked =
-                SelectedValueComparatorWrapper.isSelected(bindStatus, value);
+                SelectedValueComparatorWrapper.isSelected(bindStatus, HtmlEscape.unescapeHtml(value));
 
 
-        tag.getAttributes().setAttribute("id", id);
-        tag.getAttributes().setAttribute("name", name);
+        tag.getAttributes().setAttribute("id", id); // No need to escape: this comes from an existing 'id' or from a token
+        tag.getAttributes().setAttribute("name", name); // No need to escape: this is a java-valid token
         tag.getAttributes().setAttribute(
                 "value", RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, value, "radio"));
 

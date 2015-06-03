@@ -63,8 +63,8 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
 
         final boolean multiple = tag.getAttributes().hasAttribute("multiple");
 
-        tag.getAttributes().setAttribute("id", id);
-        tag.getAttributes().setAttribute("name", name);
+        tag.getAttributes().setAttribute("id", id); // No need to escape: this comes from an existing 'id' or from a token
+        tag.getAttributes().setAttribute("name", name); // No need to escape: this is a java-valid token
 
         structureHandler.setLocalVariable(OPTION_IN_SELECT_ATTR_NAME, attributeName);
         structureHandler.setLocalVariable(OPTION_IN_SELECT_ATTR_VALUE, attributeValue);

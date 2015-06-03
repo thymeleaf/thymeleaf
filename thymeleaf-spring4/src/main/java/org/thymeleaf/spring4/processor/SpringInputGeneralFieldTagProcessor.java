@@ -104,11 +104,11 @@ public final class SpringInputGeneralFieldTagProcessor
         // Also, no escaping needed as attribute values are always escaped by default
         final String value =
                 applyConversion(type)?
-                        ValueFormatterWrapper.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), false) :
-                        ValueFormatterWrapper.getDisplayString(bindStatus.getActualValue(), false);
+                        ValueFormatterWrapper.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), true) :
+                        ValueFormatterWrapper.getDisplayString(bindStatus.getActualValue(), true);
 
-        tag.getAttributes().setAttribute("id", id);
-        tag.getAttributes().setAttribute("name", name);
+        tag.getAttributes().setAttribute("id", id); // No need to escape: this comes from an existing 'id' or from a token
+        tag.getAttributes().setAttribute("name", name); // No need to escape: this is a java-valid token
 
         tag.getAttributes().setAttribute(
                 "value", RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, value, type));

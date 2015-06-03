@@ -27,6 +27,7 @@ import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
+import org.unbescape.html.HtmlEscape;
 
 
 /**
@@ -61,11 +62,12 @@ public final class SpringOptionFieldTagProcessor extends AbstractSpringFieldTagP
                     "Attribute \"value\" is required in \"option\" tags");
         }
 
-        final boolean selected =  SelectedValueComparatorWrapper.isSelected(bindStatus, value);
+        final boolean selected =
+                SelectedValueComparatorWrapper.isSelected(bindStatus, HtmlEscape.unescapeHtml(value));
 
-        tag.getAttributes().setAttribute("value", value);
         tag.getAttributes().setAttribute(
-                "value", RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, value, "option"));
+                "value",
+                RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, value, "option"));
 
         if (selected) {
             tag.getAttributes().setAttribute("selected", "selected");
