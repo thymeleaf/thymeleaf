@@ -213,15 +213,6 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
         private final String templateName;
 
         private ParseStatus parseStatus;
-        private IMarkupParser parser;
-        private IMarkupHandler handlerChain;
-
-        /*
-         * These structures allow reporting the correct (line,col) pair in DOM nodes during an embedded parsing
-         * operation performed inside a prototype-only comment block ('<!--/*/  /*/-->')
-         */
-        private int lineOffset;
-        private int colOffset;
 
         /*
          * These structures help processing (or more specifically, not-processing) parser-level comment blocks,
@@ -243,8 +234,6 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             super(next);
 
             this.templateName = templateName;
-            this.lineOffset = 0;
-            this.colOffset = 0;
 
         }
 
@@ -264,19 +253,6 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
         }
 
 
-        @Override
-        public void setParser(final IMarkupParser parser) {
-            this.parser = parser;
-            super.setParser(parser);
-        }
-
-        @Override
-        public void setHandlerChain(final IMarkupHandler handlerChain) {
-            this.handlerChain = handlerChain;
-            super.setHandlerChain(handlerChain);
-        }
-
-
 
 
         /*
@@ -289,7 +265,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
         public void handleDocumentStart(
                 final long startTimeNanos, final int line, final int col) throws ParseException {
             
-            super.handleDocumentStart(startTimeNanos, line + this.lineOffset, col + this.colOffset);
+            super.handleDocumentStart(startTimeNanos, line, col);
 
         }
 
@@ -301,7 +277,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 final int line, final int col)
                 throws ParseException {
 
-            super.handleDocumentEnd(endTimeNanos, totalTimeNanos, line + this.lineOffset, col + this.colOffset);
+            super.handleDocumentEnd(endTimeNanos, totalTimeNanos, line, col);
 
             if (logger.isTraceEnabled()) {
                 final BigDecimal elapsed = BigDecimal.valueOf(totalTimeNanos);
@@ -348,11 +324,11 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
             super.handleXmlDeclaration(
                     buffer,
-                    keywordOffset, keywordLen, keywordLine + this.lineOffset, keywordCol + this.colOffset,
-                    versionOffset, versionLen, versionLine + this.lineOffset, versionCol + this.colOffset,
-                    encodingOffset, encodingLen, encodingLine + this.lineOffset, encodingCol + this.colOffset,
-                    standaloneOffset, standaloneLen, standaloneLine + this.lineOffset, standaloneCol + this.colOffset,
-                    outerOffset, outerLen, line + this.lineOffset, col + this.colOffset);
+                    keywordOffset, keywordLen, keywordLine, keywordCol,
+                    versionOffset, versionLen, versionLine, versionCol,
+                    encodingOffset, encodingLen, encodingLine, encodingCol,
+                    standaloneOffset, standaloneLen, standaloneLine, standaloneCol,
+                    outerOffset, outerLen, line, col);
 
         }
 
@@ -387,13 +363,13 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
             super.handleDocType(
                     buffer,
-                    keywordOffset, keywordLen, keywordLine + this.lineOffset, keywordCol + this.colOffset,
-                    elementNameOffset, elementNameLen, elementNameLine + this.lineOffset, elementNameCol + this.colOffset,
-                    typeOffset, typeLen, typeLine + this.lineOffset, typeCol + this.colOffset,
-                    publicIdOffset, publicIdLen, publicIdLine + this.lineOffset, publicIdCol + this.colOffset,
-                    systemIdOffset, systemIdLen, systemIdLine + this.lineOffset, systemIdCol + this.colOffset,
-                    internalSubsetOffset, internalSubsetLen, internalSubsetLine + this.lineOffset, internalSubsetCol + this.colOffset,
-                    outerOffset, outerLen, outerLine + this.lineOffset, outerCol + this.colOffset);
+                    keywordOffset, keywordLen, keywordLine, keywordCol,
+                    elementNameOffset, elementNameLen, elementNameLine, elementNameCol,
+                    typeOffset, typeLen, typeLine, typeCol,
+                    publicIdOffset, publicIdLen, publicIdLine, publicIdCol,
+                    systemIdOffset, systemIdLen, systemIdLine, systemIdCol,
+                    internalSubsetOffset, internalSubsetLen, internalSubsetLine, internalSubsetCol,
+                    outerOffset, outerLen, outerLine, outerCol);
 
         }
 
@@ -417,7 +393,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
             super.handleCDATASection(
                     buffer, contentOffset, contentLen, outerOffset, outerLen,
-                    line + this.lineOffset, col + this.colOffset);
+                    line, col);
 
         }
 
@@ -458,7 +434,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                     super.handleText(
                             buffer,
                             offset + PARSER_LEVEL_COMMENT_CLOSE.length, len - PARSER_LEVEL_COMMENT_CLOSE.length,
-                            line + this.lineOffset, col + PARSER_LEVEL_COMMENT_CLOSE.length + this.colOffset);
+                            line, col + PARSER_LEVEL_COMMENT_CLOSE.length);
 
                 }
 
@@ -467,7 +443,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             }
 
             super.handleText(
-                    buffer, offset, len, line + this.lineOffset, col + this.colOffset);
+                    buffer, offset, len, line, col);
 
         }
 
@@ -489,30 +465,12 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 final int line, final int col)
                 throws ParseException {
 
-            if (isPrototypeOnlyCommentBlock(buffer, contentOffset, contentLen)) {
-                handlePrototypeOnlyComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
-                return;
-            }
-            // This check must always be executed AFTER checking for prototype-only comment blocks
             if (isParserLevelCommentStartBlock(buffer, contentOffset, contentLen)) {
                 handleParserLevelComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
                 return;
             }
 
             handleNormalComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
-
-        }
-
-
-        private static boolean isPrototypeOnlyCommentBlock(
-                final char[] buffer, final int contentOffset, final int contentLen) {
-
-            return (buffer[contentOffset] == '/' &&
-                    buffer[contentOffset + 1] == '*' &&
-                    buffer[contentOffset + 2] == '/' &&
-                    buffer[contentOffset + contentLen - 3] == '/' &&
-                    buffer[contentOffset + contentLen - 2] == '*' &&
-                    buffer[contentOffset + contentLen - 1] == '/');
 
         }
 
@@ -550,36 +508,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 throws ParseException {
 
             super.handleComment(
-                    buffer, contentOffset, contentLen, outerOffset, outerLen, line + this.lineOffset, col + this.lineOffset);
-
-        }
-
-
-        private void handlePrototypeOnlyComment(
-                final char[] buffer,
-                final int contentOffset, final int contentLen,
-                final int outerOffset, final int outerLen,
-                final int line, final int col)
-                throws ParseException {
-
-            /*
-             * Arrange offsets, so that DOM element positions in the embedded parse operation
-             * are reported correctly.
-             *
-             * Note we will never have a level > 0 embedded prototype-only comment, because the '--' sequence
-             * is forbidden inside a comment (it ends it). And besides that, it makes no sense :)
-             */
-            this.lineOffset = line - 1; // -1 --> lines are reported starting with 1, but we need a 0-based offset
-            this.colOffset = col + 2; // 2 = 3 - 1 --> because of the '/*/' sequence (-1 in order to work as offset)
-
-            // We parse the comment content using this same handler object, but removing the "/*/.../*/"
-            this.parser.parse(buffer, contentOffset + 3, contentLen - 6, this.handlerChain);
-
-            /*
-             * Return offsets to their original value.
-             */
-            this.lineOffset = 0;
-            this.colOffset = 0;
+                    buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
 
         }
 
@@ -631,11 +560,11 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
             super.handleAttribute(
                     buffer,
-                    nameOffset, nameLen, nameLine + this.lineOffset, nameCol + this.colOffset,
-                    operatorOffset, operatorLen, operatorLine + this.lineOffset, operatorCol + this.colOffset,
+                    nameOffset, nameLen, nameLine, nameCol,
+                    operatorOffset, operatorLen, operatorLine, operatorCol,
                     valueContentOffset, valueContentLen,
                     valueOuterOffset, valueOuterLen,
-                    valueLine + this.lineOffset, valueCol + this.colOffset);
+                    valueLine, valueCol);
 
         }
 
@@ -651,7 +580,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 throws ParseException {
 
             super.handleStandaloneElementStart(
-                    buffer, nameOffset, nameLen, minimized, line + this.lineOffset, col + this.colOffset);
+                    buffer, nameOffset, nameLen, minimized, line, col);
 
         }
 
@@ -665,7 +594,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 throws ParseException {
 
             super.handleOpenElementStart(
-                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
+                    buffer, nameOffset, nameLen, line, col);
 
         }
 
@@ -678,7 +607,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 throws ParseException {
 
             super.handleAutoOpenElementStart(
-                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
+                    buffer, nameOffset, nameLen, line, col);
 
         }
 
@@ -691,7 +620,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 throws ParseException {
 
             super.handleAutoOpenElementEnd(
-                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
+                    buffer, nameOffset, nameLen, line, col);
 
         }
 
@@ -704,7 +633,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 throws ParseException {
 
             super.handleCloseElementStart(
-                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
+                    buffer, nameOffset, nameLen, line, col);
 
         }
 
@@ -718,7 +647,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 throws ParseException {
 
             super.handleAutoCloseElementStart(
-                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
+                    buffer, nameOffset, nameLen, line, col);
 
         }
 
@@ -732,7 +661,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 throws ParseException {
 
             super.handleUnmatchedCloseElementStart(
-                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
+                    buffer, nameOffset, nameLen, line, col);
 
         }
 
@@ -747,7 +676,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 throws ParseException {
 
             super.handleStandaloneElementEnd(
-                    buffer, nameOffset, nameLen, minimized, line + this.lineOffset, col + this.colOffset);
+                    buffer, nameOffset, nameLen, minimized, line, col);
 
         }
 
@@ -761,7 +690,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 throws ParseException {
 
             super.handleOpenElementEnd(
-                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
+                    buffer, nameOffset, nameLen, line, col);
 
         }
 
@@ -774,7 +703,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 throws ParseException {
 
             super.handleCloseElementEnd(
-                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
+                    buffer, nameOffset, nameLen, line, col);
 
         }
 
@@ -788,7 +717,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 throws ParseException {
 
             super.handleAutoCloseElementEnd(
-                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
+                    buffer, nameOffset, nameLen, line, col);
 
         }
 
@@ -802,7 +731,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 throws ParseException {
 
             super.handleUnmatchedCloseElementEnd(
-                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
+                    buffer, nameOffset, nameLen, line, col);
 
         }
 
@@ -816,7 +745,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 throws ParseException {
 
             super.handleInnerWhiteSpace(
-                    buffer, offset, len, line + this.lineOffset, col + this.colOffset);
+                    buffer, offset, len, line, col);
 
         }
 
@@ -844,9 +773,9 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
             super.handleProcessingInstruction(
                     buffer,
-                    targetOffset, targetLen, targetLine + this.lineOffset, targetCol + this.colOffset,
-                    contentOffset, contentLen, contentLine + this.lineOffset, contentCol + this.colOffset,
-                    outerOffset, outerLen, line + this.lineOffset, col + this.colOffset);
+                    targetOffset, targetLen, targetLine, targetCol,
+                    contentOffset, contentLen, contentLine, contentCol,
+                    outerOffset, outerLen, line, col);
 
         }
 
