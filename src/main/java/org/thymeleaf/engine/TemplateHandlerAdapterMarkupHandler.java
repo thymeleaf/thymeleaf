@@ -509,6 +509,11 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
+        if (this.currentElementAttributes == null) {
+            throw new TemplateProcessingException(
+                    "Cannot process: inner whitespace is not related to an open/standalone tag", this.templateName, line, col);
+        }
+
         final String elementWhiteSpace = this.textRepository.getText(buffer, offset,len);
 
         // We can safely cast here, because we know the specific implementation classes we are using
