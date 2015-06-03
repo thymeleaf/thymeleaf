@@ -19,6 +19,9 @@
  */
 package org.thymeleaf.templateparser;
 
+import java.io.CharArrayReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -154,18 +157,21 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             handler = new ThymeleafMarkupHandler(handler, templateResourceName);
 
             // Each type of resource will require a different parser method to be called.
+            final Reader templateReader;
             if (templateResource instanceof ReaderResource) {
 
-                this.parser.parse(((ReaderResource)templateResource).getContent(), handler);
+                templateReader = new ThymeleafTemplateReader(((ReaderResource)templateResource).getContent());
 
             } else if (templateResource instanceof StringResource) {
 
-                this.parser.parse(((StringResource)templateResource).getContent(), handler);
+                templateReader = new ThymeleafTemplateReader(new StringReader(((StringResource)templateResource).getContent()));
 
             } else if (templateResource instanceof CharArrayResource) {
 
                 final CharArrayResource charArrayResource = (CharArrayResource) templateResource;
-                this.parser.parse(charArrayResource.getContent(), charArrayResource.getOffset(), charArrayResource.getLen(), handler);
+                final CharArrayReader charArrayReader =
+                        new CharArrayReader(charArrayResource.getContent(), charArrayResource.getOffset(), charArrayResource.getLen());
+                templateReader = new ThymeleafTemplateReader(charArrayReader);
 
             } else {
 
@@ -173,6 +179,9 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                         "Cannot parse: unrecognized " + IResource.class.getSimpleName() + " implementation: " + templateResource.getClass().getName());
 
             }
+
+            this.parser.parse(templateReader, handler);
+
 
         } catch (final ParseException e) {
             final String message = "An error happened during template parsing";
@@ -251,17 +260,20 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
         @Override
         public void setParseStatus(final ParseStatus status) {
             this.parseStatus = status;
+            super.setParseStatus(status);
         }
 
 
         @Override
         public void setParser(final IMarkupParser parser) {
             this.parser = parser;
+            super.setParser(parser);
         }
 
         @Override
         public void setHandlerChain(final IMarkupHandler handlerChain) {
             this.handlerChain = handlerChain;
+            super.setHandlerChain(handlerChain);
         }
 
 
