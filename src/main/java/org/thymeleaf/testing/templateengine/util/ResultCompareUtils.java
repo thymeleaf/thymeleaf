@@ -55,8 +55,8 @@ public class ResultCompareUtils {
                     new String[] {
                             "address", "article", "aside", "audio", "blockquote", "canvas", 
                             "dd", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", 
-                            "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", 
-                            "li", "noscript", "ol", "option", "output", "p", "pre", "section", "table", "tbody",
+                            "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr",
+                            "li", "main", "nav", "noscript", "ol", "option", "output", "p", "pre", "section", "table", "tbody",
                             "tfoot", "tr", "td", "th", "ul", "video"
                     }));
     private static final Set<String> BLOCK_CONTAINER_ELEMENTS =
