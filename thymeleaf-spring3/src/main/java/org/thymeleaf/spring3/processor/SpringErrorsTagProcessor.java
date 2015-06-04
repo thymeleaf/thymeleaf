@@ -84,9 +84,11 @@ public final class SpringErrorsTagProcessor extends AbstractAttributeTagProcesso
 
             tag.getAttributes().removeAttribute(attributeName);
 
-        }
+        } else {
 
-        structureHandler.removeElement();
+            structureHandler.removeElement();
+
+        }
 
     }
 
