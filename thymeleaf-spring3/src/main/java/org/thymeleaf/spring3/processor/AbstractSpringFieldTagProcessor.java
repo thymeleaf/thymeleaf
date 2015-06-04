@@ -73,12 +73,18 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
         if (this.discriminatorAttrName == null) {
             return true;
         }
+        final boolean hasDiscriminatorAttr = tag.getAttributes().hasAttribute(this.discriminatorAttrName);
         if (this.discriminatorAttrValues == null || this.discriminatorAttrValues.length == 0) {
-            return tag.getAttributes().hasAttribute(this.discriminatorAttrName);
+            return hasDiscriminatorAttr;
         }
-        final String discriminatorTagValue = tag.getAttributes().getValue(this.discriminatorAttrName);
+        final String discriminatorTagValue = (hasDiscriminatorAttr? tag.getAttributes().getValue(this.discriminatorAttrName) : null);
         for (int i = 0; i < this.discriminatorAttrValues.length; i++) {
-            if (this.discriminatorAttrValues[i].equals(discriminatorTagValue)) {
+            final String discriminatorAttrValue = this.discriminatorAttrValues[i];
+            if (discriminatorAttrValue == null) {
+                if (!hasDiscriminatorAttr || discriminatorTagValue == null) {
+                    return true;
+                }
+            } else if (discriminatorAttrValue.equals(discriminatorTagValue)) {
                 return true;
             }
         }

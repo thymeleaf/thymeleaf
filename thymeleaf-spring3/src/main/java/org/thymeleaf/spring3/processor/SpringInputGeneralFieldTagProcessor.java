@@ -60,6 +60,7 @@ public final class SpringInputGeneralFieldTagProcessor
     
     private static final String[] ALL_TYPE_ATTR_VALUES =
             new String[] {
+                null,
                 TEXT_INPUT_TYPE_ATTR_VALUE,
                 HIDDEN_INPUT_TYPE_ATTR_VALUE,
                 DATETIME_INPUT_TYPE_ATTR_VALUE,

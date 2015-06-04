@@ -38,7 +38,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 public final class SpringOptionInSelectFieldTagProcessor extends AbstractElementTagProcessor {
 
 
-    // This is 1010 in order to make sure it is executed just before "value" (Spring's version) and especially "th:field"
+    // This is 1005 in order to make sure it is executed just before "value" (Spring's version) and especially "th:field"
     public static final int ATTR_PRECEDENCE = 1005;
     public static final String OPTION_TAG_NAME = "option";
 
