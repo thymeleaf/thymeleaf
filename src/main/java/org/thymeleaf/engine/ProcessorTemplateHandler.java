@@ -23,6 +23,7 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -73,6 +74,28 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private static final Logger logger = LoggerFactory.getLogger(ProcessorTemplateHandler.class);
 
     private static final String DEFAULT_STATUS_VAR_SUFFIX = "Stat";
+
+    // This is a set containing all the names of the elements for which, when iterated, we should preserve
+    // the preceding whitespace if it exists so that resulting markup is more readable. Note they are all block
+    // elements or, at least, elements for which preceding whitespace should not matter
+    private static final Set<HTMLElementName> ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES =
+            new HashSet<HTMLElementName>(Arrays.asList(new HTMLElementName[] {
+                    ElementNames.forHTMLName("address"), ElementNames.forHTMLName("article"), ElementNames.forHTMLName("aside"),
+                    ElementNames.forHTMLName("audio"), ElementNames.forHTMLName("blockquote"), ElementNames.forHTMLName("canvas"),
+                    ElementNames.forHTMLName("dd"), ElementNames.forHTMLName("div"), ElementNames.forHTMLName("dl"),
+                    ElementNames.forHTMLName("dt"), ElementNames.forHTMLName("fieldset"), ElementNames.forHTMLName("figcaption"),
+                    ElementNames.forHTMLName("figure"), ElementNames.forHTMLName("footer"),ElementNames.forHTMLName("form"),
+                    ElementNames.forHTMLName("h1"), ElementNames.forHTMLName("h2"), ElementNames.forHTMLName("h3"),
+                    ElementNames.forHTMLName("h4"), ElementNames.forHTMLName("h5"), ElementNames.forHTMLName("h6"),
+                    ElementNames.forHTMLName("header"), ElementNames.forHTMLName("hgroup"), ElementNames.forHTMLName("hr"),
+                    ElementNames.forHTMLName("li"), ElementNames.forHTMLName("main"), ElementNames.forHTMLName("nav"),
+                    ElementNames.forHTMLName("noscript"), ElementNames.forHTMLName("ol"), ElementNames.forHTMLName("option"),
+                    ElementNames.forHTMLName("output"), ElementNames.forHTMLName("p"), ElementNames.forHTMLName("pre"),
+                    ElementNames.forHTMLName("section"), ElementNames.forHTMLName("table"), ElementNames.forHTMLName("tbody"),
+                    ElementNames.forHTMLName("td"), ElementNames.forHTMLName("tfoot"), ElementNames.forHTMLName("th"),
+                    ElementNames.forHTMLName("tr"), ElementNames.forHTMLName("ul"), ElementNames.forHTMLName("video")
+            }));
+
 
     // Structure handlers are reusable objects that will be used by processors in order to instruct the engine to
     // do things with the processed structures themselves (things that cannot be directly done from the processors like
@@ -148,6 +171,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private CloseElementTag[] standaloneCloseTagBuffers = null;
     private Text[] standaloneTextBuffers = null;
     private int standaloneTagBuffersIndex = 0;
+
+    // This variable will contain the last event that has been processed, if this last event was an IText. Its aim
+    // is to allow the inclusion of preceding whitespace in the iteration of block elements (such as <tr>, <li>, etc.)
+    // so that resulting markup is more readable than the alternative "</tr><tr ...>"
+    private IText lastTextEvent = null;
+
 
 
 
@@ -581,6 +610,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
+         * KEEP THE POINTER to this event, now we know it will be processed somehow
+         */
+        this.lastTextEvent = itext;
+
+
+        /*
          * FAIL FAST in case this structure has no associated processors.
          */
         if (!this.hasTextProcessors) {
@@ -678,6 +713,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
+         * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
+         */
+        this.lastTextEvent = null;
+
+
+        /*
          * FAIL FAST in case this structure has no associated processors.
          */
         if (!this.hasCommentProcessors) {
@@ -771,6 +812,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.iterationSpec.iterationQueue.add(CDATASection.asEngineCDATASection(this.configuration, icdataSection, true), false);
             return;
         }
+
+
+        /*
+         * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
+         */
+        this.lastTextEvent = null;
 
 
         /*
@@ -871,6 +918,18 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                             this.templateMode, this.configuration, istandaloneElementTag, true), false);
             return;
         }
+
+        
+        /*
+         * SAVE AND RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
+         * Note we will only be interested on it if it is whitespace, in order to add it to iteration queues, so
+         * that iterated markup looks better (by including the last whitespace before the iterated element)
+         * Also, note we do not mind the fact that IText events are reusable buffers and might have changed, because
+         * if there is a this.lastTextEvent != null, it means it was the last event and therefore cannot have been
+         * reused so far
+         */
+        final IText lastText = this.lastTextEvent;
+        this.lastTextEvent = null;
 
 
         /*
@@ -988,6 +1047,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.iterationSpec.iterStatusVariableName = this.elementStructureHandler.iterStatusVariableName;
                     this.iterationSpec.iteratedObject = this.elementStructureHandler.iteratedObject;
                     this.iterationSpec.iterationQueue.reset();
+
+                    // If there is a preceding whitespace, add it to the iteration spec
+                    if (lastText != null && lastText.isWhitespace() &&
+                            ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(standaloneElementTag.elementDefinition.elementName)) {
+                        this.iterationSpec.precedingWhitespace =
+                                Text.asEngineText(this.configuration, lastText, true);
+                    }
 
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
                     this.suspended = true;
@@ -1253,6 +1319,18 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
+         * SAVE AND RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
+         * Note we will only be interested on it if it is whitespace, in order to add it to iteration queues, so
+         * that iterated markup looks better (by including the last whitespace before the iterated element)
+         * Also, note we do not mind the fact that IText events are reusable buffers and might have changed, because
+         * if there is a this.lastTextEvent != null, it means it was the last event and therefore cannot have been
+         * reused so far
+         */
+        final IText lastText = this.lastTextEvent;
+        this.lastTextEvent = null;
+
+
+        /*
          * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
          * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
          */
@@ -1376,6 +1454,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.iterationSpec.iteratedObject = this.elementStructureHandler.iteratedObject;
                     this.iterationSpec.iterationQueue.reset();
 
+                    // If there is a preceding whitespace, add it to the iteration spec
+                    if (lastText != null && lastText.isWhitespace() &&
+                            ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(openElementTag.elementDefinition.elementName)) {
+                        this.iterationSpec.precedingWhitespace =
+                                Text.asEngineText(this.configuration, lastText, true);
+                    }
+
                     // Before suspending the queue, we have to check if it is the result of a "setBodyText", in
                     // which case it will contain only one non-cloned node: the text buffer. And we will need
                     // to clone that buffer before suspending the queue to avoid nasty interactions during iteration
@@ -1393,7 +1478,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
-                    // The first event in the new iteration query
+                    // Add the tag itself to the iteration queue
                     this.iterationSpec.iterationQueue.add(openElementTag, true);
 
                     // Increase markup level, as normal with open tags
@@ -1611,6 +1696,18 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
+         * SAVE AND RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
+         * Note we will only be interested on it if it is whitespace, in order to add it to iteration queues, so
+         * that iterated markup looks better (by including the last whitespace before the iterated element)
+         * Also, note we do not mind the fact that IText events are reusable buffers and might have changed, because
+         * if there is a this.lastTextEvent != null, it means it was the last event and therefore cannot have been
+         * reused so far
+         */
+        final IText lastText = this.lastTextEvent;
+        this.lastTextEvent = null;
+
+
+        /*
          * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
          * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
          */
@@ -1734,6 +1831,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.iterationSpec.iteratedObject = this.elementStructureHandler.iteratedObject;
                     this.iterationSpec.iterationQueue.reset();
 
+                    // If there is a preceding whitespace, add it to the iteration spec
+                    if (lastText != null && lastText.isWhitespace() &&
+                            ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(autoOpenElementTag.elementDefinition.elementName)) {
+                        this.iterationSpec.precedingWhitespace =
+                                Text.asEngineText(this.configuration, lastText, true);
+                    }
+
                     // Before suspending the queue, we have to check if it is the result of a "setBodyText", in
                     // which case it will contain only one non-cloned node: the text buffer. And we will need
                     // to clone that buffer before suspending the queue to avoid nasty interactions during iteration
@@ -1751,7 +1855,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
-                    // The first event in the new iteration query
+                    // Add the tag itself to the iteration queue
                     this.iterationSpec.iterationQueue.add(autoOpenElementTag, true);
 
                     // Increase markup level, as normal with open tags
@@ -1968,6 +2072,11 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         /*
+         * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
+         */
+        this.lastTextEvent = null;
+
+        /*
          * CHECK WHETHER WE ARE JUST CLOSING AN ITERATION, and in such case, process it
          */
         if (this.gatheringIteration && this.markupLevel + 1 == this.iterationSpec.fromMarkupLevel) {
@@ -2046,6 +2155,11 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         /*
+         * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
+         */
+        this.lastTextEvent = null;
+
+        /*
          * CHECK WHETHER WE ARE JUST CLOSING AN ITERATION, and in such case, process it
          */
         if (this.gatheringIteration && this.markupLevel + 1 == this.iterationSpec.fromMarkupLevel) {
@@ -2119,6 +2233,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
+        
+        /*
+         * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
+         */
+        this.lastTextEvent = null;
+
 
         /*
          * -------------------------------------------------------------------------------------------------
@@ -2155,6 +2275,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.iterationSpec.iterationQueue.add(DocType.asEngineDocType(this.configuration, idocType, true), false);
             return;
         }
+
+        
+        /*
+         * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
+         */
+        this.lastTextEvent = null;
 
 
         /*
@@ -2255,6 +2381,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
+        
+        /*
+         * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
+         */
+        this.lastTextEvent = null;
+
 
         /*
          * FAIL FAST in case this structure has no associated processors.
@@ -2352,6 +2484,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     ProcessingInstruction.asEngineProcessingInstruction(this.configuration, iprocessingInstruction, true), false);
             return;
         }
+
+        
+        /*
+         * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
+         */
+        this.lastTextEvent = null;
 
 
         /*
@@ -2469,6 +2607,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * FIX THE ITERATION-RELATED VARIABLES
          */
 
+        final Text precedingWhitespace = this.iterationSpec.precedingWhitespace;
         final String iterVariableName = this.iterationSpec.iterVariableName;
         String iterStatusVariableName = this.iterationSpec.iterStatusVariableName;
         if (StringUtils.isEmptyOrWhitespace(iterStatusVariableName)) {
@@ -2537,6 +2676,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             iterArtifacts.iterationQueue.process(this, false);
 
             this.variablesMap.decreaseLevel();
+
+            // We will use the index in order to determine the moment we need to insert the preceding whitespace into
+            // the iteration queue. This is because the preceding text event will have already been issued by the moment
+            // we start iterating, and we want to avoid a double whitespace before the fist iteration
+            if (status.index == 0 && precedingWhitespace != null) {
+                iterArtifacts.iterationQueue.insert(0, precedingWhitespace, false);
+            }
 
             status.index++;
 
@@ -2671,6 +2817,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private static final class IterationSpec {
 
         private int fromMarkupLevel;
+        private Text precedingWhitespace;
         private String iterVariableName;
         private String iterStatusVariableName;
         private Object iteratedObject;
@@ -2684,6 +2831,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         void reset() {
             this.fromMarkupLevel = Integer.MAX_VALUE;
+            this.precedingWhitespace = null;
             this.iterVariableName = null;
             this.iterStatusVariableName = null;
             this.iteratedObject = null;
