@@ -69,6 +69,7 @@ import org.thymeleaf.standard.processor.StandardStyleappendTagProcessor;
 import org.thymeleaf.standard.processor.StandardSubstituteByTagProcessor;
 import org.thymeleaf.standard.processor.StandardSwitchTagProcessor;
 import org.thymeleaf.standard.processor.StandardTextTagProcessor;
+import org.thymeleaf.standard.processor.StandardTranslationDocTypeProcessor;
 import org.thymeleaf.standard.processor.StandardUnlessTagProcessor;
 import org.thymeleaf.standard.processor.StandardUtextTagProcessor;
 import org.thymeleaf.standard.processor.StandardValueTagProcessor;
@@ -374,6 +375,11 @@ public class StandardDialect
          * TEXT PROCESSORS
          */
         processors.add(new StandardInliningTextProcessor());
+
+        /*
+         * DOCTYPE PROCESSORS
+         */
+        processors.add(new StandardTranslationDocTypeProcessor());
 
         /*
          * DOCUMENT PROCESSORS
