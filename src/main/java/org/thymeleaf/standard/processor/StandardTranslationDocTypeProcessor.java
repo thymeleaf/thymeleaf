@@ -53,8 +53,8 @@ public final class StandardTranslationDocTypeProcessor extends AbstractDocTypePr
     private static final String XHTML1_FRAMESET_THYMELEAF3_SYSTEMID = "http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-3.dtd";
     private static final String XHTML1_FRAMESET_THYMELEAF4_SYSTEMID = "http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-4.dtd";
 
-    private static final String XHTML11_THYMELEAF2_SYSTEMID = "http://www.thymeleaf.org/dtd/xhtml11-thymeleaf-2.dtd";
     private static final String XHTML11_THYMELEAF1_SYSTEMID = "http://www.thymeleaf.org/dtd/xhtml11-thymeleaf-1.dtd";
+    private static final String XHTML11_THYMELEAF2_SYSTEMID = "http://www.thymeleaf.org/dtd/xhtml11-thymeleaf-2.dtd";
     private static final String XHTML11_THYMELEAF3_SYSTEMID = "http://www.thymeleaf.org/dtd/xhtml11-thymeleaf-3.dtd";
     private static final String XHTML11_THYMELEAF4_SYSTEMID = "http://www.thymeleaf.org/dtd/xhtml11-thymeleaf-4.dtd";
 
