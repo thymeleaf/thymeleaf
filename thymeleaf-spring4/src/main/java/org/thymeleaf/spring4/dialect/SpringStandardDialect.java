@@ -43,6 +43,7 @@ import org.thymeleaf.spring4.processor.SpringOptionInSelectFieldTagProcessor;
 import org.thymeleaf.spring4.processor.SpringSelectFieldTagProcessor;
 import org.thymeleaf.spring4.processor.SpringSrcTagProcessor;
 import org.thymeleaf.spring4.processor.SpringTextareaFieldTagProcessor;
+import org.thymeleaf.spring4.processor.SpringTranslationDocTypeProcessor;
 import org.thymeleaf.spring4.processor.SpringValueTagProcessor;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.standard.expression.IStandardConversionService;
@@ -129,6 +130,10 @@ public class SpringStandardDialect extends StandardDialect {
 
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>(40);
 
+
+        /*
+         * REMOVE STANDARD PROCESSORS THAT WE WILL REPLACE
+         */
         for (final IProcessor standardProcessor : standardProcessors) {
             // There are several processors we need to remove from the Standard Dialect set
             if (!(standardProcessor instanceof StandardObjectTagProcessor) &&
@@ -143,6 +148,10 @@ public class SpringStandardDialect extends StandardDialect {
             }
         }
 
+
+        /*
+         * ATTRIBUTE TAG PROCESSORS
+         */
         processors.add(new SpringActionTagProcessor(dialectPrefix));
         processors.add(new SpringHrefTagProcessor(dialectPrefix));
         processors.add(new SpringMethodTagProcessor(dialectPrefix));
@@ -160,6 +169,11 @@ public class SpringStandardDialect extends StandardDialect {
         processors.add(new SpringOptionFieldTagProcessor(dialectPrefix));
         processors.add(new SpringTextareaFieldTagProcessor(dialectPrefix));
         processors.add(new SpringErrorClassTagProcessor(dialectPrefix));
+
+        /*
+         * DOCTYPE PROCESSORS
+         */
+        processors.add(new SpringTranslationDocTypeProcessor());
 
         return processors;
 
