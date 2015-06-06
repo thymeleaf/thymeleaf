@@ -232,7 +232,7 @@ abstract class AbstractProcessableElementTag
         }
         this.associatedProcessorsSize = 0;
         if (original.associatedProcessorsSize > 0) {
-            for (int i = 0; i < original.associatedProcessors.length; i++) {
+            for (int i = 0; i < original.associatedProcessorsSize; i++) {
                 addAssociatedProcessor(original.associatedProcessors[i]);
             }
         }
