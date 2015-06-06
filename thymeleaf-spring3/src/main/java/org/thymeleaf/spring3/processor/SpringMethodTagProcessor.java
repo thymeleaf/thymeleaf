@@ -70,23 +70,23 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
         tag.getAttributes().removeAttribute(attributeName); // We need to remove it here before being cloned
 
         // If this th:action is in a <form> tag, we might need to add a hidden field for non-supported HTTP methods
-        if ("form".equalsIgnoreCase(tag.getElementName())) {
+        if (newAttributeValue != null && "form".equalsIgnoreCase(tag.getElementName())) {
 
-            final String methodValue = tag.getAttributes().getValue("method");
-
-            if (!isMethodBrowserSupported(methodValue)) {
+            if (!isMethodBrowserSupported(newAttributeValue)) {
 
                 // Browsers only support HTTP GET and POST. If a different method
                 // has been specified, then Spring MVC allows us to specify it
                 // using a hidden input with name '_method' and set 'post' for the
                 // <form> tag.
 
+                tag.getAttributes().setAttribute(ATTR_NAME, "post");
+
                 final Markup hiddenMethodMarkup = processingContext.getMarkupFactory().createMarkup();
 
                 final String type = "hidden";
                 final String name = "_method";
                 final String value =
-                        RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, methodValue, type);
+                        RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, newAttributeValue, type);
 
                 final IStandaloneElementTag hiddenMethodElementTag =
                         processingContext.getMarkupFactory().createStandaloneElementTag("input", true);
