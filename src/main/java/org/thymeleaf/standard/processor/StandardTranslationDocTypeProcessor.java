@@ -78,7 +78,7 @@ public final class StandardTranslationDocTypeProcessor extends AbstractDocTypePr
 
 
 
-    public static final int PRECEDENCE = 100000;
+    public static final int PRECEDENCE = 1000;
 
 
 
