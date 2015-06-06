@@ -46,6 +46,7 @@ import org.thymeleaf.standard.processor.StandardAttrprependTagProcessor;
 import org.thymeleaf.standard.processor.StandardBlockTagProcessor;
 import org.thymeleaf.standard.processor.StandardCaseTagProcessor;
 import org.thymeleaf.standard.processor.StandardClassappendTagProcessor;
+import org.thymeleaf.standard.processor.StandardConditionalCommentProcessor;
 import org.thymeleaf.standard.processor.StandardConditionalFixedValueTagProcessor;
 import org.thymeleaf.standard.processor.StandardDOMEventAttributeTagProcessor;
 import org.thymeleaf.standard.processor.StandardEachTagProcessor;
@@ -380,6 +381,11 @@ public class StandardDialect
          * DOCTYPE PROCESSORS
          */
         processors.add(new StandardTranslationDocTypeProcessor());
+
+        /*
+         * COMMENT PROCESSORS
+         */
+        processors.add(new StandardConditionalCommentProcessor());
 
         /*
          * DOCUMENT PROCESSORS
