@@ -44,6 +44,7 @@ import org.thymeleaf.templateparser.HTMLTemplateParser;
 import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.templateparser.XMLTemplateParser;
 import org.thymeleaf.templateresolver.ITemplateResolver;
+import org.thymeleaf.templateresolver.StringTemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.Validate;
@@ -62,6 +63,8 @@ public final class TemplateManager {
 
     private static final ITemplateParser htmlParser = new HTMLTemplateParser(40,2048);
     private static final ITemplateParser xmlParser = new XMLTemplateParser(40, 2048);
+
+    private static final StringTemplateResolver STRING_TEMPLATE_RESOLVER = new StringTemplateResolver();
 
     private final ICache<String,ParsedTemplateMarkup> templateCache; // might be null! (= no cache)
     private final ICache<String,ParsedFragmentMarkup> fragmentCache; // might be null! (= no cache)
@@ -174,7 +177,7 @@ public final class TemplateManager {
         Validate.notNull(template, "Template cannot be null");
         // Markup Selectors CAN be null
 
-        // TODO Maybe cache keys should include the TemplateMode? (at least if we allow mixing modes in includes...) NOTE Its better if they don't include
+        // TODO Maybe all cache keys should include the TemplateMode? (at least if we allow mixing modes in includes...) NOTE Its better if they don't include
         // template mode because this allows us to use 'template' directly as key most of the times
         final String cacheKey = computeCacheKey(configuration.getTextRepository(), template, markupSelectors);
 
@@ -459,6 +462,91 @@ public final class TemplateManager {
 
 
 
+    public void processTextualTemplate(final IEngineConfiguration configuration, final IContext context,
+                                       final String textualTemplate, final Writer writer) {
+        processTextualTemplate(configuration, context, textualTemplate, null, writer);
+    }
+
+
+    public void processTextualTemplate(final IEngineConfiguration configuration, final IContext context,
+                                       final String textualTemplate, final String[] markupSelectors, final Writer writer) {
+
+        Validate.notNull(configuration, "Engine Configuration cannot be null");
+        Validate.notNull(context, "Context cannot be null");
+        Validate.notNull(textualTemplate, "Template cannot be null");
+        // Markup Selectors CAN be null
+
+        final String cacheKey = computeCacheKey(configuration.getTextRepository(), textualTemplate, markupSelectors);
+
+
+        /*
+         * First look at the cache - it might be already cached
+         */
+        if (this.templateCache != null) {
+            final ParsedTemplateMarkup cached =  this.templateCache.get(cacheKey);
+            if (cached != null) {
+                // Create the Processing Context instance that corresponds to this execution of the template engine
+                final ITemplateProcessingContext processingContext =
+                        new TemplateProcessingContext(configuration, this, cached.getTemplateResolution(), context);
+                // Create the handler chain to process the data
+                final ITemplateHandler processingHandlerChain = createTemplateProcessingHandlerChain(processingContext, writer);
+                // Process the cached template itself
+                processAsObject(cached, processingHandlerChain);
+                return;
+            }
+        }
+
+
+        /*
+         * Resolve the template, obtain the IResource and its metadata (TemplateResolution)
+         */
+        final TemplateAndResourceResolution resolution = resolveTextualTemplate(configuration, context, textualTemplate);
+
+
+        /*
+         * Create the Processing Context instance that corresponds to this execution of the template engine
+         */
+        final ITemplateProcessingContext processingContext =
+                new TemplateProcessingContext(configuration, this, resolution.templateResolution, context);
+
+
+        /*
+         * Create the handler chain to process the data
+         */
+        final ITemplateHandler processingHandlerChain = createTemplateProcessingHandlerChain(processingContext, writer);
+
+
+        /*
+         * If the resolved template is cacheable, so we will first read it as an object, cache it, and then process it
+         */
+        if (resolution.templateResolution.getValidity().isCacheable() && this.templateCache != null) {
+            // Create the handler chain to create the Template object
+            final ParsedTemplateMarkup parsedTemplate = new ParsedTemplateMarkup(processingContext.getConfiguration(), resolution.templateResolution);
+            final MarkupBuilderTemplateHandler builderHandler = new MarkupBuilderTemplateHandler(false, parsedTemplate.getInternalMarkup());
+            // Process the cached template itself
+            processAsResource(
+                    processingContext.getConfiguration(), processingContext.getTemplateMode(), false,
+                    resolution.resource, markupSelectors, builderHandler);
+            // Put the new template into cache
+            this.templateCache.put(cacheKey, parsedTemplate);
+            // Process the read (+cached) template itself
+            processAsObject(parsedTemplate, processingHandlerChain);
+            return;
+        }
+
+
+        /*
+         *  Process the template, which is not cacheable (so no worry about caching)
+         */
+        processAsResource(
+                processingContext.getConfiguration(), processingContext.getTemplateMode(), false,
+                resolution.resource, markupSelectors, processingHandlerChain);
+
+    }
+
+
+
+
 
 
 
@@ -521,6 +609,55 @@ public final class TemplateManager {
 
     }
 
+
+
+
+    private static TemplateAndResourceResolution resolveTextualTemplate(final IEngineConfiguration configuration, final IContext context, final String template) {
+
+
+        final TemplateResolution templateResolution = STRING_TEMPLATE_RESOLVER.resolveTemplate(configuration, context, template);
+
+        IResource templateResource = null;
+        if (templateResolution != null) {
+
+            final String resourceName = templateResolution.getResourceName();
+            final IResourceResolver resourceResolver = templateResolution.getResourceResolver();
+
+            if (logger.isTraceEnabled()) {
+                logger.trace("[THYMELEAF][{}] Trying to resolve template \"{}\" as resource \"{}\" with resource resolver \"{}\"", new Object[] {TemplateEngine.threadIndex(), template, resourceName, resourceResolver.getName()});
+            }
+
+            templateResource =
+                    resourceResolver.resolveResource(configuration, context, resourceName, templateResolution.getCharacterEncoding());
+
+            if (templateResource == null) {
+                if (logger.isTraceEnabled()) {
+                    logger.trace("[THYMELEAF][{}] Template \"{}\" could not be resolved as resource \"{}\" with resource resolver \"{}\"", new Object[] {TemplateEngine.threadIndex(), template, resourceName, resourceResolver.getName()});
+                }
+            } else {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("[THYMELEAF][{}] Template \"{}\" was correctly resolved as resource \"{}\" in mode {} with resource resolver \"{}\"", new Object[] {TemplateEngine.threadIndex(), template, resourceName, templateResolution.getTemplateMode(), resourceResolver.getName()});
+                }
+            }
+
+        } else {
+
+            if (logger.isTraceEnabled()) {
+                logger.trace("[THYMELEAF][{}] Skipping template resolver \"{}\" for template \"{}\"", new Object[] {TemplateEngine.threadIndex(), STRING_TEMPLATE_RESOLVER.getName(), template});
+            }
+
+        }
+
+        if (templateResolution == null || templateResource == null) {
+            throw new TemplateInputException(
+                    "Error resolving template \"" + template + "\", " +
+                            "template might not exist or might not be accessible by " +
+                            "any of the configured Template Resolvers");
+        }
+
+        return new TemplateAndResourceResolution(templateResolution, templateResource);
+
+    }
 
 
 
