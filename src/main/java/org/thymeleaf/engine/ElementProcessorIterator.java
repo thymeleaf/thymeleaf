@@ -156,7 +156,7 @@ final class ElementProcessorIterator {
         int j = 0; // index for the OLD processors
         while (i < this.auxSize) {
 
-            if (i >= this.size) {
+            if (i >= this.size || j >= this.size) {
                 // We know everything in the new array from here on has to be new. Might also be that we
                 // just did a reset (this.size == 0), and we are going to consider every new processor
                 // as "not visited"
