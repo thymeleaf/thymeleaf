@@ -78,7 +78,7 @@ public final class SpringTranslationDocTypeProcessor extends AbstractDocTypeProc
 
 
 
-    public static final int PRECEDENCE = 100000;
+    public static final int PRECEDENCE = 1000;
 
 
 
