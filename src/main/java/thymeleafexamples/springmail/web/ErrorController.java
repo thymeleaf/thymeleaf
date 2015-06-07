@@ -19,21 +19,20 @@
  */
 package thymeleafexamples.springmail.web;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.HttpServletRequest;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.ModelAndView;
 
-@Controller
+@ControllerAdvice
 public class ErrorController {
 
-    @ExceptionHandler(Exception.class)
-    public String error(Model model, HttpServletRequest request) {
-        Throwable throwable = (Throwable) request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
+    @ExceptionHandler(Throwable.class)
+    public ModelAndView exception(Throwable throwable) {
         String errorMessage = throwable != null ? throwable.getMessage() : "Unknown error";
-		model.addAttribute("errorMessage", errorMessage);
-        return "error.html";
+        ModelAndView mav = new ModelAndView();
+        mav.getModel().put("errorMessage", errorMessage);
+        mav.setViewName("error.html");
+        return mav;
     }
-    
+
 }

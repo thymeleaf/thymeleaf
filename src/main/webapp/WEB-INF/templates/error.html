@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
-        <title>Rich HTML email in Spring with Thymeleaf</title>
+        <title>Spring email with Thymeleaf</title>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Raleway:400,300,600" />
@@ -11,14 +11,14 @@
     </head>
     <body>
         <div class="container">
-            <h1>Rich HTML email in Spring with Thymeleaf</h1>
+            <h1>Spring email with Thymeleaf</h1>
             <h2>An ERROR happened (check the logs)</h2>
             <p>
                 <b>Tip</b>: Did you remember to correctly configure your SMTP server at <kbd>src/main/resources/configuration.properties</kbd>
                 and <kbd>src/main/resources/javamail.properties</kbd>?
             </p>
             <p>
-                Error message: <span th:text="${errorMesssage}">Unknown error</span>
+                Error message: <span th:text="${errorMessage}">Unknown error</span>
             </p>
             <p>
                 <a href="index.html" th:href="@{/index.html}" class="button">Back to home page</a>

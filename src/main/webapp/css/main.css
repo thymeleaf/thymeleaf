@@ -10,8 +10,9 @@ h1 {
     background-color: #D7EBAD;
     border: solid 1px #96A479;
     border-radius: 6px;
-    min-height: 70px;
+    min-height: 90px;
     padding-left: 90px;
+    line-height: 90px;
 }
 
 p.title {
