@@ -30,6 +30,7 @@ import org.thymeleaf.spring4.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.VariableExpression;
 import org.thymeleaf.standard.processor.AbstractStandardTargetSelectionTagProcessor;
+import org.thymeleaf.templatemode.TemplateMode;
 
 
 /**
@@ -47,7 +48,7 @@ public final class SpringObjectTagProcessor extends AbstractStandardTargetSelect
     
     
     public SpringObjectTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 

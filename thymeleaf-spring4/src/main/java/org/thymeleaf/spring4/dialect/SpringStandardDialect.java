@@ -145,6 +145,9 @@ public class SpringStandardDialect extends StandardDialect {
 
                 processors.add(standardProcessor);
 
+            } else if (!standardProcessor.getTemplateMode().isHTML()) {
+                // We only want to remove from the StandardDialect the HTML versions of the attribute processors
+                processors.add(standardProcessor);
             }
         }
 

@@ -25,6 +25,7 @@ import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
 import org.thymeleaf.standard.processor.AbstractStandardExpressionAttributeTagProcessor;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.unbescape.html.HtmlEscape;
 
 
@@ -45,7 +46,7 @@ public final class SpringValueTagProcessor extends AbstractStandardExpressionAtt
 
 
     public SpringValueTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 
