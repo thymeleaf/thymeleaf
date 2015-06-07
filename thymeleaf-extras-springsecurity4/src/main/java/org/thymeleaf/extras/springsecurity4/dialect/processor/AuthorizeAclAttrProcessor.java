@@ -38,6 +38,7 @@ import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.expression.TextLiteralExpression;
 import org.thymeleaf.standard.processor.AbstractStandardConditionalVisibilityTagProcessor;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  * Takes the form sec:authorize-acl="object :: permissions", renders the element
@@ -59,7 +60,7 @@ public final class AuthorizeAclAttrProcessor extends AbstractStandardConditional
 
 
     public AuthorizeAclAttrProcessor(final String dialectPrefix) {
-        super(dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 

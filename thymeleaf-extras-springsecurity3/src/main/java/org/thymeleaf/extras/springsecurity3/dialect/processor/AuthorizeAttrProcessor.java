@@ -31,6 +31,7 @@ import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.standard.processor.AbstractStandardConditionalVisibilityTagProcessor;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  * Renders the element children (*tag content*) if the authenticated user is
@@ -50,7 +51,7 @@ public final class AuthorizeAttrProcessor extends AbstractStandardConditionalVis
     
     
     public AuthorizeAttrProcessor(final String dialectPrefix, final String attrName) {
-        super(dialectPrefix, attrName, ATTR_PRECEDENCE);
+        super(TemplateMode.HTML, dialectPrefix, attrName, ATTR_PRECEDENCE);
     }
 
 
