@@ -23,6 +23,7 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.unbescape.html.HtmlEscape;
 
 /**
@@ -40,13 +41,15 @@ public abstract class AbstractStandardAttributeModifierTagProcessor extends Abst
 
 
     protected AbstractStandardAttributeModifierTagProcessor(
-            final String dialectPrefix, final String attrName, final int precedence, final boolean removeIfEmpty) {
-        this(dialectPrefix, attrName, null, precedence, removeIfEmpty);
+            final TemplateMode templateMode, final String dialectPrefix, final String attrName,
+            final int precedence, final boolean removeIfEmpty) {
+        this(templateMode, dialectPrefix, attrName, null, precedence, removeIfEmpty);
     }
 
     protected AbstractStandardAttributeModifierTagProcessor(
-            final String dialectPrefix, final String attrName, final String targetAttrName, final int precedence, final boolean removeIfEmpty) {
-        super(dialectPrefix, attrName, precedence);
+            final TemplateMode templateMode, final String dialectPrefix, final String attrName, final String targetAttrName,
+            final int precedence, final boolean removeIfEmpty) {
+        super(templateMode, dialectPrefix, attrName, precedence);
         this.targetAttrName = targetAttrName;
         this.removeIfEmpty = removeIfEmpty;
     }

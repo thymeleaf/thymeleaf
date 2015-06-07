@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.standard.processor;
 
+import org.thymeleaf.templatemode.TemplateMode;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -33,7 +35,7 @@ public final class StandardMethodTagProcessor extends AbstractStandardAttributeM
 
 
     public StandardMethodTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, ATTR_NAME, PRECEDENCE, true);
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE, true);
     }
 
 

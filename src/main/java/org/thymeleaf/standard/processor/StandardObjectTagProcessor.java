@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.standard.processor;
 
+import org.thymeleaf.templatemode.TemplateMode;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -31,8 +33,8 @@ public final class StandardObjectTagProcessor extends AbstractStandardTargetSele
     public static final int PRECEDENCE = 500;
     public static final String ATTR_NAME = "object";
 
-    public StandardObjectTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, ATTR_NAME, PRECEDENCE);
+    public StandardObjectTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

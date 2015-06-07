@@ -24,6 +24,7 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.inline.ITextInliner;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  *
@@ -45,8 +46,8 @@ public final class StandardInlineTagProcessor extends AbstractStandardTextInline
 
 
 
-    public StandardInlineTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, ATTR_NAME, PRECEDENCE);
+    public StandardInlineTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

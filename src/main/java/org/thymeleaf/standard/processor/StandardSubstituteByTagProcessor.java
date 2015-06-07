@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.standard.processor;
 
+import org.thymeleaf.templatemode.TemplateMode;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -35,8 +37,8 @@ public final class StandardSubstituteByTagProcessor extends AbstractStandardFrag
 
 
 
-    public StandardSubstituteByTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, ATTR_NAME, PRECEDENCE, true, false);
+    public StandardSubstituteByTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, true, false);
     }
 
 

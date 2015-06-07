@@ -23,6 +23,7 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.unbescape.html.HtmlEscape;
 
 /**
@@ -41,7 +42,7 @@ public final class StandardClassappendTagProcessor extends AbstractStandardExpre
 
 
     public StandardClassappendTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, ATTR_NAME, PRECEDENCE);
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

@@ -40,8 +40,8 @@ public final class StandardXmlNsTagProcessor extends AbstractAttributeTagProcess
 
 
 
-    public StandardXmlNsTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, null, null, false, ATTR_NAME_PREFIX + dialectPrefix, false, PRECEDENCE);
+    public StandardXmlNsTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, null, null, false, ATTR_NAME_PREFIX + dialectPrefix, false, PRECEDENCE);
     }
 
 

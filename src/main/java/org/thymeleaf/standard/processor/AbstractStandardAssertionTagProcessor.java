@@ -45,8 +45,9 @@ public abstract class AbstractStandardAssertionTagProcessor extends AbstractAttr
 
 
 
-    protected AbstractStandardAssertionTagProcessor(final String dialectPrefix, final String attrName, final int precedence) {
-        super(TemplateMode.HTML, dialectPrefix, null, false, attrName, true, precedence);
+    protected AbstractStandardAssertionTagProcessor(
+            final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence) {
+        super(templateMode, dialectPrefix, null, false, attrName, true, precedence);
     }
 
 

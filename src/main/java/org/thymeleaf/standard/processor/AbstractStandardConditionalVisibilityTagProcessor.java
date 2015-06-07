@@ -44,8 +44,8 @@ public abstract class AbstractStandardConditionalVisibilityTagProcessor extends 
 
 
     protected AbstractStandardConditionalVisibilityTagProcessor(
-            final String dialectPrefix, final String attrName, final int precedence) {
-        super(TemplateMode.HTML, dialectPrefix, null, false, attrName, true, precedence);
+            final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence) {
+        super(templateMode, dialectPrefix, null, false, attrName, true, precedence);
     }
 
 

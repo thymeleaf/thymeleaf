@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.standard.processor;
 
+import org.thymeleaf.templatemode.TemplateMode;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -32,8 +34,8 @@ public final class StandardAttrappendTagProcessor extends AbstractStandardMultip
     public static final String ATTR_NAME = "attrappend";
 
 
-    public StandardAttrappendTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, ATTR_NAME, PRECEDENCE, ModificationType.APPEND);
+    public StandardAttrappendTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, ModificationType.APPEND);
     }
 
 

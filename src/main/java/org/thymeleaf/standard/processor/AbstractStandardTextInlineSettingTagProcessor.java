@@ -24,6 +24,7 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.inline.ITextInliner;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  *
@@ -43,8 +44,8 @@ public abstract class AbstractStandardTextInlineSettingTagProcessor extends Abst
 
 
     protected AbstractStandardTextInlineSettingTagProcessor(
-            final String dialectPrefix, final String attrName, final int precedence) {
-        super(dialectPrefix, attrName, precedence);
+            final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence) {
+        super(templateMode, dialectPrefix, attrName, precedence);
     }
 
 

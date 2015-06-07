@@ -79,6 +79,7 @@ import org.thymeleaf.standard.processor.StandardXmlBaseTagProcessor;
 import org.thymeleaf.standard.processor.StandardXmlLangTagProcessor;
 import org.thymeleaf.standard.processor.StandardXmlNsTagProcessor;
 import org.thymeleaf.standard.processor.StandardXmlSpaceTagProcessor;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -309,24 +310,27 @@ public class StandardDialect
      * @return the set of Standard processors.
      */
     public static Set<IProcessor> createStandardProcessorsSet(final String dialectPrefix) {
+
         /*
          * It is important that we create new instances here because, if there are
          * several dialects in the TemplateEngine that extend StandardDialect, they should
          * not be returning the exact same instances for their processors in order
          * to allow specific instances to be directly linked with their owner dialect.
          */
+
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
 
+
         /*
-         * ATTRIBUTE TAG PROCESSORS
+         * HTML: ATTRIBUTE TAG PROCESSORS
          */
         processors.add(new StandardActionTagProcessor(dialectPrefix));
         processors.add(new StandardAltTitleTagProcessor(dialectPrefix));
-        processors.add(new StandardAssertTagProcessor(dialectPrefix));
-        processors.add(new StandardAttrTagProcessor(dialectPrefix));
-        processors.add(new StandardAttrappendTagProcessor(dialectPrefix));
-        processors.add(new StandardAttrprependTagProcessor(dialectPrefix));
-        processors.add(new StandardCaseTagProcessor(dialectPrefix));
+        processors.add(new StandardAssertTagProcessor(TemplateMode.HTML, dialectPrefix));
+        processors.add(new StandardAttrTagProcessor(TemplateMode.HTML, dialectPrefix));
+        processors.add(new StandardAttrappendTagProcessor(TemplateMode.HTML, dialectPrefix));
+        processors.add(new StandardAttrprependTagProcessor(TemplateMode.HTML, dialectPrefix));
+        processors.add(new StandardCaseTagProcessor(TemplateMode.HTML, dialectPrefix));
         processors.add(new StandardClassappendTagProcessor(dialectPrefix));
         for (final String attrName : StandardConditionalFixedValueTagProcessor.ATTR_NAMES) {
             processors.add(new StandardConditionalFixedValueTagProcessor(dialectPrefix, attrName));
@@ -334,65 +338,112 @@ public class StandardDialect
         for (final String attrName : StandardDOMEventAttributeTagProcessor.ATTR_NAMES) {
             processors.add(new StandardRemovableAttributeTagProcessor(dialectPrefix, attrName));
         }
-        processors.add(new StandardEachTagProcessor(dialectPrefix));
-        processors.add(new StandardFragmentTagProcessor(dialectPrefix));
+        processors.add(new StandardEachTagProcessor(TemplateMode.HTML, dialectPrefix));
+        processors.add(new StandardFragmentTagProcessor(TemplateMode.HTML, dialectPrefix));
         processors.add(new StandardHrefTagProcessor(dialectPrefix));
-        processors.add(new StandardIfTagProcessor(dialectPrefix));
-        processors.add(new StandardIncludeTagProcessor(dialectPrefix));
-        processors.add(new StandardInlineTagProcessor(dialectPrefix));
-        processors.add(new StandardInsertTagProcessor(dialectPrefix));
+        processors.add(new StandardIfTagProcessor(TemplateMode.HTML, dialectPrefix));
+        processors.add(new StandardIncludeTagProcessor(TemplateMode.HTML, dialectPrefix));
+        processors.add(new StandardInlineTagProcessor(TemplateMode.HTML, dialectPrefix));
+        processors.add(new StandardInsertTagProcessor(TemplateMode.HTML, dialectPrefix));
         processors.add(new StandardLangXmlLangTagProcessor(dialectPrefix));
         processors.add(new StandardMethodTagProcessor(dialectPrefix));
         for (final String attrName : StandardNonRemovableAttributeTagProcessor.ATTR_NAMES) {
             processors.add(new StandardNonRemovableAttributeTagProcessor(dialectPrefix, attrName));
         }
-        processors.add(new StandardObjectTagProcessor(dialectPrefix));
+        processors.add(new StandardObjectTagProcessor(TemplateMode.HTML, dialectPrefix));
         for (final String attrName : StandardRemovableAttributeTagProcessor.ATTR_NAMES) {
             processors.add(new StandardRemovableAttributeTagProcessor(dialectPrefix, attrName));
         }
-        processors.add(new StandardRemoveTagProcessor(dialectPrefix));
-        processors.add(new StandardReplaceTagProcessor(dialectPrefix));
+        processors.add(new StandardRemoveTagProcessor(TemplateMode.HTML, dialectPrefix));
+        processors.add(new StandardReplaceTagProcessor(TemplateMode.HTML, dialectPrefix));
         processors.add(new StandardSrcTagProcessor(dialectPrefix));
         processors.add(new StandardStyleappendTagProcessor(dialectPrefix));
-        processors.add(new StandardSubstituteByTagProcessor(dialectPrefix));
-        processors.add(new StandardSwitchTagProcessor(dialectPrefix));
-        processors.add(new StandardTextTagProcessor(dialectPrefix));
-        processors.add(new StandardUnlessTagProcessor(dialectPrefix));
-        processors.add(new StandardUtextTagProcessor(dialectPrefix));
+        processors.add(new StandardSubstituteByTagProcessor(TemplateMode.HTML, dialectPrefix));
+        processors.add(new StandardSwitchTagProcessor(TemplateMode.HTML, dialectPrefix));
+        processors.add(new StandardTextTagProcessor(TemplateMode.HTML, dialectPrefix));
+        processors.add(new StandardUnlessTagProcessor(TemplateMode.HTML, dialectPrefix));
+        processors.add(new StandardUtextTagProcessor(TemplateMode.HTML, dialectPrefix));
         processors.add(new StandardValueTagProcessor(dialectPrefix));
-        processors.add(new StandardWithTagProcessor(dialectPrefix));
+        processors.add(new StandardWithTagProcessor(TemplateMode.HTML, dialectPrefix));
         processors.add(new StandardXmlBaseTagProcessor(dialectPrefix));
         processors.add(new StandardXmlLangTagProcessor(dialectPrefix));
         processors.add(new StandardXmlSpaceTagProcessor(dialectPrefix));
-        processors.add(new StandardXmlNsTagProcessor(dialectPrefix));
+        processors.add(new StandardXmlNsTagProcessor(TemplateMode.HTML, dialectPrefix));
+// TODO: Implement default attribute processor
 //        processors.add(new StandardDefaultAttributesTagProcessor());
 
         /*
-         * ELEMENT TAG PROCESSORS
+         * HTML: ELEMENT TAG PROCESSORS
          */
-        processors.add(new StandardBlockTagProcessor(dialectPrefix));
+        processors.add(new StandardBlockTagProcessor(TemplateMode.HTML, dialectPrefix));
 
         /*
-         * TEXT PROCESSORS
+         * HTML: TEXT PROCESSORS
          */
-        processors.add(new StandardInliningTextProcessor());
+        processors.add(new StandardInliningTextProcessor(TemplateMode.HTML));
 
         /*
-         * DOCTYPE PROCESSORS
+         * HTML: DOCTYPE PROCESSORS
          */
         processors.add(new StandardTranslationDocTypeProcessor());
 
         /*
-         * COMMENT PROCESSORS
+         * HTML: COMMENT PROCESSORS
          */
         processors.add(new StandardConditionalCommentProcessor());
 
         /*
-         * DOCUMENT PROCESSORS
+         * HTML: DOCUMENT PROCESSORS
          */
-        processors.add(new StandardInlineEnablementDocumentProcessor());
+        processors.add(new StandardInlineEnablementDocumentProcessor(TemplateMode.HTML));
+
+
+
+        /*
+         * XML: ATTRIBUTE TAG PROCESSORS
+         */
+        processors.add(new StandardAssertTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardAttrTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardAttrappendTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardAttrprependTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardCaseTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardEachTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardFragmentTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardIfTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardIncludeTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardInlineTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardInsertTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardObjectTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardRemoveTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardReplaceTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardSubstituteByTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardSwitchTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardTextTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardUnlessTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardUtextTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardWithTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardXmlNsTagProcessor(TemplateMode.XML, dialectPrefix));
+// TODO: Implement default attribute processor
+//        processors.add(new StandardDefaultAttributesTagProcessor());
+
+        /*
+         * XML: ELEMENT TAG PROCESSORS
+         */
+        processors.add(new StandardBlockTagProcessor(TemplateMode.XML, dialectPrefix));
+
+        /*
+         * XML: TEXT PROCESSORS
+         */
+        processors.add(new StandardInliningTextProcessor(TemplateMode.XML));
+
+        /*
+         * XML: DOCUMENT PROCESSORS
+         */
+        processors.add(new StandardInlineEnablementDocumentProcessor(TemplateMode.XML));
+
 
         return processors;
+
     }
 
 

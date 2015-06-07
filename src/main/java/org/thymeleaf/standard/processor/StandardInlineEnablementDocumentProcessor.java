@@ -38,8 +38,8 @@ public final class StandardInlineEnablementDocumentProcessor extends AbstractDoc
 
     public static final int PRECEDENCE = 10;
 
-    public StandardInlineEnablementDocumentProcessor() {
-        super(TemplateMode.HTML, PRECEDENCE);
+    public StandardInlineEnablementDocumentProcessor(final TemplateMode templateMode) {
+        super(templateMode, PRECEDENCE);
     }
 
 

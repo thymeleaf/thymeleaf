@@ -44,8 +44,8 @@ public final class StandardSwitchTagProcessor extends AbstractAttributeTagProces
     public static final String SWITCH_VARIABLE_NAME = "%%SWITCH_EXPR%%";
 
 
-    public StandardSwitchTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE);
+    public StandardSwitchTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE);
     }
 
 

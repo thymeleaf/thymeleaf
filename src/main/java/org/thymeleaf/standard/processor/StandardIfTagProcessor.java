@@ -25,6 +25,7 @@ import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EvaluationUtil;
 
 /**
@@ -39,8 +40,8 @@ public final class StandardIfTagProcessor extends AbstractStandardConditionalVis
     public static final int PRECEDENCE = 300;
     public static final String ATTR_NAME = "if";
 
-    public StandardIfTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, ATTR_NAME, PRECEDENCE);
+    public StandardIfTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

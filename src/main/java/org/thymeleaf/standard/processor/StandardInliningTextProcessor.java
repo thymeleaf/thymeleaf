@@ -38,8 +38,8 @@ public final class StandardInliningTextProcessor extends AbstractTextProcessor {
 
     public static final int PRECEDENCE = 1000;
 
-    public StandardInliningTextProcessor() {
-        super(TemplateMode.HTML, PRECEDENCE);
+    public StandardInliningTextProcessor(final TemplateMode templateMode) {
+        super(templateMode, PRECEDENCE);
     }
 
 

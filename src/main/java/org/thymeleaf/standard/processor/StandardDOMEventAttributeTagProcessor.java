@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.standard.processor;
 
+import org.thymeleaf.templatemode.TemplateMode;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -107,7 +109,7 @@ public final class StandardDOMEventAttributeTagProcessor extends AbstractStandar
 
 
     public StandardDOMEventAttributeTagProcessor(final String dialectPrefix, final String attrName) {
-        super(dialectPrefix, attrName, PRECEDENCE, true);
+        super(TemplateMode.HTML, dialectPrefix, attrName, PRECEDENCE, true);
     }
 
 

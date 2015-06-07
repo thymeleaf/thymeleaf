@@ -41,8 +41,9 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
 
 
 
-    protected AbstractStandardExpressionAttributeTagProcessor(final String dialectPrefix, final String attrName, final int precedence) {
-        super(TemplateMode.HTML, dialectPrefix, null, false, attrName, true, precedence);
+    protected AbstractStandardExpressionAttributeTagProcessor(
+            final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence) {
+        super(templateMode, dialectPrefix, null, false, attrName, true, precedence);
     }
 
 

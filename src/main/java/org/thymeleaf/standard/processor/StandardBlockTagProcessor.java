@@ -39,8 +39,8 @@ public final class StandardBlockTagProcessor extends AbstractElementTagProcessor
 
 
 
-    public StandardBlockTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ELEMENT_NAME, true, null, false, PRECEDENCE);
+    public StandardBlockTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, ELEMENT_NAME, true, null, false, PRECEDENCE);
     }
 
 

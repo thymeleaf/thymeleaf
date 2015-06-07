@@ -24,6 +24,7 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  *
@@ -44,8 +45,8 @@ public final class StandardRemoveTagProcessor extends AbstractStandardExpression
     public static final String VALUE_NONE = "none";
 
 
-    public StandardRemoveTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, ATTR_NAME, PRECEDENCE);
+    public StandardRemoveTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

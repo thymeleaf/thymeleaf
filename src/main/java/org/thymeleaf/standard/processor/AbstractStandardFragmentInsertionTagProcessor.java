@@ -64,9 +64,9 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
     protected AbstractStandardFragmentInsertionTagProcessor(
-            final String dialectPrefix, final String attrName, final int precedence, final boolean replaceHost,
-            final boolean insertOnlyContents) {
-        super(TemplateMode.HTML, dialectPrefix, null, false, attrName, true, precedence);
+            final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
+            final boolean replaceHost, final boolean insertOnlyContents) {
+        super(templateMode, dialectPrefix, null, false, attrName, true, precedence);
         this.replaceHost = replaceHost;
         this.insertOnlyContents = insertOnlyContents;
     }

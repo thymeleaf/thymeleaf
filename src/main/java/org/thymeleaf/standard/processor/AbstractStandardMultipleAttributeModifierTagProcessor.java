@@ -54,8 +54,9 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
 
 
     protected AbstractStandardMultipleAttributeModifierTagProcessor(
-            final String dialectPrefix, final String attrName, final int precedence, final ModificationType modificationType) {
-        super(TemplateMode.HTML, dialectPrefix, null, false, attrName, true, precedence);
+            final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
+            final ModificationType modificationType) {
+        super(templateMode, dialectPrefix, null, false, attrName, true, precedence);
         this.modificationType = modificationType;
     }
 
@@ -97,7 +98,8 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
                         "Attribute name expression evaluated as null or empty: \"" + leftExpr + "\"");
             }
 
-            if (this.modificationType == ModificationType.SUBSTITUTION &&
+            if (getTemplateMode().isHTML() &&
+                    this.modificationType == ModificationType.SUBSTITUTION &&
                     ArrayUtils.contains(StandardConditionalFixedValueTagProcessor.ATTR_NAMES, newAttributeName)) {
                 // Attribute is a fixed-value conditional one, like "selected", which can only
                 // appear as selected="selected" or not appear at all.

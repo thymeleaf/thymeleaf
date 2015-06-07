@@ -24,6 +24,7 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.engine.ParsedFragmentMarkup;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  *
@@ -37,8 +38,8 @@ public final class StandardUtextTagProcessor extends AbstractStandardExpressionA
     public static final int PRECEDENCE = 1400;
     public static final String ATTR_NAME = "utext";
 
-    public StandardUtextTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, ATTR_NAME, PRECEDENCE);
+    public StandardUtextTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

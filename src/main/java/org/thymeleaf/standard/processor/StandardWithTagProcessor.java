@@ -48,8 +48,8 @@ public final class StandardWithTagProcessor extends AbstractAttributeTagProcesso
     public static final int PRECEDENCE = 600;
     public static final String ATTR_NAME = "with";
 
-    public StandardWithTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE);
+    public StandardWithTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE);
     }
 
 

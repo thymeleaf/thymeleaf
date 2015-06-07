@@ -43,8 +43,8 @@ public final class StandardEachTagProcessor extends AbstractAttributeTagProcesso
     public static final int PRECEDENCE = 200;
     public static final String ATTR_NAME = "each";
 
-    public StandardEachTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE);
+    public StandardEachTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE);
     }
 
 

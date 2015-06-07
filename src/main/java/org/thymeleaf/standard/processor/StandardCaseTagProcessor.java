@@ -31,6 +31,7 @@ import org.thymeleaf.standard.expression.EqualsExpression;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EvaluationUtil;
 
 /**
@@ -53,8 +54,8 @@ public final class StandardCaseTagProcessor extends AbstractStandardConditionalV
 
 
 
-    public StandardCaseTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, ATTR_NAME, PRECEDENCE);
+    public StandardCaseTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 
