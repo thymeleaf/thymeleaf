@@ -55,7 +55,8 @@ import org.thymeleaf.standard.processor.StandardHrefTagProcessor;
 import org.thymeleaf.standard.processor.StandardIfTagProcessor;
 import org.thymeleaf.standard.processor.StandardIncludeTagProcessor;
 import org.thymeleaf.standard.processor.StandardInlineEnablementDocumentProcessor;
-import org.thymeleaf.standard.processor.StandardInlineTagProcessor;
+import org.thymeleaf.standard.processor.StandardInlineHTMLTagProcessor;
+import org.thymeleaf.standard.processor.StandardInlineXMLTagProcessor;
 import org.thymeleaf.standard.processor.StandardInliningTextProcessor;
 import org.thymeleaf.standard.processor.StandardInsertTagProcessor;
 import org.thymeleaf.standard.processor.StandardLangXmlLangTagProcessor;
@@ -343,7 +344,7 @@ public class StandardDialect
         processors.add(new StandardHrefTagProcessor(dialectPrefix));
         processors.add(new StandardIfTagProcessor(TemplateMode.HTML, dialectPrefix));
         processors.add(new StandardIncludeTagProcessor(TemplateMode.HTML, dialectPrefix));
-        processors.add(new StandardInlineTagProcessor(TemplateMode.HTML, dialectPrefix));
+        processors.add(new StandardInlineHTMLTagProcessor(dialectPrefix));
         processors.add(new StandardInsertTagProcessor(TemplateMode.HTML, dialectPrefix));
         processors.add(new StandardLangXmlLangTagProcessor(dialectPrefix));
         processors.add(new StandardMethodTagProcessor(dialectPrefix));
@@ -411,7 +412,7 @@ public class StandardDialect
         processors.add(new StandardFragmentTagProcessor(TemplateMode.XML, dialectPrefix));
         processors.add(new StandardIfTagProcessor(TemplateMode.XML, dialectPrefix));
         processors.add(new StandardIncludeTagProcessor(TemplateMode.XML, dialectPrefix));
-        processors.add(new StandardInlineTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardInlineXMLTagProcessor(dialectPrefix));
         processors.add(new StandardInsertTagProcessor(TemplateMode.XML, dialectPrefix));
         processors.add(new StandardObjectTagProcessor(TemplateMode.XML, dialectPrefix));
         processors.add(new StandardRemoveTagProcessor(TemplateMode.XML, dialectPrefix));

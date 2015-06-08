@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.util;
+package org.thymeleaf.standard.util;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -30,15 +30,18 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.thymeleaf.util.DateUtils;
+import org.thymeleaf.util.StringUtils;
+
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.1.2
+ * @since 1.0
  *
  */
-public final class DartUtils {
+public final class StandardJavaScriptUtils {
 
 
 
@@ -174,7 +177,7 @@ public final class DartUtils {
             return;
         }
         if (object instanceof Map<?,?>) {
-            printMap(output, (Map<?,?>) object);
+            printMap(output, (Map<?, ?>) object);
             return;
         }
         if (object.getClass().isEnum()) {
@@ -394,7 +397,8 @@ public final class DartUtils {
 
 
 
-    private DartUtils() {
+
+    private StandardJavaScriptUtils() {
         super();
     }
 

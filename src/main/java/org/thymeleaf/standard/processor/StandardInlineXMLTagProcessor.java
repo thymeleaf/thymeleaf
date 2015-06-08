@@ -33,21 +33,19 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-public final class StandardInlineTagProcessor extends AbstractStandardTextInlineSettingTagProcessor {
+public final class StandardInlineXMLTagProcessor extends AbstractStandardTextInlineSettingTagProcessor {
 
     public static final int PRECEDENCE = 1000;
     public static final String ATTR_NAME = "inline";
 
 
     public static final String TEXT_INLINE = "text";
-    public static final String JAVASCRIPT_INLINE = "javascript";
-    public static final String DART_INLINE = "dart";
     public static final String NONE_INLINE = "none";
 
 
 
-    public StandardInlineTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
+    public StandardInlineXMLTagProcessor(final String dialectPrefix) {
+        super(TemplateMode.XML, dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 
@@ -62,19 +60,15 @@ public final class StandardInlineTagProcessor extends AbstractStandardTextInline
         final String inliner = (expressionResult == null? null : expressionResult.toString().toLowerCase());
 
         if (inliner != null) {
-            if (JAVASCRIPT_INLINE.equals(inliner)) {
-                throw new UnsupportedOperationException("JAVASCRIPT INLINING IS NOT IMPLEMENTED YET!");
-            } else if (DART_INLINE.equals(inliner)) {
-                throw new UnsupportedOperationException("DART INLINING IS NOT IMPLEMENTED YET!");
-            } else if (TEXT_INLINE.equals(inliner)) {
+            if (TEXT_INLINE.equals(inliner)) {
                 throw new UnsupportedOperationException("TEXT INLINING IS NOT IMPLEMENTED YET!");
             }
         }
 
         throw new TemplateProcessingException(
-                "Cannot recognize value for \"" + attributeName + "\". Allowed values are " +
-                "\"" + TEXT_INLINE + "\", \"" + JAVASCRIPT_INLINE + "\", " +
-                "\"" + DART_INLINE + "\" and \"" + NONE_INLINE + "\"");
+                "Cannot recognize value for \"" + attributeName + "\". Allowed values in template mode " +
+                getTemplateMode() + " are: " +
+                "\"" + TEXT_INLINE + "\" and \"" + NONE_INLINE + "\"");
 
     }
 
