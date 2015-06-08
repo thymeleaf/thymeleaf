@@ -175,6 +175,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     // This variable will contain the last event that has been processed, if this last event was an IText. Its aim
     // is to allow the inclusion of preceding whitespace in the iteration of block elements (such as <tr>, <li>, etc.)
     // so that resulting markup is more readable than the alternative "</tr><tr ...>"
+    // Note also that, given whitespace between tags is not significative in XML, this mechanism will be applied in XML
+    // template mode disregarding the name of the element.
     private IText lastTextEvent = null;
 
 
@@ -1050,7 +1052,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // If there is a preceding whitespace, add it to the iteration spec
                     if (lastText != null && lastText.isWhitespace() &&
-                            ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(standaloneElementTag.elementDefinition.elementName)) {
+                            (this.templateMode.isXML() || (this.templateMode.isHTML() && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(standaloneElementTag.elementDefinition.elementName)))) {
                         this.iterationSpec.precedingWhitespace =
                                 Text.asEngineText(this.configuration, lastText, true);
                     }
@@ -1456,7 +1458,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // If there is a preceding whitespace, add it to the iteration spec
                     if (lastText != null && lastText.isWhitespace() &&
-                            ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(openElementTag.elementDefinition.elementName)) {
+                            (this.templateMode.isXML() || (this.templateMode.isHTML() && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(openElementTag.elementDefinition.elementName)))) {
                         this.iterationSpec.precedingWhitespace =
                                 Text.asEngineText(this.configuration, lastText, true);
                     }
@@ -1833,7 +1835,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // If there is a preceding whitespace, add it to the iteration spec
                     if (lastText != null && lastText.isWhitespace() &&
-                            ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(autoOpenElementTag.elementDefinition.elementName)) {
+                            (this.templateMode.isXML() || (this.templateMode.isHTML() && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(autoOpenElementTag.elementDefinition.elementName)))) {
                         this.iterationSpec.precedingWhitespace =
                                 Text.asEngineText(this.configuration, lastText, true);
                     }
