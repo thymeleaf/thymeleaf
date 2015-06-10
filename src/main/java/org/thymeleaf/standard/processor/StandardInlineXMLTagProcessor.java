@@ -55,8 +55,6 @@ public final class StandardInlineXMLTagProcessor extends AbstractStandardTextInl
             final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue, final Object expressionResult) {
 
-        // TODO Implement the different inliners and link them here!
-
         final String inliner = (expressionResult == null? null : expressionResult.toString().toLowerCase());
 
         if (inliner != null) {
