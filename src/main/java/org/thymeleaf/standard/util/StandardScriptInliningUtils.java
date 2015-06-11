@@ -72,10 +72,35 @@ public final class StandardScriptInliningUtils {
 
     public static String inline(final IProcessingContext processingContext, final StandardScriptInliningLanguage lang, final String input) {
 
-        String inlined = processScriptingRemoveInline(input);
-        inlined = processScriptingAddInline(inlined);
-        inlined = processScriptingVariableExpressionInline(inlined);
-        inlined = processScriptingVariableInline(processingContext, lang, inlined);
+        // Before actually performing the inlining operations, we will do a quick scan on the input in order
+        // to determine exactly what kind of operations might be needed here. This is a good idea because each
+        // of these inlining operations requires the creation and use of a java regex Matcher instance, and avoiding
+        // the creation of these instances is advisable, especially in this case in which we will have to perform
+        // one, at most two of these operations each time (instead of all the possible four).
+        final PossibleInlineTargets inlineTargets = PossibleInlineTargets.computePossibleInlineTargets(input);
+
+        if (inlineTargets == null) {
+            return input;
+        }
+
+        String inlined = input;
+
+        if (inlineTargets.commentedRemoveInline) {
+            inlined = processScriptingRemoveInline(inlined);
+        }
+        if (inlineTargets.commentedAddInline) {
+            inlined = processScriptingAddInline(inlined);
+        }
+        if (inlineTargets.commentedExpressionInline) {
+            inlined = processScriptingVariableExpressionInline(inlined);
+        }
+        if (inlineTargets.commentedRemoveInline || inlineTargets.commentedAddInline ||
+                inlineTargets.commentedExpressionInline || inlineTargets.inline) {
+            // We have checked all the previous variables here because some of them result in the creation of a
+            // non-commented variable inline expression that has to be executed afterwards:
+            // /*[[${x}]]*/ -> [[${x}]]
+            inlined = processScriptingVariableInline(processingContext, lang, inlined);
+        }
 
         return inlined;
 
@@ -306,6 +331,67 @@ public final class StandardScriptInliningUtils {
 
     private StandardScriptInliningUtils() {
         super();
+    }
+
+
+
+
+
+    private static final class PossibleInlineTargets {
+
+        private boolean commentedRemoveInline = false;
+        private boolean commentedAddInline = false;
+        private boolean commentedExpressionInline = false;
+        private boolean inline = false;
+
+
+        static PossibleInlineTargets computePossibleInlineTargets(final String input) {
+
+            PossibleInlineTargets inlineTargets = null;
+
+            boolean bracketFound = false;
+
+            final int inputLen = input.length();
+            for (int i = 0; i < inputLen; i++) {
+
+                final char c = input.charAt(i);
+                if (c == '[') {
+                    if (bracketFound) {
+                        if (inlineTargets == null) {
+                            inlineTargets = new PossibleInlineTargets();
+                        }
+                        if (i > 2 && input.charAt(i - 2) == '*' && input.charAt(i - 3) == '/') {
+                            inlineTargets.commentedExpressionInline = true;
+                        } else {
+                            inlineTargets.inline = true;
+                        }
+                    }
+                    bracketFound = !bracketFound;
+                    continue;
+                } else if (bracketFound && c == '+') {
+                    if (i > 2 && input.charAt(i - 2) == '*' && input.charAt(i - 3) == '/') {
+                        if (inlineTargets == null) {
+                            inlineTargets = new PossibleInlineTargets();
+                        }
+                        inlineTargets.commentedAddInline = true;
+                    }
+                } else if (bracketFound && c == '-') {
+                    if (i > 2 && input.charAt(i - 2) == '*' && input.charAt(i - 3) == '/') {
+                        if (inlineTargets == null) {
+                            inlineTargets = new PossibleInlineTargets();
+                        }
+                        inlineTargets.commentedRemoveInline = true;
+                    }
+                }
+                bracketFound = false;
+
+            }
+
+            return inlineTargets;
+
+        }
+
+
     }
 
 
