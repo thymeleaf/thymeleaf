@@ -370,7 +370,7 @@ public class StandardDialect
         processors.add(new StandardXmlLangTagProcessor(dialectPrefix));
         processors.add(new StandardXmlSpaceTagProcessor(dialectPrefix));
         processors.add(new StandardXmlNsTagProcessor(TemplateMode.HTML, dialectPrefix));
-// TODO: Implement default attribute processor
+        // TODO: Implement default attribute processor
 //        processors.add(new StandardDefaultAttributesTagProcessor());
 
         /*
