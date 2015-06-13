@@ -29,7 +29,7 @@ import java.util.Arrays;
  * @since 3.0.0
  * 
  */
-final class ThymeleafTemplateReader extends Reader {
+public final class ThymeleafTemplateReader extends Reader {
 
     private final static char[] PROTOTYPE_ONLY_COMMENT_PREFIX = "<!--/*/".toCharArray();
     private final static char[] PROTOTYPE_ONLY_COMMENT_SUFFIX = "/*/-->".toCharArray();
@@ -43,7 +43,7 @@ final class ThymeleafTemplateReader extends Reader {
     private int index = 0;
 
 
-    ThymeleafTemplateReader(final Reader reader) {
+    public ThymeleafTemplateReader(final Reader reader) {
         super();
         this.reader = reader;
     }

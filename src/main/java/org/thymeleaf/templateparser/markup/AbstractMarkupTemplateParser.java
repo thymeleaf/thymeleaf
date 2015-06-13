@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.templateparser;
+package org.thymeleaf.templateparser.markup;
 
 import java.io.CharArrayReader;
 import java.io.Reader;
@@ -45,6 +45,8 @@ import org.thymeleaf.resource.IResource;
 import org.thymeleaf.resource.ReaderResource;
 import org.thymeleaf.resource.StringResource;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateparser.ITemplateParser;
+import org.thymeleaf.templateparser.ThymeleafTemplateReader;
 import org.thymeleaf.util.Validate;
 
 /**

@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.templateparser;
+package org.thymeleaf.templateparser.markup;
 
 import java.util.concurrent.ConcurrentHashMap;
 
