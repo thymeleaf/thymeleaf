@@ -26,7 +26,6 @@ import java.util.Arrays;
 import org.attoparser.IMarkupHandler;
 import org.attoparser.IMarkupParser;
 import org.attoparser.ParseException;
-import org.attoparser.ParseStatus;
 import org.attoparser.ParsingElementMarkupUtil;
 import org.attoparser.config.ParseConfiguration;
 import org.attoparser.select.ParseSelection;
@@ -156,10 +155,12 @@ final class TextMarkupParser implements IMarkupParser {
         handler.setParseConfiguration(this.configuration);
 
         final ParseStatus status = new ParseStatus();
-        handler.setParseStatus(status);
+        // ParseStatus is not configured into handler with handler.setParseStatus() because this is not a normal
+        // attoparser ParseStatus. But this is no problem because we are certain about the handler implementation
+        // (TemplateHandlerAdapterMarkupHandler), and it doesn't require being set a ParseStatus at all.
 
-        final ParseSelection selection = new ParseSelection();
-        handler.setParseSelection(selection);
+        // ParseSelection is not configured into handler with handler.setParseSelection because the specific
+        // handler implementation we will use (TemplateHandlerAdapterMarkupHandler)
 
         // We will not report directly to the handler, but instead to an intermediate class that will be in
         // charge of applying the required markup logic and rules, according to the specified configuration
@@ -204,10 +205,6 @@ final class TextMarkupParser implements IMarkupParser {
             status.line = 1;
             status.col = 1;
             status.inStructure = false;
-            status.parsingDisabled = true;
-            status.parsingDisabledLimitSequence = null;
-            status.autoCloseRequired = null;
-            status.autoCloseLimits = null;
 
             while (cont) {
 
@@ -322,12 +319,6 @@ final class TextMarkupParser implements IMarkupParser {
 
 
 
-
-
-
-
-
-
     private void parseBuffer(
             final char[] buffer, final int offset, final int len,
             final MarkupEventProcessor eventProcessor,
@@ -348,11 +339,6 @@ final class TextMarkupParser implements IMarkupParser {
 
         boolean inOpenElement = false;
         boolean inCloseElement = false;
-        boolean inComment = false;
-        boolean inCdata = false;
-        boolean inDocType = false;
-        boolean inXmlDeclaration = false;
-        boolean inProcessingInstruction = false;
 
         int tagStart;
         int tagEnd;
@@ -362,44 +348,7 @@ final class TextMarkupParser implements IMarkupParser {
             currentLine = locator[0];
             currentCol = locator[1];
 
-            if (status.parsingDisabledLimitSequence != null) {
-                // We need to disable parsing until we find a specific character sequence.
-                // This allows correct parsing of CDATA (not PCDATA) sections (e.g. <script> tags).
-                final int sequenceIndex =
-                        ParsingMarkupUtil.findCharacterSequence(buffer, i, maxi, locator, status.parsingDisabledLimitSequence);
-                if (sequenceIndex == -1) {
-
-                    // Not found, should ask for more buffer
-                    if (this.configuration.isTextSplittable()) {
-                        eventProcessor.processText(buffer, current, len - current, currentLine, currentCol);
-                        // No need to change the disability limit, as we havent reached the sequence yet
-                        current = len;
-                    }
-
-                    status.offset = current;
-                    status.line = currentLine;
-                    status.col = currentCol;
-                    status.inStructure = false;
-                    return;
-
-                }
-
-                // Return the unparsed text sequence (even if more text comes afterwards, this unparsed sequence
-                // should be returned now so that the 'skipUntil' sequence is not included in the middle of
-                // a returned Text event (if parsing is not re-enabled with a structure). Parsing-disabled and
-                // parsing-enabled events should not be mixed in order to improve event handling.
-
-                eventProcessor.processText(buffer, current, sequenceIndex - current, currentLine, currentCol);
-                status.parsingDisabledLimitSequence = null;
-                status.parsingDisabled = true;
-
-                current = sequenceIndex;
-                i = current;
-
-            }
-
-            inStructure =
-                    (inOpenElement || inCloseElement || inComment || inCdata || inDocType || inXmlDeclaration || inProcessingInstruction);
+            inStructure = (inOpenElement || inCloseElement);
 
             if (!inStructure) {
 
@@ -410,10 +359,6 @@ final class TextMarkupParser implements IMarkupParser {
                     if (this.configuration.isTextSplittable()) {
 
                         eventProcessor.processText(buffer, current, len - current, currentLine, currentCol);
-                        if (status.parsingDisabledLimitSequence != null) {
-                            status.parsingDisabled = false;
-                        }
-
                         current = len;
 
                     }
@@ -429,26 +374,9 @@ final class TextMarkupParser implements IMarkupParser {
                 inOpenElement = ParsingElementMarkupUtil.isOpenElementStart(buffer, tagStart, maxi);
                 if (!inOpenElement) {
                     inCloseElement = ParsingElementMarkupUtil.isCloseElementStart(buffer, tagStart, maxi);
-                    if (!inCloseElement) {
-                        inComment = ParsingCommentMarkupUtil.isCommentStart(buffer, tagStart, maxi);
-                        if (!inComment) {
-                            inCdata = ParsingCDATASectionMarkupUtil.isCDATASectionStart(buffer, tagStart, maxi);
-                            if (!inCdata) {
-                                inDocType = ParsingDocTypeMarkupUtil.isDocTypeStart(buffer, tagStart, maxi);
-                                if (!inDocType) {
-                                    inXmlDeclaration = ParsingXmlDeclarationMarkupUtil.isXmlDeclarationStart(buffer, tagStart, maxi);
-                                    if (!inXmlDeclaration) {
-                                        inProcessingInstruction = ParsingProcessingInstructionUtil.isProcessingInstructionStart(buffer, tagStart, maxi);
-                                    }
-                                }
-                            }
-                        }
-                    }
                 }
 
-                inStructure =
-                        (inOpenElement || inCloseElement || inComment || inCdata || inDocType || inXmlDeclaration || inProcessingInstruction);
-
+                inStructure = (inOpenElement || inCloseElement);
 
                 while (!inStructure) {
                     // We found a '<', but it cannot be considered a tag because it is not
@@ -468,25 +396,9 @@ final class TextMarkupParser implements IMarkupParser {
                     inOpenElement = ParsingElementMarkupUtil.isOpenElementStart(buffer, tagStart, maxi);
                     if (!inOpenElement) {
                         inCloseElement = ParsingElementMarkupUtil.isCloseElementStart(buffer, tagStart, maxi);
-                        if (!inCloseElement) {
-                            inComment = ParsingCommentMarkupUtil.isCommentStart(buffer, tagStart, maxi);
-                            if (!inComment) {
-                                inCdata = ParsingCDATASectionMarkupUtil.isCDATASectionStart(buffer, tagStart, maxi);
-                                if (!inCdata) {
-                                    inDocType = ParsingDocTypeMarkupUtil.isDocTypeStart(buffer, tagStart, maxi);
-                                    if (!inDocType) {
-                                        inXmlDeclaration = ParsingXmlDeclarationMarkupUtil.isXmlDeclarationStart(buffer, tagStart, maxi);
-                                        if (!inXmlDeclaration) {
-                                            inProcessingInstruction = ParsingProcessingInstructionUtil.isProcessingInstructionStart(buffer, tagStart, maxi);
-                                        }
-                                    }
-                                }
-                            }
-                        }
                     }
 
-                    inStructure =
-                            (inOpenElement || inCloseElement || inComment || inCdata || inDocType || inXmlDeclaration || inProcessingInstruction);
+                    inStructure = (inOpenElement || inCloseElement);
 
                 }
 
@@ -498,10 +410,6 @@ final class TextMarkupParser implements IMarkupParser {
                             buffer, current, (tagStart - current),
                             currentLine, currentCol);
 
-                    if (status.parsingDisabledLimitSequence != null) {
-                        status.parsingDisabled = false;
-                    }
-
                 }
 
                 current = tagStart;
@@ -512,16 +420,13 @@ final class TextMarkupParser implements IMarkupParser {
                 // We do not include processing instructions here because their format
                 // is undefined, and everything should be allowed except the "?>" sequence,
                 // which will terminate the instruction.
-                final boolean avoidQuotes =
-                        (inOpenElement || inCloseElement || inDocType || inXmlDeclaration);
+                final boolean avoidQuotes = (inOpenElement || inCloseElement);
 
 
                 tagEnd =
-                        (inDocType?
-                                ParsingDocTypeMarkupUtil.findNextDocTypeStructureEnd(buffer, i, maxi, locator) :
-                                (avoidQuotes?
-                                        ParsingMarkupUtil.findNextStructureEndAvoidQuotes(buffer, i, maxi, locator) :
-                                        ParsingMarkupUtil.findNextStructureEndDontAvoidQuotes(buffer, i, maxi, locator)));
+                        (avoidQuotes?
+                                ParsingMarkupUtil.findNextStructureEndAvoidQuotes(buffer, i, maxi, locator) :
+                                ParsingMarkupUtil.findNextStructureEndDontAvoidQuotes(buffer, i, maxi, locator));
 
                 if (tagEnd < 0) {
                     // This is an unfinished structure
@@ -547,10 +452,6 @@ final class TextMarkupParser implements IMarkupParser {
                     }
 
 
-                    if (status.parsingDisabledLimitSequence != null) {
-                        status.parsingDisabled = false;
-                    }
-
                     inOpenElement = false;
 
                 } else if (inCloseElement) {
@@ -560,117 +461,7 @@ final class TextMarkupParser implements IMarkupParser {
                             parseCloseElement(
                                     buffer, current + 2, ((tagEnd - current) + 1) - 3, current, (tagEnd - current) + 1, currentLine, currentCol, eventProcessor);
 
-                    if (status.parsingDisabledLimitSequence != null) {
-                        status.parsingDisabled = false;
-                    }
-
                     inCloseElement = false;
-
-                } else if (inComment) {
-                    // This is a comment! (obviously ;-))
-
-                    while (tagEnd - current < 7 || buffer[tagEnd - 1] != '-' || buffer[tagEnd - 2] != '-') {
-                        // the '>' we chose is not the comment-closing one. Let's find again
-
-                        ParsingLocatorUtil.countChar(locator, buffer[tagEnd]);
-                        tagEnd = ParsingMarkupUtil.findNextStructureEndDontAvoidQuotes(buffer, tagEnd + 1, maxi, locator);
-
-                        if (tagEnd == -1) {
-                            status.offset = current;
-                            status.line = currentLine;
-                            status.col = currentCol;
-                            status.inStructure = true;
-                            return;
-                        }
-
-                    }
-
-                    eventProcessor.processComment(buffer, current + 4, ((tagEnd - current) + 1) - 7, current, (tagEnd - current) + 1, currentLine, currentCol);
-
-                    if (status.parsingDisabledLimitSequence != null) {
-                        status.parsingDisabled = false;
-                    }
-
-                    inComment = false;
-
-                } else if (inCdata) {
-                    // This is a CDATA section
-
-                    while (tagEnd - current < 11 || buffer[tagEnd - 1] != ']' || buffer[tagEnd - 2] != ']') {
-                        // the '>' we chose is not the comment-closing one. Let's find again
-
-                        ParsingLocatorUtil.countChar(locator, buffer[tagEnd]);
-                        tagEnd = ParsingMarkupUtil.findNextStructureEndDontAvoidQuotes(buffer, tagEnd + 1, maxi, locator);
-
-                        if (tagEnd == -1) {
-                            status.offset = current;
-                            status.line = currentLine;
-                            status.col = currentCol;
-                            status.inStructure = true;
-                            return;
-                        }
-
-                    }
-
-                    eventProcessor.processCDATASection(buffer, current + 9, ((tagEnd - current) + 1) - 12, current, (tagEnd - current) + 1, currentLine, currentCol);
-
-                    if (status.parsingDisabledLimitSequence != null) {
-                        status.parsingDisabled = false;
-                    }
-
-                    inCdata = false;
-
-                } else if (inDocType) {
-                    // This is a DOCTYPE clause
-
-                    ParsingDocTypeMarkupUtil.parseDocType(
-                            buffer, current, ((tagEnd - current) + 1), currentLine, currentCol, eventProcessor);
-
-                    if (status.parsingDisabledLimitSequence != null) {
-                        status.parsingDisabled = false;
-                    }
-
-                    inDocType = false;
-
-                } else if (inXmlDeclaration) {
-                    // This is an XML Declaration
-
-                    ParsingXmlDeclarationMarkupUtil.parseXmlDeclaration(
-                            buffer, current + 2, ((tagEnd - current) + 1) - 4, current, (tagEnd - current) + 1, currentLine, currentCol, eventProcessor);
-
-                    if (status.parsingDisabledLimitSequence != null) {
-                        status.parsingDisabled = false;
-                    }
-
-                    inXmlDeclaration = false;
-
-                } else if (inProcessingInstruction) {
-                    // This is a processing instruction
-
-                    while (tagEnd - current < 5 || buffer[tagEnd - 1] != '?') {
-                        // the '>' we chose is not the PI-closing one. Let's find again
-
-                        ParsingLocatorUtil.countChar(locator, buffer[tagEnd]);
-                        tagEnd = ParsingMarkupUtil.findNextStructureEndDontAvoidQuotes(buffer, tagEnd + 1, maxi, locator);
-
-                        if (tagEnd == -1) {
-                            status.offset = current;
-                            status.line = currentLine;
-                            status.col = currentCol;
-                            status.inStructure = true;
-                            return;
-                        }
-
-                    }
-
-                    ParsingProcessingInstructionUtil.parseProcessingInstruction(
-                            buffer, current + 2, ((tagEnd - current) + 1) - 4, current, (tagEnd - current) + 1, currentLine, currentCol, eventProcessor);
-
-                    if (status.parsingDisabledLimitSequence != null) {
-                        status.parsingDisabled = false;
-                    }
-
-                    inProcessingInstruction = false;
 
                 } else {
 
