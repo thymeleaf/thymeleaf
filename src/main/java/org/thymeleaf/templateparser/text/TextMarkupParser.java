@@ -437,7 +437,6 @@ final class TextMarkupParser implements IMarkupParser {
                     return;
                 }
 
-
                 if (inOpenElement) {
                     // This is a open/standalone tag (to be determined by looking at the penultimate character)
 
