@@ -46,7 +46,6 @@ import org.thymeleaf.resource.ReaderResource;
 import org.thymeleaf.resource.StringResource;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.ITemplateParser;
-import org.thymeleaf.templateparser.ThymeleafTemplateReader;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -162,18 +161,18 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             final Reader templateReader;
             if (templateResource instanceof ReaderResource) {
 
-                templateReader = new ThymeleafTemplateReader(((ReaderResource)templateResource).getContent());
+                templateReader = new ThymeleafMarkupTemplateReader(((ReaderResource)templateResource).getContent());
 
             } else if (templateResource instanceof StringResource) {
 
-                templateReader = new ThymeleafTemplateReader(new StringReader(((StringResource)templateResource).getContent()));
+                templateReader = new ThymeleafMarkupTemplateReader(new StringReader(((StringResource)templateResource).getContent()));
 
             } else if (templateResource instanceof CharArrayResource) {
 
                 final CharArrayResource charArrayResource = (CharArrayResource) templateResource;
                 final CharArrayReader charArrayReader =
                         new CharArrayReader(charArrayResource.getContent(), charArrayResource.getOffset(), charArrayResource.getLen());
-                templateReader = new ThymeleafTemplateReader(charArrayReader);
+                templateReader = new ThymeleafMarkupTemplateReader(charArrayReader);
 
             } else {
 

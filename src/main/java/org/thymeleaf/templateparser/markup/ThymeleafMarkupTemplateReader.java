@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.templateparser;
+package org.thymeleaf.templateparser.markup;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -29,7 +29,7 @@ import java.util.Arrays;
  * @since 3.0.0
  * 
  */
-public final class ThymeleafTemplateReader extends Reader {
+public final class ThymeleafMarkupTemplateReader extends Reader {
 
     private final static char[] PROTOTYPE_ONLY_COMMENT_PREFIX = "<!--/*/".toCharArray();
     private final static char[] PROTOTYPE_ONLY_COMMENT_SUFFIX = "/*/-->".toCharArray();
@@ -43,7 +43,7 @@ public final class ThymeleafTemplateReader extends Reader {
     private int index = 0;
 
 
-    public ThymeleafTemplateReader(final Reader reader) {
+    public ThymeleafMarkupTemplateReader(final Reader reader) {
         super();
         this.reader = reader;
     }

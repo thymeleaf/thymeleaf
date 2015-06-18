@@ -22,21 +22,15 @@ package org.thymeleaf.templateparser.text;
 import java.io.CharArrayReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Arrays;
 
 import org.attoparser.HtmlMarkupHandler;
 import org.attoparser.IMarkupHandler;
-import org.attoparser.MarkupEventProcessor;
 import org.attoparser.ParseException;
 import org.attoparser.ParseStatus;
 import org.attoparser.config.ParseConfiguration;
 import org.attoparser.select.ParseSelection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.engine.TemplateHandlerAdapterMarkupHandler;
 import org.thymeleaf.exceptions.TemplateInputException;
@@ -46,7 +40,7 @@ import org.thymeleaf.resource.ReaderResource;
 import org.thymeleaf.resource.StringResource;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.ITemplateParser;
-import org.thymeleaf.templateparser.ThymeleafTemplateReader;
+import org.thymeleaf.templateparser.markup.ThymeleafMarkupTemplateReader;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -158,18 +152,19 @@ public final class TextTemplateParser implements ITemplateParser {
             final Reader templateReader;
             if (templateResource instanceof ReaderResource) {
 
-                templateReader = new ThymeleafTemplateReader(((ReaderResource)templateResource).getContent());
+                // TODO Cannot use the markup reader!! we should be creating a different syntax for this, shouldn't we?
+                templateReader = new ThymeleafMarkupTemplateReader(((ReaderResource)templateResource).getContent());
 
             } else if (templateResource instanceof StringResource) {
 
-                templateReader = new ThymeleafTemplateReader(new StringReader(((StringResource)templateResource).getContent()));
+                templateReader = new ThymeleafMarkupTemplateReader(new StringReader(((StringResource)templateResource).getContent()));
 
             } else if (templateResource instanceof CharArrayResource) {
 
                 final CharArrayResource charArrayResource = (CharArrayResource) templateResource;
                 final CharArrayReader charArrayReader =
                         new CharArrayReader(charArrayResource.getContent(), charArrayResource.getOffset(), charArrayResource.getLen());
-                templateReader = new ThymeleafTemplateReader(charArrayReader);
+                templateReader = new ThymeleafMarkupTemplateReader(charArrayReader);
 
             } else {
 
