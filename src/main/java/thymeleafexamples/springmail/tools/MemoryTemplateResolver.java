@@ -19,11 +19,13 @@
  */
 package thymeleafexamples.springmail.tools;
 
-import org.thymeleaf.TemplateProcessingParameters;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.cache.ICacheEntryValidity;
+import org.thymeleaf.cache.NonCacheableCacheEntryValidity;
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.resourceresolver.IResourceResolver;
-import org.thymeleaf.templateresolver.ITemplateResolutionValidity;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ITemplateResolver;
-import org.thymeleaf.templateresolver.NonCacheableTemplateResolutionValidity;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.util.Validate;
 
@@ -36,17 +38,13 @@ class MemoryTemplateResolver implements ITemplateResolver {
     private static final Integer ORDER = 1;
     
     private final String templateContent;
-    private final String templateMode;
+    private final TemplateMode templateMode;
 
-    public MemoryTemplateResolver(final String templateContent, final String templateMode) {
+    public MemoryTemplateResolver(final String templateContent, final TemplateMode templateMode) {
         Validate.notNull(templateContent, "Template content must be non-null");
         Validate.notNull(templateMode, "Template mode must be non-null");
         this.templateContent = templateContent;
         this.templateMode = templateMode;
-    }
-
-    @Override
-    public void initialize() {
     }
 
     @Override
@@ -60,12 +58,14 @@ class MemoryTemplateResolver implements ITemplateResolver {
     }
     
     @Override
-    public TemplateResolution resolveTemplate(final TemplateProcessingParameters tpp) {
+    public TemplateResolution resolveTemplate(final IEngineConfiguration configuration,
+            final IContext context, final String template) {
         String templateName = "CustomTemplate";
         String resourceName = "CustomResource";
         IResourceResolver resourceResolver = new FixedMemoryResourceResolver(templateContent);
         String characterEncoding = "utf-8";
-        ITemplateResolutionValidity validity = new NonCacheableTemplateResolutionValidity();
-        return new TemplateResolution(templateName, resourceName, resourceResolver, characterEncoding, templateMode, validity);
+        ICacheEntryValidity validity = new NonCacheableCacheEntryValidity();
+        return new TemplateResolution(templateName, resourceName, resourceResolver, characterEncoding,
+            templateMode, validity);
     }
 }

@@ -22,6 +22,7 @@ package thymeleafexamples.springmail.tools;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.util.Validate;
 
@@ -32,13 +33,14 @@ public class StaticTemplateExecutor {
     
     private static final String TEMPLATE_NAME = "custom";
 
-    private final String templateMode;
+    private final TemplateMode templateMode;
     
     private final IContext context;
     
     private final IMessageResolver messageResolver;
     
-    public StaticTemplateExecutor(final IContext context, final IMessageResolver messageResolver, final String templateMode) {
+    public StaticTemplateExecutor(final IContext context, final IMessageResolver messageResolver,
+            final TemplateMode templateMode) {
         Validate.notNull(context, "Context must be non-null");
         Validate.notNull(templateMode, "Template mode must be non-null");
         Validate.notNull(messageResolver, "MessageResolver must be non-null");
@@ -53,7 +55,6 @@ public class StaticTemplateExecutor {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setMessageResolver(messageResolver);
         templateEngine.setTemplateResolver(templateResolver);
-        templateEngine.initialize();
         return templateEngine.process(TEMPLATE_NAME, context);
     }    
 }

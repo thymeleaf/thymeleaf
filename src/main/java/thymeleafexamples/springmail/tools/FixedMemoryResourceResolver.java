@@ -19,9 +19,10 @@
  */
 package thymeleafexamples.springmail.tools;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import org.thymeleaf.TemplateProcessingParameters;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.resource.IResource;
+import org.thymeleaf.resource.StringResource;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.util.Validate;
 
@@ -47,7 +48,8 @@ class FixedMemoryResourceResolver implements IResourceResolver {
     }
 
     @Override
-    public InputStream getResourceAsStream(final TemplateProcessingParameters tpp, final String templateName) {
-        return new ByteArrayInputStream(templateContent.getBytes());
+    public IResource resolveResource(final IEngineConfiguration configuration, final IContext context,
+            final String resource, final String characterEncoding) {
+        return new StringResource(NAME, templateContent);
     }
 }

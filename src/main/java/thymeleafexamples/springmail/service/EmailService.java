@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.messageresolver.IMessageResolver;
-import static org.thymeleaf.templatemode.StandardTemplateModeHandlers.HTML5;
+import org.thymeleaf.templatemode.TemplateMode;
 import thymeleafexamples.springmail.tools.StaticTemplateExecutor;
 
 @Service
@@ -189,7 +189,7 @@ public class EmailService {
         ctx.setVariable("hobbies", Arrays.asList("Cinema", "Sports", "Music"));
         
         final StaticTemplateExecutor templateExecutor = new StaticTemplateExecutor(
-            ctx, messageResolver, HTML5.getTemplateModeName());
+            ctx, messageResolver, TemplateMode.HTML);
         final String output = templateExecutor.processTemplateCode(htmlContent);
         message.setText(output, true /* isHtml */);
         
