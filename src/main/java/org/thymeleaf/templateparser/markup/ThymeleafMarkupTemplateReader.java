@@ -34,6 +34,7 @@ public final class ThymeleafMarkupTemplateReader extends Reader {
     private final static char[] PROTOTYPE_ONLY_COMMENT_PREFIX = "<!--/*/".toCharArray();
     private final static char[] PROTOTYPE_ONLY_COMMENT_SUFFIX = "/*/-->".toCharArray();
 
+    
     private final Reader reader;
 
     private char[] overflowBuffer = null;
