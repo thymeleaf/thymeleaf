@@ -26,9 +26,7 @@ import java.util.Arrays;
 import org.attoparser.IMarkupHandler;
 import org.attoparser.IMarkupParser;
 import org.attoparser.ParseException;
-import org.attoparser.ParsingElementMarkupUtil;
 import org.attoparser.config.ParseConfiguration;
-import org.attoparser.select.ParseSelection;
 
 /**
  * <p>
