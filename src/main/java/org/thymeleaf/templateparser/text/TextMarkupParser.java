@@ -138,6 +138,15 @@ final class TextMarkupParser implements IMarkupParser {
     }
 
 
+    public void parse(final char[] document, final int offset, final int len, final IMarkupHandler handler)
+            throws ParseException {
+        throw new UnsupportedOperationException(
+                "char[]-based parsing is not allowed in TextMarkupParser. A java.io.Reader must be used instead");
+    }
+
+
+
+
     public void parse(
             final Reader reader, final IMarkupHandler handler)
             throws ParseException {
