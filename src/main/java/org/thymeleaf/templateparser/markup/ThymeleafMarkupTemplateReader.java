@@ -33,6 +33,8 @@ public final class ThymeleafMarkupTemplateReader extends Reader {
 
     private final static char[] PROTOTYPE_ONLY_COMMENT_PREFIX = "<!--/*/".toCharArray();
     private final static char[] PROTOTYPE_ONLY_COMMENT_SUFFIX = "/*/-->".toCharArray();
+    private final static char[] PARSER_LEVEL_COMMENT_PREFIX = "<!--/*".toCharArray();
+    private final static char[] PARSER_LEVEL_COMMENT_SUFFIX = "*/-->".toCharArray();
 
     
     private final Reader reader;
@@ -41,6 +43,7 @@ public final class ThymeleafMarkupTemplateReader extends Reader {
     private int overflowBufferLen = 0;
 
     private boolean insideComment = false;
+    private int discardFrom = -1;
     private int index = 0;
 
 
@@ -96,21 +99,22 @@ public final class ThymeleafMarkupTemplateReader extends Reader {
 
             char c;
             int i = 0;
-            while (i < maxi) { // we'll go backwards because that way removals will not affect iteration
+            while (i < maxi) {
 
                 c = cbuf[i++];
 
-                if (this.index == 0 && c != '<' && c != '/') {
-                    // Shortcut for most characters in a template: no further tests to be done
+                if (this.index == 0 && c != '<' && c != '/' && c != '*') {
+                    // Shortcut for most characters in a template: no further tests to be done if the character coming
+                    // is not one of those that can start a recognizable sequence
                     continue;
                 }
 
-                if (!this.insideComment) {
+                if (!this.insideComment && this.discardFrom < 0) {
 
                     if (c == PROTOTYPE_ONLY_COMMENT_PREFIX[this.index]) {
                         this.index++;
                         if (this.index == PROTOTYPE_ONLY_COMMENT_PREFIX.length) {
-                            // Remove the prefix, as if it was never there...
+                            // It's a full prototype-only comment prefix, so remove the prefix, as if it was never there...
                             if (i < maxi) {
                                 System.arraycopy(cbuf, i, cbuf, i - PROTOTYPE_ONLY_COMMENT_PREFIX.length, (maxi - i));
                             }
@@ -120,6 +124,13 @@ public final class ThymeleafMarkupTemplateReader extends Reader {
                             maxi -= PROTOTYPE_ONLY_COMMENT_PREFIX.length;
                             i -= PROTOTYPE_ONLY_COMMENT_PREFIX.length;
                         }
+                    } else if (this.index == PARSER_LEVEL_COMMENT_PREFIX.length){
+                        // Given we know the parser-level comment prefix matches almost exactly the prototype only
+                        // comment prefix (except the last char), we know that in this case what we have is a parser-level
+                        // prefix, so we simply have to remove the entire block until we find the suffix
+                        this.discardFrom = (i - PARSER_LEVEL_COMMENT_PREFIX.length);
+                        this.insideComment = true;
+                        this.index = 0;
                     } else {
                         this.index = 0;
                     }
@@ -129,16 +140,31 @@ public final class ThymeleafMarkupTemplateReader extends Reader {
                     if (c == PROTOTYPE_ONLY_COMMENT_SUFFIX[this.index]) {
                         this.index++;
                         if (this.index == PROTOTYPE_ONLY_COMMENT_SUFFIX.length) {
-                            // Remove the suffix, as if it was never there...
-                            if (i < maxi) {
-                                System.arraycopy(cbuf, i, cbuf, i - PROTOTYPE_ONLY_COMMENT_SUFFIX.length, (maxi - i));
+                            if (this.discardFrom < 0) {
+                                // This is a suffix for a prototype-only block. Remove the suffix, as if it was never there...
+                                if (i < maxi) {
+                                    System.arraycopy(cbuf, i, cbuf, i - PROTOTYPE_ONLY_COMMENT_SUFFIX.length, (maxi - i));
+                                }
+                                this.insideComment = false;
+                                this.index = 0;
+                                read -= PROTOTYPE_ONLY_COMMENT_SUFFIX.length;
+                                maxi -= PROTOTYPE_ONLY_COMMENT_SUFFIX.length;
+                                i -= PROTOTYPE_ONLY_COMMENT_SUFFIX.length;
+                            } else {
+                                // We have just closed a parser-level comment block
+                                System.arraycopy(cbuf, i, cbuf, this.discardFrom, (maxi - i));
+                                read -= (i - this.discardFrom);
+                                maxi -= (i - this.discardFrom);
+                                i = this.discardFrom;
+                                this.discardFrom = -1;
+                                this.insideComment = false;
+                                this.index = 0;
                             }
-                            this.insideComment = false;
-                            this.index = 0;
-                            read -= PROTOTYPE_ONLY_COMMENT_SUFFIX.length;
-                            maxi -= PROTOTYPE_ONLY_COMMENT_SUFFIX.length;
-                            i -= PROTOTYPE_ONLY_COMMENT_SUFFIX.length;
                         }
+                    } else if (this.index == 0 && c == PARSER_LEVEL_COMMENT_SUFFIX[0]){
+                        // In this case, we have just found a suffix, but its the parser-level one. From here one, we
+                        // will use the above block
+                        this.index += 2;
                     } else {
                         this.index = 0;
                     }
