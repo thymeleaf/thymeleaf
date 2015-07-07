@@ -36,6 +36,10 @@ public final class ThymeleafMarkupTemplateReader extends Reader {
     private final static char[] PARSER_LEVEL_COMMENT_PREFIX = "<!--/*".toCharArray();
     private final static char[] PARSER_LEVEL_COMMENT_SUFFIX = "*/-->".toCharArray();
 
+    private final static int PREFIX_MAX_SIZE = Math.max(PROTOTYPE_ONLY_COMMENT_PREFIX.length, PARSER_LEVEL_COMMENT_PREFIX.length);
+    private final static int SUFFIX_MAX_SIZE = Math.max(PROTOTYPE_ONLY_COMMENT_SUFFIX.length, PARSER_LEVEL_COMMENT_SUFFIX.length);
+    private final static int STRUCTURE_MAX_SIZE = Math.max(PREFIX_MAX_SIZE, SUFFIX_MAX_SIZE);
+
     
     private final Reader reader;
 
@@ -178,8 +182,8 @@ public final class ThymeleafMarkupTemplateReader extends Reader {
 
                 // First step is to copy the contents we doubt about to the overflow buffer and subtract them from cbuf
                 if (this.overflowBuffer == null) {
-                    this.overflowBuffer =
-                            new char[Math.max(PROTOTYPE_ONLY_COMMENT_PREFIX.length, PROTOTYPE_ONLY_COMMENT_SUFFIX.length)];
+                    // Using only the prototype-only comment structures will do, as they are longer
+                    this.overflowBuffer = new char[STRUCTURE_MAX_SIZE];
                 }
                 this.overflowBufferLen = this.index;
                 System.arraycopy(cbuf, maxi - this.overflowBufferLen, this.overflowBuffer, 0, this.overflowBufferLen);
