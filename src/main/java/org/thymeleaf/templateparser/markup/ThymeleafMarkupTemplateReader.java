@@ -65,12 +65,23 @@ public final class ThymeleafMarkupTemplateReader extends Reader {
 
         int read;
 
+        /*
+         * First step will be checking whether we can output all we need from the overflow
+         */
+
         if (this.overflowBufferLen == 0) {
 
             // Base case: we don't have overflow, so we just delegate on the delegate reader
             read = this.reader.read(cbuf, off, len);
 
         } else {
+
+            if (this.overflowBufferLen >= len) {
+                // At first sight, it seems we can extract everything we need from the overflow buffer. Let's try
+
+                if ()
+
+            }
 
             if (this.overflowBufferLen < len) {
 
@@ -97,12 +108,18 @@ public final class ThymeleafMarkupTemplateReader extends Reader {
         }
 
 
+        /*
+         * Once we have checked whether we could get our results from the overflow buffer, and we have completed
+         * the cbuf buffer with results coming from overflow and from a read to the delegate, we can process what
+         * we have got into cbuf
+         */
+
         if (read > 0) {
 
             int maxi = off + read;
 
             char c;
-            int i = 0;
+            int i = off;
             while (i < maxi) {
 
                 c = cbuf[i++];
@@ -113,7 +130,7 @@ public final class ThymeleafMarkupTemplateReader extends Reader {
                     continue;
                 }
 
-                if (!this.insideComment && this.discardFrom < 0) {
+                if (!this.insideComment) {
 
                     if (c == PROTOTYPE_ONLY_COMMENT_PREFIX[this.index]) {
                         this.index++;
@@ -132,43 +149,49 @@ public final class ThymeleafMarkupTemplateReader extends Reader {
                         // Given we know the parser-level comment prefix matches almost exactly the prototype only
                         // comment prefix (except the last char), we know that in this case what we have is a parser-level
                         // prefix, so we simply have to remove the entire block until we find the suffix
-                        this.discardFrom = (i - PARSER_LEVEL_COMMENT_PREFIX.length);
+                        this.discardFrom = ((i - 1) - PARSER_LEVEL_COMMENT_PREFIX.length);
                         this.insideComment = true;
                         this.index = 0;
+                        i--; // we need to back one position so that we process this character again knowing we are in a comment
                     } else {
                         this.index = 0;
                     }
 
                 } else {
 
-                    if (c == PROTOTYPE_ONLY_COMMENT_SUFFIX[this.index]) {
+                    if (this.discardFrom < 0 && c == PROTOTYPE_ONLY_COMMENT_SUFFIX[this.index]) {
                         this.index++;
                         if (this.index == PROTOTYPE_ONLY_COMMENT_SUFFIX.length) {
-                            if (this.discardFrom < 0) {
-                                // This is a suffix for a prototype-only block. Remove the suffix, as if it was never there...
-                                if (i < maxi) {
-                                    System.arraycopy(cbuf, i, cbuf, i - PROTOTYPE_ONLY_COMMENT_SUFFIX.length, (maxi - i));
-                                }
-                                this.insideComment = false;
-                                this.index = 0;
-                                read -= PROTOTYPE_ONLY_COMMENT_SUFFIX.length;
-                                maxi -= PROTOTYPE_ONLY_COMMENT_SUFFIX.length;
-                                i -= PROTOTYPE_ONLY_COMMENT_SUFFIX.length;
-                            } else {
-                                // We have just closed a parser-level comment block
-                                System.arraycopy(cbuf, i, cbuf, this.discardFrom, (maxi - i));
-                                read -= (i - this.discardFrom);
-                                maxi -= (i - this.discardFrom);
-                                i = this.discardFrom;
-                                this.discardFrom = -1;
-                                this.insideComment = false;
-                                this.index = 0;
+                            // This is a suffix for a prototype-only block. Remove the suffix, as if it was never there...
+                            if (i < maxi) {
+                                System.arraycopy(cbuf, i, cbuf, i - PROTOTYPE_ONLY_COMMENT_SUFFIX.length, (maxi - i));
+                            }
+                            this.insideComment = false;
+                            this.index = 0;
+                            read -= PROTOTYPE_ONLY_COMMENT_SUFFIX.length;
+                            maxi -= PROTOTYPE_ONLY_COMMENT_SUFFIX.length;
+                            i -= PROTOTYPE_ONLY_COMMENT_SUFFIX.length;
+                        }
+                    } else if (this.discardFrom >= 0 && c == PARSER_LEVEL_COMMENT_SUFFIX[this.index]) {
+                        if (this.index == 0 && (i - 2 >= off)) {
+                            // Special case just in order to avoid trying to close a parser-level comment with a prototype-only suffix
+                            final char cprev = cbuf[i - 2];
+                            if (cprev == PROTOTYPE_ONLY_COMMENT_SUFFIX[0]) {
+                                // It's a prototype-only comment suffix, we should not allow it to close our comment
+                                continue;
                             }
                         }
-                    } else if (this.index == 0 && c == PARSER_LEVEL_COMMENT_SUFFIX[0]){
-                        // In this case, we have just found a suffix, but its the parser-level one. From here one, we
-                        // will use the above block
-                        this.index += 2;
+                        this.index++;
+                        if (this.index == PARSER_LEVEL_COMMENT_SUFFIX.length) {
+                            // We have just closed a parser-level comment block
+                            System.arraycopy(cbuf, i, cbuf, this.discardFrom, (maxi - i));
+                            read -= (i - this.discardFrom);
+                            maxi -= (i - this.discardFrom);
+                            i = this.discardFrom;
+                            this.discardFrom = -1;
+                            this.insideComment = false;
+                            this.index = 0;
+                        }
                     } else {
                         this.index = 0;
                     }
@@ -177,6 +200,21 @@ public final class ThymeleafMarkupTemplateReader extends Reader {
 
             }
 
+
+            /*
+             * Before handling possible overflow of unfinished structures, we need to save the value indicating whether
+             * we actually need to trim the results before returning (because we are in a parser-level comment block
+             * that has not been closed yet). This is done here because during overflow-handling, these values
+             * might get changed in preparation for the next iteration to adequately use the overflow buffer.
+             */
+            final int shouldDiscardFrom = (this.insideComment && this.discardFrom >= 0 ? this.discardFrom : -1);
+
+
+            /*
+             * Now we should take care of the possibility that the buffer ended in an unfinished structure. If that
+             * is the case, we will try to read the remaining part of the structure in order to determine what to
+             * do about it before leaving (or not) the overflow buffer prepared for the next iteration.
+             */
             if (this.index > 0) {
                 // Oops, the buffer ended in something that could be a structure to be removed -- will need some more processing
 
@@ -185,16 +223,18 @@ public final class ThymeleafMarkupTemplateReader extends Reader {
                     // Using only the prototype-only comment structures will do, as they are longer
                     this.overflowBuffer = new char[STRUCTURE_MAX_SIZE];
                 }
+
+
                 this.overflowBufferLen = this.index;
                 System.arraycopy(cbuf, maxi - this.overflowBufferLen, this.overflowBuffer, 0, this.overflowBufferLen);
                 read -= this.overflowBufferLen;
+                maxi -= this.overflowBufferLen;
 
                 // Second step is trying to complete the overflow buffer in order to make a decision on whether we are
                 // really looking at a removable structure here or not...
-                final int requiredLen = this.insideComment? PROTOTYPE_ONLY_COMMENT_SUFFIX.length : PROTOTYPE_ONLY_COMMENT_PREFIX.length;
-                while (this.overflowBufferLen < requiredLen) {
+                while (this.overflowBufferLen < this.overflowBuffer.length) {
                     final int overflowRead =
-                            this.reader.read(this.overflowBuffer, this.overflowBufferLen, (requiredLen - this.overflowBufferLen));
+                            this.reader.read(this.overflowBuffer, this.overflowBufferLen, (this.overflowBuffer.length - this.overflowBufferLen));
                     if (overflowRead < 0) {
                         // we reached the end of the stream!
                         break;
@@ -204,18 +244,70 @@ public final class ThymeleafMarkupTemplateReader extends Reader {
                 }
 
                 // Third step is check whether what comes after is a removable structure or not. If it is, just ignore it
-                boolean matches =
-                    this.insideComment?
-                        isArrayEquals(PROTOTYPE_ONLY_COMMENT_SUFFIX, this.overflowBuffer, 0, this.overflowBufferLen) :
-                        isArrayEquals(PROTOTYPE_ONLY_COMMENT_PREFIX, this.overflowBuffer, 0, this.overflowBufferLen);
-                if (matches) {
-                    this.insideComment = !this.insideComment;
-                    this.overflowBufferLen = 0;
+                // NOTE we won't be modifying the "read" value here, as the actions taken here will affect the overflow buffer only
+                if (!this.insideComment) {
+
+                    if (isArrayEquals(PROTOTYPE_ONLY_COMMENT_PREFIX, this.overflowBuffer, 0, Math.min(this.overflowBufferLen, PROTOTYPE_ONLY_COMMENT_PREFIX.length))) {
+
+                        // OK, this was a prototype-only comment prefix, so we just remove it and go on, setting the insideComment flag to true
+
+                        this.insideComment = true;
+                        this.overflowBufferLen -= PROTOTYPE_ONLY_COMMENT_PREFIX.length;
+                        if (this.overflowBufferLen > 0) {
+                            System.arraycopy(this.overflowBuffer, PROTOTYPE_ONLY_COMMENT_PREFIX.length, this.overflowBuffer, 0, this.overflowBufferLen);
+                        }
+
+                    } else if (isArrayEquals(PARSER_LEVEL_COMMENT_PREFIX, this.overflowBuffer, 0, Math.min(this.overflowBufferLen, PARSER_LEVEL_COMMENT_PREFIX.length))) {
+
+                        // A parser-level comment block is just starting. We will remove the prefix and set the insideComment and
+                        // discardFrom flags, letting normal processing handling the discarding of the content and also the finding
+                        // of the suffix
+
+                        this.insideComment = true;
+                        this.overflowBufferLen -= PARSER_LEVEL_COMMENT_PREFIX.length;
+                        if (this.overflowBufferLen > 0) {
+                            System.arraycopy(this.overflowBuffer, PARSER_LEVEL_COMMENT_PREFIX.length, this.overflowBuffer, 0, this.overflowBufferLen);
+                        }
+                        this.discardFrom = 0;
+
+                    }
+
+                } else {
+
+                    if (this.discardFrom < 0 && isArrayEquals(PROTOTYPE_ONLY_COMMENT_SUFFIX, this.overflowBuffer, 0, Math.min(this.overflowBufferLen, PROTOTYPE_ONLY_COMMENT_SUFFIX.length))) {
+
+                        // We found a suffix for a prototype-only comment block, just remove it and go on, just the same as with the prefix
+
+                        this.insideComment = false;
+                        this.overflowBufferLen -= PROTOTYPE_ONLY_COMMENT_SUFFIX.length;
+                        if (this.overflowBufferLen > 0) {
+                            System.arraycopy(this.overflowBuffer, PROTOTYPE_ONLY_COMMENT_SUFFIX.length, this.overflowBuffer, 0, this.overflowBufferLen);
+                        }
+
+                    } else if (this.discardFrom >= 0 && isArrayEquals(PARSER_LEVEL_COMMENT_SUFFIX, this.overflowBuffer, 0, Math.min(this.overflowBufferLen, PARSER_LEVEL_COMMENT_SUFFIX.length))) {
+
+                        // We found the suffix closing a parser-level comment block, so we will remove it and return
+                        // the flags to their usual state
+
+                        this.insideComment = false;
+                        this.discardFrom = -1;
+                        this.overflowBufferLen -= PARSER_LEVEL_COMMENT_SUFFIX.length;
+                        if (this.overflowBufferLen > 0) {
+                            System.arraycopy(this.overflowBuffer, PARSER_LEVEL_COMMENT_SUFFIX.length, this.overflowBuffer, 0, this.overflowBufferLen);
+                        }
+
+                    }
+
                 }
-                // If it doesn't match, we just leave it in the overflow buffer for processing it afterwards
 
                 this.index = 0;
 
+            }
+
+            // Once the overflow has been worked out, we need to check whether the amount of returned characters should
+            // be affected by the fact that we might be in a parser-level comment that has not been closed yet
+            if (shouldDiscardFrom >= 0) {
+                read -= (maxi - shouldDiscardFrom);
             }
 
         }
