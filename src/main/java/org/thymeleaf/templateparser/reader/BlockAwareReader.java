@@ -21,7 +21,6 @@ package org.thymeleaf.templateparser.reader;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Arrays;
 
 /**
  *
