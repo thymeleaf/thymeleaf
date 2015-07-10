@@ -158,49 +158,29 @@ abstract class BlockAwareReader extends Reader {
 
             // Second step is trying to complete the overflow buffer in order to make a decision on whether we are
             // really looking at a removable structure here or not...
-            if (!this.insideComment) {
+            final char[] structure = (this.insideComment? this.suffix : this.prefix);
 
-                int overflowRead = 0;
-                while (overflowRead >= 0 && this.overflowBufferLen < this.prefix.length && this.overflowBuffer[this.overflowBufferLen - 1] == this.prefix[this.overflowBufferLen - 1]) {
-                    overflowRead = readBytes(this.overflowBuffer, this.overflowBufferLen++, 1); // can only return 0 or 1
-                }
+            // Check if we actually found a complete structure
+            if (matchOverflow(structure)) {
 
-                // Check if we actually found a complete structure
-                if (this.overflowBufferLen == this.prefix.length && this.overflowBuffer[this.overflowBufferLen - 1] == this.prefix[this.overflowBufferLen - 1]) {
-                    this.insideComment = true;
-                    // We don't modify the discardFrom flag here, as it wil be needed for discarding (or not) part of the buffer afterwards
-                    this.overflowBufferLen = 0;
-                    this.index = 0;
-                }
+                this.insideComment = !this.insideComment;
+                // We don't modify the discardFrom flag here, as it wil be needed for discarding (or not) part of the buffer afterwards
+                this.overflowBufferLen -= structure.length;
+                this.index = 0;
 
             } else {
-
-                int overflowRead = 0;
-                while (overflowRead >= 0 && this.overflowBufferLen < this.suffix.length && this.overflowBuffer[this.overflowBufferLen - 1] == this.suffix[this.overflowBufferLen - 1]) {
-                    overflowRead = readBytes(this.overflowBuffer, this.overflowBufferLen++, 1); // can only return 0 or 1
-                }
-
-                // Check if we actually found a complete structure
-                if (this.overflowBufferLen == this.suffix.length && this.overflowBuffer[this.overflowBufferLen - 1] == this.suffix[this.overflowBufferLen - 1]) {
-                    this.insideComment = false;
-                    // We don't modify the discardFrom flag here, as it wil be needed for discarding (or not) part of the buffer afterwards
-                    this.overflowBufferLen = 0;
-                    this.index = 0;
-                }
-
-            }
-
-            if (this.overflowBufferLen > 0) {
                 // We didn't find the structure we were looking for, and now we have an overflow that contains
                 // several characters. Including the possibility that it includes the beginning of a structure...
                 // At this stage, we know we can copy back those "this.index" bytes into the cbuf array, so that
                 // we don't try to match them against prefix/suffix again
+
                 System.arraycopy(this.overflowBuffer, 0, cbuf, maxi, this.index);
                 read += this.index;
                 maxi += this.index;
                 System.arraycopy(this.overflowBuffer, this.index, this.overflowBuffer, 0, (this.overflowBufferLen - this.index));
                 this.overflowBufferLen -= this.index;
                 this.index = 0;
+
             }
 
         }
@@ -228,13 +208,6 @@ abstract class BlockAwareReader extends Reader {
 
         if (this.overflowBufferLen == 0) {
             return this.reader.read(buffer, off, len);
-        }
-
-        if (buffer == this.overflowBuffer && this.overflowBufferLen > 1) {
-            // We allow size 1 because we know in such case the "this.overflowBufferLen <= len" below will always be
-            // true, and the overflow buffer will empty.
-            throw new IllegalStateException(
-                    "Cannot read bytes: trying to write to overflow buffer, when the overflow buffer is not empty (or size 1) yet!");
         }
 
         if (this.overflowBufferLen <= len) {
@@ -283,21 +256,31 @@ abstract class BlockAwareReader extends Reader {
 
 
 
-    private static boolean isArrayEquals(final char[] target, final char[] array, final int offset, final int len) {
-        if (array.length == len && offset == 0) {
-            return Arrays.equals(target, array);
-        }
-        if (target.length != len) {
-            return false;
-        }
-        int n = target.length;
-        while (n-- != 0) {
-            if (target[n] != array[offset + n]) {
-                return false;
+    private boolean matchOverflow(final char[] structure) throws IOException {
+
+        if (this.overflowBufferLen > 0) {
+            for (int i = 0; i < this.overflowBufferLen; i++) {
+                if (this.overflowBuffer[i] != structure[i]) {
+                    return false;
+                }
             }
         }
-        return true;
+
+        int overflowRead = 0;
+        while (overflowRead >= 0 && this.overflowBufferLen < structure.length) {
+            overflowRead = this.reader.read(this.overflowBuffer, this.overflowBufferLen, 1); // can only return 0 or 1
+            if (overflowRead > 0) {
+                this.overflowBufferLen++;
+                if (this.overflowBuffer[this.overflowBufferLen - 1] != structure[this.overflowBufferLen - 1]) {
+                    return false;
+                }
+            }
+        }
+
+        return (this.overflowBufferLen == structure.length);
+
     }
+
 
 
 
