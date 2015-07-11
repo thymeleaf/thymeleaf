@@ -19,24 +19,18 @@
  */
 package org.thymeleaf.templateparser.markup;
 
+import java.io.BufferedReader;
 import java.io.CharArrayReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
-import org.attoparser.AbstractChainedMarkupHandler;
 import org.attoparser.IMarkupHandler;
 import org.attoparser.IMarkupParser;
 import org.attoparser.MarkupParser;
 import org.attoparser.ParseException;
-import org.attoparser.ParseStatus;
 import org.attoparser.config.ParseConfiguration;
 import org.attoparser.select.BlockSelectorMarkupHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.engine.TemplateHandlerAdapterMarkupHandler;
 import org.thymeleaf.exceptions.TemplateInputException;
@@ -46,6 +40,8 @@ import org.thymeleaf.resource.ReaderResource;
 import org.thymeleaf.resource.StringResource;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.ITemplateParser;
+import org.thymeleaf.templateparser.reader.ParserLevelCommentMarkupReader;
+import org.thymeleaf.templateparser.reader.PrototypeOnlyCommentMarkupReader;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -153,26 +149,24 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 handler = new BlockSelectorMarkupHandler(handler, selectors, referenceResolver);
             }
 
-            // This is the point at which we insert thymeleaf's own handler, which will take care of parser-level
-            // and prototype-only comments.
-            handler = new ThymeleafMarkupHandler(handler, templateResourceName);
-
             // Each type of resource will require a different parser method to be called.
             final Reader templateReader;
             if (templateResource instanceof ReaderResource) {
 
-                templateReader = new ThymeleafMarkupTemplateReader(((ReaderResource)templateResource).getContent());
+                final Reader resourceReader = ((ReaderResource)templateResource).getContent();
+                templateReader = new ParserLevelCommentMarkupReader(new PrototypeOnlyCommentMarkupReader(new BufferedReader(resourceReader)));
 
             } else if (templateResource instanceof StringResource) {
 
-                templateReader = new ThymeleafMarkupTemplateReader(new StringReader(((StringResource)templateResource).getContent()));
+                final Reader resourceReader = new StringReader(((StringResource)templateResource).getContent());
+                templateReader = new ParserLevelCommentMarkupReader(new PrototypeOnlyCommentMarkupReader(resourceReader));
 
             } else if (templateResource instanceof CharArrayResource) {
 
                 final CharArrayResource charArrayResource = (CharArrayResource) templateResource;
                 final CharArrayReader charArrayReader =
                         new CharArrayReader(charArrayResource.getContent(), charArrayResource.getOffset(), charArrayResource.getLen());
-                templateReader = new ThymeleafMarkupTemplateReader(charArrayReader);
+                templateReader = new ParserLevelCommentMarkupReader(new PrototypeOnlyCommentMarkupReader(charArrayReader));
 
             } else {
 
@@ -194,252 +188,6 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
     }
 
-
-
-
-
-
-    /*
-     * ---------------------------
-     * HANDLER IMPLEMENTATION
-     * ---------------------------
-     */
-
-
-
-    protected static final class ThymeleafMarkupHandler extends AbstractChainedMarkupHandler {
-
-        private static final Logger logger = LoggerFactory.getLogger(AbstractMarkupTemplateParser.class);
-
-        private final String templateName;
-
-        private ParseStatus parseStatus;
-
-        /*
-         * These structures help processing (or more specifically, not-processing) parser-level comment blocks,
-         * which contents (reported as Text because the parser will be disabled inside them) should be completely
-         * ignored.
-         */
-        private static final char[] PARSER_LEVEL_COMMENT_CLOSE = "*/-->".toCharArray();
-        private boolean inParserLevelCommentBlock = false;
-
-
-
-
-
-        protected ThymeleafMarkupHandler(
-                final IMarkupHandler next, final String templateName) {
-
-            // We need to adapt the AttoParser adapter to Thymeleaf's own, in a way that causes the less
-            // disturbance to the parser, so we just chain a specific-purpose adapter handler.
-            super(next);
-
-            this.templateName = templateName;
-
-        }
-
-
-
-
-        /*
-         * -----------------
-         * Handler maintenance methods
-         * -----------------
-         */
-
-        @Override
-        public void setParseStatus(final ParseStatus status) {
-            this.parseStatus = status;
-            super.setParseStatus(status);
-        }
-
-
-
-
-        /*
-         * -----------------
-         * Document handling
-         * -----------------
-         */
-
-        @Override
-        public void handleDocumentStart(
-                final long startTimeNanos, final int line, final int col) throws ParseException {
-            
-            super.handleDocumentStart(startTimeNanos, line, col);
-
-        }
-
-
-
-        @Override
-        public void handleDocumentEnd(
-                final long endTimeNanos, final long totalTimeNanos,
-                final int line, final int col)
-                throws ParseException {
-
-            super.handleDocumentEnd(endTimeNanos, totalTimeNanos, line, col);
-
-            if (logger.isTraceEnabled()) {
-                final BigDecimal elapsed = BigDecimal.valueOf(totalTimeNanos);
-                final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(1000000), RoundingMode.HALF_UP);
-                if (this.templateName == null) {
-                    logger.trace("[THYMELEAF][{}][{}][{}] Processed unnamed template or fragment in {} nanoseconds (approx. {}ms)",
-                            new Object[] {TemplateEngine.threadIndex(),
-                                            elapsed, elapsedMs,
-                                            elapsed, elapsedMs});
-                } else {
-                    logger.trace("[THYMELEAF][{}][{}][{}][{}] Processed template \"{}\" in {} nanoseconds (approx. {}ms)",
-                            new Object[] {TemplateEngine.threadIndex(),
-                                            this.templateName, elapsed, elapsedMs,
-                                            this.templateName, elapsed, elapsedMs});
-                }
-            }
-
-        }
-
-
-
-
-        /*
-         * -------------
-         * Text handling
-         * -------------
-         */
-
-
-        @Override
-        public void handleText(
-                final char[] buffer,
-                final int offset, final int len,
-                final int line, final int col)
-                throws ParseException {
-
-            if (this.inParserLevelCommentBlock) {
-                // We are inside a parser-level comment block, which contents are being reported as text
-                // because parsing has been disabled. Simply ignore unless the node starts with the closing sequence
-                // of the parser-level comment block, in which case we just remove this sequence, put the flag
-                // to false and handle the rest of the Text.
-
-                for (int i = 0; i < PARSER_LEVEL_COMMENT_CLOSE.length; i++) {
-                    if (buffer[offset + i] != PARSER_LEVEL_COMMENT_CLOSE[i]) {
-                        // Ignore the Text event
-                        return;
-                    }
-                }
-
-                // We actually found the end of the parser-level comment block, so we should just process the rest of the Text node
-                this.inParserLevelCommentBlock = false;
-                if (len - PARSER_LEVEL_COMMENT_CLOSE.length > 0) {
-
-                    super.handleText(
-                            buffer,
-                            offset + PARSER_LEVEL_COMMENT_CLOSE.length, len - PARSER_LEVEL_COMMENT_CLOSE.length,
-                            line, col + PARSER_LEVEL_COMMENT_CLOSE.length);
-
-                }
-
-                return; // No text left to handle
-
-            }
-
-            super.handleText(
-                    buffer, offset, len, line, col);
-
-        }
-
-
-
-
-        /*
-         * ----------------
-         * Comment handling
-         * ----------------
-         */
-
-
-        @Override
-        public void handleComment(
-                final char[] buffer,
-                final int contentOffset, final int contentLen,
-                final int outerOffset, final int outerLen,
-                final int line, final int col)
-                throws ParseException {
-
-            if (isParserLevelCommentStartBlock(buffer, contentOffset, contentLen)) {
-                handleParserLevelComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
-                return;
-            }
-
-            handleNormalComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
-
-        }
-
-
-        private static boolean isParserLevelCommentStartBlock(
-                final char[] buffer, final int contentOffset, final int contentLen) {
-
-            // This check must always be executed AFTER checking for prototype-only comment blocks
-            // Note we only look for the starting sequence of the block, as we will disable the parser
-            // until we find the closing sequence ('*/-->') [note the inner content will be reported
-            // as text, and we should ignore it]
-            return (buffer[contentOffset] == '/' &&
-                    buffer[contentOffset + 1] == '*');
-
-        }
-
-
-        private static boolean isParserLevelCommentEndBlock(
-                final char[] buffer, final int contentOffset, final int contentLen) {
-
-            // This check must always be executed AFTER checking for prototype-only comment blocks
-            // This is used in order to determine whether the same comment block starts AND ends the parser-level
-            // comment, because in this case we should not involve Text handling in this operation
-            return (buffer[contentOffset + contentLen - 2] == '*' &&
-                    buffer[contentOffset + contentLen - 1] == '/');
-
-        }
-
-
-        private void handleNormalComment(
-                final char[] buffer,
-                final int contentOffset, final int contentLen,
-                final int outerOffset, final int outerLen,
-                final int line, final int col)
-                throws ParseException {
-
-            super.handleComment(
-                    buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
-
-        }
-
-
-        private void handleParserLevelComment(
-                final char[] buffer,
-                final int contentOffset, final int contentLen,
-                final int outerOffset, final int outerLen,
-                final int line, final int col)
-                throws ParseException {
-
-            if (isParserLevelCommentEndBlock(buffer, contentOffset, contentLen)) {
-                // This block both starts AND ends the parser-level comment, so ignoring it
-                // should be enough, without involving any text handling events
-                return;
-            }
-
-            // Comment blocks of this type provoke the disabling of the parser until we find the
-            // closing sequence ('*/-->'), which might appear in a different block of code
-            this.inParserLevelCommentBlock = true;
-
-            // Disable parsing until we find the end of the parser-level comment block
-            this.parseStatus.setParsingDisabled(PARSER_LEVEL_COMMENT_CLOSE);
-
-        }
-
-
-    }
-
-    
     
     
 }
