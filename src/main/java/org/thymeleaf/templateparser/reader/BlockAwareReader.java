@@ -35,8 +35,8 @@ abstract class BlockAwareReader extends Reader {
 
     private final Reader reader;
     private final BlockAction action;
-    private final char[] prefix;
-    private final char[] suffix;
+    private final char[] prefix, suffix;
+    private final char p0, s0;
 
     
     private char[] overflowBuffer = null;
@@ -53,6 +53,8 @@ abstract class BlockAwareReader extends Reader {
         this.action = action;
         this.prefix = prefix;
         this.suffix = suffix;
+        this.p0 = this.prefix[0];
+        this.s0 = this.suffix[0];
     }
 
 
@@ -80,7 +82,7 @@ abstract class BlockAwareReader extends Reader {
 
             c = cbuf[i++];
 
-            if (this.index == 0 && c != this.prefix[0] && c != this.suffix[0]) {
+            if (this.index == 0 && c != this.p0 && c != this.s0) {
                 // Shortcut for most characters in a template: no further tests to be done
                 continue;
             }
