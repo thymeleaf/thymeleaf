@@ -39,8 +39,9 @@ import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.messageresolver.IMessageResolver;
-import org.thymeleaf.messageresolver.MessageResolution;
+import org.thymeleaf.message.absent.IAbsentMessageFormatter;
+import org.thymeleaf.message.resolver.IMessageResolver;
+import org.thymeleaf.message.resolver.MessageResolution;
 import org.thymeleaf.resource.IResource;
 import org.thymeleaf.resourceresolver.ClassLoaderResourceResolver;
 import org.thymeleaf.resourceresolver.IResourceResolver;
@@ -92,12 +93,12 @@ public final class MessageResolutionUtils {
         }
         
         if (messageResolution == null) {
-            
             if (!returnStringAlways) {
                 return null;
             }
-            
-            return getAbsentMessageRepresentation(messageKey, processingContext.getLocale());
+
+            final IAbsentMessageFormatter absentMessageFormatter = processingContext.getConfiguration().getAbsentMessageFormatter();
+            return absentMessageFormatter.getAbsentMessageRepresentation(messageKey, processingContext.getLocale());
             
         }
         
@@ -165,7 +166,8 @@ public final class MessageResolutionUtils {
         if (messageValue == null) {
 
             if (returnStringAlways) {
-                return getAbsentMessageRepresentation(messageKey, locale);
+                final IAbsentMessageFormatter absentMessageFormatter = configuration.getAbsentMessageFormatter();
+                return absentMessageFormatter.getAbsentMessageRepresentation(messageKey, locale);
             }
 
             return null;
@@ -180,17 +182,7 @@ public final class MessageResolutionUtils {
         return messageFormat.format(messageParameters);
 
     }
-    
-    
-    
-    public static String getAbsentMessageRepresentation(final String messageKey, final Locale locale) {
-        Validate.notNull(messageKey, "Message key cannot be null");
-        if (locale != null) {
-            return "??"+messageKey+"_" + locale.toString() + "??";
-        }
-        return "??"+messageKey+"_" + "??";
-    }
-    
+
     
     
     

@@ -20,6 +20,7 @@
 package org.thymeleaf.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.message.resolver.IMessageResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.MessageResolutionUtils;
 import org.thymeleaf.util.Validate;
@@ -89,19 +90,10 @@ public abstract class AbstractProcessor implements IProcessor {
             return templateMessage;
         }
 
-        final String processorMessage =
-                MessageResolutionUtils.resolveMessageForClass(
-                        processingContext.getConfiguration(), this.getClass(),
-                        processingContext.getLocale(), messageKey,
-                        messageParameters, false);
-
-        if (processorMessage != null) {
-            return processorMessage;
-        }
-
-        return MessageResolutionUtils.getAbsentMessageRepresentation(
-                messageKey, processingContext.getLocale());
-
+        return MessageResolutionUtils.resolveMessageForClass(
+                processingContext.getConfiguration(), this.getClass(),
+                processingContext.getLocale(), messageKey,
+                messageParameters, true);
     }
 
 
@@ -112,7 +104,7 @@ public abstract class AbstractProcessor implements IProcessor {
      * </p>
      * <p>
      *   <i>Template messages</i> are resolved by the <i>Message Resolver</i>
-     *   ({@link org.thymeleaf.messageresolver.IMessageResolver}) instances
+     *   ({@link IMessageResolver}) instances
      *   configured at the Template Engine (executed in chain) in exactly the same way as,
      *   for example, a <tt>#{...}</tt> expression would when using the <i>Standard
      *   Dialect</i> or the <i>SpringStandard Dialect</i>.
