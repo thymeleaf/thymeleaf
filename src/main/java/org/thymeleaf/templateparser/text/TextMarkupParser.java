@@ -35,7 +35,7 @@ import org.attoparser.config.ParseConfiguration;
  * </p>
  * <p>
  *   This class is basically a copy of AttoParser's own {@link org.attoparser.MarkupParser}, with heavy modifications
- *   to the {@link #parseBuffer(char[], int, int, MarkupEventProcessor, ParseStatus)} in order to parse Thymeleaf's
+ *   to the {@link #parseBuffer(char[], int, int, TextEventProcessorHandler, ParseStatus)} in order to parse Thymeleaf's
  *   text-mode syntax instead of real markup.
  * </p>
  * <p>
@@ -171,7 +171,7 @@ final class TextMarkupParser implements IMarkupParser {
 
         // We will not report directly to the handler, but instead to an intermediate class that will be in
         // charge of applying the required markup logic and rules, according to the specified configuration
-        final MarkupEventProcessor eventProcessor = new MarkupEventProcessor(handler);
+        final TextEventProcessorHandler eventProcessor = new TextEventProcessorHandler(handler);
 
         // We don't already have a suitable char[] buffer, so we specify null for it and expect the parser
         // to use one of its pooled buffers.
@@ -189,7 +189,7 @@ final class TextMarkupParser implements IMarkupParser {
      */
     void parseDocument(
             final Reader reader, final int suggestedBufferSize,
-            final MarkupEventProcessor eventProcessor, final ParseStatus status)
+            final TextEventProcessorHandler eventProcessor, final ParseStatus status)
             throws ParseException {
 
 
@@ -328,7 +328,7 @@ final class TextMarkupParser implements IMarkupParser {
 
     private void parseBuffer(
             final char[] buffer, final int offset, final int len,
-            final MarkupEventProcessor eventProcessor,
+            final TextEventProcessorHandler eventProcessor,
             final ParseStatus status)
             throws ParseException {
 

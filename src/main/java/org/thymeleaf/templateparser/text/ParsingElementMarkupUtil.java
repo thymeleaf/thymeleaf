@@ -46,7 +46,7 @@ final class ParsingElementMarkupUtil {
             final int contentOffset, final int contentLen,
             @SuppressWarnings("unused") final int outerOffset, @SuppressWarnings("unused") final int outerLen,
             final int line, final int col,
-            final MarkupEventProcessor eventProcessor)
+            final TextEventProcessorHandler eventProcessor)
             throws ParseException {
 
         final int maxi = contentOffset + contentLen;
@@ -100,7 +100,7 @@ final class ParsingElementMarkupUtil {
             final int contentOffset, final int contentLen,
             @SuppressWarnings("unused") final int outerOffset, @SuppressWarnings("unused") final int outerLen,
             final int line, final int col,
-            final MarkupEventProcessor eventProcessor)
+            final TextEventProcessorHandler eventProcessor)
             throws ParseException {
 
         final int maxi = contentOffset + contentLen;
@@ -154,7 +154,7 @@ final class ParsingElementMarkupUtil {
             final int contentOffset, final int contentLen,
             final int outerOffset, final int outerLen,
             final int line, final int col,
-            final MarkupEventProcessor eventProcessor)
+            final TextEventProcessorHandler eventProcessor)
             throws ParseException {
 
         final int maxi = contentOffset + contentLen;
