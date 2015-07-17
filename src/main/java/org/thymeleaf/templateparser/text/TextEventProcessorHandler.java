@@ -24,9 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.attoparser.AbstractChainedMarkupHandler;
-import org.attoparser.IMarkupHandler;
-import org.attoparser.config.ParseConfiguration;
+import org.thymeleaf.util.TextUtil;
 
 
 /*
@@ -45,9 +43,10 @@ import org.attoparser.config.ParseConfiguration;
  */
 final class TextEventProcessorHandler extends AbstractChainedTextHandler {
 
-
     private static final int DEFAULT_STACK_LEN = 10;
     private static final int DEFAULT_ATTRIBUTE_NAMES_LEN = 3;
+
+    private static final boolean TEXT_PARSING_CASE_SENSITIVE = true;
 
     private ParseStatus status;
 
@@ -59,12 +58,10 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
     private char[][] elementStack;
     private int elementStackSize;
 
-    private boolean elementRead = false;
     private char[][] currentElementAttributeNames = null;
     private int currentElementAttributeNamesSize = 0;
 
 
-    private boolean closeElementIsMatched = true;
 
 
     TextEventProcessorHandler(final ITextHandler handler) {
@@ -93,26 +90,17 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
     public void handleDocumentEnd(final long endTimeNanos, final long totalTimeNanos, final int line, final int col)
             throws TextParseException {
 
-        if (this.requireBalancedElements && this.elementStackSize > 0) {
+        if (this.elementStackSize > 0) {
             final char[] popped = popFromStack();
-            throw new ParseException(
+            throw new TextParseException(
                     "Malformed markup: element " +
-                            "\"" + new String(popped, 0, popped.length) + "\"" +
-                            " is never closed (no closing tag at the end of document)");
+                    "\"" + new String(popped, 0, popped.length) + "\"" +
+                    " is never closed (no closing tag at the end of document)");
         }
 
-        if (!this.elementRead && (
-                (this.validPrologDocTypeRead && this.uniqueRootElementPresence.isDependsOnPrologDoctype()) ||
-                        this.uniqueRootElementPresence.isRequiredAlways())) {
-            throw new ParseException(
-                    "Malformed markup: no root element present");
-        }
+        cleanStack(line, col);
 
-        if (this.useStack) {
-            cleanStack(line, col);
-        }
-
-        getNext().handleDocumentEnd(endTimeNanos, totalTimeNanos, line, col);
+        super.handleDocumentEnd(endTimeNanos, totalTimeNanos, line, col);
 
     }
 
@@ -124,76 +112,12 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
             final int line, final int col)
             throws TextParseException {
 
-        if (this.useStack) {
+        this.currentElementAttributeNames = null;
+        this.currentElementAttributeNamesSize = 0;
 
-            if (this.elementStackSize == 0) {
-                checkValidRootElement(buffer, nameOffset, nameLen, line, col);
-            }
+        // This is a standalone element, no need to put into stack
 
-            if (this.requireUniqueAttributesInElement) {
-                this.currentElementAttributeNames = null;
-                this.currentElementAttributeNamesSize = 0;
-            }
-
-            // This is a standalone element, no need to put into stack
-
-        }
-
-        /*
-         * Perform the handling of the standalone element start
-         * These events might require previous auto-* operations, in which case these
-         * have to be performed and then the event launched again.
-         */
-
-        this.status.autoOpenCloseDone = false;
-        this.status.autoOpenParents = null;
-        this.status.autoOpenLimits = null;
-        this.status.autoCloseRequired = null;
-        this.status.autoCloseLimits = null;
-        this.status.avoidStacking = true; // Default for standalone elements is avoid stacking
-
-        getNext().handleStandaloneElementStart(buffer, nameOffset, nameLen, minimized, line, col);
-
-        if (this.useStack) {
-            if (this.status.autoOpenParents != null || this.status.autoCloseRequired != null) {
-                if (this.status.autoCloseRequired != null) {
-                    // Auto-close operations
-                    autoClose(this.status.autoCloseRequired, this.status.autoCloseLimits, line, col);
-                }
-                if (this.status.autoOpenParents != null) {
-                    // Auto-open operations
-                    autoOpen(this.status.autoOpenParents, this.status.autoOpenLimits, line, col);
-                }
-                // Re-launching of the event
-                this.status.autoOpenCloseDone = true;
-                getNext().handleStandaloneElementStart(buffer, nameOffset, nameLen, minimized, line, col);
-            }
-            if (!this.status.avoidStacking) {
-                pushToStack(buffer, nameOffset, nameLen);
-            }
-        } else {
-            if (this.status.autoOpenParents != null || this.status.autoCloseRequired != null) {
-                // We were required to perform auto* operations, but we have no stack, so we will
-                // just launch the event again
-                this.status.autoOpenCloseDone = true;
-                getNext().handleStandaloneElementStart(buffer, nameOffset, nameLen, minimized, line, col);
-            }
-        }
-
-        this.status.autoOpenCloseDone = true;
-
-
-    }
-
-    public void handleStandaloneElementEnd(
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
-            final boolean minimized,
-            final int line, final int col)
-            throws TextParseException {
-
-        this.elementRead = true;
-        getNext().handleStandaloneElementEnd(buffer, nameOffset, nameLen, minimized, line, col);
+        super.handleStandaloneElementStart(buffer, nameOffset, nameLen, minimized, line, col);
 
     }
 
@@ -204,71 +128,12 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
             final int line, final int col)
             throws TextParseException {
 
-        if (this.useStack) {
+        this.currentElementAttributeNames = null;
+        this.currentElementAttributeNamesSize = 0;
 
-            if (this.elementStackSize == 0) {
-                checkValidRootElement(buffer, nameOffset, nameLen, line, col);
-            }
+        super.handleOpenElementStart(buffer, nameOffset, nameLen, line, col);
 
-            if (this.requireUniqueAttributesInElement) {
-                this.currentElementAttributeNames = null;
-                this.currentElementAttributeNamesSize = 0;
-            }
-
-        }
-
-        /*
-         * Perform the handling of the open element start
-         * These events might require previous auto-* operations, in which case these
-         * have to be performed and then the event launched again.
-         */
-
-        this.status.autoOpenCloseDone = false;
-        this.status.autoOpenParents = null;
-        this.status.autoOpenLimits = null;
-        this.status.autoCloseRequired = null;
-        this.status.autoCloseLimits = null;
-        this.status.avoidStacking = false; // Default for open elements is not to avoid stacking
-
-        getNext().handleOpenElementStart(buffer, nameOffset, nameLen, line, col);
-
-        if (this.useStack) {
-            if (this.status.autoOpenParents != null || this.status.autoCloseRequired != null) {
-                if (this.status.autoCloseRequired != null) {
-                    // Auto-close operations
-                    autoClose(this.status.autoCloseRequired, this.status.autoCloseLimits, line, col);
-                }
-                if (this.status.autoOpenParents != null) {
-                    // Auto-open operations
-                    autoOpen(this.status.autoOpenParents, this.status.autoOpenLimits, line, col);
-                }
-                // Re-launching of the event
-                this.status.autoOpenCloseDone = true;
-                getNext().handleOpenElementStart(buffer, nameOffset, nameLen, line, col);
-            }
-            if (!this.status.avoidStacking) {
-                // Can be an HTML void element
-                pushToStack(buffer, nameOffset, nameLen);
-            }
-        } else {
-            if (this.status.autoOpenParents != null || this.status.autoCloseRequired != null) {
-                // We were required to perform auto* operations, but we have no stack, so we will
-                // just launch the event again
-                this.status.autoOpenCloseDone = true;
-                getNext().handleOpenElementStart(buffer, nameOffset, nameLen, line, col);
-            }
-        }
-
-    }
-
-    public void handleOpenElementEnd(
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
-            final int line, final int col)
-            throws TextParseException {
-
-        this.elementRead = true;
-        getNext().handleOpenElementEnd(buffer, nameOffset, nameLen, line, col);
+        pushToStack(buffer, nameOffset, nameLen);
 
     }
 
@@ -279,44 +144,15 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
             final int line, final int col)
             throws TextParseException {
 
-        if (this.useStack) {
-
-            this.closeElementIsMatched =
-                    checkStackForElement(buffer, nameOffset, nameLen, line, col);
-
-            if (this.requireUniqueAttributesInElement) {
-                this.currentElementAttributeNames = null;
-                this.currentElementAttributeNamesSize = 0;
-            }
-
-            if (this.closeElementIsMatched) {
-                getNext().handleCloseElementStart(buffer, nameOffset, nameLen, line, col);
-                return;
-            } else {
-                getNext().handleUnmatchedCloseElementStart(buffer, nameOffset, nameLen, line, col);
-                return;
-            }
-
+        if (!checkStackForElement(buffer, nameOffset, nameLen, line, col)) {
+            throw new TextParseException(
+                    "Malformed text: element \"" + new String(buffer, nameOffset, nameLen) + "\" is never closed", line, col);
         }
 
-        getNext().handleCloseElementStart(buffer, nameOffset, nameLen, line, col);
+        this.currentElementAttributeNames = null;
+        this.currentElementAttributeNamesSize = 0;
 
-    }
-
-    public void handleCloseElementEnd(
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
-            final int line, final int col)
-            throws TextParseException {
-
-        this.elementRead = true;
-
-        if (this.useStack && !this.closeElementIsMatched) {
-            getNext().handleUnmatchedCloseElementEnd(buffer, nameOffset, nameLen, line, col);
-            return;
-        }
-
-        getNext().handleCloseElementEnd(buffer, nameOffset, nameLen, line, col);
+        super.handleCloseElementStart(buffer, nameOffset, nameLen, line, col);
 
     }
 
@@ -332,65 +168,54 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
             final int valueLine, final int valueCol)
             throws TextParseException {
 
-        if (this.useStack && this.requireUniqueAttributesInElement) {
-
-            // Check attribute name is unique in this element
-            if (this.currentElementAttributeNames == null) {
-                // we only create this structure if there is at least one attribute
-                this.currentElementAttributeNames = new char[DEFAULT_ATTRIBUTE_NAMES_LEN][];
-            }
-            for (int i = 0; i < this.currentElementAttributeNamesSize; i++) {
-
-                if (TextUtil.equals(
-                        this.caseSensitive,
-                        this.currentElementAttributeNames[i], 0, this.currentElementAttributeNames[i].length,
-                        buffer, nameOffset, nameLen)) {
-
-                    throw new ParseException(
-                            "Malformed markup: Attribute \"" + new String(buffer, nameOffset, nameLen) + "\" " +
-                                    "appears more than once in element",
-                            nameLine, nameCol);
-
-                }
-
-            }
-            if (this.currentElementAttributeNamesSize == this.currentElementAttributeNames.length) {
-                // we need to grow the array!
-                final char[][] newCurrentElementAttributeNames = new char[this.currentElementAttributeNames.length + DEFAULT_ATTRIBUTE_NAMES_LEN][];
-                System.arraycopy(this.currentElementAttributeNames, 0, newCurrentElementAttributeNames, 0, this.currentElementAttributeNames.length);
-                this.currentElementAttributeNames = newCurrentElementAttributeNames;
-            }
-
-            this.currentElementAttributeNames[this.currentElementAttributeNamesSize] =
-                    this.structureNamesRepository.getStructureName(buffer, nameOffset, nameLen);
-
-            this.currentElementAttributeNamesSize++;
-
+        // Check attribute name is unique in this element
+        if (this.currentElementAttributeNames == null) {
+            // we only create this structure if there is at least one attribute
+            this.currentElementAttributeNames = new char[DEFAULT_ATTRIBUTE_NAMES_LEN][];
         }
+        for (int i = 0; i < this.currentElementAttributeNamesSize; i++) {
 
+            if (TextUtil.equals(
+                    TEXT_PARSING_CASE_SENSITIVE,
+                    this.currentElementAttributeNames[i], 0, this.currentElementAttributeNames[i].length,
+                    buffer, nameOffset, nameLen)) {
 
-        if (this.requireWellFormedAttributeValues) {
+                throw new TextParseException(
+                        "Malformed text: Attribute \"" + new String(buffer, nameOffset, nameLen) + "\" appears more than once in element",
+                        nameLine, nameCol);
 
-            // Check there is an operator
-            if (operatorLen == 0)  {
-                throw new ParseException(
-                        "Malformed markup: Attribute \"" + new String(buffer, nameOffset, nameLen) + "\" " +
-                                "must include an equals (=) sign and a value surrounded by quotes",
-                        operatorLine, operatorCol);
-            }
-
-
-            // Check attribute is surrounded by commas (double or single)
-            if (valueOuterLen == 0 || valueOuterLen == valueContentLen)  {
-                throw new ParseException(
-                        "Malformed markup: Value for attribute \"" + new String(buffer, nameOffset, nameLen) + "\" " +
-                                "must be surrounded by quotes",
-                        valueLine, valueCol);
             }
 
         }
+        if (this.currentElementAttributeNamesSize == this.currentElementAttributeNames.length) {
+            // we need to grow the array!
+            final char[][] newCurrentElementAttributeNames = new char[this.currentElementAttributeNames.length + DEFAULT_ATTRIBUTE_NAMES_LEN][];
+            System.arraycopy(this.currentElementAttributeNames, 0, newCurrentElementAttributeNames, 0, this.currentElementAttributeNames.length);
+            this.currentElementAttributeNames = newCurrentElementAttributeNames;
+        }
 
-        getNext().handleAttribute(
+        this.currentElementAttributeNames[this.currentElementAttributeNamesSize] =
+                this.structureNamesRepository.getStructureName(buffer, nameOffset, nameLen);
+
+        this.currentElementAttributeNamesSize++;
+
+
+        // Check there is an operator
+        if (operatorLen == 0)  {
+            throw new TextParseException(
+                    "Malformed text: Attribute \"" + new String(buffer, nameOffset, nameLen) + "\" must include an equals (=) sign and a value surrounded by quotes",
+                    operatorLine, operatorCol);
+        }
+
+
+        // Check attribute is surrounded by commas (double or single)
+        if (valueOuterLen == 0 || valueOuterLen == valueContentLen)  {
+            throw new TextParseException(
+                    "Malformed text: Value for attribute \"" + new String(buffer, nameOffset, nameLen) + "\" must be surrounded by quotes",
+                    valueLine, valueCol);
+        }
+
+        super.handleAttribute(
                 buffer,
                 nameOffset, nameLen, nameLine, nameCol,
                 operatorOffset, operatorLen, operatorLine, operatorCol,
