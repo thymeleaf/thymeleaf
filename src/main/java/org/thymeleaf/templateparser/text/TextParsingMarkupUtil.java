@@ -21,16 +21,16 @@ package org.thymeleaf.templateparser.text;
 
 
 /*
- * Class containing utility methods for general markup parsing.
+ * Class containing utility methods for general text parsing.
  *
  * @author Daniel Fernandez
  * @since 3.0.0
  */
-final class ParsingMarkupUtil {
+final class TextParsingMarkupUtil {
 
 
     
-    private ParsingMarkupUtil() {
+    private TextParsingMarkupUtil() {
         super();
     }
 
@@ -38,6 +38,7 @@ final class ParsingMarkupUtil {
     
     
     
+/*
     static int findNextStructureEndAvoidQuotes(
             final char[] text, final int offset, final int maxi, 
             final int[] locator) {
@@ -113,6 +114,8 @@ final class ParsingMarkupUtil {
     }
 
     
+*/
+
     static int findNextStructureStart(
             final char[] text, final int offset, final int maxi, 
             final int[] locator) {
@@ -132,7 +135,7 @@ final class ParsingMarkupUtil {
                 colIndex = i;
                 locator[1] = 0;
                 locator[0]++;
-            } else if (c == '<') {
+            } else if (c == '[') {
                 locator[1] += (i - colIndex);
                 return i;
             }
@@ -146,7 +149,8 @@ final class ParsingMarkupUtil {
         
     }
 
-    
+
+/*
     static int findNextWhitespaceCharWildcard(
             final char[] text, final int offset, final int maxi, 
             final boolean avoidQuotes, final int[] locator) {
@@ -365,5 +369,6 @@ final class ParsingMarkupUtil {
         return -1;
 
     }
+*/
 
 }

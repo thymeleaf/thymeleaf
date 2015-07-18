@@ -23,32 +23,18 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
 
-import org.attoparser.IMarkupHandler;
-import org.attoparser.IMarkupParser;
-import org.attoparser.ParseException;
-import org.attoparser.config.ParseConfiguration;
 
-/**
- * <p>
- *   This class is an implementation of the {@link IMarkupParser} from AttoParser meant to parse Thymeleaf's
- *   TEXT-mode templates and/or text inlining fragments.
- * </p>
- * <p>
- *   This class is basically a copy of AttoParser's own {@link org.attoparser.MarkupParser}, with heavy modifications
- *   to the {@link #parseBuffer(char[], int, int, TextEventProcessorHandler, ParseStatus)} in order to parse Thymeleaf's
- *   text-mode syntax instead of real markup.
- * </p>
- * <p>
- *   Using a markup parsing infrastructure for parsing text might at first look inadequate, but this is the best way
- *   to link the text parsing infrastructure to the rest of the (markup-oriented) parsing and event-handling
- *   infrastructure in handling.
- * </p>
+/*
+ * The TextParser is very similar in concept and structure to AttoParser's MarkupParser, but hugely simplified, given
+ * text parsing does not need most of the events, configurability and conditions of markup parsing.
  *
- * @author Daniel Fern&aacute;ndez
+ * Note that, instead of using AttoParser's IMarkupParser interface, the much simpler ITextHandler is used here instead.
+ *
+ * @author Daniel Fernandez
  * @since 3.0.0
  * 
  */
-final class TextMarkupParser implements IMarkupParser {
+final class TextParser {
 
     /**
      * <p>
@@ -71,49 +57,16 @@ final class TextMarkupParser implements IMarkupParser {
     private static final int DEFAULT_POOL_SIZE = 2;
 
 
-    /**
-     * <p>
-     *   This parsing configuration is basically used to instruct the AttoParser event processor
-     *   to treat structures in TEXT mode (elements) in a fully-hierarchical way (no auto
-     *   open/close, no unmatched close, require balanced, etc)
-     * </p>
-     */
-    private static final ParseConfiguration TEXT_PARSING_CONFIGURATION;
 
-
-
-    private final ParseConfiguration configuration;
     private final BufferPool pool;
 
 
 
 
 
-    static {
 
-        /*
-         * Even if we are not parsing markup but text, we will try to use AttoParser's infrastructure to the biggest
-         */
-        TEXT_PARSING_CONFIGURATION = ParseConfiguration.xmlConfiguration(); // We will use XML and that's fine for text
-        TEXT_PARSING_CONFIGURATION.setTextSplittable(false);
-        TEXT_PARSING_CONFIGURATION.setElementBalancing(ParseConfiguration.ElementBalancing.REQUIRE_BALANCED);
-        TEXT_PARSING_CONFIGURATION.setNoUnmatchedCloseElementsRequired(true);
-        TEXT_PARSING_CONFIGURATION.setUniqueAttributesInElementRequired(true);
-        TEXT_PARSING_CONFIGURATION.setXmlWellFormedAttributeValuesRequired(false);
-        TEXT_PARSING_CONFIGURATION.setUniqueRootElementPresence(ParseConfiguration.UniqueRootElementPresence.NOT_VALIDATED);
-        TEXT_PARSING_CONFIGURATION.getPrologParseConfiguration().setValidateProlog(false);
-        TEXT_PARSING_CONFIGURATION.getPrologParseConfiguration().setPrologPresence(ParseConfiguration.PrologPresence.ALLOWED);
-        TEXT_PARSING_CONFIGURATION.getPrologParseConfiguration().setXmlDeclarationPresence(ParseConfiguration.PrologPresence.ALLOWED);
-        TEXT_PARSING_CONFIGURATION.getPrologParseConfiguration().setDoctypePresence(ParseConfiguration.PrologPresence.ALLOWED);
-        TEXT_PARSING_CONFIGURATION.getPrologParseConfiguration().setRequireDoctypeKeywordsUpperCase(false);
-
-    }
-
-
-
-    TextMarkupParser(final ParseConfiguration configuration, final int poolSize, final int bufferSize) {
+    TextParser(final int poolSize, final int bufferSize) {
         super();
-        this.configuration = configuration;
         this.pool = new BufferPool(poolSize, bufferSize);
     }
 
@@ -122,8 +75,8 @@ final class TextMarkupParser implements IMarkupParser {
 
 
 
-    public void parse(final String document, final IMarkupHandler handler)
-            throws ParseException {
+    public void parse(final String document, final ITextHandler handler)
+            throws TextParseException {
         if (document == null) {
             throw new IllegalArgumentException("Document cannot be null");
         }
@@ -131,25 +84,11 @@ final class TextMarkupParser implements IMarkupParser {
     }
 
 
-    public void parse(final char[] document, final IMarkupHandler handler)
-            throws ParseException {
-        throw new UnsupportedOperationException(
-                "char[]-based parsing is not allowed in TextMarkupParser. A java.io.Reader must be used instead");
-    }
-
-
-    public void parse(final char[] document, final int offset, final int len, final IMarkupHandler handler)
-            throws ParseException {
-        throw new UnsupportedOperationException(
-                "char[]-based parsing is not allowed in TextMarkupParser. A java.io.Reader must be used instead");
-    }
-
-
 
 
     public void parse(
-            final Reader reader, final IMarkupHandler handler)
-            throws ParseException {
+            final Reader reader, final ITextHandler handler)
+            throws TextParseException {
 
         if (reader == null) {
             throw new IllegalArgumentException("Reader cannot be null");
@@ -159,23 +98,11 @@ final class TextMarkupParser implements IMarkupParser {
             throw new IllegalArgumentException("Handler cannot be null");
         }
 
-        handler.setParseConfiguration(this.configuration);
-
-        final ParseStatus status = new ParseStatus();
-        // ParseStatus is not configured into handler with handler.setParseStatus() because this is not a normal
-        // attoparser ParseStatus. But this is no problem because we are certain about the handler implementation
-        // (TemplateHandlerAdapterMarkupHandler), and it doesn't require being set a ParseStatus at all.
-
-        // ParseSelection is not configured into handler with handler.setParseSelection because the specific
-        // handler implementation we will use (TemplateHandlerAdapterMarkupHandler)
-
-        // We will not report directly to the handler, but instead to an intermediate class that will be in
-        // charge of applying the required markup logic and rules, according to the specified configuration
+        // The TextEventProcessorHandler will basically be in charge of controlling the stack of elements (the correct
+        // nesting of element events).
         final TextEventProcessorHandler eventProcessor = new TextEventProcessorHandler(handler);
 
-        // We don't already have a suitable char[] buffer, so we specify null for it and expect the parser
-        // to use one of its pooled buffers.
-        parseDocument(reader, this.pool.poolBufferSize, eventProcessor, status);
+        parseDocument(reader, this.pool.poolBufferSize, eventProcessor);
 
     }
 
@@ -187,10 +114,8 @@ final class TextMarkupParser implements IMarkupParser {
      * This method receiving the buffer size with package visibility allows
      * testing different buffer sizes.
      */
-    void parseDocument(
-            final Reader reader, final int suggestedBufferSize,
-            final TextEventProcessorHandler eventProcessor, final ParseStatus status)
-            throws ParseException {
+    void parseDocument(final Reader reader, final int suggestedBufferSize, final ITextHandler handler)
+            throws TextParseException {
 
 
         final long parsingStartTimeNanos = System.nanoTime();
@@ -199,7 +124,9 @@ final class TextMarkupParser implements IMarkupParser {
 
         try {
 
-            eventProcessor.processDocumentStart(parsingStartTimeNanos, 1, 1);
+            final TextParseStatus status = new TextParseStatus();
+
+            handler.handleDocumentStart(parsingStartTimeNanos, 1, 1);
 
             int bufferSize = suggestedBufferSize;
             buffer = this.pool.allocateBuffer(bufferSize);
@@ -215,7 +142,7 @@ final class TextMarkupParser implements IMarkupParser {
 
             while (cont) {
 
-                parseBuffer(buffer, 0, bufferContentSize, eventProcessor, status);
+                parseBuffer(buffer, 0, bufferContentSize, handler, status);
 
                 int readOffset = 0;
                 int readLen = bufferSize;
@@ -280,11 +207,11 @@ final class TextMarkupParser implements IMarkupParser {
             if (lastLen > 0) {
 
                 if (status.inStructure) {
-                    throw new ParseException(
+                    throw new TextParseException(
                             "Incomplete structure: \"" + new String(buffer, lastStart, lastLen) + "\"", status.line, status.col);
                 }
 
-                eventProcessor.processText(buffer, lastStart, lastLen, status.line, status.col);
+                handler.handleText(buffer, lastStart, lastLen, status.line, status.col);
 
                 // As we have produced an additional text event, we need to fast-forward the
                 // lastLine and lastCol position to include the last text structure.
@@ -302,12 +229,12 @@ final class TextMarkupParser implements IMarkupParser {
             }
 
             final long parsingEndTimeNanos = System.nanoTime();
-            eventProcessor.processDocumentEnd(parsingEndTimeNanos, (parsingEndTimeNanos - parsingStartTimeNanos), lastLine, lastCol);
+            handler.handleDocumentEnd(parsingEndTimeNanos, (parsingEndTimeNanos - parsingStartTimeNanos), lastLine, lastCol);
 
-        } catch (final ParseException e) {
+        } catch (final TextParseException e) {
             throw e;
         } catch (final Exception e) {
-            throw new ParseException(e);
+            throw new TextParseException(e);
         } finally {
             this.pool.releaseBuffer(buffer);
             try {
@@ -328,9 +255,8 @@ final class TextMarkupParser implements IMarkupParser {
 
     private void parseBuffer(
             final char[] buffer, final int offset, final int len,
-            final TextEventProcessorHandler eventProcessor,
-            final ParseStatus status)
-            throws ParseException {
+            final ITextHandler handler, final TextParseStatus status)
+            throws TextParseException {
 
 
         final int[] locator = new int[] {status.line, status.col};
@@ -359,16 +285,9 @@ final class TextMarkupParser implements IMarkupParser {
 
             if (!inStructure) {
 
-                tagStart = ParsingMarkupUtil.findNextStructureStart(buffer, i, maxi, locator);
+                tagStart = TextParsingMarkupUtil.findNextStructureStart(buffer, i, maxi, locator);
 
                 if (tagStart == -1) {
-
-                    if (this.configuration.isTextSplittable()) {
-
-                        eventProcessor.processText(buffer, current, len - current, currentLine, currentCol);
-                        current = len;
-
-                    }
 
                     status.offset = current;
                     status.line = currentLine;
@@ -378,19 +297,18 @@ final class TextMarkupParser implements IMarkupParser {
 
                 }
 
-                inOpenElement = ParsingElementMarkupUtil.isOpenElementStart(buffer, tagStart, maxi);
+                inOpenElement = ParsingTextElementMarkupUtil.isOpenElementStart(buffer, tagStart, maxi);
                 if (!inOpenElement) {
-                    inCloseElement = ParsingElementMarkupUtil.isCloseElementStart(buffer, tagStart, maxi);
+                    inCloseElement = ParsingTextElementMarkupUtil.isCloseElementStart(buffer, tagStart, maxi);
                 }
 
                 inStructure = (inOpenElement || inCloseElement);
 
                 while (!inStructure) {
-                    // We found a '<', but it cannot be considered a tag because it is not
-                    // the beginning of any known structure
+                    // We found a '[', but it cannot be considered beginning of any known structure
 
                     ParsingLocatorUtil.countChar(locator, buffer[tagStart]);
-                    tagStart = ParsingMarkupUtil.findNextStructureStart(buffer, tagStart + 1, maxi, locator);
+                    tagStart = TextParsingMarkupUtil.findNextStructureStart(buffer, tagStart + 1, maxi, locator);
 
                     if (tagStart == -1) {
                         status.offset = current;
@@ -400,9 +318,9 @@ final class TextMarkupParser implements IMarkupParser {
                         return;
                     }
 
-                    inOpenElement = ParsingElementMarkupUtil.isOpenElementStart(buffer, tagStart, maxi);
+                    inOpenElement = ParsingTextElementMarkupUtil.isOpenElementStart(buffer, tagStart, maxi);
                     if (!inOpenElement) {
-                        inCloseElement = ParsingElementMarkupUtil.isCloseElementStart(buffer, tagStart, maxi);
+                        inCloseElement = ParsingTextElementMarkupUtil.isCloseElementStart(buffer, tagStart, maxi);
                     }
 
                     inStructure = (inOpenElement || inCloseElement);
@@ -413,7 +331,7 @@ final class TextMarkupParser implements IMarkupParser {
                 if (tagStart > current) {
                     // We avoid empty-string text events
 
-                    eventProcessor.processText(
+                    handler.handleText(
                             buffer, current, (tagStart - current),
                             currentLine, currentCol);
 
@@ -432,8 +350,8 @@ final class TextMarkupParser implements IMarkupParser {
 
                 tagEnd =
                         (avoidQuotes?
-                                ParsingMarkupUtil.findNextStructureEndAvoidQuotes(buffer, i, maxi, locator) :
-                                ParsingMarkupUtil.findNextStructureEndDontAvoidQuotes(buffer, i, maxi, locator));
+                                TextParsingMarkupUtil.findNextStructureEndAvoidQuotes(buffer, i, maxi, locator) :
+                                TextParsingMarkupUtil.findNextStructureEndDontAvoidQuotes(buffer, i, maxi, locator));
 
                 if (tagEnd < 0) {
                     // This is an unfinished structure
@@ -448,11 +366,11 @@ final class TextMarkupParser implements IMarkupParser {
                     // This is a open/standalone tag (to be determined by looking at the penultimate character)
 
                     if ((buffer[tagEnd - 1] == '/')) {
-                        ParsingElementMarkupUtil.
+                        ParsingTextElementMarkupUtil.
                                 parseStandaloneElement(
                                         buffer, current + 1, ((tagEnd - current) + 1) - 3, current, (tagEnd - current) + 1, currentLine, currentCol, eventProcessor);
                     } else {
-                        ParsingElementMarkupUtil.
+                        ParsingTextElementMarkupUtil.
                                 parseOpenElement(
                                         buffer, current + 1, ((tagEnd - current) + 1) - 2, current, (tagEnd - current) + 1, currentLine, currentCol, eventProcessor);
                     }
@@ -463,7 +381,7 @@ final class TextMarkupParser implements IMarkupParser {
                 } else if (inCloseElement) {
                     // This is a closing tag
 
-                    ParsingElementMarkupUtil.
+                    ParsingTextElementMarkupUtil.
                             parseCloseElement(
                                     buffer, current + 2, ((tagEnd - current) + 1) - 3, current, (tagEnd - current) + 1, currentLine, currentCol, eventProcessor);
 

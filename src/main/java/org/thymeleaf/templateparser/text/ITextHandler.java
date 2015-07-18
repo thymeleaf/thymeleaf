@@ -30,9 +30,6 @@ package org.thymeleaf.templateparser.text;
 public interface ITextHandler {
 
 
-    public void setParseStatus(final ParseStatus status);
-
-
 
 
     public void handleDocumentStart(final long startTimeNanos, final int line, final int col)

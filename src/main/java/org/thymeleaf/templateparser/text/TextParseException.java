@@ -22,6 +22,9 @@ package org.thymeleaf.templateparser.text;
 
 
 /**
+ * <p>
+ *   Exception that can be thrown during parsing of text templates using a Thymeleaf text-based parser.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *

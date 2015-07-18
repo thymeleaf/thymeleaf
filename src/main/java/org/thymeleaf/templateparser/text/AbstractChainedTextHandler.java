@@ -45,10 +45,6 @@ public abstract class AbstractChainedTextHandler extends AbstractTextHandler {
 
 
 
-    public void setParseStatus(final ParseStatus status) {
-        this.next.setParseStatus(status);
-    }
-
     public void handleDocumentStart(
             final long startTimeNanos, final int line, final int col) throws TextParseException {
         this.next.handleDocumentStart(startTimeNanos, line, col);

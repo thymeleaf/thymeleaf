@@ -38,11 +38,6 @@ public abstract class AbstractTextHandler implements ITextHandler {
 
 
 
-    public void setParseStatus(final ParseStatus status) {
-        // Nothing to do. By default handlers will not be interested in using this object at all.
-        // Implementations will have to explicitly override if they need to use it.
-    }
-
     public void handleDocumentStart(
             final long startTimeNanos, final int line, final int col) throws TextParseException {
         // Nothing to be done here, meant to be overridden if required

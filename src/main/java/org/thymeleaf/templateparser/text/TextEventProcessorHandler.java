@@ -19,24 +19,17 @@
  */
 package org.thymeleaf.templateparser.text;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import org.thymeleaf.util.TextUtil;
 
 
 /*
- * Objects of this class are the first ones to receive events from the parser, and they are in charge of transmitting
- * these events to the markup handlers.
+ * This class is very similar to AttoParser's org.attoparser.MarkupEventProcessorHandler.
  *
- * This MarkupEventProcessor implements logic that allows the application of several features and restrictions in
- * XML and (especially) HTML markup. For this, it builds an element stack during parsing, which it uses to reference
- * events to their specific position in the original document.
- *
- * Note that, although MarkupParser's are stateless, objects of this class are STATEFUL just like markup handlers can
- * potentially be, and therefore a new MarkupEventProcessor object will be built for each parsing operation.
+ * Its aim is to be the one to receive the parser-generated events and do the first checks required to ensure the
+ * correct hierarchy and nesting of elements. It therefore maintains a stack of parsed elements that it checks
+ * for each parsing event, in order to be sure that every element is adequately open and closed.
  *
  * @author Daniel Fernandez
  * @since 3.0.0
@@ -48,7 +41,6 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
 
     private static final boolean TEXT_PARSING_CASE_SENSITIVE = true;
 
-    private ParseStatus status;
 
     // Will be used as an element name cache in order to avoid creating a new
     // char[] object each time an element is pushed into the stack or an attribute
@@ -78,12 +70,6 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
 
 
 
-    @Override
-    public void setParseStatus(final ParseStatus status) {
-        this.status = status;
-        super.setParseStatus(status);
-    }
-
 
 
 
@@ -97,8 +83,6 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
                     "\"" + new String(popped, 0, popped.length) + "\"" +
                     " is never closed (no closing tag at the end of document)");
         }
-
-        cleanStack(line, col);
 
         super.handleDocumentEnd(endTimeNanos, totalTimeNanos, line, col);
 
@@ -229,92 +213,23 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
             final char[] buffer, final int offset, final int len, final int line, final int col)
             throws TextParseException {
 
-        int peekDelta = 0;
-        char[] peek = peekFromStack(peekDelta);
+        char[] peek = peekFromStack();
 
-        while (peek != null) {
+        if (peek != null) {
 
-            if (TextUtil.equals(this.caseSensitive, peek, 0, peek.length, buffer, offset, len)) {
-
-                // We found the corresponding opening element, so we execute all pending auto-close events
-                // (if needed) and return true (meaning the close element has a matching open element).
-
-                for (int i = 0; i < peekDelta; i++) {
-                    peek = popFromStack();
-                    if (this.autoClose) {
-                        getNext().handleAutoCloseElementStart(peek, 0, peek.length, line, col);
-                        getNext().handleAutoCloseElementEnd(peek, 0, peek.length, line, col);
-                    } else {
-                        // fixing unclosed non-optional tags by auto closing is forbidden!
-                        throw new ParseException(
-                                "Malformed markup: element " +
-                                        "\"" + new String(peek, 0, peek.length) + "\"" +
-                                        " is never closed", line, col);
-                    }
-                }
+            if (TextUtil.equals(TEXT_PARSING_CASE_SENSITIVE, peek, 0, peek.length, buffer, offset, len)) {
                 popFromStack();
-
                 return true;
-
             }
 
             // does not match...
-
-            if (this.requireBalancedElements) {
-                throw new ParseException(
-                        "Malformed markup: element " +
-                                "\"" + new String(peek, 0, peek.length) + "\"" +
-                                " is never closed", line, col);
-            }
-
-            peek = peekFromStack(++peekDelta);
+            throw new TextParseException(
+                    "Malformed markup: element \"" + new String(peek, 0, peek.length) + "\" is never closed", line, col);
 
         }
 
-        // closing element at the root level
-        if (this.requireNoUnmatchedCloseElements) {
-            throw new ParseException(
-                    "Malformed markup: closing element " +
-                            "\"" + new String(buffer, offset, len) + "\"" +
-                            " is never open", line, col);
-        }
-
-        // Return false because the close element has no matching open element
-        return false;
-
-    }
-
-
-
-
-    private void cleanStack(final int line, final int col)
-            throws TextParseException {
-
-        if (this.elementStackSize > 0) {
-
-            // When we arrive here we know that "requireBalancedElements" is
-            // false. If it were true, an exception would have been raised before.
-
-            char[] popped = popFromStack();
-
-            while (popped != null) {
-
-                if (this.autoClose) {
-                    getNext().handleAutoCloseElementStart(popped, 0, popped.length, line, col);
-                    getNext().handleAutoCloseElementEnd(popped, 0, popped.length, line, col);
-                } else {
-                    // fixing unclosed non-optional tags by auto closing is forbidden!
-                    throw new ParseException(
-                            "Malformed markup: element " +
-                                    "\"" + new String(popped, 0, popped.length) + "\"" +
-                                    " is never closed", line, col);
-                }
-
-                popped = popFromStack();
-
-            }
-
-        }
+        throw new TextParseException(
+                "Malformed markup: closing element \"" + new String(buffer, offset, len) + "\" is never open", line, col);
 
     }
 
@@ -335,11 +250,11 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
     }
 
 
-    private char[] peekFromStack(final int delta) {
-        if (this.elementStackSize <= delta) {
+    private char[] peekFromStack() {
+        if (this.elementStackSize == 0) {
             return null;
         }
-        return this.elementStack[(this.elementStackSize - 1) - delta];
+        return this.elementStack[this.elementStackSize - 1];
     }
 
 
@@ -377,8 +292,8 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
      */
     static final class StructureNamesRepository {
 
-        private static final int REPOSITORY_INITIAL_LEN = 100;
-        private static final int REPOSITORY_INITIAL_INC = 20;
+        private static final int REPOSITORY_INITIAL_LEN = 20;
+        private static final int REPOSITORY_INITIAL_INC = 5;
         private char[][] repository;
         private int repositorySize;
 
@@ -392,6 +307,7 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
 
         char[] getStructureName(final char[] text, final int offset, final int len) {
 
+            // We are looking for exact matches here, disregarding the TEXT_PARSING_CASE_SENSITIVE constant value
             final int index =
                     TextUtil.binarySearch(true, this.repository, 0, this.repositorySize, text, offset, len);
 
@@ -420,9 +336,9 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
             // binary search returned (-(insertion point) - 1)
             final int insertionIndex = ((index + 1) * -1);
 
-            // We rely on the static structure name cache, just in case it is a standard HTML structure name.
-            // Note the StandardNamesRepository will create the new char[] if not found, so no need to null-check.
-            final char[] structureName = StandardNamesRepository.getStructureName(text, offset, len);
+            // Create the char[] for the structure name
+            final char[] structureName = new char[len];
+            System.arraycopy(text, offset, structureName, 0, len);
 
             // Make room and insert the new element
             System.arraycopy(this.repository, insertionIndex, this.repository, insertionIndex + 1, this.repositorySize - insertionIndex);
@@ -431,67 +347,6 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
 
             return structureName;
 
-        }
-
-    }
-
-
-
-
-    /*
-     *     This class is IMMUTABLE, and therefore thread-safe. Will be used in a static manner by all
-     *     threads which require the use of a repository of standard names (HTML names, in this case).
-     */
-    static final class StandardNamesRepository {
-
-
-        private static final char[][] REPOSITORY;
-
-
-        static {
-
-            final List<String> names = new ArrayList<String>(150);
-            // Add all the standard HTML element (tag) names
-            names.addAll(HtmlNames.ALL_STANDARD_ELEMENT_NAMES);
-            // We know all standard element names are lowercase, so let's cache them uppercase too
-            for (final String name : HtmlNames.ALL_STANDARD_ELEMENT_NAMES) {
-                names.add(name.toUpperCase());
-            }
-            // Add all the standard HTML attribute names
-            names.addAll(HtmlNames.ALL_STANDARD_ATTRIBUTE_NAMES);
-            // We know all standard attribute names are lowercase, so let's cache them uppercase too
-            for (final String name : HtmlNames.ALL_STANDARD_ATTRIBUTE_NAMES) {
-                names.add(name.toUpperCase());
-            }
-            Collections.sort(names);
-
-            REPOSITORY = new char[names.size()][];
-
-            for (int i = 0; i < names.size(); i++) {
-                final String name = names.get(i);
-                REPOSITORY[i] = name.toCharArray();
-            }
-
-        }
-
-
-        static char[] getStructureName(final char[] text, final int offset, final int len) {
-
-            final int index = TextUtil.binarySearch(true, REPOSITORY, text, offset, len);
-
-            if (index < 0) {
-                final char[] structureName = new char[len];
-                System.arraycopy(text, offset, structureName, 0, len);
-                return structureName;
-            }
-
-            return REPOSITORY[index];
-
-        }
-
-
-        private StandardNamesRepository() {
-            super();
         }
 
     }
