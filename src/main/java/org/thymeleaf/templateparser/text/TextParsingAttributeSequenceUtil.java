@@ -1,7 +1,7 @@
 /*
  * =============================================================================
  * 
- *   Copyright (c) 2012-2014, The ATTOPARSER team (http://www.attoparser.org)
+ *   Copyright (c) 2011-2014, The THYMELEAF team (http://www.thymeleaf.org)
  * 
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -29,13 +29,13 @@ package org.thymeleaf.templateparser.text;
  * @author Daniel Fernandez
  * @since 3.0.0
  */
-final class ParsingTextAttributeSequenceUtil {
+final class TextParsingAttributeSequenceUtil {
 
 
 
 
 
-    private ParsingTextAttributeSequenceUtil() {
+    private TextParsingAttributeSequenceUtil() {
         super();
     }
 

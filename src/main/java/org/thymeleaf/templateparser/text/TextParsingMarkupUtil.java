@@ -1,7 +1,7 @@
 /*
  * =============================================================================
  * 
- *   Copyright (c) 2012-2014, The ATTOPARSER team (http://www.attoparser.org)
+ *   Copyright (c) 2011-2014, The THYMELEAF team (http://www.thymeleaf.org)
  * 
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ final class TextParsingMarkupUtil {
     
     
     
-/*
+
     static int findNextStructureEndAvoidQuotes(
             final char[] text, final int offset, final int maxi, 
             final int[] locator) {
@@ -65,7 +65,7 @@ final class TextParsingMarkupUtil {
                 inQuotes = !inQuotes;
             } else if (c == '\'' && !inQuotes) {
                 inApos = !inApos;
-            } else if (c == '>' && !inQuotes && !inApos) {
+            } else if (i > offset && c == ']' && text[i - 1] == ']' && !inQuotes && !inApos) {
                 locator[1] += (i - colIndex);
                 return i;
             }
@@ -78,43 +78,9 @@ final class TextParsingMarkupUtil {
         return -1;
         
     }
-    
-    
-    static int findNextStructureEndDontAvoidQuotes(
-            final char[] text, final int offset, final int maxi, 
-            final int[] locator) {
-
-        char c;
-
-        int colIndex = offset;
-
-        int i = offset;
-        int n = (maxi - offset);
-
-        while (n-- != 0) {
-
-            c = text[i];
-            
-            if (c == '\n') {
-                colIndex = i;
-                locator[1] = 0;
-                locator[0]++;
-            } else if (c == '>') {
-                locator[1] += (i - colIndex);
-                return i;
-            }
-
-            i++;
-
-        }
-            
-        locator[1] += (maxi - colIndex);
-        return -1;
-        
-    }
 
     
-*/
+
 
     static int findNextStructureStart(
             final char[] text, final int offset, final int maxi, 
@@ -150,7 +116,7 @@ final class TextParsingMarkupUtil {
     }
 
 
-/*
+
     static int findNextWhitespaceCharWildcard(
             final char[] text, final int offset, final int maxi, 
             final boolean avoidQuotes, final int[] locator) {
@@ -323,52 +289,5 @@ final class TextParsingMarkupUtil {
         return -1;
 
     }
-
-
-
-
-    static int findCharacterSequence(
-            final char[] text, final int offset, final int maxi,
-            final int[] locator, final char[] charSeq) {
-
-        if (charSeq == null || charSeq.length == 0) {
-            return offset;
-        }
-
-        final char c1 = charSeq[0];
-        char c;
-
-        int i = offset;
-        int n = (maxi - offset);
-
-        while (n-- != 0) {
-
-            c = text[i];
-
-            if (c == c1) {
-                // First char matches, let's see the others
-
-                int j = 1;
-                for ( ; j < charSeq.length && (i + j) < maxi ; j++) {
-                    if (text[i + j] != charSeq[j]) {
-                        break;
-                    }
-                }
-                if (j >= charSeq.length) {
-                    return i;
-                }
-
-            }
-
-            ParsingLocatorUtil.countChar(locator, c);
-
-            i++;
-
-        }
-
-        return -1;
-
-    }
-*/
 
 }

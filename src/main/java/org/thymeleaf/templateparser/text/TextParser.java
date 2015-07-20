@@ -65,6 +65,12 @@ final class TextParser {
 
 
 
+
+    TextParser() {
+        this(DEFAULT_POOL_SIZE, DEFAULT_BUFFER_SIZE);
+    }
+
+
     TextParser(final int poolSize, final int bufferSize) {
         super();
         this.pool = new BufferPool(poolSize, bufferSize);
@@ -297,9 +303,9 @@ final class TextParser {
 
                 }
 
-                inOpenElement = ParsingTextElementMarkupUtil.isOpenElementStart(buffer, tagStart, maxi);
+                inOpenElement = TextParsingElementMarkupUtil.isOpenElementStart(buffer, tagStart, maxi);
                 if (!inOpenElement) {
-                    inCloseElement = ParsingTextElementMarkupUtil.isCloseElementStart(buffer, tagStart, maxi);
+                    inCloseElement = TextParsingElementMarkupUtil.isCloseElementStart(buffer, tagStart, maxi);
                 }
 
                 inStructure = (inOpenElement || inCloseElement);
@@ -318,9 +324,9 @@ final class TextParser {
                         return;
                     }
 
-                    inOpenElement = ParsingTextElementMarkupUtil.isOpenElementStart(buffer, tagStart, maxi);
+                    inOpenElement = TextParsingElementMarkupUtil.isOpenElementStart(buffer, tagStart, maxi);
                     if (!inOpenElement) {
-                        inCloseElement = ParsingTextElementMarkupUtil.isCloseElementStart(buffer, tagStart, maxi);
+                        inCloseElement = TextParsingElementMarkupUtil.isCloseElementStart(buffer, tagStart, maxi);
                     }
 
                     inStructure = (inOpenElement || inCloseElement);
@@ -342,16 +348,8 @@ final class TextParser {
 
             } else {
 
-                // We do not include processing instructions here because their format
-                // is undefined, and everything should be allowed except the "?>" sequence,
-                // which will terminate the instruction.
-                final boolean avoidQuotes = (inOpenElement || inCloseElement);
 
-
-                tagEnd =
-                        (avoidQuotes?
-                                TextParsingMarkupUtil.findNextStructureEndAvoidQuotes(buffer, i, maxi, locator) :
-                                TextParsingMarkupUtil.findNextStructureEndDontAvoidQuotes(buffer, i, maxi, locator));
+                tagEnd = TextParsingMarkupUtil.findNextStructureEndAvoidQuotes(buffer, i, maxi, locator);
 
                 if (tagEnd < 0) {
                     // This is an unfinished structure
@@ -363,38 +361,33 @@ final class TextParser {
                 }
 
                 if (inOpenElement) {
-                    // This is a open/standalone tag (to be determined by looking at the penultimate character)
+                    // This is a open/standalone tag (to be determined by looking at the antepenultimate character)
 
-                    if ((buffer[tagEnd - 1] == '/')) {
-                        ParsingTextElementMarkupUtil.
-                                parseStandaloneElement(
-                                        buffer, current + 1, ((tagEnd - current) + 1) - 3, current, (tagEnd - current) + 1, currentLine, currentCol, eventProcessor);
+                    if ((buffer[tagEnd - 2] == '/')) {
+                        TextParsingElementMarkupUtil.
+                                parseStandaloneElement(buffer, current, (tagEnd - current) + 1, currentLine, currentCol, handler);
                     } else {
-                        ParsingTextElementMarkupUtil.
-                                parseOpenElement(
-                                        buffer, current + 1, ((tagEnd - current) + 1) - 2, current, (tagEnd - current) + 1, currentLine, currentCol, eventProcessor);
+                        TextParsingElementMarkupUtil.
+                                parseOpenElement(buffer, current, (tagEnd - current) + 1, currentLine, currentCol, handler);
                     }
-
 
                     inOpenElement = false;
 
                 } else if (inCloseElement) {
                     // This is a closing tag
 
-                    ParsingTextElementMarkupUtil.
-                            parseCloseElement(
-                                    buffer, current + 2, ((tagEnd - current) + 1) - 3, current, (tagEnd - current) + 1, currentLine, currentCol, eventProcessor);
+                    TextParsingElementMarkupUtil.
+                            parseCloseElement(buffer, current, (tagEnd - current) + 1, currentLine, currentCol, handler);
 
                     inCloseElement = false;
 
                 } else {
 
-                    throw new IllegalStateException(
-                            "Illegal parsing state: structure is not of a recognized type");
+                    throw new IllegalStateException("Illegal parsing state: structure is not of a recognized type");
 
                 }
 
-                // The '>' char will be considered as processed too
+                // The ']' char will be considered as processed too
                 ParsingLocatorUtil.countChar(locator, buffer[tagEnd]);
 
                 current = tagEnd + 1;
