@@ -136,6 +136,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                                 configuration.getAttributeDefinitions(),
                                 templateMode);
 
+
             // If we need to select blocks, we will need a block selector here. Note this will get executed in the
             // handler chain AFTER thymeleaf's own TemplateHandlerAdapterMarkupHandler, so that we will be able to
             // include in selectors code inside prototype-only comments.
@@ -149,31 +150,25 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 handler = new BlockSelectorMarkupHandler(handler, selectors, referenceResolver);
             }
 
-            // Each type of resource will require a different parser method to be called.
-            final Reader templateReader;
+
+            // Compute the base reader, depending on the type of resource
+            Reader templateReader;
             if (templateResource instanceof ReaderResource) {
-
-                final Reader resourceReader = ((ReaderResource)templateResource).getContent();
-                templateReader = new ParserLevelCommentMarkupReader(new PrototypeOnlyCommentMarkupReader(new BufferedReader(resourceReader)));
-
+                templateReader = new BufferedReader(((ReaderResource)templateResource).getContent());
             } else if (templateResource instanceof StringResource) {
-
-                final Reader resourceReader = new StringReader(((StringResource)templateResource).getContent());
-                templateReader = new ParserLevelCommentMarkupReader(new PrototypeOnlyCommentMarkupReader(resourceReader));
-
+                templateReader = new StringReader(((StringResource)templateResource).getContent());
             } else if (templateResource instanceof CharArrayResource) {
-
                 final CharArrayResource charArrayResource = (CharArrayResource) templateResource;
-                final CharArrayReader charArrayReader =
-                        new CharArrayReader(charArrayResource.getContent(), charArrayResource.getOffset(), charArrayResource.getLen());
-                templateReader = new ParserLevelCommentMarkupReader(new PrototypeOnlyCommentMarkupReader(charArrayReader));
-
+                templateReader = new CharArrayReader(charArrayResource.getContent(), charArrayResource.getOffset(), charArrayResource.getLen());
             } else {
-
                 throw new IllegalArgumentException(
                         "Cannot parse: unrecognized " + IResource.class.getSimpleName() + " implementation: " + templateResource.getClass().getName());
-
             }
+
+
+            // Add the required reader wrappers in order to process parser-level and prototype-only comment blocks
+            templateReader = new ParserLevelCommentMarkupReader(new PrototypeOnlyCommentMarkupReader(templateReader));
+
 
             this.parser.parse(templateReader, handler);
 
