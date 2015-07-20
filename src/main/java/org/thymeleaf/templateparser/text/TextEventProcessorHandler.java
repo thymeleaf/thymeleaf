@@ -184,20 +184,7 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
         this.currentElementAttributeNamesSize++;
 
 
-        // Check there is an operator
-        if (operatorLen == 0)  {
-            throw new TextParseException(
-                    "Malformed text: Attribute \"" + new String(buffer, nameOffset, nameLen) + "\" must include an equals (=) sign and a value surrounded by quotes",
-                    operatorLine, operatorCol);
-        }
-
-
-        // Check attribute is surrounded by commas (double or single)
-        if (valueOuterLen == 0 || valueOuterLen == valueContentLen)  {
-            throw new TextParseException(
-                    "Malformed text: Value for attribute \"" + new String(buffer, nameOffset, nameLen) + "\" must be surrounded by quotes",
-                    valueLine, valueCol);
-        }
+        // In text parsing, we will be allowing both element attributes without quotes and without operator at all...
 
         super.handleAttribute(
                 buffer,
