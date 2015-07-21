@@ -92,7 +92,7 @@ public class TemplateResolver
     private String characterEncoding = null;
     private TemplateMode templateMode = DEFAULT_TEMPLATE_MODE;
     private boolean cacheable = DEFAULT_CACHEABLE;
-    private Long cacheTTLMs = null;
+    private Long cacheTTLMs = DEFAULT_CACHE_TTL_MS;
     private IResourceResolver resourceResolver = null;
     
     private final HashMap<String,String> templateAliases = new HashMap<String, String>(8);
