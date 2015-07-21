@@ -38,13 +38,20 @@ public class ElementNames {
         if (templateMode == null) {
             throw new IllegalArgumentException("Template Mode cannot be null");
         }
-        if (!templateMode.isHTML() && !templateMode.isXML()) {
-            throw new IllegalArgumentException("Cannot create Element Name for template modes other than HTML or XML");
+
+        if (templateMode == TemplateMode.HTML) {
+            return forHTMLName(elementNameBuffer, elementNameOffset, elementNameLen);
         }
 
-        return (templateMode.isHTML()?
-                forHTMLName(elementNameBuffer, elementNameOffset, elementNameLen) :
-                forXMLName(elementNameBuffer, elementNameOffset, elementNameLen));
+        if (templateMode == TemplateMode.XML) {
+            return forXMLName(elementNameBuffer, elementNameOffset, elementNameLen);
+        }
+
+        if (templateMode.isText()) {
+            return forTextName(elementNameBuffer, elementNameOffset, elementNameLen);
+        }
+
+        throw new IllegalArgumentException("Unknown template mode '" + templateMode + "'");
 
     }
 
@@ -55,11 +62,20 @@ public class ElementNames {
         if (templateMode == null) {
             throw new IllegalArgumentException("Template Mode cannot be null");
         }
-        if (!templateMode.isHTML() && !templateMode.isXML()) {
-            throw new IllegalArgumentException("Cannot create Element Name for template modes other than HTML or XML");
+
+        if (templateMode == TemplateMode.HTML) {
+            return forHTMLName(elementName);
         }
 
-        return (templateMode.isHTML()? forHTMLName(elementName) : forXMLName(elementName));
+        if (templateMode == TemplateMode.XML) {
+            return forXMLName(elementName);
+        }
+
+        if (templateMode.isText()) {
+            return forTextName(elementName);
+        }
+
+        throw new IllegalArgumentException("Unknown template mode '" + templateMode + "'");
 
     }
 
@@ -71,13 +87,20 @@ public class ElementNames {
         if (templateMode == null) {
             throw new IllegalArgumentException("Template Mode cannot be null");
         }
-        if (!templateMode.isHTML() && !templateMode.isXML()) {
-            throw new IllegalArgumentException("Cannot create Element Name for template modes other than HTML or XML");
+
+        if (templateMode == TemplateMode.HTML) {
+            return forHTMLName(prefix, elementNameBuffer, elementNameOffset, elementNameLen);
         }
 
-        return (templateMode.isHTML()?
-                forHTMLName(prefix, elementNameBuffer, elementNameOffset, elementNameLen) :
-                forXMLName(prefix, elementNameBuffer, elementNameOffset, elementNameLen));
+        if (templateMode == TemplateMode.XML) {
+            return forXMLName(prefix, elementNameBuffer, elementNameOffset, elementNameLen);
+        }
+
+        if (templateMode.isText()) {
+            return forTextName(prefix, elementNameBuffer, elementNameOffset, elementNameLen);
+        }
+
+        throw new IllegalArgumentException("Unknown template mode '" + templateMode + "'");
 
     }
 
@@ -88,11 +111,59 @@ public class ElementNames {
         if (templateMode == null) {
             throw new IllegalArgumentException("Template Mode cannot be null");
         }
-        if (!templateMode.isHTML() && !templateMode.isXML()) {
-            throw new IllegalArgumentException("Cannot create Element Name for template modes other than HTML or XML");
+
+        if (templateMode == TemplateMode.HTML) {
+            return forHTMLName(prefix, elementName);
         }
 
-        return (templateMode.isHTML()? forHTMLName(prefix, elementName) : forXMLName(prefix, elementName));
+        if (templateMode == TemplateMode.XML) {
+            return forXMLName(prefix, elementName);
+        }
+
+        if (templateMode.isText()) {
+            return forTextName(prefix, elementName);
+        }
+
+        throw new IllegalArgumentException("Unknown template mode '" + templateMode + "'");
+
+    }
+
+
+
+    public static TextElementName forTextName(final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
+
+        if (elementNameBuffer == null || elementNameLen == 0) {
+            throw new IllegalArgumentException("Element name buffer cannot be null or empty");
+        }
+        if (elementNameOffset < 0 || elementNameLen < 0) {
+            throw new IllegalArgumentException("Element name offset and len must be equal or greater than zero");
+        }
+
+
+        char c;
+        int i = elementNameOffset;
+        int n = elementNameLen;
+        while (n-- != 0) {
+
+            c = elementNameBuffer[i++];
+            if (c != ':') {
+                continue;
+            }
+
+            if (c == ':') {
+                if (i == elementNameOffset + 1){
+                    // ':' was the first char, no prefix there
+                    return new TextElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
+                }
+
+                return new TextElementName(
+                        new String(elementNameBuffer, elementNameOffset, (i - (elementNameOffset + 1))),
+                        new String(elementNameBuffer, i, (elementNameOffset + elementNameLen) - i));
+            }
+
+        }
+
+        return new TextElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
 
     }
 
@@ -163,8 +234,8 @@ public class ElementNames {
                     return new HTMLElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
                 }
 
-                if (TextUtil.equals(false, "xml:", 0, 4, elementNameBuffer, elementNameOffset, (i - elementNameOffset)) ||
-                    TextUtil.equals(false, "xmlns:", 0, 6, elementNameBuffer, elementNameOffset, (i - elementNameOffset))) {
+                if (TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "xml:", 0, 4, elementNameBuffer, elementNameOffset, (i - elementNameOffset)) ||
+                    TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "xmlns:", 0, 6, elementNameBuffer, elementNameOffset, (i - elementNameOffset))) {
                     // 'xml' is not a valid dialect prefix in HTML mode
                     return new HTMLElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
                 }
@@ -188,6 +259,42 @@ public class ElementNames {
         }
 
         return new HTMLElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
+
+    }
+
+
+
+    public static TextElementName forTextName(final String elementName) {
+
+        if (elementName == null|| elementName.length() == 0) {
+            throw new IllegalArgumentException("Element name cannot be null or empty");
+        }
+
+
+        char c;
+        int i = 0;
+        int n = elementName.length();
+        while (n-- != 0) {
+
+            c = elementName.charAt(i++);
+            if (c != ':') {
+                continue;
+            }
+
+            if (c == ':') {
+                if (i == 1){
+                    // ':' was the first char, no prefix there
+                    return new TextElementName(elementName);
+                }
+
+                return new TextElementName(
+                        elementName.substring(0, i - 1),
+                        elementName.substring(i, elementName.length()));
+            }
+
+        }
+
+        return new TextElementName(elementName);
 
     }
 
@@ -251,8 +358,8 @@ public class ElementNames {
                     return new HTMLElementName(elementName);
                 }
 
-                if (TextUtil.equals(false, "xml:", 0, 4, elementName, 0, i) ||
-                    TextUtil.equals(false, "xmlns:", 0, 6, elementName, 0, i)) {
+                if (TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "xml:", 0, 4, elementName, 0, i) ||
+                    TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "xmlns:", 0, 6, elementName, 0, i)) {
                     // 'xml' is not a valid dialect prefix in HTML mode
                     return new HTMLElementName(elementName);
                 }
@@ -281,7 +388,7 @@ public class ElementNames {
 
 
 
-    public static HTMLElementName forHTMLName(final String prefix, final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
+    public static TextElementName forTextName(final String prefix, final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
         if (elementNameBuffer == null|| elementNameLen == 0) {
             throw new IllegalArgumentException("Element name buffer cannot be null or empty");
         }
@@ -289,9 +396,9 @@ public class ElementNames {
             throw new IllegalArgumentException("Element name offset and len must be equal or greater than zero");
         }
         if (prefix == null || prefix.trim().length() == 0) {
-            return forHTMLName(elementNameBuffer, elementNameOffset, elementNameLen);
+            return forTextName(elementNameBuffer, elementNameOffset, elementNameLen);
         }
-        return new HTMLElementName(prefix, new String(elementNameBuffer, elementNameOffset, elementNameLen));
+        return new TextElementName(prefix, new String(elementNameBuffer, elementNameOffset, elementNameLen));
     }
 
 
@@ -311,14 +418,29 @@ public class ElementNames {
 
 
 
-    public static HTMLElementName forHTMLName(final String prefix, final String elementName) {
+    public static HTMLElementName forHTMLName(final String prefix, final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
+        if (elementNameBuffer == null|| elementNameLen == 0) {
+            throw new IllegalArgumentException("Element name buffer cannot be null or empty");
+        }
+        if (elementNameOffset < 0 || elementNameLen < 0) {
+            throw new IllegalArgumentException("Element name offset and len must be equal or greater than zero");
+        }
+        if (prefix == null || prefix.trim().length() == 0) {
+            return forHTMLName(elementNameBuffer, elementNameOffset, elementNameLen);
+        }
+        return new HTMLElementName(prefix, new String(elementNameBuffer, elementNameOffset, elementNameLen));
+    }
+
+
+
+    public static TextElementName forTextName(final String prefix, final String elementName) {
         if (elementName == null|| elementName.length() == 0) {
             throw new IllegalArgumentException("Element name cannot be null or empty");
         }
         if (prefix == null || prefix.trim().length() == 0) {
-            return forHTMLName(elementName);
+            return forTextName(elementName);
         }
-        return new HTMLElementName(prefix, elementName);
+        return new TextElementName(prefix, elementName);
     }
 
 
@@ -333,6 +455,17 @@ public class ElementNames {
         return new XMLElementName(prefix, elementName);
     }
 
+
+
+    public static HTMLElementName forHTMLName(final String prefix, final String elementName) {
+        if (elementName == null|| elementName.length() == 0) {
+            throw new IllegalArgumentException("Element name cannot be null or empty");
+        }
+        if (prefix == null || prefix.trim().length() == 0) {
+            return forHTMLName(elementName);
+        }
+        return new HTMLElementName(prefix, elementName);
+    }
 
 
 

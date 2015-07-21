@@ -38,13 +38,20 @@ public class AttributeNames {
         if (templateMode == null) {
             throw new IllegalArgumentException("Template Mode cannot be null");
         }
-        if (!templateMode.isHTML() && !templateMode.isXML()) {
-            throw new IllegalArgumentException("Cannot create Attribute Name for template modes other than HTML or XML");
+
+        if (templateMode == TemplateMode.HTML) {
+            return forHTMLName(attributeNameBuffer, attributeNameOffset, attributeNameLen);
         }
 
-        return (templateMode.isHTML()?
-                        forHTMLName(attributeNameBuffer, attributeNameOffset, attributeNameLen) :
-                        forXMLName(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+        if (templateMode == TemplateMode.XML) {
+            return forXMLName(attributeNameBuffer, attributeNameOffset, attributeNameLen);
+        }
+
+        if (templateMode.isText()) {
+            return forTextName(attributeNameBuffer, attributeNameOffset, attributeNameLen);
+        }
+
+        throw new IllegalArgumentException("Unknown template mode '" + templateMode + "'");
 
     }
 
@@ -55,11 +62,20 @@ public class AttributeNames {
         if (templateMode == null) {
             throw new IllegalArgumentException("Template Mode cannot be null");
         }
-        if (!templateMode.isHTML() && !templateMode.isXML()) {
-            throw new IllegalArgumentException("Cannot create Attribute Name for template modes other than HTML or XML");
+
+        if (templateMode == TemplateMode.HTML) {
+            return forHTMLName(attributeName);
         }
 
-        return (templateMode.isHTML()? forHTMLName(attributeName) : forXMLName(attributeName));
+        if (templateMode == TemplateMode.XML) {
+            return forXMLName(attributeName);
+        }
+
+        if (templateMode.isText()) {
+            return forTextName(attributeName);
+        }
+
+        throw new IllegalArgumentException("Unknown template mode '" + templateMode + "'");
 
     }
 
@@ -71,13 +87,20 @@ public class AttributeNames {
         if (templateMode == null) {
             throw new IllegalArgumentException("Template Mode cannot be null");
         }
-        if (!templateMode.isHTML() && !templateMode.isXML()) {
-            throw new IllegalArgumentException("Cannot create Attribute Name for template modes other than HTML or XML");
+
+        if (templateMode == TemplateMode.HTML) {
+            return forHTMLName(prefix, attributeNameBuffer, attributeNameOffset, attributeNameLen);
         }
 
-        return (templateMode.isHTML()?
-                forHTMLName(prefix, attributeNameBuffer, attributeNameOffset, attributeNameLen) :
-                forXMLName(prefix, attributeNameBuffer, attributeNameOffset, attributeNameLen));
+        if (templateMode == TemplateMode.XML) {
+            return forXMLName(prefix, attributeNameBuffer, attributeNameOffset, attributeNameLen);
+        }
+
+        if (templateMode.isText()) {
+            return forTextName(prefix, attributeNameBuffer, attributeNameOffset, attributeNameLen);
+        }
+
+        throw new IllegalArgumentException("Unknown template mode '" + templateMode + "'");
 
     }
 
@@ -88,11 +111,59 @@ public class AttributeNames {
         if (templateMode == null) {
             throw new IllegalArgumentException("Template Mode cannot be null");
         }
-        if (!templateMode.isHTML() && !templateMode.isXML()) {
-            throw new IllegalArgumentException("Cannot create Attribute Name for template modes other than HTML or XML");
+
+        if (templateMode == TemplateMode.HTML) {
+            return forHTMLName(prefix, attributeName);
         }
 
-        return (templateMode.isHTML()? forHTMLName(prefix, attributeName) : forXMLName(prefix, attributeName));
+        if (templateMode == TemplateMode.XML) {
+            return forXMLName(prefix, attributeName);
+        }
+
+        if (templateMode.isText()) {
+            return forTextName(prefix, attributeName);
+        }
+
+        throw new IllegalArgumentException("Unknown template mode '" + templateMode + "'");
+
+    }
+
+
+
+    public static TextAttributeName forTextName(final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
+
+        if (attributeNameBuffer == null || attributeNameLen == 0) {
+            throw new IllegalArgumentException("Attribute name buffer cannot be null or empty");
+        }
+        if (attributeNameOffset < 0 || attributeNameLen < 0) {
+            throw new IllegalArgumentException("Attribute name offset and len must be equal or greater than zero");
+        }
+
+
+        char c;
+        int i = attributeNameOffset;
+        int n = attributeNameLen;
+        while (n-- != 0) {
+
+            c = attributeNameBuffer[i++];
+            if (c != ':') {
+                continue;
+            }
+
+            if (c == ':') {
+                if (i == attributeNameOffset + 1){
+                    // ':' was the first char, no prefix there
+                    return new TextAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+                }
+
+                return new TextAttributeName(
+                        new String(attributeNameBuffer, attributeNameOffset, (i - (attributeNameOffset + 1))),
+                        new String(attributeNameBuffer, i, (attributeNameOffset + attributeNameLen) - i));
+            }
+
+        }
+
+        return new TextAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
 
     }
 
@@ -164,8 +235,8 @@ public class AttributeNames {
                     return new HTMLAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
                 }
 
-                if (TextUtil.equals(false, "xml:", 0, 4, attributeNameBuffer, attributeNameOffset, (i - attributeNameOffset)) ||
-                    TextUtil.equals(false, "xmlns:", 0, 6, attributeNameBuffer, attributeNameOffset, (i - attributeNameOffset))) {
+                if (TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "xml:", 0, 4, attributeNameBuffer, attributeNameOffset, (i - attributeNameOffset)) ||
+                    TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "xmlns:", 0, 6, attributeNameBuffer, attributeNameOffset, (i - attributeNameOffset))) {
                     // 'xml' and 'xmlns' are not a valid dialect prefix in HTML mode
                     return new HTMLAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
                 }
@@ -176,7 +247,7 @@ public class AttributeNames {
             }
 
             if (!inData && c == '-') {
-                if (i == attributeNameOffset + 5 && TextUtil.equals(false, "data", 0, 4, attributeNameBuffer, attributeNameOffset, (i - (attributeNameOffset + 1)))) {
+                if (i == attributeNameOffset + 5 && TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "data", 0, 4, attributeNameBuffer, attributeNameOffset, (i - (attributeNameOffset + 1)))) {
                     inData = true;
                     continue;
                 } else {
@@ -199,6 +270,42 @@ public class AttributeNames {
         }
 
         return new HTMLAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+
+    }
+
+
+
+    public static TextAttributeName forTextName(final String attributeName) {
+
+        if (attributeName == null || attributeName.length() == 0) {
+            throw new IllegalArgumentException("Attribute name cannot be null or empty");
+        }
+
+
+        char c;
+        int i = 0;
+        int n = attributeName.length();
+        while (n-- != 0) {
+
+            c = attributeName.charAt(i++);
+            if (c != ':') {
+                continue;
+            }
+
+            if (c == ':') {
+                if (i == 1){
+                    // ':' was the first char, no prefix there
+                    return new TextAttributeName(attributeName);
+                }
+
+                return new TextAttributeName(
+                        attributeName.substring(0, i - 1),
+                        attributeName.substring(i, attributeName.length()));
+            }
+
+        }
+
+        return new TextAttributeName(attributeName);
 
     }
 
@@ -263,8 +370,8 @@ public class AttributeNames {
                     return new HTMLAttributeName(attributeName);
                 }
 
-                if (TextUtil.equals(false, "xml:", 0, 4, attributeName, 0, i) ||
-                    TextUtil.equals(false, "xmlns:", 0, 6, attributeName, 0, i)) {
+                if (TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "xml:", 0, 4, attributeName, 0, i) ||
+                    TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "xmlns:", 0, 6, attributeName, 0, i)) {
                     // 'xml' is not a valid dialect prefix in HTML mode
                     return new HTMLAttributeName(attributeName);
                 }
@@ -275,7 +382,7 @@ public class AttributeNames {
             }
 
             if (!inData && c == '-') {
-                if (i == 5 && TextUtil.equals(false, "data", 0, 4, attributeName, 0, 4)) {
+                if (i == 5 && TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "data", 0, 4, attributeName, 0, 4)) {
                     inData = true;
                     continue;
                 } else {
@@ -303,7 +410,7 @@ public class AttributeNames {
 
 
 
-    public static HTMLAttributeName forHTMLName(final String prefix, final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
+    public static TextAttributeName forTextName(final String prefix, final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
         if (attributeNameBuffer == null || attributeNameLen == 0) {
             throw new IllegalArgumentException("Attribute name buffer cannot be null or empty");
         }
@@ -311,9 +418,9 @@ public class AttributeNames {
             throw new IllegalArgumentException("Attribute name offset and len must be equal or greater than zero");
         }
         if (prefix == null || prefix.trim().length() == 0) {
-            return forHTMLName(attributeNameBuffer, attributeNameOffset, attributeNameLen);
+            return forTextName(attributeNameBuffer, attributeNameOffset, attributeNameLen);
         }
-        return new HTMLAttributeName(prefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+        return new TextAttributeName(prefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
     }
 
 
@@ -333,14 +440,29 @@ public class AttributeNames {
 
 
 
-    public static HTMLAttributeName forHTMLName(final String prefix, final String attributeName) {
+    public static HTMLAttributeName forHTMLName(final String prefix, final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
+        if (attributeNameBuffer == null || attributeNameLen == 0) {
+            throw new IllegalArgumentException("Attribute name buffer cannot be null or empty");
+        }
+        if (attributeNameOffset < 0 || attributeNameLen < 0) {
+            throw new IllegalArgumentException("Attribute name offset and len must be equal or greater than zero");
+        }
+        if (prefix == null || prefix.trim().length() == 0) {
+            return forHTMLName(attributeNameBuffer, attributeNameOffset, attributeNameLen);
+        }
+        return new HTMLAttributeName(prefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+    }
+
+
+
+    public static TextAttributeName forTextName(final String prefix, final String attributeName) {
         if (attributeName == null || attributeName.length() == 0) {
             throw new IllegalArgumentException("Attribute name cannot be null or empty");
         }
         if (prefix == null || prefix.trim().length() == 0) {
-            return forHTMLName(attributeName);
+            return forTextName(attributeName);
         }
-        return new HTMLAttributeName(prefix, attributeName);
+        return new TextAttributeName(prefix, attributeName);
     }
 
 
@@ -357,8 +479,19 @@ public class AttributeNames {
 
 
 
+    public static HTMLAttributeName forHTMLName(final String prefix, final String attributeName) {
+        if (attributeName == null || attributeName.length() == 0) {
+            throw new IllegalArgumentException("Attribute name cannot be null or empty");
+        }
+        if (prefix == null || prefix.trim().length() == 0) {
+            return forHTMLName(attributeName);
+        }
+        return new HTMLAttributeName(prefix, attributeName);
+    }
 
-    
+
+
+
 
     private AttributeNames() {
         super();

@@ -194,12 +194,16 @@ public final class ElementDefinitions {
 
 
 
-    // We need two different repositories, for HTML and XML, because one is case-sensitive and the other is not.
+    // We need different repositories for each template mode, because *Definition structures are template-mode sensitive,
+    // given this can affect its behaviour (e.g. case-sensitivity).
     // Besides, we don't want HTML-only element types like "VOID" or "RAW_TEXT" be applied to XML elements even if they have the same name.
-    // Also, there is no need to add any 'standard elements' to XML because other than the synthetic block, there are none, and avoiding its
-    // creation we save a repository query each time an element is asked for.
+    // Also, there is no need to add any 'standard elements' to XML or other template modes because other than the
+    // synthetic block, there are none, and avoiding its creation we save a repository query each time an element is asked for.
     private final ElementDefinitionRepository htmlElementRepository;
     private final ElementDefinitionRepository xmlElementRepository;
+    private final ElementDefinitionRepository textElementRepository;
+    private final ElementDefinitionRepository javascriptElementRepository;
+    private final ElementDefinitionRepository cssElementRepository;
 
 
 
@@ -248,8 +252,11 @@ public final class ElementDefinitions {
         /*
          * Initialize the repositories
          */
-        this.htmlElementRepository = new ElementDefinitionRepository(true, elementProcessorsByTemplateMode);
-        this.xmlElementRepository = new ElementDefinitionRepository(false, elementProcessorsByTemplateMode);
+        this.htmlElementRepository = new ElementDefinitionRepository(TemplateMode.HTML, elementProcessorsByTemplateMode);
+        this.xmlElementRepository = new ElementDefinitionRepository(TemplateMode.XML, elementProcessorsByTemplateMode);
+        this.textElementRepository = new ElementDefinitionRepository(TemplateMode.TEXT, elementProcessorsByTemplateMode);
+        this.javascriptElementRepository = new ElementDefinitionRepository(TemplateMode.JAVASCRIPT, elementProcessorsByTemplateMode);
+        this.cssElementRepository = new ElementDefinitionRepository(TemplateMode.CSS, elementProcessorsByTemplateMode);
 
 
         /*
@@ -276,7 +283,7 @@ public final class ElementDefinitions {
                 // Cannot be null -- has been previously validated
                 final TemplateMode templateMode = processor.getTemplateMode();
 
-                if (!templateMode.isHTML()) {
+                if (templateMode != TemplateMode.HTML) {
                     // We are creating an HTML element definition, therefore we are only interested on HTML processors
                     continue;
                 }
@@ -326,7 +333,7 @@ public final class ElementDefinitions {
                 // Cannot be null -- has been previously validated
                 final TemplateMode templateMode = processor.getTemplateMode();
 
-                if (!templateMode.isXML()) {
+                if (templateMode != TemplateMode.XML) {
                     // We are creating an XML element definition, therefore we are only interested on XML processors
                     continue;
                 }
@@ -359,6 +366,54 @@ public final class ElementDefinitions {
 
         // Build the final instance
         return new XMLElementDefinition(name, associatedProcessors);
+
+    }
+
+
+
+
+    private static TextElementDefinition buildTextElementDefinition(
+            final TemplateMode templateMode, final TextElementName name, final Set<IElementProcessor> elementProcessors) {
+
+        // No need to use a list for sorting - the elementProcessors set has already been ordered
+        final Set<IElementProcessor> associatedProcessors = new LinkedHashSet<IElementProcessor>(2);
+
+        if (elementProcessors != null) {
+            for (final IElementProcessor processor : elementProcessors) {
+
+                if (processor.getTemplateMode() != templateMode) {
+                    // We are creating an element definition for a specific template mode
+                    continue;
+                }
+
+                final MatchingElementName matchingElementName = processor.getMatchingElementName();
+                final MatchingAttributeName matchingAttributeName = processor.getMatchingAttributeName();
+
+                if ((matchingElementName != null && matchingElementName.getTemplateMode() != templateMode) ||
+                        (matchingAttributeName != null && matchingAttributeName.getTemplateMode() != templateMode)) {
+                    throw new ConfigurationException(templateMode + " processors must return " + templateMode + "element names and " + templateMode + " attribute names (processor: " + processor.getClass().getName() + ")");
+                }
+
+                if (matchingAttributeName != null && !matchingAttributeName.isMatchingAllAttributes()) {
+                    // This processor requires a specific attribute to be present. Given filtering by attribute is more
+                    // restricted than filtering by element, we will not associate this processor with the element
+                    // (will be instead associated with the attribute).
+                    continue;
+                }
+
+                if (matchingElementName != null && !matchingElementName.matches(name)) {
+                    // Doesn't match. This processor is not associated with this element
+                    // Note that elementName == null means "apply to all processors"
+                    continue;
+                }
+
+                associatedProcessors.add(processor);
+
+            }
+        }
+
+        // Build the final instance
+        return new TextElementDefinition(name, associatedProcessors);
 
     }
 
@@ -421,6 +476,90 @@ public final class ElementDefinitions {
 
 
 
+    public TextElementDefinition forTextName(final String elementName) {
+        if (elementName == null || elementName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        return (TextElementDefinition) this.textElementRepository.getElement(elementName);
+    }
+
+
+    public TextElementDefinition forTextName(final String prefix, final String elementName) {
+        if (elementName == null || elementName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        return (TextElementDefinition) this.textElementRepository.getElement(prefix, elementName);
+    }
+
+
+    public TextElementDefinition forTextName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
+        if (elementName == null || elementNameLen == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        if (elementNameOffset < 0 || elementNameLen < 0) {
+            throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
+        }
+        return (TextElementDefinition) this.textElementRepository.getElement(elementName, elementNameOffset, elementNameLen);
+    }
+
+
+
+    public TextElementDefinition forJavaScriptName(final String elementName) {
+        if (elementName == null || elementName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        return (TextElementDefinition) this.javascriptElementRepository.getElement(elementName);
+    }
+
+
+    public TextElementDefinition forJavaScriptName(final String prefix, final String elementName) {
+        if (elementName == null || elementName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        return (TextElementDefinition) this.javascriptElementRepository.getElement(prefix, elementName);
+    }
+
+
+    public TextElementDefinition forJavaScriptName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
+        if (elementName == null || elementNameLen == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        if (elementNameOffset < 0 || elementNameLen < 0) {
+            throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
+        }
+        return (TextElementDefinition) this.javascriptElementRepository.getElement(elementName, elementNameOffset, elementNameLen);
+    }
+
+
+
+    public TextElementDefinition forCSSName(final String elementName) {
+        if (elementName == null || elementName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        return (TextElementDefinition) this.cssElementRepository.getElement(elementName);
+    }
+
+
+    public TextElementDefinition forCSSName(final String prefix, final String elementName) {
+        if (elementName == null || elementName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        return (TextElementDefinition) this.cssElementRepository.getElement(prefix, elementName);
+    }
+
+
+    public TextElementDefinition forCSSName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
+        if (elementName == null || elementNameLen == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        if (elementNameOffset < 0 || elementNameLen < 0) {
+            throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
+        }
+        return (TextElementDefinition) this.cssElementRepository.getElement(elementName, elementNameOffset, elementNameLen);
+    }
+
+
+
 
 
 
@@ -434,7 +573,7 @@ public final class ElementDefinitions {
      */
     static final class ElementDefinitionRepository {
 
-        private final boolean html;
+        private final TemplateMode templateMode;
 
         // These have already been filtered previously - only element-oriented processors will be here
         private final Map<TemplateMode, Set<IElementProcessor>> elementProcessorsByTemplateMode;
@@ -450,15 +589,15 @@ public final class ElementDefinitions {
         private final Lock writeLock = this.lock.writeLock();
 
 
-        ElementDefinitionRepository(final boolean html, final Map<TemplateMode, Set<IElementProcessor>> elementProcessorsByTemplateMode) {
+        ElementDefinitionRepository(final TemplateMode templateMode, final Map<TemplateMode, Set<IElementProcessor>> elementProcessorsByTemplateMode) {
 
             super();
 
-            this.html = html;
+            this.templateMode = templateMode;
             this.elementProcessorsByTemplateMode = elementProcessorsByTemplateMode;
 
-            this.standardRepositoryNames = (html ? new ArrayList<String>(150) : null);
-            this.standardRepository = (html ? new ArrayList<ElementDefinition>(150) : null);
+            this.standardRepositoryNames = (templateMode == TemplateMode.HTML ? new ArrayList<String>(150) : null);
+            this.standardRepository = (templateMode == TemplateMode.HTML ? new ArrayList<ElementDefinition>(150) : null);
 
             this.repositoryNames = new ArrayList<String>(150);
             this.repository = new ArrayList<ElementDefinition>(150);
@@ -475,7 +614,7 @@ public final class ElementDefinitions {
                  * We first try to find it in the repositories containing the standard elements, which does not need
                  * any synchronization.
                  */
-                index = binarySearch(!this.html, this.standardRepositoryNames, text, offset, len);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.standardRepositoryNames, text, offset, len);
 
                 if (index >= 0) {
                     return this.standardRepository.get(index);
@@ -494,7 +633,7 @@ public final class ElementDefinitions {
                 /*
                  * First look for the element in the namespaced repository
                  */
-                index = binarySearch(!this.html, this.repositoryNames, text, offset, len);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, text, offset, len);
 
                 if (index >= 0) {
                     return this.repository.get(index);
@@ -527,7 +666,7 @@ public final class ElementDefinitions {
                  * We first try to find it in the repository containing the standard elements, which does not need
                  * any synchronization.
                  */
-                index = binarySearch(!this.html, this.standardRepositoryNames, completeElementName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.standardRepositoryNames, completeElementName);
 
                 if (index >= 0) {
                     return this.standardRepository.get(index);
@@ -545,7 +684,7 @@ public final class ElementDefinitions {
                 /*
                  * First look for the element in the namespaced repository
                  */
-                index = binarySearch(!this.html, this.repositoryNames, completeElementName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, completeElementName);
 
                 if (index >= 0) {
                     return this.repository.get(index);
@@ -578,7 +717,7 @@ public final class ElementDefinitions {
                  * We first try to find it in the repository containing the standard elements, which does not need
                  * any synchronization.
                  */
-                index = binarySearch(!this.html, this.standardRepositoryNames, prefix, elementName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.standardRepositoryNames, prefix, elementName);
 
                 if (index >= 0) {
                     return this.standardRepository.get(index);
@@ -596,7 +735,7 @@ public final class ElementDefinitions {
                 /*
                  * First look for the element in the namespaced repository
                  */
-                index = binarySearch(!this.html, this.repositoryNames, prefix, elementName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, prefix, elementName);
 
                 if (index >= 0) {
                     return this.repository.get(index);
@@ -622,22 +761,31 @@ public final class ElementDefinitions {
 
         private ElementDefinition storeElement(final char[] text, final int offset, final int len) {
 
-            int index = binarySearch(!this.html, this.repositoryNames, text, offset, len);
+            int index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, text, offset, len);
             if (index >= 0) {
                 // It was already added while we were waiting for the lock!
                 return this.repository.get(index);
             }
 
-            final ElementDefinition elementDefinition =
-                    this.html?
-                            buildHTMLElementDefinition(ElementNames.forHTMLName(text, offset, len), HTMLElementType.NORMAL, this.elementProcessorsByTemplateMode.get(TemplateMode.HTML)) :
-                            buildXMLElementDefinition(ElementNames.forXMLName(text, offset, len), this.elementProcessorsByTemplateMode.get(TemplateMode.XML));
+            final Set<IElementProcessor> elementProcessors = this.elementProcessorsByTemplateMode.get(this.templateMode);
+
+            final ElementDefinition elementDefinition;
+            if (this.templateMode == TemplateMode.HTML) {
+                elementDefinition =
+                        buildHTMLElementDefinition(ElementNames.forHTMLName(text, offset, len), HTMLElementType.NORMAL, elementProcessors);
+            } else if (this.templateMode == TemplateMode.XML) {
+                elementDefinition =
+                        buildXMLElementDefinition(ElementNames.forXMLName(text, offset, len), elementProcessors);
+            } else { // this.templateMode.isText()
+                elementDefinition =
+                        buildTextElementDefinition(this.templateMode, ElementNames.forTextName(text, offset, len), elementProcessors);
+            }
 
             final String[] completeElementNames = elementDefinition.elementName.completeElementNames;
 
             for (final String completeElementName : completeElementNames) {
 
-                index = binarySearch(!this.html, this.repositoryNames, completeElementName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, completeElementName);
 
                 // binary Search returned (-(insertion point) - 1)
                 this.repositoryNames.add(((index + 1) * -1), completeElementName);
@@ -652,22 +800,31 @@ public final class ElementDefinitions {
 
         private ElementDefinition storeElement(final String text) {
 
-            int index = binarySearch(!this.html, this.repositoryNames, text);
+            int index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, text);
             if (index >= 0) {
                 // It was already added while we were waiting for the lock!
                 return this.repository.get(index);
             }
 
-            final ElementDefinition elementDefinition =
-                    this.html?
-                            buildHTMLElementDefinition(ElementNames.forHTMLName(text), HTMLElementType.NORMAL, this.elementProcessorsByTemplateMode.get(TemplateMode.HTML)) :
-                            buildXMLElementDefinition(ElementNames.forXMLName(text), this.elementProcessorsByTemplateMode.get(TemplateMode.XML));
+            final Set<IElementProcessor> elementProcessors = this.elementProcessorsByTemplateMode.get(this.templateMode);
+
+            final ElementDefinition elementDefinition;
+            if (this.templateMode == TemplateMode.HTML) {
+                elementDefinition =
+                        buildHTMLElementDefinition(ElementNames.forHTMLName(text), HTMLElementType.NORMAL, elementProcessors);
+            } else if (this.templateMode == TemplateMode.XML) {
+                elementDefinition =
+                        buildXMLElementDefinition(ElementNames.forXMLName(text), elementProcessors);
+            } else { // this.templateMode.isText()
+                elementDefinition =
+                        buildTextElementDefinition(this.templateMode, ElementNames.forTextName(text), elementProcessors);
+            }
 
             final String[] completeElementNames = elementDefinition.elementName.completeElementNames;
 
             for (final String completeElementName : completeElementNames) {
 
-                index = binarySearch(!this.html, this.repositoryNames, completeElementName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, completeElementName);
 
                 // binary Search returned (-(insertion point) - 1)
                 this.repositoryNames.add(((index + 1) * -1), completeElementName);
@@ -682,22 +839,31 @@ public final class ElementDefinitions {
 
         private ElementDefinition storeElement(final String prefix, final String elementName) {
 
-            int index = binarySearch(!this.html, this.repositoryNames, prefix, elementName);
+            int index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, prefix, elementName);
             if (index >= 0) {
                 // It was already added while we were waiting for the lock!
                 return this.repository.get(index);
             }
 
-            final ElementDefinition elementDefinition =
-                    this.html?
-                            buildHTMLElementDefinition(ElementNames.forHTMLName(prefix, elementName), HTMLElementType.NORMAL, this.elementProcessorsByTemplateMode.get(TemplateMode.HTML)) :
-                            buildXMLElementDefinition(ElementNames.forXMLName(prefix, elementName), this.elementProcessorsByTemplateMode.get(TemplateMode.XML));
+            final Set<IElementProcessor> elementProcessors = this.elementProcessorsByTemplateMode.get(this.templateMode);
+
+            final ElementDefinition elementDefinition;
+            if (this.templateMode == TemplateMode.HTML) {
+                elementDefinition =
+                        buildHTMLElementDefinition(ElementNames.forHTMLName(prefix, elementName), HTMLElementType.NORMAL, elementProcessors);
+            } else if (this.templateMode == TemplateMode.XML) {
+                elementDefinition =
+                        buildXMLElementDefinition(ElementNames.forXMLName(prefix, elementName), elementProcessors);
+            } else { // this.templateMode.isText()
+                elementDefinition =
+                        buildTextElementDefinition(this.templateMode, ElementNames.forTextName(prefix, elementName), elementProcessors);
+            }
 
             final String[] completeElementNames = elementDefinition.elementName.completeElementNames;
 
             for (final String completeElementName : completeElementNames) {
 
-                index = binarySearch(!this.html, this.repositoryNames, completeElementName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, completeElementName);
 
                 // binary Search returned (-(insertion point) - 1)
                 this.repositoryNames.add(((index + 1) * -1), completeElementName);
@@ -720,13 +886,13 @@ public final class ElementDefinitions {
             int index;
             for (final String completeElementName : completeElementNames) {
 
-                index = binarySearch(!this.html, this.standardRepositoryNames, completeElementName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.standardRepositoryNames, completeElementName);
 
                 // binary Search returned (-(insertion point) - 1)
                 this.standardRepositoryNames.add(((index + 1) * -1), completeElementName);
                 this.standardRepository.add(((index + 1) * -1), elementDefinition);
 
-                index = binarySearch(!this.html, this.repositoryNames, completeElementName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, completeElementName);
 
                 // binary Search returned (-(insertion point) - 1)
                 this.repositoryNames.add(((index + 1) * -1), completeElementName);

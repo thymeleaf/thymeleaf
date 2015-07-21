@@ -21,6 +21,7 @@ package org.thymeleaf.processor.element;
 
 import org.thymeleaf.engine.ElementName;
 import org.thymeleaf.engine.HTMLElementName;
+import org.thymeleaf.engine.TextElementName;
 import org.thymeleaf.engine.XMLElementName;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.TextUtil;
@@ -44,10 +45,12 @@ public final class MatchingElementName {
     public static MatchingElementName forElementName(final TemplateMode templateMode, final ElementName matchingElementName) {
         Validate.notNull(templateMode, "Template mode cannot be null");
         Validate.notNull(matchingElementName, "Matching element name cannot be null");
-        if (templateMode.isHTML() && !(matchingElementName instanceof HTMLElementName)) {
+        if (templateMode == TemplateMode.HTML && !(matchingElementName instanceof HTMLElementName)) {
             throw new IllegalArgumentException("Element names for HTML template mode must be of class " + HTMLElementName.class.getName());
-        } else if (templateMode.isXML() && !(matchingElementName instanceof XMLElementName)) {
+        } else if (templateMode == TemplateMode.XML && !(matchingElementName instanceof XMLElementName)) {
             throw new IllegalArgumentException("Element names for XML template mode must be of class " + XMLElementName.class.getName());
+        } else if (templateMode.isText() && !(matchingElementName instanceof TextElementName)) {
+            throw new IllegalArgumentException("Element names for any text template modes must be of class " + TextElementName.class.getName());
         }
         return new MatchingElementName(templateMode, matchingElementName, null, false);
     }
@@ -108,12 +111,11 @@ public final class MatchingElementName {
 
         if (this.matchingElementName == null) {
 
-            if (templateMode.isHTML() && !(elementName instanceof HTMLElementName)) {
+            if (this.templateMode == TemplateMode.HTML && !(elementName instanceof HTMLElementName)) {
                 return false;
-            } else if (templateMode.isXML() && !(elementName instanceof XMLElementName)) {
+            } else if (this.templateMode == TemplateMode.XML && !(elementName instanceof XMLElementName)) {
                 return false;
-            } else if (templateMode.isText()) {
-                // Nothing to do with text and matching elements!
+            } else if (this.templateMode.isText() && !(elementName instanceof TextElementName)) {
                 return false;
             }
 
@@ -130,7 +132,7 @@ public final class MatchingElementName {
                 return false; // we already checked we are not matching nulls
             }
 
-            return TextUtil.equals(!this.templateMode.isHTML(), this.matchingAllElementsWithPrefix, elementNamePrefix);
+            return TextUtil.equals(this.templateMode.isCaseSensitive(), this.matchingAllElementsWithPrefix, elementNamePrefix);
 
         }
 

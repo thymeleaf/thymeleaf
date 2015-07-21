@@ -33,7 +33,7 @@ import org.thymeleaf.TemplateEngine;
 public enum TemplateMode {
 
 
-    HTML(true, false, false), XML(false, true, false), TEXT(false, false, true),
+    HTML(true, false, false), XML(false, true, false), TEXT(false, false, true), JAVASCRIPT(false, false, true), CSS(false, false, true),
 
 
     /**
@@ -96,23 +96,25 @@ public enum TemplateMode {
     private final boolean html;
     private final boolean xml;
     private final boolean text;
+    private final boolean caseSensitive;
 
     TemplateMode(final boolean html, final boolean xml, final boolean text) {
         this.html = html;
         this.xml = xml;
         this.text = text;
+        this.caseSensitive = !this.html;
     }
 
-    public boolean isHTML() {
-        return this.html;
-    }
-
-    public boolean isXML() {
-        return this.xml;
+    public boolean isMarkup() {
+        return this.html || this.xml;
     }
 
     public boolean isText() {
         return this.text;
+    }
+
+    public boolean isCaseSensitive() {
+        return this.caseSensitive;
     }
 
 
@@ -128,6 +130,12 @@ public enum TemplateMode {
         }
         if ("TEXT".equalsIgnoreCase(mode)) {
             return TEXT;
+        }
+        if ("JAVASCRIPT".equalsIgnoreCase(mode)) {
+            return JAVASCRIPT;
+        }
+        if ("CSS".equalsIgnoreCase(mode)) {
+            return CSS;
         }
         // Legacy template modes are automatically converted here
         // This code should probably be removed at some point in the distant future after Thymeleaf v3
@@ -145,7 +153,7 @@ public enum TemplateMode {
             return XML;
         }
         logger.warn(
-                "[THYMELEAF][{}] Unknown Template Mode '{}'. Must be one of: 'HTML', 'XML', 'TEXT'. " +
+                "[THYMELEAF][{}] Unknown Template Mode '{}'. Must be one of: 'HTML', 'XML', 'TEXT', 'JAVASCRIPT', 'CSS'. " +
                 "Using default Template Mode '{}'.",
                 new Object[]{TemplateEngine.threadIndex(), mode, HTML});
         return HTML;

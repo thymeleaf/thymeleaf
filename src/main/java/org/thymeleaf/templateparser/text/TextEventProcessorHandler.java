@@ -21,6 +21,7 @@ package org.thymeleaf.templateparser.text;
 
 import java.util.Arrays;
 
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.TextUtil;
 
 
@@ -38,8 +39,6 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
 
     private static final int DEFAULT_STACK_LEN = 10;
     private static final int DEFAULT_ATTRIBUTE_NAMES_LEN = 3;
-
-    private static final boolean TEXT_PARSING_CASE_SENSITIVE = true;
 
 
     // Will be used as an element name cache in order to avoid creating a new
@@ -160,7 +159,7 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
         for (int i = 0; i < this.currentElementAttributeNamesSize; i++) {
 
             if (TextUtil.equals(
-                    TEXT_PARSING_CASE_SENSITIVE,
+                    TemplateMode.TEXT.isCaseSensitive(),
                     this.currentElementAttributeNames[i], 0, this.currentElementAttributeNames[i].length,
                     buffer, nameOffset, nameLen)) {
 
@@ -204,7 +203,7 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
 
         if (peek != null) {
 
-            if (TextUtil.equals(TEXT_PARSING_CASE_SENSITIVE, peek, 0, peek.length, buffer, offset, len)) {
+            if (TextUtil.equals(TemplateMode.TEXT.isCaseSensitive(), peek, 0, peek.length, buffer, offset, len)) {
                 popFromStack();
                 return true;
             }

@@ -54,9 +54,12 @@ public final class AttributeDefinitions {
     private static final Set<String> ALL_STANDARD_BOOLEAN_HTML_ATTRIBUTE_NAMES;
 
 
-    // We need two different repositories, for HTML and XML, because one is case-sensitive and the other is not.
+    // We need a different repository for each template mode
     private final AttributeDefinitionRepository htmlAttributeRepository;
     private final AttributeDefinitionRepository xmlAttributeRepository;
+    private final AttributeDefinitionRepository textAttributeRepository;
+    private final AttributeDefinitionRepository javascriptAttributeRepository;
+    private final AttributeDefinitionRepository cssAttributeRepository;
 
 
 
@@ -150,8 +153,11 @@ public final class AttributeDefinitions {
         /*
          * Initialize the repositories
          */
-        this.htmlAttributeRepository = new AttributeDefinitionRepository(true, elementProcessorsByTemplateMode);
-        this.xmlAttributeRepository = new AttributeDefinitionRepository(false, elementProcessorsByTemplateMode);
+        this.htmlAttributeRepository = new AttributeDefinitionRepository(TemplateMode.HTML, elementProcessorsByTemplateMode);
+        this.xmlAttributeRepository = new AttributeDefinitionRepository(TemplateMode.XML, elementProcessorsByTemplateMode);
+        this.textAttributeRepository = new AttributeDefinitionRepository(TemplateMode.TEXT, elementProcessorsByTemplateMode);
+        this.javascriptAttributeRepository = new AttributeDefinitionRepository(TemplateMode.JAVASCRIPT, elementProcessorsByTemplateMode);
+        this.cssAttributeRepository = new AttributeDefinitionRepository(TemplateMode.CSS, elementProcessorsByTemplateMode);
 
 
         /*
@@ -184,7 +190,7 @@ public final class AttributeDefinitions {
                 // Cannot be null -- has been previously validated
                 final TemplateMode templateMode = processor.getTemplateMode();
 
-                if (!templateMode.isHTML()) {
+                if (templateMode != TemplateMode.HTML) {
                     // We are creating an HTML element definition, therefore we are only interested on HTML processors
                     continue;
                 }
@@ -240,7 +246,7 @@ public final class AttributeDefinitions {
                 // Cannot be null -- has been previously validated
                 final TemplateMode templateMode = processor.getTemplateMode();
 
-                if (!templateMode.isXML()) {
+                if (templateMode != TemplateMode.XML) {
                     // We are creating an XML element definition, therefore we are only interested on XML processors
                     continue;
                 }
@@ -270,6 +276,51 @@ public final class AttributeDefinitions {
 
         // Build the final instance
         return new XMLAttributeDefinition(name, associatedProcessors);
+
+    }
+
+
+
+
+    private static TextAttributeDefinition buildTextAttributeDefinition(
+            final TemplateMode templateMode, final TextAttributeName name, final Set<IElementProcessor> elementProcessors) {
+
+        // No need to use a list for sorting - the elementProcessors set has already been ordered
+        final Set<IElementProcessor> associatedProcessors = new LinkedHashSet<IElementProcessor>(2);
+
+        if (elementProcessors != null) {
+            for (final IElementProcessor processor : elementProcessors) {
+
+                if (processor.getTemplateMode() != templateMode) {
+                    // We are creating an XML element definition, therefore we are only interested on XML processors
+                    continue;
+                }
+
+                final MatchingElementName matchingElementName = processor.getMatchingElementName();
+                final MatchingAttributeName matchingAttributeName = processor.getMatchingAttributeName();
+
+                if ((matchingElementName != null && matchingElementName.getTemplateMode() != TemplateMode.XML) ||
+                        (matchingAttributeName != null && matchingAttributeName.getTemplateMode() != TemplateMode.XML)) {
+                    throw new ConfigurationException(templateMode + " processors must return " + templateMode + "element names and " + templateMode + " attribute names (processor: " + processor.getClass().getName() + ")");
+                }
+
+                if (matchingAttributeName == null || matchingAttributeName.isMatchingAllAttributes()) {
+                    // This processor does not relate to a specific attribute - surely an element processor
+                    continue;
+                }
+
+                if (!matchingAttributeName.matches(name)) {
+                    // Doesn't match. This processor is not associated with this attribute
+                    continue;
+                }
+
+                associatedProcessors.add(processor);
+
+            }
+        }
+
+        // Build the final instance
+        return new TextAttributeDefinition(name, associatedProcessors);
 
     }
 
@@ -332,6 +383,90 @@ public final class AttributeDefinitions {
 
 
 
+    public TextAttributeDefinition forTextName(final String attributeName) {
+        if (attributeName == null || attributeName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        return (TextAttributeDefinition) this.textAttributeRepository.getAttribute(attributeName);
+    }
+
+
+    public TextAttributeDefinition forTextName(final String prefix, final String attributeName) {
+        if (attributeName == null || attributeName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        return (TextAttributeDefinition) this.textAttributeRepository.getAttribute(prefix, attributeName);
+    }
+
+
+    public TextAttributeDefinition forTextName(final char[] attributeName, final int attributeNameOffset, final int attributeNameLen) {
+        if (attributeName == null || attributeNameLen == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        if (attributeNameOffset < 0 || attributeNameLen < 0) {
+            throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
+        }
+        return (TextAttributeDefinition) this.textAttributeRepository.getAttribute(attributeName, attributeNameOffset, attributeNameLen);
+    }
+
+
+
+    public TextAttributeDefinition forJavaScriptName(final String attributeName) {
+        if (attributeName == null || attributeName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        return (TextAttributeDefinition) this.javascriptAttributeRepository.getAttribute(attributeName);
+    }
+
+
+    public TextAttributeDefinition forJavaScriptName(final String prefix, final String attributeName) {
+        if (attributeName == null || attributeName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        return (TextAttributeDefinition) this.javascriptAttributeRepository.getAttribute(prefix, attributeName);
+    }
+
+
+    public TextAttributeDefinition forJavaScriptName(final char[] attributeName, final int attributeNameOffset, final int attributeNameLen) {
+        if (attributeName == null || attributeNameLen == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        if (attributeNameOffset < 0 || attributeNameLen < 0) {
+            throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
+        }
+        return (TextAttributeDefinition) this.javascriptAttributeRepository.getAttribute(attributeName, attributeNameOffset, attributeNameLen);
+    }
+
+
+
+    public TextAttributeDefinition forCSSName(final String attributeName) {
+        if (attributeName == null || attributeName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        return (TextAttributeDefinition) this.cssAttributeRepository.getAttribute(attributeName);
+    }
+
+
+    public TextAttributeDefinition forCSSName(final String prefix, final String attributeName) {
+        if (attributeName == null || attributeName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        return (TextAttributeDefinition) this.cssAttributeRepository.getAttribute(prefix, attributeName);
+    }
+
+
+    public TextAttributeDefinition forCSSName(final char[] attributeName, final int attributeNameOffset, final int attributeNameLen) {
+        if (attributeName == null || attributeNameLen == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        if (attributeNameOffset < 0 || attributeNameLen < 0) {
+            throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
+        }
+        return (TextAttributeDefinition) this.cssAttributeRepository.getAttribute(attributeName, attributeNameOffset, attributeNameLen);
+    }
+
+
+
 
 
     /*
@@ -342,7 +477,7 @@ public final class AttributeDefinitions {
      */
     static final class AttributeDefinitionRepository {
 
-        private final boolean html;
+        private final TemplateMode templateMode;
 
         // These have already been filtered previously - only element-oriented processors will be here
         private final Map<TemplateMode, Set<IElementProcessor>> elementProcessorsByTemplateMode;
@@ -358,15 +493,15 @@ public final class AttributeDefinitions {
         private final Lock writeLock = this.lock.writeLock();
 
 
-        AttributeDefinitionRepository(final boolean html, final Map<TemplateMode, Set<IElementProcessor>> elementProcessorsByTemplateMode) {
+        AttributeDefinitionRepository(final TemplateMode templateMode, final Map<TemplateMode, Set<IElementProcessor>> elementProcessorsByTemplateMode) {
 
             super();
 
-            this.html = html;
+            this.templateMode = templateMode;
             this.elementProcessorsByTemplateMode = elementProcessorsByTemplateMode;
 
-            this.standardRepositoryNames = (html ? new ArrayList<String>(150) : null);
-            this.standardRepository = (html ? new ArrayList<AttributeDefinition>(150) : null);
+            this.standardRepositoryNames = (templateMode == TemplateMode.HTML ? new ArrayList<String>(150) : null);
+            this.standardRepository = (templateMode == TemplateMode.HTML ? new ArrayList<AttributeDefinition>(150) : null);
 
             this.repositoryNames = new ArrayList<String>(500);
             this.repository = new ArrayList<AttributeDefinition>(500);
@@ -383,7 +518,7 @@ public final class AttributeDefinitions {
                  * We first try to find it in the repository containing the standard elements, which does not need
                  * any synchronization.
                  */
-                index = binarySearch(!this.html, this.standardRepositoryNames, text, offset, len);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.standardRepositoryNames, text, offset, len);
 
                 if (index >= 0) {
                     return this.standardRepository.get(index);
@@ -401,7 +536,7 @@ public final class AttributeDefinitions {
                 /*
                  * First look for the element in the namespaced repository
                  */
-                index = binarySearch(!this.html, this.repositoryNames, text, offset, len);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, text, offset, len);
 
                 if (index >= 0) {
                     return this.repository.get(index);
@@ -434,7 +569,7 @@ public final class AttributeDefinitions {
                  * We first try to find it in the repository containing the standard elements, which does not need
                  * any synchronization.
                  */
-                index = binarySearch(!this.html, this.standardRepositoryNames, completeAttributeName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.standardRepositoryNames, completeAttributeName);
 
                 if (index >= 0) {
                     return this.standardRepository.get(index);
@@ -452,7 +587,7 @@ public final class AttributeDefinitions {
                 /*
                  * First look for the element in the namespaced repository
                  */
-                index = binarySearch(!this.html, this.repositoryNames, completeAttributeName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, completeAttributeName);
 
                 if (index >= 0) {
                     return this.repository.get(index);
@@ -485,7 +620,7 @@ public final class AttributeDefinitions {
                  * We first try to find it in the repository containing the standard elements, which does not need
                  * any synchronization.
                  */
-                index = binarySearch(!this.html, this.standardRepositoryNames, prefix, attributeName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.standardRepositoryNames, prefix, attributeName);
 
                 if (index >= 0) {
                     return this.standardRepository.get(index);
@@ -503,7 +638,7 @@ public final class AttributeDefinitions {
                 /*
                  * First look for the element in the namespaced repository
                  */
-                index = binarySearch(!this.html, this.repositoryNames, prefix, attributeName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, prefix, attributeName);
 
                 if (index >= 0) {
                     return this.repository.get(index);
@@ -529,22 +664,31 @@ public final class AttributeDefinitions {
 
         private AttributeDefinition storeAttribute(final char[] text, final int offset, final int len) {
 
-            int index = binarySearch(!this.html, this.repositoryNames, text, offset, len);
+            int index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, text, offset, len);
             if (index >= 0) {
                 // It was already added while we were waiting for the lock!
                 return this.repository.get(index);
             }
 
-            final AttributeDefinition attributeDefinition =
-                    this.html?
-                            buildHTMLAttributeDefinition(AttributeNames.forHTMLName(text, offset, len), this.elementProcessorsByTemplateMode.get(TemplateMode.HTML)) :
-                            buildXMLAttributeDefinition(AttributeNames.forXMLName(text, offset, len), this.elementProcessorsByTemplateMode.get(TemplateMode.XML));
+            final Set<IElementProcessor> elementProcessors = this.elementProcessorsByTemplateMode.get(this.templateMode);
+
+            final AttributeDefinition attributeDefinition;
+            if (this.templateMode == TemplateMode.HTML) {
+                attributeDefinition =
+                        buildHTMLAttributeDefinition(AttributeNames.forHTMLName(text, offset, len), elementProcessors);
+            } else if (this.templateMode == TemplateMode.XML) {
+                attributeDefinition =
+                        buildXMLAttributeDefinition(AttributeNames.forXMLName(text, offset, len), elementProcessors);
+            } else { // this.templateMode.isText()
+                attributeDefinition =
+                        buildTextAttributeDefinition(this.templateMode, AttributeNames.forTextName(text, offset, len), elementProcessors);
+            }
 
             final String[] completeAttributeNames = attributeDefinition.attributeName.completeAttributeNames;
 
             for (final String completeAttributeName : completeAttributeNames) {
 
-                index = binarySearch(!this.html, this.repositoryNames, completeAttributeName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, completeAttributeName);
 
                 // binary Search returned (-(insertion point) - 1)
                 this.repositoryNames.add(((index + 1) * -1), completeAttributeName);
@@ -559,22 +703,31 @@ public final class AttributeDefinitions {
 
         private AttributeDefinition storeAttribute(final String attributeName) {
 
-            int index = binarySearch(!this.html, this.repositoryNames, attributeName);
+            int index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, attributeName);
             if (index >= 0) {
                 // It was already added while we were waiting for the lock!
                 return this.repository.get(index);
             }
 
-            final AttributeDefinition attributeDefinition =
-                    this.html?
-                            buildHTMLAttributeDefinition(AttributeNames.forHTMLName(attributeName), this.elementProcessorsByTemplateMode.get(TemplateMode.HTML)) :
-                            buildXMLAttributeDefinition(AttributeNames.forXMLName(attributeName), this.elementProcessorsByTemplateMode.get(TemplateMode.XML));
+            final Set<IElementProcessor> elementProcessors = this.elementProcessorsByTemplateMode.get(this.templateMode);
+
+            final AttributeDefinition attributeDefinition;
+            if (this.templateMode == TemplateMode.HTML) {
+                attributeDefinition =
+                        buildHTMLAttributeDefinition(AttributeNames.forHTMLName(attributeName), elementProcessors);
+            } else if (this.templateMode == TemplateMode.XML) {
+                attributeDefinition =
+                        buildXMLAttributeDefinition(AttributeNames.forXMLName(attributeName), elementProcessors);
+            } else { // this.templateMode.isText()
+                attributeDefinition =
+                        buildTextAttributeDefinition(this.templateMode, AttributeNames.forTextName(attributeName), elementProcessors);
+            }
 
             final String[] completeAttributeNames = attributeDefinition.attributeName.completeAttributeNames;
 
             for (final String completeAttributeName : completeAttributeNames) {
 
-                index = binarySearch(!this.html, this.repositoryNames, completeAttributeName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, completeAttributeName);
 
                 // binary Search returned (-(insertion point) - 1)
                 this.repositoryNames.add(((index + 1) * -1), completeAttributeName);
@@ -589,22 +742,31 @@ public final class AttributeDefinitions {
 
         private AttributeDefinition storeAttribute(final String prefix, final String attributeName) {
 
-            int index = binarySearch(!this.html, this.repositoryNames, prefix, attributeName);
+            int index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, prefix, attributeName);
             if (index >= 0) {
                 // It was already added while we were waiting for the lock!
                 return this.repository.get(index);
             }
 
-            final AttributeDefinition attributeDefinition =
-                    this.html?
-                            buildHTMLAttributeDefinition(AttributeNames.forHTMLName(prefix, attributeName), this.elementProcessorsByTemplateMode.get(TemplateMode.HTML)) :
-                            buildXMLAttributeDefinition(AttributeNames.forXMLName(prefix, attributeName), this.elementProcessorsByTemplateMode.get(TemplateMode.XML));
+            final Set<IElementProcessor> elementProcessors = this.elementProcessorsByTemplateMode.get(this.templateMode);
+
+            final AttributeDefinition attributeDefinition;
+            if (this.templateMode == TemplateMode.HTML) {
+                attributeDefinition =
+                        buildHTMLAttributeDefinition(AttributeNames.forHTMLName(prefix, attributeName), elementProcessors);
+            } else if (this.templateMode == TemplateMode.XML) {
+                attributeDefinition =
+                        buildXMLAttributeDefinition(AttributeNames.forXMLName(prefix, attributeName), elementProcessors);
+            } else { // this.templateMode.isText()
+                attributeDefinition =
+                        buildTextAttributeDefinition(this.templateMode, AttributeNames.forTextName(prefix, attributeName), elementProcessors);
+            }
 
             final String[] completeAttributeNames = attributeDefinition.attributeName.completeAttributeNames;
 
             for (final String completeAttributeName : completeAttributeNames) {
 
-                index = binarySearch(!this.html, this.repositoryNames, completeAttributeName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, completeAttributeName);
 
                 // binary Search returned (-(insertion point) - 1)
                 this.repositoryNames.add(((index + 1) * -1), completeAttributeName);
@@ -627,13 +789,13 @@ public final class AttributeDefinitions {
             int index;
             for (final String completeAttributeName : completeAttributeNames) {
 
-                index = binarySearch(!this.html, this.standardRepositoryNames, completeAttributeName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.standardRepositoryNames, completeAttributeName);
 
                 // binary Search returned (-(insertion point) - 1)
                 this.standardRepositoryNames.add(((index + 1) * -1), completeAttributeName);
                 this.standardRepository.add(((index + 1) * -1), attributeDefinition);
 
-                index = binarySearch(!this.html, this.repositoryNames, completeAttributeName);
+                index = binarySearch(this.templateMode.isCaseSensitive(), this.repositoryNames, completeAttributeName);
 
                 // binary Search returned (-(insertion point) - 1)
                 this.repositoryNames.add(((index + 1) * -1), completeAttributeName);
