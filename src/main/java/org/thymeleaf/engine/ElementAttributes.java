@@ -359,8 +359,8 @@ public final class ElementAttributes implements IElementAttributes {
 
     public final void setAttribute(final String completeName, final String value, final ValueQuotes valueQuotes) {
         Validate.isTrue(
-                !(ValueQuotes.NONE.equals(valueQuotes) && !this.templateMode.isHTML()),
-                "Cannot set no-quote attributes when not in HTML mode");
+                !(ValueQuotes.NONE.equals(valueQuotes) && this.templateMode == TemplateMode.XML),
+                "Cannot set no-quote attributes when in XML template mode");
         Validate.isTrue(
                 !(ValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
                 "Cannot set an empty-string value to an attribute with no quotes");
@@ -375,7 +375,7 @@ public final class ElementAttributes implements IElementAttributes {
 
         Validate.notNull(name, "Attribute name cannot be null");
 
-        Validate.isTrue(value != null || this.templateMode.isHTML(), "Cannot set null-value attributes when not in HTML mode");
+        Validate.isTrue(value != null || this.templateMode != TemplateMode.XML, "Cannot set null-value attributes in XML template mode");
 
         if (this.attributes == null) {
             // We had no attributes array yet, create it
@@ -568,11 +568,37 @@ public final class ElementAttributes implements IElementAttributes {
 
 
     private AttributeDefinition computeAttributeDefinition(final String completeAttributeName) {
-        return (this.templateMode.isHTML()? this.attributeDefinitions.forHTMLName(completeAttributeName) : this.attributeDefinitions.forXMLName(completeAttributeName));
+        switch (this.templateMode) {
+            case HTML:
+                return this.attributeDefinitions.forHTMLName(completeAttributeName);
+            case XML:
+                return this.attributeDefinitions.forXMLName(completeAttributeName);
+            case TEXT:
+                return this.attributeDefinitions.forTextName(completeAttributeName);
+            case JAVASCRIPT:
+                return this.attributeDefinitions.forJavaScriptName(completeAttributeName);
+            case CSS:
+                return this.attributeDefinitions.forCSSName(completeAttributeName);
+            default:
+                throw new IllegalArgumentException("Unknown template mode: " + this.templateMode);
+        }
     }
 
     private AttributeDefinition computeAttributeDefinition(final String prefix, final String attributeName) {
-        return (this.templateMode.isHTML()? this.attributeDefinitions.forHTMLName(prefix, attributeName) : this.attributeDefinitions.forXMLName(prefix, attributeName));
+        switch (this.templateMode) {
+            case HTML:
+                return this.attributeDefinitions.forHTMLName(prefix, attributeName);
+            case XML:
+                return this.attributeDefinitions.forXMLName(prefix, attributeName);
+            case TEXT:
+                return this.attributeDefinitions.forTextName(prefix, attributeName);
+            case JAVASCRIPT:
+                return this.attributeDefinitions.forJavaScriptName(prefix, attributeName);
+            case CSS:
+                return this.attributeDefinitions.forCSSName(prefix, attributeName);
+            default:
+                throw new IllegalArgumentException("Unknown template mode: " + this.templateMode);
+        }
     }
 
 

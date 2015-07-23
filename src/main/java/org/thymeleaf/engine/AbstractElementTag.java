@@ -102,9 +102,7 @@ abstract class AbstractElementTag implements IElementTag {
             final String templateName, final int line, final int col) {
 
         this.elementName = elementName;
-        this.elementDefinition =
-                (this.templateMode.isHTML()?
-                    this.elementDefinitions.forHTMLName(this.elementName) : this.elementDefinitions.forXMLName(this.elementName));
+        this.elementDefinition = computeElementDefinition();
 
         this.templateName = templateName;
         this.line = line;
@@ -112,6 +110,23 @@ abstract class AbstractElementTag implements IElementTag {
 
     }
 
+
+    private ElementDefinition computeElementDefinition() {
+        switch (this.templateMode) {
+            case HTML:
+                return this.elementDefinitions.forHTMLName(this.elementName);
+            case XML:
+                return this.elementDefinitions.forXMLName(this.elementName);
+            case TEXT:
+                return this.elementDefinitions.forTextName(this.elementName);
+            case JAVASCRIPT:
+                return this.elementDefinitions.forJavaScriptName(this.elementName);
+            case CSS:
+                return this.elementDefinitions.forCSSName(this.elementName);
+            default:
+                throw new IllegalArgumentException("Unknown template mode: " + this.templateMode);
+        }
+    }
 
 
 

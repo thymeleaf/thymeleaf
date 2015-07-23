@@ -1052,7 +1052,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // If there is a preceding whitespace, add it to the iteration spec
                     if (lastText != null && lastText.isWhitespace() &&
-                            (this.templateMode.isXML() || (this.templateMode.isHTML() && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(standaloneElementTag.elementDefinition.elementName)))) {
+                            (this.templateMode == TemplateMode.XML ||
+                                    (this.templateMode == TemplateMode.HTML && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(standaloneElementTag.elementDefinition.elementName)))) {
                         this.iterationSpec.precedingWhitespace =
                                 Text.asEngineText(this.configuration, lastText, true);
                     }
@@ -1458,7 +1459,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // If there is a preceding whitespace, add it to the iteration spec
                     if (lastText != null && lastText.isWhitespace() &&
-                            (this.templateMode.isXML() || (this.templateMode.isHTML() && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(openElementTag.elementDefinition.elementName)))) {
+                            (this.templateMode == TemplateMode.XML ||
+                                    (this.templateMode == TemplateMode.HTML && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(openElementTag.elementDefinition.elementName)))) {
                         this.iterationSpec.precedingWhitespace =
                                 Text.asEngineText(this.configuration, lastText, true);
                     }
@@ -1835,7 +1837,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // If there is a preceding whitespace, add it to the iteration spec
                     if (lastText != null && lastText.isWhitespace() &&
-                            (this.templateMode.isXML() || (this.templateMode.isHTML() && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(autoOpenElementTag.elementDefinition.elementName)))) {
+                            (this.templateMode == TemplateMode.XML ||
+                                    (this.templateMode == TemplateMode.HTML && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(autoOpenElementTag.elementDefinition.elementName)))) {
                         this.iterationSpec.precedingWhitespace =
                                 Text.asEngineText(this.configuration, lastText, true);
                     }
@@ -2707,13 +2710,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     private static Integer computeIteratedObjectSize(final Object iteratedObject) {
         if (iteratedObject == null) {
-            return 0;
+            return Integer.valueOf(0);
         }
         if (iteratedObject instanceof Collection<?>) {
-            return ((Collection<?>)iteratedObject).size();
+            return Integer.valueOf(((Collection<?>)iteratedObject).size());
         }
         if (iteratedObject instanceof Map<?,?>) {
-            return ((Map<?,?>)iteratedObject).size();
+            return Integer.valueOf(((Map<?,?>)iteratedObject).size());
         }
         if (iteratedObject.getClass().isArray()) {
             return Integer.valueOf(Array.getLength(iteratedObject));
@@ -2724,7 +2727,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (iteratedObject instanceof Iterator<?>) {
             return null; // Cannot determine before actually iterating
         }
-        return 1; // In this case, we will iterate the object as a collection of size 1
+        return Integer.valueOf(1); // In this case, we will iterate the object as a collection of size 1
     }
 
 

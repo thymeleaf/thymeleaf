@@ -86,8 +86,8 @@ final class StandaloneElementTag
 
 
     public void setMinimized(final boolean minimized) {
-        if (this.templateMode.isXML() && !minimized) {
-            throw new IllegalArgumentException("Standalone tag cannot be un-minimized when in XML template mode.");
+        if (this.templateMode != TemplateMode.HTML && !minimized) {
+            throw new IllegalArgumentException("Standalone tag can only be non-minimized when in HTML template mode. (mode is " + this.templateMode + ")");
         }
         this.minimized = minimized; // No need to do anything else
     }
