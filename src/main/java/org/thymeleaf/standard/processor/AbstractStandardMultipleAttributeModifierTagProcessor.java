@@ -98,7 +98,7 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
                         "Attribute name expression evaluated as null or empty: \"" + leftExpr + "\"");
             }
 
-            if (getTemplateMode().isHTML() &&
+            if (getTemplateMode() == TemplateMode.HTML &&
                     this.modificationType == ModificationType.SUBSTITUTION &&
                     ArrayUtils.contains(StandardConditionalFixedValueTagProcessor.ATTR_NAMES, newAttributeName)) {
                 // Attribute is a fixed-value conditional one, like "selected", which can only

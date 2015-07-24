@@ -43,6 +43,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.templateparser.markup.HTMLTemplateParser;
 import org.thymeleaf.templateparser.markup.XMLTemplateParser;
+import org.thymeleaf.templateparser.text.TextTemplateParser;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolution;
@@ -63,6 +64,7 @@ public final class TemplateManager {
 
     private static final ITemplateParser htmlParser = new HTMLTemplateParser(40,2048);
     private static final ITemplateParser xmlParser = new XMLTemplateParser(40, 2048);
+    private static final ITemplateParser textParser = new TextTemplateParser(40, 2048);
 
     private static final StringTemplateResolver STRING_TEMPLATE_RESOLVER = new StringTemplateResolver();
 
@@ -682,17 +684,23 @@ public final class TemplateManager {
         /*
          * Handler chain is in place - now we must use it for calling the parser and initiate the processing
          */
-        if (templateMode.isHTML()) {
+        if (templateMode == TemplateMode.HTML) {
             if (fragment) {
                 htmlParser.parseFragment(configuration, templateMode, templateResource, markupSelectors, templateHandler);
             } else {
                 htmlParser.parseTemplate(configuration, templateMode, templateResource, markupSelectors, templateHandler);
             }
-        } else if (templateMode.isXML()) {
+        } else if (templateMode == TemplateMode.XML) {
             if (fragment) {
                 xmlParser.parseFragment(configuration, templateMode, templateResource, markupSelectors, templateHandler);
             } else {
                 xmlParser.parseTemplate(configuration, templateMode, templateResource, markupSelectors, templateHandler);
+            }
+        } else if (templateMode.isText()) {
+            if (fragment) {
+                textParser.parseFragment(configuration, templateMode, templateResource, markupSelectors, templateHandler);
+            } else {
+                textParser.parseTemplate(configuration, templateMode, templateResource, markupSelectors, templateHandler);
             }
         } else {
             throw new IllegalArgumentException(
