@@ -54,6 +54,7 @@ import org.thymeleaf.standard.processor.StandardMethodTagProcessor;
 import org.thymeleaf.standard.processor.StandardObjectTagProcessor;
 import org.thymeleaf.standard.processor.StandardSrcTagProcessor;
 import org.thymeleaf.standard.processor.StandardValueTagProcessor;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  *
@@ -145,7 +146,7 @@ public class SpringStandardDialect extends StandardDialect {
 
                 processors.add(standardProcessor);
 
-            } else if (!standardProcessor.getTemplateMode().isHTML()) {
+            } else if (standardProcessor.getTemplateMode() != TemplateMode.HTML) {
                 // We only want to remove from the StandardDialect the HTML versions of the attribute processors
                 processors.add(standardProcessor);
             }
