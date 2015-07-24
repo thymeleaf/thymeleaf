@@ -111,9 +111,9 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
         // Selectors CAN be null
         Validate.notNull(templateHandler, "Template Handler cannot be null");
 
-        if (templateMode.isHTML()) {
+        if (templateMode == TemplateMode.HTML) {
             Validate.isTrue(this.html, "Parser is configured as XML, but HTML-mode template parsing is being requested");
-        } else if (templateMode.isXML()) {
+        } else if (templateMode == TemplateMode.XML) {
             Validate.isTrue(!this.html, "Parser is configured as HTML, but XML-mode template parsing is being requested");
         } else {
             throw new IllegalArgumentException(
