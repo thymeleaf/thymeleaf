@@ -90,8 +90,83 @@ public class ResultCompareUtils {
 
     }
 
-    
+
+
+
+    /**
+     *
+     * @deprecated as of 3.0. Should use {@link #compareMarkupResults(String, String, boolean)} or
+     *             {@link #compareTextResults(String, String)} instead. Will be removed in 3.1.
+     */
+    @Deprecated
     public static ResultComparison compareResults(final String expected, final String actual, final boolean lenient) {
+        return compareMarkupResults(expected, actual, lenient);
+    }
+
+
+
+
+    public static ResultComparison compareTextResults(final String expected, final String actual) {
+
+        Validate.notNull(expected, "Expected result cannot be null");
+        Validate.notNull(actual, "Actual result cannot be null");
+
+        final int[] locator = new int[] {1, 1};
+
+        final int actualLen = actual.length();
+        final int expectedLen = expected.length();
+
+        char c;
+        int i = 0;
+
+        while (i < actualLen && i < expectedLen) {
+
+            c = actual.charAt(i);
+            if (c != expected.charAt(i)) {
+
+                final String actualFragment = actual.substring(Math.max(0, i - 20), Math.min(actualLen, i + 20));
+                final String expectedFragment = expected.substring(Math.max(0, i - 20), Math.min(expectedLen, i + 20));
+
+                final String explanation = createExplanation(actualFragment, locator[0], locator[1], expectedFragment);
+
+                return new ResultComparison(false, explanation);
+
+            }
+            countChar(locator, c);
+            i++;
+
+        }
+
+        if (i < actualLen || i < expectedLen) {
+
+            final String actualFragment = actual.substring(Math.max(0, i - 20), Math.min(actualLen, i + 20));
+            final String expectedFragment = expected.substring(Math.max(0, i - 20), Math.min(expectedLen, i + 20));
+
+            final String explanation = createExplanation(actualFragment, locator[0], locator[1], expectedFragment);
+
+            return new ResultComparison(false, explanation);
+
+        }
+
+        return new ResultComparison(true, "OK");
+
+    }
+
+
+
+    private static void countChar(final int[] locator, final char c) {
+        if (c == '\n') {
+            locator[0]++;
+            locator[1] = 1;
+            return;
+        }
+        locator[1]++;
+    }
+
+
+
+
+    public static ResultComparison compareMarkupResults(final String expected, final String actual, final boolean lenient) {
 
         Validate.notNull(expected, "Expected result cannot be null");
         Validate.notNull(actual, "Actual result cannot be null");
@@ -484,7 +559,7 @@ public class ResultCompareUtils {
 
     
     
-    public static String createExplanation(
+    private static String createExplanation(
             final String actualFragment, final int actualLine, final int actualCol, final String expectedFragment) {
         return "Actual result does not match expected result.\nObtained:\n[" + actualFragment + "]\n" +
                "at line " + actualLine + " col " + actualCol + ", but " +

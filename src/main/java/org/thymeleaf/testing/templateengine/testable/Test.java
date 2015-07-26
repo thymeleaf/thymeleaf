@@ -22,6 +22,7 @@ package org.thymeleaf.testing.templateengine.testable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
@@ -178,8 +179,11 @@ public class Test extends AbstractTest {
                     "Cannot execute: Test with name \"" + testName + "\" resolved its output resource as null");
         }
 
-        final ResultComparison comparison = 
-                ResultCompareUtils.compareResults(outputStr,result, !this.exactMatch);
+        final TemplateMode templateMode = getTemplateMode();
+
+        final ResultComparison comparison =
+                templateMode.isText()? ResultCompareUtils.compareTextResults(outputStr, result) :
+                                       ResultCompareUtils.compareMarkupResults(outputStr,result, !this.exactMatch);
         
         if (comparison.getResult()) {
             return TestResult.ok(testName);
