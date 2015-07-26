@@ -100,6 +100,8 @@ public class TemplateResolver
     private final PatternSpec xmlTemplateModePatternSpec = new PatternSpec();
     private final PatternSpec htmlTemplateModePatternSpec = new PatternSpec();
     private final PatternSpec textTemplateModePatternSpec = new PatternSpec();
+    private final PatternSpec javaScriptTemplateModePatternSpec = new PatternSpec();
+    private final PatternSpec cssTemplateModePatternSpec = new PatternSpec();
     
     private final PatternSpec cacheablePatternSpec = new PatternSpec();
     private final PatternSpec nonCacheablePatternSpec = new PatternSpec();
@@ -426,10 +428,10 @@ public class TemplateResolver
      *   This is a convenience method equivalent to {@link #getXmlTemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
      * </p>
      * 
-     * @param newXmlTemplatesModePatterns the new patterns
+     * @param newXmlTemplateModePatterns the new patterns
      */
-    public final void setXmlTemplateModePatterns(final Set<String> newXmlTemplatesModePatterns) {
-        this.xmlTemplateModePatternSpec.setPatterns(newXmlTemplatesModePatterns);
+    public final void setXmlTemplateModePatterns(final Set<String> newXmlTemplateModePatterns) {
+        this.xmlTemplateModePatternSpec.setPatterns(newXmlTemplateModePatterns);
     }
 
 
@@ -473,11 +475,107 @@ public class TemplateResolver
      *   This is a convenience method equivalent to {@link #getHtmlTemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
      * </p>
      *
-     * @param newHtmlTemplatesModePatterns the new patterns
+     * @param newHtmlTemplateModePatterns the new patterns
      * @since 3.0.0
      */
-    public final void setHtmlTemplateModePatterns(final Set<String> newHtmlTemplatesModePatterns) {
-        this.htmlTemplateModePatternSpec.setPatterns(newHtmlTemplatesModePatterns);
+    public final void setHtmlTemplateModePatterns(final Set<String> newHtmlTemplateModePatterns) {
+        this.htmlTemplateModePatternSpec.setPatterns(newHtmlTemplateModePatterns);
+    }
+
+
+
+
+    /**
+     * <p>
+     *   Returns the <i>pattern spec</i> specified for establishing the {@link TemplateMode#JAVASCRIPT}
+     *   template mode to resolved templates.
+     * </p>
+     *
+     * @return the pattern spec
+     * @since 3.0.0
+     */
+    public final PatternSpec getJavaScriptTemplateModePatternSpec() {
+        return this.javaScriptTemplateModePatternSpec;
+    }
+
+    /**
+     * <p>
+     *   Returns the <i>patterns</i> specified for establishing the {@link TemplateMode#JAVASCRIPT}
+     *   template mode to resolved templates.
+     * </p>
+     * <p>
+     *   This is a convenience method equivalent to {@link #getTextTemplateModePatternSpec()}.getPatterns()
+     * </p>
+     *
+     * @return the pattern spec
+     * @since 3.0.0
+     */
+    public final Set<String> getJavaScriptTemplateModePatterns() {
+        return this.javaScriptTemplateModePatternSpec.getPatterns();
+    }
+
+    /**
+     * <p>
+     *   Sets the new <i>patterns</i> to be applied for establishing the {@link TemplateMode#JAVASCRIPT}
+     *   template mode as Strings.
+     * </p>
+     * <p>
+     *   This is a convenience method equivalent to {@link #getJavaScriptTemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
+     * </p>
+     *
+     * @param newJavaScriptTemplateModePatterns the new patterns
+     * @since 3.0.0
+     */
+    public final void setJavaScriptTemplateModePatterns(final Set<String> newJavaScriptTemplateModePatterns) {
+        this.javaScriptTemplateModePatternSpec.setPatterns(newJavaScriptTemplateModePatterns);
+    }
+
+
+
+
+    /**
+     * <p>
+     *   Returns the <i>pattern spec</i> specified for establishing the {@link TemplateMode#CSS}
+     *   template mode to resolved templates.
+     * </p>
+     *
+     * @return the pattern spec
+     * @since 3.0.0
+     */
+    public final PatternSpec getCSSTemplateModePatternSpec() {
+        return this.cssTemplateModePatternSpec;
+    }
+
+    /**
+     * <p>
+     *   Returns the <i>patterns</i> specified for establishing the {@link TemplateMode#CSS}
+     *   template mode to resolved templates.
+     * </p>
+     * <p>
+     *   This is a convenience method equivalent to {@link #getTextTemplateModePatternSpec()}.getPatterns()
+     * </p>
+     *
+     * @return the pattern spec
+     * @since 3.0.0
+     */
+    public final Set<String> getCSSTemplateModePatterns() {
+        return this.cssTemplateModePatternSpec.getPatterns();
+    }
+
+    /**
+     * <p>
+     *   Sets the new <i>patterns</i> to be applied for establishing the {@link TemplateMode#CSS}
+     *   template mode as Strings.
+     * </p>
+     * <p>
+     *   This is a convenience method equivalent to {@link #getCSSTemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
+     * </p>
+     *
+     * @param newCSSTemplateModePatterns the new patterns
+     * @since 3.0.0
+     */
+    public final void setCSSTemplateModePatterns(final Set<String> newCSSTemplateModePatterns) {
+        this.cssTemplateModePatternSpec.setPatterns(newCSSTemplateModePatterns);
     }
 
 
@@ -521,11 +619,11 @@ public class TemplateResolver
      *   This is a convenience method equivalent to {@link #getTextTemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
      * </p>
      *
-     * @param newTextTemplatesModePatterns the new patterns
+     * @param newTextTemplateModePatterns the new patterns
      * @since 3.0.0
      */
-    public final void setTextTemplateModePatterns(final Set<String> newTextTemplatesModePatterns) {
-        this.textTemplateModePatternSpec.setPatterns(newTextTemplatesModePatterns);
+    public final void setTextTemplateModePatterns(final Set<String> newTextTemplateModePatterns) {
+        this.textTemplateModePatternSpec.setPatterns(newTextTemplateModePatterns);
     }
 
 
@@ -577,13 +675,13 @@ public class TemplateResolver
      *   This is a convenience method equivalent to {@link #getValidXmlTemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
      * </p>
      * 
-     * @param newValidXmlTemplatesModePatterns the new patterns
+     * @param newValidXmlTemplateModePatterns the new patterns
      * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
      *             Will be removed in 3.1
      */
     @Deprecated
-    public final void setValidXmlTemplateModePatterns(final Set<String> newValidXmlTemplatesModePatterns) {
-        this.xmlTemplateModePatternSpec.setPatterns(newValidXmlTemplatesModePatterns);
+    public final void setValidXmlTemplateModePatterns(final Set<String> newValidXmlTemplateModePatterns) {
+        this.xmlTemplateModePatternSpec.setPatterns(newValidXmlTemplateModePatterns);
     }
     
     
@@ -636,13 +734,13 @@ public class TemplateResolver
      *   This is a convenience method equivalent to {@link #getXhtmlTemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
      * </p>
      * 
-     * @param newXhtmlTemplatesModePatterns the new patterns
+     * @param newXhtmlTemplateModePatterns the new patterns
      * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
      *             Will be removed in 3.1
      */
     @Deprecated
-    public final void setXhtmlTemplateModePatterns(final Set<String> newXhtmlTemplatesModePatterns) {
-        this.htmlTemplateModePatternSpec.setPatterns(newXhtmlTemplatesModePatterns);
+    public final void setXhtmlTemplateModePatterns(final Set<String> newXhtmlTemplateModePatterns) {
+        this.htmlTemplateModePatternSpec.setPatterns(newXhtmlTemplateModePatterns);
     }
     
     
@@ -696,13 +794,13 @@ public class TemplateResolver
      *   This is a convenience method equivalent to {@link #getValidXhtmlTemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
      * </p>
      * 
-     * @param newValidXhtmlTemplatesModePatterns the new patterns
+     * @param newValidXhtmlTemplateModePatterns the new patterns
      * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
      *             Will be removed in 3.1
      */
     @Deprecated
-    public final void setValidXhtmlTemplateModePatterns(final Set<String> newValidXhtmlTemplatesModePatterns) {
-        this.htmlTemplateModePatternSpec.setPatterns(newValidXhtmlTemplatesModePatterns);
+    public final void setValidXhtmlTemplateModePatterns(final Set<String> newValidXhtmlTemplateModePatterns) {
+        this.htmlTemplateModePatternSpec.setPatterns(newValidXhtmlTemplateModePatterns);
     }
     
     
@@ -757,13 +855,13 @@ public class TemplateResolver
      *   This is a convenience method equivalent to {@link #getLegacyHtml5TemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
      * </p>
      * 
-     * @param newLegacyHtml5TemplatesModePatterns the new patterns
+     * @param newLegacyHtml5TemplateModePatterns the new patterns
      * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
      *             Will be removed in 3.1
      */
     @Deprecated
-    public final void setLegacyHtml5TemplateModePatterns(final Set<String> newLegacyHtml5TemplatesModePatterns) {
-        this.htmlTemplateModePatternSpec.setPatterns(newLegacyHtml5TemplatesModePatterns);
+    public final void setLegacyHtml5TemplateModePatterns(final Set<String> newLegacyHtml5TemplateModePatterns) {
+        this.htmlTemplateModePatternSpec.setPatterns(newLegacyHtml5TemplateModePatterns);
     }
     
     
@@ -816,13 +914,13 @@ public class TemplateResolver
      *   This is a convenience method equivalent to {@link #getHtml5TemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
      * </p>
      * 
-     * @param newHtml5TemplatesModePatterns the new patterns
+     * @param newHtml5TemplateModePatterns the new patterns
      * @deprecated Deprecated in 3.0.0. Use the methods for the {@link TemplateMode#XML} template mode instead.
      *             Will be removed in 3.1
      */
     @Deprecated
-    public final void setHtml5TemplateModePatterns(final Set<String> newHtml5TemplatesModePatterns) {
-        this.htmlTemplateModePatternSpec.setPatterns(newHtml5TemplatesModePatterns);
+    public final void setHtml5TemplateModePatterns(final Set<String> newHtml5TemplateModePatterns) {
+        this.htmlTemplateModePatternSpec.setPatterns(newHtml5TemplateModePatterns);
     }
     
     
