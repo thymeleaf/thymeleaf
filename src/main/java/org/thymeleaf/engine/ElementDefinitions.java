@@ -477,24 +477,24 @@ public final class ElementDefinitions {
 
 
     public TextElementDefinition forTextName(final String elementName) {
-        if (elementName == null || elementName.length() == 0) {
-            throw new IllegalArgumentException("Name cannot be null or empty");
+        if (elementName == null) { // In text modes, elementName can actually be the empty string
+            throw new IllegalArgumentException("Name cannot be null");
         }
         return (TextElementDefinition) this.textElementRepository.getElement(elementName);
     }
 
 
     public TextElementDefinition forTextName(final String prefix, final String elementName) {
-        if (elementName == null || elementName.length() == 0) {
-            throw new IllegalArgumentException("Name cannot be null or empty");
+        if (elementName == null) { // In text modes, elementName can actually be the empty string
+            throw new IllegalArgumentException("Name cannot be null");
         }
         return (TextElementDefinition) this.textElementRepository.getElement(prefix, elementName);
     }
 
 
     public TextElementDefinition forTextName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
-        if (elementName == null || elementNameLen == 0) {
-            throw new IllegalArgumentException("Name cannot be null or empty");
+        if (elementName == null) { // In text modes, elementName can actually be the empty string
+            throw new IllegalArgumentException("Name cannot be null");
         }
         if (elementNameOffset < 0 || elementNameLen < 0) {
             throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");

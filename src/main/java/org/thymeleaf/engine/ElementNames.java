@@ -266,8 +266,8 @@ public class ElementNames {
 
     public static TextElementName forTextName(final String elementName) {
 
-        if (elementName == null|| elementName.length() == 0) {
-            throw new IllegalArgumentException("Element name cannot be null or empty");
+        if (elementName == null) { // In text modes, elementName can actually be the empty string
+            throw new IllegalArgumentException("Element name cannot be null");
         }
 
 
