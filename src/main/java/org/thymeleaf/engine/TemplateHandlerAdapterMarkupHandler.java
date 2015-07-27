@@ -494,7 +494,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             valueQuotes = IElementAttributes.ValueQuotes.NONE;
         }
 
-        // We can safely cast here, because we know the specific implementation classes we are using
+        // Set the attribute, not allowing auto-whitespace given the parser should be creating the corresponding events
+        // for adequately specifying whitespace
         this.currentElementAttributes.setAttribute(
                 attributeName, attributeOperator, value, valueQuotes, nameLine, nameCol, false);
 

@@ -298,9 +298,9 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             valueQuotes = IElementAttributes.ValueQuotes.NONE;
         }
 
-        // We can safely cast here, because we know the specific implementation classes we are using
+        // Note we are using 'autowhitespace', given text-mode parsing does not include whitespace parsing
         this.currentElementAttributes.setAttribute(
-                attributeName, attributeOperator, value, valueQuotes, nameLine, nameCol, false);
+                attributeName, attributeOperator, value, valueQuotes, nameLine, nameCol, true);
 
     }
 

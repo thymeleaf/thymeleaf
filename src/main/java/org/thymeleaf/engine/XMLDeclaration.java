@@ -37,6 +37,7 @@ import org.thymeleaf.util.Validate;
 final class XMLDeclaration
             implements IXMLDeclaration, IEngineTemplateHandlerEvent {
 
+    // XML Declaration nodes do not exist in text parsing, so we are safe expliciting markup structures here
     public static final String DEFAULT_KEYWORD = "xml";
 
     public static final String ATTRIBUTE_NAME_VERSION = "version";

@@ -37,6 +37,7 @@ import org.thymeleaf.util.Validate;
 final class DocType
             implements IDocType, IEngineTemplateHandlerEvent {
 
+    // DOCTYPE nodes do not exist in text parsing, so we are safe expliciting markup structures here
     public static final String DEFAULT_KEYWORD = "DOCTYPE";
     public static final String DEFAULT_ELEMENT_NAME = "html";
     public static final String DEFAULT_TYPE_PUBLIC = "PUBLIC";
