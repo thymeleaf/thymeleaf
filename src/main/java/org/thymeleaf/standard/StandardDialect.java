@@ -443,6 +443,45 @@ public class StandardDialect
         processors.add(new StandardInlineEnablementDocumentProcessor(TemplateMode.XML));
 
 
+
+        /*
+         * TEXT: ATTRIBUTE TAG PROCESSORS
+         */
+        processors.add(new StandardAssertTagProcessor(TemplateMode.TEXT, dialectPrefix));
+        processors.add(new StandardCaseTagProcessor(TemplateMode.TEXT, dialectPrefix));
+        processors.add(new StandardEachTagProcessor(TemplateMode.TEXT, dialectPrefix));
+        // No th:fragment attribute in text modes: no fragment selection available!
+        processors.add(new StandardIfTagProcessor(TemplateMode.TEXT, dialectPrefix));
+        // No th:include to be added here, as it is already deprecated since 3.0
+        processors.add(new StandardInsertTagProcessor(TemplateMode.TEXT, dialectPrefix));
+        processors.add(new StandardObjectTagProcessor(TemplateMode.TEXT, dialectPrefix));
+        processors.add(new StandardRemoveTagProcessor(TemplateMode.TEXT, dialectPrefix));
+        processors.add(new StandardReplaceTagProcessor(TemplateMode.TEXT, dialectPrefix));
+        // No th:substituteby to be added here, as it is already deprecated since 2.1
+        processors.add(new StandardSwitchTagProcessor(TemplateMode.TEXT, dialectPrefix));
+        processors.add(new StandardTextTagProcessor(TemplateMode.TEXT, dialectPrefix));
+        processors.add(new StandardUnlessTagProcessor(TemplateMode.TEXT, dialectPrefix));
+        processors.add(new StandardUtextTagProcessor(TemplateMode.TEXT, dialectPrefix));
+        processors.add(new StandardWithTagProcessor(TemplateMode.TEXT, dialectPrefix));
+
+        /*
+         * TEXT: ELEMENT TAG PROCESSORS
+         */
+        processors.add(new StandardBlockTagProcessor(TemplateMode.TEXT, dialectPrefix));
+
+        /*
+         * TEXT: TEXT PROCESSORS
+         */
+// TODO Implement the text-mode text inliner for intelligent output
+//        processors.add(new StandardInliningTextProcessor(TemplateMode.TEXT));
+
+        /*
+         * TEXT: DOCUMENT PROCESSORS
+         */
+// TODO Implement the text-mode text inliner for intelligent output
+//        processors.add(new StandardInlineEnablementDocumentProcessor(TemplateMode.TEXT));
+
+
         return processors;
 
     }
