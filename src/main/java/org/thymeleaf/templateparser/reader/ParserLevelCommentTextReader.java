@@ -29,8 +29,8 @@ import java.io.Reader;
  */
 public final class ParserLevelCommentTextReader extends BlockAwareReader {
 
-    private final static char[] PREFIX = "[[-".toCharArray();
-    private final static char[] SUFFIX = "-]]".toCharArray();
+    private final static char[] PREFIX = "[-".toCharArray();
+    private final static char[] SUFFIX = "-]".toCharArray();
 
 
     public ParserLevelCommentTextReader(final Reader reader) {
