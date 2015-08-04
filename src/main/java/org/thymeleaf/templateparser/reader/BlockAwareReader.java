@@ -78,7 +78,7 @@ abstract class BlockAwareReader extends Reader {
 
         char c;
         int i = off;
-        while (i < maxi) { // we'll go backwards because that way removals will not affect iteration
+        while (i < maxi) {
 
             c = cbuf[i++];
 
@@ -89,7 +89,9 @@ abstract class BlockAwareReader extends Reader {
 
             if (!this.insideComment) {
 
-                if (c == this.prefix[this.index]) {
+                if (c == this.p0) {
+                    this.index = 1;
+                } else if (c == this.prefix[this.index]) {
                     this.index++;
                     if (this.index == this.prefix.length) {
                         // Remove the prefix, as if it was never there...
@@ -103,15 +105,15 @@ abstract class BlockAwareReader extends Reader {
                         i -= this.prefix.length;
                         this.discardFrom = (this.action == BlockAction.DISCARD_ALL? i : -1);
                     }
-                } else if (c == this.prefix[0]) {
-                    this.index = 1;
                 } else {
                     this.index = 0;
                 }
 
             } else {
 
-                if (c == this.suffix[this.index]) {
+                if (c == this.s0) {
+                    this.index = 1;
+                } else if (c == this.suffix[this.index]) {
                     this.index++;
                     if (this.index == this.suffix.length) {
 
@@ -138,8 +140,6 @@ abstract class BlockAwareReader extends Reader {
                         }
 
                     }
-                } else if (c == this.suffix[0]) {
-                    this.index = 1;
                 } else {
                     this.index = 0;
                 }
@@ -165,7 +165,7 @@ abstract class BlockAwareReader extends Reader {
             if (matchOverflow(structure)) {
 
                 this.insideComment = !this.insideComment;
-                // We don't modify the discardFrom flag here, as it wil be needed for discarding (or not) part of the buffer afterwards
+                // We don't modify the discardFrom flag here, as it will be needed for discarding (or not) part of the buffer afterwards
                 this.overflowBufferLen -= structure.length;
                 this.index = 0;
 
