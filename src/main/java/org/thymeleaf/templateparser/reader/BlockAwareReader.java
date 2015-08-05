@@ -89,9 +89,7 @@ abstract class BlockAwareReader extends Reader {
 
             if (!this.insideComment) {
 
-                if (c == this.p0) {
-                    this.index = 1;
-                } else if (c == this.prefix[this.index]) {
+                if (c == this.prefix[this.index]) {
                     this.index++;
                     if (this.index == this.prefix.length) {
                         // Remove the prefix, as if it was never there...
@@ -103,17 +101,17 @@ abstract class BlockAwareReader extends Reader {
                         read -= this.prefix.length;
                         maxi -= this.prefix.length;
                         i -= this.prefix.length;
-                        this.discardFrom = (this.action == BlockAction.DISCARD_ALL? i : -1);
+                        this.discardFrom = (this.action == BlockAction.DISCARD_ALL ? i : -1);
                     }
+                } else if (c == this.p0) {
+                    this.index = 1;
                 } else {
                     this.index = 0;
                 }
 
             } else {
 
-                if (c == this.s0) {
-                    this.index = 1;
-                } else if (c == this.suffix[this.index]) {
+                if (c == this.suffix[this.index]) {
                     this.index++;
                     if (this.index == this.suffix.length) {
 
@@ -140,6 +138,8 @@ abstract class BlockAwareReader extends Reader {
                         }
 
                     }
+                } else if (c == this.s0) {
+                    this.index = 1;
                 } else {
                     this.index = 0;
                 }
