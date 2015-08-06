@@ -110,7 +110,7 @@ public final class AuthUtils {
         
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Authentication object of class {} found in context for user \"{}\".",
-                    new Object[] {TemplateEngine.threadIndex(), authentication.getClass().getName()}, authentication.getName());
+                    new Object[] {TemplateEngine.threadIndex(), authentication.getClass().getName(), authentication.getName())};
         }
         
         return authentication;
