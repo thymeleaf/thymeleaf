@@ -47,17 +47,17 @@ final class TextParsingElementUtil {
             final ITextHandler handler)
             throws TextParseException {
 
-        if (len < 6 || !isOpenElementStart(buffer, offset, offset + len) || !isElementEnd(buffer, (offset + len) - 3, offset + len, true)) {
+        if (len < 4 || !isOpenElementStart(buffer, offset, offset + len) || !isElementEnd(buffer, (offset + len) - 2, offset + len, true)) {
             throw new TextParseException(
                     "Could not parse as a well-formed standalone element: \"" + new String(buffer, offset, len) + "\"", line, col);
         }
 
-        final int contentOffset = offset + 3;   // We add +3 because of '[[#'
-        final int contentLen = len - 6;         // +3 because of '[[#' and another +3 because of '/]]'
+        final int contentOffset = offset + 2;   // We add +2 because of '[#'
+        final int contentLen = len - 4;         // -2 because of '[#' and another -2 because of '/]'
 
         final int maxi = contentOffset + contentLen;
 
-        final int[] locator = new int[] {line, col + 3};
+        final int[] locator = new int[] {line, col + 2};
 
         /*
          * Extract the element name first
@@ -110,17 +110,17 @@ final class TextParsingElementUtil {
             final ITextHandler handler)
             throws TextParseException {
 
-        if (len < 5 || !isOpenElementStart(buffer, offset, offset + len) || !isElementEnd(buffer, (offset + len) - 2, offset + len, false)) {
+        if (len < 3 || !isOpenElementStart(buffer, offset, offset + len) || !isElementEnd(buffer, (offset + len) - 1, offset + len, false)) {
             throw new TextParseException(
                     "Could not parse as a well-formed open element: \"" + new String(buffer, offset, len) + "\"", line, col);
         }
 
-        final int contentOffset = offset + 3;   // We add +3 because of '[[#'
-        final int contentLen = len - 5;         // +3 because of '[[#' and another +2 because of ']]'
+        final int contentOffset = offset + 2;   // We add +2 because of '[#'
+        final int contentLen = len - 3;         // -2 because of '[#' and another -1 because of ']'
 
         final int maxi = contentOffset + contentLen;
 
-        final int[] locator = new int[] {line, col + 3};
+        final int[] locator = new int[] {line, col + 2};
 
         /*
          * Extract the element name first
@@ -173,17 +173,17 @@ final class TextParsingElementUtil {
             final ITextHandler handler)
             throws TextParseException {
 
-        if (len < 5 || !isCloseElementStart(buffer, offset, offset + len) || !isElementEnd(buffer, (offset + len) - 2, offset + len, false)) {
+        if (len < 3 || !isCloseElementStart(buffer, offset, offset + len) || !isElementEnd(buffer, (offset + len) - 1, offset + len, false)) {
             throw new TextParseException(
                     "Could not parse as a well-formed close element: \"" + new String(buffer, offset, len) + "\"", line, col);
         }
 
-        final int contentOffset = offset + 3;   // We add +3 because of '[[/'
-        final int contentLen = len - 5;         // +3 because of '[[/' and another +2 because of ']]'
+        final int contentOffset = offset + 2;   // We add +2 because of '[/'
+        final int contentLen = len - 3;         // -2 because of '[/' and another -1 because of ']'
 
         final int maxi = contentOffset + contentLen;
 
-        final int[] locator = new int[] {line, col + 3};
+        final int[] locator = new int[] {line, col + 2};
 
         /*
          * Extract the element name first
@@ -239,11 +239,10 @@ final class TextParsingElementUtil {
 
         final int len = maxi - offset;
 
-        return (len > 3 &&
+        return (len > 2 &&
                     buffer[offset] == '[' &&
-                    buffer[offset + 1] == '[' &&
-                    buffer[offset + 2] == '#' &&
-                    isElementNameOrEnd(buffer, offset + 3, maxi));
+                    buffer[offset + 1] == '#' &&
+                    isElementNameOrEnd(buffer, offset + 2, maxi));
 
     }
 
@@ -252,11 +251,10 @@ final class TextParsingElementUtil {
 
         final int len = maxi - offset;
 
-        return (len > 3 &&
+        return (len > 2 &&
                     buffer[offset] == '[' &&
-                    buffer[offset + 1] == '[' &&
-                    buffer[offset + 2] == '/' &&
-                    isElementNameOrEnd(buffer, offset + 3, maxi));
+                    buffer[offset + 1] == '/' &&
+                    isElementNameOrEnd(buffer, offset + 2, maxi));
 
     }
 
@@ -265,18 +263,18 @@ final class TextParsingElementUtil {
 
         final int len = maxi - offset;
 
-        if (len < 2) {
+        if (len < 1) {
             return false; // won't fit
         }
 
         if (minimized) {
-            if (len < 3 || buffer[offset] != '/') {
+            if (len < 2 || buffer[offset] != '/') {
                 return false;
             }
-            return buffer[offset + 1] == ']' && buffer[offset + 2] == ']';
+            return buffer[offset + 1] == ']';
         }
 
-        return buffer[offset] == ']' && buffer[offset + 1] == ']';
+        return buffer[offset] == ']';
 
     }
 
@@ -286,19 +284,19 @@ final class TextParsingElementUtil {
     private static boolean isElementNameOrEnd(final char[] buffer, final int offset, final int maxi) {
 
         if (Character.isWhitespace(buffer[offset])) {
-            // We cover here the case when we don't apply an element name: [[# th:something=...]]
+            // We cover here the case when we don't apply an element name: [# th:something=...]
             return true;
         }
 
         final int len = maxi - offset;
 
-        if (len > 2 && buffer[offset] == '/') {
-            // This can still be valid if we are just closing a no-name standalone element without attributes: [[#/]]
+        if (len > 1 && buffer[offset] == '/') {
+            // This can still be valid if we are just closing a no-name standalone element without attributes: [#/]
             return isElementEnd(buffer, offset, maxi, true);
         }
 
-        if (len > 1 && buffer[offset] == ']') {
-            // This can still be valid if we are just closing a no-name open element without attributes: [[#]]
+        if (len > 0 && buffer[offset] == ']') {
+            // This can still be valid if we are just closing a no-name open element without attributes: [#]
             return isElementEnd(buffer, offset, maxi, false);
         }
 

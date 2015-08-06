@@ -65,7 +65,7 @@ final class TextParsingUtil {
                 inQuotes = !inQuotes;
             } else if (c == '\'' && !inQuotes) {
                 inApos = !inApos;
-            } else if (i > offset && c == ']' && text[i - 1] == ']' && !inQuotes && !inApos) {
+            } else if (c == ']' && !inQuotes && !inApos) {
                 locator[1] += (i - colIndex);
                 return i;
             }

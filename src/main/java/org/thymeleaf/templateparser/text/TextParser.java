@@ -349,7 +349,7 @@ final class TextParser {
                 if (inOpenElement) {
                     // This is a open/standalone tag (to be determined by looking at the antepenultimate character)
 
-                    if ((buffer[tagEnd - 2] == '/')) {
+                    if ((buffer[tagEnd - 1] == '/')) {
                         TextParsingElementUtil.
                                 parseStandaloneElement(buffer, current, (tagEnd - current) + 1, currentLine, currentCol, handler);
                     } else {
