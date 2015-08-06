@@ -34,11 +34,8 @@ import org.thymeleaf.resource.ReaderResource;
 import org.thymeleaf.resource.StringResource;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.ITemplateParser;
-import org.thymeleaf.templateparser.reader.ParserLevelCommentCSSReader;
-import org.thymeleaf.templateparser.reader.ParserLevelCommentJavaScriptReader;
 import org.thymeleaf.templateparser.reader.ParserLevelCommentTextReader;
-import org.thymeleaf.templateparser.reader.PrototypeOnlyCommentCSSReader;
-import org.thymeleaf.templateparser.reader.PrototypeOnlyCommentJavaScriptReader;
+import org.thymeleaf.templateparser.reader.PrototypeOnlyCommentTextReader;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -140,16 +137,7 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
 
 
             // Add the required reader wrappers in order to process parser-level and prototype-only comment blocks
-            if (templateMode == TemplateMode.TEXT) {
-                templateReader = new ParserLevelCommentTextReader(templateReader);
-            } else if (templateMode == TemplateMode.JAVASCRIPT) {
-                templateReader = new ParserLevelCommentJavaScriptReader(new PrototypeOnlyCommentJavaScriptReader(templateReader));
-            } else if (templateMode == TemplateMode.CSS) {
-                templateReader = new ParserLevelCommentCSSReader(new PrototypeOnlyCommentCSSReader(templateReader));
-            } else {
-                throw new IllegalArgumentException(
-                        "Cannot parse: cannot recognize " + templateMode + " template mode as a text-parsed template mode.");
-            }
+            templateReader = new ParserLevelCommentTextReader(new PrototypeOnlyCommentTextReader(templateReader));
 
 
             this.parser.parse(templateReader, handler);

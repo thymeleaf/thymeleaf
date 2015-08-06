@@ -27,14 +27,14 @@ import java.io.Reader;
  * @since 3.0.0
  * 
  */
-public final class ParserLevelCommentJavaScriptReader extends BlockAwareReader {
+public final class PrototypeOnlyCommentTextReader extends BlockAwareReader {
 
-    private final static char[] PREFIX = "/*[-".toCharArray();
-    private final static char[] SUFFIX = "-]*/".toCharArray();
+    private final static char[] PREFIX = "/*[+".toCharArray();
+    private final static char[] SUFFIX = "+]*/".toCharArray();
 
 
-    public ParserLevelCommentJavaScriptReader(final Reader reader) {
-        super(reader, BlockAction.DISCARD_ALL, PREFIX, SUFFIX);
+    public PrototypeOnlyCommentTextReader(final Reader reader) {
+        super(reader, BlockAction.DISCARD_CONTAINER, PREFIX, SUFFIX);
     }
 
 }
