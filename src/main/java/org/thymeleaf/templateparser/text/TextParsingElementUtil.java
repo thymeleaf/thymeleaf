@@ -27,13 +27,13 @@ package org.thymeleaf.templateparser.text;
  * @author Daniel Fernandez
  * @since 3.0.0
  */
-final class TextParsingElementMarkupUtil {
+final class TextParsingElementUtil {
 
 
     
 
     
-    private TextParsingElementMarkupUtil() {
+    private TextParsingElementUtil() {
         super();
     }
 
@@ -64,7 +64,7 @@ final class TextParsingElementMarkupUtil {
          */
 
         final int elementNameEnd =
-                TextParsingMarkupUtil.findNextWhitespaceCharWildcard(buffer, contentOffset, maxi, true, locator);
+                TextParsingUtil.findNextWhitespaceCharWildcard(buffer, contentOffset, maxi, true, locator);
 
         if (elementNameEnd == -1) {
             // The buffer only contains the element name (if it has a name)
@@ -92,7 +92,7 @@ final class TextParsingElementMarkupUtil {
                 buffer, elementNameEnd, maxi - elementNameEnd, locator[0], locator[1], handler);
 
         // We need to forward the locator to the position corresponding with the element end (note we are discarding result)
-        TextParsingMarkupUtil.findNextStructureEndAvoidQuotes(buffer, elementNameEnd, maxi, locator);
+        TextParsingUtil.findNextStructureEndAvoidQuotes(buffer, elementNameEnd, maxi, locator);
 
         handler.handleStandaloneElementEnd(
                 buffer, contentOffset, (elementNameEnd - contentOffset),
@@ -127,7 +127,7 @@ final class TextParsingElementMarkupUtil {
          */
 
         final int elementNameEnd =
-                TextParsingMarkupUtil.findNextWhitespaceCharWildcard(buffer, contentOffset, maxi, true, locator);
+                TextParsingUtil.findNextWhitespaceCharWildcard(buffer, contentOffset, maxi, true, locator);
 
         if (elementNameEnd == -1) {
             // The buffer only contains the element name (if it has a name)
@@ -155,7 +155,7 @@ final class TextParsingElementMarkupUtil {
                 buffer, elementNameEnd, maxi - elementNameEnd, locator[0], locator[1], handler);
 
         // We need to forward the locator to the position corresponding with the element end (note we are discarding result)
-        TextParsingMarkupUtil.findNextStructureEndAvoidQuotes(buffer, elementNameEnd, maxi, locator);
+        TextParsingUtil.findNextStructureEndAvoidQuotes(buffer, elementNameEnd, maxi, locator);
 
         handler.handleOpenElementEnd(
                 buffer, contentOffset, (elementNameEnd - contentOffset),
@@ -190,7 +190,7 @@ final class TextParsingElementMarkupUtil {
          */
 
         final int elementNameEnd =
-                TextParsingMarkupUtil.findNextWhitespaceCharWildcard(buffer, contentOffset, maxi, true, locator);
+                TextParsingUtil.findNextWhitespaceCharWildcard(buffer, contentOffset, maxi, true, locator);
 
         if (elementNameEnd == -1) {
             // The buffer only contains the element name
@@ -214,7 +214,7 @@ final class TextParsingElementMarkupUtil {
 
 
         final int wsEnd =
-                TextParsingMarkupUtil.findNextNonWhitespaceCharWildcard(buffer, elementNameEnd, maxi, locator);
+                TextParsingUtil.findNextNonWhitespaceCharWildcard(buffer, elementNameEnd, maxi, locator);
 
         if (wsEnd != -1) {
             // This is a close tag, so everything should be whitespace

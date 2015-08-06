@@ -51,9 +51,9 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
 
 
 
-    protected AbstractTextTemplateParser(final int bufferPoolSize, final int bufferSize) {
+    protected AbstractTextTemplateParser(final int bufferPoolSize, final int bufferSize, final boolean processComments) {
         super();
-        this.parser = new TextParser(bufferPoolSize, bufferSize);
+        this.parser = new TextParser(bufferPoolSize, bufferSize, processComments);
     }
 
 
@@ -98,6 +98,7 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(templateMode, "Template Mode cannot be null");
+        Validate.isTrue(templateMode.isText(), "Template Mode has to be a text template mode");
         Validate.notNull(templateResource, "Template Resource cannot be null");
         // Text parsing does not allow selectors!
         Validate.isTrue(selectors == null || selectors.length == 0,
@@ -137,7 +138,13 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
 
 
             // Add the required reader wrappers in order to process parser-level and prototype-only comment blocks
-            templateReader = new ParserLevelCommentTextReader(new PrototypeOnlyCommentTextReader(templateReader));
+            if (templateMode == TemplateMode.TEXT) {
+                // There are no /*[+...+]*/ blocks in TEXT mode (it makes no sense)
+                templateReader = new ParserLevelCommentTextReader(templateReader);
+            } else {
+                // TemplateMode.JAVASCRIPT || TemplateMode.CSS
+                templateReader = new ParserLevelCommentTextReader(new PrototypeOnlyCommentTextReader(templateReader));
+            }
 
 
             this.parser.parse(templateReader, handler);

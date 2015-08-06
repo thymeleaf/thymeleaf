@@ -43,6 +43,8 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.templateparser.markup.HTMLTemplateParser;
 import org.thymeleaf.templateparser.markup.XMLTemplateParser;
+import org.thymeleaf.templateparser.text.CSSTemplateParser;
+import org.thymeleaf.templateparser.text.JavaScriptTemplateParser;
 import org.thymeleaf.templateparser.text.TextTemplateParser;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
@@ -65,6 +67,8 @@ public final class TemplateManager {
     private static final ITemplateParser htmlParser = new HTMLTemplateParser(40,2048);
     private static final ITemplateParser xmlParser = new XMLTemplateParser(40, 2048);
     private static final ITemplateParser textParser = new TextTemplateParser(40, 2048);
+    private static final ITemplateParser javascriptParser = new JavaScriptTemplateParser(40, 2048);
+    private static final ITemplateParser cssParser = new CSSTemplateParser(40, 2048);
 
     private static final StringTemplateResolver STRING_TEMPLATE_RESOLVER = new StringTemplateResolver();
 
@@ -696,11 +700,23 @@ public final class TemplateManager {
             } else {
                 xmlParser.parseTemplate(configuration, templateMode, templateResource, markupSelectors, templateHandler);
             }
-        } else if (templateMode.isText()) {
+        } else if (templateMode == TemplateMode.TEXT) {
             if (fragment) {
                 textParser.parseFragment(configuration, templateMode, templateResource, markupSelectors, templateHandler);
             } else {
                 textParser.parseTemplate(configuration, templateMode, templateResource, markupSelectors, templateHandler);
+            }
+        } else if (templateMode == TemplateMode.JAVASCRIPT) {
+            if (fragment) {
+                javascriptParser.parseFragment(configuration, templateMode, templateResource, markupSelectors, templateHandler);
+            } else {
+                javascriptParser.parseTemplate(configuration, templateMode, templateResource, markupSelectors, templateHandler);
+            }
+        } else if (templateMode == TemplateMode.CSS) {
+            if (fragment) {
+                cssParser.parseFragment(configuration, templateMode, templateResource, markupSelectors, templateHandler);
+            } else {
+                cssParser.parseTemplate(configuration, templateMode, templateResource, markupSelectors, templateHandler);
             }
         } else {
             throw new IllegalArgumentException(

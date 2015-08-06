@@ -26,11 +26,11 @@ package org.thymeleaf.templateparser.text;
  * @author Daniel Fernandez
  * @since 3.0.0
  */
-final class TextParsingMarkupUtil {
+final class TextParsingUtil {
 
 
     
-    private TextParsingMarkupUtil() {
+    private TextParsingUtil() {
         super();
     }
 
@@ -79,6 +79,40 @@ final class TextParsingMarkupUtil {
         
     }
 
+
+    static int findNextCommentEnd(
+            final char[] text, final int offset, final int maxi,
+            final int[] locator) {
+
+        char c;
+
+        int colIndex = offset;
+
+        int i = offset;
+        int n = (maxi - offset);
+
+        while (n-- != 0) {
+
+            c = text[i];
+
+            if (c == '\n') {
+                colIndex = i;
+                locator[1] = 0;
+                locator[0]++;
+            } else if (i > offset && c == '/' && text[i - 1] == '*') {
+                locator[1] += (i - colIndex);
+                return i;
+            }
+
+            i++;
+
+        }
+
+        locator[1] += (maxi - colIndex);
+        return -1;
+
+    }
+
     
 
 
@@ -101,7 +135,7 @@ final class TextParsingMarkupUtil {
                 colIndex = i;
                 locator[1] = 0;
                 locator[0]++;
-            } else if (c == '[') {
+            } else if (c == '[' || c == '/') { // '[' is for elements, '/' is for comments (/*...*/)
                 locator[1] += (i - colIndex);
                 return i;
             }

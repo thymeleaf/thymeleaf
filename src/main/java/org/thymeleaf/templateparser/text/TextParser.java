@@ -36,29 +36,10 @@ import java.util.Arrays;
  */
 final class TextParser {
 
-    /**
-     * <p>
-     *   Default buffer size to be used (buffer size will grow at runtime if
-     *   an artifact (structure or text) is bigger than the whole buffer).
-     *   Value: 4096 chars (= 8192 bytes).
-     * </p>
-     */
-    private static final int DEFAULT_BUFFER_SIZE = 4096;
-
-    /**
-     * <p>
-     *   Default pool size to be used. Buffers will be kept in a pool and
-     *   reused in order to increase performance. Pool will be non-exclusive
-     *   so that if pool size = 2 and a 3rd request arrives, it is assigned
-     *   a new buffer object (not linked to the pool, and therefore GC-ed
-     *   at the end). Value: 2.
-     * </p>
-     */
-    private static final int DEFAULT_POOL_SIZE = 2;
-
 
 
     private final BufferPool pool;
+    private final boolean processComments;
 
 
 
@@ -66,14 +47,10 @@ final class TextParser {
 
 
 
-    TextParser() {
-        this(DEFAULT_POOL_SIZE, DEFAULT_BUFFER_SIZE);
-    }
-
-
-    TextParser(final int poolSize, final int bufferSize) {
+    TextParser(final int poolSize, final int bufferSize, final boolean processComments) {
         super();
         this.pool = new BufferPool(poolSize, bufferSize);
+        this.processComments = processComments;
     }
 
 
@@ -278,6 +255,7 @@ final class TextParser {
 
         boolean inOpenElement = false;
         boolean inCloseElement = false;
+        boolean inComment = false;
 
         int tagStart;
         int tagEnd;
@@ -287,11 +265,11 @@ final class TextParser {
             currentLine = locator[0];
             currentCol = locator[1];
 
-            inStructure = (inOpenElement || inCloseElement);
+            inStructure = (inOpenElement || inCloseElement || inComment);
 
             if (!inStructure) {
 
-                tagStart = TextParsingMarkupUtil.findNextStructureStart(buffer, i, maxi, locator);
+                tagStart = TextParsingUtil.findNextStructureStart(buffer, i, maxi, locator);
 
                 if (tagStart == -1) {
 
@@ -303,18 +281,21 @@ final class TextParser {
 
                 }
 
-                inOpenElement = TextParsingElementMarkupUtil.isOpenElementStart(buffer, tagStart, maxi);
+                inOpenElement = TextParsingElementUtil.isOpenElementStart(buffer, tagStart, maxi);
                 if (!inOpenElement) {
-                    inCloseElement = TextParsingElementMarkupUtil.isCloseElementStart(buffer, tagStart, maxi);
+                    inCloseElement = TextParsingElementUtil.isCloseElementStart(buffer, tagStart, maxi);
+                    if (!inCloseElement && this.processComments) {
+                        inComment = TextParsingCommentUtil.isCommentStart(buffer, tagStart, maxi);
+                    }
                 }
 
-                inStructure = (inOpenElement || inCloseElement);
+                inStructure = (inOpenElement || inCloseElement || inComment);
 
                 while (!inStructure) {
-                    // We found a '[', but it cannot be considered beginning of any known structure
+                    // We found a '[' or a '/', but it cannot be considered beginning of any known structure
 
                     ParsingLocatorUtil.countChar(locator, buffer[tagStart]);
-                    tagStart = TextParsingMarkupUtil.findNextStructureStart(buffer, tagStart + 1, maxi, locator);
+                    tagStart = TextParsingUtil.findNextStructureStart(buffer, tagStart + 1, maxi, locator);
 
                     if (tagStart == -1) {
                         status.offset = current;
@@ -324,12 +305,15 @@ final class TextParser {
                         return;
                     }
 
-                    inOpenElement = TextParsingElementMarkupUtil.isOpenElementStart(buffer, tagStart, maxi);
+                    inOpenElement = TextParsingElementUtil.isOpenElementStart(buffer, tagStart, maxi);
                     if (!inOpenElement) {
-                        inCloseElement = TextParsingElementMarkupUtil.isCloseElementStart(buffer, tagStart, maxi);
+                        inCloseElement = TextParsingElementUtil.isCloseElementStart(buffer, tagStart, maxi);
+                        if (!inCloseElement && this.processComments) {
+                            inComment = TextParsingCommentUtil.isCommentStart(buffer, tagStart, maxi);
+                        }
                     }
 
-                    inStructure = (inOpenElement || inCloseElement);
+                    inStructure = (inOpenElement || inCloseElement || inComment);
 
                 }
 
@@ -349,7 +333,9 @@ final class TextParser {
             } else {
 
 
-                tagEnd = TextParsingMarkupUtil.findNextStructureEndAvoidQuotes(buffer, i, maxi, locator);
+                tagEnd =
+                        inComment? TextParsingUtil.findNextCommentEnd(buffer, i, maxi, locator) :
+                                   TextParsingUtil.findNextStructureEndAvoidQuotes(buffer, i, maxi, locator);
 
                 if (tagEnd < 0) {
                     // This is an unfinished structure
@@ -364,10 +350,10 @@ final class TextParser {
                     // This is a open/standalone tag (to be determined by looking at the antepenultimate character)
 
                     if ((buffer[tagEnd - 2] == '/')) {
-                        TextParsingElementMarkupUtil.
+                        TextParsingElementUtil.
                                 parseStandaloneElement(buffer, current, (tagEnd - current) + 1, currentLine, currentCol, handler);
                     } else {
-                        TextParsingElementMarkupUtil.
+                        TextParsingElementUtil.
                                 parseOpenElement(buffer, current, (tagEnd - current) + 1, currentLine, currentCol, handler);
                     }
 
@@ -376,10 +362,17 @@ final class TextParser {
                 } else if (inCloseElement) {
                     // This is a closing tag
 
-                    TextParsingElementMarkupUtil.
+                    TextParsingElementUtil.
                             parseCloseElement(buffer, current, (tagEnd - current) + 1, currentLine, currentCol, handler);
 
                     inCloseElement = false;
+
+                } else if (inComment) {
+                    // This is a comment! (obviously ;-))
+
+                    TextParsingCommentUtil.parseComment(buffer, current, (tagEnd - current) + 1, currentLine, currentCol, handler);
+
+                    inComment = false;
 
                 } else {
 

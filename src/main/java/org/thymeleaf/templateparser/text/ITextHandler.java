@@ -51,6 +51,14 @@ public interface ITextHandler {
 
 
 
+    public void handleComment(
+            final char[] buffer,
+            final int contentOffset, final int contentLen,
+            final int outerOffset, final int outerLen,
+            final int line, final int col)
+            throws TextParseException;
+
+
 
     public void handleStandaloneElementStart(
             final char[] buffer,

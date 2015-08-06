@@ -63,6 +63,15 @@ public abstract class AbstractChainedTextHandler extends AbstractTextHandler {
         this.next.handleText(buffer, offset, len, line, col);
     }
 
+    public void handleComment(
+            final char[] buffer,
+            final int contentOffset, final int contentLen,
+            final int outerOffset, final int outerLen,
+            final int line, final int col)
+            throws TextParseException {
+        this.next.handleComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+    }
+
     public void handleStandaloneElementStart(
             final char[] buffer,
             final int nameOffset, final int nameLen,

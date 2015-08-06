@@ -71,7 +71,7 @@ final class TextParsingAttributeSequenceUtil {
              */
 
             final int wsEnd =
-                    TextParsingMarkupUtil.findNextNonWhitespaceCharWildcard(buffer, i, maxi, locator);
+                    TextParsingUtil.findNextNonWhitespaceCharWildcard(buffer, i, maxi, locator);
 
             if (wsEnd == -1) {
                 // Everything is whitespace until the end of the tag
@@ -96,7 +96,7 @@ final class TextParsingAttributeSequenceUtil {
             currentArtifactCol = locator[1];
 
             final int attributeNameEnd =
-                    TextParsingMarkupUtil.findNextOperatorCharWildcard(buffer, i, maxi, locator);
+                    TextParsingUtil.findNextOperatorCharWildcard(buffer, i, maxi, locator);
 
             if (attributeNameEnd == -1) {
                 // This is a no-value and no-equals-sign attribute, equivalent to value = ""
@@ -141,7 +141,7 @@ final class TextParsingAttributeSequenceUtil {
             currentArtifactCol = locator[1];
 
             final int operatorEnd =
-                    TextParsingMarkupUtil.findNextNonOperatorCharWildcard(buffer, i, maxi, locator);
+                    TextParsingUtil.findNextNonOperatorCharWildcard(buffer, i, maxi, locator);
 
             if (operatorEnd == -1) {
                 // This could be:
@@ -238,8 +238,8 @@ final class TextParsingAttributeSequenceUtil {
             final boolean attributeEndsWithQuotes = (i < maxi && (buffer[current] == '"' || buffer[current] == '\''));
             final int valueEnd =
                     (attributeEndsWithQuotes?
-                            TextParsingMarkupUtil.findNextAnyCharAvoidQuotesWildcard(buffer, i, maxi, locator) :
-                            TextParsingMarkupUtil.findNextWhitespaceCharWildcard(buffer, i, maxi, false, locator));
+                            TextParsingUtil.findNextAnyCharAvoidQuotesWildcard(buffer, i, maxi, locator) :
+                            TextParsingUtil.findNextWhitespaceCharWildcard(buffer, i, maxi, false, locator));
 
             if (valueEnd == -1) {
                 // This value ends the attribute

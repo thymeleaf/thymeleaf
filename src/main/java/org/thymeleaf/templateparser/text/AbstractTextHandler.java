@@ -56,6 +56,15 @@ public abstract class AbstractTextHandler implements ITextHandler {
         // Nothing to be done here, meant to be overridden if required
     }
 
+    public void handleComment(
+            final char[] buffer,
+            final int contentOffset, final int contentLen,
+            final int outerOffset, final int outerLen,
+            final int line, final int col)
+            throws TextParseException {
+        // Nothing to be done here, meant to be overridden if required
+    }
+
     public void handleStandaloneElementStart(
             final char[] buffer,
             final int nameOffset, final int nameLen,
