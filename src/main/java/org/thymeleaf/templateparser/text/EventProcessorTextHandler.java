@@ -35,7 +35,7 @@ import org.thymeleaf.util.TextUtil;
  * @author Daniel Fernandez
  * @since 3.0.0
  */
-final class TextEventProcessorHandler extends AbstractChainedTextHandler {
+final class EventProcessorTextHandler extends AbstractChainedTextHandler {
 
     private static final int DEFAULT_STACK_LEN = 10;
     private static final int DEFAULT_ATTRIBUTE_NAMES_LEN = 3;
@@ -55,7 +55,7 @@ final class TextEventProcessorHandler extends AbstractChainedTextHandler {
 
 
 
-    TextEventProcessorHandler(final ITextHandler handler) {
+    EventProcessorTextHandler(final ITextHandler handler) {
 
         super(handler);
 

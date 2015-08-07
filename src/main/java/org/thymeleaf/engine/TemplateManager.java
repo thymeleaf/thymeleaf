@@ -64,13 +64,17 @@ public final class TemplateManager {
 
     private static final Logger logger = LoggerFactory.getLogger(TemplateManager.class);
 
-    private static final ITemplateParser htmlParser = new HTMLTemplateParser(40,2048);
-    private static final ITemplateParser xmlParser = new XMLTemplateParser(40, 2048);
-    private static final ITemplateParser textParser = new TextTemplateParser(40, 2048);
-    private static final ITemplateParser javascriptParser = new JavaScriptTemplateParser(40, 2048);
-    private static final ITemplateParser cssParser = new CSSTemplateParser(40, 2048);
+    private static final int DEFAULT_PARSER_POOL_SIZE = 40;
+    private static final int DEFAULT_PARSER_BLOCK_SIZE = 2048;
 
     private static final StringTemplateResolver STRING_TEMPLATE_RESOLVER = new StringTemplateResolver();
+
+    private final ITemplateParser htmlParser;
+    private final ITemplateParser xmlParser;
+    private final ITemplateParser textParser;
+    private final ITemplateParser javascriptParser;
+    private final ITemplateParser cssParser;
+
 
     private final ICache<String,ParsedTemplateMarkup> templateCache; // might be null! (= no cache)
     private final ICache<String,ParsedFragmentMarkup> fragmentCache; // might be null! (= no cache)
@@ -100,6 +104,12 @@ public final class TemplateManager {
             this.templateCache = cacheManager.getTemplateCache();
             this.fragmentCache = cacheManager.getFragmentCache();
         }
+
+        this.htmlParser = new HTMLTemplateParser(DEFAULT_PARSER_POOL_SIZE,DEFAULT_PARSER_BLOCK_SIZE);
+        this.xmlParser = new XMLTemplateParser(DEFAULT_PARSER_POOL_SIZE, DEFAULT_PARSER_BLOCK_SIZE);
+        this.textParser = new TextTemplateParser(DEFAULT_PARSER_POOL_SIZE, DEFAULT_PARSER_BLOCK_SIZE, configuration.getStandardDialectPrefix());
+        this.javascriptParser = new JavaScriptTemplateParser(DEFAULT_PARSER_POOL_SIZE, DEFAULT_PARSER_BLOCK_SIZE, configuration.getStandardDialectPrefix());
+        this.cssParser = new CSSTemplateParser(DEFAULT_PARSER_POOL_SIZE, DEFAULT_PARSER_BLOCK_SIZE, configuration.getStandardDialectPrefix());
 
     }
     
@@ -668,7 +678,7 @@ public final class TemplateManager {
 
 
 
-    private static void processAsResource(
+    private void processAsResource(
             final IEngineConfiguration configuration, final TemplateMode templateMode, final boolean fragment,
             final IResource templateResource, final String[] markupSelectors, final ITemplateHandler templateHandler) {
 
@@ -690,33 +700,33 @@ public final class TemplateManager {
          */
         if (templateMode == TemplateMode.HTML) {
             if (fragment) {
-                htmlParser.parseFragment(configuration, templateMode, templateResource, markupSelectors, templateHandler);
+                this.htmlParser.parseFragment(configuration, templateMode, templateResource, markupSelectors, templateHandler);
             } else {
-                htmlParser.parseTemplate(configuration, templateMode, templateResource, markupSelectors, templateHandler);
+                this.htmlParser.parseTemplate(configuration, templateMode, templateResource, markupSelectors, templateHandler);
             }
         } else if (templateMode == TemplateMode.XML) {
             if (fragment) {
-                xmlParser.parseFragment(configuration, templateMode, templateResource, markupSelectors, templateHandler);
+                this.xmlParser.parseFragment(configuration, templateMode, templateResource, markupSelectors, templateHandler);
             } else {
-                xmlParser.parseTemplate(configuration, templateMode, templateResource, markupSelectors, templateHandler);
+                this.xmlParser.parseTemplate(configuration, templateMode, templateResource, markupSelectors, templateHandler);
             }
         } else if (templateMode == TemplateMode.TEXT) {
             if (fragment) {
-                textParser.parseFragment(configuration, templateMode, templateResource, markupSelectors, templateHandler);
+                this.textParser.parseFragment(configuration, templateMode, templateResource, markupSelectors, templateHandler);
             } else {
-                textParser.parseTemplate(configuration, templateMode, templateResource, markupSelectors, templateHandler);
+                this.textParser.parseTemplate(configuration, templateMode, templateResource, markupSelectors, templateHandler);
             }
         } else if (templateMode == TemplateMode.JAVASCRIPT) {
             if (fragment) {
-                javascriptParser.parseFragment(configuration, templateMode, templateResource, markupSelectors, templateHandler);
+                this.javascriptParser.parseFragment(configuration, templateMode, templateResource, markupSelectors, templateHandler);
             } else {
-                javascriptParser.parseTemplate(configuration, templateMode, templateResource, markupSelectors, templateHandler);
+                this.javascriptParser.parseTemplate(configuration, templateMode, templateResource, markupSelectors, templateHandler);
             }
         } else if (templateMode == TemplateMode.CSS) {
             if (fragment) {
-                cssParser.parseFragment(configuration, templateMode, templateResource, markupSelectors, templateHandler);
+                this.cssParser.parseFragment(configuration, templateMode, templateResource, markupSelectors, templateHandler);
             } else {
-                cssParser.parseTemplate(configuration, templateMode, templateResource, markupSelectors, templateHandler);
+                this.cssParser.parseTemplate(configuration, templateMode, templateResource, markupSelectors, templateHandler);
             }
         } else {
             throw new IllegalArgumentException(

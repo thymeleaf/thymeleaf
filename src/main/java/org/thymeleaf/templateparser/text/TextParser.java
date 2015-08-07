@@ -40,6 +40,7 @@ final class TextParser {
 
     private final BufferPool pool;
     private final boolean processComments;
+    private final String standardDialectPrefix;
 
 
 
@@ -47,10 +48,11 @@ final class TextParser {
 
 
 
-    TextParser(final int poolSize, final int bufferSize, final boolean processComments) {
+    TextParser(final int poolSize, final int bufferSize, final boolean processComments, final String standardDialectPrefix) {
         super();
         this.pool = new BufferPool(poolSize, bufferSize);
         this.processComments = processComments;
+        this.standardDialectPrefix = standardDialectPrefix;
     }
 
 
@@ -81,11 +83,24 @@ final class TextParser {
             throw new IllegalArgumentException("Handler cannot be null");
         }
 
+        ITextHandler handlerChain = handler;
+
         // The TextEventProcessorHandler will basically be in charge of controlling the stack of elements (the correct
         // nesting of element events).
-        final TextEventProcessorHandler eventProcessor = new TextEventProcessorHandler(handler);
+        handlerChain = new EventProcessorTextHandler(handlerChain);
 
-        parseDocument(reader, this.pool.poolBufferSize, eventProcessor);
+        // Just before the event processor kicks in, we need to scan the TEXT events searching for inlined
+        // expressions such as [[${someVar}]] and convert them to element events, as if they were expressed in
+        // a more verbose [# th:text="${someVar}"/] way.
+        handlerChain = new InlinedExpressionProcessorTextHandler(handlerChain, this.standardDialectPrefix);
+
+        // If comment processing is active (for JAVASCRIPT and CSS template modes), we need to look inside comments and
+        // check if they are only wrapping elements or inlined expressions, in which case we will need to unwrap them.
+        if (this.processComments) {
+            handlerChain = new CommentProcessorTextHandler(handlerChain);
+        }
+
+        parseDocument(reader, this.pool.poolBufferSize, handlerChain);
 
     }
 

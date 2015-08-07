@@ -51,9 +51,10 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
 
 
 
-    protected AbstractTextTemplateParser(final int bufferPoolSize, final int bufferSize, final boolean processComments) {
+    protected AbstractTextTemplateParser(
+            final int bufferPoolSize, final int bufferSize, final boolean processComments, final String standardDialectPrefix) {
         super();
-        this.parser = new TextParser(bufferPoolSize, bufferSize, processComments);
+        this.parser = new TextParser(bufferPoolSize, bufferSize, processComments, standardDialectPrefix);
     }
 
 
