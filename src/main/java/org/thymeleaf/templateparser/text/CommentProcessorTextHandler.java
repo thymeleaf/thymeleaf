@@ -120,7 +120,7 @@ final class CommentProcessorTextHandler extends AbstractChainedTextHandler {
          *             comment is in).
          */
 
-        getNext().handleText(buffer, contentOffset, contentLen, line, col);
+        getNext().handleText(buffer, contentOffset, contentLen, line, col + 2); // +2 in order to count '[[' or [('
         this.filterTexts = true;
 
     }
