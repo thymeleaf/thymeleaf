@@ -386,7 +386,7 @@ public class StandardDialect
         /*
          * HTML: ELEMENT TAG PROCESSORS
          */
-        processors.add(new StandardBlockTagProcessor(TemplateMode.HTML, dialectPrefix));
+        processors.add(new StandardBlockTagProcessor(TemplateMode.HTML, dialectPrefix, StandardBlockTagProcessor.ELEMENT_NAME));
 
         /*
          * HTML: TEXT PROCESSORS
@@ -449,7 +449,7 @@ public class StandardDialect
         /*
          * XML: ELEMENT TAG PROCESSORS
          */
-        processors.add(new StandardBlockTagProcessor(TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardBlockTagProcessor(TemplateMode.XML, dialectPrefix, StandardBlockTagProcessor.ELEMENT_NAME));
 
         /*
          * XML: TEXT PROCESSORS
@@ -495,7 +495,8 @@ public class StandardDialect
         /*
          * TEXT: ELEMENT TAG PROCESSORS
          */
-        processors.add(new StandardBlockTagProcessor(TemplateMode.TEXT, dialectPrefix));
+        processors.add(new StandardBlockTagProcessor(TemplateMode.TEXT, dialectPrefix, StandardBlockTagProcessor.ELEMENT_NAME));
+        processors.add(new StandardBlockTagProcessor(TemplateMode.TEXT, null, "")); // With no name, will process [# th....] elements
 
         /*
          * TEXT: TEXT PROCESSORS
@@ -519,12 +520,38 @@ public class StandardDialect
 
 
         /*
-         * TEXT: TEXT PROCESSORS
+         * JAVASCRIPT: ATTRIBUTE TAG PROCESSORS
+         */
+        processors.add(new StandardAssertTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
+        processors.add(new StandardCaseTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
+        processors.add(new StandardEachTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
+        // No th:fragment attribute in text modes: no fragment selection available!
+        processors.add(new StandardIfTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
+        // No th:include to be added here, as it is already deprecated since 3.0
+        processors.add(new StandardInsertTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
+        processors.add(new StandardObjectTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
+        processors.add(new StandardRemoveTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
+        processors.add(new StandardReplaceTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
+        // No th:substituteby to be added here, as it is already deprecated since 2.1
+        processors.add(new StandardSwitchTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
+        processors.add(new StandardTextTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
+        processors.add(new StandardUnlessTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
+        processors.add(new StandardUtextTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
+        processors.add(new StandardWithTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
+
+        /*
+         * JAVASCRIPT: ELEMENT TAG PROCESSORS
+         */
+        processors.add(new StandardBlockTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix, StandardBlockTagProcessor.ELEMENT_NAME));
+        processors.add(new StandardBlockTagProcessor(TemplateMode.JAVASCRIPT, null, "")); // With no name, will process [# th....] elements
+
+        /*
+         * JAVASCRIPT: TEXT PROCESSORS
          */
         processors.add(new StandardInliningTextProcessor(TemplateMode.JAVASCRIPT));
 
         /*
-         * TEXT: DOCUMENT PROCESSORS
+         * JAVASCRIPT: DOCUMENT PROCESSORS
          */
         processors.add(new StandardInlineEnablementDocumentProcessor(TemplateMode.JAVASCRIPT));
 
@@ -540,12 +567,38 @@ public class StandardDialect
 
 
         /*
-         * TEXT: TEXT PROCESSORS
+         * CSS: ATTRIBUTE TAG PROCESSORS
+         */
+        processors.add(new StandardAssertTagProcessor(TemplateMode.CSS, dialectPrefix));
+        processors.add(new StandardCaseTagProcessor(TemplateMode.CSS, dialectPrefix));
+        processors.add(new StandardEachTagProcessor(TemplateMode.CSS, dialectPrefix));
+        // No th:fragment attribute in text modes: no fragment selection available!
+        processors.add(new StandardIfTagProcessor(TemplateMode.CSS, dialectPrefix));
+        // No th:include to be added here, as it is already deprecated since 3.0
+        processors.add(new StandardInsertTagProcessor(TemplateMode.CSS, dialectPrefix));
+        processors.add(new StandardObjectTagProcessor(TemplateMode.CSS, dialectPrefix));
+        processors.add(new StandardRemoveTagProcessor(TemplateMode.CSS, dialectPrefix));
+        processors.add(new StandardReplaceTagProcessor(TemplateMode.CSS, dialectPrefix));
+        // No th:substituteby to be added here, as it is already deprecated since 2.1
+        processors.add(new StandardSwitchTagProcessor(TemplateMode.CSS, dialectPrefix));
+        processors.add(new StandardTextTagProcessor(TemplateMode.CSS, dialectPrefix));
+        processors.add(new StandardUnlessTagProcessor(TemplateMode.CSS, dialectPrefix));
+        processors.add(new StandardUtextTagProcessor(TemplateMode.CSS, dialectPrefix));
+        processors.add(new StandardWithTagProcessor(TemplateMode.CSS, dialectPrefix));
+
+        /*
+         * CSS: ELEMENT TAG PROCESSORS
+         */
+        processors.add(new StandardBlockTagProcessor(TemplateMode.CSS, dialectPrefix, StandardBlockTagProcessor.ELEMENT_NAME));
+        processors.add(new StandardBlockTagProcessor(TemplateMode.CSS, null, "")); // With no name, will process [# th....] elements
+
+        /*
+         * CSS: TEXT PROCESSORS
          */
         processors.add(new StandardInliningTextProcessor(TemplateMode.CSS));
 
         /*
-         * TEXT: DOCUMENT PROCESSORS
+         * CSS: DOCUMENT PROCESSORS
          */
         processors.add(new StandardInlineEnablementDocumentProcessor(TemplateMode.CSS));
 

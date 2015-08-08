@@ -505,7 +505,7 @@ public final class ElementDefinitions {
 
 
     public TextElementDefinition forJavaScriptName(final String elementName) {
-        if (elementName == null || elementName.length() == 0) {
+        if (elementName == null) { // In text modes, elementName can actually be the empty string
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
         return (TextElementDefinition) this.javascriptElementRepository.getElement(elementName);
@@ -513,7 +513,7 @@ public final class ElementDefinitions {
 
 
     public TextElementDefinition forJavaScriptName(final String prefix, final String elementName) {
-        if (elementName == null || elementName.length() == 0) {
+        if (elementName == null) { // In text modes, elementName can actually be the empty string
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
         return (TextElementDefinition) this.javascriptElementRepository.getElement(prefix, elementName);
@@ -521,7 +521,7 @@ public final class ElementDefinitions {
 
 
     public TextElementDefinition forJavaScriptName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
-        if (elementName == null || elementNameLen == 0) {
+        if (elementName == null) { // In text modes, elementName can actually be the empty string
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
         if (elementNameOffset < 0 || elementNameLen < 0) {
@@ -533,7 +533,7 @@ public final class ElementDefinitions {
 
 
     public TextElementDefinition forCSSName(final String elementName) {
-        if (elementName == null || elementName.length() == 0) {
+        if (elementName == null) { // In text modes, elementName can actually be the empty string
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
         return (TextElementDefinition) this.cssElementRepository.getElement(elementName);
@@ -541,7 +541,7 @@ public final class ElementDefinitions {
 
 
     public TextElementDefinition forCSSName(final String prefix, final String elementName) {
-        if (elementName == null || elementName.length() == 0) {
+        if (elementName == null) { // In text modes, elementName can actually be the empty string
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
         return (TextElementDefinition) this.cssElementRepository.getElement(prefix, elementName);
@@ -549,7 +549,7 @@ public final class ElementDefinitions {
 
 
     public TextElementDefinition forCSSName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
-        if (elementName == null || elementNameLen == 0) {
+        if (elementName == null) { // In text modes, elementName can actually be the empty string
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
         if (elementNameOffset < 0 || elementNameLen < 0) {

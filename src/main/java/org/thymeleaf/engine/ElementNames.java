@@ -210,7 +210,7 @@ public class ElementNames {
 
     public static HTMLElementName forHTMLName(final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
 
-        if (elementNameBuffer == null|| elementNameLen == 0) {
+        if (elementNameBuffer == null || elementNameLen == 0) {
             throw new IllegalArgumentException("Element name buffer cannot be null or empty");
         }
         if (elementNameOffset < 0 || elementNameLen < 0) {
@@ -302,7 +302,7 @@ public class ElementNames {
 
     public static XMLElementName forXMLName(final String elementName) {
 
-        if (elementName == null|| elementName.length() == 0) {
+        if (elementName == null || elementName.length() == 0) {
             throw new IllegalArgumentException("Element name cannot be null or empty");
         }
 
@@ -338,7 +338,7 @@ public class ElementNames {
 
     public static HTMLElementName forHTMLName(final String elementName) {
 
-        if (elementName == null|| elementName.length() == 0) {
+        if (elementName == null || elementName.length() == 0) {
             throw new IllegalArgumentException("Element name cannot be null or empty");
         }
 
@@ -389,8 +389,8 @@ public class ElementNames {
 
 
     public static TextElementName forTextName(final String prefix, final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
-        if (elementNameBuffer == null|| elementNameLen == 0) {
-            throw new IllegalArgumentException("Element name buffer cannot be null or empty");
+        if (elementNameBuffer == null) { // Note TEXT element names CAN be empty (only element names, not attribute names)
+            throw new IllegalArgumentException("Element name buffer cannot be null");
         }
         if (elementNameOffset < 0 || elementNameLen < 0) {
             throw new IllegalArgumentException("Element name offset and len must be equal or greater than zero");
@@ -404,7 +404,7 @@ public class ElementNames {
 
 
     public static XMLElementName forXMLName(final String prefix, final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
-        if (elementNameBuffer == null|| elementNameLen == 0) {
+        if (elementNameBuffer == null || elementNameLen == 0) {
             throw new IllegalArgumentException("Element name buffer cannot be null or empty");
         }
         if (elementNameOffset < 0 || elementNameLen < 0) {
@@ -419,7 +419,7 @@ public class ElementNames {
 
 
     public static HTMLElementName forHTMLName(final String prefix, final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
-        if (elementNameBuffer == null|| elementNameLen == 0) {
+        if (elementNameBuffer == null || elementNameLen == 0) {
             throw new IllegalArgumentException("Element name buffer cannot be null or empty");
         }
         if (elementNameOffset < 0 || elementNameLen < 0) {
@@ -434,7 +434,7 @@ public class ElementNames {
 
 
     public static TextElementName forTextName(final String prefix, final String elementName) {
-        if (elementName == null|| elementName.length() == 0) {
+        if (elementName == null) { // Note TEXT element names CAN be empty (only element names, not attribute names)
             throw new IllegalArgumentException("Element name cannot be null or empty");
         }
         if (prefix == null || prefix.trim().length() == 0) {
@@ -446,7 +446,7 @@ public class ElementNames {
 
 
     public static XMLElementName forXMLName(final String prefix, final String elementName) {
-        if (elementName == null|| elementName.length() == 0) {
+        if (elementName == null || elementName.length() == 0) {
             throw new IllegalArgumentException("Element name cannot be null or empty");
         }
         if (prefix == null || prefix.trim().length() == 0) {
@@ -458,7 +458,7 @@ public class ElementNames {
 
 
     public static HTMLElementName forHTMLName(final String prefix, final String elementName) {
-        if (elementName == null|| elementName.length() == 0) {
+        if (elementName == null || elementName.length() == 0) {
             throw new IllegalArgumentException("Element name cannot be null or empty");
         }
         if (prefix == null || prefix.trim().length() == 0) {
