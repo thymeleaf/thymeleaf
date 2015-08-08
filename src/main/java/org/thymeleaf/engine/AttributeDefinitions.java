@@ -292,15 +292,15 @@ public final class AttributeDefinitions {
             for (final IElementProcessor processor : elementProcessors) {
 
                 if (processor.getTemplateMode() != templateMode) {
-                    // We are creating an XML element definition, therefore we are only interested on XML processors
+                    // We are creating a text element definition, therefore we are only interested on XML processors
                     continue;
                 }
 
                 final MatchingElementName matchingElementName = processor.getMatchingElementName();
                 final MatchingAttributeName matchingAttributeName = processor.getMatchingAttributeName();
 
-                if ((matchingElementName != null && matchingElementName.getTemplateMode() != TemplateMode.XML) ||
-                        (matchingAttributeName != null && matchingAttributeName.getTemplateMode() != TemplateMode.XML)) {
+                if ((matchingElementName != null && matchingElementName.getTemplateMode() != templateMode) ||
+                        (matchingAttributeName != null && matchingAttributeName.getTemplateMode() != templateMode)) {
                     throw new ConfigurationException(templateMode + " processors must return " + templateMode + "element names and " + templateMode + " attribute names (processor: " + processor.getClass().getName() + ")");
                 }
 
