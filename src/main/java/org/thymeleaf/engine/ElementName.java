@@ -40,7 +40,7 @@ public abstract class ElementName {
 
         super();
 
-        if (elementName == null) { // can be empty (e.g. in text modes)
+        if (elementName == null || (elementName.length() > 0 && elementName.trim().length() == 0)) { // can be the empty string (e.g. in text modes)
             throw new IllegalArgumentException("Element name cannot be null");
         }
 
