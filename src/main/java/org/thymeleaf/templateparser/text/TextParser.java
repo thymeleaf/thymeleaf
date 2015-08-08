@@ -89,11 +89,6 @@ final class TextParser {
         // nesting of element events).
         handlerChain = new EventProcessorTextHandler(handlerChain);
 
-        // Just before the event processor kicks in, we need to scan the TEXT events searching for inlined
-        // expressions such as [[${someVar}]] and convert them to element events, as if they were expressed in
-        // a more verbose [# th:text="${someVar}"/] way.
-        handlerChain = new InlinedExpressionProcessorTextHandler(handlerChain, this.standardDialectPrefix);
-
         // If comment processing is active (for JAVASCRIPT and CSS template modes), we need to look inside comments and
         // check if they are only wrapping elements or inlined expressions, in which case we will need to unwrap them.
         if (this.processComments) {
