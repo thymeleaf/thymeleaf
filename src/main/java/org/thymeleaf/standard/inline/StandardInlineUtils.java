@@ -39,8 +39,9 @@ final class StandardInlineUtils {
 
             c = text.charAt(i++);
             if (c == '[' && i < maxi) {
-                final char c1 = text.charAt(i);
-                if (c1 == '[' || c1 == '(') {
+                c = text.charAt(i);
+                if (c == '[' || c == '(') {
+                    // There probably is some kind of [[...]] or [(...)] inlined expression
                     return true;
                 }
             }
