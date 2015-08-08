@@ -22,7 +22,6 @@ package org.thymeleaf.processor.element;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.HTMLAttributeName;
 import org.thymeleaf.engine.TextAttributeName;
-import org.thymeleaf.engine.TextElementName;
 import org.thymeleaf.engine.XMLAttributeName;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.TextUtil;

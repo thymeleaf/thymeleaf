@@ -21,7 +21,6 @@ package org.thymeleaf.standard.inline;
 
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.inline.IInliner;
-import org.thymeleaf.standard.util.StandardScriptInliningUtils;
 
 /**
  *
@@ -39,7 +38,7 @@ public final class StandardCSSInliner implements IInliner {
     }
 
     public String getName() {
-        return "STANDARDDART";
+        return StandardCSSInliner.class.getSimpleName();
     }
 
 
@@ -47,15 +46,23 @@ public final class StandardCSSInliner implements IInliner {
 
         /*
          * If all the text to be inlined is whitespace (we know this from the moment it was parsed), then just return,
-         * because there is no way we can do anything with just whitespace
+         * because there is no way we can do anything with just whitespace.
          */
         if (textIsWhitespace) {
             return text;
         }
 
-        // We are processing the contents of a JavaScript <script> tag, so we don't need to apply HtmlEscaping of any kind...
-        return StandardScriptInliningUtils.inline(
-                        context, StandardScriptInliningUtils.StandardScriptInliningLanguage.DART, text.toString());
+
+        /*
+         * First we will quickly check whether inling is needed at all, so that we don't spend more time on this if
+         * not required.
+         */
+        if (!StandardInlineUtils.mightNeedInlining(text)) {
+            return text;
+        }
+
+
+        return "///" + text + "///";
 
     }
 

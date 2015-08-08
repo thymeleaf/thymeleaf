@@ -23,8 +23,8 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.standard.util.StandardEscapedOutputUtils;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.unbescape.html.HtmlEscape;
 
 /**
  *
@@ -52,7 +52,9 @@ public final class StandardTextTagProcessor extends AbstractStandardExpressionAt
             final AttributeName attributeName, final String attributeValue, final Object expressionResult,
             final IElementStructureHandler structureHandler) {
 
-        structureHandler.setBody(expressionResult == null ? "" : HtmlEscape.escapeHtml4Xml(expressionResult.toString()), false);
+        final String text = StandardEscapedOutputUtils.produceEscapedOutput(getTemplateMode(), expressionResult);
+
+        structureHandler.setBody(text, false);
 
         tag.getAttributes().removeAttribute(attributeName);
 

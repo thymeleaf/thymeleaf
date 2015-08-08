@@ -21,7 +21,6 @@ package org.thymeleaf.standard.inline;
 
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.inline.IInliner;
-import org.thymeleaf.standard.util.StandardScriptInliningUtils;
 
 /**
  *
@@ -39,7 +38,7 @@ public final class StandardJavaScriptInliner implements IInliner {
     }
 
     public String getName() {
-        return "STANDARDJAVASCRIPT";
+        return StandardJavaScriptInliner.class.getSimpleName();
     }
 
 
@@ -53,9 +52,17 @@ public final class StandardJavaScriptInliner implements IInliner {
             return text;
         }
 
-        // We are processing the contents of a JavaScript <script> tag, so we don't need to apply HtmlEscaping of any kind...
-        return StandardScriptInliningUtils.inline(
-                        context, StandardScriptInliningUtils.StandardScriptInliningLanguage.JAVASCRIPT, text.toString());
+
+        /*
+         * First we will quickly check whether inling is needed at all, so that we don't spend more time on this if
+         * not required.
+         */
+        if (!StandardInlineUtils.mightNeedInlining(text)) {
+            return text;
+        }
+
+
+        return "///" + text + "///";
 
     }
 

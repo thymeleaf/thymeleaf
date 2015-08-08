@@ -31,7 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.thymeleaf.util.DateUtils;
-import org.thymeleaf.util.StringUtils;
+import org.unbescape.javascript.JavaScriptEscape;
 
 
 /**
@@ -48,7 +48,7 @@ public final class StandardJavaScriptUtils {
 
 
     public static String escapeString(final String str) {
-        return StringUtils.escapeJavaScript(str);
+        return JavaScriptEscape.escapeJavaScript(str);
     }
 
 
@@ -195,7 +195,7 @@ public final class StandardJavaScriptUtils {
 
     private static void printString(final StringBuilder output, final String str) {
         output.append('\'');
-        output.append(StringUtils.escapeJavaScript(str));
+        output.append(JavaScriptEscape.escapeJavaScript(str));
         output.append('\'');
     }
 

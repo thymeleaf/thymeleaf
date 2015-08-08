@@ -38,7 +38,7 @@ public final class StandardXMLInliner implements IInliner {
     }
 
     public String getName() {
-        return "STANDARDTEXT";
+        return StandardXMLInliner.class.getSimpleName();
     }
 
 
@@ -52,34 +52,18 @@ public final class StandardXMLInliner implements IInliner {
             return text;
         }
 
+
         /*
-         * Fail fast - if the text does not look as an 'inlining candidate' (it should contain at least one '}' symbol,
-         * then simply skup
+         * First we will quickly check whether inling is needed at all, so that we don't spend more time on this if
+         * not required.
          */
-        if (!isInliningCandidate(text)) {
+        if (!StandardInlineUtils.mightNeedInlining(text)) {
             return text;
         }
 
-        // TODO Check processingContext.getTemplateMode() and, if !isText(), UNESCAPE, process, and finally ESCAPE
 
-//        return "[[[" + text.toString() + "]]]";
-return text.toString();
+        return "///" + text + "///";
 
-    }
-
-
-    /*
-     * This method quickly checks if a text looks like it would need inlining. At least a '}' should be contained for
-     * the text to be considered a 'candidate'
-     */
-    private static boolean isInliningCandidate(final CharSequence text) {
-        int n = text.length();
-        while (n-- != 0) {
-            if (text.charAt(n) == '}') {
-                return true;
-            }
-        }
-        return false;
     }
 
 }

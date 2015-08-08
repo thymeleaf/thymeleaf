@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.engine;
 
-import org.attoparser.AbstractMarkupHandler;
-import org.attoparser.ParseException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.templatemode.TemplateMode;
