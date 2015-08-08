@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.context;
 
-import org.thymeleaf.inline.ITextInliner;
+import org.thymeleaf.inline.IInliner;
 
 /**
  *
@@ -50,6 +50,6 @@ public interface IVariablesMap extends IContext {
 
     // Text inlining works as a local variable, but is used so often that it has its own methods in order to allow
     // specific performance improvements to be designed for them
-    public ITextInliner getTextInliner();
+    public IInliner getInliner();
 
 }

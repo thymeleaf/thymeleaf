@@ -322,6 +322,16 @@ public class StandardDialect
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
 
 
+
+        /*
+         * ------------------------
+         * ------------------------
+         * HTML TEMPLATE MODE
+         * ------------------------
+         * ------------------------
+         */
+
+
         /*
          * HTML: ATTRIBUTE TAG PROCESSORS
          */
@@ -401,6 +411,15 @@ public class StandardDialect
 
 
         /*
+         * ------------------------
+         * ------------------------
+         * XML TEMPLATE MODE
+         * ------------------------
+         * ------------------------
+         */
+
+
+        /*
          * XML: ATTRIBUTE TAG PROCESSORS
          */
         processors.add(new StandardAssertTagProcessor(TemplateMode.XML, dialectPrefix));
@@ -445,6 +464,15 @@ public class StandardDialect
 
 
         /*
+         * ------------------------
+         * ------------------------
+         * TEXT TEMPLATE MODE
+         * ------------------------
+         * ------------------------
+         */
+
+
+        /*
          * TEXT: ATTRIBUTE TAG PROCESSORS
          */
         processors.add(new StandardAssertTagProcessor(TemplateMode.TEXT, dialectPrefix));
@@ -472,14 +500,56 @@ public class StandardDialect
         /*
          * TEXT: TEXT PROCESSORS
          */
-// TODO Implement the text-mode text inliner for intelligent output
-//        processors.add(new StandardInliningTextProcessor(TemplateMode.TEXT));
+        processors.add(new StandardInliningTextProcessor(TemplateMode.TEXT));
 
         /*
          * TEXT: DOCUMENT PROCESSORS
          */
-// TODO Implement the text-mode text inliner for intelligent output
-//        processors.add(new StandardInlineEnablementDocumentProcessor(TemplateMode.TEXT));
+        processors.add(new StandardInlineEnablementDocumentProcessor(TemplateMode.TEXT));
+
+
+
+        /*
+         * ------------------------
+         * ------------------------
+         * JAVASCRIPT TEMPLATE MODE
+         * ------------------------
+         * ------------------------
+         */
+
+
+        /*
+         * TEXT: TEXT PROCESSORS
+         */
+        processors.add(new StandardInliningTextProcessor(TemplateMode.JAVASCRIPT));
+
+        /*
+         * TEXT: DOCUMENT PROCESSORS
+         */
+        processors.add(new StandardInlineEnablementDocumentProcessor(TemplateMode.JAVASCRIPT));
+
+
+
+        /*
+         * ------------------------
+         * ------------------------
+         * CSS TEMPLATE MODE
+         * ------------------------
+         * ------------------------
+         */
+
+
+        /*
+         * TEXT: TEXT PROCESSORS
+         */
+        processors.add(new StandardInliningTextProcessor(TemplateMode.CSS));
+
+        /*
+         * TEXT: DOCUMENT PROCESSORS
+         */
+        processors.add(new StandardInlineEnablementDocumentProcessor(TemplateMode.CSS));
+
+
 
 
         return processors;

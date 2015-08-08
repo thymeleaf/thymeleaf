@@ -17,9 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine;
+package org.thymeleaf.inline;
 
-import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.context.IProcessingContext;
 
 /**
  *
@@ -27,19 +27,10 @@ import org.thymeleaf.inline.IInliner;
  * @since 3.0.0
  * 
  */
-public interface IDocumentStructureHandler {
+public interface IInliner {
 
-    public void reset();
+    public String getName();
 
-    public void setLocalVariable(final String name, final Object value);
-    public void removeLocalVariable(final String name);
-
-    public void setSelectionTarget(final Object selectionTarget);
-
-    public void setInliner(final IInliner inliner);
-
-    public void insert(final String text, final boolean processable);
-    public void insert(final IMarkup markup, final boolean processable);
+    public CharSequence inline(final IProcessingContext context, final CharSequence text, final boolean textIsWhitespace);
 
 }
-

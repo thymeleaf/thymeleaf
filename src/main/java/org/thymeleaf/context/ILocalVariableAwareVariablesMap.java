@@ -21,7 +21,7 @@ package org.thymeleaf.context;
 
 import java.util.Map;
 
-import org.thymeleaf.inline.ITextInliner;
+import org.thymeleaf.inline.IInliner;
 
 /**
  *
@@ -54,7 +54,7 @@ public interface ILocalVariableAwareVariablesMap extends IVariablesMap {
 
     public void setSelectionTarget(final Object selectionTarget);
 
-    public void setTextInliner(final ITextInliner textInliner);
+    public void setInliner(final IInliner inliner);
 
 
 }

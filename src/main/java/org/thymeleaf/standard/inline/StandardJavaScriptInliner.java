@@ -20,7 +20,7 @@
 package org.thymeleaf.standard.inline;
 
 import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.inline.ITextInliner;
+import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.standard.util.StandardScriptInliningUtils;
 
 /**
@@ -29,7 +29,7 @@ import org.thymeleaf.standard.util.StandardScriptInliningUtils;
  * @since 3.0.0
  * 
  */
-public final class StandardJavaScriptInliner implements ITextInliner {
+public final class StandardJavaScriptInliner implements IInliner {
 
     public static final StandardJavaScriptInliner INSTANCE = new StandardJavaScriptInliner();
 

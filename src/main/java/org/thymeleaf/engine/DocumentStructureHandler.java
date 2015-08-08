@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.thymeleaf.inline.ITextInliner;
+import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -53,8 +53,8 @@ final class DocumentStructureHandler implements IDocumentStructureHandler {
     boolean setSelectionTarget;
     Object selectionTargetObject;
 
-    boolean setTextInliner;
-    ITextInliner setTextInlinerValue;
+    boolean setInliner;
+    IInliner setInlinerValue;
 
 
 
@@ -111,9 +111,9 @@ final class DocumentStructureHandler implements IDocumentStructureHandler {
     }
 
 
-    public void setTextInliner(final ITextInliner textInliner) {
-        this.setTextInliner = true;
-        this.setTextInlinerValue = textInliner;
+    public void setInliner(final IInliner inliner) {
+        this.setInliner = true;
+        this.setInlinerValue = inliner;
     }
 
 
@@ -136,8 +136,8 @@ final class DocumentStructureHandler implements IDocumentStructureHandler {
         this.setSelectionTarget = false;
         this.selectionTargetObject = null;
 
-        this.setTextInliner = false;
-        this.setTextInlinerValue = null;
+        this.setInliner = false;
+        this.setInlinerValue = null;
 
     }
 

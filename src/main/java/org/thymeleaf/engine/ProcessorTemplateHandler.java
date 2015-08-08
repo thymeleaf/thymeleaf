@@ -436,9 +436,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 }
             }
 
-            if (this.documentStructureHandler.setTextInliner) {
+            if (this.documentStructureHandler.setInliner) {
                 if (this.variablesMap != null) {
-                    this.variablesMap.setTextInliner(this.documentStructureHandler.setTextInlinerValue);
+                    this.variablesMap.setInliner(this.documentStructureHandler.setInlinerValue);
                 }
             }
 
@@ -541,9 +541,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 }
             }
 
-            if (this.documentStructureHandler.setTextInliner) {
+            if (this.documentStructureHandler.setInliner) {
                 if (this.variablesMap != null) {
-                    this.variablesMap.setTextInliner(this.documentStructureHandler.setTextInlinerValue);
+                    this.variablesMap.setInliner(this.documentStructureHandler.setInlinerValue);
                 }
             }
 
@@ -1034,9 +1034,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     }
                 }
 
-                if (this.elementStructureHandler.setTextInliner) {
+                if (this.elementStructureHandler.setInliner) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.setTextInliner(this.elementStructureHandler.setTextInlinerValue);
+                        this.variablesMap.setInliner(this.elementStructureHandler.setInlinerValue);
                     }
                 }
 
@@ -1441,9 +1441,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     }
                 }
 
-                if (this.elementStructureHandler.setTextInliner) {
+                if (this.elementStructureHandler.setInliner) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.setTextInliner(this.elementStructureHandler.setTextInlinerValue);
+                        this.variablesMap.setInliner(this.elementStructureHandler.setInlinerValue);
                     }
                 }
 
@@ -1819,9 +1819,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     }
                 }
 
-                if (this.elementStructureHandler.setTextInliner) {
+                if (this.elementStructureHandler.setInliner) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.setTextInliner(this.elementStructureHandler.setTextInlinerValue);
+                        this.variablesMap.setInliner(this.elementStructureHandler.setInlinerValue);
                     }
                 }
 

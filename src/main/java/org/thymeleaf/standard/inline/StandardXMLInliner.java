@@ -20,8 +20,7 @@
 package org.thymeleaf.standard.inline;
 
 import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.inline.ITextInliner;
-import org.thymeleaf.standard.util.StandardScriptInliningUtils;
+import org.thymeleaf.inline.IInliner;
 
 /**
  *
@@ -29,17 +28,17 @@ import org.thymeleaf.standard.util.StandardScriptInliningUtils;
  * @since 3.0.0
  * 
  */
-public final class StandardDartInliner implements ITextInliner {
+public final class StandardXMLInliner implements IInliner {
 
-    public static final StandardDartInliner INSTANCE = new StandardDartInliner();
+    public static final StandardXMLInliner INSTANCE = new StandardXMLInliner();
 
 
-    private StandardDartInliner() {
+    private StandardXMLInliner() {
         super();
     }
 
     public String getName() {
-        return "STANDARDDART";
+        return "STANDARDTEXT";
     }
 
 
@@ -53,11 +52,34 @@ public final class StandardDartInliner implements ITextInliner {
             return text;
         }
 
-        // We are processing the contents of a JavaScript <script> tag, so we don't need to apply HtmlEscaping of any kind...
-        return StandardScriptInliningUtils.inline(
-                        context, StandardScriptInliningUtils.StandardScriptInliningLanguage.DART, text.toString());
+        /*
+         * Fail fast - if the text does not look as an 'inlining candidate' (it should contain at least one '}' symbol,
+         * then simply skup
+         */
+        if (!isInliningCandidate(text)) {
+            return text;
+        }
+
+        // TODO Check processingContext.getTemplateMode() and, if !isText(), UNESCAPE, process, and finally ESCAPE
+
+//        return "[[[" + text.toString() + "]]]";
+return text.toString();
 
     }
 
+
+    /*
+     * This method quickly checks if a text looks like it would need inlining. At least a '}' should be contained for
+     * the text to be considered a 'candidate'
+     */
+    private static boolean isInliningCandidate(final CharSequence text) {
+        int n = text.length();
+        while (n-- != 0) {
+            if (text.charAt(n) == '}') {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

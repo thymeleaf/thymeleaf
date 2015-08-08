@@ -22,7 +22,7 @@ package org.thymeleaf.standard.processor;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
-import org.thymeleaf.inline.ITextInliner;
+import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.templatemode.TemplateMode;
 
@@ -36,10 +36,12 @@ import org.thymeleaf.templatemode.TemplateMode;
 public abstract class AbstractStandardTextInlineSettingTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
 
 
-    public static final String TEXT_INLINE = "text";
-    public static final String JAVASCRIPT_INLINE = "javascript";
-    public static final String DART_INLINE = "dart";
-    public static final String NONE_INLINE = "none";
+    protected static final String INLINE_MODE_NONE = "none";
+    protected static final String INLINE_MODE_HTML = "html";
+    protected static final String INLINE_MODE_XML = "xml";
+    protected static final String INLINE_MODE_TEXT = "text";
+    protected static final String INLINE_MODE_JAVASCRIPT = "javascript";
+    protected static final String INLINE_MODE_CSS = "css";
 
 
 
@@ -57,8 +59,8 @@ public abstract class AbstractStandardTextInlineSettingTagProcessor extends Abst
             final AttributeName attributeName, final String attributeValue, final Object expressionResult,
             final IElementStructureHandler structureHandler) {
 
-        final ITextInliner inliner = getTextInliner(processingContext, tag, attributeName, attributeValue, expressionResult);
-        structureHandler.setTextInliner(inliner);
+        final IInliner inliner = getInliner(processingContext, tag, attributeName, attributeValue, expressionResult);
+        structureHandler.setInliner(inliner);
 
         tag.getAttributes().removeAttribute(attributeName);
 
@@ -68,7 +70,7 @@ public abstract class AbstractStandardTextInlineSettingTagProcessor extends Abst
 
 
 
-    protected abstract ITextInliner getTextInliner(
+    protected abstract IInliner getInliner(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue, final Object expressionResult);

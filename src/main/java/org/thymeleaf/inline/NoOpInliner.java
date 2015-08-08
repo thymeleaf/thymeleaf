@@ -27,11 +27,23 @@ import org.thymeleaf.context.IProcessingContext;
  * @since 3.0.0
  * 
  */
-public interface ITextInliner {
+public final class NoOpInliner implements IInliner {
 
-    public String getName();
+    public static final NoOpInliner INSTANCE = new NoOpInliner();
 
-    // TODO include in javadoc the fact that it is the inliner the one that should unescape/escape (if in HTML/XML)
-    public CharSequence inline(final IProcessingContext context, final CharSequence text, final boolean textIsWhitespace);
+
+    private NoOpInliner() {
+        super();
+    }
+
+    public String getName() {
+        return "NOOP";
+    }
+
+
+    public CharSequence inline(final IProcessingContext context, final CharSequence text, final boolean textIsWhitespace) {
+        // Nothing to do. Anyway, this should never end up being executed...
+        return text;
+    }
 
 }

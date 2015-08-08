@@ -28,12 +28,12 @@ import org.thymeleaf.inline.IInliner;
  * @since 3.0.0
  * 
  */
-public final class StandardTextInliner implements IInliner {
+public final class StandardHTMLInliner implements IInliner {
 
-    public static final StandardTextInliner INSTANCE = new StandardTextInliner();
+    public static final StandardHTMLInliner INSTANCE = new StandardHTMLInliner();
 
 
-    private StandardTextInliner() {
+    private StandardHTMLInliner() {
         super();
     }
 

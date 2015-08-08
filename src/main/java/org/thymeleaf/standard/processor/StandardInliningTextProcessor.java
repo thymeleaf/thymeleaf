@@ -21,8 +21,8 @@ package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.ITextStructureHandler;
-import org.thymeleaf.inline.ITextInliner;
-import org.thymeleaf.inline.NoOpTextInliner;
+import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.inline.NoOpInliner;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.processor.text.AbstractTextProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -48,14 +48,14 @@ public final class StandardInliningTextProcessor extends AbstractTextProcessor {
                         final ITextStructureHandler structureHandler) {
 
 
-        final ITextInliner textInliner = processingContext.getVariables().getTextInliner();
+        final IInliner inliner = processingContext.getVariables().getInliner();
 
-        if (textInliner == null || textInliner == NoOpTextInliner.INSTANCE) {
+        if (inliner == null || inliner == NoOpInliner.INSTANCE) {
             return;
         }
 
         // Execute the inliner directly passing the IText node (which is also a CharSequence)
-        final CharSequence result = textInliner.inline(processingContext, text, text.isWhitespace());
+        final CharSequence result = inliner.inline(processingContext, text, text.isWhitespace());
 
         if (result == text) {
             // Either there were no changes, or they were directly done on the IText node itself. Either way,

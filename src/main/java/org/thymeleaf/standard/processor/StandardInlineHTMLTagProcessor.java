@@ -22,10 +22,13 @@ package org.thymeleaf.standard.processor;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.inline.ITextInliner;
+import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.inline.NoOpInliner;
 import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.standard.inline.StandardDartInliner;
+import org.thymeleaf.standard.inline.StandardCSSInliner;
+import org.thymeleaf.standard.inline.StandardHTMLInliner;
 import org.thymeleaf.standard.inline.StandardJavaScriptInliner;
+import org.thymeleaf.standard.inline.StandardTextInliner;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -41,11 +44,6 @@ public final class StandardInlineHTMLTagProcessor extends AbstractStandardTextIn
     public static final String ATTR_NAME = "inline";
 
 
-    public static final String TEXT_INLINE = "text";
-    public static final String JAVASCRIPT_INLINE = "javascript";
-    public static final String DART_INLINE = "dart";
-    public static final String NONE_INLINE = "none";
-
 
 
     public StandardInlineHTMLTagProcessor(final String dialectPrefix) {
@@ -55,27 +53,32 @@ public final class StandardInlineHTMLTagProcessor extends AbstractStandardTextIn
 
 
     @Override
-    protected ITextInliner getTextInliner(
+    protected IInliner getInliner(
             final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue, final Object expressionResult) {
 
         final String inliner = (expressionResult == null? null : expressionResult.toString().toLowerCase());
 
         if (inliner != null) {
-            if (JAVASCRIPT_INLINE.equals(inliner)) {
+            if (INLINE_MODE_NONE.equals(inliner)) {
+                return NoOpInliner.INSTANCE;
+            } else if (INLINE_MODE_HTML.equals(inliner)) {
+                return StandardHTMLInliner.INSTANCE;
+            } else if (INLINE_MODE_TEXT.equals(inliner)) {
+                return StandardTextInliner.INSTANCE;
+            } else if (INLINE_MODE_JAVASCRIPT.equals(inliner)) {
                 return StandardJavaScriptInliner.INSTANCE;
-            } else if (DART_INLINE.equals(inliner)) {
-                return StandardDartInliner.INSTANCE;
-            } else if (TEXT_INLINE.equals(inliner)) {
-                throw new UnsupportedOperationException("TEXT INLINING IS NOT IMPLEMENTED YET!");
+            } else if (INLINE_MODE_CSS.equals(inliner)) {
+                return StandardCSSInliner.INSTANCE;
             }
         }
 
         throw new TemplateProcessingException(
-                "Cannot recognize value for \"" + attributeName + "\". Allowed values in template mode " +
+                "Cannot recognize value for \"" + attributeName + "\". Allowed inline modes in template mode " +
                 getTemplateMode() + " are: " +
-                "\"" + TEXT_INLINE + "\", \"" + JAVASCRIPT_INLINE + "\", " +
-                "\"" + DART_INLINE + "\" and \"" + NONE_INLINE + "\"");
+                "\"" + INLINE_MODE_HTML + "\", \"" + INLINE_MODE_TEXT + "\", " +
+                "\"" + INLINE_MODE_JAVASCRIPT + "\", \"" + INLINE_MODE_CSS + "\" and " +
+                "\"" + INLINE_MODE_NONE + "\"");
 
     }
 

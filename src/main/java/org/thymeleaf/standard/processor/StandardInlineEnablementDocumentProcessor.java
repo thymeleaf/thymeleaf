@@ -21,10 +21,15 @@ package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.IDocumentStructureHandler;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IDocumentEnd;
 import org.thymeleaf.model.IDocumentStart;
 import org.thymeleaf.processor.document.AbstractDocumentProcessor;
+import org.thymeleaf.standard.inline.StandardCSSInliner;
+import org.thymeleaf.standard.inline.StandardHTMLInliner;
+import org.thymeleaf.standard.inline.StandardJavaScriptInliner;
 import org.thymeleaf.standard.inline.StandardTextInliner;
+import org.thymeleaf.standard.inline.StandardXMLInliner;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -48,7 +53,28 @@ public final class StandardInlineEnablementDocumentProcessor extends AbstractDoc
             final ITemplateProcessingContext processingContext, final IDocumentStart documentStart,
             final IDocumentStructureHandler structureHandler) {
 
-        structureHandler.setTextInliner(StandardTextInliner.INSTANCE);
+        switch (getTemplateMode()) {
+
+            case HTML:
+                structureHandler.setInliner(StandardHTMLInliner.INSTANCE);
+                break;
+            case XML:
+                structureHandler.setInliner(StandardXMLInliner.INSTANCE);
+                break;
+            case TEXT:
+                structureHandler.setInliner(StandardTextInliner.INSTANCE);
+                break;
+            case JAVASCRIPT:
+                structureHandler.setInliner(StandardJavaScriptInliner.INSTANCE);
+                break;
+            case CSS:
+                structureHandler.setInliner(StandardCSSInliner.INSTANCE);
+                break;
+            default:
+                throw new TemplateProcessingException(
+                        "Unrecognized template mode: " + getTemplateMode() + ", cannot initialize inlining!");
+
+        }
 
     }
 

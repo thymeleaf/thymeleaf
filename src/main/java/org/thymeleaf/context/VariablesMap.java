@@ -26,8 +26,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.thymeleaf.inline.ITextInliner;
-import org.thymeleaf.inline.NoOpTextInliner;
+import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.inline.NoOpInliner;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -55,7 +55,7 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
     private int[] levels;
     private HashMap<String,Object>[] maps;
     private SelectionTarget[] selectionTargets;
-    private ITextInliner[] textInliners;
+    private IInliner[] inliners;
 
     private static final Object NON_EXISTING = new Object() {
         @Override
@@ -81,11 +81,11 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
         this.levels = new int[DEFAULT_LEVELS_SIZE];
         this.maps = (HashMap<String, Object>[]) new HashMap<?,?>[DEFAULT_LEVELS_SIZE];
         this.selectionTargets = new SelectionTarget[DEFAULT_LEVELS_SIZE];
-        this.textInliners = new ITextInliner[DEFAULT_LEVELS_SIZE];
+        this.inliners = new IInliner[DEFAULT_LEVELS_SIZE];
         Arrays.fill(this.levels, Integer.MAX_VALUE);
         Arrays.fill(this.maps, null);
         Arrays.fill(this.selectionTargets, null);
-        Arrays.fill(this.textInliners, null);
+        Arrays.fill(this.inliners, null);
         this.levels[0] = 0;
 
         if (variables != null) {
@@ -234,24 +234,24 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
 
 
-    public ITextInliner getTextInliner() {
+    public IInliner getInliner() {
         int n = this.index + 1;
         while (n-- != 0) {
-            if (this.textInliners[n] != null) {
-                if (this.textInliners[n] == NoOpTextInliner.INSTANCE) {
+            if (this.inliners[n] != null) {
+                if (this.inliners[n] == NoOpInliner.INSTANCE) {
                     return null;
                 }
-                return this.textInliners[n];
+                return this.inliners[n];
             }
         }
         return null;
     }
 
 
-    public void setTextInliner(final ITextInliner textInliner) {
+    public void setInliner(final IInliner inliner) {
         ensureLevelInitialized(DEFAULT_MAP_SIZE);
-        // We use NoOpTexInliner.INSTACE in order to signal when inlining has actually been disabled
-        this.textInliners[this.index] = (textInliner == null? NoOpTextInliner.INSTANCE : textInliner);
+        // We use NoOpInliner.INSTACE in order to signal when inlining has actually been disabled
+        this.inliners[this.index] = (inliner == null? NoOpInliner.INSTANCE : inliner);
     }
 
 
@@ -270,19 +270,19 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
                 final int[] newLevels = new int[this.levels.length + DEFAULT_LEVELS_SIZE];
                 final HashMap<String,Object>[] newMaps = (HashMap<String, Object>[]) new HashMap<?,?>[this.maps.length + DEFAULT_LEVELS_SIZE];
                 final SelectionTarget[] newSelectionTargets = new SelectionTarget[this.selectionTargets.length + DEFAULT_LEVELS_SIZE];
-                final ITextInliner[] newTextInliners = new ITextInliner[this.textInliners.length + DEFAULT_LEVELS_SIZE];
+                final IInliner[] newInliners = new IInliner[this.inliners.length + DEFAULT_LEVELS_SIZE];
                 Arrays.fill(newLevels, Integer.MAX_VALUE);
                 Arrays.fill(newMaps, null);
                 Arrays.fill(newSelectionTargets, null);
-                Arrays.fill(newTextInliners, null);
+                Arrays.fill(newInliners, null);
                 System.arraycopy(this.levels, 0, newLevels, 0, this.levels.length);
                 System.arraycopy(this.maps, 0, newMaps, 0, this.maps.length);
                 System.arraycopy(this.selectionTargets, 0, newSelectionTargets, 0, this.selectionTargets.length);
-                System.arraycopy(this.textInliners, 0, newTextInliners, 0, this.textInliners.length);
+                System.arraycopy(this.inliners, 0, newInliners, 0, this.inliners.length);
                 this.levels = newLevels;
                 this.maps = newMaps;
                 this.selectionTargets = newSelectionTargets;
-                this.textInliners = newTextInliners;
+                this.inliners = newInliners;
             }
 
             this.levels[this.index] = this.level;
@@ -317,7 +317,7 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
                 this.maps[this.index].clear();
             }
             this.selectionTargets[this.index] = null;
-            this.textInliners[this.index] = null;
+            this.inliners[this.index] = null;
             this.index--;
         }
         this.level--;
@@ -351,7 +351,7 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
                     levelVars.put(name, value);
                 }
             }
-            if (n == 0 || !levelVars.isEmpty() || this.selectionTargets[n] != null || this.textInliners[n] != null) {
+            if (n == 0 || !levelVars.isEmpty() || this.selectionTargets[n] != null || this.inliners[n] != null) {
                 if (strBuilder.length() > 1) {
                     strBuilder.append(',');
                 }
@@ -362,8 +362,8 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
                 if (this.selectionTargets[n] != null) {
                     strBuilder.append("<" + this.selectionTargets[n].selectionTarget + ">");
                 }
-                if (this.textInliners[n] != null) {
-                    strBuilder.append("[" + this.textInliners[n].getName() + "]");
+                if (this.inliners[n] != null) {
+                    strBuilder.append("[" + this.inliners[n].getName() + "]");
                 }
             }
         }
@@ -397,7 +397,7 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
             }
             i++;
         }
-        final String textInliningStr = (getTextInliner() != null? "[" + getTextInliner().getName() + "]" : "" );
+        final String textInliningStr = (getInliner() != null? "[" + getInliner().getName() + "]" : "" );
         return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "") + textInliningStr;
 
     }
