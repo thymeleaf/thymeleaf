@@ -30,8 +30,9 @@ package org.thymeleaf.templateparser.text;
  * Some examples (note the comment suffixes are written with a whitespace so that they don't close this comment):
  *
  *     /*[# th:each="a : ${list}"]* /        ->     [# th:each="a : ${list}"] (decomposed into the corresponding events)
- *     /*[${someVar}]* / something;          ->     [${someVar}];             (as a single TEXT event)
+ *     /*[(${someVar})]* / something;        ->     [(${someVar})];           (as a single TEXT event)
  *     /*[[${someVar}]]* / something;        ->     [[${someVar}]];           (as a single TEXT event)
+ *     /*[whatever]* /                       ->     /*[whatever]* /           (as a single TEXT event)
  *     /*whatever* /                         ->     /*whatever* /             (as a single TEXT event)
  *
  * NOTE: No comment event should ever be fired by this handler. "Normal" comments, i.e. those that are not commented
@@ -65,7 +66,7 @@ final class CommentProcessorTextHandler extends AbstractChainedTextHandler {
 
         /*
          * FIRST STEP: Quickly determine if we actually need to do anything with this comment. We will process
-         * every comment which content starts and ends in brackets.
+         * every comment which has any of the shapes: [#...], [/...], [(...)] or [[...]].
          * If we determine that a comment is not processable, we will output it as mere text.
          */
 
@@ -114,8 +115,9 @@ final class CommentProcessorTextHandler extends AbstractChainedTextHandler {
 
         /*
          * FINAL STEP: At this point, we know it's an expression, not an element. So we will not be modifying the
-         *             content of the comment (the expression itself, such as '[[${someVar}]]', but we will be removing
-         *             the rest of the line (or more correctly the rest of the structure the comment is in).
+         *             content of the comment (the expression itself, such as '[[${someVar}]]' or '[(${someVar})], but
+         *             we will be removing the rest of the line (or more correctly the rest of the structure the
+         *             comment is in).
          */
 
         getNext().handleText(buffer, contentOffset, contentLen, line, col);
@@ -124,8 +126,30 @@ final class CommentProcessorTextHandler extends AbstractChainedTextHandler {
     }
 
 
+
+
     private boolean isCommentProcessable(final char[] buffer, final int contentOffset, final int contentLen) {
-        return (contentLen > 1 && buffer[contentOffset] == '[' && buffer[contentOffset + contentLen - 1] == ']');
+        final int maxi = contentOffset + contentLen;
+        if (contentLen < 3 || buffer[contentOffset] != '[' || buffer[maxi - 1] != ']') {
+            return false;
+        }
+        if (contentLen >= 4 && buffer[contentOffset + 1] == '(' && buffer[maxi - 2] == ')') {
+            // That's a [(...)] commented unescaped expression
+            return true;
+        }
+        if (contentLen >= 4 && buffer[contentOffset + 1] == '[' && buffer[maxi - 2] == ']') {
+            // That's a [[...]] commented escaped expression
+            return true;
+        }
+        // It is wrapped by brackets, but it is not a commented expression, so it will only be processable if it
+        // matches the syntax of a commented element
+        if (TextParsingElementUtil.isOpenElementStart(buffer, contentOffset, maxi))  {
+            return TextParsingElementUtil.isElementEnd(buffer, maxi - 1, maxi, false); // we don't mind whether it is minimized or not
+        }
+        if (TextParsingElementUtil.isCloseElementStart(buffer, contentOffset, maxi)) {
+            return TextParsingElementUtil.isElementEnd(buffer, maxi - 1, maxi, false);
+        }
+        return false;
     }
 
 

@@ -24,13 +24,13 @@ import org.thymeleaf.standard.processor.StandardUtextTagProcessor;
 
 /*
  * This class performs the processing of inlined expressions in text modes. This means searching for inlined expressions
- * such as [${someVar}] (unescaped) or [[${someVar}]] (escaped) and replacing them by the sequence of events
+ * such as [(${someVar})] (unescaped) or [[${someVar}]] (escaped) and replacing them by the sequence of events
  * corresponding to escaped/unescaped block elements with th:text/th:utext attributes.
  *
  * Some examples:
  *
- *     [${someVar}]           ->     [# th:utext="${someVar}"]
  *     [[${someVar}]]         ->     [# th:text="${someVar}"]
+ *     [(${someVar})]         ->     [# th:utext="${someVar}"]
  *
  * @author Daniel Fernandez
  * @since 3.0.0
