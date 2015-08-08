@@ -25,6 +25,7 @@ import java.io.Writer;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.text.ITextRepository;
+import org.thymeleaf.util.AggregateCharSequence;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -41,7 +42,7 @@ final class Text
     private char[] buffer;
     private int offset;
 
-    private String text;
+    private CharSequence text;
 
     private int length;
 
@@ -89,7 +90,13 @@ final class Text
             this.text = this.textRepository.getText(this.buffer, this.offset, this.length);
         }
 
-        return this.text;
+        if (!(this.text instanceof String)) {
+            // This is to ensure we only compute once the String from whatever implementation of
+            // CharSequence we are using
+            this.text = this.text.toString();
+        }
+
+        return this.text.toString();
 
     }
 
@@ -171,7 +178,7 @@ final class Text
 
 
 
-    public void setText(final String text) {
+    public void setText(final CharSequence text) {
 
         if (text == null) {
             throw new IllegalArgumentException("Text cannot be null");
@@ -221,7 +228,13 @@ final class Text
             // resources than writing String objects
             writer.write(this.buffer, this.offset, this.length);
         } else {
-            writer.write(this.text);
+            if (this.text instanceof AggregateCharSequence) {
+                // In the special case we are using an AggregateCharSequence, we will avoid creating a String
+                // for the whole content
+                ((AggregateCharSequence)this.text).write(writer);
+            } else {
+                writer.write(this.text.toString());
+            }
         }
     }
 
@@ -284,7 +297,7 @@ final class Text
 
 
 
-    private static boolean computeIsWhitespace(final String text) {
+    private static boolean computeIsWhitespace(final CharSequence text) {
         int n = text.length();
         if (n == 0) {
             return true;

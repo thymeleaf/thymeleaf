@@ -19,6 +19,11 @@
  */
 package org.thymeleaf.standard.inline;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.thymeleaf.util.AggregateCharSequence;
+
 /*
  *
  * @author Daniel Fernandez
@@ -31,16 +36,15 @@ final class StandardInlineUtils {
 
     static boolean mightNeedInlining(final CharSequence text) {
 
-        int i = 0;
-        final int maxi = text.length();
+        int n = text.length();
 
         char c;
-        while (i < maxi) {
+        while (n-- != 0) {
 
-            c = text.charAt(i++);
-            if (c == '[' && i < maxi) {
-                c = text.charAt(i);
-                if (c == '[' || c == '(') {
+            c = text.charAt(n);
+            if (c == ']' && n > 0) {
+                c = text.charAt(n - 1);
+                if (c == ']' || c == ')') {
                     // There probably is some kind of [[...]] or [(...)] inlined expression
                     return true;
                 }
@@ -51,6 +55,23 @@ final class StandardInlineUtils {
         return false;
 
     }
+
+
+
+    static CharSequence performInlining(final CharSequence text) {
+
+        final List<CharSequence> textFragments = new ArrayList<CharSequence>(4);
+
+        textFragments.add("$$$");
+        textFragments.add("INLINED");
+        textFragments.add("$$$");
+
+        return new AggregateCharSequence(textFragments);
+
+    }
+
+
+
 
 
 

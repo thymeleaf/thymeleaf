@@ -241,7 +241,7 @@ public class ImmutableMarkup implements IMarkup {
             return this.wrapped.subSequence(start, end);
         }
 
-        public void setText(final String text) {
+        public void setText(final CharSequence text) {
             ImmutableMarkup.immutableException();
         }
 

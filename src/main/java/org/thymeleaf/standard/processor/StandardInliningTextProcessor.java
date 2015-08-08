@@ -65,7 +65,7 @@ public final class StandardInliningTextProcessor extends AbstractTextProcessor {
 
         // Text was changed, so we need to set it as the new text
         // NOTE it is the responsibility of the inliner to correctly perform any HTML escaping operations
-        text.setText(result.toString());
+        text.setText(result);
 
     }
 

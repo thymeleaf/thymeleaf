@@ -62,7 +62,10 @@ public final class StandardTextInliner implements IInliner {
         }
 
 
-        return "///" + text + "///";
+        /*
+         * Once we are quite sure that we will need to execute some inlined expressions, let's do it!
+         */
+        return StandardInlineUtils.performInlining(text);
 
     }
 
