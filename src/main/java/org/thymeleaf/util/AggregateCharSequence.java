@@ -19,19 +19,28 @@
  */
 package org.thymeleaf.util;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
+import java.util.List;
 
 
 /**
  * <p>
- *   Character sequence that aggregates one or several {@link String} objects, without the need to clone them.
+ *   Character sequence that aggregates one or several {@link CharSequence} objects, without the need to clone them
+ *   or convert them to String.
  * </p>
  * <p>
- *   Special implementation of the {@link CharSequence} interface that replaces {@link String} objects in many
- *   parts of the framework where a specific text literal is composed of several parts and we want to avoid
- *   creating new {@link String} objects for them, using instead objects of this class that simply keep an array
- *   of references to the original Strings.
+ *   Special implementation of the {@link CharSequence} interface that can replace {@link String} objects
+ *   wherever a specific text literal is composed of several parts and we want to avoid creating new
+ *   {@link String} objects for them, using instead objects of this class that simply keep an array
+ *   of references to the original CharSequences.
  * </p>
+ * <p>
+ *   Note that any mutable {@link CharSequence} implementations used to build objects of this class should
+ *   <strong>never</strong> be modified after the creation of the aggregated object.
+ * </p>
+ *
  *
  * <p>
  *   This class is <strong>thread-safe</strong>
@@ -43,14 +52,14 @@ import java.io.Serializable;
  * @since 3.0.0
  *
  */
-public final class AggregateString implements Serializable, CharSequence {
+public final class AggregateCharSequence implements Serializable, CharSequence {
 
 
     protected static final long serialVersionUID = 823987612L;
 
     private static final int[] UNIQUE_ZERO_OFFSET = new int[] { 0 };
 
-    private final String[] values;
+    private final CharSequence[] values;
     private final int[] offsets;
     private final int length;
 
@@ -60,7 +69,7 @@ public final class AggregateString implements Serializable, CharSequence {
 
 
 
-    public AggregateString(final String component) {
+    public AggregateCharSequence(final CharSequence component) {
 
         super();
 
@@ -68,14 +77,14 @@ public final class AggregateString implements Serializable, CharSequence {
             throw new IllegalArgumentException("Component argument is null, which is forbidden");
         }
 
-        this.values = new String[] { component };
+        this.values = new CharSequence[] { component };
         this.offsets = UNIQUE_ZERO_OFFSET;
         this.length = component.length();
 
     }
 
 
-    public AggregateString(final String component0, final String component1) {
+    public AggregateCharSequence(final CharSequence component0, final CharSequence component1) {
 
         super();
 
@@ -83,14 +92,14 @@ public final class AggregateString implements Serializable, CharSequence {
             throw new IllegalArgumentException("At least one component argument is null, which is forbidden");
         }
 
-        this.values = new String[] { component0, component1 };
+        this.values = new CharSequence[] { component0, component1 };
         this.offsets = new int[] { 0, component0.length() };
         this.length = this.offsets[1] + component1.length();
 
     }
 
 
-    public AggregateString(final String component0, final String component1, final String component2) {
+    public AggregateCharSequence(final CharSequence component0, final CharSequence component1, final CharSequence component2) {
 
         super();
 
@@ -98,14 +107,14 @@ public final class AggregateString implements Serializable, CharSequence {
             throw new IllegalArgumentException("At least one component argument is null, which is forbidden");
         }
 
-        this.values = new String[] { component0, component1, component2 };
+        this.values = new CharSequence[] { component0, component1, component2 };
         this.offsets = new int[] { 0, component0.length(), component0.length() + component1.length() };
         this.length = this.offsets[2] + component2.length();
 
     }
 
 
-    public AggregateString(final String component0, final String component1, final String component2, final String component3) {
+    public AggregateCharSequence(final CharSequence component0, final CharSequence component1, final CharSequence component2, final CharSequence component3) {
 
         super();
 
@@ -113,7 +122,7 @@ public final class AggregateString implements Serializable, CharSequence {
             throw new IllegalArgumentException("At least one component argument is null, which is forbidden");
         }
 
-        this.values = new String[] { component0, component1, component2, component3 };
+        this.values = new CharSequence[] { component0, component1, component2, component3 };
         this.offsets = new int[] { 0, component0.length(), component0.length() + component1.length(), component0.length() + component1.length() + component2.length() };
         this.length = this.offsets[3] + component3.length();
 
@@ -121,7 +130,7 @@ public final class AggregateString implements Serializable, CharSequence {
 
 
 
-    public AggregateString(final String[] components) {
+    public AggregateCharSequence(final CharSequence[] components) {
 
         // NOTE: We have this set of constructors instead of only one with a varargs argument in order to
         // avoid unnecessary creation of String[] objects
@@ -135,13 +144,13 @@ public final class AggregateString implements Serializable, CharSequence {
         if (components.length == 0) {
 
             // We want always at least one String
-            this.values = new String[]{""};
+            this.values = new CharSequence[]{""};
             this.offsets = UNIQUE_ZERO_OFFSET;
             this.length = 0;
 
         } else {
 
-            this.values = new String[components.length];
+            this.values = new CharSequence[components.length];
             this.offsets = new int[components.length];
 
             int totalLength = 0;
@@ -152,6 +161,50 @@ public final class AggregateString implements Serializable, CharSequence {
                 }
                 final int componentLen = components[i].length();
                 this.values[i] = components[i];
+                this.offsets[i] = (i == 0 ? 0 : this.offsets[i - 1] + this.values[i - 1].length());
+                totalLength += componentLen;
+                i++;
+            }
+
+            this.length = totalLength;
+
+        }
+
+    }
+
+
+
+    public AggregateCharSequence(final List<? extends CharSequence> components) {
+
+        super();
+
+        if (components == null) {
+            throw new IllegalArgumentException("Components argument array cannot be null");
+        }
+
+        final int componentsSize = components.size();
+
+        if (componentsSize == 0) {
+
+            // We want always at least one String
+            this.values = new CharSequence[]{""};
+            this.offsets = UNIQUE_ZERO_OFFSET;
+            this.length = 0;
+
+        } else {
+
+            this.values = new CharSequence[componentsSize];
+            this.offsets = new int[componentsSize];
+
+            int totalLength = 0;
+            int i = 0;
+            while (i < componentsSize) {
+                final CharSequence element = components.get(i);
+                if (element == null) {
+                    throw new IllegalArgumentException("Components argument contains at least a null, which is forbidden");
+                }
+                final int componentLen = element.length();
+                this.values[i] = element;
                 this.offsets[i] = (i == 0 ? 0 : this.offsets[i - 1] + this.values[i - 1].length());
                 totalLength += componentLen;
                 i++;
@@ -220,8 +273,8 @@ public final class AggregateString implements Serializable, CharSequence {
             }
         }
         if (n0 == n1) {
-            // Shortcut: let the String#substring method do the job...
-            return this.values[n0].substring((beginIndex - this.offsets[n0]), (endIndex - this.offsets[n0]));
+            // Shortcut: let the CharSequence#subSequence method do the job...
+            return this.values[n0].subSequence((beginIndex - this.offsets[n0]), (endIndex - this.offsets[n0]));
         }
         final char[] chars = new char[endIndex - beginIndex];
         int charsOffset = 0;
@@ -229,12 +282,35 @@ public final class AggregateString implements Serializable, CharSequence {
         while (nx <= n1) {
             final int nstart = Math.max(beginIndex, this.offsets[nx]) - this.offsets[nx];
             final int nend = Math.min(endIndex, this.offsets[nx] + this.values[nx].length()) - this.offsets[nx];
-            this.values[nx].getChars(nstart, nend, chars, charsOffset);
+            copyChars(this.values[nx], nstart, nend, chars, charsOffset);
             charsOffset += (nend - nstart);
             nx++;
         }
         return new String(chars);
 
+    }
+
+
+    /**
+     * <p>
+     *     This method can avoid the need to create a {@link String} object containing all the contents in
+     *     this character sequence just when we want to write it to a {@link Writer}.
+     * </p>
+     * <p>
+     *     The implementation simply iterates each of the contained {@link CharSequence} objects and passes
+     *     each one to the writer passed as argument.
+     * </p>
+     *
+     * @param writer the writer to write the character sequence to.
+     * @throws IOException
+     */
+    public void write(final Writer writer) throws IOException {
+        if (writer == null) {
+            throw new IllegalArgumentException("Writer cannot be null");
+        }
+        for (int i = 0; i < this.values.length; i++) {
+            writer.write(this.values[i].toString());
+        }
     }
 
 
@@ -247,14 +323,16 @@ public final class AggregateString implements Serializable, CharSequence {
             return true;
         }
 
-        if (!(o instanceof AggregateString)) {
+        if (!(o instanceof AggregateCharSequence)) {
             return false;
         }
 
-        final AggregateString that = (AggregateString) o;
+        final AggregateCharSequence that = (AggregateCharSequence) o;
 
         if (this.values.length == 1 && that.values.length == 1) {
-            return this.values[0].equals(that.values[0]);
+            if (this.values[0] instanceof String && that.values[0] instanceof String) {
+                return this.values[0].equals(that.values[0]);
+            }
         }
 
         if (this.length != that.length) {
@@ -291,8 +369,8 @@ public final class AggregateString implements Serializable, CharSequence {
                 len2 = that.values[m2].length();
             }
 
-            // Shortcut, in case we have to identical strings ready to be compared with one another
-            if (n1 == 0 && n2 == 0 && len1 == len2) {
+            // Shortcut, in case we have to identical Strings ready to be compared with one another
+            if (n1 == 0 && n2 == 0 && len1 == len2 && this.values[m1] instanceof String && that.values[m2] instanceof String) {
                 if (!this.values[m1].equals(that.values[m2])) {
                     return false;
                 }
@@ -334,8 +412,8 @@ public final class AggregateString implements Serializable, CharSequence {
             if (this.values.length == 1) {
                 h = this.values[0].hashCode(); // Might be cached at the String object, let's benefit from that
             } else {
-                final String vals[] = this.values;
-                String val;
+                final CharSequence[] vals = this.values;
+                CharSequence val;
                 int valLen;
                 for (int x = 0; x < vals.length; x++) {
                     val = vals[x];
@@ -377,7 +455,7 @@ public final class AggregateString implements Serializable, CharSequence {
         }
 
         if (cs instanceof String) {
-            if (this.values.length == 1) {
+            if (this.values.length == 1 && this.values[0] instanceof String) {
                 return this.values[0].equals(cs);
             }
             if (this.hash != 0 && this.hash != cs.hashCode()) {
@@ -422,16 +500,34 @@ public final class AggregateString implements Serializable, CharSequence {
             return "";
         }
         if (this.values.length == 1) {
-            // Hooray, no need to create a new String object!
-            return this.values[0];
+            return this.values[0].toString();
         }
         final char[] chars = new char[this.length];
         for (int i = 0; i < this.values.length; i++) {
-            this.values[i].getChars(0, this.values[i].length(), chars, this.offsets[i]);
+            copyChars(this.values[i], 0, this.values[i].length(), chars, this.offsets[i]);
         }
         return new String(chars);
     }
 
+
+
+
+
+    private static void copyChars(
+            final CharSequence src, final int srcBegin, final int srcEnd, final char[] dst, final int dstBegin) {
+
+        if (src instanceof String) {
+            ((String)src).getChars(srcBegin, srcEnd, dst, dstBegin);
+            return;
+        }
+
+        int i = srcBegin;
+        while (i < srcEnd) {
+            dst[dstBegin + (i - srcBegin)] = src.charAt(i);
+            i++;
+        }
+
+    }
 
 
 
