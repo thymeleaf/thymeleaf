@@ -41,7 +41,7 @@ public final class NoOpInliner implements IInliner {
     }
 
 
-    public CharSequence inline(final IProcessingContext context, final CharSequence text, final boolean textIsWhitespace) {
+    public CharSequence inline(final IProcessingContext context, final CharSequence text) {
         // Nothing to do. Anyway, this should never end up being executed...
         return text;
     }

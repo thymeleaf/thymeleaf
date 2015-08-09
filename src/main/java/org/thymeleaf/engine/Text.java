@@ -47,6 +47,7 @@ final class Text
     private int length;
 
     private Boolean whitespace;
+    private Boolean inlineable;
 
     private String templateName;
     private int line;
@@ -134,6 +135,24 @@ final class Text
         }
 
         return this.whitespace.booleanValue();
+    }
+
+
+    public boolean contains(final CharSequence subsequence) {
+
+        if (this.inlineable == null) {
+            if (isWhitespace()) {
+                this.inlineable = Boolean.FALSE;
+            } else {
+                if (this.buffer != null) {
+                    this.inlineable = Boolean.valueOf(computeIsInlineable(this.buffer, this.offset, this.length));
+                } else {
+                    this.inlineable = Boolean.valueOf(computeIsInlineable(this.text));
+                }
+            }
+        }
+
+        return this.inlineable.booleanValue();
     }
 
 
@@ -333,6 +352,52 @@ final class Text
             }
         }
         return true;
+    }
+
+
+
+
+    private static boolean contains(final CharSequence text, final CharSequence subsequence) {
+        if (text instanceof String) {
+            return ((String)text).contains(subsequence);
+        }
+        // TODO Use TextUtil here (after converting it to CharSequence)?
+        int n = text.length();
+        if (n == 0) {
+            return false;
+        }
+        char c;
+        while (n-- != 0) {
+            c = text.charAt(n);
+            if (c == ']' && n > 0) {
+                c = text.charAt(n - 1);
+                if (c == ']' || c == ')') {
+                    // There probably is some kind of [[...]] or [(...)] inlined expression
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    private static boolean computeIsInlineable(final char[] buffer, final int off, final int len, final CharSequence subsequence) {
+        int n = len;
+        if (n == 0) {
+            return false;
+        }
+        char c;
+        while (n-- != 0) {
+            c = buffer[off + n];
+            if (c == ']' && n > 0) {
+                c = buffer[off + (n - 1)];
+                if (c == ']' || c == ')') {
+                    // There probably is some kind of [[...]] or [(...)] inlined expression
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 

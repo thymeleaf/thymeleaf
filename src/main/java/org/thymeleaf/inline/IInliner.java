@@ -31,6 +31,6 @@ public interface IInliner {
 
     public String getName();
 
-    public CharSequence inline(final IProcessingContext context, final CharSequence text, final boolean textIsWhitespace);
+    public CharSequence inline(final IProcessingContext context, final CharSequence text);
 
 }
