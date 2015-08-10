@@ -35,7 +35,7 @@ public final class TextUtil {
 
     /**
      * <p>
-     *   Check equality of two <tt>String</tt> objects. This is equivalent to {@link java.lang.String#equals(Object)}
+     *   Check equality of two <tt>CharSequence</tt> objects. This is equivalent to {@link java.lang.String#equals(Object)}
      *   and {@link java.lang.String#equalsIgnoreCase(String)}.
      * </p>
      *
@@ -44,7 +44,7 @@ public final class TextUtil {
      * @param text2 the second text to be compared.
      * @return whether both texts are equal or not.
      */
-    public static boolean equals(final boolean caseSensitive, final String text1, final String text2) {
+    public static boolean equals(final boolean caseSensitive, final CharSequence text1, final CharSequence text2) {
 
         if (text1 == null) {
             throw new IllegalArgumentException("First text being compared cannot be null");
@@ -53,14 +53,22 @@ public final class TextUtil {
             throw new IllegalArgumentException("Second text being compared cannot be null");
         }
 
-        return (caseSensitive? text1.equals(text2) : text1.equalsIgnoreCase(text2));
+        if (text1 == text2) {
+            return true;
+        }
+
+        if (text1 instanceof String && text2 instanceof String) {
+            return (caseSensitive ? text1.equals(text2) : ((String)text1).equalsIgnoreCase((String)text2));
+        }
+
+        return equals(caseSensitive, text1, 0, text1.length(), text2, 0, text2.length());
 
     }
 
 
     /**
      * <p>
-     *   Check equality between a <tt>String</tt> and a <tt>char[]</tt> object.
+     *   Check equality between a <tt>CharSequence</tt> and a <tt>char[]</tt> object.
      * </p>
      *
      * @param caseSensitive whether the comparison must be done in a case-sensitive or case-insensitive way.
@@ -68,7 +76,7 @@ public final class TextUtil {
      * @param text2 the second text to be compared.
      * @return whether both texts are equal or not.
      */
-    public static boolean equals(final boolean caseSensitive, final String text1, final char[] text2) {
+    public static boolean equals(final boolean caseSensitive, final CharSequence text1, final char[] text2) {
         return equals(caseSensitive, text1, 0, text1.length(), text2, 0, text2.length);
     }
 
@@ -84,6 +92,9 @@ public final class TextUtil {
      * @return whether both texts are equal or not.
      */
     public static boolean equals(final boolean caseSensitive, final char[] text1, final char[] text2) {
+        if (text1 == text2) {
+            return true;
+        }
         return equals(caseSensitive, text1, 0, text1.length, text2, 0, text2.length);
     }
 
@@ -165,7 +176,7 @@ public final class TextUtil {
 
     /**
      * <p>
-     *   Check equality between a <tt>String</tt> and a <tt>char[]</tt> object, specifying (offset,len) pairs
+     *   Check equality between a <tt>CharSequence</tt> and a <tt>char[]</tt> object, specifying (offset,len) pairs
      *   for limiting the fragments to be checked.
      * </p>
      *
@@ -180,7 +191,7 @@ public final class TextUtil {
      */
     public static boolean equals(
             final boolean caseSensitive,
-            final String text1, final int text1Offset, final int text1Len,
+            final CharSequence text1, final int text1Offset, final int text1Len,
             final char[] text2, final int text2Offset, final int text2Len) {
 
         if (text1 == null) {
@@ -236,7 +247,7 @@ public final class TextUtil {
 
     /**
      * <p>
-     *   Check equality between two <tt>String</tt> objects, specifying (offset,len) pairs
+     *   Check equality between two <tt>CharSequence</tt> objects, specifying (offset,len) pairs
      *   for limiting the fragments to be checked.
      * </p>
      *
@@ -251,8 +262,8 @@ public final class TextUtil {
      */
     public static boolean equals(
             final boolean caseSensitive,
-            final String text1, final int text1Offset, final int text1Len,
-            final String text2, final int text2Offset, final int text2Len) {
+            final CharSequence text1, final int text1Offset, final int text1Len,
+            final CharSequence text2, final int text2Offset, final int text2Len) {
 
         if (text1 == null) {
             throw new IllegalArgumentException("First text being compared cannot be null");
@@ -323,7 +334,7 @@ public final class TextUtil {
      * @param prefix the prefix to be searched.
      * @return whether the text starts with the prefix or not.
      */
-    public static boolean startsWith(final boolean caseSensitive, final String text, final String prefix) {
+    public static boolean startsWith(final boolean caseSensitive, final CharSequence text, final CharSequence prefix) {
 
         if (text == null) {
             throw new IllegalArgumentException("Text cannot be null");
@@ -332,7 +343,11 @@ public final class TextUtil {
             throw new IllegalArgumentException("Prefix cannot be null");
         }
 
-        return (caseSensitive? text.startsWith(prefix) : startsWith(caseSensitive, text, 0, text.length(), prefix, 0, prefix.length()));
+        if (text instanceof String && prefix instanceof String) {
+            return (caseSensitive ? ((String)text).startsWith((String)prefix) : startsWith(caseSensitive, text, 0, text.length(), prefix, 0, prefix.length()));
+        }
+
+        return startsWith(caseSensitive, text, 0, text.length(), prefix, 0, prefix.length());
 
     }
 
@@ -347,7 +362,7 @@ public final class TextUtil {
      * @param prefix the prefix to be searched.
      * @return whether the text starts with the prefix or not.
      */
-    public static boolean startsWith(final boolean caseSensitive, final String text, final char[] prefix) {
+    public static boolean startsWith(final boolean caseSensitive, final CharSequence text, final char[] prefix) {
         return startsWith(caseSensitive, text, 0, text.length(), prefix, 0, prefix.length);
     }
 
@@ -455,7 +470,7 @@ public final class TextUtil {
      */
     public static boolean startsWith(
             final boolean caseSensitive,
-            final String text, final int textOffset, final int textLen,
+            final CharSequence text, final int textOffset, final int textLen,
             final char[] prefix, final int prefixOffset, final int prefixLen) {
 
         if (text == null) {
@@ -527,7 +542,7 @@ public final class TextUtil {
     public static boolean startsWith(
             final boolean caseSensitive,
             final char[] text, final int textOffset, final int textLen,
-            final String prefix, final int prefixOffset, final int prefixLen) {
+            final CharSequence prefix, final int prefixOffset, final int prefixLen) {
 
         if (text == null) {
             throw new IllegalArgumentException("Text cannot be null");
@@ -597,8 +612,8 @@ public final class TextUtil {
      */
     public static boolean startsWith(
             final boolean caseSensitive,
-            final String text, final int textOffset, final int textLen,
-            final String prefix, final int prefixOffset, final int prefixLen) {
+            final CharSequence text, final int textOffset, final int textLen,
+            final CharSequence prefix, final int prefixOffset, final int prefixLen) {
 
         if (text == null) {
             throw new IllegalArgumentException("Text cannot be null");
@@ -665,7 +680,7 @@ public final class TextUtil {
      * @param suffix the suffix to be searched.
      * @return whether the text ends with the suffix or not.
      */
-    public static boolean endsWith(final boolean caseSensitive, final String text, final String suffix) {
+    public static boolean endsWith(final boolean caseSensitive, final CharSequence text, final CharSequence suffix) {
 
         if (text == null) {
             throw new IllegalArgumentException("Text cannot be null");
@@ -674,7 +689,11 @@ public final class TextUtil {
             throw new IllegalArgumentException("Suffix cannot be null");
         }
 
-        return (caseSensitive? text.endsWith(suffix) : endsWith(caseSensitive, text, 0, text.length(), suffix, 0, suffix.length()));
+        if (text instanceof String && suffix instanceof String) {
+            return (caseSensitive ? ((String)text).endsWith((String)suffix) : endsWith(caseSensitive, text, 0, text.length(), suffix, 0, suffix.length()));
+        }
+
+        return endsWith(caseSensitive, text, 0, text.length(), suffix, 0, suffix.length());
 
     }
 
@@ -689,7 +708,7 @@ public final class TextUtil {
      * @param suffix the suffix to be searched.
      * @return whether the text ends with the suffix or not.
      */
-    public static boolean endsWith(final boolean caseSensitive, final String text, final char[] suffix) {
+    public static boolean endsWith(final boolean caseSensitive, final CharSequence text, final char[] suffix) {
         return endsWith(caseSensitive, text, 0, text.length(), suffix, 0, suffix.length);
     }
 
@@ -800,7 +819,7 @@ public final class TextUtil {
      */
     public static boolean endsWith(
             final boolean caseSensitive,
-            final String text, final int textOffset, final int textLen,
+            final CharSequence text, final int textOffset, final int textLen,
             final char[] suffix, final int suffixOffset, final int suffixLen) {
 
         if (text == null) {
@@ -875,7 +894,7 @@ public final class TextUtil {
     public static boolean endsWith(
             final boolean caseSensitive,
             final char[] text, final int textOffset, final int textLen,
-            final String suffix, final int suffixOffset, final int suffixLen) {
+            final CharSequence suffix, final int suffixOffset, final int suffixLen) {
 
         if (text == null) {
             throw new IllegalArgumentException("Text cannot be null");
@@ -948,8 +967,8 @@ public final class TextUtil {
      */
     public static boolean endsWith(
             final boolean caseSensitive,
-            final String text, final int textOffset, final int textLen,
-            final String suffix, final int suffixOffset, final int suffixLen) {
+            final CharSequence text, final int textOffset, final int textLen,
+            final CharSequence suffix, final int suffixOffset, final int suffixLen) {
 
         if (text == null) {
             throw new IllegalArgumentException("Text cannot be null");
@@ -1019,7 +1038,7 @@ public final class TextUtil {
      * @param fragment the fragment to be searched.
      * @return whether the text contains the fragment or not.
      */
-    public static boolean contains(final boolean caseSensitive, final String text, final String fragment) {
+    public static boolean contains(final boolean caseSensitive, final CharSequence text, final CharSequence fragment) {
 
         if (text == null) {
             throw new IllegalArgumentException("Text cannot be null");
@@ -1028,7 +1047,14 @@ public final class TextUtil {
             throw new IllegalArgumentException("Fragment cannot be null");
         }
 
-        return (caseSensitive? text.contains(fragment) : contains(caseSensitive, text, 0, text.length(), fragment, 0, fragment.length()));
+        if (text instanceof String && fragment instanceof String) {
+            // Technically, String#contains(...) allows a CharSequence as an argument, so the
+            // 'fragment instanceof String' would not be necessary. But it seems String#contains(...) in turn
+            // calls .toString() on the CharSequence argument, which would be inconvenient.
+            return (caseSensitive ? ((String)text).contains(fragment) : contains(caseSensitive, text, 0, text.length(), fragment, 0, fragment.length()));
+        }
+
+        return contains(caseSensitive, text, 0, text.length(), fragment, 0, fragment.length());
 
     }
 
@@ -1043,7 +1069,7 @@ public final class TextUtil {
      * @param fragment the fragment to be searched.
      * @return whether the text contains the fragment or not.
      */
-    public static boolean contains(final boolean caseSensitive, final String text, final char[] fragment) {
+    public static boolean contains(final boolean caseSensitive, final CharSequence text, final char[] fragment) {
         return contains(caseSensitive, text, 0, text.length(), fragment, 0, fragment.length);
     }
 
@@ -1159,7 +1185,7 @@ public final class TextUtil {
      */
     public static boolean contains(
             final boolean caseSensitive,
-            final String text, final int textOffset, final int textLen,
+            final CharSequence text, final int textOffset, final int textLen,
             final char[] fragment, final int fragmentOffset, final int fragmentLen) {
 
         if (text == null) {
@@ -1239,7 +1265,7 @@ public final class TextUtil {
     public static boolean contains(
             final boolean caseSensitive,
             final char[] text, final int textOffset, final int textLen,
-            final String fragment, final int fragmentOffset, final int fragmentLen) {
+            final CharSequence fragment, final int fragmentOffset, final int fragmentLen) {
 
         if (text == null) {
             throw new IllegalArgumentException("Text cannot be null");
@@ -1317,8 +1343,8 @@ public final class TextUtil {
      */
     public static boolean contains(
             final boolean caseSensitive,
-            final String text, final int textOffset, final int textLen,
-            final String fragment, final int fragmentOffset, final int fragmentLen) {
+            final CharSequence text, final int textOffset, final int textLen,
+            final CharSequence fragment, final int fragmentOffset, final int fragmentLen) {
 
         if (text == null) {
             throw new IllegalArgumentException("Text cannot be null");
@@ -1388,7 +1414,7 @@ public final class TextUtil {
      *   Compares two texts lexicographically.
      * </p>
      * <p>
-     *   The comparison is based on the Unicode value of each character in the strings. The character sequence
+     *   The comparison is based on the Unicode value of each character in the CharSequences. The character sequence
      *   represented by the first text object is compared lexicographically to the character sequence represented
      *   by the second text.
      * </p>
@@ -1409,7 +1435,7 @@ public final class TextUtil {
      *         is lexicographically less than the second text; and a value greater than <tt>0</tt> if the
      *         first text is lexicographically greater than the second text.
      */
-    public static int compareTo(final boolean caseSensitive, final String text1, final String text2) {
+    public static int compareTo(final boolean caseSensitive, final CharSequence text1, final CharSequence text2) {
 
         if (text1 == null) {
             throw new IllegalArgumentException("First text being compared cannot be null");
@@ -1418,7 +1444,11 @@ public final class TextUtil {
             throw new IllegalArgumentException("Second text being compared cannot be null");
         }
 
-        return (caseSensitive? text1.compareTo(text2) : text1.compareToIgnoreCase(text2));
+        if (text1 instanceof String && text2 instanceof String) {
+            return (caseSensitive ? ((String)text1).compareTo((String)text2) : ((String)text1).compareToIgnoreCase((String)text2));
+        }
+
+        return compareTo(caseSensitive, text1, 0, text1.length(), text2, 0, text2.length());
 
     }
 
@@ -1428,7 +1458,7 @@ public final class TextUtil {
      *   Compares two texts lexicographically.
      * </p>
      * <p>
-     *   The comparison is based on the Unicode value of each character in the strings. The character sequence
+     *   The comparison is based on the Unicode value of each character in the CharSequences. The character sequence
      *   represented by the first text object is compared lexicographically to the character sequence represented
      *   by the second text.
      * </p>
@@ -1449,7 +1479,7 @@ public final class TextUtil {
      *         is lexicographically less than the second text; and a value greater than <tt>0</tt> if the
      *         first text is lexicographically greater than the second text.
      */
-    public static int compareTo(final boolean caseSensitive, final String text1, final char[] text2) {
+    public static int compareTo(final boolean caseSensitive, final CharSequence text1, final char[] text2) {
         return compareTo(caseSensitive, text1, 0, text1.length(), text2, 0, text2.length);
     }
 
@@ -1459,7 +1489,7 @@ public final class TextUtil {
      *   Compares two texts lexicographically.
      * </p>
      * <p>
-     *   The comparison is based on the Unicode value of each character in the strings. The character sequence
+     *   The comparison is based on the Unicode value of each character in the CharSequences. The character sequence
      *   represented by the first text object is compared lexicographically to the character sequence represented
      *   by the second text.
      * </p>
@@ -1490,7 +1520,7 @@ public final class TextUtil {
      *   Compares two texts lexicographically.
      * </p>
      * <p>
-     *   The comparison is based on the Unicode value of each character in the strings. The character sequence
+     *   The comparison is based on the Unicode value of each character in the CharSequences. The character sequence
      *   represented by the first text object is compared lexicographically to the character sequence represented
      *   by the second text.
      * </p>
@@ -1576,7 +1606,7 @@ public final class TextUtil {
      *   Compares two texts lexicographically.
      * </p>
      * <p>
-     *   The comparison is based on the Unicode value of each character in the strings. The character sequence
+     *   The comparison is based on the Unicode value of each character in the CharSequences. The character sequence
      *   represented by the first text object is compared lexicographically to the character sequence represented
      *   by the second text.
      * </p>
@@ -1603,7 +1633,7 @@ public final class TextUtil {
      */
     public static int compareTo(
             final boolean caseSensitive,
-            final String text1, final int text1Offset, final int text1Len,
+            final CharSequence text1, final int text1Offset, final int text1Len,
             final char[] text2, final int text2Offset, final int text2Len) {
 
         if (text1 == null) {
@@ -1658,7 +1688,7 @@ public final class TextUtil {
      *   Compares two texts lexicographically.
      * </p>
      * <p>
-     *   The comparison is based on the Unicode value of each character in the strings. The character sequence
+     *   The comparison is based on the Unicode value of each character in the CharSequences. The character sequence
      *   represented by the first text object is compared lexicographically to the character sequence represented
      *   by the second text.
      * </p>
@@ -1685,8 +1715,8 @@ public final class TextUtil {
      */
     public static int compareTo(
             final boolean caseSensitive,
-            final String text1, final int text1Offset, final int text1Len,
-            final String text2, final int text2Offset, final int text2Len) {
+            final CharSequence text1, final int text1Offset, final int text1Len,
+            final CharSequence text2, final int text2Offset, final int text2Len) {
 
         if (text1 == null) {
             throw new IllegalArgumentException("First text being compared cannot be null");
@@ -1797,7 +1827,7 @@ public final class TextUtil {
      */
     public static int binarySearch(
             final boolean caseSensitive, final char[][] values,
-            final String text, final int textOffset, final int textLen) {
+            final CharSequence text, final int textOffset, final int textLen) {
 
         if (values == null) {
             throw new IllegalArgumentException("Values array cannot be null");
@@ -1828,7 +1858,7 @@ public final class TextUtil {
      *         be &gt;= 0 if and only if the key is found.
      */
     public static int binarySearch(
-            final boolean caseSensitive, final String[] values,
+            final boolean caseSensitive, final CharSequence[] values,
             final char[] text, final int textOffset, final int textLen) {
 
         if (values == null) {
@@ -1860,8 +1890,8 @@ public final class TextUtil {
      *         be &gt;= 0 if and only if the key is found.
      */
     public static int binarySearch(
-            final boolean caseSensitive, final String[] values,
-            final String text, final int textOffset, final int textLen) {
+            final boolean caseSensitive, final CharSequence[] values,
+            final CharSequence text, final int textOffset, final int textLen) {
 
         if (values == null) {
             throw new IllegalArgumentException("Values array cannot be null");
@@ -1917,7 +1947,7 @@ public final class TextUtil {
             mid = (low + high) >>> 1;
             midVal = values[mid];
 
-            cmp = TextUtil.compareTo(caseSensitive, midVal, 0, midVal.length, text, textOffset, textLen);
+            cmp = compareTo(caseSensitive, midVal, 0, midVal.length, text, textOffset, textLen);
 
             if (cmp < 0) {
                 low = mid + 1;
@@ -1961,7 +1991,7 @@ public final class TextUtil {
     public static int binarySearch(
             final boolean caseSensitive,
             final char[][] values, final int valuesOffset, final int valuesLen,
-            final String text, final int textOffset, final int textLen) {
+            final CharSequence text, final int textOffset, final int textLen) {
 
         if (values == null) {
             throw new IllegalArgumentException("Values array cannot be null");
@@ -1981,7 +2011,7 @@ public final class TextUtil {
             mid = (low + high) >>> 1;
             midVal = values[mid];
 
-            cmp = TextUtil.compareTo(caseSensitive, text, textOffset, textLen, midVal, 0, midVal.length);
+            cmp = compareTo(caseSensitive, text, textOffset, textLen, midVal, 0, midVal.length);
 
             if (cmp > 0) {
                 low = mid + 1;
@@ -2024,7 +2054,7 @@ public final class TextUtil {
      */
     public static int binarySearch(
             final boolean caseSensitive,
-            final String[] values, final int valuesOffset, final int valuesLen,
+            final CharSequence[] values, final int valuesOffset, final int valuesLen,
             final char[] text, final int textOffset, final int textLen) {
 
         if (values == null) {
@@ -2038,14 +2068,14 @@ public final class TextUtil {
         int high = (valuesOffset + valuesLen) - 1;
 
         int mid, cmp;
-        String midVal;
+        CharSequence midVal;
 
         while (low <= high) {
 
             mid = (low + high) >>> 1;
             midVal = values[mid];
 
-            cmp = TextUtil.compareTo(caseSensitive, midVal, 0, midVal.length(), text, textOffset, textLen);
+            cmp = compareTo(caseSensitive, midVal, 0, midVal.length(), text, textOffset, textLen);
 
             if (cmp < 0) {
                 low = mid + 1;
@@ -2088,8 +2118,8 @@ public final class TextUtil {
      */
     public static int binarySearch(
             final boolean caseSensitive,
-            final String[] values, final int valuesOffset, final int valuesLen,
-            final String text, final int textOffset, final int textLen) {
+            final CharSequence[] values, final int valuesOffset, final int valuesLen,
+            final CharSequence text, final int textOffset, final int textLen) {
 
         if (values == null) {
             throw new IllegalArgumentException("Values array cannot be null");
@@ -2102,14 +2132,14 @@ public final class TextUtil {
         int high = (valuesOffset + valuesLen) - 1;
 
         int mid, cmp;
-        String midVal;
+        CharSequence midVal;
 
         while (low <= high) {
 
             mid = (low + high) >>> 1;
             midVal = values[mid];
 
-            cmp = TextUtil.compareTo(caseSensitive, text, textOffset, textLen, midVal, 0, midVal.length());
+            cmp = compareTo(caseSensitive, text, textOffset, textLen, midVal, 0, midVal.length());
 
             if (cmp > 0) {
                 low = mid + 1;
