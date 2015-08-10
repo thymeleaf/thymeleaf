@@ -274,6 +274,9 @@ final class CommentProcessorTextHandler extends AbstractChainedTextHandler {
                 if (c == ';' || c == ',' || c == ')' || c == '}' || c == ']') {
                     return i - 1;
                 }
+                if (c == '/' && i < maxi && buffer[i] == '/') { // This is a single-line comment
+                    return i - 1;
+                }
             }
 
             ParsingLocatorUtil.countChar(locator, c);

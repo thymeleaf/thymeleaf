@@ -55,7 +55,7 @@ public final class StandardInliningTextProcessor extends AbstractTextProcessor {
         }
 
         // Execute the inliner directly passing the IText node (which is also a CharSequence)
-        final CharSequence result = inliner.inline(processingContext, text, text.isWhitespace());
+        final CharSequence result = inliner.inline(processingContext, text);
 
         if (result == text) {
             // Either there were no changes, or they were directly done on the IText node itself. Either way,

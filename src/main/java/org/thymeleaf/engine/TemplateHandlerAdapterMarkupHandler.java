@@ -267,14 +267,13 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
         this.text.reset(buffer, offset, len, this.templateName, line, col);
-        // Precompute the whitespace flag in texts - this should help performance, especially when using a template cache
+        // Precompute some flag in texts - this should help performance, especially when using a template cache.
+        // Example flags are: 'whitespace' (marking when a text only contains whitespace) or the internal 'inlineable'
+        // (marking when a text might contain inlined expressions according to the Standard Dialects).
         // NOTE we are doing this only for those text nodes that are parsed, i.e. come from the template and therefore
         // will probably be processed (and their 'whitespace' flag queried), whereas we still save the need to call this
         // 'isWhitespace' computation on Text nodes added during processing itself (which might be many more, and larger)
-        this.text.isWhitespace();
-        // Precompute the inlineable flag in texts - as for the whitespace flag, this should help performance, avoiding
-        // continuously checking for the need to inline in text events that contain no inlined expressions
-        this.text.isInlineable();
+        this.text.precomputeFlags();
         this.templateHandler.handleText(this.text);
     }
 

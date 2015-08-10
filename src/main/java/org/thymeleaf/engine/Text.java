@@ -26,6 +26,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.AggregateCharSequence;
+import org.thymeleaf.util.TextUtil;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -37,6 +38,16 @@ import org.thymeleaf.util.Validate;
 final class Text
             implements IText, IEngineTemplateHandlerEvent {
 
+    // We will use these markers in order to precompute whether we might need to apply inlining to this Text node
+    // (if inlining is active). We will do such precomputation by checking whether a specific marker is contained
+    // in the text. Note this is actually an implementation detail directly linked with a specific dialect set
+    // (the Standard Dialects), so it is something that should not make its way to the IText public API. Instead,
+    // we will access this precomputation (stored at the 'inlineable' flag) by means of the general-purpose
+    // 'contains' method.
+    // For more details on this syntax, see the org.thymeleaf.standard.inline.StandardInlineUtils class.
+    private static final String INLINE_SYNTAX_MARKER_ESCAPED = "]]";
+    private static final String INLINE_SYNTAX_MARKER_UNESCAPED = ")]";
+
     private final ITextRepository textRepository;
 
     private char[] buffer;
@@ -47,7 +58,8 @@ final class Text
     private int length;
 
     private Boolean whitespace;
-    private Boolean inlineable;
+    private Boolean inlineableEscaped;
+    private Boolean inlineableUnescaped;
 
     private String templateName;
     private int line;
@@ -124,6 +136,16 @@ final class Text
     }
 
 
+    /*
+     * Note this method IS NOT a part of the IText interface
+     */
+    public void precomputeFlags() {
+        isWhitespace();
+        contains(INLINE_SYNTAX_MARKER_ESCAPED);
+        contains(INLINE_SYNTAX_MARKER_UNESCAPED);
+    }
+
+
     public boolean isWhitespace() {
 
         if (this.whitespace == null) {
@@ -140,19 +162,42 @@ final class Text
 
     public boolean contains(final CharSequence subsequence) {
 
-        if (this.inlineable == null) {
-            if (isWhitespace()) {
-                this.inlineable = Boolean.FALSE;
-            } else {
-                if (this.buffer != null) {
-                    this.inlineable = Boolean.valueOf(computeIsInlineable(this.buffer, this.offset, this.length));
-                } else {
-                    this.inlineable = Boolean.valueOf(computeIsInlineable(this.text));
-                }
-            }
+        if (subsequence == null) {
+            throw new IllegalArgumentException("Subsequence cannot be null");
         }
 
-        return this.inlineable.booleanValue();
+        if (TextUtil.equals(true, subsequence, INLINE_SYNTAX_MARKER_ESCAPED)) {
+            if (this.inlineableEscaped == null) {
+                if (isWhitespace()) {
+                    this.inlineableEscaped = Boolean.FALSE;
+                } else {
+                    if (this.buffer != null) {
+                        this.inlineableEscaped = Boolean.valueOf(TextUtil.contains(true, this.buffer, this.offset, this.length, INLINE_SYNTAX_MARKER_ESCAPED, 0, INLINE_SYNTAX_MARKER_ESCAPED.length()));
+                    } else {
+                        this.inlineableEscaped = Boolean.valueOf(TextUtil.contains(true, this.text, INLINE_SYNTAX_MARKER_ESCAPED));
+                    }
+                }
+            }
+            return this.inlineableEscaped.booleanValue();
+        }
+
+        if (TextUtil.equals(true, subsequence, INLINE_SYNTAX_MARKER_UNESCAPED)) {
+            if (this.inlineableUnescaped == null) {
+                if (isWhitespace()) {
+                    this.inlineableUnescaped = Boolean.FALSE;
+                } else {
+                    if (this.buffer != null) {
+                        this.inlineableUnescaped = Boolean.valueOf(TextUtil.contains(true, this.buffer, this.offset, this.length, INLINE_SYNTAX_MARKER_UNESCAPED, 0, INLINE_SYNTAX_MARKER_UNESCAPED.length()));
+                    } else {
+                        this.inlineableUnescaped = Boolean.valueOf(TextUtil.contains(true, this.text, INLINE_SYNTAX_MARKER_UNESCAPED));
+                    }
+                }
+            }
+            return this.inlineableUnescaped.booleanValue();
+        }
+
+        return TextUtil.contains(true, this, subsequence);
+
     }
 
 
@@ -187,6 +232,8 @@ final class Text
         this.text = null;
 
         this.whitespace = null;
+        this.inlineableEscaped = null;
+        this.inlineableUnescaped = null;
 
         this.templateName = templateName;
         this.line = line;
@@ -211,6 +258,8 @@ final class Text
         this.offset = -1;
 
         this.whitespace = null;
+        this.inlineableEscaped = null;
+        this.inlineableUnescaped = null;
 
         this.templateName = null;
         this.line = -1;
@@ -282,6 +331,8 @@ final class Text
         this.text = original.getText(); // Need to call the method in order to force computing -- no buffer cloning!
         this.length = this.text.length();
         this.whitespace = original.whitespace;
+        this.inlineableEscaped = original.inlineableEscaped;
+        this.inlineableUnescaped = original.inlineableUnescaped;
         this.templateName = original.templateName;
         this.line = original.line;
         this.col = original.col;
@@ -306,6 +357,8 @@ final class Text
         newInstance.text = text.getText();
         newInstance.length = newInstance.text.length();
         newInstance.whitespace = null;
+        newInstance.inlineableEscaped = null;
+        newInstance.inlineableUnescaped = null;
         newInstance.templateName = text.getTemplateName();
         newInstance.line = text.getLine();
         newInstance.col = text.getCol();
@@ -355,50 +408,6 @@ final class Text
     }
 
 
-
-
-    private static boolean contains(final CharSequence text, final CharSequence subsequence) {
-        if (text instanceof String) {
-            return ((String)text).contains(subsequence);
-        }
-        // TODO Use TextUtil here (after converting it to CharSequence)?
-        int n = text.length();
-        if (n == 0) {
-            return false;
-        }
-        char c;
-        while (n-- != 0) {
-            c = text.charAt(n);
-            if (c == ']' && n > 0) {
-                c = text.charAt(n - 1);
-                if (c == ']' || c == ')') {
-                    // There probably is some kind of [[...]] or [(...)] inlined expression
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-
-    private static boolean computeIsInlineable(final char[] buffer, final int off, final int len, final CharSequence subsequence) {
-        int n = len;
-        if (n == 0) {
-            return false;
-        }
-        char c;
-        while (n-- != 0) {
-            c = buffer[off + n];
-            if (c == ']' && n > 0) {
-                c = buffer[off + (n - 1)];
-                if (c == ']' || c == ')') {
-                    // There probably is some kind of [[...]] or [(...)] inlined expression
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
 
 }

@@ -23,9 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.thymeleaf.model.IText;
+import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.AggregateCharSequence;
 
 /*
+ * Class containing some standard methods and constants for expression inlining operations in the Standard
+ * Dialects.
+ *
+ * This class is <strong>only meant for INTERNAL USE</strong>.
  *
  * @author Daniel Fernandez
  * @since 3.0.0
@@ -33,15 +38,14 @@ import org.thymeleaf.util.AggregateCharSequence;
  */
 final class StandardInlineUtils {
 
+    static final String INLINE_SYNTAX_MARKER_ESCAPED = "]]";
+    static final String INLINE_SYNTAX_MARKER_UNESCAPED = ")]";
 
 
     static boolean mightNeedInlining(final CharSequence text) {
-
         int n = text.length();
-
         char c;
         while (n-- != 0) {
-
             c = text.charAt(n);
             if (c == ']' && n > 0) {
                 c = text.charAt(n - 1);
@@ -50,16 +54,13 @@ final class StandardInlineUtils {
                     return true;
                 }
             }
-
         }
-
         return false;
-
     }
 
 
 
-    static CharSequence performInlining(final CharSequence text) {
+    static CharSequence performInlining(final ITextRepository textRepository, final CharSequence text) {
 
         final int[] locator =
                 (text instanceof IText)?
@@ -74,44 +75,95 @@ final class StandardInlineUtils {
 
         int expStart, expEnd;
         int currentLine, currentCol;
-        char innerClosingChar;
+        char innerClosingChar = 0x0;
+
+        boolean inExpression = false;
 
         while (i < maxi) {
 
-            expStart = findNextStructureStart(text, i, maxi, locator);
-            if (expStart == -1) {
-
-                if (textFragments == null) {
-                    return text;
-                }
-
-            }
-
-            current = expStart;
             currentLine = locator[0];
             currentCol = locator[1];
 
-            // The inner closing char we will be looking for will depend on the type of expression we just found
-            innerClosingChar = text.charAt(expStart + 1) == '[' ? ']' : ')';
+            if (!inExpression) {
 
-            expEnd = findNextStructureEndAvoidQuotes(text, expStart + 2, maxi, innerClosingChar, locator);
-            if (expEnd == -1) {
+                expStart = findNextStructureStart(text, i, maxi, locator);
+
+                if (expStart == -1) {
+
+                    if (textFragments == null) {
+                        return text;
+                    }
+
+                    if (textFragments == null) {
+                        textFragments = new ArrayList<CharSequence>(4);
+                    }
+                    final CharSequence fragment =
+                            (textRepository != null? textRepository.getText(text, current, maxi) : text.subSequence(current, maxi));
+                    textFragments.add(fragment);
+                    break;
+
+                }
+
+                inExpression = true;
+
+                if (expStart > current) {
+                    // We avoid empty-string text events
+
+                    if (textFragments == null) {
+                        textFragments = new ArrayList<CharSequence>(4);
+                    }
+                    final CharSequence fragment =
+                            (textRepository != null? textRepository.getText(text, current, expStart) : text.subSequence(current, expStart));
+                    textFragments.add(fragment);
+
+                }
+
+                innerClosingChar = text.charAt(expStart + 1) == '[' ? ']' : ')';
+                current = expStart;
+                i = current + 2;
+
+            } else {
+
+                // The inner closing char we will be looking for will depend on the type of expression we just found
+
+                expEnd = findNextStructureEndAvoidQuotes(text, i, maxi, innerClosingChar, locator);
+
+                if (expEnd < 0) {
+
+                    if (textFragments == null) {
+                        return text;
+                    }
+
+                    if (textFragments == null) {
+                        textFragments = new ArrayList<CharSequence>(4);
+                    }
+                    final CharSequence fragment =
+                            (textRepository != null? textRepository.getText(text, current, maxi) : text.subSequence(current, maxi));
+                    textFragments.add(fragment);
+                    break;
+
+                }
+
 
                 if (textFragments == null) {
-                    return text;
+                    textFragments = new ArrayList<CharSequence>(4);
                 }
+                textFragments.add("$$$INLINED$$$");
+
+
+                // The ')]' or ']]' suffix will be considered as processed too
+                countChar(locator, text.charAt(expEnd));
+                countChar(locator, text.charAt(expEnd + 1));
+
+                inExpression = false;
+
+                current = expEnd + 2;
+                i = current;
+
 
             }
 
         }
-
-
-
-        final List<CharSequence> textFragments = new ArrayList<CharSequence>(4);
-
-        textFragments.add("$$$");
-        textFragments.add("INLINED");
-        textFragments.add("$$$");
 
         return new AggregateCharSequence(textFragments);
 
@@ -121,9 +173,17 @@ final class StandardInlineUtils {
 
 
 
+    private static void countChar(final int[] locator, final char c) {
+        if (c == '\n') {
+            locator[0]++;
+            locator[1] = 1;
+            return;
+        }
+        locator[1]++;
+    }
 
 
-    static int findNextStructureStart(
+    private static int findNextStructureStart(
             final CharSequence text, final int offset, final int maxi,
             final int[] locator) {
 
@@ -162,7 +222,7 @@ final class StandardInlineUtils {
 
 
 
-    static int findNextStructureEndAvoidQuotes(
+    private static int findNextStructureEndAvoidQuotes(
             final CharSequence text, final int offset, final int maxi,
             final char innerClosingChar, final int[] locator) {
 

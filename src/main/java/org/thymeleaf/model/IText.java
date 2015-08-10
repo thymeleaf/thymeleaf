@@ -38,6 +38,6 @@ public interface IText extends INode, CharSequence {
      */
     public boolean isWhitespace();
 
-    public boolean isInlineable();
+    public boolean contains(final CharSequence subsequence);
 
 }

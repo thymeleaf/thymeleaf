@@ -237,8 +237,8 @@ public class ImmutableMarkup implements IMarkup {
             return this.wrapped.isWhitespace();
         }
 
-        public boolean isInlineable() {
-            return this.wrapped.isInlineable();
+        public boolean contains(final CharSequence subsequence) {
+            return this.wrapped.contains(subsequence);
         }
 
         public CharSequence subSequence(final int start, final int end) {

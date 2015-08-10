@@ -20,6 +20,7 @@
 package org.thymeleaf.inline;
 
 import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.ITemplateProcessingContext;
 
 /**
  *
@@ -41,7 +42,7 @@ public final class NoOpInliner implements IInliner {
     }
 
 
-    public CharSequence inline(final IProcessingContext context, final CharSequence text) {
+    public CharSequence inline(final ITemplateProcessingContext context, final CharSequence text) {
         // Nothing to do. Anyway, this should never end up being executed...
         return text;
     }
