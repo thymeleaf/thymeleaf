@@ -297,6 +297,7 @@ public class TemplateEngine implements ITemplateEngine {
 
                     logger.info("[THYMELEAF] INITIALIZING TEMPLATE ENGINE");
 
+                    // TODO Should this be done here or at the constructor? what is the interaction with SpringStandardDialect if at the constructor?
                     // If no template resolvers have been set at this point, use a StringTemplateResolver
                     if (this.templateResolvers == null || this.templateResolvers.isEmpty()) {
                         if (logger.isDebugEnabled()) {
