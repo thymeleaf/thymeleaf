@@ -38,12 +38,14 @@ import org.thymeleaf.cache.StandardCacheManager;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.engine.TemplateManager;
+import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.TemplateEngineException;
 import org.thymeleaf.exceptions.TemplateOutputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.standard.StandardDialect;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
 import org.thymeleaf.text.ITextRepository;
@@ -250,6 +252,7 @@ public class TemplateEngine implements ITemplateEngine {
         setCacheManager(new StandardCacheManager());
         setMessageResolver(new StandardMessageResolver());
         setDialect(new StandardDialect());
+        setTemplateResolver(new StringTemplateResolver());
     }
 
 
@@ -297,13 +300,12 @@ public class TemplateEngine implements ITemplateEngine {
 
                     logger.info("[THYMELEAF] INITIALIZING TEMPLATE ENGINE");
 
-                    // TODO Should this be done here or at the constructor? what is the interaction with SpringStandardDialect if at the constructor?
-                    // If no template resolvers have been set at this point, use a StringTemplateResolver
+                    // We need at least one template resolver at this point - we set the StringTemplateResolver
+                    // as default, but someone might have overridden it, so we need to check just in case
                     if (this.templateResolvers == null || this.templateResolvers.isEmpty()) {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("[THYMELEAF] No Template Resolver has been specified: using " + StringTemplateResolver.class.getName());
-                        }
-                        setTemplateResolver(new StringTemplateResolver());
+                        throw new ConfigurationException(
+                                "No Template Resolvers have been configured for this TemplateEngine instance. " +
+                                "At least one Template Resolver is required.");
                     }
 
                     this.configuration =
@@ -871,7 +873,36 @@ public class TemplateEngine implements ITemplateEngine {
      *         with the provided context.
      */
     public final String process(final String template, final IContext context) {
-        return process(template, null, context);
+        return process(template, null, null, context);
+    }
+
+
+
+
+    /**
+     * <p>
+     *   Process a template. This method receives both a <i>template name</i> and a <i>context</i>.
+     * </p>
+     * <p>
+     *   The template name will be used as input for the template resolvers, queried in chain
+     *   until one of them resolves the template, which will then be executed.
+     * </p>
+     * <p>
+     *   The context will contain the variables that will be available for the execution of
+     *   expressions inside the template.
+     * </p>
+     *
+     * @param template the template; depending on the template resolver this might be a template name or even
+     *                 the template contents (e.g. StringTemplateResolver).
+     * @param templateMode the template mode to be used for processing the template, overriding the one assigned by
+     *                     the corresponding template resolver.
+     * @param context the context.
+     * @return a String containing the result of evaluating the specified template
+     *         with the provided context.
+     * @since 3.0.0
+     */
+    public final String process(final String template, final TemplateMode templateMode, final IContext context) {
+        return process(template, null, templateMode, context);
     }
 
 
@@ -895,10 +926,42 @@ public class TemplateEngine implements ITemplateEngine {
      * @param markupSelectors the markup selectors to be used, defining the fragments that should be processed
      * @param context the context.   @return a String containing the result of evaluating the specified template
      *         with the provided context.
+     * @since 3.0.0
      */
     public final String process(final String template, final String[] markupSelectors, final IContext context) {
         final StringWriter stringWriter = new StringWriter();
-        process(template, markupSelectors, context, stringWriter);
+        process(template, markupSelectors, null, context, stringWriter);
+        return stringWriter.toString();
+    }
+
+
+
+
+    /**
+     * <p>
+     *   Process a template. This method receives both a <i>template name</i> and a <i>context</i>.
+     * </p>
+     * <p>
+     *   The template name will be used as input for the template resolvers, queried in chain
+     *   until one of them resolves the template, which will then be executed.
+     * </p>
+     * <p>
+     *   The context will contain the variables that will be available for the execution of
+     *   expressions inside the template.
+     * </p>
+     *
+     * @param template the template; depending on the template resolver this might be a template name or even
+     *                 the template contents (e.g. StringTemplateResolver).
+     * @param markupSelectors the markup selectors to be used, defining the fragments that should be processed
+     * @param templateMode the template mode to be used for processing the template, overriding the one assigned by
+     *                     the corresponding template resolver.
+     * @param context the context.   @return a String containing the result of evaluating the specified template
+     *         with the provided context.
+     * @since 3.0.0
+     */
+    public final String process(final String template, final String[] markupSelectors, final TemplateMode templateMode, final IContext context) {
+        final StringWriter stringWriter = new StringWriter();
+        process(template, markupSelectors, templateMode, context, stringWriter);
         return stringWriter.toString();
     }
 
@@ -926,13 +989,77 @@ public class TemplateEngine implements ITemplateEngine {
      *                 the template contents (e.g. StringTemplateResolver).
      * @param context the context.
      * @param writer the writer the results will be output to.
- *   @since 2.0.0
+     * @since 2.0.0
      */
     public final void process(final String template, final IContext context, final Writer writer) {
-        process(template, null, context, writer);
+        process(template, null, null, context, writer);
     }
 
-    
+
+
+
+    /**
+     * <p>
+     *   Process a template. This method receives a <i>template name</i>, a <i>context</i> and
+     *   also a {@link Writer}, so that there is no need to create a String object containing the
+     *   whole processing results because these will be written to the specified writer as
+     *   soon as they are generated from the processed DOM tree. This is specially useful for
+     *   web environments (using {@link javax.servlet.http.HttpServletResponse#getWriter()}).
+     * </p>
+     * <p>
+     *   The template name will be used as input for the template resolvers, queried in chain
+     *   until one of them resolves the template, which will then be executed.
+     * </p>
+     * <p>
+     *   The context will contain the variables that will be available for the execution of
+     *   expressions inside the template.
+     * </p>
+     *
+     * @param template the template; depending on the template resolver this might be a template name or even
+     *                 the template contents (e.g. StringTemplateResolver).
+     * @param templateMode the template mode to be used for processing the template, overriding the one assigned by
+     *                     the corresponding template resolver.
+     * @param context the context.
+     * @param writer the writer the results will be output to.
+     * @since 3.0.0
+     */
+    public final void process(final String template, final TemplateMode templateMode, final IContext context, final Writer writer) {
+        process(template, null, templateMode, context, writer);
+    }
+
+
+
+
+    /**
+     * <p>
+     *   Process a template. This method receives a <i>template name</i>, a <i>context</i> and
+     *   also a {@link Writer}, so that there is no need to create a String object containing the
+     *   whole processing results because these will be written to the specified writer as
+     *   soon as they are generated from the processed DOM tree. This is specially useful for
+     *   web environments (using {@link javax.servlet.http.HttpServletResponse#getWriter()}).
+     * </p>
+     * <p>
+     *   The template name will be used as input for the template resolvers, queried in chain
+     *   until one of them resolves the template, which will then be executed.
+     * </p>
+     * <p>
+     *   The context will contain the variables that will be available for the execution of
+     *   expressions inside the template.
+     * </p>
+     *
+     * @param template the template; depending on the template resolver this might be a template name or even
+     *                 the template contents (e.g. StringTemplateResolver).
+     * @param markupSelectors the markup selectors to be used, defining the fragments that should be processed
+     * @param context the context.
+     * @param writer the writer the results will be output to.
+     * @since 3.0.0
+     */
+    public final void process(final String template, final String[] markupSelectors, final IContext context, final Writer writer) {
+        process(template, markupSelectors, null, context, writer);
+    }
+
+
+
 
     /**
      * <p>
@@ -954,11 +1081,14 @@ public class TemplateEngine implements ITemplateEngine {
      * @param template the template; depending on the template resolver this might be a template name or even
      *                 the template contents (e.g. StringTemplateResolver).
      * @param markupSelectors the markup selectors to be used, defining the fragments that should be processed
+     * @param templateMode the template mode to be used for processing the template, overriding the one assigned by
+     *                     the corresponding template resolver.
      * @param context the context.
      * @param writer the writer the results will be output to.
-*    @since 3.0.0
+     * @since 3.0.0
      */
-    public final void process(final String template, final String[] markupSelectors, final IContext context, final Writer writer) {
+    public final void process(
+            final String template, final String[] markupSelectors, final TemplateMode templateMode, final IContext context, final Writer writer) {
 
         if (!this.initialized.get()) {
             initialize();
@@ -969,7 +1099,8 @@ public class TemplateEngine implements ITemplateEngine {
             Validate.notNull(template, "Template cannot be null");
             Validate.notNull(context, "Context cannot be null");
             Validate.notNull(writer, "Writer cannot be null");
-            // markup selectors CAN actually be null
+            // markup selectors CAN actually be null if we are going to render the entire template
+            // templateMode CAN also be null if we are going to use the mode specified by the template resolver
 
             if (logger.isDebugEnabled()) {
                 if (markupSelectors == null || markupSelectors.length == 0) {
@@ -983,7 +1114,7 @@ public class TemplateEngine implements ITemplateEngine {
 
             final long startNanos = System.nanoTime();
             
-            this.templateManager.processTemplate(this.configuration, context, template, markupSelectors, writer);
+            this.templateManager.processTemplate(this.configuration, template, markupSelectors, templateMode, context, writer);
 
             final long endNanos = System.nanoTime();
             

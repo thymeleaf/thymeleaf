@@ -393,19 +393,17 @@ public final class TemplateManager {
 
 
 
-    public void processTemplate(final IEngineConfiguration configuration, final IContext context,
-                                final String template, final Writer writer) {
-        processTemplate(configuration, context, template, null, writer);
-    }
-
-
-    public void processTemplate(final IEngineConfiguration configuration, final IContext context,
-                                final String template, final String[] markupSelectors, final Writer writer) {
+    public void processTemplate(final IEngineConfiguration configuration,
+                                final String template, final String[] markupSelectors,
+                                final TemplateMode templateMode,
+                                final IContext context,
+                                final Writer writer) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(context, "Context cannot be null");
         Validate.notNull(template, "Template cannot be null");
-        // Markup Selectors CAN be null
+        // markup selectors CAN actually be null if we are going to render the entire template
+        // templateMode CAN also be null if we are going to use the mode specified by the template resolver
 
         final String cacheKey = computeCacheKey(configuration.getTextRepository(), template, markupSelectors);
 
