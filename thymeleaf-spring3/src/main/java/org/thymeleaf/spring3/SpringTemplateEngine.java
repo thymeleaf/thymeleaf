@@ -64,7 +64,7 @@ public class SpringTemplateEngine extends TemplateEngine
     
     public SpringTemplateEngine() {
         super();
-        // This will set the StandardMessageResolver and StandardDialect, which we will override later
+        // This will set the SpringStandardDialect, overriding the Standard one set in the super constructor
         super.setDialect(SPRINGSTANDARD_DIALECT);
     }
 
