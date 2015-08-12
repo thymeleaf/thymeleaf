@@ -20,6 +20,7 @@
 package org.thymeleaf.cache;
 
 
+import java.util.Set;
 
 /**
  * <p>
@@ -88,5 +89,17 @@ public interface ICache<K, V> {
      * @param key the key of the entry to be cleared.
      */
     public void clearKey(final K key);
+
+    /**
+     * <p>
+     *   Returns all the keys contained in this cache. Note this method might return keys for entries
+     *   that are already invalid, so the result of calling {@link #get(Object)} for these keys might
+     *   be <tt>null</tt>.
+     * </p>
+     *
+     * @return the complete set of cache keys. Might include keys for already-invalid (non-cleaned) entries.
+     * @since 3.0.0
+     */
+    public Set<K> keySet();
 
 }

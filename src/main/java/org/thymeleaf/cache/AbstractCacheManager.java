@@ -43,10 +43,10 @@ import org.thymeleaf.engine.ParsedTemplateMarkup;
 public abstract class AbstractCacheManager implements ICacheManager {
 
 
-    private volatile ICache<String,ParsedTemplateMarkup> templateCache;
+    private volatile ICache<TemplateCacheKey,ParsedTemplateMarkup> templateCache;
     private volatile boolean templateCacheInitialized = false;
     
-    private volatile ICache<String,ParsedFragmentMarkup> fragmentCache;
+    private volatile ICache<FragmentCacheKey,ParsedFragmentMarkup> fragmentCache;
     private volatile boolean fragmentCacheInitialized = false;
     
     private volatile ICache<String,Object> expressionCache;
@@ -61,7 +61,7 @@ public abstract class AbstractCacheManager implements ICacheManager {
     }
     
     
-    public final ICache<String, ParsedTemplateMarkup> getTemplateCache() {
+    public final ICache<TemplateCacheKey, ParsedTemplateMarkup> getTemplateCache() {
         if (!this.templateCacheInitialized) {
             synchronized(this) {
                 if (!this.templateCacheInitialized) {
@@ -74,7 +74,7 @@ public abstract class AbstractCacheManager implements ICacheManager {
     }
 
     
-    public final ICache<String, ParsedFragmentMarkup> getFragmentCache() {
+    public final ICache<FragmentCacheKey, ParsedFragmentMarkup> getFragmentCache() {
         if (!this.fragmentCacheInitialized) {
             synchronized(this) {
                 if (!this.fragmentCacheInitialized) {
@@ -126,12 +126,12 @@ public abstract class AbstractCacheManager implements ICacheManager {
 
     public void clearAllCaches() {
 
-        final ICache<String, ParsedTemplateMarkup> templateCacheObj = getTemplateCache();
+        final ICache<TemplateCacheKey, ParsedTemplateMarkup> templateCacheObj = getTemplateCache();
         if (templateCacheObj != null) {
             templateCacheObj.clear();
         }
         
-        final ICache<String, ParsedFragmentMarkup> fragmentCacheObj = getFragmentCache();
+        final ICache<FragmentCacheKey, ParsedFragmentMarkup> fragmentCacheObj = getFragmentCache();
         if (fragmentCacheObj != null) {
             fragmentCacheObj.clear();
         }
@@ -159,9 +159,9 @@ public abstract class AbstractCacheManager implements ICacheManager {
     }
 
 
-    protected abstract ICache<String,ParsedTemplateMarkup> initializeTemplateCache();
+    protected abstract ICache<TemplateCacheKey,ParsedTemplateMarkup> initializeTemplateCache();
 
-    protected abstract ICache<String,ParsedFragmentMarkup> initializeFragmentCache();
+    protected abstract ICache<FragmentCacheKey,ParsedFragmentMarkup> initializeFragmentCache();
     
     protected abstract ICache<String,Properties> initializeMessageCache();
     

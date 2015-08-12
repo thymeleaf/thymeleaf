@@ -2210,6 +2210,11 @@ public final class TextUtil {
     }
 
 
+    public static int hashCode(final CharSequence text0, final CharSequence text1, final CharSequence text2, final CharSequence text3, final CharSequence text4) {
+        return hashCodePart(hashCodePart(hashCodePart(hashCodePart(hashCodePart(0, text0), text1), text2), text3), text4);
+    }
+
+
 
     private static int hashCodePart(final int h, final CharSequence text) {
         return hashCodePart(h, text, 0, text.length());

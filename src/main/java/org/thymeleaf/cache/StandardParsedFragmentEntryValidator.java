@@ -31,7 +31,7 @@ import org.thymeleaf.engine.ParsedFragmentMarkup;
  *
  */
 public final class StandardParsedFragmentEntryValidator
-        implements ICacheEntryValidityChecker<String,ParsedFragmentMarkup> {
+        implements ICacheEntryValidityChecker<FragmentCacheKey,ParsedFragmentMarkup> {
 
     private static final long serialVersionUID = -5853535204141790247L;
 
@@ -40,7 +40,7 @@ public final class StandardParsedFragmentEntryValidator
     }
 
     public boolean checkIsValueStillValid(
-            final String key, final ParsedFragmentMarkup value, final long entryCreationTimestamp) {
+            final FragmentCacheKey key, final ParsedFragmentMarkup value, final long entryCreationTimestamp) {
         return value.getValidity().isCacheStillValid();
     }
     

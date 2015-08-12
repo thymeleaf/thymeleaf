@@ -395,6 +395,62 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
     }
 
 
+    public String getText(final CharSequence text0, final CharSequence text1, final CharSequence text2, final CharSequence text3, final CharSequence text4) {
+
+        if (text0 == null) {
+            return getText(text1, text2, text3, text4);
+        }
+        if (text1 == null) {
+            return getText(text0, text2, text3, text4);
+        }
+        if (text2 == null) {
+            return getText(text0, text1, text3, text4);
+        }
+        if (text3 == null) {
+            return getText(text0, text1, text2, text4);
+        }
+        if (text4 == null) {
+            return getText(text0, text1, text2, text3);
+        }
+
+        final int hashCode = TextUtil.hashCode(text0, text1, text2, text3, text4);
+
+        this.readLock.lock();
+
+        try {
+
+            final int[] ids = this.textMap[Math.abs(hashCode) % TEXT_MAP_LEN];
+
+            if (ids != null) {
+
+                // Now we need to iterate the array of ids looking for the target text
+                for (int i = 0; i < ids.length; i++) {
+                    final String candidate = this.texts[ids[i]];
+                    if (checkResult(text0, text1, text2, text3, text4, candidate)) {
+                        // We will return the stored instance, maybe allowing the 'text' arg to be eaten by the GC
+                        return candidate;
+                    }
+                }
+
+            }
+
+        } finally {
+            this.readLock.unlock();
+        }
+
+        /*
+         * NOT FOUND. We need to obtain a write lock and store the text
+         */
+        this.writeLock.lock();
+        try {
+            return storeText(text0.toString() + text1.toString() + text2.toString() + text3.toString() + text4.toString());
+        } finally {
+            this.writeLock.unlock();
+        }
+
+    }
+
+
 
 
 
@@ -506,6 +562,29 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
         }
 
         return checkResultPart(checkResultPart(checkResultPart(checkResultPart(0, input0, result), input1, result), input2, result), input3, result) != -1;
+
+    }
+
+
+    private static boolean checkResult(final CharSequence input0, final CharSequence input1, final CharSequence input2, final CharSequence input3, final CharSequence input4, final String result) {
+
+        if (input0 == null) {
+            return checkResult(input1, input2, input3, input4, result);
+        }
+        if (input1 == null) {
+            return checkResult(input0, input2, input3, input4, result);
+        }
+        if (input2 == null) {
+            return checkResult(input0, input1, input3, input4, result);
+        }
+        if (input3 == null) {
+            return checkResult(input0, input1, input2, input4, result);
+        }
+        if (input4 == null) {
+            return checkResult(input0, input1, input2, input3, result);
+        }
+
+        return checkResultPart(checkResultPart(checkResultPart(checkResultPart(checkResultPart(0, input0, result), input1, result), input2, result), input3, result), input4, result) != -1;
 
     }
 

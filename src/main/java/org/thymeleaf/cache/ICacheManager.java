@@ -83,7 +83,7 @@ public interface ICacheManager {
      * 
      * @return the cache of parsed templates.
      */
-    public ICache<String,ParsedTemplateMarkup> getTemplateCache();
+    public ICache<TemplateCacheKey,ParsedTemplateMarkup> getTemplateCache();
     
     /**
      * <p>
@@ -105,7 +105,7 @@ public interface ICacheManager {
      *
      * @return the cache of parsed template code fragments
      */
-    public ICache<String,ParsedFragmentMarkup> getFragmentCache();
+    public ICache<FragmentCacheKey,ParsedFragmentMarkup> getFragmentCache();
     
     /**
      * <p>

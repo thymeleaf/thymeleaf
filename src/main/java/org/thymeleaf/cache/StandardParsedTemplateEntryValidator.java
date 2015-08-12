@@ -31,7 +31,7 @@ import org.thymeleaf.engine.ParsedTemplateMarkup;
  *
  */
 public final class StandardParsedTemplateEntryValidator
-        implements ICacheEntryValidityChecker<String,ParsedTemplateMarkup> {
+        implements ICacheEntryValidityChecker<TemplateCacheKey,ParsedTemplateMarkup> {
     
     private static final long serialVersionUID = -185355204140990247L;
 
@@ -40,7 +40,7 @@ public final class StandardParsedTemplateEntryValidator
     }
 
     public boolean checkIsValueStillValid(
-            final String key, final ParsedTemplateMarkup value, final long entryCreationTimestamp) {
+            final TemplateCacheKey key, final ParsedTemplateMarkup value, final long entryCreationTimestamp) {
         return value.getTemplateResolution().getValidity().isCacheStillValid();
     }
     

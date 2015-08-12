@@ -129,6 +129,21 @@ public final class AggregateCharSequence implements Serializable, CharSequence {
     }
 
 
+    public AggregateCharSequence(final CharSequence component0, final CharSequence component1, final CharSequence component2, final CharSequence component3, final CharSequence component4) {
+
+        super();
+
+        if (component0 == null || component1 == null || component2 == null || component3 == null || component4 == null) {
+            throw new IllegalArgumentException("At least one component argument is null, which is forbidden");
+        }
+
+        this.values = new CharSequence[] { component0, component1, component2, component3, component4 };
+        this.offsets = new int[] { 0, component0.length(), component0.length() + component1.length(), component0.length() + component1.length() + component2.length(), component0.length() + component1.length() + component2.length() + component3.length() };
+        this.length = this.offsets[4] + component3.length();
+
+    }
+
+
 
     public AggregateCharSequence(final CharSequence[] components) {
 

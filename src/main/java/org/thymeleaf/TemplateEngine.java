@@ -805,7 +805,7 @@ public class TemplateEngine implements ITemplateEngine {
         if (!this.initialized.get()) {
             initialize();
         }
-        this.templateManager.clearTemplateCache();
+        this.templateManager.clearCaches();
     }
 
 
@@ -822,12 +822,11 @@ public class TemplateEngine implements ITemplateEngine {
      * @param templateName the name of the template to be cleared from cache.
      */
     public void clearTemplateCacheFor(final String templateName) {
-        // TODO Check this works with the specification of fragments!
         Validate.notNull(templateName, "Template name cannot be null");
         if (!this.initialized.get()) {
             initialize();
         }
-        this.templateManager.clearTemplateCacheFor(templateName);
+        this.templateManager.clearCachesFor(templateName);
     }
     
     

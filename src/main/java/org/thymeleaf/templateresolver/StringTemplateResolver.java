@@ -40,7 +40,6 @@ public class StringTemplateResolver
 
 
 
-
     public StringTemplateResolver() {
         super();
         super.setResourceResolver(new StringResourceResolver());

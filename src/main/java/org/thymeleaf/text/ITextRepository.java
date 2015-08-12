@@ -109,6 +109,24 @@ public interface ITextRepository {
 
     /**
      * <p>
+     *     Retrieve the stored version of the text passed as argument (composed of more than one fragment).
+     * </p>
+     * <p>
+     *     The aim of this method is to avoid the need to create instances of appended {@link String} or
+     *     {@link CharSequence} objects, using the repository to find the unique version of the appended result.
+     * </p>
+     *
+     * @param text0 the first fragment of the text to be retrieved.
+     * @param text1 the second fragment of the text to be retrieved.
+     * @param text2 the third fragment of the text to be retrieved.
+     * @param text3 the fourth fragment of the text to be retrieved.
+     * @param text4 the fifth fragment of the text to be retrieved.
+     * @return the stored text.
+     */
+    public String getText(final CharSequence text0, final CharSequence text1, final CharSequence text2, final CharSequence text3, final CharSequence text4);
+
+    /**
+     * <p>
      *     Retrieve the stored version of the text passed as argument.
      * </p>
      *

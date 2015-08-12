@@ -92,6 +92,26 @@ public final class NoCacheTextRepository implements ITextRepository {
     }
 
 
+    public String getText(final CharSequence text0, final CharSequence text1, final CharSequence text2, final CharSequence text3, final CharSequence text4) {
+        if (text0 == null) {
+            return getText(text1, text2, text3, text4);
+        }
+        if (text1 == null) {
+            return getText(text0, text2, text3, text4);
+        }
+        if (text2 == null) {
+            return getText(text0, text1, text3, text4);
+        }
+        if (text3 == null) {
+            return getText(text0, text1, text2, text4);
+        }
+        if (text4 == null) {
+            return getText(text0, text1, text2, text3);
+        }
+        return text0.toString() + text1.toString() + text2.toString() + text3.toString() + text4.toString();
+    }
+
+
     public String getText(final char[] text, final int offset, final int len) {
         return new String(text, offset, len);
     }
