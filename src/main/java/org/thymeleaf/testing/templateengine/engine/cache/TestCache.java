@@ -19,8 +19,12 @@
  */
 package org.thymeleaf.testing.templateengine.engine.cache;
 
+import java.util.Set;
+
+import org.thymeleaf.cache.FragmentCacheKey;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheEntryValidityChecker;
+import org.thymeleaf.cache.TemplateCacheKey;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 
 
@@ -29,13 +33,13 @@ import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 
 
 
-public final class TestCache<V> implements ICache<String,V> {
+public final class TestCache<K,V> implements ICache<K,V> {
 
     
-    private final ICache<String,V> cache;
+    private final ICache<K,V> cache;
     
 
-    public TestCache(final ICache<String,V> cache) {
+    public TestCache(final ICache<K,V> cache) {
         super();
         this.cache = cache;
     }
@@ -43,36 +47,53 @@ public final class TestCache<V> implements ICache<String,V> {
     
     
     
-    private static String prefix(final String key) {
+    private Object prefix(final K key) {
         final String testName = TestExecutor.getThreadTestName();
-        return testName + "_" + key;
+        if (key instanceof String) {
+            return testName + "_" + key;
+        }
+        if (key instanceof TemplateCacheKey) {
+            final TemplateCacheKey cacheKey = (TemplateCacheKey)key;
+            return new TemplateCacheKey(
+                    testName + "_" + cacheKey.getTemplate(), cacheKey.getMarkupSelectors(),
+                    cacheKey.isTextualTemplate(), cacheKey.getForcedTemplateMode());
+        }
+        if (key instanceof FragmentCacheKey) {
+            final FragmentCacheKey cacheKey = (FragmentCacheKey)key;
+            return new FragmentCacheKey(
+                    testName + "_" + cacheKey.getTemplate(), cacheKey.getMarkupSelectors(), cacheKey.getFragment(),
+                    cacheKey.isTextualTemplate(), cacheKey.getForcedTemplateMode());
+        }
+        return key;
     }
     
     
     
     
-    public void put(final String key, final V value) {
-        this.cache.put(prefix(key), value);
+    public void put(final K key, final V value) {
+        this.cache.put((K)prefix(key), value);
     }
 
-    public V get(final String key) {
-        return this.cache.get(prefix(key));
+    public V get(final K key) {
+        return this.cache.get((K)prefix(key));
     }
 
-    public V get(final String key,
-            final ICacheEntryValidityChecker<? super String, ? super V> validityChecker) {
-        return this.cache.get(prefix(key), validityChecker);
+    public V get(final K key,
+            final ICacheEntryValidityChecker<? super K, ? super V> validityChecker) {
+        return this.cache.get((K)prefix(key), validityChecker);
     }
 
     public void clear() {
         this.cache.clear();
     }
 
-    public void clearKey(final String key) {
-        this.cache.clearKey(prefix(key));
+    public void clearKey(final K key) {
+        this.cache.clearKey((K)prefix(key));
     }
 
-    
-    
-    
+    public Set<K> keySet() {
+        return this.cache.keySet();
+    }
+
+
 }

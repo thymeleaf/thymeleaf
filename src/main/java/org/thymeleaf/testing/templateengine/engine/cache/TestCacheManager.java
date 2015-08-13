@@ -22,9 +22,11 @@ package org.thymeleaf.testing.templateengine.engine.cache;
 import java.util.List;
 import java.util.Properties;
 
+import org.thymeleaf.cache.FragmentCacheKey;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.cache.StandardCacheManager;
+import org.thymeleaf.cache.TemplateCacheKey;
 import org.thymeleaf.engine.ParsedFragmentMarkup;
 import org.thymeleaf.engine.ParsedTemplateMarkup;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
@@ -47,23 +49,23 @@ public final class TestCacheManager implements ICacheManager {
     }
 
 
-    public ICache<String, ParsedTemplateMarkup> getTemplateCache() {
-        return new TestCache<ParsedTemplateMarkup>(this.cacheManager.getTemplateCache());
+    public ICache<TemplateCacheKey, ParsedTemplateMarkup> getTemplateCache() {
+        return new TestCache<TemplateCacheKey, ParsedTemplateMarkup>(this.cacheManager.getTemplateCache());
     }
 
 
-    public ICache<String, ParsedFragmentMarkup> getFragmentCache() {
-        return new TestCache<ParsedFragmentMarkup>(this.cacheManager.getFragmentCache());
+    public ICache<FragmentCacheKey, ParsedFragmentMarkup> getFragmentCache() {
+        return new TestCache<FragmentCacheKey, ParsedFragmentMarkup>(this.cacheManager.getFragmentCache());
     }
 
 
     public ICache<String, Properties> getMessageCache() {
-        return new TestCache<Properties>(this.cacheManager.getMessageCache());
+        return new TestCache<String, Properties>(this.cacheManager.getMessageCache());
     }
 
 
     public ICache<String, Object> getExpressionCache() {
-        return new TestCache<Object>(this.cacheManager.getExpressionCache());
+        return new TestCache<String, Object>(this.cacheManager.getExpressionCache());
     }
 
 
@@ -74,7 +76,7 @@ public final class TestCacheManager implements ICacheManager {
         if (specificCache == null) {
             return null;
         }
-        return (ICache<K,V>)(ICache<?,?>) new TestCache<V>((ICache<String,V>)(ICache<?,V>)specificCache);
+        return new TestCache<K,V>(specificCache);
     }
 
 
