@@ -110,16 +110,13 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          * OBTAIN THE FRAGMENT MARKUP from the TemplateManager. This means the fragment will be parsed and maybe
          * cached, and we will be returned an immutable markup object (specifically a ParsedFragmentMarkup)
          */
-        ImmutableMarkup parsedFragment;
-        if (processedFragmentSelection.hasFragmentSelector()) {
-            parsedFragment =
-                    processingContext.getTemplateManager().parseTemplateFragment(
-                            processingContext, templateName, new String[] { processedFragmentSelection.getFragmentSelector() });
-        } else {
-            parsedFragment =
-                    processingContext.getTemplateManager().parseTemplateFragment(
-                            processingContext, templateName, null); // insertOnlyContents would make no sense here
-        }
+        final String[] markupFragments =
+                (processedFragmentSelection.hasFragmentSelector()? new String[] { processedFragmentSelection.getFragmentSelector() } : null);
+        ImmutableMarkup parsedFragment =
+                    processingContext.getTemplateManager().parseFragment(
+                            processingContext.getConfiguration(),
+                            templateName, markupFragments,
+                            false, null, processingContext.getVariables(), true);
 
 
         /*

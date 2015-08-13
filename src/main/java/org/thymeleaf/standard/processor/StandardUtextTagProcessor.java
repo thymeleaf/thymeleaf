@@ -84,9 +84,11 @@ public final class StandardUtextTagProcessor extends AbstractStandardExpressionA
         }
 
         final ParsedFragmentMarkup parsedFragment =
-                processingContext.getTemplateManager().parseTextualFragment(
-                        processingContext.getConfiguration(), processingContext.getTemplateMode(),
-                        processingContext.getTemplateResolution().getTemplateName(), unescapedText);
+                processingContext.getTemplateManager().parseFragment(
+                        processingContext.getConfiguration(),
+                        processingContext.getTemplateResolution().getTemplateName(), unescapedText,
+                        processingContext.getTemplateMode(),
+                        false); // useCache == false because we could potentially pollute the cache with too many entries (th:utext is too variable!)
 
         // Setting 'processable' to false avoiding text inliners processing already generated text,
         // which in turn avoids code injection.

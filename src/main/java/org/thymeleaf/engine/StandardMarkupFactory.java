@@ -90,7 +90,10 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
     public IMarkup parseAsMarkup(final String markup) {
-        return this.templateManager.parseTextualFragment(this.configuration, this.templateMode, this.templateName, markup);
+        // We will be setting useCache to false because we don't want to pollute the cache with mere String
+        // parsing done from here. If the cache is needed the TemplateManager should be used.
+        return this.templateManager.parseFragment(
+                this.configuration, this.templateName, markup, this.templateMode, false);
     }
 
 

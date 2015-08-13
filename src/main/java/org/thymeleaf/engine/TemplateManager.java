@@ -188,28 +188,27 @@ public final class TemplateManager {
 
 
     public ParsedTemplateMarkup parseTemplate(
-            final IEngineConfiguration configuration, final IContext context, final String template) {
-        return parseTemplate(configuration, context, template, null);
-    }
-
-
-    public ParsedTemplateMarkup parseTemplate(
-            final IEngineConfiguration configuration, final IContext context, final String template, final String[] markupSelectors) {
+            final IEngineConfiguration configuration,
+            final String template, final String[] markupSelectors,
+            final boolean textualTemplate, final TemplateMode templateMode,
+            final IContext context,
+            final boolean useCache) {
         
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(context, "Context cannot be null");
         Validate.notNull(template, "Template cannot be null");
-        // Markup Selectors CAN be null
+        Validate.isTrue(!textualTemplate || templateMode != null,
+                "When a textual template is specified, (forced) template mode must be specified too");
+        // markup selectors CAN actually be null if we are going to render the entire template
+        // templateMode CAN also be null if we are going to use the mode specified by the template resolver
 
-        // TODO Maybe all cache keys should include the TemplateMode? (at least if we allow mixing modes in includes...) NOTE Its better if they don't include
-        // template mode because this allows us to use 'template' directly as key most of the times
-        final String cacheKey = computeCacheKey(configuration.getTextRepository(), template, markupSelectors);
-
+        final TemplateCacheKey cacheKey =
+                useCache? new TemplateCacheKey(template, markupSelectors, textualTemplate, templateMode) : null;
 
         /*
          * First look at the cache - it might be already cached
          */
-        if (this.templateCache != null) {
+        if (useCache && this.templateCache != null) {
             final ParsedTemplateMarkup cached =  this.templateCache.get(cacheKey);
             if (cached != null) {
                 return cached;
@@ -218,9 +217,18 @@ public final class TemplateManager {
 
 
         /*
+         * If this template is a textual template (i.e. not a template name, but the template itself expressed
+         * as a String object), we need to force the use of a StringTemplateResolver for resolution
+         */
+        final Set<ITemplateResolver> templateResolvers =
+                (textualTemplate? STRING_TEMPLATE_RESOLVER_SET : configuration.getTemplateResolvers());
+
+
+        /*
          * Resolve the template, obtain the IResource and its metadata (TemplateResolution)
          */
-        final TemplateAndResourceResolution resolution = resolveTemplate(configuration, template, context);
+        final TemplateAndResourceResolution resolution =
+                resolveTemplate(configuration, templateResolvers, template, templateMode, context);
 
 
         /*
@@ -240,7 +248,7 @@ public final class TemplateManager {
         /*
          * Cache the template if it is cacheable
          */
-        if (this.templateCache != null) {
+        if (useCache && this.templateCache != null) {
             if (resolution.templateResolution.getValidity().isCacheable()) {
                 this.templateCache.put(cacheKey, parsedTemplate);
             }
@@ -259,43 +267,47 @@ public final class TemplateManager {
     public ParsedFragmentMarkup parseFragment(
             final IEngineConfiguration configuration,
             final String template, final String[] markupSelectors,
-            final boolean textualTemplate, final TemplateMode forcedTemplateMode,
+            final boolean textualTemplate, final TemplateMode templateMode,
             final IContext context,
             final boolean useCache) {
-        return parseFragment(configuration, template, markupSelectors, null, textualTemplate, forcedTemplateMode, context, useCache);
+        Validate.isTrue(context != null || textualTemplate, "Context cannot be null if template is not textual");
+        Validate.isTrue(!textualTemplate || templateMode != null,
+                "When a textual template is specified, (forced) template mode must be specified too");
+        return parseFragment(configuration, template, markupSelectors, null, textualTemplate, templateMode, context, useCache);
     }
 
 
     public ParsedFragmentMarkup parseFragment(
             final IEngineConfiguration configuration,
             final String template, final String fragment,
-            final boolean textualTemplate, final TemplateMode forcedTemplateMode,
-            final IContext context,
+            final TemplateMode templateMode,
             final boolean useCache) {
-        return parseFragment(configuration, template, null, fragment, textualTemplate, forcedTemplateMode, context, useCache);
+        // Note that textualTemplate is not needed in this case as we will only be using the template name as a
+        // part of the key, but not resolving or parsing the fragment itself
+        // Also, note that context is not needed in this case because we will not be using the TemplateResolvers
+        Validate.notNull(fragment, "Fragment cannot be null");
+        Validate.notNull(templateMode, "Template mode cannot be null");
+        return parseFragment(configuration, template, null, fragment, false, templateMode, null, useCache);
     }
 
 
     private ParsedFragmentMarkup parseFragment(
             final IEngineConfiguration configuration,
             final String template, final String[] markupSelectors, final String fragment,
-            final boolean textualTemplate, final TemplateMode forcedTemplateMode,
+            final boolean textualTemplate, final TemplateMode templateMode,
             final IContext context,
             final boolean useCache) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
-        Validate.notNull(context, "Context cannot be null");
         Validate.notNull(template, "Template cannot be null");
-        Validate.isTrue(fragment == null || forcedTemplateMode != null,
-                "When a textual fragment is specified, (forced) template mode must be specified too");
         // markup selectors CAN actually be null if we are going to render the entire template
-        // forcedTemplateMode CAN also be null if we are going to use the mode specified by the template resolver
+        // templateMode CAN also be null if we are going to use the mode specified by the template resolver
 
         // NOTE that thanks to the double method signature offered, markupSelectors and fragment will never
         //      be specified at the same time.
 
         final FragmentCacheKey cacheKey =
-                useCache? new FragmentCacheKey(template, markupSelectors, fragment, textualTemplate, forcedTemplateMode) : null;
+                useCache? new FragmentCacheKey(template, markupSelectors, fragment, textualTemplate, templateMode) : null;
 
         /*
          * First look at the cache - it might be already cached
@@ -308,55 +320,63 @@ public final class TemplateManager {
         }
 
 
-        final IResource resource;
-        final TemplateMode templateMode;
-        final ICacheEntryValidity cacheEntryValidity;
+        final IResource computedResource;
+        final TemplateMode computedTemplateMode;
+        final ICacheEntryValidity computedCacheEntryValidity;
 
         if (fragment != null) {
             // This is a textual fragment (i.e. just a text from a template -- we don't need to resolve a template and
-            // match markup selectors)
-
+            // match markup selectors). Also, we know that in this case, markupSelectors == null.
 
             /*
              * Create the Resource (a StringResource, in this case) representing the fragment to parse
              */
-            resource = new StringResource(cacheKey.toString(), fragment);
+            computedResource = new StringResource(cacheKey.toString(), fragment);
 
             /*
              * Template Mode has to be always specified (forced) for textual fragments
              */
-            templateMode = forcedTemplateMode;
+            computedTemplateMode = templateMode;
 
             /*
              * Cache entry validity for textual fragments will be 'always' if cache is used
              */
-            cacheEntryValidity = useCache? AlwaysValidCacheEntryValidity.INSTANCE : NonCacheableCacheEntryValidity.INSTANCE;
+            computedCacheEntryValidity = useCache? AlwaysValidCacheEntryValidity.INSTANCE : NonCacheableCacheEntryValidity.INSTANCE;
 
-
-        } else {
-            // This is not a textual fragment -- we need to resolve a template and, maybe, match markup selectors
-
+        } else if (textualTemplate) {
+            // This is a textual template, so there is no need to use the resolvers for it -- we will just build the
+            // StringResource and pass it to the parsing infrastructure
 
             /*
-             * If this template is a textual template (i.e. not a template name, but the template itself expressed
-             * as a String object), we need to force the use of a StringTemplateResolver for resolution
+             * Create the Resource (a StringResource, in this case) representing the fragment to parse
              */
-            final Set<ITemplateResolver> templateResolvers =
-                    (textualTemplate? STRING_TEMPLATE_RESOLVER_SET : configuration.getTemplateResolvers());
+            computedResource = new StringResource(cacheKey.toString(), template);
+
+            /*
+             * Template Mode has to be always specified (forced) for textual fragments
+             */
+            computedTemplateMode = templateMode;
+
+            /*
+             * Cache entry validity for textual fragments will be 'always' if cache is used
+             */
+            computedCacheEntryValidity = useCache? AlwaysValidCacheEntryValidity.INSTANCE : NonCacheableCacheEntryValidity.INSTANCE;
+
+        } else {
+            // This is not a textual fragment nor a textual template -- we need to resolve a template and, maybe, match markup selectors
 
             /*
              * Resolve the template, obtain the IResource and its metadata (TemplateResolution)
              */
             final TemplateAndResourceResolution resolution =
-                    resolveTemplate(configuration, templateResolvers, template, forcedTemplateMode, context);
+                    resolveTemplate(configuration, configuration.getTemplateResolvers(), template, templateMode, context);
 
             /*
              * Assign the values
              */
-            resource = resolution.resource;
-            templateMode = resolution.templateResolution.getTemplateMode();
-            cacheEntryValidity = resolution.templateResolution.getValidity();
-
+            computedResource = resolution.resource;
+            computedTemplateMode = resolution.templateResolution.getTemplateMode();
+            computedCacheEntryValidity = resolution.templateResolution.getValidity();
 
         }
 
@@ -364,14 +384,14 @@ public final class TemplateManager {
         /*
          *  Create the Template Handler that will be in charge of building a ParsedTemplateMarkup object as the result of reading the template
          */
-        final ParsedFragmentMarkup parsedFragment = new ParsedFragmentMarkup(configuration, templateMode, cacheEntryValidity);
+        final ParsedFragmentMarkup parsedFragment = new ParsedFragmentMarkup(configuration, computedTemplateMode, computedCacheEntryValidity);
         final MarkupBuilderTemplateHandler builderHandler = new MarkupBuilderTemplateHandler(true, parsedFragment.getInternalMarkup());
 
         /*
          * PROCESS THE TEMPLATE
          */
         processResolvedResource(
-                configuration, resource, markupSelectors, true, templateMode, builderHandler);
+                configuration, computedResource, markupSelectors, true, computedTemplateMode, builderHandler);
 
 
         /*
@@ -392,15 +412,9 @@ public final class TemplateManager {
 
 
 
-    // TODO Why doesn't this processTemplate method resemble parseFragment in order to not really needing
-    //      resolution of textualFragments? manually creating a StringResource should be enough...
-    //      Also, if this is done, the way textualFragments in parseFragment are dealtWith... should be changed?
-    //      And in fact... is StringTemplateResolver actually needed at all?
-
-
     public void processTemplate(final IEngineConfiguration configuration,
                                 final String template, final String[] markupSelectors,
-                                final boolean textualTemplate, final TemplateMode forcedTemplateMode,
+                                final boolean textualTemplate, final TemplateMode templateMode,
                                 final IContext context,
                                 final Writer writer,
                                 final boolean useCache) {
@@ -409,10 +423,10 @@ public final class TemplateManager {
         Validate.notNull(context, "Context cannot be null");
         Validate.notNull(template, "Template cannot be null");
         // markup selectors CAN actually be null if we are going to render the entire template
-        // forcedTemplateMode CAN also be null if we are going to use the mode specified by the template resolver
+        // templateMode CAN also be null if we are going to use the mode specified by the template resolver
 
         final TemplateCacheKey cacheKey =
-                useCache? new TemplateCacheKey(template, markupSelectors, textualTemplate, forcedTemplateMode) : null;
+                useCache? new TemplateCacheKey(template, markupSelectors, textualTemplate, templateMode) : null;
 
 
         /*
@@ -445,7 +459,7 @@ public final class TemplateManager {
          * Resolve the template, obtain the IResource and its metadata (TemplateResolution)
          */
         final TemplateAndResourceResolution resolution =
-                resolveTemplate(configuration, templateResolvers, template, forcedTemplateMode, context);
+                resolveTemplate(configuration, templateResolvers, template, templateMode, context);
 
 
         /*
@@ -504,7 +518,7 @@ public final class TemplateManager {
             final IEngineConfiguration configuration,
             final Set<ITemplateResolver> templateResolvers,
             final String template,
-            final TemplateMode forcedTemplateMode,
+            final TemplateMode templateMode,
             final IContext context) {
 
         TemplateResolution templateResolution = null;
@@ -516,13 +530,13 @@ public final class TemplateManager {
 
             if (templateResolution != null) {
 
-                if (forcedTemplateMode != null && templateResolution.getTemplateMode() != forcedTemplateMode) {
+                if (templateMode != null && templateResolution.getTemplateMode() != templateMode) {
                     // We need to force the template mode
                     templateResolution =
                             new TemplateResolution(
                                     templateResolution.getTemplateName(), templateResolution.getResourceName(),
                                     templateResolution.getResourceResolver(), templateResolution.getCharacterEncoding(),
-                                    forcedTemplateMode, templateResolution.getValidity());
+                                    templateMode, templateResolution.getValidity());
                 }
 
                 final String resourceName = templateResolution.getResourceName();
