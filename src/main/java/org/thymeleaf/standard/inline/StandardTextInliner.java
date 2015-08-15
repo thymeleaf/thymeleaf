@@ -19,11 +19,7 @@
  */
 package org.thymeleaf.standard.inline;
 
-import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.inline.IInliner;
-import org.thymeleaf.model.IText;
-import org.thymeleaf.util.Validate;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  *
@@ -31,65 +27,13 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class StandardTextInliner implements IInliner {
+public final class StandardTextInliner extends AbstractStandardInliner {
 
     public static final StandardTextInliner INSTANCE = new StandardTextInliner();
 
 
     private StandardTextInliner() {
-        super();
-    }
-
-    public String getName() {
-        return StandardTextInliner.class.getSimpleName();
-    }
-
-
-    public CharSequence inline(final ITemplateProcessingContext context, final CharSequence text) {
-
-        Validate.notNull(context, "Context cannot be null");
-        Validate.notNull(text, "Text cannot be null");
-
-        if (text instanceof IText) {
-
-            final IText itext = (IText) text;
-
-            /*
-             * If all the text to be inlined is whitespace (we know this from the moment it was parsed), then just return,
-             * because there is no way we can do anything with just whitespace.
-             */
-            if (itext.isWhitespace()) {
-                return text;
-            }
-
-            /*
-             * We will quickly check whether inlining seems needed at all, so that we don't spend more time on this if
-             * not required.
-             * Note the org.thymeleaf.engine.Text implementation of IText already precomputes the answers to these
-             * 'contains' questions at parsing time so that they are answered without needing to traverse the
-             * entire texts.
-             */
-            if (!itext.contains(StandardInlineUtils.INLINE_SYNTAX_MARKER_ESCAPED) && !itext.contains(StandardInlineUtils.INLINE_SYNTAX_MARKER_UNESCAPED)) {
-                return text;
-            }
-
-        } else {
-
-            /*
-             * This is not an IText, but anyway we will perform a quick test to check whether we might need inlining
-             */
-            if (!StandardInlineUtils.mightNeedInlining(text)) {
-                return text;
-            }
-
-        }
-
-
-        /*
-         * Once we are quite sure that we will need to execute some inlined expressions, let's do it!
-         */
-        return StandardInlineUtils.performInlining(context.getConfiguration().getTextRepository(), text);
-
+        super(TemplateMode.TEXT);
     }
 
 }
