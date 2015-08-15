@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.inline;
 
-import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.ITemplateProcessingContext;
 
 /**

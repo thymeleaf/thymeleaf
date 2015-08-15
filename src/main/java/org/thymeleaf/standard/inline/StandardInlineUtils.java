@@ -22,9 +22,16 @@ package org.thymeleaf.standard.inline;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.model.IText;
+import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.standard.util.StandardEscapedOutputUtils;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.AggregateCharSequence;
+import org.unbescape.html.HtmlEscape;
 
 /*
  * Class containing some standard methods and constants for expression inlining operations in the Standard
@@ -37,6 +44,8 @@ import org.thymeleaf.util.AggregateCharSequence;
  * 
  */
 final class StandardInlineUtils {
+
+    static final String LOCAL_VARIABLE_ORIGINAL_TEMPLATE_MODE = "thymeleafOriginalTemplateMode";
 
     static final String INLINE_SYNTAX_MARKER_ESCAPED = "]]";
     static final String INLINE_SYNTAX_MARKER_UNESCAPED = ")]";
@@ -60,7 +69,11 @@ final class StandardInlineUtils {
 
 
 
-    static CharSequence performInlining(final ITextRepository textRepository, final CharSequence text) {
+    static CharSequence performInlining(final ITemplateProcessingContext context, final CharSequence text) {
+
+        final ITextRepository textRepository = context.getConfiguration().getTextRepository();
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
+        final TemplateMode originalTemplateMode = (TemplateMode) context.getVariables().getVariable(LOCAL_VARIABLE_ORIGINAL_TEMPLATE_MODE);
 
         final int[] locator =
                 (text instanceof IText)?
@@ -148,7 +161,9 @@ final class StandardInlineUtils {
                 if (textFragments == null) {
                     textFragments = new ArrayList<CharSequence>(4);
                 }
-                textFragments.add("$$$INLINED$$$");
+                final CharSequence expression =
+                        (textRepository != null? textRepository.getText(text, current + 2, expEnd) : text.subSequence(current + 2, expEnd));
+                textFragments.add(evaluateExpression(expressionParser, originalTemplateMode, context, expression, true));
 
 
                 // The ')]' or ']]' suffix will be considered as processed too
@@ -168,6 +183,39 @@ final class StandardInlineUtils {
         return new AggregateCharSequence(textFragments);
 
     }
+
+
+
+
+    private static CharSequence evaluateExpression(
+            final IStandardExpressionParser expressionParser, final TemplateMode originalTemplateMode,
+            final ITemplateProcessingContext context, final CharSequence expression, final boolean escaped) {
+
+        /*
+         * In order to evaluate an expression we need to first unescape it (if template mode is HTML or XML) and
+         * then parse + execute it.
+         * The last step will be producing escaped output (if it is an escaped inlined expression). The format of
+         * escaped output being used will depend on the template mode.
+         */
+
+        String expressionStr = expression.toString();
+
+        if (originalTemplateMode == TemplateMode.HTML || originalTemplateMode == TemplateMode.XML) {
+            expressionStr = HtmlEscape.unescapeHtml(expressionStr);
+        }
+
+        final IStandardExpression expr = expressionParser.parseExpression(context, expressionStr);
+
+        final Object exprResult = expr.execute(context);
+
+
+        if (escaped) {
+            return StandardEscapedOutputUtils.produceEscapedOutput(context.getTemplateMode(), exprResult);
+        }
+        return exprResult.toString();
+
+    }
+
 
 
 

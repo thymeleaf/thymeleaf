@@ -21,7 +21,9 @@ package org.thymeleaf.standard.inline;
 
 import java.io.StringWriter;
 
+import org.thymeleaf.context.ILocalVariableAwareVariablesMap;
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.IVariablesMap;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.IText;
@@ -74,6 +76,11 @@ public abstract class AbstractStandardInliner implements IInliner {
                     return text;
                 }
 
+            }
+
+            final IVariablesMap variablesMap = context.getVariables();
+            if (variablesMap instanceof ILocalVariableAwareVariablesMap) {
+                ((ILocalVariableAwareVariablesMap)variablesMap).put(StandardInlineUtils.LOCAL_VARIABLE_ORIGINAL_TEMPLATE_MODE, context.getTemplateMode());
             }
 
             final StringWriter stringWriter = new StringWriter();
@@ -130,7 +137,7 @@ public abstract class AbstractStandardInliner implements IInliner {
         /*
          * Once we are quite sure that we will need to execute some inlined expressions, let's do it!
          */
-        return StandardInlineUtils.performInlining(context.getConfiguration().getTextRepository(), text);
+        return StandardInlineUtils.performInlining(context, text);
 
     }
 
