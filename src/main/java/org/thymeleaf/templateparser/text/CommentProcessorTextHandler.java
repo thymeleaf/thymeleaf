@@ -271,6 +271,9 @@ final class CommentProcessorTextHandler extends AbstractChainedTextHandler {
             }
 
             if (arrayLevel == 0 && objectLevel == 0) {
+                if (c == '\n'){
+                    return i - 1; // If we find a line feed after we are sure no open array/objects left, just stop
+                }
                 if (c == ';' || c == ',' || c == ')' || c == '}' || c == ']') {
                     return i - 1;
                 }
