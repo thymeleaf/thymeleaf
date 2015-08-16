@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
@@ -161,10 +162,21 @@ final class StandardInlineUtils {
                 if (textFragments == null) {
                     textFragments = new ArrayList<CharSequence>(4);
                 }
+
                 final CharSequence expression =
                         (textRepository != null? textRepository.getText(text, current + 2, expEnd) : text.subSequence(current + 2, expEnd));
-                textFragments.add(evaluateExpression(expressionParser, originalTemplateMode, context, expression, true));
 
+                final CharSequence evaluatedExpression =
+                        evaluateExpression(expressionParser, originalTemplateMode, context, expression, true);
+
+                if (evaluatedExpression != null) {
+                    textFragments.add(evaluatedExpression);
+                } else {
+                    // If we received null, then this was not parsable as a Standard Expresion, and we just need to
+                    // output it without any modifications
+                    textFragments.add(
+                            (textRepository != null? textRepository.getText(text, current, expEnd + 2) : text.subSequence(current, expEnd + 2)));
+                }
 
                 // The ')]' or ']]' suffix will be considered as processed too
                 countChar(locator, text.charAt(expEnd));
@@ -201,10 +213,18 @@ final class StandardInlineUtils {
         String expressionStr = expression.toString();
 
         if (originalTemplateMode == TemplateMode.HTML || originalTemplateMode == TemplateMode.XML) {
+            // If we were originally (when inlining started) in a markup template (HTML, XML), the contents
+            // of this expression were probably escaped, which we need to undo
             expressionStr = HtmlEscape.unescapeHtml(expressionStr);
         }
 
-        final IStandardExpression expr = expressionParser.parseExpression(context, expressionStr);
+        final IStandardExpression expr;
+        try {
+            expr = expressionParser.parseExpression(context, expressionStr);
+        } catch (final TemplateProcessingException e) {
+            // We were not able to parse as expression, so we should just ignore this inlining
+            return null;
+        }
 
         final Object exprResult = expr.execute(context);
 
