@@ -216,7 +216,8 @@ final class StandardInlineUtils {
          */
 
         final String expressionStr =
-                EscapedAttributeUtils.unescapeAttribute(originalTemplateMode, expression.toString());
+                EscapedAttributeUtils.unescapeAttribute(
+                        (originalTemplateMode != null? originalTemplateMode : context.getTemplateMode()), expression.toString());
 
         final IStandardExpression expr;
         try {
