@@ -86,9 +86,9 @@ final class UnmatchedCloseElementTag
         // We will write exactly the same as for non-unmatched close elements, because that does not matter from the markup point
         Validate.notNull(writer, "Writer cannot be null");
         if (this.templateMode.isText()) {
-            writer.write("[[/");
+            writer.write("[/");
             writer.write(this.elementName);
-            writer.write("]]");
+            writer.write("]");
             return;
         }
         writer.write("</");

@@ -86,9 +86,9 @@ final class CloseElementTag
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
         if (this.templateMode.isText()) {
-            writer.write("[[/");
+            writer.write("[/");
             writer.write(this.elementName);
-            writer.write("]]");
+            writer.write("]");
             return;
         }
         writer.write("</");
