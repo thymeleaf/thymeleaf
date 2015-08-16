@@ -90,8 +90,8 @@ public final class StandardCSSUtils {
             printNull(output);
             return;
         }
-        if (object instanceof String) {
-            printString(output, (String) object);
+        if (object instanceof CharSequence) {
+            printString(output, object.toString());
             return;
         }
         if (object instanceof Character) {
