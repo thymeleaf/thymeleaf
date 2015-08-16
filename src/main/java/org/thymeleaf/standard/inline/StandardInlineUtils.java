@@ -167,7 +167,7 @@ final class StandardInlineUtils {
                         (textRepository != null? textRepository.getText(text, current + 2, expEnd) : text.subSequence(current + 2, expEnd));
 
                 final CharSequence evaluatedExpression =
-                        evaluateExpression(expressionParser, originalTemplateMode, context, expression, true);
+                        evaluateExpression(expressionParser, originalTemplateMode, context, expression, (text.charAt(current + 1) == '['));
 
                 if (evaluatedExpression != null) {
                     textFragments.add(evaluatedExpression);
