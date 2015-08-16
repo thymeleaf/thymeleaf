@@ -210,12 +210,12 @@ final class EventProcessorTextHandler extends AbstractChainedTextHandler {
 
             // does not match...
             throw new TextParseException(
-                    "Malformed markup: element \"" + new String(peek, 0, peek.length) + "\" is never closed", line, col);
+                    "Malformed markup: " + (peek.length > 0? ("element \"" + new String(peek, 0, peek.length) + "\"") : ("unnamed element")) + " is never closed", line, col);
 
         }
 
         throw new TextParseException(
-                "Malformed markup: closing element \"" + new String(buffer, offset, len) + "\" is never open", line, col);
+                "Malformed markup: " + (peek.length > 0? ("closing element \"" + new String(buffer, offset, len) + "\"") : ("unnamed closing element")) + " is never open", line, col);
 
     }
 
