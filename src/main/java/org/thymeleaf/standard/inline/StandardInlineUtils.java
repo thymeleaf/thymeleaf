@@ -32,7 +32,7 @@ import org.thymeleaf.standard.util.StandardEscapedOutputUtils;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.AggregateCharSequence;
-import org.unbescape.html.HtmlEscape;
+import org.thymeleaf.util.EscapedAttributeUtils;
 
 /*
  * Class containing some standard methods and constants for expression inlining operations in the Standard
@@ -204,19 +204,19 @@ final class StandardInlineUtils {
             final ITemplateProcessingContext context, final CharSequence expression, final boolean escaped) {
 
         /*
-         * In order to evaluate an expression we need to first unescape it (if template mode is HTML or XML) and
-         * then parse + execute it.
+         * In order to evaluate an expression we need to first unescape it, and then parse + execute it. This basically
+         * mimics the behaviour of the th:text and th:utext processors, except for the fact that th:utext parses the
+         * evaluated result as a piece of markup and inserts it into the template being processed, something we
+         * cannot do in an inlining operation because we would be inserting a piece of template of a different
+         * template mode than the container template (something that is forbidden) -- that's why inlining always
+         * resolves the inlined Text as another Text (contrary to inserting a parsed piece of markup).
+         *
          * The last step will be producing escaped output (if it is an escaped inlined expression). The format of
          * escaped output being used will depend on the template mode.
          */
 
-        String expressionStr = expression.toString();
-
-        if (originalTemplateMode == TemplateMode.HTML || originalTemplateMode == TemplateMode.XML) {
-            // If we were originally (when inlining started) in a markup template (HTML, XML), the contents
-            // of this expression were probably escaped, which we need to undo
-            expressionStr = HtmlEscape.unescapeHtml(expressionStr);
-        }
+        final String expressionStr =
+                EscapedAttributeUtils.unescapeAttribute(originalTemplateMode, expression.toString());
 
         final IStandardExpression expr;
         try {

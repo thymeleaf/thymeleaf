@@ -41,8 +41,8 @@ import org.thymeleaf.standard.expression.FragmentSignatureUtils;
 import org.thymeleaf.standard.expression.ParsedFragmentSelection;
 import org.thymeleaf.standard.expression.ProcessedFragmentSelection;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.EscapedAttributeUtils;
 import org.thymeleaf.util.StringUtils;
-import org.unbescape.html.HtmlEscape;
 
 /**
  *
@@ -135,7 +135,8 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
             if (elementAttributes.hasAttribute(dialectPrefix, FRAGMENT_ATTR_NAME)) {
                 // The selected fragment actually has a "th:fragment" attribute, so we should process its signature
 
-                final String fragmentSignatureSpec = HtmlEscape.unescapeHtml(elementAttributes.getValue(dialectPrefix, FRAGMENT_ATTR_NAME));
+                final String fragmentSignatureSpec =
+                        EscapedAttributeUtils.unescapeAttribute(processingContext.getTemplateMode(), elementAttributes.getValue(dialectPrefix, FRAGMENT_ATTR_NAME));
                 if (!StringUtils.isEmptyOrWhitespace(fragmentSignatureSpec)) {
 
                     final FragmentSignature fragmentSignature =
