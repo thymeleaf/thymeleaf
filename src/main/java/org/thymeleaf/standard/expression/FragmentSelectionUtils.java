@@ -360,7 +360,9 @@ public final class FragmentSelectionUtils {
         final IStandardExpression templateNameExpression = fragmentSelection.getTemplateName();
         final String templateName;
         if (templateNameExpression != null) {
-            final Object templateNameObject = templateNameExpression.execute(processingContext);
+            // Note we will apply restricted variable access for resolving template names in fragment specs. This
+            // protects against the possibility of code injection attacks from request parameters.
+            final Object templateNameObject = templateNameExpression.execute(processingContext, StandardExpressionExecutionContext.RESTRICTED);
             if (templateNameObject == null) {
                 throw new TemplateProcessingException(
                         "Evaluation of template name from spec \"" + fragmentSelection.getStringRepresentation() + "\" returned null.");
