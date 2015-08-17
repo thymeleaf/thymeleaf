@@ -27,6 +27,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.util.StandardEscapedOutputUtils;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -227,7 +228,8 @@ final class StandardInlineUtils {
             return null;
         }
 
-        final Object exprResult = expr.execute(context);
+        final Object exprResult =
+                (escaped? expr.execute(context) : expr.execute(context, StandardExpressionExecutionContext.UNESCAPED_EXPRESSION));
 
 
         if (escaped) {

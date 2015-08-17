@@ -19,11 +19,17 @@
  */
 package org.thymeleaf.standard.processor;
 
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.engine.ParsedFragmentMarkup;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
+import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -33,23 +39,30 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-public final class StandardUtextTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
+public final class StandardUtextTagProcessor extends AbstractAttributeTagProcessor {
 
     public static final int PRECEDENCE = 1400;
     public static final String ATTR_NAME = "utext";
 
-    public StandardUtextTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
-    }
 
+    public StandardUtextTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE);
+    }
 
 
     @Override
     protected void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
+            final AttributeName attributeName,
+            final String attributeValue,
             final IElementStructureHandler structureHandler) {
+
+        final IEngineConfiguration configuration = processingContext.getConfiguration();
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+
+        final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
+        final Object expressionResult = expression.execute(processingContext, StandardExpressionExecutionContext.UNESCAPED_EXPRESSION);
 
         final String unescapedText = (expressionResult == null ? "" : expressionResult.toString());
 
