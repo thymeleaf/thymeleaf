@@ -183,7 +183,7 @@ public class SPELVariableExpressionEvaluator
              * because evaluation contexts are not thread-safe and are only used in a single template execution
              */
             thymeleafEvaluationContext.setExpressionObjects(expressionObjects);
-            thymeleafEvaluationContext.setRequestParametersRestricted(expContext.getRestrictVariableAccess());
+            thymeleafEvaluationContext.setVariableAccessRestricted(expContext.getRestrictVariableAccess());
 
 
             /*

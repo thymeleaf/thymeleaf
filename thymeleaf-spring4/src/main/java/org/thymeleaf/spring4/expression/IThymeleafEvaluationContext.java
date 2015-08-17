@@ -31,8 +31,8 @@ import org.thymeleaf.expression.IExpressionObjects;
  */
 public interface IThymeleafEvaluationContext extends EvaluationContext {
 
-    public boolean isRequestParametersRestricted();
-    public void setRequestParametersRestricted(final boolean restricted);
+    public boolean isVariableAccessRestricted();
+    public void setVariableAccessRestricted(final boolean restricted);
 
     public IExpressionObjects getExpressionObjects();
     public void setExpressionObjects(final IExpressionObjects expressionObjects);

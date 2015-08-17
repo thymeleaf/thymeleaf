@@ -66,7 +66,7 @@ public final class ThymeleafEvaluationContext
 
 
     private IExpressionObjects expressionObjects = null;
-    private boolean requestParametersRestricted = false;
+    private boolean variableAccessRestricted = false;
 
 
 
@@ -104,12 +104,12 @@ public final class ThymeleafEvaluationContext
 
 
 
-    public boolean isRequestParametersRestricted() {
-        return this.requestParametersRestricted;
+    public boolean isVariableAccessRestricted() {
+        return this.variableAccessRestricted;
     }
 
-    public void setRequestParametersRestricted(final boolean restricted) {
-        this.requestParametersRestricted = restricted;
+    public void setVariableAccessRestricted(final boolean restricted) {
+        this.variableAccessRestricted = restricted;
     }
 
     public IExpressionObjects getExpressionObjects() {

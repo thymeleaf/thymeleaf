@@ -161,11 +161,11 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
     }
 
 
-    public boolean isRequestParametersRestricted() {
+    public boolean isVariableAccessRestricted() {
         return this.requestParametersRestricted;
     }
 
-    public void setRequestParametersRestricted(final boolean restricted) {
+    public void setVariableAccessRestricted(final boolean restricted) {
         this.requestParametersRestricted = restricted;
     }
 
