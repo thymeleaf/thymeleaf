@@ -46,9 +46,8 @@ import org.thymeleaf.context.IVariablesMap;
 public final class OGNLVariablesMapPropertyAccessor implements PropertyAccessor {
 
     public static final String RESTRICT_REQUEST_PARAMETERS = "%RESTRICT_REQUEST_PARAMETERS%";
+    private static final String REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME = "param";
 
-
-    // TODO Actually control request parameter restrictions!
 
     OGNLVariablesMapPropertyAccessor() {
         super();
@@ -63,6 +62,13 @@ public final class OGNLVariablesMapPropertyAccessor implements PropertyAccessor 
             throw new IllegalStateException(
                     "Wrong target type. This property accessor is only usable for IVariableMap implementations, and " +
                     "in this case the target object is " + (target == null? "null" : ("of class " + target.getClass().getName())));
+        }
+
+        if (REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME.equals(name) && context != null && context.containsKey(RESTRICT_REQUEST_PARAMETERS)) {
+            throw new OgnlException(
+                    "Access to variable \"" + name + "\" is forbidden in this context. Note some restrictions apply to " +
+                    "variable access. For example, accessing request parameters is forbidden in preprocessing and " +
+                    "unescaped expressions, and also in fragment inclusion specifications.");
         }
 
         /*
