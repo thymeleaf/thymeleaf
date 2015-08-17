@@ -41,10 +41,10 @@ public final class SPELVariablesMapPropertyAccessor implements PropertyAccessor 
 
     static final SPELVariablesMapPropertyAccessor INSTANCE = new SPELVariablesMapPropertyAccessor();
 
+    private static final String REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME = "param";
     private static final Class<?>[] TARGET_CLASSES = new Class<?>[] { IVariablesMap.class };
 
 
-    // TODO Actually control request parameter restrictions (the IThymeleafEvaluationContext implementations will know)!
 
 
     SPELVariablesMapPropertyAccessor() {
@@ -60,6 +60,16 @@ public final class SPELVariablesMapPropertyAccessor implements PropertyAccessor 
 
     public boolean canRead(final EvaluationContext context, final Object target, final String name)
             throws AccessException {
+        if (context instanceof IThymeleafEvaluationContext) {
+            if (((IThymeleafEvaluationContext) context).isVariableAccessRestricted()) {
+                if (REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME.equals(name)) {
+                    throw new AccessException(
+                            "Access to variable \"" + name + "\" is forbidden in this context. Note some restrictions apply to " +
+                            "variable access. For example, accessing request parameters is forbidden in preprocessing and " +
+                            "unescaped expressions, and also in fragment inclusion specifications.");
+                }
+            }
+        }
         return target != null;
     }
 
