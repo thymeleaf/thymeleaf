@@ -145,7 +145,7 @@ public final class OGNLVariableExpressionEvaluator
                 // can actually communicate with the PropertyAccessor, (OGNLVariablesMapPropertyAccessor), which is the
                 // agent in charge of applying such restrictions, is by adding a context variable that the property accessor
                 // can later lookup during evaluation.
-                if (expContext.getForbidRequestParameters()) {
+                if (expContext.getRestrictVariableAccess()) {
                     contextVariablesMap.put(OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS, OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
                 } else {
                     contextVariablesMap.remove(OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
@@ -153,7 +153,7 @@ public final class OGNLVariableExpressionEvaluator
 
             } else {
 
-                if (expContext.getForbidRequestParameters()) {
+                if (expContext.getRestrictVariableAccess()) {
                     contextVariablesMap = CONTEXT_VARIABLES_MAP_NOEXPOBJECTS_RESTRICTIONS;
                 } else {
                     contextVariablesMap = Collections.EMPTY_MAP;

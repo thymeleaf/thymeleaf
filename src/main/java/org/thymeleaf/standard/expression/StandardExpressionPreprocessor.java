@@ -79,7 +79,7 @@ final class StandardExpressionPreprocessor {
                     return null;
                 }
                 
-                final Object result = expression.execute(processingContext, StandardExpressionExecutionContext.PREPROCESSING);
+                final Object result = expression.execute(processingContext, StandardExpressionExecutionContext.RESTRICTED);
                 
                 strBuilder.append(result);
                 

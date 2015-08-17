@@ -62,7 +62,7 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
 
         final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
-        final Object expressionResult = expression.execute(processingContext, StandardExpressionExecutionContext.UNESCAPED_EXPRESSION);
+        final Object expressionResult = expression.execute(processingContext, StandardExpressionExecutionContext.RESTRICTED);
 
         final String unescapedText = (expressionResult == null ? "" : expressionResult.toString());
 

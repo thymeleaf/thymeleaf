@@ -35,24 +35,23 @@ package org.thymeleaf.standard.expression;
  */
 public final class StandardExpressionExecutionContext {
 
-    public static final StandardExpressionExecutionContext PREPROCESSING = new StandardExpressionExecutionContext(true, false);
+    public static final StandardExpressionExecutionContext RESTRICTED = new StandardExpressionExecutionContext(true, false);
+    public static final StandardExpressionExecutionContext RESTRICTED_WITH_TYPE_CONVERSION = new StandardExpressionExecutionContext(true, true);
     public static final StandardExpressionExecutionContext NORMAL = new StandardExpressionExecutionContext(false, false);
     public static final StandardExpressionExecutionContext NORMAL_WITH_TYPE_CONVERSION = new StandardExpressionExecutionContext(false, true);
-    public static final StandardExpressionExecutionContext UNESCAPED_EXPRESSION = new StandardExpressionExecutionContext(true, false);
-    public static final StandardExpressionExecutionContext UNESCAPED_EXPRESSION_WITH_TYPE_CONVERSION = new StandardExpressionExecutionContext(true, true);
 
-    private final boolean forbidRequestParameters;
+    private final boolean restrictVariableAccess;
     private final boolean performTypeConversion;
     
     
-    private StandardExpressionExecutionContext(final boolean forbidRequestParameters, final boolean performTypeConversion) {
+    private StandardExpressionExecutionContext(final boolean restrictVariableAccess, final boolean performTypeConversion) {
         super();
-        this.forbidRequestParameters = forbidRequestParameters;
+        this.restrictVariableAccess = restrictVariableAccess;
         this.performTypeConversion = performTypeConversion;
     }
 
-    public boolean getForbidRequestParameters() {
-        return this.forbidRequestParameters;
+    public boolean getRestrictVariableAccess() {
+        return this.restrictVariableAccess;
     }
 
     public boolean getPerformTypeConversion() {
@@ -63,8 +62,8 @@ public final class StandardExpressionExecutionContext {
         if (this == NORMAL_WITH_TYPE_CONVERSION) {
             return NORMAL;
         }
-        if (this == UNESCAPED_EXPRESSION_WITH_TYPE_CONVERSION) {
-            return UNESCAPED_EXPRESSION;
+        if (this == RESTRICTED_WITH_TYPE_CONVERSION) {
+            return RESTRICTED;
         }
         return this;
     }
@@ -73,8 +72,8 @@ public final class StandardExpressionExecutionContext {
         if (this == NORMAL) {
             return NORMAL_WITH_TYPE_CONVERSION;
         }
-        if (this == UNESCAPED_EXPRESSION) {
-            return UNESCAPED_EXPRESSION_WITH_TYPE_CONVERSION;
+        if (this == RESTRICTED) {
+            return RESTRICTED_WITH_TYPE_CONVERSION;
         }
         return this;
     }

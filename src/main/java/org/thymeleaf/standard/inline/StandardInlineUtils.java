@@ -229,7 +229,7 @@ final class StandardInlineUtils {
         }
 
         final Object exprResult =
-                (escaped? expr.execute(context) : expr.execute(context, StandardExpressionExecutionContext.UNESCAPED_EXPRESSION));
+                (escaped? expr.execute(context) : expr.execute(context, StandardExpressionExecutionContext.RESTRICTED));
 
 
         if (escaped) {
