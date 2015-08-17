@@ -30,7 +30,7 @@ package org.thymeleaf.standard.expression;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.0.16
+ * @since 2.0.16 (reimplemented in 3.0.0)
  *
  */
 public final class StandardExpressionExecutionContext {
