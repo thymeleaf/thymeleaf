@@ -317,7 +317,7 @@ public final class OGNLVariableExpressionEvaluator
             throws Exception {
 
         if (parsedExpression instanceof OGNLShortcutExpression) {
-            return ((OGNLShortcutExpression) parsedExpression).evaluate(processingContext, root);
+            return ((OGNLShortcutExpression) parsedExpression).evaluate(processingContext, context, root);
         }
 
         // We create the OgnlContext here instead of just sending the Map as context because that prevents OGNL from

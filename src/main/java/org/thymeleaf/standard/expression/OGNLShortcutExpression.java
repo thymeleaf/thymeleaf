@@ -70,7 +70,8 @@ final class OGNLShortcutExpression {
     }
 
 
-    Object evaluate(final IProcessingContext processingContext, final Object root) throws Exception {
+    Object evaluate(final IProcessingContext processingContext, final Map<String, Object> context, final Object root)
+            throws Exception {
 
         final IEngineConfiguration configuration = processingContext.getConfiguration();
         final ITextRepository textRepository = configuration.getTextRepository();
@@ -101,7 +102,7 @@ final class OGNLShortcutExpression {
 
             } else if (OGNLVariablesMapPropertyAccessor.class.equals(ognlPropertyAccessor.getClass())) {
 
-                target = getVariablesMapProperty(propertyName, target);
+                target = getVariablesMapProperty(propertyName, context, target);
 
             } else if (ObjectPropertyAccessor.class.equals(ognlPropertyAccessor.getClass())) {
 
@@ -149,8 +150,20 @@ final class OGNLShortcutExpression {
 
 
 
-    private static Object getVariablesMapProperty(final String propertyName, final Object target) {
+    private static Object getVariablesMapProperty(
+            final String propertyName, final Map<String, Object> context, final Object target)
+            throws OgnlException {
+
+        if (OGNLVariablesMapPropertyAccessor.REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME.equals(propertyName) &&
+                context != null && context.containsKey(OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS)) {
+            throw new OgnlException(
+                    "Access to variable \"" + propertyName + "\" is forbidden in this context. Note some restrictions apply to " +
+                    "variable access. For example, accessing request parameters is forbidden in preprocessing and " +
+                    "unescaped expressions, and also in fragment inclusion specifications.");
+        }
+
         return ((IVariablesMap) target).getVariable(propertyName);
+
     }
 
 
