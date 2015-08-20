@@ -103,9 +103,10 @@ abstract class BlockAwareReader extends Reader {
                         i -= this.prefix.length;
                         this.discardFrom = (this.action == BlockAction.DISCARD_ALL ? i : -1);
                     }
-                } else if (c == this.p0) {
-                    this.index = 1;
                 } else {
+                    if (this.index > 0) {
+                        i -= this.index;
+                    }
                     this.index = 0;
                 }
 
@@ -138,9 +139,10 @@ abstract class BlockAwareReader extends Reader {
                         }
 
                     }
-                } else if (c == this.s0) {
-                    this.index = 1;
                 } else {
+                    if (this.index > 0) {
+                        i -= this.index;
+                    }
                     this.index = 0;
                 }
 
@@ -172,14 +174,15 @@ abstract class BlockAwareReader extends Reader {
             } else {
                 // We didn't find the structure we were looking for, and now we have an overflow that contains
                 // several characters. Including the possibility that it includes the beginning of a structure...
-                // At this stage, we know we can copy back those "this.index" bytes into the cbuf array, so that
-                // we don't try to match them against prefix/suffix again
+                // At this stage, we know we can copy back JUST ONE of those "this.index" bytes into the cbuf array, so
+                // that we don't try to match it against prefix/suffix again (but we allow any matches starting with
+                // the next char)
 
-                System.arraycopy(this.overflowBuffer, 0, cbuf, maxi, this.index);
-                read += this.index;
-                maxi += this.index;
-                System.arraycopy(this.overflowBuffer, this.index, this.overflowBuffer, 0, (this.overflowBufferLen - this.index));
-                this.overflowBufferLen -= this.index;
+                System.arraycopy(this.overflowBuffer, 0, cbuf, maxi, 1);
+                read++;
+                maxi++;
+                System.arraycopy(this.overflowBuffer, 1, this.overflowBuffer, 0, (this.overflowBufferLen - 1));
+                this.overflowBufferLen--;
                 this.index = 0;
 
             }
