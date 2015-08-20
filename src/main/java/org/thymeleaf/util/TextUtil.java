@@ -1159,6 +1159,11 @@ public final class TextUtil {
 
             }
 
+            if (j > 0) {
+                // Go back to matching start + 1, in order to be able to match things like "aab" with fragment "ab"
+                i -= j;
+            }
+
             j = 0;
 
         }
@@ -1236,6 +1241,11 @@ public final class TextUtil {
                     continue;
                 }
 
+            }
+
+            if (j > 0) {
+                // Go back to matching start + 1, in order to be able to match things like "aab" with fragment "ab"
+                i -= j;
             }
 
             j = 0;
@@ -1317,6 +1327,11 @@ public final class TextUtil {
 
             }
 
+            if (j > 0) {
+                // Go back to matching start + 1, in order to be able to match things like "aab" with fragment "ab"
+                i -= j;
+            }
+
             j = 0;
 
         }
@@ -1394,6 +1409,11 @@ public final class TextUtil {
                     continue;
                 }
 
+            }
+
+            if (j > 0) {
+                // Go back to matching start + 1, in order to be able to match things like "aab" with fragment "ab"
+                i -= j;
             }
 
             j = 0;
