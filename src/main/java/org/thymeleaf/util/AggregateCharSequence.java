@@ -317,7 +317,7 @@ public final class AggregateCharSequence implements Serializable, CharSequence {
      * </p>
      *
      * @param writer the writer to write the character sequence to.
-     * @throws IOException
+     * @throws IOException if an input/output exception happens during writing
      */
     public void write(final Writer writer) throws IOException {
         if (writer == null) {

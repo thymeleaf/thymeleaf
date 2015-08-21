@@ -925,6 +925,8 @@ public class TemplateEngine implements ITemplateEngine {
      * @param markupSelectors the markup selectors to be used, defining the fragments that should be processed
      * @param context the context.   @return a String containing the result of evaluating the specified template
      *         with the provided context.
+     * @return a String containing the result of evaluating the specified template
+     *         with the provided context.
      * @since 3.0.0
      */
     public final String process(final String template, final String[] markupSelectors, final IContext context) {
@@ -955,6 +957,8 @@ public class TemplateEngine implements ITemplateEngine {
      * @param templateMode the template mode to be used for processing the template, overriding the one assigned by
      *                     the corresponding template resolver.
      * @param context the context.   @return a String containing the result of evaluating the specified template
+     *         with the provided context.
+     * @return a String containing the result of evaluating the specified template
      *         with the provided context.
      * @since 3.0.0
      */
