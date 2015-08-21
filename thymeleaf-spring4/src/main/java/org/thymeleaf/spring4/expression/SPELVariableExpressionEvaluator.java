@@ -41,6 +41,7 @@ import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.standard.util.StandardExpressionUtils;
 
 /**
  * 
@@ -124,7 +125,7 @@ public class SPELVariableExpressionEvaluator
              * needed).
              */
             final IExpressionObjects expressionObjects =
-                    (mightNeedExpressionObjects(spelExpression)? processingContext.getExpressionObjects() : null);
+                    (StandardExpressionUtils.mightNeedExpressionObjects(spelExpression)? processingContext.getExpressionObjects() : null);
 
 
             /*
@@ -275,19 +276,6 @@ public class SPELVariableExpressionEvaluator
                 processingContext.getConfiguration().getTextRepository().getText(expression, 0, dotPos);
         return localVariableAwareVariablesMap.isVariableLocal(expressionFirstComponent);
 
-    }
-
-
-
-
-    private static boolean mightNeedExpressionObjects(final String expression) {
-        int n = expression.length();
-        while (n-- != 0) {
-            if (expression.charAt(n) == '#') {
-                return true;
-            }
-        }
-        return false;
     }
 
 
