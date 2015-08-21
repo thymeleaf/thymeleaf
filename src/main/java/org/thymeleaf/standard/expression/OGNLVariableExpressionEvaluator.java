@@ -37,6 +37,7 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IVariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.IExpressionObjects;
+import org.thymeleaf.standard.util.StandardExpressionUtils;
 import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.EvaluationUtils;
 
@@ -127,7 +128,7 @@ public final class OGNLVariableExpressionEvaluator
             }
 
             final Map<String,Object> contextVariablesMap;
-            if (mightNeedExpressionObjects(expression)) {
+            if (StandardExpressionUtils.mightNeedExpressionObjects(expression)) {
 
                 // The IExpressionObjects implementation returned by processing contexts that include the Standard
                 // Dialects will be lazy in the creation of expression objects (i.e. they won't be created until really
@@ -327,18 +328,6 @@ public final class OGNLVariableExpressionEvaluator
 
     }
 
-
-
-
-    private static boolean mightNeedExpressionObjects(final String expression) {
-        int n = expression.length();
-        while (n-- != 0) {
-            if (expression.charAt(n) == '#') {
-                return true;
-            }
-        }
-        return false;
-    }
 
 
 }

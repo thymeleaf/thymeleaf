@@ -26,6 +26,9 @@ import ognl.OgnlContext;
 import ognl.OgnlException;
 import ognl.PropertyAccessor;
 import ognl.enhance.UnsupportedCompilationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IVariablesMap;
 
 /**
@@ -44,6 +47,8 @@ import org.thymeleaf.context.IVariablesMap;
  * @since 2.0 (reimplemented in 3.0.0)
  */
 public final class OGNLVariablesMapPropertyAccessor implements PropertyAccessor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OGNLVariablesMapPropertyAccessor.class);
 
     public static final String RESTRICT_REQUEST_PARAMETERS = "%RESTRICT_REQUEST_PARAMETERS%";
     static final String REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME = "param";
@@ -71,6 +76,14 @@ public final class OGNLVariablesMapPropertyAccessor implements PropertyAccessor 
                     "unescaped expressions, and also in fragment inclusion specifications.");
         }
 
+        final String propertyName = (name == null? null : name.toString());
+
+        // 'execInfo' translation from context variable to expression object - deprecated and to be removed in 3.1
+        final Object execInfoResult = checkExecInfo(propertyName, context);
+        if (execInfoResult != null) {
+            return execInfoResult;
+        }
+
         /*
          * NOTE we do not check here whether we are being asked for the 'locale', 'request', 'response', etc.
          * because there already are specific expression objects for the most important of them, which should
@@ -78,8 +91,39 @@ public final class OGNLVariablesMapPropertyAccessor implements PropertyAccessor 
          * The variables maps should just be used as a map, without exposure of its more-internal methods...
          */
         final IVariablesMap map = (IVariablesMap) target;
-        return map.getVariable(name == null? null : name.toString());
+        return map.getVariable(propertyName);
 
+    }
+
+
+
+
+    /**
+     * Translation from 'execInfo' context variable (${execInfo}) to 'execInfo' expression object (${#execInfo}), needed
+     * since 3.0.0.
+     *
+     * Note this is expressed as a separate method in order to mark this as deprecated and make it easily locatable.
+     *
+     * @param propertyName the name of the property being accessed (we are looking for 'execInfo').
+     * @param context the expression context, which should contain the expression objects.
+     * @deprecated created (and deprecated) in 3.0.0 in order to support automatic conversion of calls to the 'execInfo'
+     *             context variable (${execInfo}) into the 'execInfo' expression object (${#execInfo}), which is its
+     *             new only valid form. This method, along with the infrastructure for execInfo conversion in
+     *             StandardExpressionUtils#mightNeedExpressionObjects(...) will be removed in 3.1.
+     */
+    @Deprecated
+    private static Object checkExecInfo(final String propertyName, final Map<String,Object> context) {
+        if ("execInfo".equals(propertyName)) {
+            LOGGER.warn(
+                    "[THYMELEAF][{}] Found Thymeleaf Standard Expression containing a call to the context variable " +
+                    "\"execInfo\" (e.g. \"${execInfo.templateName}\"), which has been deprecated. The " +
+                    "Execution Info should be now accessed as an expression object instead " +
+                    "(e.g. \"${#execInfo.templateName}\"). Deprecated use is still allowed, but will be removed " +
+                    "in future versions of Thymeleaf.",
+                    TemplateEngine.threadIndex());
+            return context.get("execInfo");
+        }
+        return null;
     }
 
 
