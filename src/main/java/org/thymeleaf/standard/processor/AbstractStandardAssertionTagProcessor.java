@@ -31,7 +31,7 @@ import org.thymeleaf.standard.expression.ExpressionSequence;
 import org.thymeleaf.standard.expression.ExpressionSequenceUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.util.EvaluationUtil;
+import org.thymeleaf.util.EvaluationUtils;
 import org.thymeleaf.util.StringUtils;
 
 /**
@@ -70,7 +70,7 @@ public abstract class AbstractStandardAssertionTagProcessor extends AbstractAttr
 
         for (final IStandardExpression expression : expressions) {
             final Object expressionResult = expression.execute(processingContext);
-            final boolean expressionBooleanResult = EvaluationUtil.evaluateAsBoolean(expressionResult);
+            final boolean expressionBooleanResult = EvaluationUtils.evaluateAsBoolean(expressionResult);
             if (!expressionBooleanResult) {
                 final int line = tag.getAttributes().getLine(attributeName);
                 final int col = tag.getAttributes().getCol(attributeName);

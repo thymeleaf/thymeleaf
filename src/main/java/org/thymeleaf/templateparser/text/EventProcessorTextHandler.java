@@ -22,7 +22,7 @@ package org.thymeleaf.templateparser.text;
 import java.util.Arrays;
 
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.util.TextUtil;
+import org.thymeleaf.util.TextUtils;
 
 
 /*
@@ -158,7 +158,7 @@ final class EventProcessorTextHandler extends AbstractChainedTextHandler {
         }
         for (int i = 0; i < this.currentElementAttributeNamesSize; i++) {
 
-            if (TextUtil.equals(
+            if (TextUtils.equals(
                     TemplateMode.TEXT.isCaseSensitive(),
                     this.currentElementAttributeNames[i], 0, this.currentElementAttributeNames[i].length,
                     buffer, nameOffset, nameLen)) {
@@ -203,7 +203,7 @@ final class EventProcessorTextHandler extends AbstractChainedTextHandler {
 
         if (peek != null) {
 
-            if (TextUtil.equals(TemplateMode.TEXT.isCaseSensitive(), peek, 0, peek.length, buffer, offset, len)) {
+            if (TextUtils.equals(TemplateMode.TEXT.isCaseSensitive(), peek, 0, peek.length, buffer, offset, len)) {
                 popFromStack();
                 return true;
             }
@@ -295,7 +295,7 @@ final class EventProcessorTextHandler extends AbstractChainedTextHandler {
 
             // We are looking for exact matches here, disregarding the TEXT_PARSING_CASE_SENSITIVE constant value
             final int index =
-                    TextUtil.binarySearch(true, this.repository, 0, this.repositorySize, text, offset, len);
+                    TextUtils.binarySearch(true, this.repository, 0, this.repositorySize, text, offset, len);
 
             if (index >= 0) {
                 return this.repository[index];

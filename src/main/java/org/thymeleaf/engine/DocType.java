@@ -25,7 +25,7 @@ import java.io.Writer;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.model.IDocType;
 import org.thymeleaf.text.ITextRepository;
-import org.thymeleaf.util.TextUtil;
+import org.thymeleaf.util.TextUtils;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -225,19 +225,19 @@ final class DocType
             final String systemId,
             final String internalSubset) {
 
-        if (keyword == null || !TextUtil.equals(false, DEFAULT_KEYWORD, keyword)) {
+        if (keyword == null || !TextUtils.equals(false, DEFAULT_KEYWORD, keyword)) {
             throw new IllegalArgumentException("DOCTYPE keyword must be non-null and case-insensitively equal to '" + DEFAULT_KEYWORD + "'");
         }
         if (elementName == null || elementName.trim().length() == 0) {
             throw new IllegalArgumentException("DOCTYPE element name must be non-null and non-empty");
         }
-        if (type != null && !(TextUtil.equals(false, DEFAULT_TYPE_PUBLIC, type) || TextUtil.equals(false, DEFAULT_TYPE_SYSTEM, type))) {
+        if (type != null && !(TextUtils.equals(false, DEFAULT_TYPE_PUBLIC, type) || TextUtils.equals(false, DEFAULT_TYPE_SYSTEM, type))) {
             throw new IllegalArgumentException("DOCTYPE type must be either null or equal either to '" + DEFAULT_TYPE_PUBLIC + "' or '" + DEFAULT_TYPE_SYSTEM + "'");
         }
-        if (publicId != null && (type == null || TextUtil.equals(false, DEFAULT_TYPE_SYSTEM, type))) {
+        if (publicId != null && (type == null || TextUtils.equals(false, DEFAULT_TYPE_SYSTEM, type))) {
             throw new IllegalArgumentException("DOCTYPE PUBLIC ID cannot be non-null if type is null or equal to '" + DEFAULT_TYPE_SYSTEM + "'");
         }
-        if (publicId == null && (type != null && TextUtil.equals(false, DEFAULT_TYPE_PUBLIC, type))) {
+        if (publicId == null && (type != null && TextUtils.equals(false, DEFAULT_TYPE_PUBLIC, type))) {
             throw new IllegalArgumentException("DOCTYPE PUBLIC ID cannot be null if type is equal to '" + DEFAULT_TYPE_PUBLIC + "'");
         }
         if (systemId != null && type == null) {

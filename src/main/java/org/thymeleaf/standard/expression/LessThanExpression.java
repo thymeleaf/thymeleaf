@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.util.EvaluationUtil;
+import org.thymeleaf.util.EvaluationUtils;
 
 
 /**
@@ -80,8 +80,8 @@ public final class LessThanExpression extends GreaterLesserExpression {
 
         Boolean result = null;
 
-        final BigDecimal leftNumberValue = EvaluationUtil.evaluateAsNumber(leftValue);
-        final BigDecimal rightNumberValue = EvaluationUtil.evaluateAsNumber(rightValue);
+        final BigDecimal leftNumberValue = EvaluationUtils.evaluateAsNumber(leftValue);
+        final BigDecimal rightNumberValue = EvaluationUtils.evaluateAsNumber(rightValue);
         
         if (leftNumberValue != null && rightNumberValue != null) {
             result = Boolean.valueOf(leftNumberValue.compareTo(rightNumberValue) == -1);

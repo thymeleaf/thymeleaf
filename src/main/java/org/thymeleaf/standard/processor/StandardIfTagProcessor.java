@@ -26,7 +26,7 @@ import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.util.EvaluationUtil;
+import org.thymeleaf.util.EvaluationUtils;
 
 /**
  *
@@ -58,7 +58,7 @@ public final class StandardIfTagProcessor extends AbstractStandardConditionalVis
         final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
         final Object value = expression.execute(processingContext);
 
-        return EvaluationUtil.evaluateAsBoolean(value);
+        return EvaluationUtils.evaluateAsBoolean(value);
 
     }
 

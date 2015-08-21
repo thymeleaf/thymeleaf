@@ -46,12 +46,12 @@ public final class ObjectUtils {
      * @deprecated since 2.1, you should use the
      *            {@link org.thymeleaf.standard.expression.IStandardConversionService} implementation
      *            corresponding to the dialect you are using or the methods in
-     *            {@link EvaluationUtil}.
+     *            {@link EvaluationUtils}.
      *            Will be removed in 3.0.
      */
     @Deprecated
     public static boolean evaluateAsBoolean(final Object condition) {
-        return EvaluationUtil.evaluateAsBoolean(condition);
+        return EvaluationUtils.evaluateAsBoolean(condition);
     }
 
 
@@ -64,12 +64,12 @@ public final class ObjectUtils {
      * @deprecated since 2.1, you should use the
      *            {@link org.thymeleaf.standard.expression.IStandardConversionService} implementation
      *            corresponding to the dialect you are using or the methods in
-     *            {@link EvaluationUtil}.
+     *            {@link EvaluationUtils}.
      *            Will be removed in 3.0.
      */
     @Deprecated
     public static BigDecimal evaluateAsNumber(final Object object) {
-        return EvaluationUtil.evaluateAsNumber(object);
+        return EvaluationUtils.evaluateAsNumber(object);
     }
 
 
@@ -81,12 +81,12 @@ public final class ObjectUtils {
      * @deprecated since 2.1, you should use the
      *            {@link org.thymeleaf.standard.expression.IStandardConversionService} implementation
      *            corresponding to the dialect you are using or the methods in
-     *            {@link EvaluationUtil}.
+     *            {@link EvaluationUtils}.
      *            Will be removed in 3.0.
      */
     @Deprecated
     public static List<Object> convertToIterable(final Object value) {
-        return EvaluationUtil.evaluateAsList(value);
+        return EvaluationUtils.evaluateAsList(value);
     }
 
 
@@ -98,17 +98,17 @@ public final class ObjectUtils {
      * @deprecated since 2.1, you should use the
      *            {@link org.thymeleaf.standard.expression.IStandardConversionService} implementation
      *            corresponding to the dialect you are using or the methods in
-     *            {@link EvaluationUtil}.
+     *            {@link EvaluationUtils}.
      *            Will be removed in 3.0.
      */
     @Deprecated
     public static List<Object> convertToList(final Object value) {
         if (value == null) {
             // This mimics the old behaviour of the deprecated convertToList() method, which is not the same
-            // as the current EvaluationUtil.convertToList() method.
+            // as the current EvaluationUtils.convertToList() method.
             return Collections.singletonList(null);
         }
-        return EvaluationUtil.evaluateAsList(value);
+        return EvaluationUtils.evaluateAsList(value);
     }
 
 
@@ -121,12 +121,12 @@ public final class ObjectUtils {
      * @deprecated since 2.1, you should use the
      *            {@link org.thymeleaf.standard.expression.IStandardConversionService} implementation
      *            corresponding to the dialect you are using or the methods in
-     *            {@link EvaluationUtil}.
+     *            {@link EvaluationUtils}.
      *            Will be removed in 3.0.
      */
     @Deprecated
     public static Object[] convertToArray(final Object value) {
-        return EvaluationUtil.evaluateAsArray(value);
+        return EvaluationUtils.evaluateAsArray(value);
     }
     
     

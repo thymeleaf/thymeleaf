@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.util.EvaluationUtil;
+import org.thymeleaf.util.EvaluationUtils;
 
 
 /**
@@ -82,8 +82,8 @@ public final class DivisionExpression extends MultiplicationDivisionRemainderExp
             rightValue = "null";
         }
 
-        final BigDecimal leftNumberValue = EvaluationUtil.evaluateAsNumber(leftValue);
-        final BigDecimal rightNumberValue = EvaluationUtil.evaluateAsNumber(rightValue);
+        final BigDecimal leftNumberValue = EvaluationUtils.evaluateAsNumber(leftValue);
+        final BigDecimal rightNumberValue = EvaluationUtils.evaluateAsNumber(rightValue);
         if (leftNumberValue != null && rightNumberValue != null) {
             try {
                 return leftNumberValue.divide(rightNumberValue);

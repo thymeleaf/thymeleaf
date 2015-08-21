@@ -30,7 +30,7 @@ package org.thymeleaf.util;
  * @since 3.0.0
  *
  */
-public final class TextUtil {
+public final class TextUtils {
 
 
     /**
@@ -2265,7 +2265,7 @@ public final class TextUtil {
 
 
 
-    private TextUtil() {
+    private TextUtils() {
         super();
     }
 

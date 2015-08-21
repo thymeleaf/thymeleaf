@@ -23,7 +23,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.thymeleaf.util.TextUtil;
+import org.thymeleaf.util.TextUtils;
 
 /**
  * <p>
@@ -119,7 +119,7 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
             return null;
         }
 
-        final int hashCode = TextUtil.hashCode(text, offset, len);
+        final int hashCode = TextUtils.hashCode(text, offset, len);
 
         this.readLock.lock();
 
@@ -163,7 +163,7 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
             return null;
         }
 
-        final int hashCode = TextUtil.hashCode(text);
+        final int hashCode = TextUtils.hashCode(text);
 
         this.readLock.lock();
 
@@ -207,7 +207,7 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
             return null;
         }
 
-        final int hashCode = TextUtil.hashCode(text, beginIndex, endIndex);
+        final int hashCode = TextUtils.hashCode(text, beginIndex, endIndex);
 
         this.readLock.lock();
 
@@ -254,7 +254,7 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
             return getText(text0);
         }
 
-        final int hashCode = TextUtil.hashCode(text0, text1);
+        final int hashCode = TextUtils.hashCode(text0, text1);
 
         this.readLock.lock();
 
@@ -304,7 +304,7 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
             return getText(text0, text1);
         }
 
-        final int hashCode = TextUtil.hashCode(text0, text1, text2);
+        final int hashCode = TextUtils.hashCode(text0, text1, text2);
 
         this.readLock.lock();
 
@@ -357,7 +357,7 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
             return getText(text0, text1, text2);
         }
 
-        final int hashCode = TextUtil.hashCode(text0, text1, text2, text3);
+        final int hashCode = TextUtils.hashCode(text0, text1, text2, text3);
 
         this.readLock.lock();
 
@@ -413,7 +413,7 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
             return getText(text0, text1, text2, text3);
         }
 
-        final int hashCode = TextUtil.hashCode(text0, text1, text2, text3, text4);
+        final int hashCode = TextUtils.hashCode(text0, text1, text2, text3, text4);
 
         this.readLock.lock();
 

@@ -26,7 +26,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.AggregateCharSequence;
-import org.thymeleaf.util.TextUtil;
+import org.thymeleaf.util.TextUtils;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -166,37 +166,37 @@ final class Text
             throw new IllegalArgumentException("Subsequence cannot be null");
         }
 
-        if (TextUtil.equals(true, subsequence, INLINE_SYNTAX_MARKER_ESCAPED)) {
+        if (TextUtils.equals(true, subsequence, INLINE_SYNTAX_MARKER_ESCAPED)) {
             if (this.inlineableEscaped == null) {
                 if (isWhitespace()) {
                     this.inlineableEscaped = Boolean.FALSE;
                 } else {
                     if (this.buffer != null) {
-                        this.inlineableEscaped = Boolean.valueOf(TextUtil.contains(true, this.buffer, this.offset, this.length, INLINE_SYNTAX_MARKER_ESCAPED, 0, INLINE_SYNTAX_MARKER_ESCAPED.length()));
+                        this.inlineableEscaped = Boolean.valueOf(TextUtils.contains(true, this.buffer, this.offset, this.length, INLINE_SYNTAX_MARKER_ESCAPED, 0, INLINE_SYNTAX_MARKER_ESCAPED.length()));
                     } else {
-                        this.inlineableEscaped = Boolean.valueOf(TextUtil.contains(true, this.text, INLINE_SYNTAX_MARKER_ESCAPED));
+                        this.inlineableEscaped = Boolean.valueOf(TextUtils.contains(true, this.text, INLINE_SYNTAX_MARKER_ESCAPED));
                     }
                 }
             }
             return this.inlineableEscaped.booleanValue();
         }
 
-        if (TextUtil.equals(true, subsequence, INLINE_SYNTAX_MARKER_UNESCAPED)) {
+        if (TextUtils.equals(true, subsequence, INLINE_SYNTAX_MARKER_UNESCAPED)) {
             if (this.inlineableUnescaped == null) {
                 if (isWhitespace()) {
                     this.inlineableUnescaped = Boolean.FALSE;
                 } else {
                     if (this.buffer != null) {
-                        this.inlineableUnescaped = Boolean.valueOf(TextUtil.contains(true, this.buffer, this.offset, this.length, INLINE_SYNTAX_MARKER_UNESCAPED, 0, INLINE_SYNTAX_MARKER_UNESCAPED.length()));
+                        this.inlineableUnescaped = Boolean.valueOf(TextUtils.contains(true, this.buffer, this.offset, this.length, INLINE_SYNTAX_MARKER_UNESCAPED, 0, INLINE_SYNTAX_MARKER_UNESCAPED.length()));
                     } else {
-                        this.inlineableUnescaped = Boolean.valueOf(TextUtil.contains(true, this.text, INLINE_SYNTAX_MARKER_UNESCAPED));
+                        this.inlineableUnescaped = Boolean.valueOf(TextUtils.contains(true, this.text, INLINE_SYNTAX_MARKER_UNESCAPED));
                     }
                 }
             }
             return this.inlineableUnescaped.booleanValue();
         }
 
-        return TextUtil.contains(true, this, subsequence);
+        return TextUtils.contains(true, this, subsequence);
 
     }
 

@@ -33,7 +33,7 @@ import org.thymeleaf.standard.expression.AssignationUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.ArrayUtils;
-import org.thymeleaf.util.EvaluationUtil;
+import org.thymeleaf.util.EvaluationUtils;
 import org.thymeleaf.util.StringUtils;
 import org.unbescape.html.HtmlEscape;
 
@@ -104,7 +104,7 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
                 // Attribute is a fixed-value conditional one, like "selected", which can only
                 // appear as selected="selected" or not appear at all.
 
-                if (EvaluationUtil.evaluateAsBoolean(rightValue)) {
+                if (EvaluationUtils.evaluateAsBoolean(rightValue)) {
                     tag.getAttributes().setAttribute(newAttributeName, newAttributeName);
                 } else {
                     tag.getAttributes().removeAttribute(newAttributeName);

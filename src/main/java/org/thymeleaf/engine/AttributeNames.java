@@ -20,7 +20,7 @@
 package org.thymeleaf.engine;
 
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.util.TextUtil;
+import org.thymeleaf.util.TextUtils;
 
 /**
  *
@@ -235,8 +235,8 @@ public class AttributeNames {
                     return new HTMLAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
                 }
 
-                if (TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "xml:", 0, 4, attributeNameBuffer, attributeNameOffset, (i - attributeNameOffset)) ||
-                    TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "xmlns:", 0, 6, attributeNameBuffer, attributeNameOffset, (i - attributeNameOffset))) {
+                if (TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "xml:", 0, 4, attributeNameBuffer, attributeNameOffset, (i - attributeNameOffset)) ||
+                    TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "xmlns:", 0, 6, attributeNameBuffer, attributeNameOffset, (i - attributeNameOffset))) {
                     // 'xml' and 'xmlns' are not a valid dialect prefix in HTML mode
                     return new HTMLAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
                 }
@@ -247,7 +247,7 @@ public class AttributeNames {
             }
 
             if (!inData && c == '-') {
-                if (i == attributeNameOffset + 5 && TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "data", 0, 4, attributeNameBuffer, attributeNameOffset, (i - (attributeNameOffset + 1)))) {
+                if (i == attributeNameOffset + 5 && TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "data", 0, 4, attributeNameBuffer, attributeNameOffset, (i - (attributeNameOffset + 1)))) {
                     inData = true;
                     continue;
                 } else {
@@ -370,8 +370,8 @@ public class AttributeNames {
                     return new HTMLAttributeName(attributeName);
                 }
 
-                if (TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "xml:", 0, 4, attributeName, 0, i) ||
-                    TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "xmlns:", 0, 6, attributeName, 0, i)) {
+                if (TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "xml:", 0, 4, attributeName, 0, i) ||
+                    TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "xmlns:", 0, 6, attributeName, 0, i)) {
                     // 'xml' is not a valid dialect prefix in HTML mode
                     return new HTMLAttributeName(attributeName);
                 }
@@ -382,7 +382,7 @@ public class AttributeNames {
             }
 
             if (!inData && c == '-') {
-                if (i == 5 && TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "data", 0, 4, attributeName, 0, 4)) {
+                if (i == 5 && TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "data", 0, 4, attributeName, 0, 4)) {
                     inData = true;
                     continue;
                 } else {

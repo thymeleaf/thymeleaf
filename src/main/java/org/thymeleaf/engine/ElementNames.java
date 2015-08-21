@@ -20,7 +20,7 @@
 package org.thymeleaf.engine;
 
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.util.TextUtil;
+import org.thymeleaf.util.TextUtils;
 
 /**
  *
@@ -234,8 +234,8 @@ public class ElementNames {
                     return new HTMLElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
                 }
 
-                if (TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "xml:", 0, 4, elementNameBuffer, elementNameOffset, (i - elementNameOffset)) ||
-                    TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "xmlns:", 0, 6, elementNameBuffer, elementNameOffset, (i - elementNameOffset))) {
+                if (TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "xml:", 0, 4, elementNameBuffer, elementNameOffset, (i - elementNameOffset)) ||
+                    TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "xmlns:", 0, 6, elementNameBuffer, elementNameOffset, (i - elementNameOffset))) {
                     // 'xml' is not a valid dialect prefix in HTML mode
                     return new HTMLElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
                 }
@@ -358,8 +358,8 @@ public class ElementNames {
                     return new HTMLElementName(elementName);
                 }
 
-                if (TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "xml:", 0, 4, elementName, 0, i) ||
-                    TextUtil.equals(TemplateMode.HTML.isCaseSensitive(), "xmlns:", 0, 6, elementName, 0, i)) {
+                if (TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "xml:", 0, 4, elementName, 0, i) ||
+                    TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "xmlns:", 0, 6, elementName, 0, i)) {
                     // 'xml' is not a valid dialect prefix in HTML mode
                     return new HTMLElementName(elementName);
                 }

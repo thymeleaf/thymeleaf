@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.util.EvaluationUtil;
+import org.thymeleaf.util.EvaluationUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -199,7 +199,7 @@ public final class ConditionalExpression extends ComplexExpression {
         }
 
         final Object condObj = expression.getConditionExpression().execute(processingContext, expContext);
-        final boolean cond = EvaluationUtil.evaluateAsBoolean(condObj);
+        final boolean cond = EvaluationUtils.evaluateAsBoolean(condObj);
         
         if (cond) {
             return expression.getThenExpression().execute(processingContext, expContext);

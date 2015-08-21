@@ -32,7 +32,7 @@ import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.util.EvaluationUtil;
+import org.thymeleaf.util.EvaluationUtils;
 
 /**
  *
@@ -107,7 +107,7 @@ public final class StandardCaseTagProcessor extends AbstractStandardConditionalV
 
         final Object value = equalsExpression.execute(processingContext);
 
-        final boolean visible = EvaluationUtil.evaluateAsBoolean(value);
+        final boolean visible = EvaluationUtils.evaluateAsBoolean(value);
 
         if (this.logger.isTraceEnabled()) {
             this.logger.trace("[THYMELEAF][{}][{}] Case expression \"{}\" in attribute \"{}\" has been evaluated as: \"{}\"",

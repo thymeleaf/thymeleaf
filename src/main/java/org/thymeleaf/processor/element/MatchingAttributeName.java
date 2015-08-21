@@ -24,7 +24,7 @@ import org.thymeleaf.engine.HTMLAttributeName;
 import org.thymeleaf.engine.TextAttributeName;
 import org.thymeleaf.engine.XMLAttributeName;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.util.TextUtil;
+import org.thymeleaf.util.TextUtils;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -132,7 +132,7 @@ public final class MatchingAttributeName {
                 return false; // we already checked we are not matching nulls
             }
 
-            return TextUtil.equals(this.templateMode.isCaseSensitive(), this.matchingAllAttributesWithPrefix, attributeNamePrefix);
+            return TextUtils.equals(this.templateMode.isCaseSensitive(), this.matchingAllAttributesWithPrefix, attributeNamePrefix);
 
         }
 

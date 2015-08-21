@@ -24,7 +24,7 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.util.EvaluationUtil;
+import org.thymeleaf.util.EvaluationUtils;
 
 /**
  *
@@ -64,7 +64,7 @@ public final class StandardConditionalFixedValueTagProcessor extends AbstractSta
             final IElementStructureHandler structureHandler) {
 
         final String targetAttributeName = attributeName.getAttributeName(); // th:async -> async
-        if (EvaluationUtil.evaluateAsBoolean(expressionResult)) {
+        if (EvaluationUtils.evaluateAsBoolean(expressionResult)) {
             tag.getAttributes().setAttribute(targetAttributeName, targetAttributeName);
         } else {
             tag.getAttributes().removeAttribute(targetAttributeName);

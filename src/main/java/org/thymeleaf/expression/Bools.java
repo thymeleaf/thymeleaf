@@ -24,7 +24,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.thymeleaf.util.EvaluationUtil;
+import org.thymeleaf.util.EvaluationUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -54,7 +54,7 @@ public final class Bools {
 
 
     public Boolean isTrue(final Object target) {
-        return Boolean.valueOf(EvaluationUtil.evaluateAsBoolean(target));
+        return Boolean.valueOf(EvaluationUtils.evaluateAsBoolean(target));
     }
 
 
@@ -89,7 +89,7 @@ public final class Bools {
     
     
     public Boolean isFalse(final Object target) {
-        return Boolean.valueOf(!EvaluationUtil.evaluateAsBoolean(target));
+        return Boolean.valueOf(!EvaluationUtils.evaluateAsBoolean(target));
     }
     
     public Boolean[] arrayIsFalse(final Object[] target) {

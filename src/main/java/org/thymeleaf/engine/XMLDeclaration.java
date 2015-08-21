@@ -25,7 +25,7 @@ import java.io.Writer;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.text.ITextRepository;
-import org.thymeleaf.util.TextUtil;
+import org.thymeleaf.util.TextUtils;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -193,7 +193,7 @@ final class XMLDeclaration
             final String encoding,
             final String standalone) {
 
-        if (keyword == null || !TextUtil.equals(true, DEFAULT_KEYWORD, keyword)) {
+        if (keyword == null || !TextUtils.equals(true, DEFAULT_KEYWORD, keyword)) {
             throw new IllegalArgumentException("XML Declaration keyword must be non-null and equal to '" + DEFAULT_KEYWORD + "'");
         }
 
