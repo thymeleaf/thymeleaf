@@ -116,7 +116,8 @@ public class SpringStandardDialect extends StandardDialect {
      * <p>
      *   Create a the set of SpringStandard processors, all of them freshly instanced.
      * </p>
-     * 
+     *
+     * @param dialectPrefix the prefix established for the Standard Dialect, needed for initialization
      * @return the set of SpringStandard processors.
      */
     public static Set<IProcessor> createSpringStandardProcessorsSet(final String dialectPrefix) {
