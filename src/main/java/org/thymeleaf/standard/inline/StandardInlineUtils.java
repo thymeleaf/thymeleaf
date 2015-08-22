@@ -235,7 +235,7 @@ final class StandardInlineUtils {
         if (escaped) {
             return StandardEscapedOutputUtils.produceEscapedOutput(context.getTemplateMode(), exprResult);
         }
-        return exprResult.toString();
+        return exprResult == null? "" : exprResult.toString();
 
     }
 
