@@ -19,9 +19,13 @@
  */
 package org.thymeleaf.context;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -330,11 +334,12 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
         strBuilder.append('{');
         int n = this.index + 1;
         while (n-- != 0) {
-            final Map<String,Object> levelVars = new HashMap<String, Object>();
+            final Map<String,Object> levelVars = new LinkedHashMap<String, Object>();
             if (this.maps[n] != null) {
-                for (final Map.Entry<String,Object> mapEntry : this.maps[n].entrySet()) {
-                    final String name = mapEntry.getKey();
-                    final Object value = mapEntry.getValue();
+                final List<String> entryNames = new ArrayList<String>(this.maps[n].keySet());
+                Collections.sort(entryNames);
+                for (final String name : entryNames) {
+                    final Object value = this.maps[n].get(name);
                     if (value == NON_EXISTING) {
                         // We only have to add this if it is really removing anything
                         int n2 = n;
@@ -380,14 +385,15 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
     @Override
     public String toString() {
 
-        final Map<String,Object> equivalentMap = new HashMap<String, Object>();
+        final Map<String,Object> equivalentMap = new LinkedHashMap<String, Object>();
         int n = this.index + 1;
         int i = 0;
         while (n-- != 0) {
             if (this.maps[i] != null) {
-                for (final Map.Entry<String,Object> mapEntry : this.maps[i].entrySet()) {
-                    final String name = mapEntry.getKey();
-                    final Object value = mapEntry.getValue();
+                final List<String> entryNames = new ArrayList<String>(this.maps[i].keySet());
+                Collections.sort(entryNames);
+                for (final String name : entryNames) {
+                    final Object value = this.maps[i].get(name);
                     if (value == NON_EXISTING) {
                         equivalentMap.remove(name);
                         continue;
