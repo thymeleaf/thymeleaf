@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.util.regex.Pattern;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
@@ -43,10 +41,9 @@ public final class TextLiteralExpression extends SimpleExpression {
     
     private static final long serialVersionUID = 6511847028638506552L;
 
+    static final char ESCAPE_PREFIX = '\\';
     static final char DELIMITER = '\'';
-    
-    private static final Pattern DELIMITER_ESCAPE_PATTERN = Pattern.compile("\\\\'");
-    
+
     
     private final LiteralValue value;
 
@@ -68,8 +65,7 @@ public final class TextLiteralExpression extends SimpleExpression {
         // We know input is not null
         final int inputLen = input.length();
         if (inputLen > 1 && input.charAt(0) == '\'' && input.charAt(inputLen - 1) == '\'') {
-            final String unwrappedInput = input.substring(1, inputLen - 1);
-            return DELIMITER_ESCAPE_PATTERN.matcher(unwrappedInput).replaceAll("'");
+            return unescapeLiteral(input.substring(1, inputLen - 1));
         }
         return input;
     }
@@ -160,5 +156,96 @@ public final class TextLiteralExpression extends SimpleExpression {
         return odd;
     }
 
-    
+
+
+
+    /*
+     * This unescape operation will perform two transformations:
+     *   \' -> '
+     *   \\ -> \
+     */
+    private static String unescapeLiteral(final String text) {
+
+        if (text == null) {
+            return null;
+        }
+
+        StringBuilder strBuilder = null;
+
+        final int max = text.length();
+
+        int readOffset = 0;
+        int referenceOffset = 0;
+
+        char c;
+
+        for (int i = 0; i < max; i++) {
+
+            c = text.charAt(i);
+
+            /*
+             * Check the need for an unescape operation at this point
+             */
+
+            if (c != ESCAPE_PREFIX || (i + 1) >= max) {
+                continue;
+            }
+
+            if (c == ESCAPE_PREFIX) {
+
+                switch (text.charAt(i + 1)) {
+                    case '\'': c = '\''; referenceOffset = i + 1; break;
+                    case '\\': c = '\\'; referenceOffset = i + 1; break;
+                    // We weren't able to consume any valid escape chars, just not consider it an escape operation
+                    default: referenceOffset = i; break;
+                }
+
+            }
+
+
+            /*
+             * At this point we know for sure we will need some kind of unescape, so we
+             * can increase the offset and initialize the string builder if needed, along with
+             * copying to it all the contents pending up to this point.
+             */
+
+            if (strBuilder == null) {
+                strBuilder = new StringBuilder(max + 5);
+            }
+
+            if (i - readOffset > 0) {
+                strBuilder.append(text, readOffset, i);
+            }
+
+            i = referenceOffset;
+            readOffset = i + 1;
+
+            /*
+             * Write the unescaped char
+             */
+            strBuilder.append(c);
+
+        }
+
+
+        /*
+         * -----------------------------------------------------------------------------------------------
+         * Final cleaning: return the original String object if no unescape was actually needed. Otherwise
+         *                 append the remaining escaped text to the string builder and return.
+         * -----------------------------------------------------------------------------------------------
+         */
+
+        if (strBuilder == null) {
+            return text;
+        }
+
+        if (max - readOffset > 0) {
+            strBuilder.append(text, readOffset, max);
+        }
+
+        return strBuilder.toString();
+
+    }
+
+
 }

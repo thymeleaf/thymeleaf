@@ -189,6 +189,8 @@ final class LiteralSubstitutionUtil {
 
                 if (c == TextLiteralExpression.DELIMITER) {
                     strBuilder.append('\\');
+                } else if (c == TextLiteralExpression.ESCAPE_PREFIX) {
+                    strBuilder.append('\\');
                 }
 
                 strBuilder.append(c);
