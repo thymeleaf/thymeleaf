@@ -57,6 +57,7 @@ public interface IEngineConfiguration {
 
     public Set<DialectConfiguration> getDialectConfigurations();
     public Set<IDialect> getDialects();
+    public boolean isStandardDialectPresent();
     public String getStandardDialectPrefix();
 
     public ITextRepository getTextRepository();

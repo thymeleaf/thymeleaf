@@ -40,6 +40,7 @@ final class TextParser {
 
     private final BufferPool pool;
     private final boolean processComments;
+    private final boolean standardDialectPresent;
     private final String standardDialectPrefix;
 
 
@@ -48,10 +49,13 @@ final class TextParser {
 
 
 
-    TextParser(final int poolSize, final int bufferSize, final boolean processComments, final String standardDialectPrefix) {
+    TextParser(final int poolSize, final int bufferSize,
+               final boolean processComments,
+               final boolean standardDialectPresent, final String standardDialectPrefix) {
         super();
         this.pool = new BufferPool(poolSize, bufferSize);
         this.processComments = processComments;
+        this.standardDialectPresent = standardDialectPresent;
         this.standardDialectPrefix = standardDialectPrefix;
     }
 
@@ -92,7 +96,7 @@ final class TextParser {
         // If comment processing is active (for JAVASCRIPT and CSS template modes), we need to look inside comments and
         // check if they are only wrapping elements or inlined expressions, in which case we will need to unwrap them.
         if (this.processComments) {
-            handlerChain = new CommentProcessorTextHandler(handlerChain);
+            handlerChain = new CommentProcessorTextHandler(handlerChain, this.standardDialectPresent);
         }
 
         parseDocument(reader, this.pool.poolBufferSize, handlerChain);

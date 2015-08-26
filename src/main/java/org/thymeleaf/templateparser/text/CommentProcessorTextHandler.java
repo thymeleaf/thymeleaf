@@ -24,7 +24,7 @@ package org.thymeleaf.templateparser.text;
  * is that every comment that is identified as a 'commented element' should be converted to the adequate
  * 'element' events, and also that every comment that is identified as a 'commented expression' is processed by
  * removing the comment prefix/suffix and then also removing part of the following text event content (until any of
- * ';', ',' ,')', '}', ']' is found (taking care of the possible existance of literals, and of different levels of
+ * ';', ',' ,')', '}', ']' is found (taking care of the possible existence of literals, and of different levels of
  * object property hierarchy), or another non-text event is fired)
  *
  * Some examples (note the comment suffixes are written with a whitespace so that they don't close this comment):
@@ -37,19 +37,23 @@ package org.thymeleaf.templateparser.text;
  *
  * NOTE: No comment event should ever be fired by this handler. "Normal" comments, i.e. those that are not commented
  *       elements nor commented expressions, will be passed to the next handler in the chain as text events.
+ * NOTE: The inlining mechanism is a part of the Standard Dialects, so the conversion performed by this handler
+ *       on inlined output expressions should only be applied if one of the Standard Dialects has been configured.
  *
  * @author Daniel Fernandez
  * @since 3.0.0
  */
 final class CommentProcessorTextHandler extends AbstractChainedTextHandler {
 
+    private final boolean standardDialectPresent;
 
     private boolean filterTexts = false;
     private int[] locator = new int[2];
 
 
-    CommentProcessorTextHandler(final ITextHandler handler) {
+    CommentProcessorTextHandler(final ITextHandler handler, final boolean standardDialectPresent) {
         super(handler);
+        this.standardDialectPresent = standardDialectPresent;
     }
 
 
@@ -118,10 +122,19 @@ final class CommentProcessorTextHandler extends AbstractChainedTextHandler {
          *             content of the comment (the expression itself, such as '[[${someVar}]]' or '[(${someVar})], but
          *             we will be removing the rest of the line (or more correctly the rest of the structure the
          *             comment is in).
+         *
+         *             NOTE This will only be performed if a Standard Dialect is present, given it's the Standard
+         *             Dialects who define the output expression inlining mechanism.
          */
 
-        getNext().handleText(buffer, contentOffset, contentLen, line, col + 2); // +2 in order to count '[[' or [('
-        this.filterTexts = true;
+        if (this.standardDialectPresent) {
+            getNext().handleText(buffer, contentOffset, contentLen, line, col + 2); // +2 in order to count '[[' or [('
+            this.filterTexts = true;
+        } else {
+            // A Standard Dialect is not present, so this entire mechanism is disabled and the comment reported
+            // as mere text. No need to perform any transformation
+            getNext().handleText(buffer, outerOffset, outerLen, line, col);
+        }
 
     }
 

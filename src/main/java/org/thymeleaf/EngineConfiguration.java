@@ -122,6 +122,10 @@ public class EngineConfiguration implements IEngineConfiguration {
         return this.dialectSetConfiguration.getDialects();
     }
 
+    public boolean isStandardDialectPresent() {
+        return this.dialectSetConfiguration.isStandardDialectPresent();
+    }
+
     public String getStandardDialectPrefix() {
         return this.dialectSetConfiguration.getStandardDialectPrefix();
     }

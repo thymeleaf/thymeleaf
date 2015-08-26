@@ -66,6 +66,7 @@ final class DialectSetConfiguration {
     private final Set<DialectConfiguration> dialectConfigurations;
     private final Set<IDialect> dialects;
 
+    private final boolean standardDialectPresent;
     private final String standardDialectPrefix;
 
     private final Map<String,Object> executionAttributes;
@@ -100,6 +101,7 @@ final class DialectSetConfiguration {
         final Set<IDialect> dialects = new LinkedHashSet<IDialect>(dialectConfigurations.size());
 
         // If we find a standard dialect among the configured ones (Standard or SpringStandard), we will report its prefix
+        boolean standardDialectPresent = false;
         String standardDialectPrefix = null;
 
         // This map will be used for merging the execution attributes of all the dialects
@@ -142,6 +144,7 @@ final class DialectSetConfiguration {
                         (dialectConfiguration.isPrefixSpecified()? dialectConfiguration.getPrefix() : ((IProcessorDialect) dialect).getPrefix());
 
                 if (dialect instanceof StandardDialect) {
+                    standardDialectPresent = true;
                     standardDialectPrefix = dialectPrefix;
                 }
 
@@ -391,7 +394,8 @@ final class DialectSetConfiguration {
 
 
         return new DialectSetConfiguration(
-                new LinkedHashSet<DialectConfiguration>(dialectConfigurations), dialects, standardDialectPrefix,
+                new LinkedHashSet<DialectConfiguration>(dialectConfigurations), dialects,
+                standardDialectPresent, standardDialectPrefix,
                 executionAttributes, aggregateExpressionObjectFactory,
                 elementDefinitions, attributeDefinitions,
                 documentProcessorsByTemplateMode,
@@ -421,7 +425,7 @@ final class DialectSetConfiguration {
 
     private DialectSetConfiguration(
             final Set<DialectConfiguration> dialectConfigurations, final Set<IDialect> dialects,
-            final String standardDialectPrefix,
+            final boolean standardDialectPresent, final String standardDialectPrefix,
             final Map<String, Object> executionAttributes,
             final AggregateExpressionObjectFactory expressionObjectFactory,
             final ElementDefinitions elementDefinitions, final AttributeDefinitions attributeDefinitions,
@@ -440,6 +444,7 @@ final class DialectSetConfiguration {
 
         this.dialectConfigurations = Collections.unmodifiableSet(dialectConfigurations);
         this.dialects = Collections.unmodifiableSet(dialects);
+        this.standardDialectPresent = standardDialectPresent;
         this.standardDialectPrefix = standardDialectPrefix;
         this.executionAttributes = Collections.unmodifiableMap(executionAttributes);
         this.expressionObjectFactory = expressionObjectFactory;
@@ -468,6 +473,10 @@ final class DialectSetConfiguration {
 
     public Set<IDialect> getDialects() {
         return this.dialects;
+    }
+
+    public boolean isStandardDialectPresent() {
+        return this.standardDialectPresent;
     }
 
     public String getStandardDialectPrefix() {
