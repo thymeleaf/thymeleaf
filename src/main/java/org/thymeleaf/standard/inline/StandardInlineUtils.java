@@ -30,7 +30,6 @@ import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.util.StandardEscapedOutputUtils;
-import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.AggregateCharSequence;
 import org.thymeleaf.util.EscapedAttributeUtils;
@@ -46,8 +45,6 @@ import org.thymeleaf.util.EscapedAttributeUtils;
  * 
  */
 final class StandardInlineUtils {
-
-    static final String LOCAL_VARIABLE_ORIGINAL_TEMPLATE_MODE = "thymeleafOriginalTemplateMode";
 
     static final String INLINE_SYNTAX_MARKER_ESCAPED = "]]";
     static final String INLINE_SYNTAX_MARKER_UNESCAPED = ")]";
@@ -75,7 +72,6 @@ final class StandardInlineUtils {
 
         final ITextRepository textRepository = context.getConfiguration().getTextRepository();
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
-        final TemplateMode originalTemplateMode = (TemplateMode) context.getVariables().getVariable(LOCAL_VARIABLE_ORIGINAL_TEMPLATE_MODE);
 
         final int[] locator =
                 (text instanceof IText)?
@@ -168,7 +164,7 @@ final class StandardInlineUtils {
                         (textRepository != null? textRepository.getText(text, current + 2, expEnd) : text.subSequence(current + 2, expEnd));
 
                 final CharSequence evaluatedExpression =
-                        evaluateExpression(expressionParser, originalTemplateMode, context, expression, (text.charAt(current + 1) == '['));
+                        evaluateExpression(expressionParser, context, expression, (text.charAt(current + 1) == '['));
 
                 if (evaluatedExpression != null) {
                     textFragments.add(evaluatedExpression);
@@ -201,8 +197,8 @@ final class StandardInlineUtils {
 
 
     private static CharSequence evaluateExpression(
-            final IStandardExpressionParser expressionParser, final TemplateMode originalTemplateMode,
-            final ITemplateProcessingContext context, final CharSequence expression, final boolean escaped) {
+            final IStandardExpressionParser expressionParser, final ITemplateProcessingContext context,
+            final CharSequence expression, final boolean escaped) {
 
         /*
          * In order to evaluate an expression we need to first unescape it, and then parse + execute it. This basically
@@ -217,8 +213,7 @@ final class StandardInlineUtils {
          */
 
         final String expressionStr =
-                EscapedAttributeUtils.unescapeAttribute(
-                        (originalTemplateMode != null? originalTemplateMode : context.getTemplateMode()), expression.toString());
+                EscapedAttributeUtils.unescapeAttribute(context.getTemplateMode(), expression.toString());
 
         final IStandardExpression expr;
         try {
