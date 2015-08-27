@@ -45,6 +45,7 @@ public abstract class AbstractTemplateProcessingContext
             extends AbstractProcessingContext
             implements ITemplateProcessingContext {
 
+    private final ITemplateProcessingContext parent;
     private final TemplateManager templateManager;
     private final TemplateResolution templateResolution;
     private final TemplateMode templateMode;
@@ -53,7 +54,8 @@ public abstract class AbstractTemplateProcessingContext
 
 
 
-    public AbstractTemplateProcessingContext(
+    protected AbstractTemplateProcessingContext(
+            final ITemplateProcessingContext parent,
             final IEngineConfiguration configuration,
             final TemplateManager templateManager,
             final TemplateResolution templateResolution,
@@ -61,9 +63,11 @@ public abstract class AbstractTemplateProcessingContext
 
         super(configuration, context);
 
+        // parent CAN be null, if this is a first-level template
         Validate.notNull(templateManager, "Template Processor cannot be null");
         Validate.notNull(templateResolution, "Template Resolution cannot be null");
 
+        this.parent = parent;
         this.templateManager = templateManager;
         this.templateResolution = templateResolution;
         this.templateMode = this.templateResolution.getTemplateMode();
@@ -75,7 +79,8 @@ public abstract class AbstractTemplateProcessingContext
 
     }
 
-    public AbstractTemplateProcessingContext(
+    protected AbstractTemplateProcessingContext(
+            final ITemplateProcessingContext parent,
             final IEngineConfiguration configuration,
             final TemplateManager templateManager,
             final TemplateResolution templateResolution,
@@ -83,9 +88,11 @@ public abstract class AbstractTemplateProcessingContext
 
         super(configuration, locale, variables);
 
+        // parent CAN be null, if this is a first-level template
         Validate.notNull(templateManager, "Template Processor cannot be null");
         Validate.notNull(templateResolution, "Template Resolution cannot be null");
 
+        this.parent = parent;
         this.templateManager = templateManager;
         this.templateResolution = templateResolution;
         this.templateMode = this.templateResolution.getTemplateMode();
@@ -96,6 +103,10 @@ public abstract class AbstractTemplateProcessingContext
 
     }
 
+
+    public final ITemplateProcessingContext getParent() {
+        return this.parent;
+    }
 
     public final TemplateManager getTemplateManager() {
         return this.templateManager;
