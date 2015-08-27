@@ -59,7 +59,7 @@ public final class ThymeleafEvaluationContext
             extends StandardEvaluationContext
             implements IThymeleafEvaluationContext {
 
-    public static final String THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME = "thymeleafEvaluationContext";
+    public static final String THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME = "thymeleaf::EvaluationContext";
 
 
     private static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
