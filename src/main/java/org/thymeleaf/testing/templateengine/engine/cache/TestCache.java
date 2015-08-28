@@ -55,14 +55,16 @@ public final class TestCache<K,V> implements ICache<K,V> {
         if (key instanceof TemplateCacheKey) {
             final TemplateCacheKey cacheKey = (TemplateCacheKey)key;
             return new TemplateCacheKey(
-                    testName + "_" + cacheKey.getTemplate(), cacheKey.getMarkupSelectors(),
-                    cacheKey.isTextualTemplate(), cacheKey.getForcedTemplateMode());
+                    cacheKey.getOwnerTemplate(), testName + "_" + cacheKey.getTemplate(), cacheKey.getMarkupSelectors(),
+                    cacheKey.getLineOffset(), cacheKey.getColOffset(),
+                    cacheKey.getTemplateMode());
         }
         if (key instanceof FragmentCacheKey) {
             final FragmentCacheKey cacheKey = (FragmentCacheKey)key;
             return new FragmentCacheKey(
-                    testName + "_" + cacheKey.getTemplate(), cacheKey.getMarkupSelectors(), cacheKey.getFragment(),
-                    cacheKey.isTextualTemplate(), cacheKey.getForcedTemplateMode());
+                    cacheKey.getOwnerTemplate(), testName + "_" + cacheKey.getFragment(), cacheKey.getMarkupSelectors(),
+                    cacheKey.getLineOffset(), cacheKey.getColOffset(),
+                    cacheKey.getTemplateMode());
         }
         return key;
     }
