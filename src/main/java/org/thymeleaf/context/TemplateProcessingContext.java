@@ -41,7 +41,7 @@ public final class TemplateProcessingContext extends AbstractTemplateProcessingC
             final TemplateManager templateManager,
             final TemplateResolution templateResolution,
             final Locale locale, final Map<String, Object> variables) {
-        super(null, configuration, templateManager, templateResolution, locale, variables);
+        super(configuration, templateManager, templateResolution, locale, variables);
     }
 
     public TemplateProcessingContext(
@@ -49,13 +49,8 @@ public final class TemplateProcessingContext extends AbstractTemplateProcessingC
             final TemplateManager templateManager,
             final TemplateResolution templateResolution,
             final IContext context) {
-        super(null, configuration, templateManager, templateResolution, context);
+        super(configuration, templateManager, templateResolution, context);
     }
 
-    public TemplateProcessingContext(
-            final ITemplateProcessingContext parent,
-            final TemplateResolution templateResolution) {
-        super(parent, parent.getConfiguration(), parent.getTemplateManager(), templateResolution, parent.getVariables());
-    }
 
 }

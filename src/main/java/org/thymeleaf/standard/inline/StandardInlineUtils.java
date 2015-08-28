@@ -24,6 +24,9 @@ import java.util.List;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.ICDATASection;
+import org.thymeleaf.model.IComment;
+import org.thymeleaf.model.INode;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
@@ -45,6 +48,7 @@ import org.thymeleaf.util.EscapedAttributeUtils;
  * 
  */
 final class StandardInlineUtils {
+
 
     static final String INLINE_SYNTAX_MARKER_ESCAPED = "]]";
     static final String INLINE_SYNTAX_MARKER_UNESCAPED = ")]";
@@ -73,10 +77,8 @@ final class StandardInlineUtils {
         final ITextRepository textRepository = context.getConfiguration().getTextRepository();
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
 
-        final int[] locator =
-                (text instanceof IText)?
-                    new int[] { ((IText)text).getLine(), ((IText)text).getCol() } :
-                    new int[] { Integer.MIN_VALUE, Integer.MIN_VALUE }; // Negative (line,col) will mean 'no locator'
+        final String templateName = computeTemplateName(text);
+        final int[] locator = new int[] { computeLine(text), computeCol(text) };
 
         List<CharSequence> textFragments = null;
 
@@ -164,7 +166,9 @@ final class StandardInlineUtils {
                         (textRepository != null? textRepository.getText(text, current + 2, expEnd) : text.subSequence(current + 2, expEnd));
 
                 final CharSequence evaluatedExpression =
-                        evaluateExpression(expressionParser, context, expression, (text.charAt(current + 1) == '['));
+                        evaluateExpression(
+                                expressionParser, context, expression, (text.charAt(current + 1) == '['),
+                                templateName, currentLine, currentCol + 2);
 
                 if (evaluatedExpression != null) {
                     textFragments.add(evaluatedExpression);
@@ -198,7 +202,8 @@ final class StandardInlineUtils {
 
     private static CharSequence evaluateExpression(
             final IStandardExpressionParser expressionParser, final ITemplateProcessingContext context,
-            final CharSequence expression, final boolean escaped) {
+            final CharSequence expression, final boolean escaped,
+            final String templateName, final int line, final int col) {
 
         /*
          * In order to evaluate an expression we need to first unescape it, and then parse + execute it. This basically
@@ -212,25 +217,39 @@ final class StandardInlineUtils {
          * escaped output being used will depend on the template mode.
          */
 
-        final String expressionStr =
-                EscapedAttributeUtils.unescapeAttribute(context.getTemplateMode(), expression.toString());
-
-        final IStandardExpression expr;
         try {
-            expr = expressionParser.parseExpression(context, expressionStr);
+
+            final String expressionStr =
+                    EscapedAttributeUtils.unescapeAttribute(context.getTemplateMode(), expression.toString());
+
+            final IStandardExpression expr;
+            try {
+                expr = expressionParser.parseExpression(context, expressionStr);
+            } catch (final TemplateProcessingException e) {
+                // We were not able to parse as expression, so we should just ignore this inlining
+                return null;
+            }
+
+            final Object exprResult =
+                    (escaped? expr.execute(context) : expr.execute(context, StandardExpressionExecutionContext.RESTRICTED));
+
+
+            if (escaped) {
+                return StandardEscapedOutputUtils.produceEscapedOutput(context.getTemplateMode(), exprResult);
+            }
+            return exprResult == null? "" : exprResult.toString();
+
         } catch (final TemplateProcessingException e) {
-            // We were not able to parse as expression, so we should just ignore this inlining
-            return null;
+            // This is a nice moment to check whether the execution raised an error and, if so, add location information
+            // NOTE we set the template/line/col always, as deeper levels might not know the truth about this being
+            //      an inlined fragment inside a higher-level template.
+            e.setTemplateName(templateName);
+            e.setLineAndCol(line, col);
+            throw e;
+        } catch (final Exception e) {
+            throw new TemplateProcessingException(
+                    "Error during execution of inlined output expression", templateName, line, col, e);
         }
-
-        final Object exprResult =
-                (escaped? expr.execute(context) : expr.execute(context, StandardExpressionExecutionContext.RESTRICTED));
-
-
-        if (escaped) {
-            return StandardEscapedOutputUtils.produceEscapedOutput(context.getTemplateMode(), exprResult);
-        }
-        return exprResult == null? "" : exprResult.toString();
 
     }
 
@@ -333,6 +352,41 @@ final class StandardInlineUtils {
 
 
 
+
+    static String computeTemplateName(final CharSequence text) {
+        if (text instanceof INode) {
+            return ((INode)text).getTemplateName();
+        }
+        return text.toString();
+    }
+
+
+    static int computeLine(final CharSequence text) {
+        if (text instanceof IText) {
+            return ((IText)text).getLine();
+        }
+        if (text instanceof IComment) {
+            return ((IComment)text).getLine();
+        }
+        if (text instanceof ICDATASection) {
+            return ((ICDATASection)text).getLine();
+        }
+        return Integer.MIN_VALUE; // Negative (line,col) will mean 'no locator'
+    }
+
+
+    static int computeCol(final CharSequence text) {
+        if (text instanceof IText) {
+            return ((IText)text).getCol();
+        }
+        if (text instanceof IComment) {
+            return ((IComment)text).getCol();
+        }
+        if (text instanceof ICDATASection) {
+            return ((ICDATASection)text).getCol();
+        }
+        return Integer.MIN_VALUE; // Negative (line,col) will mean 'no locator'
+    }
 
 
     private StandardInlineUtils() {

@@ -1117,7 +1117,7 @@ public class TemplateEngine implements ITemplateEngine {
 
             final long startNanos = System.nanoTime();
             
-            this.templateManager.processTemplate(this.configuration, template, markupSelectors, false, templateMode, context, writer, true);
+            this.templateManager.processStandaloneTemplate(this.configuration, template, markupSelectors, templateMode, context, writer, true);
 
             final long endNanos = System.nanoTime();
             

@@ -113,10 +113,15 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         final String[] markupFragments =
                 (processedFragmentSelection.hasFragmentSelector()? new String[] { processedFragmentSelection.getFragmentSelector() } : null);
         ImmutableMarkup parsedFragment =
-                    processingContext.getTemplateManager().parseFragment(
+                    processingContext.getTemplateManager().parseStandaloneFragment(
                             processingContext.getConfiguration(),
                             templateName, markupFragments,
-                            false, null, processingContext.getVariables(), true);
+                            // we actually 'force' the template mode of the inserted fragment to be the same. This
+                            // gives us a little bit more flexibility including e.g. text templates inside HTML ones,
+                            // with the possibility of later applying inlining (text inlining in this case) to process
+                            // them.
+                            processingContext.getTemplateMode(),
+                            processingContext.getVariables(), true);
 
 
         /*

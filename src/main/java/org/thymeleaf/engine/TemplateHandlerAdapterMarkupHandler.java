@@ -24,6 +24,7 @@ import org.attoparser.ParseException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateparser.ParsableArtifactType;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.Validate;
 
@@ -38,12 +39,14 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
     private static final String ATTRIBUTE_EQUALS_OPERATOR = "=";
 
     private final String templateName;
-    private final boolean topLevelTemplate;
+    private final ParsableArtifactType artifactType;
     private final ITemplateHandler templateHandler;
     private final ITextRepository textRepository;
     private final ElementDefinitions elementDefinitions;
     private final AttributeDefinitions attributeDefinitions;
     private final TemplateMode templateMode;
+    private final int lineOffset;
+    private final int colOffset;
 
     private final DocumentStart documentStart;
     private final DocumentEnd documentEnd;
@@ -66,14 +69,16 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
     
     public TemplateHandlerAdapterMarkupHandler(final String templateName,
-                                               final boolean topLevelTemplate,
+                                               final ParsableArtifactType artifactType,
                                                final ITemplateHandler templateHandler,
                                                final ITextRepository textRepository,
                                                final ElementDefinitions elementDefinitions,
                                                final AttributeDefinitions attributeDefinitions,
-                                               final TemplateMode templateMode) {
+                                               final TemplateMode templateMode,
+                                               final int lineOffset, final int colOffset) {
         super();
 
+        Validate.notNull(artifactType, "Artifact Type cannot be null");
         Validate.notNull(templateHandler, "Template handler cannot be null");
         Validate.notNull(textRepository, "Text Repository cannot be null");
         Validate.notNull(elementDefinitions, "Element Definitions repository cannot be null");
@@ -81,7 +86,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         Validate.notNull(templateMode, "Template mode cannot be null");
 
         this.templateName = templateName;
-        this.topLevelTemplate = topLevelTemplate;
+        this.artifactType = artifactType;
 
         this.templateHandler = templateHandler;
 
@@ -92,6 +97,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.elementDefinitions = elementDefinitions;
         this.attributeDefinitions = attributeDefinitions;
         this.templateMode = templateMode;
+        this.lineOffset = (lineOffset > 0 ? lineOffset - 1 : lineOffset); // line n for offset will be line 1 for the newly parsed template
+        this.colOffset = (colOffset > 0 ? colOffset - 1 : colOffset); // line n for offset will be line 1 for the newly parsed template
 
         // We will be using these as objectual buffers in order to avoid creating too many objects
         this.documentStart = new DocumentStart();
@@ -132,8 +139,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         // as a template name) are indeed top level templates. These are simply templates that have been applied a
         // markup selector, but they are not fragments meant to be included in other higher-level templates being
         // processed.
-        if (this.topLevelTemplate) {
-            this.documentStart.reset(startTimeNanos, this.templateName, line, col);
+        if (this.artifactType == ParsableArtifactType.TEMPLATE) {
+            this.documentStart.reset(startTimeNanos, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
             this.templateHandler.handleDocumentStart(this.documentStart);
         }
 
@@ -154,8 +161,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         // as a template name) are indeed top level templates. These are simply templates that have been applied a
         // markup selector, but they are not fragments meant to be included in other higher-level templates being
         // processed.
-        if (this.topLevelTemplate) {
-            this.documentEnd.reset(endTimeNanos, totalTimeNanos, this.templateName, line, col);
+        if (this.artifactType == ParsableArtifactType.TEMPLATE) {
+            this.documentEnd.reset(endTimeNanos, totalTimeNanos, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
             this.templateHandler.handleDocumentEnd(this.documentEnd);
         }
 
@@ -187,7 +194,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         final String standalone =
                 (standaloneLen == 0? null : this.textRepository.getText(buffer, standaloneOffset, standaloneLen));
 
-        this.xmlDeclaration.reset(fullXmlDeclaration, keyword, version, encoding, standalone, this.templateName, line, col);
+        this.xmlDeclaration.reset(fullXmlDeclaration, keyword, version, encoding, standalone, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
 
         this.templateHandler.handleXMLDeclaration(this.xmlDeclaration);
 
@@ -226,7 +233,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         final String internalSubset =
                 (internalSubsetLen == 0? null : this.textRepository.getText(buffer, internalSubsetOffset, internalSubsetLen));
 
-        this.docType.reset(fullDocType, keyword, rootElementName, type, publicId, systemId, internalSubset, this.templateName, outerLine, outerCol);
+        this.docType.reset(fullDocType, keyword, rootElementName, type, publicId, systemId, internalSubset, this.templateName, this.lineOffset + outerLine, (outerLine == 1? this.colOffset : 0) + outerCol);
 
         this.templateHandler.handleDocType(this.docType);
 
@@ -241,7 +248,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int outerOffset, final int outerLen,
             final int line, final int col)
             throws ParseException {
-        this.cdataSection.reset(buffer, outerOffset, outerLen, this.templateName, line, col);
+        this.cdataSection.reset(buffer, outerOffset, outerLen, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         this.templateHandler.handleCDATASection(this.cdataSection);
     }
 
@@ -254,7 +261,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int outerOffset, final int outerLen,
             final int line, final int col)
             throws ParseException {
-        this.comment.reset(buffer, outerOffset, outerLen, this.templateName, line, col);
+        this.comment.reset(buffer, outerOffset, outerLen, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         this.templateHandler.handleComment(this.comment);
     }
 
@@ -266,7 +273,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int offset, final int len,
             final int line, final int col)
             throws ParseException {
-        this.text.reset(buffer, offset, len, this.templateName, line, col);
+        this.text.reset(buffer, offset, len, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         // Precompute some flag in texts - this should help performance, especially when using a template cache.
         // Example flags are: 'whitespace' (marking when a text only contains whitespace) or the internal 'inlineable'
         // (marking when a text might contain inlined expressions according to the Standard Dialects).
@@ -288,7 +295,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         this.standaloneElementTag.reset(
-                this.textRepository.getText(buffer, nameOffset, nameLen), minimized, this.templateName, line, col);
+                this.textRepository.getText(buffer, nameOffset, nameLen), minimized, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         this.currentElementAttributes = (ElementAttributes) this.standaloneElementTag.getAttributes();
 
     }
@@ -318,7 +325,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         this.openElementTag.reset(
-                this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, line, col);
+                this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         this.currentElementAttributes = (ElementAttributes) this.openElementTag.getAttributes();
 
     }
@@ -348,7 +355,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         this.autoOpenElementTag.reset(
-                this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, line, col);
+                this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         this.currentElementAttributes = (ElementAttributes) this.autoOpenElementTag.getAttributes();
 
     }
@@ -377,7 +384,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        this.closeElementTag.reset(this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, line, col);
+        this.closeElementTag.reset(this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         this.currentElementAttributes = null;
 
     }
@@ -404,7 +411,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        this.autoCloseElementTag.reset(this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, line, col);
+        this.autoCloseElementTag.reset(this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         this.currentElementAttributes = null;
 
     }
@@ -431,7 +438,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        this.unmatchedCloseElementTag.setUnmatchedCloseElementTag(this.textRepository.getText(buffer, nameOffset,nameLen), this.templateName, line, col);
+        this.unmatchedCloseElementTag.setUnmatchedCloseElementTag(this.textRepository.getText(buffer, nameOffset,nameLen), this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         this.currentElementAttributes = null;
 
     }
@@ -466,7 +473,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         if (this.currentElementAttributes == null) {
             throw new TemplateProcessingException(
-                    "Cannot process: attribute is not related to an open/standalone tag", this.templateName, nameLine, nameCol);
+                    "Cannot process: attribute is not related to an open/standalone tag", this.templateName, this.lineOffset + nameLine, (nameLine == 1? this.colOffset : 0) + nameCol);
         }
 
         final String attributeName = this.textRepository.getText(buffer, nameOffset, nameLen);
@@ -499,7 +506,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         // Set the attribute, not allowing auto-whitespace given the parser should be creating the corresponding events
         // for adequately specifying whitespace
         this.currentElementAttributes.setAttribute(
-                attributeName, attributeOperator, value, valueQuotes, nameLine, nameCol, false);
+                attributeName, attributeOperator, value, valueQuotes, this.lineOffset + nameLine, (nameLine == 1? this.colOffset : 0) + nameCol, false);
 
     }
 
@@ -514,10 +521,10 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         if (this.currentElementAttributes == null) {
             throw new TemplateProcessingException(
-                    "Cannot process: inner whitespace is not related to an open/standalone tag", this.templateName, line, col);
+                    "Cannot process: inner whitespace is not related to an open/standalone tag", this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         }
 
-        final String elementWhiteSpace = this.textRepository.getText(buffer, offset,len);
+        final String elementWhiteSpace = this.textRepository.getText(buffer, offset, len);
 
         // We can safely cast here, because we know the specific implementation classes we are using
         // Also note line and col are discarded for white spaces
@@ -543,7 +550,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         final String content =
                 (contentLen == 0? null : this.textRepository.getText(buffer, contentOffset, contentLen));
 
-        this.processingInstruction.reset(fullProcessingInstruction, target, content, this.templateName, line, col);
+        this.processingInstruction.reset(fullProcessingInstruction, target, content, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         this.templateHandler.handleProcessingInstruction(this.processingInstruction);
 
     }

@@ -89,8 +89,13 @@ public final class StandardConditionalCommentProcessor extends AbstractCommentPr
                 configuration.getTextRepository().getText(
                         commentStr, parsingResult.getContentOffset(), parsingResult.getContentOffset() + parsingResult.getContentLen());
 
-        templateManager.processTemplate(
-                configuration, parsableContent, null, true, processingContext.getTemplateMode(), context, writer, true);
+        templateManager.processNestedTemplate(
+                processingContext.getConfiguration(),
+                comment.getTemplateName(), parsableContent,
+                comment.getLine(), comment.getCol(),
+                processingContext.getTemplateMode(),
+                processingContext.getVariables(),
+                writer, true);
 
         /*
          * Rebuild the conditional comment end expression

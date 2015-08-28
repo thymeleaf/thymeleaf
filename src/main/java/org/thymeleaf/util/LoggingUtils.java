@@ -25,27 +25,33 @@ package org.thymeleaf.util;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.0.18
+ * @since 3.0.0
  *
  */
-public final class TemplateModeUtils {
-    
-    
+public final class LoggingUtils {
 
-    public static boolean isXml(final String templateMode) {
-        Validate.notNull(templateMode, "Template mode cannot be null");
-        return templateMode.toUpperCase().contains("XML");
+
+
+    public static String loggifyTemplateName(final String template) {
+        if (template == null) {
+            return null;
+        }
+        if (template.length() <= 80) {
+            return template.replace('\n', ' ');
+        }
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append(template.substring(0, 40).replace('\n', ' '));
+        strBuilder.append("[...]");
+        strBuilder.append(template.substring(template.length() - 25).replace('\n', ' '));
+        return strBuilder.toString();
     }
-    
 
-    
-    public static boolean isHtml(final String templateMode) {
-        return !isXml(templateMode);
-    }
 
-    
-    
-    private TemplateModeUtils() {
+
+
+
+
+    private LoggingUtils() {
         super();
     }
     

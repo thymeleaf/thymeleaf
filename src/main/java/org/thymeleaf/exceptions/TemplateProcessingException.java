@@ -20,6 +20,7 @@
 package org.thymeleaf.exceptions;
 
 
+import org.thymeleaf.util.LoggingUtils;
 
 /**
  * <p>
@@ -139,9 +140,11 @@ public class TemplateProcessingException extends TemplateEngineException {
         if (this.templateName != null) {
             sb.append(' ');
             sb.append('(');
-            sb.append(this.templateName);
+            sb.append("template: \"");
+            sb.append(LoggingUtils.loggifyTemplateName(this.templateName));
+            sb.append('"');
             if (this.line != null || this.col != null) {
-                sb.append(": ");
+                sb.append(" - ");
                 if (this.line != null) {
                     sb.append("line ");
                     sb.append(this.line);
@@ -157,6 +160,5 @@ public class TemplateProcessingException extends TemplateEngineException {
         return sb.toString();
         
     }
-    
-    
+
 }

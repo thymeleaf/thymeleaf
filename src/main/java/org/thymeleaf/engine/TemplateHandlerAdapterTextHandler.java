@@ -22,6 +22,7 @@ package org.thymeleaf.engine;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateparser.ParsableArtifactType;
 import org.thymeleaf.templateparser.text.AbstractTextHandler;
 import org.thymeleaf.templateparser.text.TextParseException;
 import org.thymeleaf.text.ITextRepository;
@@ -38,12 +39,14 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
     private static final String ATTRIBUTE_EQUALS_OPERATOR = "=";
 
     private final String templateName;
-    private final boolean topLevelTemplate;
+    private final ParsableArtifactType artifactType;
     private final ITemplateHandler templateHandler;
     private final ITextRepository textRepository;
     private final ElementDefinitions elementDefinitions;
     private final AttributeDefinitions attributeDefinitions;
     private final TemplateMode templateMode;
+    private final int lineOffset;
+    private final int colOffset;
 
     private final DocumentStart documentStart;
     private final DocumentEnd documentEnd;
@@ -58,14 +61,16 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
 
 
     public TemplateHandlerAdapterTextHandler(final String templateName,
-                                             final boolean topLevelTemplate,
+                                             final ParsableArtifactType artifactType,
                                              final ITemplateHandler templateHandler,
                                              final ITextRepository textRepository,
                                              final ElementDefinitions elementDefinitions,
                                              final AttributeDefinitions attributeDefinitions,
-                                             final TemplateMode templateMode) {
+                                             final TemplateMode templateMode,
+                                             final int lineOffset, final int colOffset) {
         super();
 
+        Validate.notNull(artifactType, "Artifact Type cannot be null");
         Validate.notNull(templateHandler, "Template handler cannot be null");
         Validate.notNull(textRepository, "Text Repository cannot be null");
         Validate.notNull(elementDefinitions, "Element Definitions repository cannot be null");
@@ -73,7 +78,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
         Validate.notNull(templateMode, "Template mode cannot be null");
 
         this.templateName = templateName;
-        this.topLevelTemplate = topLevelTemplate;
+        this.artifactType = artifactType;
 
         this.templateHandler = templateHandler;
 
@@ -84,6 +89,8 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
         this.elementDefinitions = elementDefinitions;
         this.attributeDefinitions = attributeDefinitions;
         this.templateMode = templateMode;
+        this.lineOffset = (lineOffset > 0 ? lineOffset - 1 : lineOffset); // line n for offset will be line 1 for the newly parsed template
+        this.colOffset = (colOffset > 0 ? colOffset - 1 : colOffset); // line n for offset will be line 1 for the newly parsed template
 
         // We will be using these as objectual buffers in order to avoid creating too many objects
         this.documentStart = new DocumentStart();
@@ -116,8 +123,8 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
         // as a template name) are indeed top level templates. These are simply templates that have been applied a
         // markup selector, but they are not fragments meant to be included in other higher-level templates being
         // processed.
-        if (this.topLevelTemplate) {
-            this.documentStart.reset(startTimeNanos, this.templateName, line, col);
+        if (this.artifactType == ParsableArtifactType.TEMPLATE) {
+            this.documentStart.reset(startTimeNanos, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
             this.templateHandler.handleDocumentStart(this.documentStart);
         }
 
@@ -138,8 +145,8 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
         // as a template name) are indeed top level templates. These are simply templates that have been applied a
         // markup selector, but they are not fragments meant to be included in other higher-level templates being
         // processed.
-        if (this.topLevelTemplate) {
-            this.documentEnd.reset(endTimeNanos, totalTimeNanos, this.templateName, line, col);
+        if (this.artifactType == ParsableArtifactType.TEMPLATE) {
+            this.documentEnd.reset(endTimeNanos, totalTimeNanos, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
             this.templateHandler.handleDocumentEnd(this.documentEnd);
         }
 
@@ -153,7 +160,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             final int offset, final int len,
             final int line, final int col)
             throws TextParseException {
-        this.text.reset(buffer, offset, len, this.templateName, line, col);
+        this.text.reset(buffer, offset, len, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         // Precompute some flag in texts - this should help performance, especially when using a template cache.
         // Example flags are: 'whitespace' (marking when a text only contains whitespace) or the internal 'inlineable'
         // (marking when a text might contain inlined expressions according to the Standard Dialects).
@@ -175,7 +182,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             throws TextParseException {
 
         this.standaloneElementTag.reset(
-                this.textRepository.getText(buffer, nameOffset, nameLen), minimized, this.templateName, line, col);
+                this.textRepository.getText(buffer, nameOffset, nameLen), minimized, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         this.currentElementAttributes = (ElementAttributes) this.standaloneElementTag.getAttributes();
 
     }
@@ -205,7 +212,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             throws TextParseException {
 
         this.openElementTag.reset(
-                this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, line, col);
+                this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         this.currentElementAttributes = (ElementAttributes) this.openElementTag.getAttributes();
 
     }
@@ -234,7 +241,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             final int line, final int col)
             throws TextParseException {
 
-        this.closeElementTag.reset(this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, line, col);
+        this.closeElementTag.reset(this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         this.currentElementAttributes = null;
 
     }
@@ -268,7 +275,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
 
         if (this.currentElementAttributes == null) {
             throw new TemplateProcessingException(
-                    "Cannot process: attribute is not related to an open/standalone tag", this.templateName, nameLine, nameCol);
+                    "Cannot process: attribute is not related to an open/standalone tag", this.templateName, this.lineOffset + nameLine, (nameLine == 1? this.colOffset : 0) + nameCol);
         }
 
         final String attributeName = this.textRepository.getText(buffer, nameOffset, nameLen);
@@ -300,7 +307,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
 
         // Note we are using 'autowhitespace', given text-mode parsing does not include whitespace parsing
         this.currentElementAttributes.setAttribute(
-                attributeName, attributeOperator, value, valueQuotes, nameLine, nameCol, true);
+                attributeName, attributeOperator, value, valueQuotes, this.lineOffset + nameLine, (nameLine == 1? this.colOffset : 0) + nameCol, true);
 
     }
 

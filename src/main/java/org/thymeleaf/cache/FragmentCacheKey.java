@@ -22,7 +22,7 @@ package org.thymeleaf.cache;
 import java.util.Arrays;
 
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.util.StringUtils;
+import org.thymeleaf.util.LoggingUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -37,53 +37,66 @@ import org.thymeleaf.util.Validate;
  */
 public final class FragmentCacheKey {
 
-    private final boolean textualTemplate;
-    private final String template;
-    private final String[] markupSelectors;
-    private final TemplateMode forcedTemplateMode;
+    private final String ownerTemplate;
     private final String fragment;
+    private final String[] markupSelectors;
+    private final int lineOffset;
+    private final int colOffset;
+    private final TemplateMode templateMode;
 
 
 
 
     public FragmentCacheKey(
-            final String template, final String[] markupSelectors, final String fragment, final boolean textualTemplate, final TemplateMode forcedTemplateMode) {
+            final String ownerTemplate, final String fragment, final String[] markupSelectors,
+            final int lineOffset, final int colOffset, final TemplateMode templateMode) {
+
         super();
-        Validate.notNull(template, "Template cannot be null");
-        // markupSelectors can be null if we are selecting an entire template as fragment, or if this is a textual fragment
-        // fragment can be null if we are using markup selectors, or if we are selecting an entire template as fragment
-        this.textualTemplate = textualTemplate;
-        this.template = template;
-        this.forcedTemplateMode = forcedTemplateMode;
-        if (markupSelectors != null) {
+
+        // ownerTemplate will be null if this fragment is actually a standalone template (that will be included as a template somewhere else)
+        Validate.notNull(fragment, "Fragment cannot be null");
+        // markupSelectors can be null if we are selecting the entire fragment
+        // templateMode can be null if this fragment is standalone (no owner template) AND we are forcing a specific template mode for its processing
+
+        this.ownerTemplate = ownerTemplate;
+        this.fragment = fragment;
+        if (markupSelectors != null && markupSelectors.length > 0) {
             this.markupSelectors = markupSelectors.clone();
             Arrays.sort(this.markupSelectors); // we need to sort this so that Arrays.sort() works in equals()
         } else {
             this.markupSelectors = null;
         }
-        this.fragment = fragment;
+        this.lineOffset = lineOffset;
+        this.colOffset = colOffset;
+        this.templateMode = templateMode;
+
     }
 
 
-    public boolean isTextualTemplate() {
-        return this.textualTemplate;
-    }
-
-    public String getTemplate() {
-        return this.template;
+    public String getOwnerTemplate() {
+        return this.ownerTemplate;
     }
 
     public String[] getMarkupSelectors() {
         return this.markupSelectors;
     }
 
-    public TemplateMode getForcedTemplateMode() {
-        return this.forcedTemplateMode;
-    }
-
     public String getFragment() {
         return this.fragment;
     }
+
+    public int getLineOffset() {
+        return this.lineOffset;
+    }
+
+    public int getColOffset() {
+        return this.colOffset;
+    }
+
+    public TemplateMode getTemplateMode() {
+        return this.templateMode;
+    }
+
 
 
 
@@ -93,36 +106,41 @@ public final class FragmentCacheKey {
         if (this == o) {
             return true;
         }
+
         if (!(o instanceof FragmentCacheKey)) {
             return false;
         }
 
         final FragmentCacheKey that = (FragmentCacheKey) o;
 
-        if (this.textualTemplate != that.textualTemplate) {
+        if (this.lineOffset != that.lineOffset) {
             return false;
         }
-        if (!this.template.equals(that.template)) {
+        if (this.colOffset != that.colOffset) {
             return false;
         }
-        if (!Arrays.equals(this.markupSelectors, that.markupSelectors)) {
+        if (this.ownerTemplate != null ? !this.ownerTemplate.equals(that.ownerTemplate) : that.ownerTemplate != null) {
             return false;
         }
-        if (this.forcedTemplateMode != that.forcedTemplateMode) {
+        if (!this.fragment.equals(that.fragment)) {
             return false;
         }
-        return !(this.fragment != null ? !this.fragment.equals(that.fragment) : that.fragment != null);
+        if (!Arrays.equals(this.markupSelectors, that.markupSelectors)) { // Works because we ordered the arrays
+            return false;
+        }
+        return this.templateMode == that.templateMode;
 
     }
 
 
     @Override
     public int hashCode() {
-        int result = (this.textualTemplate ? 1 : 0);
-        result = 31 * result + this.template.hashCode();
+        int result = this.ownerTemplate != null ? this.ownerTemplate.hashCode() : 0;
+        result = 31 * result + this.fragment.hashCode();
         result = 31 * result + (this.markupSelectors != null ? Arrays.hashCode(this.markupSelectors) : 0);
-        result = 31 * result + (this.forcedTemplateMode != null ? this.forcedTemplateMode.hashCode() : 0);
-        result = 31 * result + (this.fragment != null ? this.fragment.hashCode() : 0);
+        result = 31 * result + this.lineOffset;
+        result = 31 * result + this.colOffset;
+        result = 31 * result + (this.templateMode != null ? this.templateMode.hashCode() : 0);
         return result;
     }
 
@@ -132,22 +150,24 @@ public final class FragmentCacheKey {
     @Override
     public String toString() {
         final StringBuilder strBuilder = new StringBuilder();
-        if (this.textualTemplate) {
-            strBuilder.append("(textual)");
+        strBuilder.append(LoggingUtils.loggifyTemplateName(this.fragment));
+        if (this.ownerTemplate != null) {
+            strBuilder.append('@');
+            strBuilder.append('(');
+            strBuilder.append(LoggingUtils.loggifyTemplateName(this.ownerTemplate));
+            strBuilder.append(';');
+            strBuilder.append(this.lineOffset);
+            strBuilder.append(',');
+            strBuilder.append(this.colOffset);
+            strBuilder.append(')');
         }
-        strBuilder.append(StringUtils.abbreviate(this.template, 40).replace('\n', '\\'));
         if (this.markupSelectors != null && this.markupSelectors.length > 0) {
             strBuilder.append("::");
             strBuilder.append(Arrays.toString(this.markupSelectors));
         }
-        if (this.forcedTemplateMode != null) {
+        if (this.templateMode != null) {
             strBuilder.append("@(");
-            strBuilder.append(this.forcedTemplateMode);
-            strBuilder.append(")");
-        }
-        if (this.fragment != null) {
-            strBuilder.append("#(");
-            strBuilder.append(StringUtils.abbreviate(this.fragment,40).replace('\n', '\\'));
+            strBuilder.append(this.templateMode);
             strBuilder.append(")");
         }
         return strBuilder.toString();

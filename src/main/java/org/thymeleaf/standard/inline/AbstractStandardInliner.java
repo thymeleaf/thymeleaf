@@ -79,9 +79,11 @@ public abstract class AbstractStandardInliner implements IInliner {
             final StringWriter stringWriter = new StringWriter();
 
             final TemplateManager templateManager = context.getTemplateManager();
-            templateManager.processTemplate(
-                    context.getConfiguration(), text.toString(), null, true, this.templateMode,
-                    context.getVariables(), stringWriter, true);
+            templateManager.processNestedTemplate(
+                    context.getConfiguration(),
+                    StandardInlineUtils.computeTemplateName(text), text.toString(),
+                    StandardInlineUtils.computeLine(text), StandardInlineUtils.computeCol(text),
+                    this.templateMode, context.getVariables(), stringWriter, true);
 
             return stringWriter.toString();
 

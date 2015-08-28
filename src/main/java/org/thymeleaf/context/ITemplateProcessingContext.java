@@ -33,8 +33,6 @@ import org.thymeleaf.templateresolver.TemplateResolution;
  */
 public interface ITemplateProcessingContext extends IProcessingContext {
 
-    public ITemplateProcessingContext getParent();
-
     public TemplateManager getTemplateManager();
 
     public TemplateMode getTemplateMode();

@@ -22,7 +22,7 @@ package org.thymeleaf.cache;
 import java.util.Arrays;
 
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.util.StringUtils;
+import org.thymeleaf.util.LoggingUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -37,45 +37,64 @@ import org.thymeleaf.util.Validate;
  */
 public final class TemplateCacheKey {
 
-    private final boolean textualTemplate;
+    private final String ownerTemplate;
     private final String template;
     private final String[] markupSelectors;
-    private final TemplateMode forcedTemplateMode;
+    private final int lineOffset;
+    private final int colOffset;
+    private final TemplateMode templateMode;
 
 
 
 
     public TemplateCacheKey(
-            final String template, final String[] markupSelectors, final boolean textualTemplate, final TemplateMode forcedTemplateMode) {
+            final String ownerTemplate, final String template, final String[] markupSelectors,
+            final int lineOffset, final int colOffset, final TemplateMode templateMode) {
+
         super();
+
+        // ownerTemplate will be null if this template is standalone (not something we are processing from inside another one like e.g. an inlining)
         Validate.notNull(template, "Template cannot be null");
-        this.textualTemplate = textualTemplate;
+        // markupSelectors can be null if we are selecting the entire template
+        // templateMode can be null if this template is standalone (no owner template) AND we are forcing a specific template mode for its processing
+
+        this.ownerTemplate = ownerTemplate;
         this.template = template;
-        this.forcedTemplateMode = forcedTemplateMode;
-        if (markupSelectors != null) {
+        if (markupSelectors != null && markupSelectors.length > 0) {
             this.markupSelectors = markupSelectors.clone();
             Arrays.sort(this.markupSelectors); // we need to sort this so that Arrays.sort() works in equals()
         } else {
             this.markupSelectors = null;
         }
+        this.lineOffset = lineOffset;
+        this.colOffset = colOffset;
+        this.templateMode = templateMode;
+
     }
 
 
-
-    public boolean isTextualTemplate() {
-        return this.textualTemplate;
-    }
-
-    public String getTemplate() {
-        return this.template;
+    public String getOwnerTemplate() {
+        return this.ownerTemplate;
     }
 
     public String[] getMarkupSelectors() {
         return this.markupSelectors;
     }
 
-    public TemplateMode getForcedTemplateMode() {
-        return this.forcedTemplateMode;
+    public String getTemplate() {
+        return this.template;
+    }
+
+    public int getLineOffset() {
+        return this.lineOffset;
+    }
+
+    public int getColOffset() {
+        return this.colOffset;
+    }
+
+    public TemplateMode getTemplateMode() {
+        return this.templateMode;
     }
 
 
@@ -87,50 +106,68 @@ public final class TemplateCacheKey {
         if (this == o) {
             return true;
         }
+
         if (!(o instanceof TemplateCacheKey)) {
             return false;
         }
 
         final TemplateCacheKey that = (TemplateCacheKey) o;
 
-        if (this.textualTemplate != that.textualTemplate) {
+        if (this.lineOffset != that.lineOffset) {
+            return false;
+        }
+        if (this.colOffset != that.colOffset) {
+            return false;
+        }
+        if (this.ownerTemplate != null ? !this.ownerTemplate.equals(that.ownerTemplate) : that.ownerTemplate != null) {
             return false;
         }
         if (!this.template.equals(that.template)) {
             return false;
         }
-        if (!Arrays.equals(this.markupSelectors, that.markupSelectors)) {
+        if (!Arrays.equals(this.markupSelectors, that.markupSelectors)) { // Works because we ordered the arrays
             return false;
         }
-        return this.forcedTemplateMode == that.forcedTemplateMode;
+        return this.templateMode == that.templateMode;
 
     }
 
 
     @Override
     public int hashCode() {
-        int result = (this.textualTemplate ? 1 : 0);
+        int result = this.ownerTemplate != null ? this.ownerTemplate.hashCode() : 0;
         result = 31 * result + this.template.hashCode();
         result = 31 * result + (this.markupSelectors != null ? Arrays.hashCode(this.markupSelectors) : 0);
-        result = 31 * result + (this.forcedTemplateMode != null ? this.forcedTemplateMode.hashCode() : 0);
+        result = 31 * result + this.lineOffset;
+        result = 31 * result + this.colOffset;
+        result = 31 * result + (this.templateMode != null ? this.templateMode.hashCode() : 0);
         return result;
     }
+
+
 
 
     @Override
     public String toString() {
         final StringBuilder strBuilder = new StringBuilder();
-        if (this.textualTemplate) {
-            strBuilder.append("(textual)");
+        strBuilder.append(LoggingUtils.loggifyTemplateName(this.template));
+        if (this.ownerTemplate != null) {
+            strBuilder.append('@');
+            strBuilder.append('(');
+            strBuilder.append(LoggingUtils.loggifyTemplateName(this.ownerTemplate));
+            strBuilder.append(';');
+            strBuilder.append(this.lineOffset);
+            strBuilder.append(',');
+            strBuilder.append(this.colOffset);
+            strBuilder.append(')');
         }
-        strBuilder.append(StringUtils.abbreviate(this.template, 40).replace('\n','\\'));
         if (this.markupSelectors != null && this.markupSelectors.length > 0) {
             strBuilder.append("::");
             strBuilder.append(Arrays.toString(this.markupSelectors));
         }
-        if (this.forcedTemplateMode != null) {
+        if (this.templateMode != null) {
             strBuilder.append("@(");
-            strBuilder.append(this.forcedTemplateMode);
+            strBuilder.append(this.templateMode);
             strBuilder.append(")");
         }
         return strBuilder.toString();

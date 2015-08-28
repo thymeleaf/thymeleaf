@@ -40,6 +40,7 @@ import org.thymeleaf.resource.ReaderResource;
 import org.thymeleaf.resource.StringResource;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.ITemplateParser;
+import org.thymeleaf.templateparser.ParsableArtifactType;
 import org.thymeleaf.templateparser.reader.ParserLevelCommentMarkupReader;
 import org.thymeleaf.templateparser.reader.PrototypeOnlyCommentMarkupReader;
 import org.thymeleaf.util.Validate;
@@ -76,40 +77,58 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
 
 
-    public final void parseTemplate(
+    public void parseStandalone(
             final IEngineConfiguration configuration,
-            final TemplateMode templateMode,
-            final IResource templateResource,
+            final ParsableArtifactType artifactType,
+            final IResource resource,
             final String[] selectors,
-            final ITemplateHandler templateHandler) {
-        parse(configuration, templateMode, templateResource, true, selectors, templateHandler);
+            final TemplateMode templateMode,
+            final ITemplateHandler handler) {
+
+        Validate.notNull(configuration, "Engine Configuration cannot be null");
+        Validate.notNull(artifactType, "Artifact Type cannot be null");
+        Validate.notNull(resource, "Resource cannot be null");
+        // selectors CAN be null if we are going to render the entire template
+        Validate.notNull(templateMode, "Template Mode cannot be null");
+        Validate.isTrue(templateMode.isMarkup(), "Template Mode has to be a markup template mode");
+        Validate.notNull(handler, "Template Handler cannot be null");
+
+        parse(configuration, artifactType, null, resource, selectors, 0, 0, templateMode, handler);
+
     }
 
 
-    public final void parseFragment(
+    public void parseNested(
             final IEngineConfiguration configuration,
+            final ParsableArtifactType artifactType,
+            final String ownerTemplate,
+            final IResource resource,
+            final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
-            final IResource templateResource,
-            final String[] selectors,
-            final ITemplateHandler templateHandler) {
-        parse(configuration, templateMode, templateResource, false, selectors, templateHandler);
+            final ITemplateHandler handler) {
+
+        Validate.notNull(configuration, "Engine Configuration cannot be null");
+        Validate.notNull(artifactType, "Artifact Type cannot be null");
+        Validate.notNull(ownerTemplate, "Owner template cannot be null");
+        Validate.notNull(resource, "Template cannot be null");
+        // NOTE markup selectors cannot be specified when parsing a nested template
+        Validate.notNull(templateMode, "Template mode cannot be null");
+        Validate.isTrue(templateMode.isMarkup(), "Template Mode has to be a markup template mode");
+        Validate.notNull(handler, "Template Handler cannot be null");
+
+        parse(configuration, artifactType, ownerTemplate, resource, null, lineOffset, colOffset, templateMode, handler);
+
     }
 
 
 
     private void parse(
             final IEngineConfiguration configuration,
+            final ParsableArtifactType artifactType,
+            final String ownerTemplate, final IResource resource, final String[] selectors,
+            final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
-            final IResource templateResource,
-            final boolean topLevel,
-            final String[] selectors,
             final ITemplateHandler templateHandler) {
-
-        Validate.notNull(configuration, "Engine Configuration cannot be null");
-        Validate.notNull(templateMode, "Template Mode cannot be null");
-        Validate.notNull(templateResource, "Template Resource cannot be null");
-        // Selectors CAN be null
-        Validate.notNull(templateHandler, "Template Handler cannot be null");
 
         if (templateMode == TemplateMode.HTML) {
             Validate.isTrue(this.html, "Parser is configured as XML, but HTML-mode template parsing is being requested");
@@ -121,20 +140,21 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                     "has been specified: " + templateMode);
         }
 
-        final String templateResourceName = templateResource.getName();
+        final String templateName = (ownerTemplate != null? ownerTemplate : resource.getName());
 
         try {
 
             // The final step of the handler chain will be the adapter that will convert attoparser's handler chain to thymeleaf's.
             IMarkupHandler handler =
                         new TemplateHandlerAdapterMarkupHandler(
-                                templateResourceName,
-                                topLevel,
+                                templateName,
+                                artifactType,
                                 templateHandler,
                                 configuration.getTextRepository(),
                                 configuration.getElementDefinitions(),
                                 configuration.getAttributeDefinitions(),
-                                templateMode);
+                                templateMode,
+                                lineOffset, colOffset);
 
 
             // If we need to select blocks, we will need a block selector here. Note this will get executed in the
@@ -153,16 +173,16 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
             // Compute the base reader, depending on the type of resource
             Reader templateReader;
-            if (templateResource instanceof ReaderResource) {
-                templateReader = new BufferedReader(((ReaderResource)templateResource).getContent());
-            } else if (templateResource instanceof StringResource) {
-                templateReader = new StringReader(((StringResource)templateResource).getContent());
-            } else if (templateResource instanceof CharArrayResource) {
-                final CharArrayResource charArrayResource = (CharArrayResource) templateResource;
+            if (resource instanceof ReaderResource) {
+                templateReader = new BufferedReader(((ReaderResource)resource).getContent());
+            } else if (resource instanceof StringResource) {
+                templateReader = new StringReader(((StringResource)resource).getContent());
+            } else if (resource instanceof CharArrayResource) {
+                final CharArrayResource charArrayResource = (CharArrayResource) resource;
                 templateReader = new CharArrayReader(charArrayResource.getContent(), charArrayResource.getOffset(), charArrayResource.getLen());
             } else {
                 throw new IllegalArgumentException(
-                        "Cannot parse: unrecognized " + IResource.class.getSimpleName() + " implementation: " + templateResource.getClass().getName());
+                        "Cannot parse: unrecognized " + IResource.class.getSimpleName() + " implementation: " + resource.getClass().getName());
             }
 
 
@@ -176,9 +196,9 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
         } catch (final ParseException e) {
             final String message = "An error happened during template parsing";
             if (e.getLine() != null && e.getCol() != null) {
-                throw new TemplateInputException(message, templateResource.getName(), e.getLine().intValue(), e.getCol().intValue(), e);
+                throw new TemplateInputException(message, resource.getName(), e.getLine().intValue(), e.getCol().intValue(), e);
             }
-            throw new TemplateInputException(message, templateResource.getName(), e);
+            throw new TemplateInputException(message, resource.getName(), e);
         }
 
     }

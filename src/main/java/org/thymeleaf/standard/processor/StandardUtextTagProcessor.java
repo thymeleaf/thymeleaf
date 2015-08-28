@@ -97,9 +97,10 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
         }
 
         final ParsedFragmentMarkup parsedFragment =
-                processingContext.getTemplateManager().parseFragment(
+                processingContext.getTemplateManager().parseNestedFragment(
                         processingContext.getConfiguration(),
-                        processingContext.getTemplateResolution().getTemplateName(), unescapedText,
+                        tag.getTemplateName(), unescapedText,
+                        0, 0, // we won't apply offset here because the inserted text does not really come from the template itself
                         processingContext.getTemplateMode(),
                         false); // useCache == false because we could potentially pollute the cache with too many entries (th:utext is too variable!)
 

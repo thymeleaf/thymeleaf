@@ -50,7 +50,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
     private final AttributeDefinitions attributeDefinitions;
     private final ElementDefinitions elementDefinitions;
     private final TemplateMode templateMode;
-    private final String templateName;
+    private final String template;
     private final TemplateManager templateManager;
 
 
@@ -58,7 +58,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
     public StandardMarkupFactory(
             final IEngineConfiguration configuration, final TemplateMode templateMode,
-            final String templateName, final TemplateManager templateManager) {
+            final String template, final TemplateManager templateManager) {
 
         super();
 
@@ -67,7 +67,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
         Validate.notNull(configuration.getTextRepository(), "Text Repository returned by Engine Configuration cannot be null");
         Validate.notNull(configuration.getAttributeDefinitions(), "Attribute Definitions returned by Engine Configuration cannot be null");
         Validate.notNull(configuration.getElementDefinitions(), "Element Definitions returned by Engine Configuration cannot be null");
-        Validate.notNull(templateName, "Template Name cannot be null");
+        Validate.notNull(template, "Template cannot be null");
         Validate.notNull(templateManager, "Template Processor cannot be null");
 
         this.configuration = configuration;
@@ -75,7 +75,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
         this.attributeDefinitions = this.configuration.getAttributeDefinitions();
         this.elementDefinitions = this.configuration.getElementDefinitions();
         this.templateMode = templateMode;
-        this.templateName = templateName;
+        this.template = template;
         this.templateManager = templateManager;
 
     }
@@ -91,9 +91,10 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
     public IMarkup parseAsMarkup(final String markup) {
         // We will be setting useCache to false because we don't want to pollute the cache with mere String
-        // parsing done from here. If the cache is needed the TemplateManager should be used.
-        return this.templateManager.parseFragment(
-                this.configuration, this.templateName, markup, this.templateMode, false);
+        // parsing done from here. Also, we are 'artificially' specifying it as nested even if we don't really
+        // know if this markup is exactly a nested text inside the template, but that's not really important...
+        return this.templateManager.parseNestedFragment(
+                this.configuration, this.template, markup, 0, 0, this.templateMode, false);
     }
 
 

@@ -34,19 +34,22 @@ import org.thymeleaf.templatemode.TemplateMode;
 public interface ITemplateParser {
 
 
-    public void parseTemplate(
+    public void parseStandalone(
                       final IEngineConfiguration configuration,
-                      final TemplateMode templateMode,
-                      final IResource templateResource,
+                      final ParsableArtifactType artifactType,
+                      final IResource resource,
                       final String[] selectors,
+                      final TemplateMode templateMode,
                       final ITemplateHandler handler);
 
 
-    public void parseFragment(
+    public void parseNested(
                       final IEngineConfiguration configuration,
+                      final ParsableArtifactType artifactType,
+                      final String ownerTemplate,
+                      final IResource resource,
+                      final int lineOffset, final int colOffset,
                       final TemplateMode templateMode,
-                      final IResource templateResource,
-                      final String[] selectors,
                       final ITemplateHandler handler);
 
 }
