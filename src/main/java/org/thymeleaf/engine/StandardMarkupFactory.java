@@ -20,6 +20,7 @@
 package org.thymeleaf.engine;
 
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IAutoCloseElementTag;
 import org.thymeleaf.model.IAutoOpenElementTag;
 import org.thymeleaf.model.ICDATASection;
@@ -82,6 +83,15 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
 
+    private void checkRestrictedEventForTextTemplateMode(final Class<? extends ITemplateHandlerEvent> eventClass) {
+        if (this.templateMode.isText()) {
+            throw new TemplateProcessingException(
+                    "Events of class " + eventClass.getSimpleName() + " cannot be created in a text-type template " +
+                    "mode (" + this.templateMode + ")");
+        }
+    }
+
+
 
     public Markup createMarkup() {
         return new Markup(this.configuration, this.templateMode);
@@ -100,6 +110,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
     public ICDATASection createCDATASection(final String content) {
+        checkRestrictedEventForTextTemplateMode(ICDATASection.class);
         return new CDATASection(this.textRepository, content);
     }
 
@@ -107,6 +118,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
     public IComment createComment(final String content) {
+        checkRestrictedEventForTextTemplateMode(IComment.class);
         return new Comment(this.textRepository, content);
     }
 
@@ -114,10 +126,12 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
     public IDocType createHTML5DocType() {
+        checkRestrictedEventForTextTemplateMode(IDocType.class);
         return new DocType(this.textRepository, null, null);
     }
 
     public IDocType createDocType(final String publicId, final String systemId) {
+        checkRestrictedEventForTextTemplateMode(IDocType.class);
         return new DocType(this.textRepository, publicId, systemId);
     }
 
@@ -129,6 +143,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
             final String systemId,
             final String internalSubset) {
 
+        checkRestrictedEventForTextTemplateMode(IDocType.class);
         return new DocType(this.textRepository, keyword, elementName, type, publicId, systemId, internalSubset);
     }
 
@@ -136,6 +151,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
     public IProcessingInstruction createProcessingInstruction(final String target, final String content) {
+        checkRestrictedEventForTextTemplateMode(IProcessingInstruction.class);
         return new ProcessingInstruction(this.textRepository, target, content);
     }
 
@@ -150,6 +166,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
     public IXMLDeclaration createXMLDeclaration(final String version, final String encoding, final String standalone) {
+        checkRestrictedEventForTextTemplateMode(IXMLDeclaration.class);
         return new XMLDeclaration(this.textRepository, version, encoding, standalone);
     }
 
@@ -167,6 +184,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
     public IAutoOpenElementTag createAutoOpenElementTag(final String elementName) {
+        checkRestrictedEventForTextTemplateMode(IAutoOpenElementTag.class);
         return new AutoOpenElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions, elementName);
     }
 
@@ -177,11 +195,13 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
     public IAutoCloseElementTag createAutoCloseElementTag(final String elementName) {
+        checkRestrictedEventForTextTemplateMode(IAutoCloseElementTag.class);
         return new AutoCloseElementTag(this.templateMode, this.elementDefinitions, elementName);
     }
 
 
     public IUnmatchedCloseElementTag createUnmatchedCloseElementTag(final String elementName) {
+        checkRestrictedEventForTextTemplateMode(IUnmatchedCloseElementTag.class);
         return new UnmatchedCloseElementTag(this.templateMode, this.elementDefinitions, elementName);
     }
 
