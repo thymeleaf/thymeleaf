@@ -80,7 +80,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <springframework.version>4.1.4.RELEASE</springframework.version>
+        <springframework.version>4.2.0.RELEASE</springframework.version>
         <thymeleaf.version>3.0.0-SNAPSHOT</thymeleaf.version>
     </properties>
 
@@ -107,7 +107,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
+                <version>3.3</version>
                 <configuration>
                     <source>1.5</source>
                     <target>1.5</target>
@@ -237,14 +237,14 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.10</version>
+            <version>1.7.12</version>
             <scope>compile</scope>
         </dependency>
         
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.10</version>
+            <version>1.7.12</version>
             <scope>compile</scope>
         </dependency>
 

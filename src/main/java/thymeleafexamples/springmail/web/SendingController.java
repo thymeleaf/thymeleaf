@@ -39,6 +39,19 @@ public class SendingController {
     @Autowired 
     private EmailService emailService;
 
+    /* Send plain TEXT mail */
+    @RequestMapping(value = "/sendMailText", method = POST)
+    public String sendTextMail(
+            @RequestParam("recipientName") final String recipientName,
+            @RequestParam("recipientEmail") final String recipientEmail,
+            final Locale locale) 
+            throws MessagingException {
+
+        this.emailService.sendTextMail(recipientName, recipientEmail, locale);
+        return "redirect:sent.html";
+        
+    }
+    
     /* Send HTML mail (simple) */
     @RequestMapping(value = "/sendMailSimple", method = POST)
     public String sendSimpleMail(

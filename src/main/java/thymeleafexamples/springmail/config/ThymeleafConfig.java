@@ -10,7 +10,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring4.dialect.SpringStandardDialect;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
@@ -43,7 +45,9 @@ public class ThymeleafConfig extends WebMvcConfigurerAdapter {
     public SpringTemplateEngine templateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.addTemplateResolver(emailTemplateResolver());
+        templateEngine.addTemplateResolver(textEmailTemplateResolver());
         templateEngine.addTemplateResolver(webTemplateResolver());
+//        templateEngine.setDialect(new SpringStandardDialect());
         return templateEngine;
     }
 
@@ -53,7 +57,24 @@ public class ThymeleafConfig extends WebMvcConfigurerAdapter {
     private TemplateResolver emailTemplateResolver() {
         TemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setPrefix("/mail/");
-        templateResolver.setTemplateMode("HTML5");
+        templateResolver.setSuffix(".html");
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        templateResolver.setCharacterEncoding(ENCODING);
+        templateResolver.setOrder(1);
+        // Template cache is true by default. Set to false if you want 
+        // templates to be automatically updated when modified.
+        templateResolver.setCacheable(false);
+        return templateResolver;
+    }
+    
+    /**
+     * THYMELEAF: Template Resolver for email text templates.
+     */
+    private TemplateResolver textEmailTemplateResolver() {
+        TemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setPrefix("/mail/");
+        templateResolver.setSuffix(".txt");
+        templateResolver.setTemplateMode(TemplateMode.TEXT);
         templateResolver.setCharacterEncoding(ENCODING);
         templateResolver.setOrder(1);
         // Template cache is true by default. Set to false if you want 
@@ -69,7 +90,8 @@ public class ThymeleafConfig extends WebMvcConfigurerAdapter {
     private TemplateResolver webTemplateResolver() {
         TemplateResolver templateResolver = new ServletContextTemplateResolver();
         templateResolver.setPrefix("/WEB-INF/templates/");
-        templateResolver.setTemplateMode("HTML5");
+        templateResolver.setSuffix(".html");
+        templateResolver.setTemplateMode(TemplateMode.HTML);
         templateResolver.setCharacterEncoding(ENCODING);
         templateResolver.setOrder(2);
         // Template cache is true by default. Set to false if you want 

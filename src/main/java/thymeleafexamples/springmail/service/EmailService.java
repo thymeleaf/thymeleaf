@@ -59,6 +59,37 @@ public class EmailService {
     private IMessageResolver messageResolver;
 
     /* 
+     * Send plain TEXT mail 
+     */
+    public void sendTextMail(
+            final String recipientName, final String recipientEmail, final Locale locale) 
+            throws MessagingException {
+        
+        // Prepare the evaluation context
+        final Context ctx = new Context(locale);
+        ctx.setVariable("name", recipientName);
+        ctx.setVariable("subscriptionDate", new Date());
+        ctx.setVariable("hobbies", Arrays.asList("Cinema", "Sports", "Music"));
+        
+        // Prepare message using a Spring helper
+        final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
+        final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, "UTF-8");
+        message.setSubject("Example plain TEXT email");
+        message.setFrom("thymeleaf@example.com");
+        message.setTo(recipientEmail);
+
+        // Create the HTML body using Thymeleaf
+        final String htmlContent = this.templateEngine.process("email-text", ctx);
+        message.setText(htmlContent, true /* isHtml */);
+        
+        // Send email
+        this.mailSender.send(mimeMessage);
+    }
+
+    
+    
+    
+    /* 
      * Send HTML mail (simple) 
      */
     public void sendSimpleMail(
@@ -79,12 +110,11 @@ public class EmailService {
         message.setTo(recipientEmail);
 
         // Create the HTML body using Thymeleaf
-        final String htmlContent = this.templateEngine.process("email-simple.html", ctx);
+        final String htmlContent = this.templateEngine.process("email-simple", ctx);
         message.setText(htmlContent, true /* isHtml */);
         
         // Send email
         this.mailSender.send(mimeMessage);
-
     }
 
     
@@ -113,7 +143,7 @@ public class EmailService {
         message.setTo(recipientEmail);
 
         // Create the HTML body using Thymeleaf
-        final String htmlContent = this.templateEngine.process("email-withattachment.html", ctx);
+        final String htmlContent = this.templateEngine.process("email-withattachment", ctx);
         message.setText(htmlContent, true /* isHtml */);
         
         // Add the attachment
@@ -123,7 +153,6 @@ public class EmailService {
         
         // Send mail
         this.mailSender.send(mimeMessage);
-        
     }
 
     
@@ -152,7 +181,7 @@ public class EmailService {
         message.setTo(recipientEmail);
 
         // Create the HTML body using Thymeleaf
-        final String htmlContent = this.templateEngine.process("email-inlineimage.html", ctx);
+        final String htmlContent = this.templateEngine.process("email-inlineimage", ctx);
         message.setText(htmlContent, true /* isHtml */);
         
         // Add the inline image, referenced from the HTML code as "cid:${imageResourceName}"
@@ -161,7 +190,6 @@ public class EmailService {
         
         // Send mail
         this.mailSender.send(mimeMessage);
-        
     }
     
     
@@ -201,8 +229,6 @@ public class EmailService {
         
         // Send mail
         this.mailSender.send(mimeMessage);
-        
     }
-
 
 }

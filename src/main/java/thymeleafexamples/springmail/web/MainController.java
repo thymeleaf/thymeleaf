@@ -37,25 +37,31 @@ public class MainController {
     /* Home page. */
     @RequestMapping(value = {"/", "/index.html"}, method = GET)
     public String index() {
-        return "index.html";
+        return "index";
+    }
+    
+    /* Plain text email. */
+    @RequestMapping(value = "/text.html", method = GET)
+    public String text() {
+        return "text";
     }
     
     /* Simple HTML email. */
     @RequestMapping(value = "/simple.html", method = GET)
     public String simple() {
-        return "simple.html";
+        return "simple";
     }
     
     /* HTML email with attachment. */
     @RequestMapping(value = "/attachment.html", method = GET)
     public String attachment() {
-        return "attachment.html";
+        return "attachment";
     }
     
     /* HTML email with inline image. */
     @RequestMapping(value = "/inline.html", method = GET)
     public String inline() {
-        return "inline.html";
+        return "inline";
     }
     
     /* Editable HTML email. */
@@ -64,13 +70,13 @@ public class MainController {
         InputStream inputStream = request.getServletContext().getResourceAsStream(EDITABLE_TEMPLATE);
         String baseTemplate = IOUtils.toString(inputStream, ENCODING);
         model.addAttribute("baseTemplate", baseTemplate);
-        return "editable.html";
+        return "editable";
     }
     
     /* Sending confirmation page. */
     @RequestMapping(value = "/sent.html", method = GET)
     public String sent() {
-        return "sent.html";
+        return "sent";
     }
     
 }

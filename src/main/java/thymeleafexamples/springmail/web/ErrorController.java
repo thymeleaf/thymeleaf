@@ -31,7 +31,7 @@ public class ErrorController {
         String errorMessage = throwable != null ? throwable.getMessage() : "Unknown error";
         ModelAndView mav = new ModelAndView();
         mav.getModel().put("errorMessage", errorMessage);
-        mav.setViewName("error.html");
+        mav.setViewName("error");
         return mav;
     }
 
