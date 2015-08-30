@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.templateparser.text;
 
+import java.util.Arrays;
+
 /*
  * This class converts inlined output expressions into their equivalent element events, which makes it possible
  * to cache parsed inlined expressions.
@@ -39,6 +41,7 @@ final class InlinedOutputExpressionProcessorTextHandler extends AbstractChainedT
     private final boolean standardDialectPresent;
     private final String standardDialectPrefix;
 
+    private int markupLevel = 0;
 
 
     InlinedOutputExpressionProcessorTextHandler(
@@ -63,7 +66,130 @@ final class InlinedOutputExpressionProcessorTextHandler extends AbstractChainedT
         }
 
 
+
+
     }
 
+
+
+
+    @Override
+    public void handleStandaloneElementStart(
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
+            final boolean minimized,
+            final int line, final int col)
+            throws TextParseException {
+
+        super.handleStandaloneElementStart(buffer, nameOffset, nameLen, minimized, line, col);
+
+    }
+
+
+    @Override
+    public void handleStandaloneElementEnd(
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
+            final boolean minimized,
+            final int line, final int col)
+            throws TextParseException {
+
+        super.handleStandaloneElementEnd(buffer, nameOffset, nameLen, minimized, line, col);
+
+    }
+
+
+
+
+    @Override
+    public void handleOpenElementStart(
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
+            final int line, final int col)
+            throws TextParseException {
+        super.handleOpenElementStart(buffer, nameOffset, nameLen, line, col);
+    }
+
+
+    @Override
+    public void handleOpenElementEnd(
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
+            final int line, final int col)
+            throws TextParseException {
+
+        this.markupLevel++;
+
+        super.handleOpenElementEnd(buffer, nameOffset, nameLen, line, col);
+
+    }
+
+
+
+
+    @Override
+    public void handleCloseElementStart(
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
+            final int line, final int col)
+            throws TextParseException {
+
+        this.markupLevel++;
+
+        super.handleCloseElementStart(buffer, nameOffset, nameLen, line, col);
+
+    }
+
+
+    @Override
+    public void handleCloseElementEnd(
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
+            final int line, final int col)
+            throws TextParseException {
+
+        super.handleCloseElementEnd(buffer, nameOffset, nameLen, line, col);
+
+    }
+
+
+
+
+    @Override
+    public void handleAttribute(
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
+            final int nameLine, final int nameCol,
+            final int operatorOffset, final int operatorLen,
+            final int operatorLine, final int operatorCol,
+            final int valueContentOffset, final int valueContentLen,
+            final int valueOuterOffset, final int valueOuterLen,
+            final int valueLine, final int valueCol)
+            throws TextParseException {
+
+        super.handleAttribute(
+                buffer,
+                nameOffset, nameLen, nameLine, nameCol,
+                operatorOffset, operatorLen, operatorLine, operatorCol,
+                valueContentOffset, valueContentLen, valueOuterOffset, valueOuterLen, valueLine, valueCol);
+
+    }
+
+
+
+
+
+
+    private void increaseMarkupLevel() {
+
+        this.markupLevel++;
+
+
+    }
+
+
+    private void decreaseMarkupLevel() {
+        this.markupLevel--;
+    }
 
 }
