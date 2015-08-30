@@ -19,12 +19,10 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
-import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.standard.inline.StandardInlineMode;
 import org.thymeleaf.standard.inline.StandardTextInliner;
 import org.thymeleaf.standard.inline.StandardXMLInliner;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -51,27 +49,22 @@ public final class StandardInlineXMLTagProcessor extends AbstractStandardTextInl
 
 
     @Override
-    protected IInliner getInliner(
-            final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue, final Object expressionResult) {
+    protected IInliner getInliner(final StandardInlineMode inlineMode) {
 
-        final String inliner = (expressionResult == null? null : expressionResult.toString().toLowerCase());
-
-        if (inliner != null) {
-            if (INLINE_MODE_NONE.equals(inliner)) {
+        switch (inlineMode) {
+            case NONE:
                 return NoOpInliner.INSTANCE;
-            } else if (INLINE_MODE_XML.equals(inliner)) {
+            case XML:
                 return StandardXMLInliner.INSTANCE;
-            } else if (INLINE_MODE_TEXT.equals(inliner)) {
+            case TEXT:
                 return StandardTextInliner.INSTANCE;
-            }
+            default:
+                throw new TemplateProcessingException(
+                        "Invalid inline mode selected: " + inlineMode + ". Allowed inline modes in template mode " +
+                        getTemplateMode() + " are: " +
+                        "\"" + StandardInlineMode.XML + "\", \"" + StandardInlineMode.TEXT + "\", " +
+                        "\"" + StandardInlineMode.NONE + "\"");
         }
-
-        throw new TemplateProcessingException(
-                "Cannot recognize value for \"" + attributeName + "\". Allowed inline modes in template mode " +
-                getTemplateMode() + " are: " +
-                "\"" + INLINE_MODE_XML + "\", \"" + INLINE_MODE_TEXT + "\", " +
-                "\"" + INLINE_MODE_NONE + "\"");
 
     }
 

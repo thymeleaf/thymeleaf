@@ -17,9 +17,11 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.templateparser.text;
+package org.thymeleaf.templateparser.markup;
 
-import java.util.Arrays;
+import org.attoparser.AbstractChainedMarkupHandler;
+import org.attoparser.IMarkupHandler;
+import org.attoparser.ParseException;
 
 /*
  * This class converts inlined output expressions into their equivalent element events, which makes it possible
@@ -36,7 +38,7 @@ import java.util.Arrays;
  * @author Daniel Fernandez
  * @since 3.0.0
  */
-final class InlinedOutputExpressionProcessorTextHandler extends AbstractChainedTextHandler {
+final class InlinedOutputExpressionProcessorMarkupHandler extends AbstractChainedMarkupHandler {
 
     private final boolean standardDialectPresent;
     private final String standardDialectPrefix;
@@ -44,8 +46,8 @@ final class InlinedOutputExpressionProcessorTextHandler extends AbstractChainedT
     private int markupLevel = 0;
 
 
-    InlinedOutputExpressionProcessorTextHandler(
-            final ITextHandler handler, final boolean standardDialectPresent, final String standardDialectPrefix) {
+    InlinedOutputExpressionProcessorMarkupHandler(
+            final IMarkupHandler handler, final boolean standardDialectPresent, final String standardDialectPrefix) {
         super(handler);
         this.standardDialectPresent = standardDialectPresent;
         this.standardDialectPrefix = standardDialectPrefix;
@@ -58,7 +60,7 @@ final class InlinedOutputExpressionProcessorTextHandler extends AbstractChainedT
             final char[] buffer,
             final int offset, final int len,
             final int line, final int col)
-            throws TextParseException {
+            throws ParseException {
 
         if (!this.standardDialectPresent) {
             getNext().handleText(buffer, offset, len, line, col);
@@ -79,7 +81,7 @@ final class InlinedOutputExpressionProcessorTextHandler extends AbstractChainedT
             final int nameOffset, final int nameLen,
             final boolean minimized,
             final int line, final int col)
-            throws TextParseException {
+            throws ParseException {
 
         super.handleStandaloneElementStart(buffer, nameOffset, nameLen, minimized, line, col);
 
@@ -92,7 +94,7 @@ final class InlinedOutputExpressionProcessorTextHandler extends AbstractChainedT
             final int nameOffset, final int nameLen,
             final boolean minimized,
             final int line, final int col)
-            throws TextParseException {
+            throws ParseException {
 
         super.handleStandaloneElementEnd(buffer, nameOffset, nameLen, minimized, line, col);
 
@@ -106,7 +108,7 @@ final class InlinedOutputExpressionProcessorTextHandler extends AbstractChainedT
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int line, final int col)
-            throws TextParseException {
+            throws ParseException {
 
         this.markupLevel++;
 
@@ -120,7 +122,7 @@ final class InlinedOutputExpressionProcessorTextHandler extends AbstractChainedT
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int line, final int col)
-            throws TextParseException {
+            throws ParseException {
 
         super.handleOpenElementEnd(buffer, nameOffset, nameLen, line, col);
 
@@ -134,7 +136,7 @@ final class InlinedOutputExpressionProcessorTextHandler extends AbstractChainedT
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int line, final int col)
-            throws TextParseException {
+            throws ParseException {
 
         super.handleCloseElementStart(buffer, nameOffset, nameLen, line, col);
 
@@ -146,7 +148,7 @@ final class InlinedOutputExpressionProcessorTextHandler extends AbstractChainedT
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int line, final int col)
-            throws TextParseException {
+            throws ParseException {
 
         this.markupLevel--;
 
@@ -167,7 +169,7 @@ final class InlinedOutputExpressionProcessorTextHandler extends AbstractChainedT
             final int valueContentOffset, final int valueContentLen,
             final int valueOuterOffset, final int valueOuterLen,
             final int valueLine, final int valueCol)
-            throws TextParseException {
+            throws ParseException {
 
         super.handleAttribute(
                 buffer,
