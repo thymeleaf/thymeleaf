@@ -7,3 +7,4 @@ bin/
 *.iml
 nb-configuration.xml
 src/main/webapp/META-INF
+src/main/resources/configuration.properties

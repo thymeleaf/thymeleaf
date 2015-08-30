@@ -23,7 +23,7 @@ public class SpringWebInitializer implements WebApplicationInitializer {
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.register(ThymeleafConfig.class);
+		context.register(ThymeleafWebConfig.class);
 		context.register(MailConfig.class);
 		context.setServletContext(servletContext);
         configureSpringMvcFrontController(servletContext, context);
