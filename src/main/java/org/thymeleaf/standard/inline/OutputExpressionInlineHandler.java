@@ -442,7 +442,7 @@ public final class OutputExpressionInlineHandler implements IInlineHandler {
                 prepareAttributeBuffer(textAttributeName, text, current + 2, textAttributeValueLen);
 
 
-                this.next.handleStandaloneElementStart(this.blockElementName, 0, this.blockElementName.length, true, currentLine, currentCol + 2);
+                this.next.handleOpenElementStart(this.blockElementName, 0, this.blockElementName.length, currentLine, currentCol + 2);
                 this.next.handleAttribute(
                         this.attributeBuffer,
                         0, textAttributeNameLen,
@@ -452,7 +452,11 @@ public final class OutputExpressionInlineHandler implements IInlineHandler {
                         textAttributeNameLen + 2, textAttributeValueLen,
                         textAttributeNameLen + 1, textAttributeValueLen + 2,
                         currentLine, currentCol + 2);
-                this.next.handleStandaloneElementEnd(this.blockElementName, 0, this.blockElementName.length, true, currentLine, currentCol + 2);
+                this.next.handleOpenElementEnd(this.blockElementName, 0, this.blockElementName.length, currentLine, currentCol + 2);
+
+                this.next.handleCloseElementStart(this.blockElementName, 0, this.blockElementName.length, currentLine, currentCol + 2);
+                this.next.handleCloseElementEnd(this.blockElementName, 0, this.blockElementName.length, currentLine, currentCol + 2);
+
 
 
                 // The ')]' or ']]' suffix will be considered as processed too
