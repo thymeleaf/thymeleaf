@@ -135,7 +135,7 @@ abstract class AbstractProcessableElementTag
 
 
 
-    void recomputeProcessors() {
+    final void recomputeProcessors() {
 
         // Something has changed (usually the processors associated with the attributes) so we need to recompute
 
@@ -209,7 +209,7 @@ abstract class AbstractProcessableElementTag
 
 
 
-    protected void resetProcessableElementTag(
+    protected final void resetProcessableElementTag(
             final String elementName,
             final String templateName, final int line, final int col) {
 
@@ -223,7 +223,7 @@ abstract class AbstractProcessableElementTag
 
 
 
-    protected void resetAsCloneOfProcessableElementTag(final AbstractProcessableElementTag original) {
+    protected final void resetAsCloneOfProcessableElementTag(final AbstractProcessableElementTag original) {
         super.resetAsCloneOfElementTag(original);
         if (this.elementAttributes == null) {
             this.elementAttributes = original.elementAttributes.cloneElementAttributes();

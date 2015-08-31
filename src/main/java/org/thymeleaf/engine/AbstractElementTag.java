@@ -165,7 +165,7 @@ abstract class AbstractElementTag implements IElementTag {
 
 
 
-    protected void resetAsCloneOfElementTag(final AbstractElementTag original) {
+    protected final void resetAsCloneOfElementTag(final AbstractElementTag original) {
         this.templateMode = original.templateMode;
         this.templateMode = original.templateMode;
         this.elementDefinitions = original.elementDefinitions;

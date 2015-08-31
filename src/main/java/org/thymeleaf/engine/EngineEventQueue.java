@@ -275,7 +275,6 @@ final class EngineEventQueue {
         }
 
         if (reset) {
-            Arrays.fill(this.queue, null);
             this.queueSize = 0;
         }
 
@@ -432,7 +431,6 @@ final class EngineEventQueue {
 
 
     void reset() {
-        Arrays.fill(this.queue, null);
         this.queueSize = 0;
     }
 
