@@ -120,8 +120,10 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
      */
     private static boolean mightContainStructures(final String unescapedText) {
         int n = unescapedText.length();
+        char c;
         while (n-- != 0) {
-            if (unescapedText.charAt(n) == '>') {
+            c = unescapedText.charAt(n);
+            if (c == '>' || c == ']') {
                 // Might be the end of a structure!
                 return true;
             }
