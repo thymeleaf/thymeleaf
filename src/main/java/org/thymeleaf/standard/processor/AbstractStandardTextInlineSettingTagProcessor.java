@@ -21,7 +21,6 @@ package org.thymeleaf.standard.processor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
@@ -68,11 +67,8 @@ public abstract class AbstractStandardTextInlineSettingTagProcessor extends Abst
             final AttributeName attributeName, final String attributeValue,
             final IElementStructureHandler structureHandler) {
 
-        // Check DART inlining, deprecated in 3.0.0 (defaults to JAVASCRIPT)
-        final String normalizedAttributeValue = checkDartInline(attributeValue);
-
         // Note we are NOT executing the attributeValue as a Standard Expression: we are expecting a literal (see comment above)
-        final IInliner inliner = getInliner(StandardInlineMode.parse(normalizedAttributeValue));
+        final IInliner inliner = getInliner(StandardInlineMode.parse(attributeValue));
         structureHandler.setInliner(inliner);
 
         tag.getAttributes().removeAttribute(attributeName);
@@ -81,37 +77,7 @@ public abstract class AbstractStandardTextInlineSettingTagProcessor extends Abst
 
 
 
-
-
     protected abstract IInliner getInliner(final StandardInlineMode inlineMode);
 
-
-
-
-    /**
-     * Check for the pre-3.0 "dart" inlining mode, which was removed when inlining modes were matched to template modes,
-     * due to the inexistence of a (unneeded) "DART" template mode.
-     *
-     * NOTE this method is expressed here separately only in order to mark it as DEPRECATED and make it easily locatable
-     *      as such.
-     *
-     * @param inliner the name of the inliner we are asking for
-     * @return StandardJavaScriptInliner.INSTANCE if the inliner being asked for is "dart", null otherwise
-     * @deprecated in 3.0.0, "javascript" inlining should be used instead (since 3.0.0 all inlining modes refer to
-     *             template modes, and there is no "DART" template mode). Support for this default operation will be
-     *             removed in 3.1
-     */
-    @Deprecated
-    private static String checkDartInline(final String inliner) {
-        if ("dart".equalsIgnoreCase(inliner)) {
-            LOGGER.warn(
-                    "[THYMELEAF][{}] Found inline call with value \"dart\", which has been deprecated as no " +
-                    "corresponding template mode exists for it. Inline will be redirected to \"javascript\", which " +
-                    "should now be used instead. This redirection will be removed in future versions of Thymeleaf.",
-                    TemplateEngine.threadIndex());
-            return "JAVASCRIPT";
-        }
-        return inliner;
-    }
 
 }

@@ -51,7 +51,7 @@ final class CommentProcessorTextHandler extends AbstractChainedTextHandler {
     private int[] locator = new int[2];
 
 
-    CommentProcessorTextHandler(final ITextHandler handler, final boolean standardDialectPresent) {
+    CommentProcessorTextHandler(final boolean standardDialectPresent, final ITextHandler handler) {
         super(handler);
         this.standardDialectPresent = standardDialectPresent;
     }

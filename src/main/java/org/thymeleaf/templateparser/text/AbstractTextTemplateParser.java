@@ -143,6 +143,14 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
                                 lineOffset, colOffset);
 
 
+            // Just before the adapter markup handler, we will insert the processing of inlined output expressions
+            handler = new InlinedOutputExpressionTextHandler(
+                                configuration,
+                                templateMode,
+                                configuration.isStandardDialectPresent(),
+                                configuration.getStandardDialectPrefix(),
+                                handler);
+
             // Compute the base reader, depending on the type of resource
             Reader templateReader;
             if (resource instanceof ReaderResource) {

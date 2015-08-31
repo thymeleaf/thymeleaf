@@ -96,7 +96,7 @@ final class TextParser {
         // If comment processing is active (for JAVASCRIPT and CSS template modes), we need to look inside comments and
         // check if they are only wrapping elements or inlined expressions, in which case we will need to unwrap them.
         if (this.processComments) {
-            handlerChain = new CommentProcessorTextHandler(handlerChain, this.standardDialectPresent);
+            handlerChain = new CommentProcessorTextHandler(this.standardDialectPresent, handlerChain);
         }
 
         parseDocument(reader, this.pool.poolBufferSize, handlerChain);

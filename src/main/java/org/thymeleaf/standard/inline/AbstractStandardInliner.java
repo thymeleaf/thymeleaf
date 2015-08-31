@@ -24,6 +24,9 @@ import java.io.StringWriter;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.model.ICDATASection;
+import org.thymeleaf.model.IComment;
+import org.thymeleaf.model.INode;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
@@ -81,8 +84,8 @@ public abstract class AbstractStandardInliner implements IInliner {
             final TemplateManager templateManager = context.getTemplateManager();
             templateManager.processNestedTemplate(
                     context.getConfiguration(),
-                    StandardInlineUtils.computeTemplateName(text), text.toString(),
-                    StandardInlineUtils.computeLine(text), StandardInlineUtils.computeCol(text),
+                    computeTemplateName(text), text.toString(),
+                    computeLine(text), computeCol(text),
                     this.templateMode, context.getVariables(), stringWriter, true);
 
             return stringWriter.toString();
@@ -91,49 +94,50 @@ public abstract class AbstractStandardInliner implements IInliner {
 
 
         /*
-         * Template modes match, so we can perform expression inlining in the text
+         * Template modes match, so there is nothing we need to do (all output expressions will have been replaced
+         * by th:block's with th:text/th:utext at parsing time!)
          */
 
-        if (text instanceof IText) {
+        return text;
 
-            final IText itext = (IText) text;
+    }
 
-            /*
-             * If all the text to be inlined is whitespace (we know this from the moment it was parsed), then just return,
-             * because there is no way we can do anything with just whitespace.
-             */
-            if (itext.isWhitespace()) {
-                return text;
-            }
 
-            /*
-             * We will quickly check whether inlining seems needed at all, so that we don't spend more time on this if
-             * not required.
-             * Note the org.thymeleaf.engine.Text implementation of IText already precomputes the answers to these
-             * 'contains' questions at parsing time so that they are answered without needing to traverse the
-             * entire texts.
-             */
-            if (!itext.contains(StandardInlineUtils.INLINE_SYNTAX_MARKER_ESCAPED) && !itext.contains(StandardInlineUtils.INLINE_SYNTAX_MARKER_UNESCAPED)) {
-                return text;
-            }
 
-        } else {
 
-            /*
-             * This is not an IText, but anyway we will perform a quick test to check whether we might need inlining
-             */
-            if (!StandardInlineUtils.mightNeedInlining(text)) {
-                return text;
-            }
-
+    static String computeTemplateName(final CharSequence text) {
+        if (text instanceof INode) {
+            return ((INode)text).getTemplateName();
         }
+        return text.toString();
+    }
 
 
-        /*
-         * Once we are quite sure that we will need to execute some inlined expressions, let's do it!
-         */
-        return StandardInlineUtils.performInlining(context, text);
+    static int computeLine(final CharSequence text) {
+        if (text instanceof IText) {
+            return ((IText)text).getLine();
+        }
+        if (text instanceof IComment) {
+            return ((IComment)text).getLine();
+        }
+        if (text instanceof ICDATASection) {
+            return ((ICDATASection)text).getLine();
+        }
+        return Integer.MIN_VALUE; // Negative (line,col) will mean 'no locator'
+    }
 
+
+    static int computeCol(final CharSequence text) {
+        if (text instanceof IText) {
+            return ((IText)text).getCol();
+        }
+        if (text instanceof IComment) {
+            return ((IComment)text).getCol();
+        }
+        if (text instanceof ICDATASection) {
+            return ((ICDATASection)text).getCol();
+        }
+        return Integer.MIN_VALUE; // Negative (line,col) will mean 'no locator'
     }
 
 

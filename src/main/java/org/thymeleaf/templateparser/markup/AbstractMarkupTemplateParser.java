@@ -156,6 +156,14 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                                 templateMode,
                                 lineOffset, colOffset);
 
+            // Just before the adapter markup handler, we will insert the processing of inlined output expressions
+            handler = new InlinedOutputExpressionMarkupHandler(
+                                configuration,
+                                templateMode,
+                                configuration.isStandardDialectPresent(),
+                                configuration.getStandardDialectPrefix(),
+                                handler);
+
 
             // If we need to select blocks, we will need a block selector here. Note this will get executed in the
             // handler chain AFTER thymeleaf's own TemplateHandlerAdapterMarkupHandler, so that we will be able to

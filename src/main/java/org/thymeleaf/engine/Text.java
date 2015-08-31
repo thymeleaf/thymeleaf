@@ -26,7 +26,6 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.AggregateCharSequence;
-import org.thymeleaf.util.TextUtils;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -38,16 +37,6 @@ import org.thymeleaf.util.Validate;
 final class Text
             implements IText, IEngineTemplateHandlerEvent {
 
-    // We will use these markers in order to precompute whether we might need to apply inlining to this Text node
-    // (if inlining is active). We will do such precomputation by checking whether a specific marker is contained
-    // in the text. Note this is actually an implementation detail directly linked with a specific dialect set
-    // (the Standard Dialects), so it is something that should not make its way to the IText public API. Instead,
-    // we will access this precomputation (stored at the 'inlineable' flag) by means of the general-purpose
-    // 'contains' method.
-    // For more details on this syntax, see the org.thymeleaf.standard.inline.StandardInlineUtils class.
-    private static final String INLINE_SYNTAX_MARKER_ESCAPED = "]]";
-    private static final String INLINE_SYNTAX_MARKER_UNESCAPED = ")]";
-
     private final ITextRepository textRepository;
 
     private char[] buffer;
@@ -58,8 +47,6 @@ final class Text
     private int length;
 
     private Boolean whitespace;
-    private Boolean inlineableEscaped;
-    private Boolean inlineableUnescaped;
 
     private String templateName;
     private int line;
@@ -141,8 +128,6 @@ final class Text
      */
     public void precomputeFlags() {
         isWhitespace();
-        contains(INLINE_SYNTAX_MARKER_ESCAPED);
-        contains(INLINE_SYNTAX_MARKER_UNESCAPED);
     }
 
 
@@ -157,47 +142,6 @@ final class Text
         }
 
         return this.whitespace.booleanValue();
-    }
-
-
-    public boolean contains(final CharSequence subsequence) {
-
-        if (subsequence == null) {
-            throw new IllegalArgumentException("Subsequence cannot be null");
-        }
-
-        if (TextUtils.equals(true, subsequence, INLINE_SYNTAX_MARKER_ESCAPED)) {
-            if (this.inlineableEscaped == null) {
-                if (isWhitespace()) {
-                    this.inlineableEscaped = Boolean.FALSE;
-                } else {
-                    if (this.buffer != null) {
-                        this.inlineableEscaped = Boolean.valueOf(TextUtils.contains(true, this.buffer, this.offset, this.length, INLINE_SYNTAX_MARKER_ESCAPED, 0, INLINE_SYNTAX_MARKER_ESCAPED.length()));
-                    } else {
-                        this.inlineableEscaped = Boolean.valueOf(TextUtils.contains(true, this.text, INLINE_SYNTAX_MARKER_ESCAPED));
-                    }
-                }
-            }
-            return this.inlineableEscaped.booleanValue();
-        }
-
-        if (TextUtils.equals(true, subsequence, INLINE_SYNTAX_MARKER_UNESCAPED)) {
-            if (this.inlineableUnescaped == null) {
-                if (isWhitespace()) {
-                    this.inlineableUnescaped = Boolean.FALSE;
-                } else {
-                    if (this.buffer != null) {
-                        this.inlineableUnescaped = Boolean.valueOf(TextUtils.contains(true, this.buffer, this.offset, this.length, INLINE_SYNTAX_MARKER_UNESCAPED, 0, INLINE_SYNTAX_MARKER_UNESCAPED.length()));
-                    } else {
-                        this.inlineableUnescaped = Boolean.valueOf(TextUtils.contains(true, this.text, INLINE_SYNTAX_MARKER_UNESCAPED));
-                    }
-                }
-            }
-            return this.inlineableUnescaped.booleanValue();
-        }
-
-        return TextUtils.contains(true, this, subsequence);
-
     }
 
 
@@ -232,8 +176,6 @@ final class Text
         this.text = null;
 
         this.whitespace = null;
-        this.inlineableEscaped = null;
-        this.inlineableUnescaped = null;
 
         this.templateName = templateName;
         this.line = line;
@@ -258,8 +200,6 @@ final class Text
         this.offset = -1;
 
         this.whitespace = null;
-        this.inlineableEscaped = null;
-        this.inlineableUnescaped = null;
 
         this.templateName = null;
         this.line = -1;
@@ -331,8 +271,6 @@ final class Text
         this.text = original.getText(); // Need to call the method in order to force computing -- no buffer cloning!
         this.length = this.text.length();
         this.whitespace = original.whitespace;
-        this.inlineableEscaped = original.inlineableEscaped;
-        this.inlineableUnescaped = original.inlineableUnescaped;
         this.templateName = original.templateName;
         this.line = original.line;
         this.col = original.col;
@@ -357,8 +295,6 @@ final class Text
         newInstance.text = text.getText();
         newInstance.length = newInstance.text.length();
         newInstance.whitespace = null;
-        newInstance.inlineableEscaped = null;
-        newInstance.inlineableUnescaped = null;
         newInstance.templateName = text.getTemplateName();
         newInstance.line = text.getLine();
         newInstance.col = text.getCol();

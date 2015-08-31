@@ -237,10 +237,6 @@ public class ImmutableMarkup implements IMarkup {
             return this.wrapped.isWhitespace();
         }
 
-        public boolean contains(final CharSequence subsequence) {
-            return this.wrapped.contains(subsequence);
-        }
-
         public CharSequence subSequence(final int start, final int end) {
             return this.wrapped.subSequence(start, end);
         }
