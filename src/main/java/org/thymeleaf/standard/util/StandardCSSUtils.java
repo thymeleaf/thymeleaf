@@ -116,9 +116,7 @@ public final class StandardCSSUtils {
 
 
     private static void printString(final StringBuilder output, final String str) {
-        output.append('\'');
-        output.append(CssEscape.escapeCssString(str));
-        output.append('\'');
+        output.append(CssEscape.escapeCssIdentifier(str));
     }
 
 
