@@ -31,12 +31,12 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.attoparser.util.TextUtil;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.processor.element.IElementProcessor;
 import org.thymeleaf.processor.element.MatchingAttributeName;
 import org.thymeleaf.processor.element.MatchingElementName;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.TextUtils;
 
 /**
  *
@@ -822,7 +822,7 @@ public final class AttributeDefinitions {
                 mid = (low + high) >>> 1;
                 midVal = values.get(mid);
 
-                cmp = TextUtil.compareTo(caseSensitive, midVal, 0, midVal.length(), text, offset, len);
+                cmp = TextUtils.compareTo(caseSensitive, midVal, 0, midVal.length(), text, offset, len);
 
                 if (cmp < 0) {
                     low = mid + 1;
@@ -853,7 +853,7 @@ public final class AttributeDefinitions {
                 mid = (low + high) >>> 1;
                 midVal = values.get(mid);
 
-                cmp = TextUtil.compareTo(caseSensitive, midVal, text);
+                cmp = TextUtils.compareTo(caseSensitive, midVal, text);
 
                 if (cmp < 0) {
                     low = mid + 1;
@@ -896,7 +896,7 @@ public final class AttributeDefinitions {
                 midVal = values.get(mid);
                 midValLen = midVal.length();
 
-                if (TextUtil.startsWith(caseSensitive, midVal, prefix)) {
+                if (TextUtils.startsWith(caseSensitive, midVal, prefix)) {
 
                     // Prefix matched, but it could be a mere coincidence if the text being evaluated doesn't have
                     // a ':' after the prefix letters, so we will make sure by comparing the next char manually
@@ -918,7 +918,7 @@ public final class AttributeDefinitions {
                         } else {
 
                             // Prefix matches and we made sure midVal has a ':', so let's try the attributeName
-                            cmp = TextUtil.compareTo(caseSensitive, midVal, prefixLen + 1, (midValLen - (prefixLen + 1)), attributeName, 0, attributeNameLen);
+                            cmp = TextUtils.compareTo(caseSensitive, midVal, prefixLen + 1, (midValLen - (prefixLen + 1)), attributeName, 0, attributeNameLen);
 
                             if (cmp < 0) {
                                 low = mid + 1;
@@ -937,7 +937,7 @@ public final class AttributeDefinitions {
 
                     // midVal does not start with prefix, so comparing midVal and prefix should be enough
 
-                    cmp = TextUtil.compareTo(caseSensitive, midVal, prefix);
+                    cmp = TextUtils.compareTo(caseSensitive, midVal, prefix);
 
                     if (cmp < 0) {
                         low = mid + 1;
