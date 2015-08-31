@@ -30,7 +30,6 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
-import org.thymeleaf.text.ITextRepository;
 import org.unbescape.html.HtmlEscape;
 
 
@@ -119,9 +118,7 @@ public final class SpringInputCheckboxFieldTagProcessor
 
             final Markup hiddenTagMarkup = processingContext.getMarkupFactory().createMarkup();
 
-            final ITextRepository textRepository = processingContext.getConfiguration().getTextRepository();
-
-            final String hiddenName = textRepository.getText(WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX,name);
+            final String hiddenName = WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name;
             final String hiddenValue = "on";
 
             final IStandaloneElementTag hiddenTag =

@@ -35,7 +35,6 @@ import org.springframework.web.servlet.view.AbstractCachingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.ITemplateEngine;
-import org.thymeleaf.text.ITextRepository;
 
 
 /**
@@ -602,16 +601,14 @@ public class ThymeleafViewResolver
         }
         if (viewName.startsWith(REDIRECT_URL_PREFIX)) {
             vrlogger.trace("[THYMELEAF] View \"{}\" is a redirect, and will not be handled directly by ThymeleafViewResolver.", viewName);
-            final ITextRepository textRepository = getTemplateEngine().getConfiguration().getTextRepository();
-            final String redirectUrl = textRepository.getText(viewName, REDIRECT_URL_PREFIX.length(), viewName.length());
+            final String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length(), viewName.length());
             final RedirectView view = new RedirectView(redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible());
             view.setApplicationContext(getApplicationContext());
             return view;
         }
         if (viewName.startsWith(FORWARD_URL_PREFIX)) {
             vrlogger.trace("[THYMELEAF] View \"{}\" is a forward, and will not be handled directly by ThymeleafViewResolver.", viewName);
-            final ITextRepository textRepository = getTemplateEngine().getConfiguration().getTextRepository();
-            final String forwardUrl = textRepository.getText(viewName, FORWARD_URL_PREFIX.length(), viewName.length());
+            final String forwardUrl = viewName.substring(FORWARD_URL_PREFIX.length(), viewName.length());
             return new InternalResourceView(forwardUrl);
         }
         vrlogger.trace("[THYMELEAF] View {} will be handled by ThymeleafViewResolver and a " +

@@ -241,14 +241,14 @@ public class SPELVariableExpressionEvaluator
         if (cacheManager != null) {
             cache = cacheManager.getExpressionCache();
             if (cache != null) {
-                exp = (SpelExpression) cache.get(configuration.getTextRepository().getText(SPEL_CACHE_PREFIX, spelExpression));
+                exp = (SpelExpression) cache.get(SPEL_CACHE_PREFIX + spelExpression);
             }
         }
 
         if (exp == null) {
             exp = (SpelExpression) PARSER.parseExpression(spelExpression);
             if (cache != null && null != exp) {
-                cache.put(configuration.getTextRepository().getText(SPEL_CACHE_PREFIX, spelExpression), exp);
+                cache.put(SPEL_CACHE_PREFIX + spelExpression, exp);
             }
         }
 
@@ -272,8 +272,7 @@ public class SPELVariableExpressionEvaluator
             return false;
         }
         // Once we extract the first part of the expression, we check whether it is a local variable...
-        final String expressionFirstComponent =
-                processingContext.getConfiguration().getTextRepository().getText(expression, 0, dotPos);
+        final String expressionFirstComponent = expression.substring(0, dotPos);
         return localVariableAwareVariablesMap.isVariableLocal(expressionFirstComponent);
 
     }
