@@ -52,7 +52,7 @@ final class ExpressionCache {
         if (cacheManager != null) {
             final ICache<String,Object> cache = cacheManager.getExpressionCache();
             if (cache != null) {
-                return cache.get(configuration.getTextRepository().getText(prefix, input));
+                return cache.get(prefix + input);
             }
         }
         return null;
@@ -64,7 +64,7 @@ final class ExpressionCache {
         if (cacheManager != null) {
             final ICache<String,Object> cache = cacheManager.getExpressionCache();
             if (cache != null) {
-                cache.put(configuration.getTextRepository().getText(prefix, input), value);
+                cache.put(prefix + input, value);
             }
         }
     }
@@ -75,7 +75,7 @@ final class ExpressionCache {
         if (cacheManager != null) {
             final ICache<String,Object> cache = cacheManager.getExpressionCache();
             if (cache != null) {
-                cache.clearKey(configuration.getTextRepository().getText(prefix, input));
+                cache.clearKey(prefix + input);
             }
         }
     }

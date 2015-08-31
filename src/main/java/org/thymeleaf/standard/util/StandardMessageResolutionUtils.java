@@ -72,13 +72,10 @@ public final class StandardMessageResolutionUtils {
         Validate.notNull(key, "Message key cannot be null");
 
         final IEngineConfiguration configuration = processingContext.getConfiguration();
-        final ITextRepository textRepository = configuration.getTextRepository();
         final Locale locale = processingContext.getLocale();
 
         final String templateName = processingContext.getTemplateResolution().getTemplateName();
-        final String cacheKey =
-                configuration.getTextRepository().getText(
-                        TEMPLATE_CACHE_PREFIX, templateName, "_", computeLocaleToString(textRepository, locale));
+        final String cacheKey = TEMPLATE_CACHE_PREFIX + templateName + "_" + computeLocaleToString(locale);
 
         Properties properties = null;
         ICache<String,Properties> messagesCache = null;
@@ -141,20 +138,20 @@ public final class StandardMessageResolutionUtils {
     // Calling locale.toString is surprisingly expensive, so we will try to us some shortcuts
     // NOTE there is one like this at MessageResolutionUtils. It's private and duplicated because it is
     //      a low-level implementation detail
-    private static String computeLocaleToString(final ITextRepository textRepository, final Locale locale) {
+    private static String computeLocaleToString(final Locale locale) {
         String localeStr = locale.getLanguage();
         final String country = locale.getCountry();
         final String variant = locale.getVariant();
         if (country.length() > 0) {
             if (localeStr.length() > 0) {
-                localeStr = textRepository.getText(localeStr, "_", country);
+                localeStr = localeStr + "_" + country;
             } else {
                 localeStr = country;
             }
         }
         if (variant.length() > 0) {
             if (localeStr.length() > 0) {
-                localeStr = textRepository.getText(localeStr, "_", variant);
+                localeStr = localeStr + "_" + variant;
             } else {
                 localeStr = variant;
             }

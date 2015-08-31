@@ -1104,15 +1104,15 @@ public class TemplateResolver
         }
 
         if (!hasPrefix) { // hasSuffix
-            return configuration.getTextRepository().getText(unaliasedName, this.suffix);
+            return unaliasedName + this.suffix;
         }
 
         if (!hasSuffix) { // hasPrefix
-            return configuration.getTextRepository().getText(this.prefix, unaliasedName);
+            return this.prefix + unaliasedName;
         }
 
         // hasPrefix && hasSuffix
-        return configuration.getTextRepository().getText(this.prefix, unaliasedName, this.suffix);
+        return this.prefix + unaliasedName + this.suffix;
 
     }
     

@@ -44,7 +44,6 @@ import org.thymeleaf.messageresolver.MessageResolution;
 import org.thymeleaf.resource.IResource;
 import org.thymeleaf.resourceresolver.ClassLoaderResourceResolver;
 import org.thymeleaf.resourceresolver.IResourceResolver;
-import org.thymeleaf.text.ITextRepository;
 
 
 /**
@@ -128,12 +127,8 @@ public final class MessageResolutionUtils {
         Validate.notNull(locale, "Locale in context cannot be null");
         Validate.notNull(messageKey, "Message key cannot be null");
 
-        final ITextRepository textRepository = configuration.getTextRepository();
-
         final String className = targetClass.getName();
-        final String cacheKey =
-                configuration.getTextRepository().getText(
-                        CLASS_CACHE_PREFIX, className, "_", computeLocaleToString(textRepository,locale));
+        final String cacheKey = CLASS_CACHE_PREFIX + className + "_" + computeLocaleToString(locale);
         
         ICache<String,Properties> messagesCache = null;
         Properties properties = null;
@@ -382,20 +377,20 @@ public final class MessageResolutionUtils {
     // Calling locale.toString is surprisingly expensive, so we will try to us some shortcuts
     // NOTE there is one like this at StandardMessageResolutionUtils. It's private and duplicated because it is
     //      a low-level implementation detail
-    private static String computeLocaleToString(final ITextRepository textRepository, final Locale locale) {
+    private static String computeLocaleToString(final Locale locale) {
         String localeStr = locale.getLanguage();
         final String country = locale.getCountry();
         final String variant = locale.getVariant();
         if (country.length() > 0) {
             if (localeStr.length() > 0) {
-                localeStr = textRepository.getText(localeStr, "_", country);
+                localeStr = localeStr + "_" + country;
             } else {
                 localeStr = country;
             }
         }
         if (variant.length() > 0) {
             if (localeStr.length() > 0) {
-                localeStr = textRepository.getText(localeStr, "_", variant);
+                localeStr = localeStr + "_" + variant;
             } else {
                 localeStr = variant;
             }

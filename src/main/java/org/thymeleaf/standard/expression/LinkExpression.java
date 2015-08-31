@@ -36,7 +36,6 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.context.IWebVariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 import org.unbescape.uri.UriEscape;
@@ -59,9 +58,8 @@ public final class LinkExpression extends SimpleExpression {
     private static final char PARAMS_START_CHAR = '(';
     private static final char PARAMS_END_CHAR = ')';
 
-    private static final char URL_TEMPLATE_DELIMITER_PREFIX_CHAR = '{';
-    private static final String URL_TEMPLATE_DELIMITER_PREFIX = "{";
-    private static final String URL_TEMPLATE_DELIMITER_SUFFIX = "}";
+    private static final char URL_TEMPLATE_DELIMITER_PREFIX = '{';
+    private static final char URL_TEMPLATE_DELIMITER_SUFFIX = '}';
 
     private static final Pattern LINK_PATTERN = 
         Pattern.compile("^\\s*\\@\\{(.+?)\\}\\s*$", Pattern.DOTALL);
@@ -245,8 +243,6 @@ public final class LinkExpression extends SimpleExpression {
          *         or th:src end up not being processed.
          */
 
-        final ITextRepository textRepository = processingContext.getConfiguration().getTextRepository();
-
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating link: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
@@ -292,8 +288,7 @@ public final class LinkExpression extends SimpleExpression {
          * Compute whether we might have variable templates (e.g. Spring Path Variables) inside this link base
          * that we might need to resolve afterwards
          */
-        final boolean mightHaveVariableTemplates =
-                findCharInSequence((String)base, URL_TEMPLATE_DELIMITER_PREFIX_CHAR) >= 0;
+        final boolean mightHaveVariableTemplates = findCharInSequence((String)base, URL_TEMPLATE_DELIMITER_PREFIX) >= 0;
 
 
         /*
@@ -358,7 +353,7 @@ public final class LinkExpression extends SimpleExpression {
          * "Path Variables" (e.g. '/something/{variable}/othersomething')
          */
         if (mightHaveVariableTemplates) {
-            linkBase = replaceTemplateParamsInBase(textRepository, linkBase, parameters);
+            linkBase = replaceTemplateParamsInBase(linkBase, parameters);
         }
 
 
@@ -546,8 +541,7 @@ public final class LinkExpression extends SimpleExpression {
 
 
 
-    static StringBuilder replaceTemplateParamsInBase(
-            final ITextRepository textRepository, final StringBuilder linkBase, final LinkParameters parameters) {
+    static StringBuilder replaceTemplateParamsInBase(final StringBuilder linkBase, final LinkParameters parameters) {
 
         /*
          * If parameters is null, there's nothing to do
@@ -574,8 +568,7 @@ public final class LinkExpression extends SimpleExpression {
             final String paramName = parameters.getParameterName(i);
 
             // We use the text repository in order to avoid the unnecessary creation of too many instances of the same string
-            final String template =
-                    textRepository.getText(URL_TEMPLATE_DELIMITER_PREFIX, paramName, URL_TEMPLATE_DELIMITER_SUFFIX);
+            final String template = URL_TEMPLATE_DELIMITER_PREFIX + paramName + URL_TEMPLATE_DELIMITER_SUFFIX;
 
             final int templateIndex = linkBase.indexOf(template); // not great, because StringBuilder.indexOf ends up calling template.toCharArray(), but...
 
@@ -599,7 +592,7 @@ public final class LinkExpression extends SimpleExpression {
                         (start < questionMarkPosition?
                                 UriEscape.escapeUriPath(templateReplacement) : UriEscape.escapeUriQueryParam(templateReplacement));
                 linkBase.replace(start, start + templateLen, escapedReplacement);
-                if (findCharInSequence(linkBase, URL_TEMPLATE_DELIMITER_PREFIX_CHAR) < 0) {
+                if (findCharInSequence(linkBase, URL_TEMPLATE_DELIMITER_PREFIX) < 0) {
                     // Just trying to save an additional StringBuilder#indexOf() -which provokes a
                     // template.toCharArray()-- in the most common case: only one variable template for a
                     // variable that is not multivalued.
