@@ -94,8 +94,7 @@
     <maven.compile.source>1.5</maven.compile.source>
     <maven.compile.target>1.5</maven.compile.target>
     <servlet-api.version>2.5</servlet-api.version>
-    <ognl.version>3.0.11</ognl.version>
-    <javassist.version>3.16.1-GA</javassist.version>
+    <ognl.version>3.1</ognl.version>
     <attoparser.version>2.0.0.BETA3</attoparser.version>
     <unbescape.version>1.1.1.RELEASE</unbescape.version>
     <slf4j.version>1.6.6</slf4j.version>
@@ -272,19 +271,6 @@
       <groupId>ognl</groupId>
       <artifactId>ognl</artifactId>
       <version>${ognl.version}</version>
-      <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>javassist</groupId>
-          <artifactId>javassist</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.javassist</groupId>
-      <artifactId>javassist</artifactId>
-      <version>${javassist.version}</version>
       <scope>compile</scope>
     </dependency>
 

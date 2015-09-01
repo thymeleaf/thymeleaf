@@ -22,10 +22,6 @@ package org.thymeleaf.standard.expression;
 import java.util.Collections;
 import java.util.Map;
 
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
-import javassist.LoaderClassPath;
 import ognl.OgnlContext;
 import ognl.OgnlException;
 import ognl.OgnlRuntime;
@@ -38,8 +34,6 @@ import org.thymeleaf.context.IVariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.standard.util.StandardExpressionUtils;
-import org.thymeleaf.util.ClassLoaderUtils;
-import org.thymeleaf.util.EvaluationUtils;
 
 /**
  * 
@@ -84,14 +78,6 @@ public final class OGNLVariableExpressionEvaluator
          */
         final OGNLVariablesMapPropertyAccessor accessor = new OGNLVariablesMapPropertyAccessor();
         OgnlRuntime.setPropertyAccessor(IVariablesMap.class, accessor);
-
-        /*
-         * APPLY THE BOOLEAN EVALUATION FIX (so that ${!'false'} evaluates as true)
-         */
-        if (!booleanFixApplied && shouldApplyOgnlBooleanFix()) {
-            applyOgnlBooleanFix();
-            booleanFixApplied = true;
-        }
 
     }
 
@@ -211,87 +197,7 @@ public final class OGNLVariableExpressionEvaluator
     public String toString() {
         return "OGNL";
     }
-    
-    
-    
-    /**
-     * <p>
-     *   Determines whether a fix should be applied to OGNL in order
-     *   to evaluate Strings as booleans in the same way as 
-     *   Thymeleaf does ('false', 'off' and 'no' are actually "false"
-     *   instead of OGNL's default "true"). 
-     * </p>
-     * 
-     * @return whether the OGNL boolean fix should be applied or not.
-     */
-    protected boolean shouldApplyOgnlBooleanFix() {
-        return true;
-    }
-        
-    
-    
-    private static void applyOgnlBooleanFix() {
-        
-        try {
-            
-            final ClassLoader classLoader = 
-                    ClassLoaderUtils.getClassLoader(OGNLVariableExpressionEvaluator.class);
-            
-            final ClassPool pool = new ClassPool(true);
-            pool.insertClassPath(new LoaderClassPath(classLoader));
 
-            final CtClass[] params = new CtClass[] { pool.get(Object.class.getName()) };
-            
-            // We must load by class name here instead of "OgnlOps.class.getName()" because
-            // the latter would cause the class to be loaded and therefore it would not be
-            // possible to modify it.
-            final CtClass ognlClass = pool.get("ognl.OgnlOps");
-            final CtClass fixClass = pool.get(OGNLVariableExpressionEvaluator.class.getName());
-            
-            final CtMethod ognlMethod = 
-                    ognlClass.getDeclaredMethod("booleanValue", params);
-            final CtMethod fixMethod = 
-                    fixClass.getDeclaredMethod("fixBooleanValue", params);
-            
-            ognlMethod.setBody(fixMethod, null);
-            
-            // Pushes the class to the class loader, effectively making it
-            // load the modified version instead of the original one. 
-            ognlClass.toClass(classLoader, null);
-            
-        } catch (final Exception e) {
-            // Any exceptions here will be consumed and converted into log messages.
-            // An exception at this point could be caused by multiple situations that 
-            // should not suppose the stop of the framework's initialization.
-            // If the fix cannot not applied, an INFO message is issued and initialization
-            // continues normally.
-            if (logger.isTraceEnabled()) {
-                logger.trace(
-                        "Thymeleaf was not able to apply a fix on OGNL's boolean evaluation " +
-                        "that would have enabled OGNL to evaluate Strings as booleans (e.g. in " +
-                        "\"th:if\") in exactly the same way as Thymeleaf itself or Spring EL ('false', " +
-                        "'off' and 'no' should be considered \"false\"). This did not stop the " +
-                        "initialization process.", e);
-            } else {
-                logger.info(
-                        "Thymeleaf was not able to apply a fix on OGNL's boolean evaluation " +
-                        "that would have enabled OGNL to evaluate Strings as booleans (e.g. in " +
-                        "\"th:if\") in exactly the same way as Thymeleaf itself or Spring EL ('false', " +
-                        "'off' and 'no' should be considered \"false\"). This did not stop the " +
-                        "initialization process. Exception raised was " + e.getClass().getName() + 
-                        ": " + e.getMessage() + " [Set the log to TRACE for the complete exception stack trace]");
-            }
-        }
-        
-    }
-        
-        
-    static boolean fixBooleanValue(final Object value) {
-        // This specifies how evaluation to boolean should be done *INSIDE* OGNL expressions, so the conversion
-        // service does not really apply at this point (it will be applied later, on the Standard -not OGNL- expr.)
-        return EvaluationUtils.evaluateAsBoolean(value);
-    }
-    
 
 
 
