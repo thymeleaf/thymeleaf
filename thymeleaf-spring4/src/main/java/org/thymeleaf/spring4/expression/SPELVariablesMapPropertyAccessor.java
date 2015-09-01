@@ -98,9 +98,11 @@ public final class SPELVariablesMapPropertyAccessor implements PropertyAccessor 
              */
 
             // 'execInfo' translation from context variable to expression object - deprecated and to be removed in 3.1
-            final Object execInfoResult = checkExecInfo(name, context);
-            if (execInfoResult != null) {
-                return new TypedValue(execInfoResult);
+            if ("execInfo".equals(name)) { // Quick check to avoid deprecated method call
+                final Object execInfoResult = checkExecInfo(name, context);
+                if (execInfoResult != null) {
+                    return new TypedValue(execInfoResult);
+                }
             }
 
             final IVariablesMap variablesMap = (IVariablesMap) target;
