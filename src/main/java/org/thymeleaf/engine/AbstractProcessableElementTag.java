@@ -142,12 +142,7 @@ abstract class AbstractProcessableElementTag
         this.associatedProcessorsSize = 0;
 
         if (this.elementDefinition.hasAssociatedProcessors) {
-
-            final IElementProcessor[] elementAssociatedProcessors = this.elementDefinition.associatedProcessors;
-            for (int i = 0; i < elementAssociatedProcessors.length; i++) {
-                addAssociatedProcessor(elementAssociatedProcessors[i]);
-            }
-
+            addAssociatedProcessors(this.elementDefinition.associatedProcessors, this.elementDefinition.associatedProcessors.length);
         }
 
         int n = this.elementAttributes.attributesSize;
@@ -192,7 +187,7 @@ abstract class AbstractProcessableElementTag
     // care of the length of the array (in case it has to be grown)
     private void addAssociatedProcessor(final IElementProcessor elementProcessor) {
 
-        if (this.associatedProcessors == null || this.associatedProcessors.length == this.associatedProcessorsSize) {
+        if (this.associatedProcessors == null || this.associatedProcessorsSize == this.associatedProcessors.length) {
             // We need to grow the structures
             final IElementProcessor[] newAssociatedProcessors =
                     new IElementProcessor[this.associatedProcessorsSize + DEFAULT_ASSOCIATED_PROCESSORS_LENGTH];
@@ -204,6 +199,25 @@ abstract class AbstractProcessableElementTag
 
         this.associatedProcessors[this.associatedProcessorsSize] = elementProcessor;
         this.associatedProcessorsSize++;
+
+    }
+
+
+    private void addAssociatedProcessors(final IElementProcessor[] elementProcessors, final int elementProcessorsSize) {
+
+        final int requiredLen = this.associatedProcessorsSize + elementProcessorsSize;
+
+        if (this.associatedProcessors == null || requiredLen > this.associatedProcessors.length) {
+            // We need to grow the structures
+            final IElementProcessor[] newAssociatedProcessors = new IElementProcessor[requiredLen + DEFAULT_ASSOCIATED_PROCESSORS_LENGTH];
+            if (this.associatedProcessors != null) {
+                System.arraycopy(this.associatedProcessors, 0, newAssociatedProcessors, 0, this.associatedProcessors.length);
+            }
+            this.associatedProcessors = newAssociatedProcessors;
+        }
+
+        System.arraycopy(elementProcessors, 0, this.associatedProcessors, this.associatedProcessorsSize, elementProcessorsSize);
+        this.associatedProcessorsSize += elementProcessorsSize;
 
     }
 
@@ -232,9 +246,7 @@ abstract class AbstractProcessableElementTag
         }
         this.associatedProcessorsSize = 0;
         if (original.associatedProcessorsSize > 0) {
-            for (int i = 0; i < original.associatedProcessorsSize; i++) {
-                addAssociatedProcessor(original.associatedProcessors[i]);
-            }
+            addAssociatedProcessors(original.associatedProcessors, original.associatedProcessorsSize);
         }
         this.associatedProcessorsAttributesVersion = original.associatedProcessorsAttributesVersion;
     }
