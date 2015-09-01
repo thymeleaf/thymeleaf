@@ -31,12 +31,13 @@ public abstract class ElementName {
 
     final protected String prefix;
     final protected String elementName;
-    protected String[] completeElementNames;
+    final protected String[] completeElementNames;
+    final private int h;
 
 
 
 
-    protected ElementName(final String prefix, final String elementName) {
+    protected ElementName(final String prefix, final String elementName, final String[] completeElementNames) {
 
         super();
 
@@ -49,7 +50,8 @@ public abstract class ElementName {
 
         this.prefix = prefix;
         this.elementName = elementName;
-        this.completeElementNames = new String[] { this.elementName };
+        this.completeElementNames = completeElementNames;
+        this.h = Arrays.hashCode(this.completeElementNames);
 
     }
 
@@ -85,6 +87,10 @@ public abstract class ElementName {
 
         final ElementName that = (ElementName) o;
 
+        if (this.h != that.h) {
+            return false;
+        }
+
         if (!Arrays.equals(this.completeElementNames, that.completeElementNames)) {
             return false;
         }
@@ -98,7 +104,7 @@ public abstract class ElementName {
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(this.completeElementNames);
+        return this.h;
     }
 
 

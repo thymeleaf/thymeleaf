@@ -153,17 +153,17 @@ public class ElementNames {
             if (c == ':') {
                 if (i == elementNameOffset + 1){
                     // ':' was the first char, no prefix there
-                    return new TextElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
+                    return TextElementName.forName(null, new String(elementNameBuffer, elementNameOffset, elementNameLen));
                 }
 
-                return new TextElementName(
+                return TextElementName.forName(
                         new String(elementNameBuffer, elementNameOffset, (i - (elementNameOffset + 1))),
                         new String(elementNameBuffer, i, (elementNameOffset + elementNameLen) - i));
             }
 
         }
 
-        return new TextElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
+        return TextElementName.forName(null, new String(elementNameBuffer, elementNameOffset, elementNameLen));
 
     }
 
@@ -192,17 +192,17 @@ public class ElementNames {
             if (c == ':') {
                 if (i == elementNameOffset + 1){
                     // ':' was the first char, no prefix there
-                    return new XMLElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
+                    return XMLElementName.forName(null, new String(elementNameBuffer, elementNameOffset, elementNameLen));
                 }
 
-                return new XMLElementName(
+                return XMLElementName.forName(
                         new String(elementNameBuffer, elementNameOffset, (i - (elementNameOffset + 1))),
                         new String(elementNameBuffer, i, (elementNameOffset + elementNameLen) - i));
             }
 
         }
 
-        return new XMLElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
+        return XMLElementName.forName(null, new String(elementNameBuffer, elementNameOffset, elementNameLen));
 
     }
 
@@ -231,16 +231,16 @@ public class ElementNames {
             if (c == ':') {
                 if (i == elementNameOffset + 1){
                     // ':' was the first char, no prefix there
-                    return new HTMLElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
+                    return HTMLElementName.forName(null, new String(elementNameBuffer, elementNameOffset, elementNameLen));
                 }
 
                 if (TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "xml:", 0, 4, elementNameBuffer, elementNameOffset, (i - elementNameOffset)) ||
                     TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "xmlns:", 0, 6, elementNameBuffer, elementNameOffset, (i - elementNameOffset))) {
                     // 'xml' is not a valid dialect prefix in HTML mode
-                    return new HTMLElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
+                    return HTMLElementName.forName(null, new String(elementNameBuffer, elementNameOffset, elementNameLen));
                 }
 
-                return new HTMLElementName(
+                return HTMLElementName.forName(
                         new String(elementNameBuffer, elementNameOffset, (i - (elementNameOffset + 1))),
                         new String(elementNameBuffer, i, (elementNameOffset + elementNameLen) - i));
             }
@@ -248,17 +248,17 @@ public class ElementNames {
             if (c == '-') {
                 if (i == elementNameOffset + 1) {
                     // '-' was the first char, no prefix there
-                    return new HTMLElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
+                    return HTMLElementName.forName(null, new String(elementNameBuffer, elementNameOffset, elementNameLen));
 
                 }
-                return new HTMLElementName(
+                return HTMLElementName.forName(
                         new String(elementNameBuffer, elementNameOffset, (i - (elementNameOffset + 1))),
                         new String(elementNameBuffer, i, (elementNameOffset + elementNameLen) - i));
             }
 
         }
 
-        return new HTMLElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
+        return HTMLElementName.forName(null, new String(elementNameBuffer, elementNameOffset, elementNameLen));
 
     }
 
@@ -284,17 +284,17 @@ public class ElementNames {
             if (c == ':') {
                 if (i == 1){
                     // ':' was the first char, no prefix there
-                    return new TextElementName(elementName);
+                    return TextElementName.forName(null, elementName);
                 }
 
-                return new TextElementName(
+                return TextElementName.forName(
                         elementName.substring(0, i - 1),
                         elementName.substring(i, elementName.length()));
             }
 
         }
 
-        return new TextElementName(elementName);
+        return TextElementName.forName(null, elementName);
 
     }
 
@@ -320,17 +320,17 @@ public class ElementNames {
             if (c == ':') {
                 if (i == 1){
                     // ':' was the first char, no prefix there
-                    return new XMLElementName(elementName);
+                    return XMLElementName.forName(null, elementName);
                 }
 
-                return new XMLElementName(
+                return XMLElementName.forName(
                         elementName.substring(0, i - 1),
                         elementName.substring(i, elementName.length()));
             }
 
         }
 
-        return new XMLElementName(elementName);
+        return XMLElementName.forName(null, elementName);
 
     }
 
@@ -355,16 +355,16 @@ public class ElementNames {
             if (c == ':') {
                 if (i == 1){
                     // ':' was the first char, no prefix there
-                    return new HTMLElementName(elementName);
+                    return HTMLElementName.forName(null, elementName);
                 }
 
                 if (TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "xml:", 0, 4, elementName, 0, i) ||
                     TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "xmlns:", 0, 6, elementName, 0, i)) {
                     // 'xml' is not a valid dialect prefix in HTML mode
-                    return new HTMLElementName(elementName);
+                    return HTMLElementName.forName(null, elementName);
                 }
 
-                return new HTMLElementName(
+                return HTMLElementName.forName(
                         elementName.substring(0, i - 1),
                         elementName.substring(i,elementName.length()));
             }
@@ -372,17 +372,17 @@ public class ElementNames {
             if (c == '-') {
                 if (i == 1) {
                     // '-' was the first char, no prefix there
-                    return new HTMLElementName(elementName);
+                    return HTMLElementName.forName(null, elementName);
 
                 }
-                return new HTMLElementName(
+                return HTMLElementName.forName(
                         elementName.substring(0, i - 1),
                         elementName.substring(i, elementName.length()));
             }
 
         }
 
-        return new HTMLElementName(elementName);
+        return HTMLElementName.forName(null, elementName);
 
     }
 
@@ -398,7 +398,7 @@ public class ElementNames {
         if (prefix == null || prefix.trim().length() == 0) {
             return forTextName(elementNameBuffer, elementNameOffset, elementNameLen);
         }
-        return new TextElementName(prefix, new String(elementNameBuffer, elementNameOffset, elementNameLen));
+        return TextElementName.forName(prefix, new String(elementNameBuffer, elementNameOffset, elementNameLen));
     }
 
 
@@ -413,7 +413,7 @@ public class ElementNames {
         if (prefix == null || prefix.trim().length() == 0) {
             return forXMLName(elementNameBuffer, elementNameOffset, elementNameLen);
         }
-        return new XMLElementName(prefix, new String(elementNameBuffer, elementNameOffset, elementNameLen));
+        return XMLElementName.forName(prefix, new String(elementNameBuffer, elementNameOffset, elementNameLen));
     }
 
 
@@ -428,7 +428,7 @@ public class ElementNames {
         if (prefix == null || prefix.trim().length() == 0) {
             return forHTMLName(elementNameBuffer, elementNameOffset, elementNameLen);
         }
-        return new HTMLElementName(prefix, new String(elementNameBuffer, elementNameOffset, elementNameLen));
+        return HTMLElementName.forName(prefix, new String(elementNameBuffer, elementNameOffset, elementNameLen));
     }
 
 
@@ -440,7 +440,7 @@ public class ElementNames {
         if (prefix == null || prefix.trim().length() == 0) {
             return forTextName(elementName);
         }
-        return new TextElementName(prefix, elementName);
+        return TextElementName.forName(prefix, elementName);
     }
 
 
@@ -452,7 +452,7 @@ public class ElementNames {
         if (prefix == null || prefix.trim().length() == 0) {
             return forXMLName(elementName);
         }
-        return new XMLElementName(prefix, elementName);
+        return XMLElementName.forName(prefix, elementName);
     }
 
 
@@ -464,7 +464,7 @@ public class ElementNames {
         if (prefix == null || prefix.trim().length() == 0) {
             return forHTMLName(elementName);
         }
-        return new HTMLElementName(prefix, elementName);
+        return HTMLElementName.forName(prefix, elementName);
     }
 
 

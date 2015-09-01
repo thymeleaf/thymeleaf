@@ -31,13 +31,14 @@ public abstract class AttributeName {
 
     final protected String prefix;
     final protected String attributeName;
-    protected String[] completeAttributeNames;
+    final protected String[] completeAttributeNames;
+    final private int h;
 
 
 
 
 
-    protected AttributeName(final String prefix, final String attributeName) {
+    protected AttributeName(final String prefix, final String attributeName, final String[] completeAttributeNames) {
 
         super();
 
@@ -49,7 +50,8 @@ public abstract class AttributeName {
 
         this.prefix = prefix;
         this.attributeName = attributeName;
-        this.completeAttributeNames = new String[] { this.attributeName };
+        this.completeAttributeNames = completeAttributeNames;
+        this.h = Arrays.hashCode(this.completeAttributeNames);
 
     }
 
@@ -85,6 +87,10 @@ public abstract class AttributeName {
 
         final AttributeName that = (AttributeName) o;
 
+        if (this.h != that.h) {
+            return false;
+        }
+
         if (!Arrays.equals(this.completeAttributeNames, that.completeAttributeNames)) {
             return false;
         }
@@ -98,7 +104,7 @@ public abstract class AttributeName {
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(this.completeAttributeNames);
+        return this.h;
     }
 
 

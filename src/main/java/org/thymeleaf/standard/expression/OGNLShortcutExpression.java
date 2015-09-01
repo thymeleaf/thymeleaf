@@ -166,9 +166,11 @@ final class OGNLShortcutExpression {
         }
 
         // 'execInfo' translation from context variable to expression object - deprecated and to be removed in 3.1
-        final Object execInfoResult = checkExecInfo(propertyName, context);
-        if (execInfoResult != null) {
-            return execInfoResult;
+        if ("execInfo".equals(propertyName)) { // Quick check to avoid deprecated method call
+            final Object execInfoResult = checkExecInfo(propertyName, context);
+            if (execInfoResult != null) {
+                return execInfoResult;
+            }
         }
 
         return ((IVariablesMap) target).getVariable(propertyName);

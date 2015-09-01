@@ -31,30 +31,45 @@ public final class TextAttributeName extends AttributeName {
 
 
 
-    TextAttributeName(final String attributeName) {
-        this(null, attributeName);
-    }
+    static TextAttributeName forName(final String prefix, final String attributeName) {
 
+        final boolean hasPrefix = prefix != null && prefix.length() > 0;
 
-    TextAttributeName(final String prefix, final String attributeName) {
+        final String completeNamespacedAttributeName;
+        final String[] completeAttributeNames;
 
-        super(prefix, attributeName);
+        if (hasPrefix) {
 
-        if (this.prefix == null || this.prefix.length() == 0) {
-
-            this.completeNamespacedAttributeName = this.attributeName;
-
-            // The completeAttributeNames array is assigned correctly at the parent class in this case
+            completeNamespacedAttributeName = prefix + ":" + attributeName;
+            completeAttributeNames = new String[] { completeNamespacedAttributeName };
 
         } else {
 
-            this.completeNamespacedAttributeName = this.prefix + ":" + this.attributeName;
-
-            this.completeAttributeNames =
-                    new String[] { this.completeNamespacedAttributeName };
+            completeNamespacedAttributeName = attributeName;
+            completeAttributeNames = new String[] { attributeName };
 
         }
 
+        return new TextAttributeName(
+                prefix, attributeName,
+                completeNamespacedAttributeName, completeAttributeNames);
+
+    }
+
+
+    private TextAttributeName(
+            final String prefix, final String attributeName,
+            final String completeNamespacedAttributeName,
+            final String[] completeAttributeNames) {
+
+        super(prefix, attributeName, completeAttributeNames);
+        this.completeNamespacedAttributeName = completeNamespacedAttributeName;
+
+    }
+
+
+    public String getCompleteNamespacedAttributeName() {
+        return this.completeNamespacedAttributeName;
     }
 
 }

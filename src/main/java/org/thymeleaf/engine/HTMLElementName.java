@@ -33,32 +33,51 @@ public final class HTMLElementName extends ElementName {
 
 
 
-    HTMLElementName(final String elementName) {
-        this(null, elementName);
-    }
+    static HTMLElementName forName(final String prefix, final String elementName) {
 
+        final boolean hasPrefix = prefix != null && prefix.length() > 0;
 
-    HTMLElementName(final String prefix, final String elementName) {
+        final String nameElementName =
+                (elementName == null || elementName.length() == 0)? null : elementName.toLowerCase();
 
-        super(prefix == null || prefix.length() == 0? null : prefix.toLowerCase(),
-              elementName == null || elementName.length() == 0? null : elementName.toLowerCase());
+        final String namePrefix;
+        final String completeNamespacedElementName;
+        final String completeHTML5ElementName;
+        final String[] completeAttributeNames;
 
-        if (this.prefix == null || this.prefix.length() == 0) {
+        if (hasPrefix) {
 
-            this.completeNamespacedElementName = this.elementName;
-            this.completeHTML5ElementName = this.elementName;
-
-            // The completeAttributeNames array is assigned correctly at the parent class in this case
+            namePrefix = prefix.toLowerCase();
+            completeNamespacedElementName = namePrefix + ":" + nameElementName;
+            completeHTML5ElementName = namePrefix + "-" + nameElementName;
+            completeAttributeNames = new String[] { completeNamespacedElementName, completeHTML5ElementName };
 
         } else {
 
-            this.completeNamespacedElementName = this.prefix + ":" + this.elementName;
-            this.completeHTML5ElementName = this.prefix + "-" + this.elementName;
-
-            this.completeElementNames =
-                    new String[] { this.completeNamespacedElementName, this.completeHTML5ElementName};
+            namePrefix = null;
+            completeNamespacedElementName = nameElementName;
+            completeHTML5ElementName = nameElementName;
+            completeAttributeNames = new String[] { nameElementName };
 
         }
+
+        return new HTMLElementName(
+                namePrefix, nameElementName,
+                completeNamespacedElementName, completeHTML5ElementName, completeAttributeNames);
+
+    }
+
+
+    private HTMLElementName(
+            final String prefix, final String elementName,
+            final String completeNamespacedElementName,
+            final String completeHTML5ElementName,
+            final String[] completeElementNames) {
+
+        super(prefix, elementName, completeElementNames);
+
+        this.completeNamespacedElementName = completeNamespacedElementName;
+        this.completeHTML5ElementName = completeHTML5ElementName;
 
     }
 

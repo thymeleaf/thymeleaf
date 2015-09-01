@@ -31,30 +31,45 @@ public final class XMLAttributeName extends AttributeName {
 
 
 
-    XMLAttributeName(final String attributeName) {
-        this(null, attributeName);
-    }
+    static XMLAttributeName forName(final String prefix, final String attributeName) {
 
+        final boolean hasPrefix = prefix != null && prefix.length() > 0;
 
-    XMLAttributeName(final String prefix, final String attributeName) {
+        final String completeNamespacedAttributeName;
+        final String[] completeAttributeNames;
 
-        super(prefix, attributeName);
+        if (hasPrefix) {
 
-        if (this.prefix == null || this.prefix.length() == 0) {
-
-            this.completeNamespacedAttributeName = this.attributeName;
-
-            // The completeAttributeNames array is assigned correctly at the parent class in this case
+            completeNamespacedAttributeName = prefix + ":" + attributeName;
+            completeAttributeNames = new String[] { completeNamespacedAttributeName };
 
         } else {
 
-            this.completeNamespacedAttributeName = this.prefix + ":" + this.attributeName;
-
-            this.completeAttributeNames =
-                    new String[] { this.completeNamespacedAttributeName };
+            completeNamespacedAttributeName = attributeName;
+            completeAttributeNames = new String[] { attributeName };
 
         }
 
+        return new XMLAttributeName(
+                prefix, attributeName,
+                completeNamespacedAttributeName, completeAttributeNames);
+
+    }
+
+
+    private XMLAttributeName(
+            final String prefix, final String attributeName,
+            final String completeNamespacedAttributeName,
+            final String[] completeAttributeNames) {
+
+        super(prefix, attributeName, completeAttributeNames);
+        this.completeNamespacedAttributeName = completeNamespacedAttributeName;
+
+    }
+
+
+    public String getCompleteNamespacedAttributeName() {
+        return this.completeNamespacedAttributeName;
     }
 
 }

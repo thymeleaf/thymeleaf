@@ -153,17 +153,17 @@ public class AttributeNames {
             if (c == ':') {
                 if (i == attributeNameOffset + 1){
                     // ':' was the first char, no prefix there
-                    return new TextAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+                    return TextAttributeName.forName(null, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
                 }
 
-                return new TextAttributeName(
+                return TextAttributeName.forName(
                         new String(attributeNameBuffer, attributeNameOffset, (i - (attributeNameOffset + 1))),
                         new String(attributeNameBuffer, i, (attributeNameOffset + attributeNameLen) - i));
             }
 
         }
 
-        return new TextAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+        return TextAttributeName.forName(null, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
 
     }
 
@@ -192,17 +192,17 @@ public class AttributeNames {
             if (c == ':') {
                 if (i == attributeNameOffset + 1){
                     // ':' was the first char, no prefix there
-                    return new XMLAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+                    return XMLAttributeName.forName(null, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
                 }
 
-                return new XMLAttributeName(
+                return XMLAttributeName.forName(
                         new String(attributeNameBuffer, attributeNameOffset, (i - (attributeNameOffset + 1))),
                         new String(attributeNameBuffer, i, (attributeNameOffset + attributeNameLen) - i));
             }
 
         }
 
-        return new XMLAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+        return XMLAttributeName.forName(null, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
 
     }
 
@@ -232,16 +232,16 @@ public class AttributeNames {
             if (!inData && c == ':') {
                 if (i == attributeNameOffset + 1){
                     // ':' was the first char, no prefix there
-                    return new HTMLAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+                    return HTMLAttributeName.forName(null, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
                 }
 
                 if (TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "xml:", 0, 4, attributeNameBuffer, attributeNameOffset, (i - attributeNameOffset)) ||
                     TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "xmlns:", 0, 6, attributeNameBuffer, attributeNameOffset, (i - attributeNameOffset))) {
                     // 'xml' and 'xmlns' are not a valid dialect prefix in HTML mode
-                    return new HTMLAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+                    return HTMLAttributeName.forName(null, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
                 }
 
-                return new HTMLAttributeName(
+                return HTMLAttributeName.forName(
                         new String(attributeNameBuffer, attributeNameOffset, (i - (attributeNameOffset + 1))),
                         new String(attributeNameBuffer, i, (attributeNameOffset + attributeNameLen) - i));
             }
@@ -252,24 +252,24 @@ public class AttributeNames {
                     continue;
                 } else {
                     // this is just a normal, non-thymeleaf 'data-*' attribute
-                    return new HTMLAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+                    return HTMLAttributeName.forName(null, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
                 }
             }
 
             if (inData && c == '-') {
                 if (i == attributeNameOffset + 6) {
                     // '-' was the first char after 'data-', no prefix there
-                    return new HTMLAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+                    return HTMLAttributeName.forName(null, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
 
                 }
-                return new HTMLAttributeName(
+                return HTMLAttributeName.forName(
                         new String(attributeNameBuffer, attributeNameOffset + 5, (i - (attributeNameOffset + 6))),
                         new String(attributeNameBuffer, i, (attributeNameOffset + attributeNameLen) - i));
             }
 
         }
 
-        return new HTMLAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+        return HTMLAttributeName.forName(null, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
 
     }
 
@@ -295,17 +295,17 @@ public class AttributeNames {
             if (c == ':') {
                 if (i == 1){
                     // ':' was the first char, no prefix there
-                    return new TextAttributeName(attributeName);
+                    return TextAttributeName.forName(null, attributeName);
                 }
 
-                return new TextAttributeName(
+                return TextAttributeName.forName(
                         attributeName.substring(0, i - 1),
                         attributeName.substring(i, attributeName.length()));
             }
 
         }
 
-        return new TextAttributeName(attributeName);
+        return TextAttributeName.forName(null, attributeName);
 
     }
 
@@ -331,17 +331,17 @@ public class AttributeNames {
             if (c == ':') {
                 if (i == 1){
                     // ':' was the first char, no prefix there
-                    return new XMLAttributeName(attributeName);
+                    return XMLAttributeName.forName(null, attributeName);
                 }
 
-                return new XMLAttributeName(
+                return XMLAttributeName.forName(
                         attributeName.substring(0, i - 1),
                         attributeName.substring(i, attributeName.length()));
             }
 
         }
 
-        return new XMLAttributeName(attributeName);
+        return XMLAttributeName.forName(null, attributeName);
 
     }
 
@@ -367,16 +367,16 @@ public class AttributeNames {
             if (!inData && c == ':') {
                 if (i == 1){
                     // ':' was the first char, no prefix there
-                    return new HTMLAttributeName(attributeName);
+                    return HTMLAttributeName.forName(null, attributeName);
                 }
 
                 if (TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "xml:", 0, 4, attributeName, 0, i) ||
                     TextUtils.equals(TemplateMode.HTML.isCaseSensitive(), "xmlns:", 0, 6, attributeName, 0, i)) {
                     // 'xml' is not a valid dialect prefix in HTML mode
-                    return new HTMLAttributeName(attributeName);
+                    return HTMLAttributeName.forName(null, attributeName);
                 }
 
-                return new HTMLAttributeName(
+                return HTMLAttributeName.forName(
                         attributeName.substring(0, i - 1),
                         attributeName.substring(i,attributeName.length()));
             }
@@ -387,24 +387,24 @@ public class AttributeNames {
                     continue;
                 } else {
                     // this is just a normal, non-thymeleaf 'data-*' attribute
-                    return new HTMLAttributeName(attributeName);
+                    return HTMLAttributeName.forName(null, attributeName);
                 }
             }
 
             if (inData && c == '-') {
                 if (i == 6) {
                     // '-' was the first char after 'data-', no prefix there
-                    return new HTMLAttributeName(attributeName);
+                    return HTMLAttributeName.forName(null, attributeName);
 
                 }
-                return new HTMLAttributeName(
+                return HTMLAttributeName.forName(
                         attributeName.substring(5, i - 1),
                         attributeName.substring(i, attributeName.length()));
             }
 
         }
 
-        return new HTMLAttributeName(attributeName);
+        return HTMLAttributeName.forName(null, attributeName);
 
     }
 
@@ -420,7 +420,7 @@ public class AttributeNames {
         if (prefix == null || prefix.trim().length() == 0) {
             return forTextName(attributeNameBuffer, attributeNameOffset, attributeNameLen);
         }
-        return new TextAttributeName(prefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+        return TextAttributeName.forName(prefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
     }
 
 
@@ -435,7 +435,7 @@ public class AttributeNames {
         if (prefix == null || prefix.trim().length() == 0) {
             return forXMLName(attributeNameBuffer, attributeNameOffset, attributeNameLen);
         }
-        return new XMLAttributeName(prefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+        return XMLAttributeName.forName(prefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
     }
 
 
@@ -450,7 +450,7 @@ public class AttributeNames {
         if (prefix == null || prefix.trim().length() == 0) {
             return forHTMLName(attributeNameBuffer, attributeNameOffset, attributeNameLen);
         }
-        return new HTMLAttributeName(prefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+        return HTMLAttributeName.forName(prefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
     }
 
 
@@ -462,7 +462,7 @@ public class AttributeNames {
         if (prefix == null || prefix.trim().length() == 0) {
             return forTextName(attributeName);
         }
-        return new TextAttributeName(prefix, attributeName);
+        return TextAttributeName.forName(prefix, attributeName);
     }
 
 
@@ -474,7 +474,7 @@ public class AttributeNames {
         if (prefix == null || prefix.trim().length() == 0) {
             return forXMLName(attributeName);
         }
-        return new XMLAttributeName(prefix, attributeName);
+        return XMLAttributeName.forName(prefix, attributeName);
     }
 
 
@@ -486,7 +486,7 @@ public class AttributeNames {
         if (prefix == null || prefix.trim().length() == 0) {
             return forHTMLName(attributeName);
         }
-        return new HTMLAttributeName(prefix, attributeName);
+        return HTMLAttributeName.forName(prefix, attributeName);
     }
 
 
