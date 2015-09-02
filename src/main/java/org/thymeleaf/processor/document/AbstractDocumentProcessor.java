@@ -56,11 +56,13 @@ public abstract class AbstractDocumentProcessor
             doProcessDocumentStart(processingContext, documentStart, structureHandler);
 
         } catch (final TemplateProcessingException e) {
-            if (!e.hasTemplateName()) {
-                e.setTemplateName(documentStart.getTemplateName());
-            }
-            if (!e.hasLineAndCol()) {
-                e.setLineAndCol(documentStart.getLine(), documentStart.getCol());
+            if (documentStart.hasLocation()) {
+                if (!e.hasTemplateName()) {
+                    e.setTemplateName(documentStart.getTemplateName());
+                }
+                if (!e.hasLineAndCol()) {
+                    e.setLineAndCol(documentStart.getLine(), documentStart.getCol());
+                }
             }
             throw e;
         } catch (final Exception e) {
@@ -83,11 +85,13 @@ public abstract class AbstractDocumentProcessor
                     processingContext, documentEnd, structureHandler);
 
         } catch (final TemplateProcessingException e) {
-            if (!e.hasTemplateName()) {
-                e.setTemplateName(documentEnd.getTemplateName());
-            }
-            if (!e.hasLineAndCol()) {
-                e.setLineAndCol(documentEnd.getLine(), documentEnd.getCol());
+            if (documentEnd.hasLocation()) {
+                if (!e.hasTemplateName()) {
+                    e.setTemplateName(documentEnd.getTemplateName());
+                }
+                if (!e.hasLineAndCol()) {
+                    e.setLineAndCol(documentEnd.getLine(), documentEnd.getCol());
+                }
             }
             throw e;
         } catch (final Exception e) {

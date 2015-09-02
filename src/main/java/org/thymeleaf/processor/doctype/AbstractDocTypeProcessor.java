@@ -51,11 +51,13 @@ public abstract class AbstractDocTypeProcessor
             doProcess(processingContext, docType, structureHandler);
 
         } catch (final TemplateProcessingException e) {
-            if (!e.hasTemplateName()) {
-                e.setTemplateName(docType.getTemplateName());
-            }
-            if (!e.hasLineAndCol()) {
-                e.setLineAndCol(docType.getLine(), docType.getCol());
+            if (docType.hasLocation()) {
+                if (!e.hasTemplateName()) {
+                    e.setTemplateName(docType.getTemplateName());
+                }
+                if (!e.hasLineAndCol()) {
+                    e.setLineAndCol(docType.getLine(), docType.getCol());
+                }
             }
             throw e;
         } catch (final Exception e) {

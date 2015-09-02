@@ -51,11 +51,13 @@ public abstract class AbstractCommentProcessor
             doProcess(processingContext, comment, structureHandler);
 
         } catch (final TemplateProcessingException e) {
-            if (!e.hasTemplateName()) {
-                e.setTemplateName(comment.getTemplateName());
-            }
-            if (!e.hasLineAndCol()) {
-                e.setLineAndCol(comment.getLine(), comment.getCol());
+            if (comment.hasLocation()) {
+                if (!e.hasTemplateName()) {
+                    e.setTemplateName(comment.getTemplateName());
+                }
+                if (!e.hasLineAndCol()) {
+                    e.setLineAndCol(comment.getLine(), comment.getCol());
+                }
             }
             throw e;
         } catch (final Exception e) {

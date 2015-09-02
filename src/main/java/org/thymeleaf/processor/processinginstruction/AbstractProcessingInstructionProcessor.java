@@ -51,11 +51,13 @@ public abstract class AbstractProcessingInstructionProcessor
             doProcess(processingContext, processingInstruction, structureHandler);
 
         } catch (final TemplateProcessingException e) {
-            if (!e.hasTemplateName()) {
-                e.setTemplateName(processingInstruction.getTemplateName());
-            }
-            if (!e.hasLineAndCol()) {
-                e.setLineAndCol(processingInstruction.getLine(), processingInstruction.getCol());
+            if (processingInstruction.hasLocation()) {
+                if (!e.hasTemplateName()) {
+                    e.setTemplateName(processingInstruction.getTemplateName());
+                }
+                if (!e.hasLineAndCol()) {
+                    e.setLineAndCol(processingInstruction.getLine(), processingInstruction.getCol());
+                }
             }
             throw e;
         } catch (final Exception e) {

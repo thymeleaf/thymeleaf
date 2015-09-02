@@ -51,11 +51,13 @@ public abstract class AbstractCDATASectionProcessor
             doProcess(processingContext, cdataSection, structureHandler);
 
         } catch (final TemplateProcessingException e) {
-            if (!e.hasTemplateName()) {
-                e.setTemplateName(cdataSection.getTemplateName());
-            }
-            if (!e.hasLineAndCol()) {
-                e.setLineAndCol(cdataSection.getLine(), cdataSection.getCol());
+            if (cdataSection.hasLocation()) {
+                if (!e.hasTemplateName()) {
+                    e.setTemplateName(cdataSection.getTemplateName());
+                }
+                if (!e.hasLineAndCol()) {
+                    e.setLineAndCol(cdataSection.getLine(), cdataSection.getCol());
+                }
             }
             throw e;
         } catch (final Exception e) {

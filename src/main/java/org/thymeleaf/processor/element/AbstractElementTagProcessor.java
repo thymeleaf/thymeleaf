@@ -95,11 +95,13 @@ public abstract class AbstractElementTagProcessor
 
         } catch (final TemplateProcessingException e) {
             // This is a nice moment to check whether the execution raised an error and, if so, add location information
-            if (!e.hasTemplateName()) {
-                e.setTemplateName(tag.getTemplateName());
-            }
-            if (!e.hasLineAndCol()) {
-                e.setLineAndCol(tag.getLine(), tag.getCol());
+            if (tag.hasLocation()) {
+                if (!e.hasTemplateName()) {
+                    e.setTemplateName(tag.getTemplateName());
+                }
+                if (!e.hasLineAndCol()) {
+                    e.setLineAndCol(tag.getLine(), tag.getCol());
+                }
             }
             throw e;
         } catch (final Exception e) {

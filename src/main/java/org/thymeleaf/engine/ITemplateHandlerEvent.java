@@ -27,6 +27,9 @@ package org.thymeleaf.engine;
  */
 public interface ITemplateHandlerEvent {
 
-    // Nothing to add. Just a marker interface grouping all classes that can be used for modeling ITemplateHandler events
+    public boolean hasLocation();
+    public String getTemplateName();
+    public int getLine();
+    public int getCol();
 
 }

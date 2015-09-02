@@ -51,11 +51,13 @@ public abstract class AbstractTextProcessor
             doProcess(processingContext, text, structureHandler);
 
         } catch (final TemplateProcessingException e) {
-            if (!e.hasTemplateName()) {
-                e.setTemplateName(text.getTemplateName());
-            }
-            if (!e.hasLineAndCol()) {
-                e.setLineAndCol(text.getLine(), text.getCol());
+            if (text.hasLocation()) {
+                if (!e.hasTemplateName()) {
+                    e.setTemplateName(text.getTemplateName());
+                }
+                if (!e.hasLineAndCol()) {
+                    e.setLineAndCol(text.getLine(), text.getCol());
+                }
             }
             throw e;
         } catch (final Exception e) {

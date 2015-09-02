@@ -51,11 +51,13 @@ public abstract class AbstractXMLDeclarationProcessor
             doProcess(processingContext, xmlDeclaration, structureHandler);
 
         } catch (final TemplateProcessingException e) {
-            if (!e.hasTemplateName()) {
-                e.setTemplateName(xmlDeclaration.getTemplateName());
-            }
-            if (!e.hasLineAndCol()) {
-                e.setLineAndCol(xmlDeclaration.getLine(), xmlDeclaration.getCol());
+            if (xmlDeclaration.hasLocation()) {
+                if (!e.hasTemplateName()) {
+                    e.setTemplateName(xmlDeclaration.getTemplateName());
+                }
+                if (!e.hasLineAndCol()) {
+                    e.setLineAndCol(xmlDeclaration.getLine(), xmlDeclaration.getCol());
+                }
             }
             throw e;
         } catch (final Exception e) {

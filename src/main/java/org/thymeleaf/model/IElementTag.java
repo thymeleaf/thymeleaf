@@ -36,11 +36,6 @@ public interface IElementTag extends ITemplateHandlerEvent {
     public ElementDefinition getElementDefinition();
     public String getElementName();
 
-    public boolean hasLocation();
-    public String getTemplateName();
-    public int getLine();
-    public int getCol();
-
     public void write(final Writer writer) throws IOException;
 
     public IElementTag cloneElementTag();

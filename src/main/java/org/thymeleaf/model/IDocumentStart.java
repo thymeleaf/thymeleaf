@@ -30,9 +30,6 @@ import org.thymeleaf.engine.ITemplateHandlerEvent;
 public interface IDocumentStart extends ITemplateHandlerEvent {
 
     public long getStartTimeNanos();
-    public String getTemplateName();
-    public int getLine();
-    public int getCol();
 
     public IDocumentStart cloneEvent();
 

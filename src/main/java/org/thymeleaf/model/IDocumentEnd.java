@@ -31,9 +31,6 @@ public interface IDocumentEnd extends ITemplateHandlerEvent {
 
     public long getEndTimeNanos();
     public long getTotalTimeNanos();
-    public String getTemplateName();
-    public int getLine();
-    public int getCol();
 
     public IDocumentEnd cloneEvent();
 
