@@ -179,13 +179,10 @@ final class EngineEventQueue {
             // No need to clone - argument is an immutable piece of markup and therefore using it without cloning will
             // produce no side/undesired effects
             markup = ((ImmutableMarkup) imarkup).getInternalMarkup();
-        } else if (imarkup instanceof Markup) {
+        } else {
             // This implementation does not directly come from the parser nor is immutable, so we must clone its events
             // to avoid interactions.
             markup = imarkup.cloneMarkup();
-        } else {
-            throw new TemplateProcessingException(
-                    "Unrecognized implementation of the " + IMarkup.class.getName() + " interface: " + imarkup.getClass().getName());
         }
 
         final EngineEventQueue markupQueue = markup.getEventQueue();
