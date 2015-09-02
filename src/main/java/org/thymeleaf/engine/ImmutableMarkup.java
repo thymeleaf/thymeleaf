@@ -114,8 +114,8 @@ public class ImmutableMarkup implements IMarkup {
 
 
 
-    public final String computeMarkup() {
-        return this.markup.computeMarkup();
+    public final String renderMarkup() {
+        return this.markup.renderMarkup();
     }
 
 
@@ -127,7 +127,7 @@ public class ImmutableMarkup implements IMarkup {
 
     @Override
     public String toString() {
-        return computeMarkup();
+        return renderMarkup();
     }
 
 

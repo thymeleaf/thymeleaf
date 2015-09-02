@@ -36,7 +36,7 @@ public interface IMarkup {
 
     public TemplateMode getTemplateMode();
 
-    public String computeMarkup();
+    public String renderMarkup();
 
     public Markup cloneMarkup();
 

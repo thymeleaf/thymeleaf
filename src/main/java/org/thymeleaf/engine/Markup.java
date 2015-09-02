@@ -149,7 +149,7 @@ public final class Markup implements IMarkup {
 
 
 
-    public final String computeMarkup() {
+    public final String renderMarkup() {
         final StringWriter writer = new StringWriter();
         final OutputTemplateHandler outputTemplateHandler = new OutputTemplateHandler(writer);
         process(outputTemplateHandler);
@@ -173,7 +173,7 @@ public final class Markup implements IMarkup {
 
     @Override
     public String toString() {
-        return computeMarkup();
+        return renderMarkup();
     }
 
 
