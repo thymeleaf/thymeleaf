@@ -41,7 +41,7 @@ import org.thymeleaf.model.IXMLDeclaration;
 public interface IMarkupFactory {
 
 
-    public Markup createMarkup();
+    public MutableMarkup createMarkup();
 
     public IMarkup parseAsMarkup(final String markup);
 

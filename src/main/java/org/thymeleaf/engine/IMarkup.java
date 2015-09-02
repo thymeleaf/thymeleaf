@@ -36,8 +36,12 @@ public interface IMarkup {
 
     public TemplateMode getTemplateMode();
 
+    public int size();
+
+    public ITemplateHandlerEvent get(final int pos);
+
     public String renderMarkup();
 
-    public Markup cloneMarkup();
+    public MutableMarkup cloneAsMutable();
 
 }

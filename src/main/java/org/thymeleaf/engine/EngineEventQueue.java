@@ -169,7 +169,7 @@ final class EngineEventQueue {
         }
 
 
-        final Markup markup;
+        final MutableMarkup markup;
         if (imarkup instanceof ParsedTemplateMarkup) {
             // This is forbidden - we cannot add something that is not a fragment, but an entire, top level template
             throw new TemplateProcessingException(
@@ -182,7 +182,7 @@ final class EngineEventQueue {
         } else {
             // This implementation does not directly come from the parser nor is immutable, so we must clone its events
             // to avoid interactions.
-            markup = imarkup.cloneMarkup();
+            markup = imarkup.cloneAsMutable();
         }
 
         final EngineEventQueue markupQueue = markup.getEventQueue();

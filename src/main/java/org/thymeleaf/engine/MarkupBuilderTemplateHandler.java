@@ -47,13 +47,13 @@ import org.thymeleaf.util.Validate;
 public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler {
 
     private final boolean fragment;
-    private final Markup markup;
+    private final MutableMarkup markup;
     private final IEngineConfiguration configuration;
     private final TemplateMode templateMode;
 
 
 
-    public MarkupBuilderTemplateHandler(final boolean fragment, final Markup markup) {
+    public MarkupBuilderTemplateHandler(final boolean fragment, final MutableMarkup markup) {
         super();
         Validate.notNull(markup, "Markup cannot be null");
         Validate.notNull(markup.getConfiguration(), "Engine Configuration returned by Markup cannot be null");
@@ -66,7 +66,7 @@ public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler 
 
 
 
-    public Markup getMarkup() {
+    public MutableMarkup getMarkup() {
         return this.markup;
     }
 

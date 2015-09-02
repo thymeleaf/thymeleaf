@@ -26,7 +26,7 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.engine.ITemplateHandlerEvent;
 import org.thymeleaf.engine.ImmutableMarkup;
-import org.thymeleaf.engine.Markup;
+import org.thymeleaf.engine.MutableMarkup;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IAutoCloseElementTag;
 import org.thymeleaf.model.IAutoOpenElementTag;
@@ -182,7 +182,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
              * them, along with anything else that is also at that level 0.
              */
 
-            final Markup mutableMarkup = parsedFragment.asMutable();
+            final MutableMarkup mutableMarkup = parsedFragment.cloneAsMutable();
             int markupLevel = 0;
             int n = mutableMarkup.size();
             while (n-- != 0) { // We traverse backwards so that we can modify at the same time
@@ -210,7 +210,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
             }
 
             // Once processed, we convert it to immutable (this way, it won't be cloned anymore)
-            parsedFragment = mutableMarkup.asImmutable();
+            parsedFragment = mutableMarkup.cloneAsImmutable();
 
         }
 
