@@ -53,7 +53,7 @@ import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.processor.comment.ICommentProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeProcessor;
 import org.thymeleaf.processor.document.IDocumentProcessor;
-import org.thymeleaf.processor.element.IElementNodeProcessor;
+import org.thymeleaf.processor.element.IElementMarkupProcessor;
 import org.thymeleaf.processor.element.IElementProcessor;
 import org.thymeleaf.processor.element.IElementTagProcessor;
 import org.thymeleaf.processor.processinginstruction.IProcessingInstructionProcessor;
@@ -160,6 +160,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private SuspensionSpec suspensionSpec; // Will be initialized once we have the processing context
     private boolean gatheringIteration = false;
     private IterationSpec iterationSpec = null;
+    private boolean gatheringElementMarkup = false;
+    private ElementMarkupSpec elementMarkupSpec = null;
 
     // Used during iteration, in order to not create too many queue and processor objects (which in turn might
     // create too many event buffer objects)
@@ -246,6 +248,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         // handling method (standalone -> open) or start caching an iteration
         this.suspensionSpec = new SuspensionSpec(this.templateMode, this.configuration);
         this.iterationSpec = new IterationSpec(this.templateMode, this.configuration);
+        this.elementMarkupSpec = new ElementMarkupSpec(this.templateMode, this.configuration);
 
         // Flags used for quickly determining if a non-element structure might have to be processed or not
         this.hasDocumentProcessors = !this.configuration.getDocumentProcessors(this.templateMode).isEmpty();
@@ -612,6 +615,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         */
+        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
+            this.elementMarkupSpec.markupQueue.add(Text.asEngineText(this.configuration, itext, true), false);
+            return;
+        }
+
+
+        /*
          * KEEP THE POINTER to this event, now we know it will be processed somehow
          */
         this.lastTextEvent = itext;
@@ -710,6 +722,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          */
         if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
             this.iterationSpec.iterationQueue.add(Comment.asEngineComment(this.configuration, icomment, true), false);
+            return;
+        }
+
+
+        /*
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         */
+        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
+            this.elementMarkupSpec.markupQueue.add(Comment.asEngineComment(this.configuration, icomment, true), false);
             return;
         }
 
@@ -817,6 +838,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         */
+        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
+            this.elementMarkupSpec.markupQueue.add(CDATASection.asEngineCDATASection(this.configuration, icdataSection, true), false);
+            return;
+        }
+
+
+        /*
          * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
          */
         this.lastTextEvent = null;
@@ -916,6 +946,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          */
         if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
             this.iterationSpec.iterationQueue.add(
+                    StandaloneElementTag.asEngineStandaloneElementTag(
+                            this.templateMode, this.configuration, istandaloneElementTag, true), false);
+            return;
+        }
+
+
+        /*
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         */
+        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
+            this.elementMarkupSpec.markupQueue.add(
                     StandaloneElementTag.asEngineStandaloneElementTag(
                             this.templateMode, this.configuration, istandaloneElementTag, true), false);
             return;
@@ -1252,7 +1293,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 }
                 // No way to process 'removeBody' or 'removeAllButFirstChild' on a standalone tag
 
-            } else if (processor instanceof IElementNodeProcessor) {
+            } else if (processor instanceof IElementMarkupProcessor) {
                 throw new UnsupportedOperationException("Support for Node processors not implemented yet");
             } else {
                 throw new IllegalStateException(
@@ -1315,6 +1356,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          */
         if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
             this.iterationSpec.iterationQueue.add(
+                    OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, iopenElementTag, true), false);
+            increaseMarkupLevel();
+            return;
+        }
+
+
+        /*
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         */
+        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
+            this.elementMarkupSpec.markupQueue.add(
                     OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, iopenElementTag, true), false);
             increaseMarkupLevel();
             return;
@@ -1610,7 +1662,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 }
 
-            } else if (processor instanceof IElementNodeProcessor) {
+            } else if (processor instanceof IElementMarkupProcessor) {
                 // TODO Implement Node processors and Node DOM structure handling, and copy those to the "autoOpen" events
                 throw new UnsupportedOperationException("Support for Node processors not implemented yet");
             } else {
@@ -1693,6 +1745,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          */
         if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
             this.iterationSpec.iterationQueue.add(
+                    AutoOpenElementTag.asEngineAutoOpenElementTag(this.templateMode, this.configuration, iautoOpenElementTag, true), false);
+            increaseMarkupLevel();
+            return;
+        }
+
+
+        /*
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         */
+        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
+            this.elementMarkupSpec.markupQueue.add(
                     AutoOpenElementTag.asEngineAutoOpenElementTag(this.templateMode, this.configuration, iautoOpenElementTag, true), false);
             increaseMarkupLevel();
             return;
@@ -1988,7 +2051,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 }
 
-            } else if (processor instanceof IElementNodeProcessor) {
+            } else if (processor instanceof IElementMarkupProcessor) {
                 // TODO Implement Node processors and Node DOM structure handling, and copy those to the "autoOpen" events
                 throw new UnsupportedOperationException("Support for Node processors not implemented yet");
             } else {
@@ -2077,6 +2140,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         /*
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         */
+        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
+            this.elementMarkupSpec.markupQueue.add(
+                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true), false);
+            return;
+        }
+
+        /*
          * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
          */
         this.lastTextEvent = null;
@@ -2160,6 +2232,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         /*
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         */
+        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
+            this.elementMarkupSpec.markupQueue.add(
+                    AutoCloseElementTag.asEngineAutoCloseElementTag(this.templateMode, this.configuration, iautoCloseElementTag, true), false);
+            return;
+        }
+
+        /*
          * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
          */
         this.lastTextEvent = null;
@@ -2238,6 +2319,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
+        /*
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         */
+        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
+            this.elementMarkupSpec.markupQueue.add(
+                    UnmatchedCloseElementTag.asEngineUnmatchedCloseElementTag(this.templateMode, this.configuration, iunmatchedCloseElementTag, true), false);
+            return;
+        }
+
         
         /*
          * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
@@ -2278,6 +2368,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          */
         if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
             this.iterationSpec.iterationQueue.add(DocType.asEngineDocType(this.configuration, idocType, true), false);
+            return;
+        }
+
+
+        /*
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         */
+        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
+            this.elementMarkupSpec.markupQueue.add(DocType.asEngineDocType(this.configuration, idocType, true), false);
             return;
         }
 
@@ -2386,6 +2485,16 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
+
+        /*
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         */
+        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
+            this.elementMarkupSpec.markupQueue.add(
+                    XMLDeclaration.asEngineXMLDeclaration(this.configuration, ixmlDeclaration, true), false);
+            return;
+        }
+
         
         /*
          * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
@@ -2486,6 +2595,16 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         // Check whether we are in the middle of an iteration and we just need to cache this to the queue (for now)
         if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
             this.iterationSpec.iterationQueue.add(
+                    ProcessingInstruction.asEngineProcessingInstruction(this.configuration, iprocessingInstruction, true), false);
+            return;
+        }
+
+
+        /*
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         */
+        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
+            this.elementMarkupSpec.markupQueue.add(
                     ProcessingInstruction.asEngineProcessingInstruction(this.configuration, iprocessingInstruction, true), false);
             return;
         }
@@ -2841,6 +2960,26 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.iterStatusVariableName = null;
             this.iteratedObject = null;
             this.iterationQueue.reset();
+        }
+
+    }
+
+
+
+    private static final class ElementMarkupSpec {
+
+        private int fromMarkupLevel;
+        final EngineEventQueue markupQueue;
+
+        ElementMarkupSpec(final TemplateMode templateMode, final IEngineConfiguration configuration) {
+            super();
+            this.markupQueue = new EngineEventQueue(configuration, templateMode, 50);
+            reset();
+        }
+
+        void reset() {
+            this.fromMarkupLevel = Integer.MAX_VALUE;
+            this.markupQueue.reset();
         }
 
     }

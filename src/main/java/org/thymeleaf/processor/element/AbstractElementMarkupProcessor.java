@@ -19,13 +19,12 @@
  */
 package org.thymeleaf.processor.element;
 
-import java.util.List;
-
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeNames;
 import org.thymeleaf.engine.ElementNames;
+import org.thymeleaf.engine.IMarkup;
+import org.thymeleaf.engine.ITemplateHandlerEvent;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.INode;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 
@@ -36,8 +35,8 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-public abstract class AbstractElementNodeProcessor
-        extends AbstractProcessor implements IElementNodeProcessor {
+public abstract class AbstractElementMarkupProcessor
+        extends AbstractProcessor implements IElementMarkupProcessor {
 
     private final String dialectPrefix;
     private final String elementName;
@@ -49,7 +48,7 @@ public abstract class AbstractElementNodeProcessor
 
 
 
-    public AbstractElementNodeProcessor(
+    public AbstractElementMarkupProcessor(
             final TemplateMode templateMode,
             final String dialectPrefix,
             final String elementName, final boolean prefixElementName,
@@ -90,29 +89,49 @@ public abstract class AbstractElementNodeProcessor
 
 
 
-    public final List<INode> process(final ITemplateProcessingContext processingContext, final INode node) {
+    public final IMarkup process(final ITemplateProcessingContext processingContext, final IMarkup markup) {
 
         try {
 
-            return doProcess(processingContext, node);
+            return doProcess(processingContext, markup);
 
         } catch (final TemplateProcessingException e) {
-            if (!e.hasTemplateName()) {
-                e.setTemplateName(node.getTemplateName());
-            }
-            if (!e.hasLineAndCol()) {
-                e.setLineAndCol(node.getLine(), node.getCol());
+
+            if (markup.size() > 0) { // If size is 0, we have nowhere to extract template/line/col info from
+                final ITemplateHandlerEvent firstEvent = markup.get(0);
+                if (firstEvent != null && firstEvent.hasLocation()) {
+                    if (!e.hasTemplateName()) {
+                        e.setTemplateName(firstEvent.getTemplateName());
+                    }
+                    if (!e.hasLineAndCol()) {
+                        e.setLineAndCol(firstEvent.getLine(), firstEvent.getCol());
+                    }
+                }
             }
             throw e;
+
         } catch (final Exception e) {
+
+            String templateName = null;
+            int line = -1;
+            int col = -1;
+
+            if (markup.size() > 0) { // If size is 0, we have nowhere to extract template/line/col info from
+                final ITemplateHandlerEvent firstEvent = markup.get(0);
+                if (firstEvent != null && firstEvent.hasLocation()) {
+                    templateName = firstEvent.getTemplateName();
+                    line = firstEvent.getLine();
+                    col = firstEvent.getCol();
+                }
+            }
             throw new TemplateProcessingException(
-                    "Error during execution of processor '" + this.getClass().getName() + "'",
-                    node.getTemplateName(), node.getLine(), node.getCol(), e);
+                    "Error during execution of processor '" + this.getClass().getName() + "'", templateName, line, col, e);
+
         }
 
     }
 
 
-    protected abstract List<INode> doProcess(final ITemplateProcessingContext processingContext, final INode node);
+    protected abstract IMarkup doProcess(final ITemplateProcessingContext processingContext, final IMarkup markup);
 
 }

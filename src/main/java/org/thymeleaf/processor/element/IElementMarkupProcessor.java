@@ -19,10 +19,8 @@
  */
 package org.thymeleaf.processor.element;
 
-import java.util.List;
-
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.model.INode;
+import org.thymeleaf.engine.IMarkup;
 
 /**
  *
@@ -30,10 +28,10 @@ import org.thymeleaf.model.INode;
  * @since 3.0.0
  * 
  */
-public interface IElementNodeProcessor extends IElementProcessor {
+public interface IElementMarkupProcessor extends IElementProcessor {
 
 
-    public List<INode> process(final ITemplateProcessingContext processingContext, final INode node);
+    public IMarkup process(final ITemplateProcessingContext processingContext, final IMarkup markup);
 
 
 }

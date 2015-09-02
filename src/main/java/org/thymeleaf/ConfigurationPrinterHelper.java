@@ -44,7 +44,7 @@ import org.thymeleaf.processor.PrecedenceProcessorComparator;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.processor.comment.ICommentProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeProcessor;
-import org.thymeleaf.processor.element.IElementNodeProcessor;
+import org.thymeleaf.processor.element.IElementMarkupProcessor;
 import org.thymeleaf.processor.element.IElementProcessor;
 import org.thymeleaf.processor.element.IElementTagProcessor;
 import org.thymeleaf.processor.element.MatchingAttributeName;
@@ -162,9 +162,9 @@ final class ConfigurationPrinterHelper {
             final IProcessorDialect dialect = (IProcessorDialect)idialect;
 
             final Set<IProcessor> processors = dialect.getProcessors(dialectPrefix);
-            printProcessorsForTemplatrMode(logBuilder, processors, TemplateMode.HTML);
-            printProcessorsForTemplatrMode(logBuilder, processors, TemplateMode.XML);
-            printProcessorsForTemplatrMode(logBuilder, processors, TemplateMode.TEXT);
+            printProcessorsForTemplateMode(logBuilder, processors, TemplateMode.HTML);
+            printProcessorsForTemplateMode(logBuilder, processors, TemplateMode.XML);
+            printProcessorsForTemplateMode(logBuilder, processors, TemplateMode.TEXT);
 
         }
 
@@ -239,7 +239,7 @@ final class ConfigurationPrinterHelper {
 
 
 
-    private static void printProcessorsForTemplatrMode(final ConfigLogBuilder logBuilder, final Set<IProcessor> processors, final TemplateMode templateMode) {
+    private static void printProcessorsForTemplateMode(final ConfigLogBuilder logBuilder, final Set<IProcessor> processors, final TemplateMode templateMode) {
 
         if (processors == null || processors.isEmpty()) {
             return;
@@ -249,7 +249,7 @@ final class ConfigurationPrinterHelper {
         final List<ICommentProcessor> commentProcessors = new ArrayList<ICommentProcessor>();
         final List<IDocTypeProcessor> docTypeProcessors = new ArrayList<IDocTypeProcessor>();
         final List<IElementTagProcessor> elementTagProcessors = new ArrayList<IElementTagProcessor>();
-        final List<IElementNodeProcessor> elementNodeProcessors = new ArrayList<IElementNodeProcessor>();
+        final List<IElementMarkupProcessor> elementMarkupProcessors = new ArrayList<IElementMarkupProcessor>();
         final List<IProcessingInstructionProcessor> processingInstructionProcessors = new ArrayList<IProcessingInstructionProcessor>();
         final List<ITextProcessor> textProcessors = new ArrayList<ITextProcessor>();
         final List<IXMLDeclarationProcessor> xmlDeclarationProcessors = new ArrayList<IXMLDeclarationProcessor>();
@@ -270,8 +270,8 @@ final class ConfigurationPrinterHelper {
                 docTypeProcessors.add((IDocTypeProcessor) processor);
             } else if (processor instanceof IElementTagProcessor) {
                 elementTagProcessors.add((IElementTagProcessor) processor);
-            } else if (processor instanceof IElementNodeProcessor) {
-                elementNodeProcessors.add((IElementNodeProcessor) processor);
+            } else if (processor instanceof IElementMarkupProcessor) {
+                elementMarkupProcessors.add((IElementMarkupProcessor) processor);
             } else if (processor instanceof IProcessingInstructionProcessor) {
                 processingInstructionProcessors.add((IProcessingInstructionProcessor) processor);
             } else if (processor instanceof ITextProcessor) {
@@ -293,7 +293,7 @@ final class ConfigurationPrinterHelper {
         Collections.sort(commentProcessors, PrecedenceProcessorComparator.INSTANCE);
         Collections.sort(docTypeProcessors, PrecedenceProcessorComparator.INSTANCE);
         Collections.sort(elementTagProcessors, PrinterElementProcessorComparator.INSTANCE);
-        Collections.sort(elementNodeProcessors, PrinterElementProcessorComparator.INSTANCE);
+        Collections.sort(elementMarkupProcessors, PrinterElementProcessorComparator.INSTANCE);
         Collections.sort(processingInstructionProcessors, PrecedenceProcessorComparator.INSTANCE);
         Collections.sort(textProcessors, PrecedenceProcessorComparator.INSTANCE);
         Collections.sort(xmlDeclarationProcessors, PrecedenceProcessorComparator.INSTANCE);
@@ -306,60 +306,60 @@ final class ConfigurationPrinterHelper {
                 final String elementName = (matchingElementName == null? "*" : matchingElementName.toString());
                 final String attributeName = (matchingAttributeName == null? "*" : matchingAttributeName.toString());
                 logBuilder.line("[THYMELEAF]             * [{} {}] [{}]: {}",
-                        new Object[] {elementName, attributeName, processor.getPrecedence(), processor.getClass().getName()});
+                        new Object[] {elementName, attributeName, Integer.valueOf(processor.getPrecedence()), processor.getClass().getName()});
             }
         }
-        if (!elementNodeProcessors.isEmpty()) {
-            logBuilder.line("[THYMELEAF]         * Element Node Processors by [matching element and attribute name] [precedence]:");
-            for (final IElementNodeProcessor processor : elementNodeProcessors) {
+        if (!elementMarkupProcessors.isEmpty()) {
+            logBuilder.line("[THYMELEAF]         * Element Markup Processors by [matching element and attribute name] [precedence]:");
+            for (final IElementMarkupProcessor processor : elementMarkupProcessors) {
                 final MatchingElementName matchingElementName = processor.getMatchingElementName();
                 final MatchingAttributeName matchingAttributeName = processor.getMatchingAttributeName();
                 final String elementName = (matchingElementName == null? "*" : matchingElementName.toString());
                 final String attributeName = (matchingAttributeName == null? "*" : matchingAttributeName.toString());
                 logBuilder.line("[THYMELEAF]             * [{} {}] [{}]: {}",
-                        new Object[] {elementName, attributeName, processor.getPrecedence(), processor.getClass().getName()});
+                        new Object[] {elementName, attributeName, Integer.valueOf(processor.getPrecedence()), processor.getClass().getName()});
             }
         }
         if (!textProcessors.isEmpty()) {
             logBuilder.line("[THYMELEAF]         * Text Processors by [precedence]:");
             for (final ITextProcessor processor : textProcessors) {
                 logBuilder.line("[THYMELEAF]             * [{}]: {}",
-                        new Object[] {processor.getPrecedence(), processor.getClass().getName()});
+                        new Object[] {Integer.valueOf(processor.getPrecedence()), processor.getClass().getName()});
             }
         }
         if (!docTypeProcessors.isEmpty()) {
             logBuilder.line("[THYMELEAF]         * DOCTYPE Processors by [precedence]:");
             for (final IDocTypeProcessor processor : docTypeProcessors) {
                 logBuilder.line("[THYMELEAF]             * [{}]: {}",
-                        new Object[] {processor.getPrecedence(), processor.getClass().getName()});
+                        new Object[] {Integer.valueOf(processor.getPrecedence()), processor.getClass().getName()});
             }
         }
         if (!cdataSectionProcessors.isEmpty()) {
             logBuilder.line("[THYMELEAF]         * CDATA Section Processors by [precedence]:");
             for (final ICDATASectionProcessor processor : cdataSectionProcessors) {
                 logBuilder.line("[THYMELEAF]             * [{}]: {}",
-                        new Object[] {processor.getPrecedence(), processor.getClass().getName()});
+                        new Object[] {Integer.valueOf(processor.getPrecedence()), processor.getClass().getName()});
             }
         }
         if (!commentProcessors.isEmpty()) {
             logBuilder.line("[THYMELEAF]         * Comment Processors by [precedence]:");
             for (final ICommentProcessor processor : commentProcessors) {
                 logBuilder.line("[THYMELEAF]             * [{}]: {}",
-                        new Object[] {processor.getPrecedence(), processor.getClass().getName()});
+                        new Object[] {Integer.valueOf(processor.getPrecedence()), processor.getClass().getName()});
             }
         }
         if (!xmlDeclarationProcessors.isEmpty()) {
             logBuilder.line("[THYMELEAF]         * XML Declaration Processors by [precedence]:");
             for (final IXMLDeclarationProcessor processor : xmlDeclarationProcessors) {
                 logBuilder.line("[THYMELEAF]             * [{}]: {}",
-                        new Object[] {processor.getPrecedence(), processor.getClass().getName()});
+                        new Object[] {Integer.valueOf(processor.getPrecedence()), processor.getClass().getName()});
             }
         }
         if (!processingInstructionProcessors.isEmpty()) {
             logBuilder.line("[THYMELEAF]         * Processing Instruction Processors by [precedence]:");
             for (final IProcessingInstructionProcessor processor : processingInstructionProcessors) {
                 logBuilder.line("[THYMELEAF]             * [{}]: {}",
-                        new Object[] {processor.getPrecedence(), processor.getClass().getName()});
+                        new Object[] {Integer.valueOf(processor.getPrecedence()), processor.getClass().getName()});
             }
         }
 
