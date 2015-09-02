@@ -22,7 +22,7 @@ package org.thymeleaf.spring4.processor;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
-import org.thymeleaf.engine.Markup;
+import org.thymeleaf.engine.MutableMarkup;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
@@ -82,7 +82,7 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
 
                 tag.getAttributes().setAttribute(ATTR_NAME, "post");
 
-                final Markup hiddenMethodMarkup = processingContext.getMarkupFactory().createMarkup();
+                final MutableMarkup hiddenMethodMarkup = processingContext.getMarkupFactory().createMarkup();
 
                 final String type = "hidden";
                 final String name = "_method";

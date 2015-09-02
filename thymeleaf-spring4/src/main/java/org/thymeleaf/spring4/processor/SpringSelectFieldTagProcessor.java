@@ -24,7 +24,7 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
-import org.thymeleaf.engine.Markup;
+import org.thymeleaf.engine.MutableMarkup;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
@@ -73,7 +73,7 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
 
         if (multiple && !isDisabled(tag)) {
 
-            final Markup hiddenMethodElementMarkup = processingContext.getMarkupFactory().createMarkup();
+            final MutableMarkup hiddenMethodElementMarkup = processingContext.getMarkupFactory().createMarkup();
 
             final String hiddenName = WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name;
             final String type = "hidden";

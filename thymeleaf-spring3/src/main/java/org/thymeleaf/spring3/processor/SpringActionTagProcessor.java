@@ -24,7 +24,7 @@ import java.util.Map;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
-import org.thymeleaf.engine.Markup;
+import org.thymeleaf.engine.MutableMarkup;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
@@ -84,7 +84,7 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
 
             if (extraHiddenFields != null && extraHiddenFields.size() > 0) {
 
-                final Markup extraHiddenElementTags = processingContext.getMarkupFactory().createMarkup();
+                final MutableMarkup extraHiddenElementTags = processingContext.getMarkupFactory().createMarkup();
 
                 for (final Map.Entry<String,String> extraHiddenField : extraHiddenFields.entrySet()) {
 

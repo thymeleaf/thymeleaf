@@ -25,7 +25,7 @@ import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
-import org.thymeleaf.engine.Markup;
+import org.thymeleaf.engine.MutableMarkup;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IStandaloneElementTag;
@@ -116,7 +116,7 @@ public final class SpringInputCheckboxFieldTagProcessor
              * never displayed or is disabled.
              */
 
-            final Markup hiddenTagMarkup = processingContext.getMarkupFactory().createMarkup();
+            final MutableMarkup hiddenTagMarkup = processingContext.getMarkupFactory().createMarkup();
 
             final String hiddenName = WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name;
             final String hiddenValue = "on";
