@@ -21,7 +21,6 @@ package org.thymeleaf.processor.element;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.ITemplateHandlerEvent;
 import org.thymeleaf.engine.Markup;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
