@@ -45,7 +45,7 @@ public abstract class AbstractStandardDoubleAttributeModifierTagProcessor extend
             final TemplateMode templateMode, final String dialectPrefix, final String attrName,
             final int precedence, final String attributeOne, final String attributeTwo,
             final boolean removeIfEmpty) {
-        super(templateMode, dialectPrefix, attrName, precedence);
+        super(templateMode, dialectPrefix, attrName, precedence, true);
         this.removeIfEmpty = removeIfEmpty;
         this.attributeOne = attributeOne;
         this.attributeTwo = attributeTwo;
@@ -57,7 +57,9 @@ public abstract class AbstractStandardDoubleAttributeModifierTagProcessor extend
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
+            final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
+            final Object expressionResult,
             final IElementStructureHandler structureHandler) {
 
         final String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? null : expressionResult.toString());
@@ -72,8 +74,6 @@ public abstract class AbstractStandardDoubleAttributeModifierTagProcessor extend
             tag.getAttributes().setAttribute(this.attributeOne, newAttributeValue);
             tag.getAttributes().setAttribute(this.attributeTwo, newAttributeValue);
         }
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

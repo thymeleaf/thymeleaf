@@ -44,7 +44,7 @@ public final class StandardEachTagProcessor extends AbstractAttributeTagProcesso
     public static final String ATTR_NAME = "each";
 
     public StandardEachTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE);
+        super(templateMode, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE, true);
     }
 
 
@@ -54,6 +54,7 @@ public final class StandardEachTagProcessor extends AbstractAttributeTagProcesso
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementStructureHandler structureHandler) {
 
         final Each each = EachUtils.parseEach(processingContext, attributeValue);
@@ -85,8 +86,6 @@ public final class StandardEachTagProcessor extends AbstractAttributeTagProcesso
         }
 
         structureHandler.iterateElement(iterVarName, statusVarName, iteratedValue);
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

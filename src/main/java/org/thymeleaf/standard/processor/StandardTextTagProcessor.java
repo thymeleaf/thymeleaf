@@ -40,7 +40,7 @@ public final class StandardTextTagProcessor extends AbstractStandardExpressionAt
 
 
     public StandardTextTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, true);
     }
 
 
@@ -49,14 +49,14 @@ public final class StandardTextTagProcessor extends AbstractStandardExpressionAt
     protected void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
+            final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
+            final Object expressionResult,
             final IElementStructureHandler structureHandler) {
 
         final String text = StandardEscapedOutputUtils.produceEscapedOutput(getTemplateMode(), expressionResult);
 
         structureHandler.setBody(text, false);
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

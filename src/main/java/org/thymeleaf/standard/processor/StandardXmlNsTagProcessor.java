@@ -41,17 +41,17 @@ public final class StandardXmlNsTagProcessor extends AbstractAttributeTagProcess
 
 
     public StandardXmlNsTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, null, null, false, ATTR_NAME_PREFIX + dialectPrefix, false, PRECEDENCE);
+        super(templateMode, null, null, false, ATTR_NAME_PREFIX + dialectPrefix, false, PRECEDENCE, true);
     }
 
 
     @Override
     protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
+                             final String attributeTemplateName, final int attributeLine, final int attributeCol,
                              final IElementStructureHandler structureHandler) {
 
-        // We are just removing the "xmlns:th" (or equivalent) attribute
-        tag.getAttributes().removeAttribute(attributeName);
+        // Nothing to do really, we are just removing the "xmlns:th" (or equivalent) attribute
 
     }
 

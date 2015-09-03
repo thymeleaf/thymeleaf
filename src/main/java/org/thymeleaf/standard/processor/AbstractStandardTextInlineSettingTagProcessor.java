@@ -55,7 +55,7 @@ public abstract class AbstractStandardTextInlineSettingTagProcessor extends Abst
 
     protected AbstractStandardTextInlineSettingTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence) {
-        super(templateMode, dialectPrefix, null, false, attrName, true, precedence);
+        super(templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
     }
 
 
@@ -65,13 +65,12 @@ public abstract class AbstractStandardTextInlineSettingTagProcessor extends Abst
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementStructureHandler structureHandler) {
 
         // Note we are NOT executing the attributeValue as a Standard Expression: we are expecting a literal (see comment above)
         final IInliner inliner = getInliner(StandardInlineMode.parse(attributeValue));
         structureHandler.setInliner(inliner);
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

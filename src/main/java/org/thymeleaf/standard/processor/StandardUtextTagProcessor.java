@@ -46,7 +46,7 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
 
 
     public StandardUtextTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE);
+        super(templateMode, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE, true);
     }
 
 
@@ -56,6 +56,7 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
             final IProcessableElementTag tag,
             final AttributeName attributeName,
             final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementStructureHandler structureHandler) {
 
         final IEngineConfiguration configuration = processingContext.getConfiguration();
@@ -79,7 +80,6 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
          */
         if (!processingContext.getConfiguration().hasPostProcessors()) {
             structureHandler.setBody(unescapedText, false);
-            tag.getAttributes().removeAttribute(attributeName);
             return;
         }
 
@@ -92,14 +92,13 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
         if (!mightContainStructures(unescapedText)) {
             // If this text contains no markup structures, there would be no need to parse it or treat it as markup!
             structureHandler.setBody(unescapedText, false);
-            tag.getAttributes().removeAttribute(attributeName);
             return;
         }
 
         final ParsedFragmentMarkup parsedFragment =
                 processingContext.getTemplateManager().parseNestedFragment(
                         processingContext.getConfiguration(),
-                        tag.getTemplateName(), unescapedText,
+                        attributeTemplateName, unescapedText,
                         0, 0, // we won't apply offset here because the inserted text does not really come from the template itself
                         processingContext.getTemplateMode(),
                         false); // useCache == false because we could potentially pollute the cache with too many entries (th:utext is too variable!)
@@ -108,7 +107,6 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
         // which in turn avoids code injection.
         structureHandler.setBody(parsedFragment, false);
 
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

@@ -45,7 +45,7 @@ public final class StandardSwitchTagProcessor extends AbstractAttributeTagProces
 
 
     public StandardSwitchTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE);
+        super(templateMode, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE, true);
     }
 
 
@@ -53,6 +53,7 @@ public final class StandardSwitchTagProcessor extends AbstractAttributeTagProces
     protected void doProcess(
             final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementStructureHandler structureHandler) {
 
         final IStandardExpressionParser expressionParser =
@@ -61,8 +62,6 @@ public final class StandardSwitchTagProcessor extends AbstractAttributeTagProces
         final IStandardExpression switchExpression = expressionParser.parseExpression(processingContext, attributeValue);
 
         structureHandler.setLocalVariable(SWITCH_VARIABLE_NAME, new SwitchStructure(switchExpression));
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

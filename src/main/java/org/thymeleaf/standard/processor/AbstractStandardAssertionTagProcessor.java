@@ -47,7 +47,7 @@ public abstract class AbstractStandardAssertionTagProcessor extends AbstractAttr
 
     protected AbstractStandardAssertionTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence) {
-        super(templateMode, dialectPrefix, null, false, attrName, true, precedence);
+        super(templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
     }
 
 
@@ -57,6 +57,7 @@ public abstract class AbstractStandardAssertionTagProcessor extends AbstractAttr
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementStructureHandler structureHandler) {
 
         if (StringUtils.isEmptyOrWhitespace(attributeValue)) {
@@ -72,14 +73,10 @@ public abstract class AbstractStandardAssertionTagProcessor extends AbstractAttr
             final Object expressionResult = expression.execute(processingContext);
             final boolean expressionBooleanResult = EvaluationUtils.evaluateAsBoolean(expressionResult);
             if (!expressionBooleanResult) {
-                final int line = tag.getAttributes().getLine(attributeName);
-                final int col = tag.getAttributes().getCol(attributeName);
                 throw new TemplateAssertionException(
-                        expression.getStringRepresentation(), tag.getTemplateName(), line, col);
+                        expression.getStringRepresentation(), attributeTemplateName, attributeLine, attributeCol);
             }
         }
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

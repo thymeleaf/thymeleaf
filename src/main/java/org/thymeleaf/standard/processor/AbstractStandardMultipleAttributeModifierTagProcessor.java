@@ -56,7 +56,7 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
     protected AbstractStandardMultipleAttributeModifierTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
             final ModificationType modificationType) {
-        super(templateMode, dialectPrefix, null, false, attrName, true, precedence);
+        super(templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
         this.modificationType = modificationType;
     }
 
@@ -68,6 +68,7 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementStructureHandler structureHandler) {
 
 
@@ -147,8 +148,6 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
             }
 
         }
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

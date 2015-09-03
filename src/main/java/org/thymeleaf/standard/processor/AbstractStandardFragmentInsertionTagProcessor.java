@@ -66,7 +66,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
     protected AbstractStandardFragmentInsertionTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
             final boolean replaceHost, final boolean insertOnlyContents) {
-        super(templateMode, dialectPrefix, null, false, attrName, true, precedence);
+        super(templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
         this.replaceHost = replaceHost;
         this.insertOnlyContents = insertOnlyContents;
     }
@@ -78,6 +78,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementStructureHandler structureHandler) {
 
         /*
@@ -102,7 +103,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
         if (StringUtils.isEmptyOrWhitespace(templateName) || TEMPLATE_NAME_CURRENT_TEMPLATE.equals(templateName)) {
             // We will use the same templateName that the host tag comes from
-            templateName = tag.getTemplateName();
+            templateName = attributeTemplateName;
         }
 
 
@@ -220,8 +221,6 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         } else {
             structureHandler.setBody(parsedFragment, true);
         }
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

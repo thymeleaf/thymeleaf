@@ -43,7 +43,7 @@ public abstract class AbstractStandardTargetSelectionTagProcessor extends Abstra
 
     protected AbstractStandardTargetSelectionTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence) {
-        super(templateMode, dialectPrefix, null, false, attrName, true, precedence);
+        super(templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
     }
 
 
@@ -53,6 +53,7 @@ public abstract class AbstractStandardTargetSelectionTagProcessor extends Abstra
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementStructureHandler structureHandler) {
 
         final IStandardExpressionParser expressionParser =
@@ -73,8 +74,6 @@ public abstract class AbstractStandardTargetSelectionTagProcessor extends Abstra
         }
 
         structureHandler.setSelectionTarget(newSelectionTarget);
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

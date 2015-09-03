@@ -42,7 +42,7 @@ public final class StandardClassappendTagProcessor extends AbstractStandardExpre
 
 
     public StandardClassappendTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE);
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE, true);
     }
 
 
@@ -51,7 +51,9 @@ public final class StandardClassappendTagProcessor extends AbstractStandardExpre
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
+            final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
+            final Object expressionResult,
             final IElementStructureHandler structureHandler) {
 
         final String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? null : expressionResult.toString());
@@ -69,8 +71,6 @@ public final class StandardClassappendTagProcessor extends AbstractStandardExpre
             }
 
         }
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

@@ -45,7 +45,7 @@ public abstract class AbstractStandardConditionalVisibilityTagProcessor extends 
 
     protected AbstractStandardConditionalVisibilityTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence) {
-        super(templateMode, dialectPrefix, null, false, attrName, true, precedence);
+        super(templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
     }
 
 
@@ -55,6 +55,7 @@ public abstract class AbstractStandardConditionalVisibilityTagProcessor extends 
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementStructureHandler structureHandler) {
 
         final boolean visible = isVisible(processingContext, tag, attributeName, attributeValue);
@@ -62,8 +63,6 @@ public abstract class AbstractStandardConditionalVisibilityTagProcessor extends 
         if (!visible) {
             structureHandler.removeElement();
         }
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

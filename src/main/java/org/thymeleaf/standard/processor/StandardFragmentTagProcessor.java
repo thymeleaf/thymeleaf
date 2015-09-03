@@ -49,7 +49,9 @@ public final class StandardFragmentTagProcessor extends AbstractElementTagProces
 
     @Override
     protected void doProcess(
-            final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+            final ITemplateProcessingContext processingContext,
+            final IProcessableElementTag tag,
+            final String tagTemplateName, final int tagLine, final int tagCol,
             final IElementStructureHandler structureHandler) {
 
         // Nothing to do, this processor is just a marker. Simply remove the attribute

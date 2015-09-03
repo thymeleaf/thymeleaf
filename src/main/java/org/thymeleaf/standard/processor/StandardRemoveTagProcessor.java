@@ -46,7 +46,7 @@ public final class StandardRemoveTagProcessor extends AbstractStandardExpression
 
 
     public StandardRemoveTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, true);
     }
 
 
@@ -55,7 +55,9 @@ public final class StandardRemoveTagProcessor extends AbstractStandardExpression
     protected void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
+            final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
+            final Object expressionResult,
             final IElementStructureHandler structureHandler) {
 
         if (expressionResult != null) {
@@ -77,8 +79,6 @@ public final class StandardRemoveTagProcessor extends AbstractStandardExpression
             }
 
         }
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

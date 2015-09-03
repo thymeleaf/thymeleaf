@@ -49,7 +49,7 @@ public final class StandardWithTagProcessor extends AbstractAttributeTagProcesso
     public static final String ATTR_NAME = "with";
 
     public StandardWithTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE);
+        super(templateMode, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE, true);
     }
 
 
@@ -59,6 +59,7 @@ public final class StandardWithTagProcessor extends AbstractAttributeTagProcesso
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementStructureHandler structureHandler) {
 
         final AssignationSequence assignations =
@@ -107,8 +108,6 @@ public final class StandardWithTagProcessor extends AbstractAttributeTagProcesso
             }
 
         }
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

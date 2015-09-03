@@ -42,8 +42,8 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
 
 
     protected AbstractStandardExpressionAttributeTagProcessor(
-            final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence) {
-        super(templateMode, dialectPrefix, null, false, attrName, true, precedence);
+            final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence, final boolean removeAttribute) {
+        super(templateMode, dialectPrefix, null, false, attrName, true, precedence, removeAttribute);
     }
 
 
@@ -54,6 +54,7 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
             final IProcessableElementTag tag,
             final AttributeName attributeName,
             final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementStructureHandler structureHandler) {
 
         final IEngineConfiguration configuration = processingContext.getConfiguration();
@@ -62,7 +63,10 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
         final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
         final Object expressionResult = expression.execute(processingContext);
 
-        doProcess(processingContext, tag, attributeName, attributeValue, expressionResult, structureHandler);
+        doProcess(
+                processingContext, tag,
+                attributeName, attributeValue, attributeTemplateName, attributeLine, attributeCol,
+                expressionResult, structureHandler);
 
     }
 
@@ -72,6 +76,7 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
             final IProcessableElementTag tag,
             final AttributeName attributeName,
             final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final Object expressionResult,
             final IElementStructureHandler structureHandler);
 

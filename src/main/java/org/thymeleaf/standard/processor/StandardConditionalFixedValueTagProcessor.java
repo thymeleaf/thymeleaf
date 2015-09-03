@@ -51,7 +51,7 @@ public final class StandardConditionalFixedValueTagProcessor extends AbstractSta
 
 
     public StandardConditionalFixedValueTagProcessor(final String dialectPrefix, final String attrName) {
-        super(TemplateMode.HTML, dialectPrefix, attrName, PRECEDENCE);
+        super(TemplateMode.HTML, dialectPrefix, attrName, PRECEDENCE, true);
     }
 
 
@@ -60,7 +60,9 @@ public final class StandardConditionalFixedValueTagProcessor extends AbstractSta
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
+            final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
+            final Object expressionResult,
             final IElementStructureHandler structureHandler) {
 
         final String targetAttributeName = attributeName.getAttributeName(); // th:async -> async
@@ -69,8 +71,6 @@ public final class StandardConditionalFixedValueTagProcessor extends AbstractSta
         } else {
             tag.getAttributes().removeAttribute(targetAttributeName);
         }
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

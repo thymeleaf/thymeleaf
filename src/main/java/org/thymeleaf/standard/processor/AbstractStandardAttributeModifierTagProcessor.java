@@ -49,7 +49,7 @@ public abstract class AbstractStandardAttributeModifierTagProcessor extends Abst
     protected AbstractStandardAttributeModifierTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix, final String attrName, final String targetAttrName,
             final int precedence, final boolean removeIfEmpty) {
-        super(templateMode, dialectPrefix, attrName, precedence);
+        super(templateMode, dialectPrefix, attrName, precedence, true);
         this.targetAttrName = targetAttrName;
         this.removeIfEmpty = removeIfEmpty;
     }
@@ -60,7 +60,9 @@ public abstract class AbstractStandardAttributeModifierTagProcessor extends Abst
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
+            final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
+            final Object expressionResult,
             final IElementStructureHandler structureHandler) {
 
         final String newAttributeName =
@@ -75,8 +77,6 @@ public abstract class AbstractStandardAttributeModifierTagProcessor extends Abst
             // We are setting the equivalent attribute name, without the prefix...
             tag.getAttributes().setAttribute(newAttributeName, (newAttributeValue == null? "" : newAttributeValue));
         }
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 
