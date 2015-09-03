@@ -427,8 +427,9 @@ public final class TemplateManager {
 
             /*
              * Create the Resource (a StringResource, in this case) representing the fragment to parse
+             * Resource name will be its cache key, or the fragment itself if no cache is to be used
              */
-            computedResource = new StringResource(cacheKey.toString(), fragment);
+            computedResource = new StringResource((cacheKey != null? cacheKey.toString() : fragment), fragment);
 
             /*
              * Template Mode has to be always specified (forced) for textual fragments
