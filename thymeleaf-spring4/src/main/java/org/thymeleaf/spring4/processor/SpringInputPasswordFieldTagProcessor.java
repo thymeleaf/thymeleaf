@@ -45,7 +45,7 @@ public final class SpringInputPasswordFieldTagProcessor extends AbstractSpringFi
 
     
     public SpringInputPasswordFieldTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { PASSWORD_INPUT_TYPE_ATTR_VALUE });
+        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { PASSWORD_INPUT_TYPE_ATTR_VALUE }, true);
     }
 
 
@@ -54,6 +54,7 @@ public final class SpringInputPasswordFieldTagProcessor extends AbstractSpringFi
     @Override
     protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
+                             final String attributeTemplateName, final int attributeLine, final int attributeCol,
                              final BindStatus bindStatus, final IElementStructureHandler structureHandler) {
 
         String name = bindStatus.getExpression();
@@ -66,8 +67,6 @@ public final class SpringInputPasswordFieldTagProcessor extends AbstractSpringFi
 
         tag.getAttributes().setAttribute(
                 "value", RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, "", "password"));
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

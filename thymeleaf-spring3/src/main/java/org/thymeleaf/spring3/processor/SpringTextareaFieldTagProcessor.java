@@ -40,7 +40,7 @@ public final class SpringTextareaFieldTagProcessor extends AbstractSpringFieldTa
 
 
     public SpringTextareaFieldTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, TEXTAREA_TAG_NAME, null, null);
+        super(dialectPrefix, TEXTAREA_TAG_NAME, null, null, true);
     }
 
 
@@ -48,6 +48,7 @@ public final class SpringTextareaFieldTagProcessor extends AbstractSpringFieldTa
     @Override
     protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
+                             final String attributeTemplateName, final int attributeLine, final int attributeCol,
                              final BindStatus bindStatus, final IElementStructureHandler structureHandler) {
 
         String name = bindStatus.getExpression();
@@ -64,8 +65,6 @@ public final class SpringTextareaFieldTagProcessor extends AbstractSpringFieldTa
         tag.getAttributes().setAttribute("name", name); // No need to escape: this is a java-valid token
 
         structureHandler.setBody((processedValue == null? "" : processedValue), false);
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

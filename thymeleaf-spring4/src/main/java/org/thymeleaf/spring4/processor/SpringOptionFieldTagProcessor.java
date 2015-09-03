@@ -43,7 +43,7 @@ public final class SpringOptionFieldTagProcessor extends AbstractSpringFieldTagP
 
 
     public SpringOptionFieldTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, OPTION_TAG_NAME, null, null);
+        super(dialectPrefix, OPTION_TAG_NAME, null, null, true);
     }
 
 
@@ -51,6 +51,7 @@ public final class SpringOptionFieldTagProcessor extends AbstractSpringFieldTagP
     @Override
     protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
+                             final String attributeTemplateName, final int attributeLine, final int attributeCol,
                              final BindStatus bindStatus, final IElementStructureHandler structureHandler) {
 
         String name = bindStatus.getExpression();
@@ -74,8 +75,6 @@ public final class SpringOptionFieldTagProcessor extends AbstractSpringFieldTagP
         } else {
             tag.getAttributes().removeAttribute("selected");
         }
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

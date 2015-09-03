@@ -45,7 +45,7 @@ public final class SpringHrefTagProcessor extends AbstractStandardExpressionAttr
 
 
     public SpringHrefTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, true);
     }
 
 
@@ -54,7 +54,9 @@ public final class SpringHrefTagProcessor extends AbstractStandardExpressionAttr
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
+            final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
+            final Object expressionResult,
             final IElementStructureHandler structureHandler) {
 
         String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? "" : expressionResult.toString());
@@ -64,8 +66,6 @@ public final class SpringHrefTagProcessor extends AbstractStandardExpressionAttr
 
         // Set the real, non prefixed attribute
         tag.getAttributes().setAttribute(ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

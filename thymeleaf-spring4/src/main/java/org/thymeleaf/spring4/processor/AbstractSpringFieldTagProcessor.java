@@ -57,13 +57,17 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
 
     private final String discriminatorAttrName;
     private final String[] discriminatorAttrValues;
+    private final boolean removeAttribute;
 
 
     public AbstractSpringFieldTagProcessor(
-            final String dialectPrefix, final String elementName, final String discriminatorAttrName, final String[] discriminatorAttrValues) {
-        super(TemplateMode.HTML, dialectPrefix, elementName, false, ATTR_NAME, true, ATTR_PRECEDENCE);
+            final String dialectPrefix, final String elementName,
+            final String discriminatorAttrName, final String[] discriminatorAttrValues,
+            final boolean removeAttribute) {
+        super(TemplateMode.HTML, dialectPrefix, elementName, false, ATTR_NAME, true, ATTR_PRECEDENCE, false);
         this.discriminatorAttrName = discriminatorAttrName;
         this.discriminatorAttrValues = discriminatorAttrValues;
+        this.removeAttribute = removeAttribute;
     }
 
 
@@ -99,6 +103,7 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementStructureHandler structureHandler) {
 
         /*
@@ -114,10 +119,17 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
             return;
         }
 
+        if (this.removeAttribute) {
+            tag.getAttributes().removeAttribute(attributeName);
+        }
+
         final BindStatus bindStatus = FieldUtils.getBindStatus(processingContext, attributeValue);
         structureHandler.setLocalVariable(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS, bindStatus);
 
-        doProcess(processingContext, tag, attributeName, attributeValue, bindStatus, structureHandler);
+        doProcess(
+                processingContext, tag,
+                attributeName, attributeValue, attributeTemplateName, attributeLine, attributeCol,
+                bindStatus, structureHandler);
 
     }
 
@@ -129,6 +141,7 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
             final IProcessableElementTag tag,
             final AttributeName attributeName,
             final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final BindStatus bindStatus,
             final IElementStructureHandler structureHandler);
 

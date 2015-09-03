@@ -58,7 +58,7 @@ public final class SpringErrorClassTagProcessor extends AbstractAttributeTagProc
 
 
     public SpringErrorClassTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, null, false, ATTR_NAME, true,ATTR_PRECEDENCE);
+        super(TemplateMode.HTML, dialectPrefix, null, false, ATTR_NAME, true,ATTR_PRECEDENCE, true);
     }
 
 
@@ -69,6 +69,7 @@ public final class SpringErrorClassTagProcessor extends AbstractAttributeTagProc
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementStructureHandler structureHandler) {
 
         final BindStatus bindStatus = computeBindStatus(processingContext, tag);
@@ -106,8 +107,6 @@ public final class SpringErrorClassTagProcessor extends AbstractAttributeTagProc
             }
 
         }
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

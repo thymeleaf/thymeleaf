@@ -49,7 +49,7 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
 
 
     public SpringActionTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, true);
     }
 
 
@@ -58,7 +58,9 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
+            final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
+            final Object expressionResult,
             final IElementStructureHandler structureHandler) {
 
         String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? "" : expressionResult.toString());
@@ -72,9 +74,6 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
 
         // Set the 'action' attribute
         tag.getAttributes().setAttribute(ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
-
-        // We need to remove it here in case it is cloned
-        tag.getAttributes().removeAttribute(attributeName);
 
         // If this th:action is in a <form> tag, we might need to add a hidden field (depending on Spring configuration)
         if ("form".equalsIgnoreCase(tag.getElementName())) {

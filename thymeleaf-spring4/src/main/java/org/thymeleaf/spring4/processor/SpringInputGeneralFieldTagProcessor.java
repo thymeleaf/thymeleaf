@@ -82,7 +82,7 @@ public final class SpringInputGeneralFieldTagProcessor
 
 
     public SpringInputGeneralFieldTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, ALL_TYPE_ATTR_VALUES);
+        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, ALL_TYPE_ATTR_VALUES, true);
     }
 
 
@@ -91,6 +91,7 @@ public final class SpringInputGeneralFieldTagProcessor
     @Override
     protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
+                             final String attributeTemplateName, final int attributeLine, final int attributeCol,
                              final BindStatus bindStatus, final IElementStructureHandler structureHandler) {
 
         String name = bindStatus.getExpression();
@@ -113,8 +114,6 @@ public final class SpringInputGeneralFieldTagProcessor
 
         tag.getAttributes().setAttribute(
                 "value", RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, value, type));
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

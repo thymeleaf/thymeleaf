@@ -42,7 +42,7 @@ public final class SpringInputFileFieldTagProcessor extends AbstractSpringFieldT
 
     
     public SpringInputFileFieldTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { FILE_INPUT_TYPE_ATTR_VALUE });
+        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { FILE_INPUT_TYPE_ATTR_VALUE }, true);
     }
 
 
@@ -51,6 +51,7 @@ public final class SpringInputFileFieldTagProcessor extends AbstractSpringFieldT
     @Override
     protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
+                             final String attributeTemplateName, final int attributeLine, final int attributeCol,
                              final BindStatus bindStatus, final IElementStructureHandler structureHandler) {
 
         String name = bindStatus.getExpression();
@@ -60,8 +61,6 @@ public final class SpringInputFileFieldTagProcessor extends AbstractSpringFieldT
 
         tag.getAttributes().setAttribute("id", id); // No need to escape: this comes from an existing 'id' or from a token
         tag.getAttributes().setAttribute("name", name); // No need to escape: this is a java-valid token
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

@@ -49,7 +49,7 @@ public final class SpringInputCheckboxFieldTagProcessor
 
     
     public SpringInputCheckboxFieldTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { CHECKBOX_INPUT_TYPE_ATTR_VALUE });
+        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { CHECKBOX_INPUT_TYPE_ATTR_VALUE }, true);
     }
 
 
@@ -58,6 +58,7 @@ public final class SpringInputCheckboxFieldTagProcessor
     @Override
     protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
+                             final String attributeTemplateName, final int attributeLine, final int attributeCol,
                              final BindStatus bindStatus, final IElementStructureHandler structureHandler) {
 
         String name = bindStatus.getExpression();
@@ -103,8 +104,6 @@ public final class SpringInputCheckboxFieldTagProcessor
         } else {
             tag.getAttributes().removeAttribute("checked");
         }
-
-        tag.getAttributes().removeAttribute(attributeName); // We need to remove it here before being cloned
 
 
         if (!isDisabled(tag)) {

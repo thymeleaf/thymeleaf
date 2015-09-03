@@ -47,7 +47,7 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
 
 
     public SpringMethodTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, true);
     }
 
 
@@ -56,7 +56,9 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue, final Object expressionResult,
+            final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
+            final Object expressionResult,
             final IElementStructureHandler structureHandler) {
 
         final String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? null : expressionResult.toString());
@@ -67,8 +69,6 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
         } else {
             tag.getAttributes().setAttribute(ATTR_NAME, newAttributeValue);
         }
-
-        tag.getAttributes().removeAttribute(attributeName); // We need to remove it here before being cloned
 
         // If this th:action is in a <form> tag, we might need to add a hidden field for non-supported HTTP methods
         if (newAttributeValue != null && "form".equalsIgnoreCase(tag.getElementName())) {

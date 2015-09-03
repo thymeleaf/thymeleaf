@@ -46,7 +46,7 @@ public final class SpringInputRadioFieldTagProcessor extends AbstractSpringField
 
     
     public SpringInputRadioFieldTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { RADIO_INPUT_TYPE_ATTR_VALUE });
+        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { RADIO_INPUT_TYPE_ATTR_VALUE }, true);
     }
 
 
@@ -55,6 +55,7 @@ public final class SpringInputRadioFieldTagProcessor extends AbstractSpringField
     @Override
     protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
+                             final String attributeTemplateName, final int attributeLine, final int attributeCol,
                              final BindStatus bindStatus, final IElementStructureHandler structureHandler) {
 
         String name = bindStatus.getExpression();
@@ -82,8 +83,6 @@ public final class SpringInputRadioFieldTagProcessor extends AbstractSpringField
         } else {
             tag.getAttributes().removeAttribute("checked");
         }
-
-        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

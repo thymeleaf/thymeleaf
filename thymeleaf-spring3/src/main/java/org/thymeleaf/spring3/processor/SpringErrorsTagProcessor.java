@@ -50,7 +50,7 @@ public final class SpringErrorsTagProcessor extends AbstractAttributeTagProcesso
     
     
     public SpringErrorsTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, null, false, ATTR_NAME, true, ATTR_PRECEDENCE);
+        super(TemplateMode.HTML, dialectPrefix, null, false, ATTR_NAME, true, ATTR_PRECEDENCE, true);
     }
 
 
@@ -60,6 +60,7 @@ public final class SpringErrorsTagProcessor extends AbstractAttributeTagProcesso
     protected void doProcess(
             final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementStructureHandler structureHandler) {
 
         final BindStatus bindStatus = FieldUtils.getBindStatus(processingContext, attributeValue);
@@ -81,8 +82,6 @@ public final class SpringErrorsTagProcessor extends AbstractAttributeTagProcesso
 
             // Just in case we also have a th:errorclass in this tag
             structureHandler.setLocalVariable(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS, bindStatus);
-
-            tag.getAttributes().removeAttribute(attributeName);
 
         } else {
 

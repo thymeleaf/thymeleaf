@@ -46,7 +46,7 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
 
 
     public SpringSelectFieldTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, SELECT_TAG_NAME, null, null);
+        super(dialectPrefix, SELECT_TAG_NAME, null, null, true);
     }
 
 
@@ -54,6 +54,7 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
     @Override
     protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
+                             final String attributeTemplateName, final int attributeLine, final int attributeCol,
                              final BindStatus bindStatus, final IElementStructureHandler structureHandler) {
 
         String name = bindStatus.getExpression();
@@ -68,8 +69,6 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
 
         structureHandler.setLocalVariable(OPTION_IN_SELECT_ATTR_NAME, attributeName);
         structureHandler.setLocalVariable(OPTION_IN_SELECT_ATTR_VALUE, attributeValue);
-
-        tag.getAttributes().removeAttribute(attributeName); // We need to remove it here before being cloned
 
         if (multiple && !isDisabled(tag)) {
 
