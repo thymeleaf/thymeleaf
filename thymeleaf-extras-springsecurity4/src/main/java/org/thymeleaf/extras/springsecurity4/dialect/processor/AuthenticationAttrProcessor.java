@@ -44,7 +44,7 @@ public final class AuthenticationAttrProcessor extends AbstractAttributeTagProce
 
 
     public AuthenticationAttrProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix,  null, false, ATTR_NAME, true, ATTR_PRECEDENCE);
+        super(TemplateMode.HTML, dialectPrefix,  null, false, ATTR_NAME, true, ATTR_PRECEDENCE, true);
     }
 
 
@@ -54,9 +54,8 @@ public final class AuthenticationAttrProcessor extends AbstractAttributeTagProce
     protected void doProcess(
             final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementStructureHandler structureHandler) {
-
-        tag.getAttributes().removeAttribute(attributeName);
 
         final String attrValue = (attributeValue == null? null : attributeValue.trim());
 
