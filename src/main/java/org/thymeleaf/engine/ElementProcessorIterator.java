@@ -21,6 +21,7 @@ package org.thymeleaf.engine;
 
 import java.util.Arrays;
 
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.PrecedenceProcessorComparator;
 import org.thymeleaf.processor.element.IElementProcessor;
 
@@ -56,6 +57,9 @@ final class ElementProcessorIterator {
     // The version, used to keep track of the tag's attributes and knowing when we have to recompute
     private int attributesVersion = Integer.MIN_VALUE;
 
+    // This flag will determine if we should return the last processor that we have already returned, or if we just did
+    private boolean lastToBeRepeated = false;
+    private boolean lastWasRepeated = false;
 
 
 
@@ -69,10 +73,23 @@ final class ElementProcessorIterator {
         this.size = 0;
         this.last = -1;
         this.attributesVersion = Integer.MIN_VALUE;
+        this.lastToBeRepeated = false;
+        this.lastWasRepeated = false;
     }
 
 
-    public IElementProcessor next(final AbstractProcessableElementTag tag) {
+    IElementProcessor next(final AbstractProcessableElementTag tag) {
+
+        // It should never happen that after calling 'setLastToBeRepeated' we change tag or modify it before
+        // calling 'next' again, so we are fine checking this flag before checking for recomputes
+        if (this.lastToBeRepeated) {
+            final IElementProcessor repeatedLast = computeRepeatedLast(tag);
+            this.lastToBeRepeated = false;
+            this.lastWasRepeated = true;
+            return repeatedLast;
+        }
+
+        this.lastWasRepeated = false;
 
         if (this.attributesVersion == Integer.MIN_VALUE || tag.elementAttributes.version != this.attributesVersion) {
             recompute(tag);
@@ -97,6 +114,42 @@ final class ElementProcessorIterator {
         }
         this.last = this.size;
         return null;
+
+    }
+
+
+    private IElementProcessor computeRepeatedLast(final AbstractProcessableElementTag tag) {
+
+        if (this.attributesVersion == Integer.MIN_VALUE || tag.elementAttributes.version != this.attributesVersion) {
+            throw new TemplateProcessingException("Cannot return last processor to be repeated: changes were made and processor recompute is needed!");
+        }
+
+        if (this.processors == null) {
+            throw new TemplateProcessingException("Cannot return last processor to be repeated: no processors in tag!");
+        }
+
+        return this.processors[this.last];
+
+    }
+
+
+    boolean lastWasRepeated() {
+        return this.lastWasRepeated;
+    }
+
+
+
+    void setLastToBeRepeated(final AbstractProcessableElementTag tag) {
+
+        if (this.attributesVersion == Integer.MIN_VALUE || tag.elementAttributes.version != this.attributesVersion) {
+            throw new TemplateProcessingException("Cannot set last processor to be repeated: processor recompute is needed!");
+        }
+
+        if (this.processors == null) {
+            throw new TemplateProcessingException("Cannot set last processor to be repeated: no processors in tag!");
+        }
+
+        this.lastToBeRepeated = true;
 
     }
 
@@ -227,6 +280,8 @@ final class ElementProcessorIterator {
         this.size = original.size;
         this.last = original.last;
         this.attributesVersion = original.attributesVersion;
+        this.lastToBeRepeated = original.lastToBeRepeated;
+        this.lastWasRepeated = original.lastWasRepeated;
 
         if (original.processors != null) {
             if (this.processors == null || this.processors.length < original.size) {

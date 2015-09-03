@@ -22,8 +22,8 @@ package org.thymeleaf.processor.element;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeNames;
 import org.thymeleaf.engine.ElementNames;
-import org.thymeleaf.engine.IMarkup;
 import org.thymeleaf.engine.ITemplateHandlerEvent;
+import org.thymeleaf.engine.Markup;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -40,17 +40,14 @@ public abstract class AbstractElementMarkupProcessor
 
     private final String dialectPrefix;
     private final String elementName;
-    private final boolean prefixElementName;
     private final String attributeName;
-    private final boolean prefixAttributeName;
-    private MatchingElementName matchingElementName;
-    private MatchingAttributeName matchingAttributeName;
+    private final MatchingElementName matchingElementName;
+    private final MatchingAttributeName matchingAttributeName;
 
 
 
     public AbstractElementMarkupProcessor(
-            final TemplateMode templateMode,
-            final String dialectPrefix,
+            final TemplateMode templateMode, final String dialectPrefix,
             final String elementName, final boolean prefixElementName,
             final String attributeName, final boolean prefixAttributeName,
             final int precedence) {
@@ -60,20 +57,18 @@ public abstract class AbstractElementMarkupProcessor
         this.dialectPrefix = dialectPrefix;
 
         this.elementName = elementName;
-        this.prefixElementName = prefixElementName;
         this.attributeName = attributeName;
-        this.prefixAttributeName = prefixAttributeName;
 
         this.matchingElementName =
                 (this.elementName == null?
                     null :
                     MatchingElementName.forElementName(
-                            getTemplateMode(), ElementNames.forName(getTemplateMode(), (this.prefixElementName? this.dialectPrefix : null), this.elementName)));
+                            templateMode, ElementNames.forName(templateMode, (prefixElementName? this.dialectPrefix : null), this.elementName)));
         this.matchingAttributeName =
                 (this.attributeName == null?
                     null :
                     MatchingAttributeName.forAttributeName(
-                            getTemplateMode(), AttributeNames.forName(getTemplateMode(), (this.prefixAttributeName? this.dialectPrefix : null), this.attributeName)));
+                            templateMode, AttributeNames.forName(templateMode, (prefixAttributeName? this.dialectPrefix : null), this.attributeName)));
 
     }
 
@@ -89,49 +84,49 @@ public abstract class AbstractElementMarkupProcessor
 
 
 
-    public final IMarkup process(final ITemplateProcessingContext processingContext, final IMarkup markup) {
+    public final void process(
+            final ITemplateProcessingContext processingContext,
+            final Markup markup) {
 
+        String markupTemplateName = null;
+        int markupLine = -1;
+        int markupCol = -1;
         try {
 
-            return doProcess(processingContext, markup);
+            final ITemplateHandlerEvent firstEvent = markup.get(0);
+            markupTemplateName = firstEvent.getTemplateName();
+            markupLine = firstEvent.getLine();
+            markupCol = firstEvent.getLine();
+
+            doProcess(processingContext, markup, markupTemplateName, markupLine, markupCol);
 
         } catch (final TemplateProcessingException e) {
 
-            if (markup.size() > 0) { // If size is 0, we have nowhere to extract template/line/col info from
-                final ITemplateHandlerEvent firstEvent = markup.get(0);
-                if (firstEvent != null && firstEvent.hasLocation()) {
-                    if (!e.hasTemplateName()) {
-                        e.setTemplateName(firstEvent.getTemplateName());
-                    }
-                    if (!e.hasLineAndCol()) {
-                        e.setLineAndCol(firstEvent.getLine(), firstEvent.getCol());
-                    }
+            if (markupTemplateName != null) {
+                if (!e.hasTemplateName()) {
+                    e.setTemplateName(markupTemplateName);
+                }
+            }
+            if (markupLine != -1 && markupCol != -1) {
+                if (!e.hasLineAndCol()) {
+                    e.setLineAndCol(markupLine, markupCol);
                 }
             }
             throw e;
 
         } catch (final Exception e) {
 
-            String templateName = null;
-            int line = -1;
-            int col = -1;
-
-            if (markup.size() > 0) { // If size is 0, we have nowhere to extract template/line/col info from
-                final ITemplateHandlerEvent firstEvent = markup.get(0);
-                if (firstEvent != null && firstEvent.hasLocation()) {
-                    templateName = firstEvent.getTemplateName();
-                    line = firstEvent.getLine();
-                    col = firstEvent.getCol();
-                }
-            }
             throw new TemplateProcessingException(
-                    "Error during execution of processor '" + this.getClass().getName() + "'", templateName, line, col, e);
+                    "Error during execution of processor '" + this.getClass().getName() + "'", markupTemplateName, markupLine, markupCol, e);
 
         }
 
     }
 
 
-    protected abstract IMarkup doProcess(final ITemplateProcessingContext processingContext, final IMarkup markup);
+    protected abstract void doProcess(
+            final ITemplateProcessingContext processingContext,
+            final Markup markup,
+            final String markupTemplateName, final int markupLine, final int markupCol);
 
 }

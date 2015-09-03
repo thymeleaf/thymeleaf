@@ -154,6 +154,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     // Putting a text node to the queue for immediate execution is so common we will have a common buffer object for that
     private Text textBuffer = null;
 
+    // In order to execute IElementMarkupProcessor processors we will use a buffer so that we don't create so many Markup objects
+    private Markup markupBuffer = null;
+
     // Used for suspending the execution of a tag and replacing it for a different event (perhaps after building a
     // queue) or iterating the suspended event and its body.
     private boolean suspended = false;
@@ -248,6 +251,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         // Buffer used for text-shaped body replacement in tags (very common operation)
         this.textBuffer = new Text(this.configuration.getTextRepository());
+
+        // Buffer used for executing IElementMarkupProcessor processors
+        this.markupBuffer = new Markup(this.configuration, this.templateMode);
 
         // Specs containing all the info required for suspending the execution of a processor in order to e.g. change
         // handling method (standalone -> open) or start caching an iteration
@@ -1300,37 +1306,87 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             } else if (processor instanceof IElementMarkupProcessor) {
 
-                // Set the element markup info in order to start gathering all the element markup's events
-                this.gatheringElementMarkup = true;
-                this.elementMarkupSpec.fromMarkupLevel = this.markupLevel + 1;
-                this.elementMarkupSpec.markupQueue.reset();
+                /*
+                 * This is an Element Markup processor, which means that before executing we might need to gather
+                 * all the markup that is inside the element (including the element's events themselves) and then,
+                 * once all markup has been gathered, call the processor. Note this process is quite similar to
+                 * that of iteration.
+                 *
+                 * In order to know whether we need to start the markup gathering process, or if just finished it
+                 * and we need to actually execute the processor, we will ask the elementProcessorIterator to know
+                 * if this is the first or the second time we execute this processor.
+                 */
 
-                // Suspend the queue - execution will be restarted by the execution of this event again once markup is gathered
-                this.suspended = true;
-                this.suspensionSpec.allowedElementCountInBody = Integer.MAX_VALUE;
-                this.suspensionSpec.allowedNonElementStructuresInBody = true;
-                this.suspensionSpec.queueProcessable = queueProcessable;
-                this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
-                this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
+                if (!this.elementProcessorIterator.lastWasRepeated()){
 
-                // Add this standalone tag to the element markup queue
-                this.elementMarkupSpec.markupQueue.add(standaloneElementTag, true);
+                    // Set the element markup info in order to start gathering all the element markup's events
+                    this.gatheringElementMarkup = true;
+                    this.elementMarkupSpec.fromMarkupLevel = this.markupLevel + 1;
+                    this.elementMarkupSpec.markupQueue.reset();
 
-                // Decrease the handler execution level (all important bits are already in suspensionSpec)
-                decreaseHandlerExecLevel();
+                    // Set the processor to be executed again, because this time we will just set the "markup gathering" mechanism
+                    this.elementProcessorIterator.setLastToBeRepeated(standaloneElementTag);
 
-                // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- we need the variables stored there, if any
+                    // Suspend the queue - execution will be restarted by the execution of this event again once markup is gathered
+                    this.suspended = true;
+                    this.suspensionSpec.allowedElementCountInBody = Integer.MAX_VALUE;
+                    this.suspensionSpec.allowedNonElementStructuresInBody = true;
+                    this.suspensionSpec.queueProcessable = queueProcessable;
+                    this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
+                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
-                // Process the queue by iterating it
-                processElementMarkup();
+                    // Add this standalone tag to the element markup queue
+                    this.elementMarkupSpec.markupQueue.add(standaloneElementTag, true);
 
-                // Decrease the variables map level
-                if (this.variablesMap != null) {
-                    this.variablesMap.decreaseLevel();
+                    // Decrease the handler execution level (all important bits are already in suspensionSpec)
+                    decreaseHandlerExecLevel();
+
+                    // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- we need the variables stored there, if any
+
+                    // Process the queue by iterating it
+                    processElementMarkup();
+
+                    // Decrease the variables map level
+                    if (this.variablesMap != null) {
+                        this.variablesMap.decreaseLevel();
+                    }
+
+                    // Complete exit of the handler method: no more processing to do from here
+                    return;
+
                 }
 
-                // Complete exit of the handler method: no more processing to do from here
-                return;
+                /*
+                 * This is not the first time we try to execute this processor, which means the markup gathering
+                 * process has already taken place.
+                 */
+
+                final EngineEventQueue gatheredQueue = this.elementMarkupArtifacts[this.elementMarkupArtifactsIndex - 1].markupQueue;
+
+                // We will use the markup buffer in order to save in number of Markup objects created. This is safe
+                // because we will only be calling one of these processors at a time, and the markup contents will
+                // be cloned after execution in order to insert them into the queue.
+                //
+                // NOTE we are not cloning the events themselves here. There should be no need, as we are going to
+                //      re-locate these events into a new queue, and their old position (which will be executed
+                //      anyway) will be ignored.
+                this.markupBuffer.getEventQueue().resetAsCloneOf(gatheredQueue, false);
+
+                ((IElementMarkupProcessor) processor).process(this.processingContext, this.markupBuffer);
+
+                /*
+                 * Now we will do the exact equivalent to what is performed for an Element Tag processor, when this
+                 * returns a result of type "replaceWithMarkup".
+                 */
+
+                queue.reset(); // Remove any previous results on the queue
+                queueProcessable = true; // We actually NEED TO process this queue
+
+                // Markup will be automatically cloned if mutable
+                queue.addMarkup(this.markupBuffer);
+
+                tagRemoved = true;
+
 
             } else {
                 throw new IllegalStateException(
@@ -1702,48 +1758,92 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             } else if (processor instanceof IElementMarkupProcessor) {
 
                 /*
-                 * This is an Element Markup processor, which means that before executing we will need to gather
+                 * This is an Element Markup processor, which means that before executing we might need to gather
                  * all the markup that is inside the element (including the element's events themselves) and then,
-                 * once all markup has been gathered, call the processor.
+                 * once all markup has been gathered, call the processor. Note this process is quite similar to
+                 * that of iteration.
                  *
-                 * Note this process is quite similar to that of iteration.
+                 * In order to know whether we need to start the markup gathering process, or if just finished it
+                 * and we need to actually execute the processor, we will ask the elementProcessorIterator to know
+                 * if this is the first or the second time we execute this processor.
                  */
 
-                // Set the element markup info in order to start gathering all the element markup's events
-                this.gatheringElementMarkup = true;
-                this.elementMarkupSpec.fromMarkupLevel = this.markupLevel + 1;
-                this.elementMarkupSpec.markupQueue.reset();
+                if (!this.elementProcessorIterator.lastWasRepeated()){
 
-                // Before suspending the queue, we have to check if it is the result of a "setBodyText", in
-                // which case it will contain only one non-cloned node: the text buffer. And we will need to clone
-                // that buffer before suspending the queue to avoid nasty interactions during element markup processing
-                if (queue.size() == 1 && queue.get(0) == this.textBuffer) {
-                    // Replace the text buffer with a clone
-                    queue.reset();
-                    queue.add(this.textBuffer, true);
+                    // Set the element markup info in order to start gathering all the element markup's events
+                    this.gatheringElementMarkup = true;
+                    this.elementMarkupSpec.fromMarkupLevel = this.markupLevel + 1;
+                    this.elementMarkupSpec.markupQueue.reset();
+
+                    // Before suspending the queue, we have to check if it is the result of a "setBodyText", in
+                    // which case it will contain only one non-cloned node: the text buffer. And we will need to clone
+                    // that buffer before suspending the queue to avoid nasty interactions during element markup processing
+                    if (queue.size() == 1 && queue.get(0) == this.textBuffer) {
+                        // Replace the text buffer with a clone
+                        queue.reset();
+                        queue.add(this.textBuffer, true);
+                    }
+
+                    // Set the processor to be executed again, because this time we will just set the "markup gathering" mechanism
+                    this.elementProcessorIterator.setLastToBeRepeated(openElementTag);
+
+                    // Suspend the queue - execution will be restarted by the handleOpenElement event
+                    this.suspended = true;
+                    this.suspensionSpec.allowedElementCountInBody = allowedElementCountInBody;
+                    this.suspensionSpec.allowedNonElementStructuresInBody = allowedNonElementStructuresInBody;
+                    this.suspensionSpec.queueProcessable = queueProcessable;
+                    this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
+                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
+
+                    // Add the tag itself to the element markup queue
+                    this.elementMarkupSpec.markupQueue.add(openElementTag, true);
+
+                    // Increase markup level, as normal with open tags
+                    increaseMarkupLevel();
+
+                    // Decrease the handler execution level (all important bits are already in suspensionSpec)
+                    decreaseHandlerExecLevel();
+
+                    // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- that's the responsibility of the close event
+
+                    // Nothing else to be done by this handler... let's just queue the rest of the events in this element
+                    return;
+
                 }
 
-                // Suspend the queue - execution will be restarted by the handleOpenElement event
-                this.suspended = true;
-                this.suspensionSpec.allowedElementCountInBody = allowedElementCountInBody;
-                this.suspensionSpec.allowedNonElementStructuresInBody = allowedNonElementStructuresInBody;
-                this.suspensionSpec.queueProcessable = queueProcessable;
-                this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
-                this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
+                /*
+                 * This is not the first time we try to execute this processor, which means the markup gathering
+                 * process has already taken place.
+                 */
 
-                // Add the tag itself to the element markup queue
-                this.elementMarkupSpec.markupQueue.add(openElementTag, true);
+                final EngineEventQueue gatheredQueue = this.elementMarkupArtifacts[this.elementMarkupArtifactsIndex - 1].markupQueue;
 
-                // Increase markup level, as normal with open tags
-                increaseMarkupLevel();
+                // We will use the markup buffer in order to save in number of Markup objects created. This is safe
+                // because we will only be calling one of these processors at a time, and the markup contents will
+                // be cloned after execution in order to insert them into the queue.
+                //
+                // NOTE we are not cloning the events themselves here. There should be no need, as we are going to
+                //      re-locate these events into a new queue, and their old position (which will be executed
+                //      anyway) will be ignored.
+                this.markupBuffer.getEventQueue().resetAsCloneOf(gatheredQueue, false);
 
-                // Decrease the handler execution level (all important bits are already in suspensionSpec)
-                decreaseHandlerExecLevel();
+                ((IElementMarkupProcessor) processor).process(this.processingContext, this.markupBuffer);
 
-                // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- that's the responsibility of the close event
+                /*
+                 * Now we will do the exact equivalent to what is performed for an Element Tag processor, when this
+                 * returns a result of type "replaceWithMarkup".
+                 */
 
-                // Nothing else to be done by this handler... let's just queue the rest of the events in this element
-                return;
+                queue.reset(); // Remove any previous results on the queue
+                queueProcessable = true; // We actually NEED TO process this queue
+
+                // Markup will be automatically cloned if mutable
+                queue.addMarkup(this.markupBuffer);
+
+                tagRemoved = true;
+                allowedElementCountInBody = 0;
+                allowedNonElementStructuresInBody = false;
+
 
             } else {
                 throw new IllegalStateException(
@@ -2134,48 +2234,97 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             } else if (processor instanceof IElementMarkupProcessor) {
 
                 /*
-                 * This is an Element Markup processor, which means that before executing we will need to gather
+                 * This is an Element Markup processor, which means that before executing we might need to gather
                  * all the markup that is inside the element (including the element's events themselves) and then,
-                 * once all markup has been gathered, call the processor.
+                 * once all markup has been gathered, call the processor. Note this process is quite similar to
+                 * that of iteration.
                  *
-                 * Note this process is quite similar to that of iteration.
+                 * In order to know whether we need to start the markup gathering process, or if just finished it
+                 * and we need to actually execute the processor, we will ask the elementProcessorIterator to know
+                 * if this is the first or the second time we execute this processor.
                  */
 
-                // Set the element markup info in order to start gathering all the element markup's events
-                this.gatheringElementMarkup = true;
-                this.elementMarkupSpec.fromMarkupLevel = this.markupLevel + 1;
-                this.elementMarkupSpec.markupQueue.reset();
+                if (!this.elementProcessorIterator.lastWasRepeated()){
 
-                // Before suspending the queue, we have to check if it is the result of a "setBodyText", in
-                // which case it will contain only one non-cloned node: the text buffer. And we will need to clone
-                // that buffer before suspending the queue to avoid nasty interactions during element markup processing
-                if (queue.size() == 1 && queue.get(0) == this.textBuffer) {
-                    // Replace the text buffer with a clone
-                    queue.reset();
-                    queue.add(this.textBuffer, true);
+                    // Set the element markup info in order to start gathering all the element markup's events
+                    this.gatheringElementMarkup = true;
+                    this.elementMarkupSpec.fromMarkupLevel = this.markupLevel + 1;
+                    this.elementMarkupSpec.markupQueue.reset();
+
+                    // Before suspending the queue, we have to check if it is the result of a "setBodyText", in
+                    // which case it will contain only one non-cloned node: the text buffer. And we will need to clone
+                    // that buffer before suspending the queue to avoid nasty interactions during element markup processing
+                    if (queue.size() == 1 && queue.get(0) == this.textBuffer) {
+                        // Replace the text buffer with a clone
+                        queue.reset();
+                        queue.add(this.textBuffer, true);
+                    }
+
+                    // Set the processor to be executed again, because this time we will just set the "markup gathering" mechanism
+                    this.elementProcessorIterator.setLastToBeRepeated(autoOpenElementTag);
+
+                    // Suspend the queue - execution will be restarted by the handleOpenElement event
+                    this.suspended = true;
+                    this.suspensionSpec.allowedElementCountInBody = allowedElementCountInBody;
+                    this.suspensionSpec.allowedNonElementStructuresInBody = allowedNonElementStructuresInBody;
+                    this.suspensionSpec.queueProcessable = queueProcessable;
+                    this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
+                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
+
+                    // Add the tag itself to the element markup queue
+                    this.elementMarkupSpec.markupQueue.add(autoOpenElementTag, true);
+
+                    // Increase markup level, as normal with open tags
+                    increaseMarkupLevel();
+
+                    // Decrease the handler execution level (all important bits are already in suspensionSpec)
+                    decreaseHandlerExecLevel();
+
+                    // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- that's the responsibility of the close event
+
+                    // Nothing else to be done by this handler... let's just queue the rest of the events in this element
+                    return;
+
                 }
 
-                // Suspend the queue - execution will be restarted by the handleOpenElement event
-                this.suspended = true;
-                this.suspensionSpec.allowedElementCountInBody = allowedElementCountInBody;
-                this.suspensionSpec.allowedNonElementStructuresInBody = allowedNonElementStructuresInBody;
-                this.suspensionSpec.queueProcessable = queueProcessable;
-                this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
-                this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
+                /*
+                 * This is not the first time we try to execute this processor, which means the markup gathering
+                 * process has already taken place.
+                 */
 
-                // Add the tag itself to the element markup queue
-                this.elementMarkupSpec.markupQueue.add(autoOpenElementTag, true);
+                /*
+                 * This is not the first time we try to execute this processor, which means the markup gathering
+                 * process has already taken place.
+                 */
 
-                // Increase markup level, as normal with open tags
-                increaseMarkupLevel();
+                final EngineEventQueue gatheredQueue = this.elementMarkupArtifacts[this.elementMarkupArtifactsIndex - 1].markupQueue;
 
-                // Decrease the handler execution level (all important bits are already in suspensionSpec)
-                decreaseHandlerExecLevel();
+                // We will use the markup buffer in order to save in number of Markup objects created. This is safe
+                // because we will only be calling one of these processors at a time, and the markup contents will
+                // be cloned after execution in order to insert them into the queue.
+                //
+                // NOTE we are not cloning the events themselves here. There should be no need, as we are going to
+                //      re-locate these events into a new queue, and their old position (which will be executed
+                //      anyway) will be ignored.
+                this.markupBuffer.getEventQueue().resetAsCloneOf(gatheredQueue, false);
 
-                // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- that's the responsibility of the close event
+                ((IElementMarkupProcessor) processor).process(this.processingContext, this.markupBuffer);
 
-                // Nothing else to be done by this handler... let's just queue the rest of the events in this element
-                return;
+                /*
+                 * Now we will do the exact equivalent to what is performed for an Element Tag processor, when this
+                 * returns a result of type "replaceWithMarkup".
+                 */
+
+                queue.reset(); // Remove any previous results on the queue
+                queueProcessable = true; // We actually NEED TO process this queue
+
+                // Markup will be automatically cloned if mutable
+                queue.addMarkup(this.markupBuffer);
+
+                tagRemoved = true;
+                allowedElementCountInBody = 0;
+                allowedNonElementStructuresInBody = false;
+
 
             } else {
                 throw new IllegalStateException(
@@ -2523,7 +2672,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (!this.allowedNonElementStructuresByMarkupLevel[this.markupLevel]) {
+            if (!this.allowedNonElementStructuresByMarkupLevel[this.markupLevel]) {
             return;
         }
 
