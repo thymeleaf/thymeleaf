@@ -54,18 +54,18 @@ import org.thymeleaf.util.Validate;
  */
 public class ImmutableMarkup implements IMarkup {
 
-    private final MutableMarkup markup;
+    private final Markup markup;
 
 
     // Package-protected constructor, because we don't want anyone creating these objects from outside the engine.
     // Specifically, they will only be created from the TemplateManager.
     // If a processor (be it standard or custom-made) wants to create a piece of markup, that should be a Markup
     // object, not this.
-    protected ImmutableMarkup(final IEngineConfiguration configuration, final TemplateMode templateMode) {
+    ImmutableMarkup(final IEngineConfiguration configuration, final TemplateMode templateMode) {
         super();
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(templateMode, "Template Mode cannot be null");
-        this.markup = new MutableMarkup(configuration, templateMode);
+        this.markup = new Markup(configuration, templateMode);
     }
 
 
@@ -102,13 +102,13 @@ public class ImmutableMarkup implements IMarkup {
     // We don't want anyone to have direct access to the underlying Markup object from outside the engine.
     // This will effectively turn our ParsedFragmentMarkup into immutable (though not really) and therefore allow us
     // to confidently cache these objects without worrying that anyone can modify them
-    final MutableMarkup getInternalMarkup() {
+    final Markup getInternalMarkup() {
         return this.markup;
     }
 
 
 
-    public MutableMarkup cloneAsMutable() {
+    public Markup cloneAsMutable() {
         return this.markup.cloneAsMutable();
     }
 

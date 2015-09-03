@@ -47,7 +47,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public final class MutableMarkup implements IMarkup {
+public final class Markup implements IMarkup {
 
     private static final int INITIAL_EVENT_QUEUE_SIZE = 100; // 100 events by default, will auto-grow
 
@@ -58,7 +58,7 @@ public final class MutableMarkup implements IMarkup {
 
 
     // Only to be called from the IMarkupFactory
-    public MutableMarkup(final IEngineConfiguration configuration, final TemplateMode templateMode) {
+    public Markup(final IEngineConfiguration configuration, final TemplateMode templateMode) {
         super();
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(templateMode, "Template Mode cannot be null");
@@ -157,8 +157,8 @@ public final class MutableMarkup implements IMarkup {
     }
 
 
-    public MutableMarkup cloneAsMutable() {
-        final MutableMarkup clone = new MutableMarkup(this.configuration, this.templateMode);
+    public Markup cloneAsMutable() {
+        final Markup clone = new Markup(this.configuration, this.templateMode);
         clone.queue.resetAsCloneOf(this.queue, true);
         return clone;
     }

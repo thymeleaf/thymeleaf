@@ -169,7 +169,7 @@ final class EngineEventQueue {
         }
 
 
-        final MutableMarkup markup;
+        final Markup markup;
         if (imarkup instanceof ParsedTemplateMarkup) {
             // This is forbidden - we cannot add something that is not a fragment, but an entire, top level template
             throw new TemplateProcessingException(

@@ -93,8 +93,8 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
 
-    public MutableMarkup createMarkup() {
-        return new MutableMarkup(this.configuration, this.templateMode);
+    public Markup createMarkup() {
+        return new Markup(this.configuration, this.templateMode);
     }
 
 
