@@ -20,8 +20,6 @@
 package org.thymeleaf.engine;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.model.IAutoCloseElementTag;
-import org.thymeleaf.model.IAutoOpenElementTag;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
@@ -32,7 +30,6 @@ import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.model.IText;
-import org.thymeleaf.model.IUnmatchedCloseElementTag;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
@@ -143,34 +140,10 @@ public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler 
 
 
     @Override
-    public void handleAutoOpenElement(final IAutoOpenElementTag autoOpenElementTag) {
-        this.markup.add(autoOpenElementTag);
-        // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
-        super.handleAutoOpenElement(autoOpenElementTag);
-    }
-
-
-    @Override
     public void handleCloseElement(final ICloseElementTag closeElementTag) {
         this.markup.add(closeElementTag);
         // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleCloseElement(closeElementTag);
-    }
-
-
-    @Override
-    public void handleAutoCloseElement(final IAutoCloseElementTag autoCloseElementTag) {
-        this.markup.add(autoCloseElementTag);
-        // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
-        super.handleAutoCloseElement(autoCloseElementTag);
-    }
-
-
-    @Override
-    public void handleUnmatchedCloseElement(final IUnmatchedCloseElementTag unmatchedCloseElementTag) {
-        this.markup.add(unmatchedCloseElementTag);
-        // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
-        super.handleUnmatchedCloseElement(unmatchedCloseElementTag);
     }
 
 

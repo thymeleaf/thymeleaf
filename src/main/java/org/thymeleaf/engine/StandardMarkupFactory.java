@@ -21,8 +21,6 @@ package org.thymeleaf.engine;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IAutoCloseElementTag;
-import org.thymeleaf.model.IAutoOpenElementTag;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
@@ -31,7 +29,6 @@ import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.model.IText;
-import org.thymeleaf.model.IUnmatchedCloseElementTag;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.text.ITextRepository;
@@ -83,10 +80,10 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
 
-    private void checkRestrictedEventForTextTemplateMode(final Class<? extends ITemplateHandlerEvent> eventClass) {
+    private void checkRestrictedEventForTextTemplateMode(final String eventClass) {
         if (this.templateMode.isText()) {
             throw new TemplateProcessingException(
-                    "Events of class " + eventClass.getSimpleName() + " cannot be created in a text-type template " +
+                    "Events of class " + eventClass + " cannot be created in a text-type template " +
                     "mode (" + this.templateMode + ")");
         }
     }
@@ -110,7 +107,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
     public ICDATASection createCDATASection(final String content) {
-        checkRestrictedEventForTextTemplateMode(ICDATASection.class);
+        checkRestrictedEventForTextTemplateMode("CDATASection");
         return new CDATASection(this.textRepository, content);
     }
 
@@ -118,7 +115,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
     public IComment createComment(final String content) {
-        checkRestrictedEventForTextTemplateMode(IComment.class);
+        checkRestrictedEventForTextTemplateMode("Comment");
         return new Comment(this.textRepository, content);
     }
 
@@ -126,12 +123,12 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
     public IDocType createHTML5DocType() {
-        checkRestrictedEventForTextTemplateMode(IDocType.class);
+        checkRestrictedEventForTextTemplateMode("DocType");
         return new DocType(this.textRepository, null, null);
     }
 
     public IDocType createDocType(final String publicId, final String systemId) {
-        checkRestrictedEventForTextTemplateMode(IDocType.class);
+        checkRestrictedEventForTextTemplateMode("DocType");
         return new DocType(this.textRepository, publicId, systemId);
     }
 
@@ -143,7 +140,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
             final String systemId,
             final String internalSubset) {
 
-        checkRestrictedEventForTextTemplateMode(IDocType.class);
+        checkRestrictedEventForTextTemplateMode("DocType");
         return new DocType(this.textRepository, keyword, elementName, type, publicId, systemId, internalSubset);
     }
 
@@ -151,7 +148,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
     public IProcessingInstruction createProcessingInstruction(final String target, final String content) {
-        checkRestrictedEventForTextTemplateMode(IProcessingInstruction.class);
+        checkRestrictedEventForTextTemplateMode("ProcessingInstruction");
         return new ProcessingInstruction(this.textRepository, target, content);
     }
 
@@ -166,7 +163,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
     public IXMLDeclaration createXMLDeclaration(final String version, final String encoding, final String standalone) {
-        checkRestrictedEventForTextTemplateMode(IXMLDeclaration.class);
+        checkRestrictedEventForTextTemplateMode("XMLDeclaration");
         return new XMLDeclaration(this.textRepository, version, encoding, standalone);
     }
 
@@ -174,35 +171,36 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
     public IStandaloneElementTag createStandaloneElementTag(final String elementName, final boolean minimized) {
-        return new StandaloneElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions, elementName, minimized);
+        return new StandaloneElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions, elementName, false, minimized);
+    }
+
+    public IStandaloneElementTag createSyntheticStandaloneElementTag(final String elementName, final boolean minimized) {
+        return new StandaloneElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions, elementName, true, minimized);
     }
 
 
     public IOpenElementTag createOpenElementTag(final String elementName) {
-        return new OpenElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions, elementName);
+        return new OpenElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions, elementName, false);
     }
 
-
-    public IAutoOpenElementTag createAutoOpenElementTag(final String elementName) {
-        checkRestrictedEventForTextTemplateMode(IAutoOpenElementTag.class);
-        return new AutoOpenElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions, elementName);
+    public IOpenElementTag createSyntheticOpenElementTag(final String elementName) {
+        checkRestrictedEventForTextTemplateMode("SyntheticOpenElementTag");
+        return new OpenElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions, elementName, true);
     }
 
 
     public ICloseElementTag createCloseElementTag(final String elementName) {
-        return new CloseElementTag(this.templateMode, this.elementDefinitions, elementName);
+        return new CloseElementTag(this.templateMode, this.elementDefinitions, elementName, false, false);
     }
 
-
-    public IAutoCloseElementTag createAutoCloseElementTag(final String elementName) {
-        checkRestrictedEventForTextTemplateMode(IAutoCloseElementTag.class);
-        return new AutoCloseElementTag(this.templateMode, this.elementDefinitions, elementName);
+    public ICloseElementTag createSyntheticCloseElementTag(final String elementName) {
+        checkRestrictedEventForTextTemplateMode("SyntheticCloseElementTag");
+        return new CloseElementTag(this.templateMode, this.elementDefinitions, elementName, true, false);
     }
 
-
-    public IUnmatchedCloseElementTag createUnmatchedCloseElementTag(final String elementName) {
-        checkRestrictedEventForTextTemplateMode(IUnmatchedCloseElementTag.class);
-        return new UnmatchedCloseElementTag(this.templateMode, this.elementDefinitions, elementName);
+    public ICloseElementTag createUnmatchedCloseElementTag(final String elementName) {
+        checkRestrictedEventForTextTemplateMode("UnmatchedCloseElementTag");
+        return new CloseElementTag(this.templateMode, this.elementDefinitions, elementName, false, true);
     }
 
 

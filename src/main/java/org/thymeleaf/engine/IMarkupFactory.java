@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.engine;
 
-import org.thymeleaf.model.IAutoCloseElementTag;
-import org.thymeleaf.model.IAutoOpenElementTag;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
@@ -29,7 +27,6 @@ import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.model.IText;
-import org.thymeleaf.model.IUnmatchedCloseElementTag;
 import org.thymeleaf.model.IXMLDeclaration;
 
 /**
@@ -67,11 +64,14 @@ public interface IMarkupFactory {
 
 
     public IStandaloneElementTag createStandaloneElementTag(final String elementName, final boolean minimized);
+    public IStandaloneElementTag createSyntheticStandaloneElementTag(final String elementName, final boolean minimized);
+
     public IOpenElementTag createOpenElementTag(final String elementName);
-    public IAutoOpenElementTag createAutoOpenElementTag(final String elementName);
+    public IOpenElementTag createSyntheticOpenElementTag(final String elementName);
+
     public ICloseElementTag createCloseElementTag(final String elementName);
-    public IAutoCloseElementTag createAutoCloseElementTag(final String elementName);
-    public IUnmatchedCloseElementTag createUnmatchedCloseElementTag(final String elementName);
+    public ICloseElementTag createSyntheticCloseElementTag(final String elementName);
+    public ICloseElementTag createUnmatchedCloseElementTag(final String elementName);
 
 
 }

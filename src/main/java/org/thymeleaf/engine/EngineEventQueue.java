@@ -63,9 +63,6 @@ final class EngineEventQueue {
     private OpenElementTag openElementTagBuffer = null;
     private StandaloneElementTag standaloneElementTagBuffer = null;
     private CloseElementTag closeElementTagBuffer = null;
-    private AutoOpenElementTag autoOpenElementTagBuffer = null;
-    private AutoCloseElementTag autoCloseElementTagBuffer = null;
-    private UnmatchedCloseElementTag unmatchedCloseElementTagBuffer = null;
 
 
 
@@ -244,12 +241,6 @@ final class EngineEventQueue {
                 handler.handleCloseElement(bufferize((CloseElementTag) event));
             } else if (event instanceof StandaloneElementTag) {
                 handler.handleStandaloneElement(bufferize((StandaloneElementTag) event));
-            } else if (event instanceof AutoOpenElementTag) {
-                handler.handleAutoOpenElement(bufferize((AutoOpenElementTag) event));
-            } else if (event instanceof AutoCloseElementTag) {
-                handler.handleAutoCloseElement(bufferize((AutoCloseElementTag) event));
-            } else if (event instanceof UnmatchedCloseElementTag) {
-                handler.handleUnmatchedCloseElement(bufferize((UnmatchedCloseElementTag) event));
             } else if (event instanceof DocType) {
                 handler.handleDocType(bufferize((DocType) event));
             } else if (event instanceof Comment) {
@@ -372,39 +363,6 @@ final class EngineEventQueue {
 
 
 
-    AutoOpenElementTag bufferize(final AutoOpenElementTag event) {
-        if (this.autoOpenElementTagBuffer == null) {
-            this.autoOpenElementTagBuffer =
-                    new AutoOpenElementTag(this.templateMode, this.configuration.getElementDefinitions(), this.configuration.getAttributeDefinitions());
-        }
-        this.autoOpenElementTagBuffer.resetAsCloneOf(event);
-        return this.autoOpenElementTagBuffer;
-    }
-
-
-
-    AutoCloseElementTag bufferize(final AutoCloseElementTag event) {
-        if (this.autoCloseElementTagBuffer == null) {
-            this.autoCloseElementTagBuffer =
-                    new AutoCloseElementTag(this.templateMode, this.configuration.getElementDefinitions());
-        }
-        this.autoCloseElementTagBuffer.resetAsCloneOf(event);
-        return this.autoCloseElementTagBuffer;
-    }
-
-
-
-    UnmatchedCloseElementTag bufferize(final UnmatchedCloseElementTag event) {
-        if (this.unmatchedCloseElementTagBuffer == null) {
-            this.unmatchedCloseElementTagBuffer =
-                    new UnmatchedCloseElementTag(this.templateMode, this.configuration.getElementDefinitions());
-        }
-        this.unmatchedCloseElementTagBuffer.resetAsCloneOf(event);
-        return this.unmatchedCloseElementTagBuffer;
-    }
-
-
-
     DocumentStart bufferize(final DocumentStart event) {
         if (this.documentStartBuffer == null) {
             this.documentStartBuffer = new DocumentStart();
@@ -496,12 +454,6 @@ final class EngineEventQueue {
             return ((CloseElementTag)event).cloneElementTag();
         } else if (event instanceof StandaloneElementTag) {
             return ((StandaloneElementTag)event).cloneElementTag();
-        } else if (event instanceof AutoOpenElementTag) {
-            return ((AutoOpenElementTag)event).cloneElementTag();
-        } else if (event instanceof AutoCloseElementTag) {
-            return ((AutoCloseElementTag)event).cloneElementTag();
-        } else if (event instanceof UnmatchedCloseElementTag) {
-            return ((UnmatchedCloseElementTag)event).cloneElementTag();
         } else if (event instanceof Comment) {
             return ((Comment)event).cloneNode();
         } else if (event instanceof DocType) {

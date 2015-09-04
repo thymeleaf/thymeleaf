@@ -74,8 +74,9 @@ abstract class AbstractProcessableElementTag
             final TemplateMode templateMode,
             final ElementDefinitions elementDefinitions,
             final AttributeDefinitions attributeDefinitions,
-            final String elementName) {
-        super(templateMode, elementDefinitions, elementName);
+            final String elementName,
+            final boolean synthetic) {
+        super(templateMode, elementDefinitions, elementName, synthetic);
         this.elementAttributes = new ElementAttributes(this.templateMode, attributeDefinitions);
     }
 
@@ -224,10 +225,10 @@ abstract class AbstractProcessableElementTag
 
 
     protected final void resetProcessableElementTag(
-            final String elementName,
+            final String elementName, final boolean synthetic,
             final String templateName, final int line, final int col) {
 
-        resetElementTag(elementName, templateName, line, col);
+        resetElementTag(elementName, synthetic, templateName, line, col);
         this.elementAttributes.clearAll();
         this.associatedProcessorsAttributesVersion = Integer.MIN_VALUE;
 

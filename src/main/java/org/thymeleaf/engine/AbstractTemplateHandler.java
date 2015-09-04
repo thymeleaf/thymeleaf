@@ -21,8 +21,6 @@ package org.thymeleaf.engine;
 
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.model.IAutoCloseElementTag;
-import org.thymeleaf.model.IAutoOpenElementTag;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
@@ -33,7 +31,6 @@ import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.model.IText;
-import org.thymeleaf.model.IUnmatchedCloseElementTag;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.util.Validate;
 
@@ -239,17 +236,6 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
     }
 
 
-    public void handleAutoOpenElement(final IAutoOpenElementTag autoOpenElementTag) {
-
-        if (this.next == null) {
-            return;
-        }
-
-        this.next.handleAutoOpenElement(autoOpenElementTag);
-
-    }
-
-
     public void handleCloseElement(final ICloseElementTag closeElementTag) {
 
         if (this.next == null) {
@@ -257,28 +243,6 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
         }
 
         this.next.handleCloseElement(closeElementTag);
-
-    }
-
-
-    public void handleAutoCloseElement(final IAutoCloseElementTag autoCloseElementTag) {
-
-        if (this.next == null) {
-            return;
-        }
-
-        this.next.handleAutoCloseElement(autoCloseElementTag);
-
-    }
-
-
-    public void handleUnmatchedCloseElement(final IUnmatchedCloseElementTag unmatchedCloseElementTag) {
-
-        if (this.next == null) {
-            return;
-        }
-
-        this.next.handleUnmatchedCloseElement(unmatchedCloseElementTag);
 
     }
 

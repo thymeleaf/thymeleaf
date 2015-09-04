@@ -44,6 +44,9 @@ final class CloseElementTag
      */
 
 
+    private boolean unmatched;
+
+
     // Meant to be called only from the template handler adapter
     CloseElementTag(
             final TemplateMode templateMode,
@@ -57,8 +60,11 @@ final class CloseElementTag
     CloseElementTag(
             final TemplateMode templateMode,
             final ElementDefinitions elementDefinitions,
-            final String elementName) {
-        super(templateMode, elementDefinitions, elementName);
+            final String elementName,
+            final boolean synthetic,
+            final boolean unmatched) {
+        super(templateMode, elementDefinitions, elementName, synthetic);
+        this.unmatched = unmatched;
     }
 
 
@@ -70,11 +76,16 @@ final class CloseElementTag
 
 
 
+    public boolean isUnmatched() {
+        return this.unmatched;
+    }
+
 
     // Meant to be called only from within the engine
-    void reset(final String elementName,
+    void reset(final String elementName, final boolean synthetic, final boolean unmatched,
                final String templateName, final int line, final int col) {
-        resetElementTag(elementName, templateName, line, col);
+        resetElementTag(elementName, synthetic, templateName, line, col);
+        this.unmatched = unmatched;
     }
 
 
@@ -84,6 +95,11 @@ final class CloseElementTag
 
 
     public void write(final Writer writer) throws IOException {
+        if (this.synthetic) {
+            // Nothing to be written... synthetic elements were not present at the original template!
+            return;
+        }
+        // NOTE that being unmatched or not doesn't have an influence in how the tag is represented in output
         Validate.notNull(writer, "Writer cannot be null");
         if (this.templateMode.isText()) {
             writer.write("[/");
@@ -110,6 +126,7 @@ final class CloseElementTag
     // Meant to be called only from within the engine
     void resetAsCloneOf(final CloseElementTag original) {
         super.resetAsCloneOfElementTag(original);
+        this.unmatched = original.unmatched;
     }
 
 
@@ -118,6 +135,7 @@ final class CloseElementTag
         // It's exactly the same as with open tags - even the processors, because processors don't apply depending on
         // whether the tag is open or standalone...
         super.resetAsCloneOfElementTag(original);
+        this.unmatched = false;
     }
 
 
@@ -134,7 +152,7 @@ final class CloseElementTag
         }
 
         final CloseElementTag newInstance = new CloseElementTag(templateMode, configuration.getElementDefinitions());
-        newInstance.reset(closeElementTag.getElementName(), closeElementTag.getTemplateName(), closeElementTag.getLine(), closeElementTag.getCol());
+        newInstance.reset(closeElementTag.getElementName(), closeElementTag.isSynthetic(), closeElementTag.isUnmatched(), closeElementTag.getTemplateName(), closeElementTag.getLine(), closeElementTag.getCol());
         return newInstance;
 
     }

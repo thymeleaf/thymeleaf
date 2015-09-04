@@ -23,8 +23,6 @@ import java.io.StringWriter;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IAutoCloseElementTag;
-import org.thymeleaf.model.IAutoOpenElementTag;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
@@ -35,7 +33,6 @@ import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.model.IText;
-import org.thymeleaf.model.IUnmatchedCloseElementTag;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
@@ -184,7 +181,7 @@ public final class Markup implements IMarkup {
             final ITemplateHandlerEvent event, final boolean cloneAlways) {
 
         if (event instanceof IText) {
-            return Text.asEngineText(configuration, (IText)event, cloneAlways);
+            return Text.asEngineText(configuration, (IText) event, cloneAlways);
         }
         if (event instanceof IOpenElementTag) {
             return OpenElementTag.asEngineOpenElementTag(templateMode, configuration, (IOpenElementTag) event, cloneAlways);
@@ -194,15 +191,6 @@ public final class Markup implements IMarkup {
         }
         if (event instanceof IStandaloneElementTag) {
             return StandaloneElementTag.asEngineStandaloneElementTag(templateMode, configuration, (IStandaloneElementTag) event, cloneAlways);
-        }
-        if (event instanceof IAutoOpenElementTag) {
-            return AutoOpenElementTag.asEngineAutoOpenElementTag(templateMode, configuration, (IAutoOpenElementTag) event, cloneAlways);
-        }
-        if (event instanceof IAutoCloseElementTag) {
-            return AutoCloseElementTag.asEngineAutoCloseElementTag(templateMode, configuration, (IAutoCloseElementTag) event, cloneAlways);
-        }
-        if (event instanceof IUnmatchedCloseElementTag) {
-            return UnmatchedCloseElementTag.asEngineUnmatchedCloseElementTag(templateMode, configuration, (IUnmatchedCloseElementTag) event, cloneAlways);
         }
         if (event instanceof IDocType) {
             return DocType.asEngineDocType(configuration, (IDocType) event, cloneAlways);

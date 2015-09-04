@@ -22,8 +22,6 @@ package org.thymeleaf.engine;
 import java.io.Writer;
 
 import org.thymeleaf.exceptions.TemplateOutputException;
-import org.thymeleaf.model.IAutoCloseElementTag;
-import org.thymeleaf.model.IAutoOpenElementTag;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
@@ -32,7 +30,6 @@ import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.model.IText;
-import org.thymeleaf.model.IUnmatchedCloseElementTag;
 import org.thymeleaf.model.IXMLDeclaration;
 
 
@@ -156,23 +153,6 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleAutoOpenElement(final IAutoOpenElementTag autoOpenElementTag) {
-
-        try {
-            autoOpenElementTag.write(this.writer);
-        } catch (final Exception e) {
-            throw new TemplateOutputException(
-                    "An error happened during template rendering",
-                    autoOpenElementTag.getTemplateName(), autoOpenElementTag.getLine(), autoOpenElementTag.getCol(), e);
-        }
-
-        // Just in case someone set us a 'next'
-        super.handleAutoOpenElement(autoOpenElementTag);
-
-    }
-
-
-    @Override
     public void handleCloseElement(final ICloseElementTag closeElementTag) {
 
         try {
@@ -185,40 +165,6 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
         // Just in case someone set us a 'next'
         super.handleCloseElement(closeElementTag);
-
-    }
-
-
-    @Override
-    public void handleAutoCloseElement(final IAutoCloseElementTag autoCloseElementTag) {
-
-        try {
-            autoCloseElementTag.write(this.writer);
-        } catch (final Exception e) {
-            throw new TemplateOutputException(
-                    "An error happened during template rendering",
-                    autoCloseElementTag.getTemplateName(), autoCloseElementTag.getLine(), autoCloseElementTag.getCol(), e);
-        }
-
-        // Just in case someone set us a 'next'
-        super.handleAutoCloseElement(autoCloseElementTag);
-
-    }
-
-
-    @Override
-    public void handleUnmatchedCloseElement(final IUnmatchedCloseElementTag unmatchedCloseElementTag) {
-
-        try {
-            unmatchedCloseElementTag.write(this.writer);
-        } catch (final Exception e) {
-            throw new TemplateOutputException(
-                    "An error happened during template rendering",
-                    unmatchedCloseElementTag.getTemplateName(), unmatchedCloseElementTag.getLine(), unmatchedCloseElementTag.getCol(), e);
-        }
-
-        // Just in case someone set us a 'next'
-        super.handleUnmatchedCloseElement(unmatchedCloseElementTag);
 
     }
 

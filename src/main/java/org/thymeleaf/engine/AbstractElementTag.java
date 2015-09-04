@@ -41,6 +41,8 @@ abstract class AbstractElementTag implements IElementTag {
     protected ElementDefinition elementDefinition;
     protected String elementName;
 
+    protected boolean synthetic;
+
     private String templateName;
     private int line;
     private int col;
@@ -63,7 +65,8 @@ abstract class AbstractElementTag implements IElementTag {
     protected AbstractElementTag(
             final TemplateMode templateMode,
             final ElementDefinitions elementDefinitions,
-            final String elementName) {
+            final String elementName,
+            final boolean synthetic) {
 
         super();
 
@@ -72,7 +75,7 @@ abstract class AbstractElementTag implements IElementTag {
         this.templateMode = templateMode;
         this.elementDefinitions = elementDefinitions;
 
-        resetElementTag(elementName, null, -1, -1);
+        resetElementTag(elementName, synthetic, null, -1, -1);
 
     }
 
@@ -95,14 +98,20 @@ abstract class AbstractElementTag implements IElementTag {
     }
 
 
+    public final boolean isSynthetic() {
+        return this.synthetic;
+    }
+
 
 
     protected void resetElementTag(
-            final String elementName,
+            final String elementName, final boolean synthetic,
             final String templateName, final int line, final int col) {
 
         this.elementName = elementName;
         this.elementDefinition = computeElementDefinition();
+
+        this.synthetic = synthetic;
 
         this.templateName = templateName;
         this.line = line;
@@ -171,6 +180,7 @@ abstract class AbstractElementTag implements IElementTag {
         this.elementDefinitions = original.elementDefinitions;
         this.elementDefinition = original.elementDefinition;
         this.elementName = original.elementName;
+        this.synthetic = original.synthetic;
         this.templateName = original.templateName;
         this.line = original.line;
         this.col = original.col;

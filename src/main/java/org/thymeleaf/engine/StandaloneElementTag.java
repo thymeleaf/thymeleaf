@@ -65,8 +65,9 @@ final class StandaloneElementTag
             final ElementDefinitions elementDefinitions,
             final AttributeDefinitions attributeDefinitions,
             final String elementName,
+            final boolean synthetic,
             final boolean minimized) {
-        super(templateMode, elementDefinitions, attributeDefinitions, elementName);
+        super(templateMode, elementDefinitions, attributeDefinitions, elementName, synthetic);
         this.minimized = minimized;
     }
 
@@ -96,11 +97,11 @@ final class StandaloneElementTag
 
 
     // Meant to be called only from within the engine
-    void reset(final String elementName,
+    void reset(final String elementName, final boolean synthetic,
                final boolean minimized,
                final String templateName, final int line, final int col) {
 
-        resetProcessableElementTag(elementName, templateName, line, col);
+        resetProcessableElementTag(elementName, synthetic, templateName, line, col);
         this.minimized = minimized;
 
     }
@@ -110,6 +111,10 @@ final class StandaloneElementTag
 
 
     public void write(final Writer writer) throws IOException {
+        if (this.synthetic) {
+            // Nothing to be written... synthetic elements were not present at the original template!
+            return;
+        }
         Validate.notNull(writer, "Writer cannot be null");
         if (this.templateMode.isText()) {
             writer.write("[#");
@@ -164,7 +169,7 @@ final class StandaloneElementTag
 
         final StandaloneElementTag newInstance = new StandaloneElementTag(templateMode, configuration.getElementDefinitions(), configuration.getAttributeDefinitions());
 
-        newInstance.reset(standaloneElementTag.getElementName(), standaloneElementTag.isMinimized(), standaloneElementTag.getTemplateName(), standaloneElementTag.getLine(), standaloneElementTag.getCol());
+        newInstance.reset(standaloneElementTag.getElementName(), standaloneElementTag.isSynthetic(), standaloneElementTag.isMinimized(), standaloneElementTag.getTemplateName(), standaloneElementTag.getLine(), standaloneElementTag.getCol());
 
         final IElementAttributes attributes = standaloneElementTag.getAttributes();
         if (attributes != null) {

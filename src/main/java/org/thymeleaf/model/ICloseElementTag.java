@@ -27,6 +27,8 @@ package org.thymeleaf.model;
  */
 public interface ICloseElementTag extends IElementTag {
 
+    public boolean isUnmatched();
+
     public ICloseElementTag cloneElementTag();
 
 }

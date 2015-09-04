@@ -182,7 +182,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             throws TextParseException {
 
         this.standaloneElementTag.reset(
-                this.textRepository.getText(buffer, nameOffset, nameLen), minimized, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
+                this.textRepository.getText(buffer, nameOffset, nameLen), false, minimized, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         this.currentElementAttributes = (ElementAttributes) this.standaloneElementTag.getAttributes();
 
     }
@@ -212,7 +212,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             throws TextParseException {
 
         this.openElementTag.reset(
-                this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
+                this.textRepository.getText(buffer, nameOffset, nameLen), false, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         this.currentElementAttributes = (ElementAttributes) this.openElementTag.getAttributes();
 
     }
@@ -241,7 +241,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             final int line, final int col)
             throws TextParseException {
 
-        this.closeElementTag.reset(this.textRepository.getText(buffer, nameOffset, nameLen), this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
+        this.closeElementTag.reset(this.textRepository.getText(buffer, nameOffset, nameLen), false, false, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         this.currentElementAttributes = null;
 
     }

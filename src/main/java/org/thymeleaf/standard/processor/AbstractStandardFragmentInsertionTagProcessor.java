@@ -28,8 +28,6 @@ import org.thymeleaf.engine.ITemplateHandlerEvent;
 import org.thymeleaf.engine.ImmutableMarkup;
 import org.thymeleaf.engine.Markup;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IAutoCloseElementTag;
-import org.thymeleaf.model.IAutoOpenElementTag;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IOpenElementTag;
@@ -190,14 +188,14 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
                 final ITemplateHandlerEvent event = markup.get(n);
 
-                if (event instanceof ICloseElementTag || event instanceof IAutoCloseElementTag) {
+                if (event instanceof ICloseElementTag) {
                     if (markupLevel <= 0) {
                         markup.remove(n);
                     }
                     markupLevel++;
                     continue;
                 }
-                if (event instanceof IOpenElementTag || event instanceof IAutoOpenElementTag) {
+                if (event instanceof IOpenElementTag) {
                     markupLevel--;
                     if (markupLevel <= 0) {
                         markup.remove(n);

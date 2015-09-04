@@ -61,8 +61,9 @@ final class OpenElementTag
             final TemplateMode templateMode,
             final ElementDefinitions elementDefinitions,
             final AttributeDefinitions attributeDefinitions,
-            final String elementName) {
-        super(templateMode, elementDefinitions, attributeDefinitions, elementName);
+            final String elementName,
+            final boolean synthetic) {
+        super(templateMode, elementDefinitions, attributeDefinitions, elementName, synthetic);
     }
 
 
@@ -76,15 +77,19 @@ final class OpenElementTag
 
 
     // Meant to be called only from within the engine
-    void reset(final String elementName,
+    void reset(final String elementName, final boolean synthetic,
                final String templateName, final int line, final int col) {
-        resetProcessableElementTag(elementName, templateName, line, col);
+        resetProcessableElementTag(elementName, synthetic, templateName, line, col);
     }
 
 
 
 
     public void write(final Writer writer) throws IOException {
+        if (this.synthetic) {
+            // Nothing to be written... synthetic elements were not present at the original template!
+            return;
+        }
         Validate.notNull(writer, "Writer cannot be null");
         if (this.templateMode.isText()) {
             writer.write("[#");
@@ -137,7 +142,7 @@ final class OpenElementTag
 
         final OpenElementTag newInstance = new OpenElementTag(templateMode, configuration.getElementDefinitions(), configuration.getAttributeDefinitions());
 
-        newInstance.reset(openElementTag.getElementName(), openElementTag.getTemplateName(), openElementTag.getLine(), openElementTag.getCol());
+        newInstance.reset(openElementTag.getElementName(), openElementTag.isSynthetic(), openElementTag.getTemplateName(), openElementTag.getLine(), openElementTag.getCol());
 
         final IElementAttributes attributes = openElementTag.getAttributes();
         if (attributes != null) {

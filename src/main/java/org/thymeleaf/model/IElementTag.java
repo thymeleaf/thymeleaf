@@ -36,6 +36,8 @@ public interface IElementTag extends ITemplateHandlerEvent {
     public ElementDefinition getElementDefinition();
     public String getElementName();
 
+    public boolean isSynthetic();
+
     public void write(final Writer writer) throws IOException;
 
     public IElementTag cloneElementTag();

@@ -25,8 +25,6 @@ import java.util.List;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IAutoCloseElementTag;
-import org.thymeleaf.model.IAutoOpenElementTag;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
@@ -39,7 +37,6 @@ import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.model.IText;
-import org.thymeleaf.model.IUnmatchedCloseElementTag;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.processor.element.IElementProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -138,12 +135,6 @@ public class ImmutableMarkup implements IMarkup {
             return new ImmutableCloseElementTag((ICloseElementTag)event);
         } else if (event instanceof IStandaloneElementTag) {
             return new ImmutableStandaloneElementTag((IStandaloneElementTag)event);
-        } else if (event instanceof IAutoOpenElementTag) {
-            return new ImmutableAutoOpenElementTag((IAutoOpenElementTag)event);
-        } else if (event instanceof IAutoCloseElementTag) {
-            return new ImmutableAutoCloseElementTag((IAutoCloseElementTag)event);
-        } else if (event instanceof IUnmatchedCloseElementTag) {
-            return new ImmutableUnmatchedCloseElementTag((IUnmatchedCloseElementTag)event);
         } else if (event instanceof IDocType) {
             return new ImmutableDocType((IDocType)event);
         } else if (event instanceof IComment) {
@@ -717,6 +708,10 @@ public class ImmutableMarkup implements IMarkup {
             ImmutableMarkup.immutableException();
         }
 
+        public boolean isSynthetic() {
+            return this.wrapped.isSynthetic();
+        }
+
         public IStandaloneElementTag cloneElementTag() {
             ImmutableMarkup.immutableException();
             return null;
@@ -736,26 +731,11 @@ public class ImmutableMarkup implements IMarkup {
             this.wrapped = wrapped;
         }
 
+        public boolean isSynthetic() {
+            return this.wrapped.isSynthetic();
+        }
+
         public IOpenElementTag cloneElementTag() {
-            ImmutableMarkup.immutableException();
-            return null;
-        }
-
-    }
-
-
-
-    private static final class ImmutableAutoOpenElementTag
-            extends AbstractImmutableProcessableElementTag implements IAutoOpenElementTag {
-
-        private final IAutoOpenElementTag wrapped;
-
-        private ImmutableAutoOpenElementTag(final IAutoOpenElementTag wrapped) {
-            super(wrapped);
-            this.wrapped = wrapped;
-        }
-
-        public IAutoOpenElementTag cloneElementTag() {
             ImmutableMarkup.immutableException();
             return null;
         }
@@ -774,45 +754,15 @@ public class ImmutableMarkup implements IMarkup {
             this.wrapped = wrapped;
         }
 
+        public boolean isSynthetic() {
+            return this.wrapped.isSynthetic();
+        }
+
+        public boolean isUnmatched() {
+            return this.wrapped.isUnmatched();
+        }
+
         public ICloseElementTag cloneElementTag() {
-            ImmutableMarkup.immutableException();
-            return null;
-        }
-
-    }
-
-
-
-    private static final class ImmutableAutoCloseElementTag
-            extends AbstractImmutableElementTag implements IAutoCloseElementTag {
-
-        private final IAutoCloseElementTag wrapped;
-
-        private ImmutableAutoCloseElementTag(final IAutoCloseElementTag wrapped) {
-            super(wrapped);
-            this.wrapped = wrapped;
-        }
-
-        public IAutoCloseElementTag cloneElementTag() {
-            ImmutableMarkup.immutableException();
-            return null;
-        }
-
-    }
-
-
-
-    private static final class ImmutableUnmatchedCloseElementTag
-            extends AbstractImmutableElementTag implements IUnmatchedCloseElementTag {
-
-        private final IUnmatchedCloseElementTag wrapped;
-
-        private ImmutableUnmatchedCloseElementTag(final IUnmatchedCloseElementTag wrapped) {
-            super(wrapped);
-            this.wrapped = wrapped;
-        }
-
-        public IUnmatchedCloseElementTag cloneElementTag() {
             ImmutableMarkup.immutableException();
             return null;
         }
