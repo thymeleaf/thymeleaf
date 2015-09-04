@@ -2292,11 +2292,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                  * process has already taken place.
                  */
 
-                /*
-                 * This is not the first time we try to execute this processor, which means the markup gathering
-                 * process has already taken place.
-                 */
-
                 final EngineEventQueue gatheredQueue = this.elementMarkupArtifacts[this.elementMarkupArtifactsIndex - 1].markupQueue;
 
                 // We will use the markup buffer in order to save in number of Markup objects created. This is safe
