@@ -20,7 +20,6 @@
 package org.thymeleaf.processor.doctype;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.IDocTypeStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IDocType;
 import org.thymeleaf.processor.AbstractProcessor;

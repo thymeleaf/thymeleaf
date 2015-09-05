@@ -23,10 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.standard.inline.StandardInlineMode;
 import org.thymeleaf.templatemode.TemplateMode;
 
@@ -66,7 +66,7 @@ public abstract class AbstractStandardTextInlineSettingTagProcessor extends Abst
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
-            final IElementStructureHandler structureHandler) {
+            final IElementTagStructureHandler structureHandler) {
 
         // Note we are NOT executing the attributeValue as a Standard Expression: we are expecting a literal (see comment above)
         final IInliner inliner = getInliner(StandardInlineMode.parse(attributeValue));

@@ -22,7 +22,6 @@ package org.thymeleaf.processor.element;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeNames;
 import org.thymeleaf.engine.ElementNames;
-import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.AbstractProcessor;
@@ -87,7 +86,7 @@ public abstract class AbstractElementTagProcessor
     public final void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final IElementStructureHandler structureHandler) {
+            final IElementTagStructureHandler structureHandler) {
 
         String tagTemplateName = null;
         int tagLine = -1;
@@ -125,7 +124,7 @@ public abstract class AbstractElementTagProcessor
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final String tagTemplateName, final int tagLine, final int tagCol,
-            final IElementStructureHandler structureHandler);
+            final IElementTagStructureHandler structureHandler);
 
 
 

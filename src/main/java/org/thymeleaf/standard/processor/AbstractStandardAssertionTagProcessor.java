@@ -23,10 +23,10 @@ import java.util.List;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateAssertionException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.standard.expression.ExpressionSequence;
 import org.thymeleaf.standard.expression.ExpressionSequenceUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
@@ -58,7 +58,7 @@ public abstract class AbstractStandardAssertionTagProcessor extends AbstractAttr
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
-            final IElementStructureHandler structureHandler) {
+            final IElementTagStructureHandler structureHandler) {
 
         if (StringUtils.isEmptyOrWhitespace(attributeValue)) {
             return;

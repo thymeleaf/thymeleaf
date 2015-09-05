@@ -20,10 +20,10 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.processor.element.IElementTagProcessor;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.processor.element.MatchingAttributeName;
 import org.thymeleaf.processor.element.MatchingElementName;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -67,7 +67,7 @@ public final class StandardDefaultAttributesTagProcessor
     public void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final IElementStructureHandler structureHandler) {
+            final IElementTagStructureHandler structureHandler) {
 
 //        System.out.println("DEFAULT ACTING ON ELEMENT: " + tag.toString());
 

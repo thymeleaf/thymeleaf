@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.engine.ITemplateEvent;
 import org.thymeleaf.engine.ImmutableMarkup;
 import org.thymeleaf.engine.Markup;
@@ -33,6 +32,7 @@ import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.standard.expression.FragmentSelectionUtils;
 import org.thymeleaf.standard.expression.FragmentSignature;
 import org.thymeleaf.standard.expression.FragmentSignatureUtils;
@@ -77,7 +77,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
-            final IElementStructureHandler structureHandler) {
+            final IElementTagStructureHandler structureHandler) {
 
         /*
          * PARSE THE FRAGMENT SELECTION SPEC and resolve each of its components

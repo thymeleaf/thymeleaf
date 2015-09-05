@@ -17,7 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine;
+package org.thymeleaf.processor.processinginstruction;
+
+import org.thymeleaf.engine.IMarkup;
 
 /**
  *
@@ -25,14 +27,14 @@ package org.thymeleaf.engine;
  * @since 3.0.0
  * 
  */
-public interface IDocTypeStructureHandler {
+public interface IProcessingInstructionStructureHandler {
 
 
     public void reset();
 
     public void replaceWith(final IMarkup markup, final boolean processable);
 
-    public void removeDocType();
+    public void removeProcessingInstruction();
 
 }
 

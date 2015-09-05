@@ -20,7 +20,6 @@
 package org.thymeleaf.processor.cdatasection;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.ICDATASectionStructureHandler;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.processor.IProcessor;
 

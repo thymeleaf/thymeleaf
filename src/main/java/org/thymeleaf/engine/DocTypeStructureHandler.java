@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.engine;
 
+import org.thymeleaf.processor.doctype.IDocTypeStructureHandler;
 import org.thymeleaf.util.Validate;
 
 /**

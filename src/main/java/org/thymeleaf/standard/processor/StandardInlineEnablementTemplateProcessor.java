@@ -20,11 +20,11 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.ITemplateStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ITemplateEnd;
 import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.processor.template.AbstractTemplateProcessor;
+import org.thymeleaf.processor.template.ITemplateStructureHandler;
 import org.thymeleaf.standard.inline.StandardCSSInliner;
 import org.thymeleaf.standard.inline.StandardHTMLInliner;
 import org.thymeleaf.standard.inline.StandardJavaScriptInliner;

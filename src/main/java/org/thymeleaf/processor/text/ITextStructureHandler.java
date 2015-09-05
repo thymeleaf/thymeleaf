@@ -17,7 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine;
+package org.thymeleaf.processor.text;
+
+import org.thymeleaf.engine.IMarkup;
 
 /**
  *
@@ -25,14 +27,14 @@ package org.thymeleaf.engine;
  * @since 3.0.0
  * 
  */
-public interface IXMLDeclarationStructureHandler {
+public interface ITextStructureHandler {
 
 
     public void reset();
 
     public void replaceWith(final IMarkup markup, final boolean processable);
 
-    public void removeXMLDeclaration();
+    public void removeText();
 
 }
 

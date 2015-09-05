@@ -20,7 +20,6 @@
 package org.thymeleaf.processor.text;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.ITextStructureHandler;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.processor.IProcessor;
 

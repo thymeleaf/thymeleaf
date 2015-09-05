@@ -20,7 +20,6 @@
 package org.thymeleaf.processor.processinginstruction;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.IProcessingInstructionStructureHandler;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.processor.IProcessor;
 

@@ -97,7 +97,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     // Structure handlers are reusable objects that will be used by processors in order to instruct the engine to
     // do things with the processed structures themselves (things that cannot be directly done from the processors like
     // removing structures or iterating elements)
-    private final ElementStructureHandler elementStructureHandler;
+    private final ElementTagStructureHandler elementStructureHandler;
     private final TemplateStructureHandler templateStructureHandler;
     private final CDATASectionStructureHandler cdataSectionStructureHandler;
     private final CommentStructureHandler commentStructureHandler;
@@ -205,7 +205,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         this.allowedNonElementStructuresByMarkupLevel = new boolean[10];
         Arrays.fill(this.allowedNonElementStructuresByMarkupLevel, true);
 
-        this.elementStructureHandler = new ElementStructureHandler();
+        this.elementStructureHandler = new ElementTagStructureHandler();
         this.templateStructureHandler = new TemplateStructureHandler();
         this.cdataSectionStructureHandler = new CDATASectionStructureHandler();
         this.commentStructureHandler = new CommentStructureHandler();

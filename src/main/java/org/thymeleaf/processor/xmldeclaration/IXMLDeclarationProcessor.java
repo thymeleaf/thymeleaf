@@ -20,7 +20,6 @@
 package org.thymeleaf.processor.xmldeclaration;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.IXMLDeclarationStructureHandler;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.processor.IProcessor;
 

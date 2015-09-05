@@ -20,7 +20,6 @@
 package org.thymeleaf.processor.element;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
 
 /**
@@ -34,7 +33,7 @@ public interface IElementTagProcessor extends IElementProcessor {
 
     public void process(
             final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
-            final IElementStructureHandler structureHandler);
+            final IElementTagStructureHandler structureHandler);
 
 
 }

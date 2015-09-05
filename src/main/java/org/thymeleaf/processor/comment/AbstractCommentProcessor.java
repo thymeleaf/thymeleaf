@@ -20,7 +20,6 @@
 package org.thymeleaf.processor.comment;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.ICommentStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.processor.AbstractProcessor;

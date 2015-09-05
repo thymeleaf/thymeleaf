@@ -17,9 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine;
+package org.thymeleaf.processor.xmldeclaration;
 
-import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.engine.IMarkup;
 
 /**
  *
@@ -27,34 +27,14 @@ import org.thymeleaf.inline.IInliner;
  * @since 3.0.0
  * 
  */
-public interface IElementStructureHandler {
+public interface IXMLDeclarationStructureHandler {
 
 
     public void reset();
 
-    public void setLocalVariable(final String name, final Object value);
-    public void removeLocalVariable(final String name);
-
-    public void setSelectionTarget(final Object selectionTarget);
-
-    public void setInliner(final IInliner inliner);
-
-    public void setBody(final String text, final boolean processable);
-    public void setBody(final IMarkup markup, final boolean processable);
-
-    public void insertBefore(final IMarkup markup); // cannot be processable
-    public void insertAfter(final IMarkup markup, final boolean processable);
-
-    public void replaceWith(final String text, final boolean processable);
     public void replaceWith(final IMarkup markup, final boolean processable);
 
-
-    public void removeElement();
-    public void removeTag();
-    public void removeBody();
-    public void removeAllButFirstChild();
-
-    public void iterateElement(final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject);
+    public void removeXMLDeclaration();
 
 }
 

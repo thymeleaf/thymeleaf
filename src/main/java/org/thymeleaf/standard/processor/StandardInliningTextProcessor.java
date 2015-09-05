@@ -20,11 +20,11 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.ITextStructureHandler;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.processor.text.AbstractTextProcessor;
+import org.thymeleaf.processor.text.ITextStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**

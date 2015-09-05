@@ -17,7 +17,10 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine;
+package org.thymeleaf.processor.template;
+
+import org.thymeleaf.engine.IMarkup;
+import org.thymeleaf.inline.IInliner;
 
 /**
  *
@@ -25,14 +28,19 @@ package org.thymeleaf.engine;
  * @since 3.0.0
  * 
  */
-public interface ICDATASectionStructureHandler {
-
+public interface ITemplateStructureHandler {
 
     public void reset();
 
-    public void replaceWith(final IMarkup markup, final boolean processable);
+    public void setLocalVariable(final String name, final Object value);
+    public void removeLocalVariable(final String name);
 
-    public void removeCDATASection();
+    public void setSelectionTarget(final Object selectionTarget);
+
+    public void setInliner(final IInliner inliner);
+
+    public void insert(final String text, final boolean processable);
+    public void insert(final IMarkup markup, final boolean processable);
 
 }
 

@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -33,7 +34,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-final class ElementStructureHandler implements IElementStructureHandler {
+final class ElementTagStructureHandler implements IElementTagStructureHandler {
 
 
     boolean setBodyText;
@@ -88,7 +89,7 @@ final class ElementStructureHandler implements IElementStructureHandler {
 
 
 
-    ElementStructureHandler() {
+    ElementTagStructureHandler() {
         super();
         reset();
     }

@@ -24,10 +24,10 @@ import java.io.StringWriter;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.ICommentStructureHandler;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.processor.comment.AbstractCommentProcessor;
+import org.thymeleaf.processor.comment.ICommentStructureHandler;
 import org.thymeleaf.standard.util.StandardConditionalCommentUtils;
 import org.thymeleaf.templatemode.TemplateMode;
 

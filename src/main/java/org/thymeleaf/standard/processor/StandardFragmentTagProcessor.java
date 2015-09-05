@@ -21,9 +21,9 @@ package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractElementTagProcessor;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -52,7 +52,7 @@ public final class StandardFragmentTagProcessor extends AbstractElementTagProces
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final String tagTemplateName, final int tagLine, final int tagCol,
-            final IElementStructureHandler structureHandler) {
+            final IElementTagStructureHandler structureHandler) {
 
         // Nothing to do, this processor is just a marker. Simply remove the attribute
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();

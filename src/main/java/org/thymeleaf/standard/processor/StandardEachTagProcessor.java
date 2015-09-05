@@ -21,10 +21,10 @@ package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.standard.expression.Each;
 import org.thymeleaf.standard.expression.EachUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
@@ -55,7 +55,7 @@ public final class StandardEachTagProcessor extends AbstractAttributeTagProcesso
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
-            final IElementStructureHandler structureHandler) {
+            final IElementTagStructureHandler structureHandler) {
 
         final Each each = EachUtils.parseEach(processingContext, attributeValue);
 

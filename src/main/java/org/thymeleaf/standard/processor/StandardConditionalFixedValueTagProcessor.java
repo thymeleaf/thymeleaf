@@ -21,8 +21,8 @@ package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EvaluationUtils;
 
@@ -63,7 +63,7 @@ public final class StandardConditionalFixedValueTagProcessor extends AbstractSta
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final Object expressionResult,
-            final IElementStructureHandler structureHandler) {
+            final IElementTagStructureHandler structureHandler) {
 
         final String targetAttributeName = attributeName.getAttributeName(); // th:async -> async
         if (EvaluationUtils.evaluateAsBoolean(expressionResult)) {

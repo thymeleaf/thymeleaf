@@ -17,8 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine;
+package org.thymeleaf.processor.element;
 
+import org.thymeleaf.engine.IMarkup;
 import org.thymeleaf.inline.IInliner;
 
 /**
@@ -27,7 +28,8 @@ import org.thymeleaf.inline.IInliner;
  * @since 3.0.0
  * 
  */
-public interface ITemplateStructureHandler {
+public interface IElementTagStructureHandler {
+
 
     public void reset();
 
@@ -38,8 +40,22 @@ public interface ITemplateStructureHandler {
 
     public void setInliner(final IInliner inliner);
 
-    public void insert(final String text, final boolean processable);
-    public void insert(final IMarkup markup, final boolean processable);
+    public void setBody(final String text, final boolean processable);
+    public void setBody(final IMarkup markup, final boolean processable);
+
+    public void insertBefore(final IMarkup markup); // cannot be processable
+    public void insertAfter(final IMarkup markup, final boolean processable);
+
+    public void replaceWith(final String text, final boolean processable);
+    public void replaceWith(final IMarkup markup, final boolean processable);
+
+
+    public void removeElement();
+    public void removeTag();
+    public void removeBody();
+    public void removeAllButFirstChild();
+
+    public void iterateElement(final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject);
 
 }
 

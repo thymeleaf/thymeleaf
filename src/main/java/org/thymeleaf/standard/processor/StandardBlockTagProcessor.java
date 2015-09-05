@@ -20,9 +20,9 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractElementTagProcessor;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -48,7 +48,7 @@ public final class StandardBlockTagProcessor extends AbstractElementTagProcessor
     protected void doProcess(final ITemplateProcessingContext processingContext,
                              final IProcessableElementTag tag,
                              final String tagTemplateName, final int tagLine, final int tagCol,
-                             final IElementStructureHandler structureHandler) {
+                             final IElementTagStructureHandler structureHandler) {
 
         // We are just removing the "<th:block>", leaving whichever contents (body) it might have generated.
         structureHandler.removeTag();
