@@ -25,7 +25,7 @@ package org.thymeleaf.engine;
  * @since 3.0.0
  * 
  */
-public interface ITemplateHandlerEvent {
+public interface ITemplateEvent {
 
     public boolean hasLocation();
     public String getTemplateName();

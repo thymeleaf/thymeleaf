@@ -22,7 +22,7 @@ package org.thymeleaf.model;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.thymeleaf.engine.ITemplateHandlerEvent;
+import org.thymeleaf.engine.ITemplateEvent;
 
 /**
  *
@@ -30,7 +30,7 @@ import org.thymeleaf.engine.ITemplateHandlerEvent;
  * @since 3.0.0
  * 
  */
-public interface INode extends ITemplateHandlerEvent {
+public interface INode extends ITemplateEvent {
 
     public void write(final Writer writer) throws IOException;
 

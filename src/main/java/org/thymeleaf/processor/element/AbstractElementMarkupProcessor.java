@@ -22,7 +22,7 @@ package org.thymeleaf.processor.element;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeNames;
 import org.thymeleaf.engine.ElementNames;
-import org.thymeleaf.engine.ITemplateHandlerEvent;
+import org.thymeleaf.engine.ITemplateEvent;
 import org.thymeleaf.engine.Markup;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.AbstractProcessor;
@@ -93,7 +93,7 @@ public abstract class AbstractElementMarkupProcessor
         int markupCol = -1;
         try {
 
-            final ITemplateHandlerEvent firstEvent = markup.get(0);
+            final ITemplateEvent firstEvent = markup.get(0);
             markupTemplateName = firstEvent.getTemplateName();
             markupLine = firstEvent.getLine();
             markupCol = firstEvent.getLine();

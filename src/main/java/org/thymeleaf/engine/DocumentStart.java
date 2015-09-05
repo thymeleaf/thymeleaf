@@ -28,7 +28,7 @@ import org.thymeleaf.model.IDocumentStart;
  * 
  */
 final class DocumentStart
-            implements IDocumentStart, IEngineTemplateHandlerEvent {
+            implements IDocumentStart, IEngineTemplateEvent {
 
     private long startTimeNanos;
 

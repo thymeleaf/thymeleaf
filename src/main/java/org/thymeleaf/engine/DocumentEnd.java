@@ -28,7 +28,7 @@ import org.thymeleaf.model.IDocumentEnd;
  * 
  */
 final class DocumentEnd
-            implements IDocumentEnd, IEngineTemplateHandlerEvent {
+            implements IDocumentEnd, IEngineTemplateEvent {
 
     private long endTimeNanos;
     private long totalTimeNanos;

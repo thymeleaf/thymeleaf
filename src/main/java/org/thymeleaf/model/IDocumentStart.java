@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.model;
 
-import org.thymeleaf.engine.ITemplateHandlerEvent;
+import org.thymeleaf.engine.ITemplateEvent;
 
 /**
  *
@@ -27,7 +27,7 @@ import org.thymeleaf.engine.ITemplateHandlerEvent;
  * @since 3.0.0
  * 
  */
-public interface IDocumentStart extends ITemplateHandlerEvent {
+public interface IDocumentStart extends ITemplateEvent {
 
     public long getStartTimeNanos();
 

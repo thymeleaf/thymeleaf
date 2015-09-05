@@ -35,7 +35,7 @@ import org.thymeleaf.util.Validate;
  */
 final class CloseElementTag
             extends AbstractElementTag
-            implements ICloseElementTag, IEngineTemplateHandlerEvent {
+            implements ICloseElementTag, IEngineTemplateEvent {
 
 
     /*

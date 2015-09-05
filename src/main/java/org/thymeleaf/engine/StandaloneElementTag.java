@@ -37,7 +37,7 @@ import org.thymeleaf.util.Validate;
  */
 final class StandaloneElementTag
             extends AbstractProcessableElementTag
-            implements IStandaloneElementTag, IEngineTemplateHandlerEvent {
+            implements IStandaloneElementTag, IEngineTemplateEvent {
 
     private boolean minimized;
 

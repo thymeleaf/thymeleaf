@@ -89,7 +89,7 @@ public class ImmutableMarkup implements IMarkup {
     }
 
 
-    public ITemplateHandlerEvent get(final int pos) {
+    public ITemplateEvent get(final int pos) {
         return immutableEvent(this.markup.get(pos));
     }
 
@@ -125,7 +125,7 @@ public class ImmutableMarkup implements IMarkup {
 
 
 
-    private static ITemplateHandlerEvent immutableEvent(final ITemplateHandlerEvent event) {
+    private static ITemplateEvent immutableEvent(final ITemplateEvent event) {
 
         if (event instanceof IText) {
             return new ImmutableText((IText)event);

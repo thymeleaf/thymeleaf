@@ -25,7 +25,7 @@ package org.thymeleaf.engine;
  * @since 3.0.0
  * 
  */
-interface IEngineTemplateHandlerEvent extends ITemplateHandlerEvent {
+interface IEngineTemplateEvent extends ITemplateEvent {
 
     // Nothing to add. Just a marker interface grouping all internal event implementations
 

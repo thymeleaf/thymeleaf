@@ -34,7 +34,7 @@ import org.thymeleaf.util.Validate;
  * 
  */
 final class CDATASection
-            implements ICDATASection, IEngineTemplateHandlerEvent {
+            implements ICDATASection, IEngineTemplateEvent {
 
     // CDATA Section nodes do not exist in text parsing, so we are safe expliciting markup structures here
     private static final String CDATA_PREFIX = "<![CDATA[";

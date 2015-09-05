@@ -37,7 +37,7 @@ import org.thymeleaf.util.Validate;
  */
 final class OpenElementTag
             extends AbstractProcessableElementTag
-            implements IOpenElementTag, IEngineTemplateHandlerEvent {
+            implements IOpenElementTag, IEngineTemplateEvent {
 
 
     /*

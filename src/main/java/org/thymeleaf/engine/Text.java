@@ -35,7 +35,7 @@ import org.thymeleaf.util.Validate;
  * 
  */
 final class Text
-            implements IText, IEngineTemplateHandlerEvent {
+            implements IText, IEngineTemplateEvent {
 
     private final ITextRepository textRepository;
 

@@ -38,7 +38,7 @@ public interface IMarkup {
 
     public int size();
 
-    public ITemplateHandlerEvent get(final int pos);
+    public ITemplateEvent get(final int pos);
 
     public String renderMarkup();
 

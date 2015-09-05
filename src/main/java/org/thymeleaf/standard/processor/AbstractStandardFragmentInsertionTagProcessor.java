@@ -24,7 +24,7 @@ import java.util.Map;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;
-import org.thymeleaf.engine.ITemplateHandlerEvent;
+import org.thymeleaf.engine.ITemplateEvent;
 import org.thymeleaf.engine.ImmutableMarkup;
 import org.thymeleaf.engine.Markup;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -128,7 +128,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          * affect the way we apply the parameters to the fragment
          */
         final int parsedFragmentLen = parsedFragment.size();
-        final ITemplateHandlerEvent firstEvent = (parsedFragmentLen >= 1? parsedFragment.get(0) : null);
+        final ITemplateEvent firstEvent = (parsedFragmentLen >= 1? parsedFragment.get(0) : null);
 
         // We need to examine the first event just in case it contains a th:fragment matching the one we were looking
         if (firstEvent instanceof IProcessableElementTag) {
@@ -186,7 +186,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
             int n = markup.size();
             while (n-- != 0) { // We traverse backwards so that we can modify at the same time
 
-                final ITemplateHandlerEvent event = markup.get(n);
+                final ITemplateEvent event = markup.get(n);
 
                 if (event instanceof ICloseElementTag) {
                     if (markupLevel <= 0) {

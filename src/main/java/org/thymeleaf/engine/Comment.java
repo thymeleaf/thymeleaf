@@ -34,7 +34,7 @@ import org.thymeleaf.util.Validate;
  * 
  */
 final class Comment
-            implements IComment, IEngineTemplateHandlerEvent {
+            implements IComment, IEngineTemplateEvent {
 
     // Comment nodes do not exist in text parsing, so we are safe expliciting markup structures here
     private static final String COMMENT_PREFIX = "<!--";

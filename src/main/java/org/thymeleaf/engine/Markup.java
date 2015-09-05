@@ -82,17 +82,17 @@ public final class Markup implements IMarkup {
     }
 
 
-    public ITemplateHandlerEvent get(final int pos) {
+    public ITemplateEvent get(final int pos) {
         return this.queue.get(pos);
     }
 
 
-    public void add(final ITemplateHandlerEvent event) {
+    public void add(final ITemplateEvent event) {
         this.queue.add(asEngineEvent(this.configuration, this.templateMode, event, true), false);
     }
 
 
-    public void insert(final int pos, final ITemplateHandlerEvent event) {
+    public void insert(final int pos, final ITemplateEvent event) {
         this.queue.insert(pos, asEngineEvent(this.configuration, this.templateMode, event, true), false);
     }
 
@@ -176,9 +176,9 @@ public final class Markup implements IMarkup {
 
 
 
-    private static IEngineTemplateHandlerEvent asEngineEvent(
+    private static IEngineTemplateEvent asEngineEvent(
             final IEngineConfiguration configuration, final TemplateMode templateMode,
-            final ITemplateHandlerEvent event, final boolean cloneAlways) {
+            final ITemplateEvent event, final boolean cloneAlways) {
 
         if (event instanceof IText) {
             return Text.asEngineText(configuration, (IText) event, cloneAlways);

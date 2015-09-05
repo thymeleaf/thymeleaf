@@ -39,13 +39,13 @@ final class EngineEventQueue {
      */
 
     /*
-     * This queue WILL ONLY CONTAIN ENGINE-BASED IMPLEMENTATIONS of the ITemplateHandlerEvent interface
+     * This queue WILL ONLY CONTAIN ENGINE-BASED IMPLEMENTATIONS of the ITemplateEvent interface
      */
 
     private static final int DEFAULT_INITIAL_SIZE = 50;
 
     private int queueSize = 0;
-    private IEngineTemplateHandlerEvent[] queue; // We use the interface, but not all implementations will be allowed
+    private IEngineTemplateEvent[] queue; // We use the interface, but not all implementations will be allowed
 
     private final TemplateMode templateMode;
     private final IEngineConfiguration configuration;
@@ -76,7 +76,7 @@ final class EngineEventQueue {
         super();
 
         if (initialSize > 0) {
-            this.queue = new IEngineTemplateHandlerEvent[initialSize];
+            this.queue = new IEngineTemplateEvent[initialSize];
             Arrays.fill(this.queue, null);
         }
 
@@ -94,7 +94,7 @@ final class EngineEventQueue {
     }
 
 
-    IEngineTemplateHandlerEvent get(final int pos) {
+    IEngineTemplateEvent get(final int pos) {
         if (pos < 0 && pos >= this.queueSize) {
             throw new IndexOutOfBoundsException("Requested position " + pos + " of event queue with size " + this.queueSize);
         }
@@ -103,12 +103,12 @@ final class EngineEventQueue {
 
 
 
-    void add(final IEngineTemplateHandlerEvent event, final boolean cloneAlways) {
+    void add(final IEngineTemplateEvent event, final boolean cloneAlways) {
         insert(this.queueSize, event, cloneAlways);
     }
 
 
-    void insert(final int pos, final IEngineTemplateHandlerEvent event, final boolean cloneAlways) {
+    void insert(final int pos, final IEngineTemplateEvent event, final boolean cloneAlways) {
 
         if (pos < 0 && pos >= this.queueSize) {
             throw new IndexOutOfBoundsException("Requested position " + pos + " of event queue with size " + this.queueSize);
@@ -120,7 +120,7 @@ final class EngineEventQueue {
 
         if (this.queue.length == this.queueSize) {
             // We need to grow the queue!
-            final IEngineTemplateHandlerEvent[] newQueue = new IEngineTemplateHandlerEvent[Math.min(this.queue.length + 25, this.queue.length * 2)];
+            final IEngineTemplateEvent[] newQueue = new IEngineTemplateEvent[Math.min(this.queue.length + 25, this.queue.length * 2)];
             Arrays.fill(newQueue, null);
             System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
             this.queue = newQueue;
@@ -186,7 +186,7 @@ final class EngineEventQueue {
 
         if (this.queue.length <= (this.queueSize + markupQueue.queueSize)) {
             // We need to grow the queue!
-            final IEngineTemplateHandlerEvent[] newQueue = new IEngineTemplateHandlerEvent[Math.max(this.queueSize + markupQueue.queueSize, this.queue.length + 25)];
+            final IEngineTemplateEvent[] newQueue = new IEngineTemplateEvent[Math.max(this.queueSize + markupQueue.queueSize, this.queue.length + 25)];
             Arrays.fill(newQueue, null);
             System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
             this.queue = newQueue;
@@ -225,7 +225,7 @@ final class EngineEventQueue {
             return;
         }
 
-        IEngineTemplateHandlerEvent event;
+        IEngineTemplateEvent event;
         int n = this.queueSize;
         int i = 0;
 
@@ -428,7 +428,7 @@ final class EngineEventQueue {
         }
 
         if (this.queue.length < original.queueSize) {
-            this.queue = new IEngineTemplateHandlerEvent[Math.max(DEFAULT_INITIAL_SIZE, original.queueSize)];
+            this.queue = new IEngineTemplateEvent[Math.max(DEFAULT_INITIAL_SIZE, original.queueSize)];
         }
 
         if (!cloneEvents) {
@@ -444,7 +444,7 @@ final class EngineEventQueue {
     }
 
 
-    private static IEngineTemplateHandlerEvent cloneEngineEvent(final IEngineTemplateHandlerEvent event) {
+    private static IEngineTemplateEvent cloneEngineEvent(final IEngineTemplateEvent event) {
 
         if (event instanceof Text) {
             return ((Text)event).cloneNode();
@@ -471,7 +471,7 @@ final class EngineEventQueue {
         }
 
         throw new TemplateProcessingException(
-                "Unrecognized implementation of " + IEngineTemplateHandlerEvent.class.getName() + ": " +
+                "Unrecognized implementation of " + IEngineTemplateEvent.class.getName() + ": " +
                 event.getClass().getName());
 
     }

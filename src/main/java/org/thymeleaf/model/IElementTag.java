@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.thymeleaf.engine.ElementDefinition;
-import org.thymeleaf.engine.ITemplateHandlerEvent;
+import org.thymeleaf.engine.ITemplateEvent;
 
 /**
  *
@@ -31,7 +31,7 @@ import org.thymeleaf.engine.ITemplateHandlerEvent;
  * @since 3.0.0
  * 
  */
-public interface IElementTag extends ITemplateHandlerEvent {
+public interface IElementTag extends ITemplateEvent {
 
     public ElementDefinition getElementDefinition();
     public String getElementName();

@@ -34,7 +34,7 @@ import org.thymeleaf.util.Validate;
  * 
  */
 public final class ProcessingInstruction
-            implements IProcessingInstruction, IEngineTemplateHandlerEvent {
+            implements IProcessingInstruction, IEngineTemplateEvent {
 
     private final ITextRepository textRepository;
 
