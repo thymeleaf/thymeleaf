@@ -141,7 +141,7 @@ final class StandaloneElementTag
 
 
 
-    public StandaloneElementTag cloneElementTag() {
+    public StandaloneElementTag cloneEvent() {
         final StandaloneElementTag clone = new StandaloneElementTag();
         clone.resetAsCloneOf(this);
         return clone;
@@ -162,7 +162,7 @@ final class StandaloneElementTag
 
         if (standaloneElementTag instanceof StandaloneElementTag) {
             if (cloneAlways) {
-                return ((StandaloneElementTag) standaloneElementTag).cloneElementTag();
+                return ((StandaloneElementTag) standaloneElementTag).cloneEvent();
             }
             return (StandaloneElementTag) standaloneElementTag;
         }

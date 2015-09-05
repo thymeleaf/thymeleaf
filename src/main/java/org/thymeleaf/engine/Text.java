@@ -254,7 +254,7 @@ final class Text
 
 
 
-    public Text cloneNode() {
+    public Text cloneEvent() {
         // When cloning we will protect the buffer as only the instances used themselves as buffers in the 'engine'
         // package should reference a buffer.
         final Text clone = new Text(this.textRepository);
@@ -284,7 +284,7 @@ final class Text
 
         if (text instanceof Text) {
             if (cloneAlways) {
-                return ((Text) text).cloneNode();
+                return ((Text) text).cloneEvent();
             }
             return (Text) text;
         }

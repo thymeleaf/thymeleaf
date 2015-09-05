@@ -27,6 +27,6 @@ package org.thymeleaf.model;
  */
 public interface IOpenElementTag extends IProcessableElementTag {
 
-    public IOpenElementTag cloneElementTag();
+    public IOpenElementTag cloneEvent();
 
 }

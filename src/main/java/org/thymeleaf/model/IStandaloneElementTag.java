@@ -30,6 +30,6 @@ public interface IStandaloneElementTag extends IProcessableElementTag {
     public boolean isMinimized();
     public void setMinimized(final boolean minimized);
 
-    public IStandaloneElementTag cloneElementTag();
+    public IStandaloneElementTag cloneEvent();
 
 }

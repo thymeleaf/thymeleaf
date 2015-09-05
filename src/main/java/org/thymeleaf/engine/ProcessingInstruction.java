@@ -203,7 +203,7 @@ public final class ProcessingInstruction
 
 
 
-    public ProcessingInstruction cloneNode() {
+    public ProcessingInstruction cloneEvent() {
         final ProcessingInstruction clone = new ProcessingInstruction(this.textRepository);
         clone.resetAsCloneOf(this);
         return clone;
@@ -229,7 +229,7 @@ public final class ProcessingInstruction
 
         if (processingInstruction instanceof ProcessingInstruction) {
             if (cloneAlways) {
-                return ((ProcessingInstruction) processingInstruction).cloneNode();
+                return ((ProcessingInstruction) processingInstruction).cloneEvent();
             }
             return (ProcessingInstruction) processingInstruction;
         }

@@ -33,8 +33,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-final class Comment
-            implements IComment, IEngineTemplateEvent {
+final class Comment implements IComment, IEngineTemplateEvent {
 
     // Comment nodes do not exist in text parsing, so we are safe expliciting markup structures here
     private static final String COMMENT_PREFIX = "<!--";
@@ -264,7 +263,7 @@ final class Comment
 
 
 
-    public Comment cloneNode() {
+    public Comment cloneEvent() {
         // When cloning we will protect the buffer as only the instances used themselves as buffers in the 'engine'
         // package should reference a buffer.
         final Comment clone = new Comment(this.textRepository);
@@ -295,7 +294,7 @@ final class Comment
 
         if (comment instanceof Comment) {
             if (cloneAlways) {
-                return ((Comment) comment).cloneNode();
+                return ((Comment) comment).cloneEvent();
             }
             return (Comment) comment;
         }

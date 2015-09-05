@@ -19,13 +19,15 @@
  */
 package org.thymeleaf.model;
 
+import org.thymeleaf.engine.ITemplateEvent;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-public interface IDocType extends INode {
+public interface IDocType extends ITemplateEvent {
 
     public String getKeyword();
     public String getElementName();
@@ -43,6 +45,6 @@ public interface IDocType extends INode {
     public void setIDs(final String type, final String publicId, final String systemId);
     public void setInternalSubset(final String internalSubset);
 
-    public IDocType cloneNode();
+    public IDocType cloneEvent();
 
 }

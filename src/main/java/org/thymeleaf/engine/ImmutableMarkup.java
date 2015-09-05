@@ -31,7 +31,6 @@ import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IElementTag;
-import org.thymeleaf.model.INode;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
@@ -166,32 +165,32 @@ public class ImmutableMarkup implements IMarkup {
 
 
 
-    private static abstract class AbstractImmutableNode implements INode {
+    private static abstract class AbstractImmutableTemplateEvent implements ITemplateEvent {
 
-        private final INode wrapped;
+        private final ITemplateEvent wrapped;
 
-        protected AbstractImmutableNode(final INode wrapped) {
+        protected AbstractImmutableTemplateEvent(final ITemplateEvent wrapped) {
             super();
             this.wrapped = wrapped;
         }
 
-        public boolean hasLocation() {
+        public final boolean hasLocation() {
             return this.wrapped.hasLocation();
         }
 
-        public String getTemplateName() {
+        public final String getTemplateName() {
             return this.wrapped.getTemplateName();
         }
 
-        public int getLine() {
+        public final int getLine() {
             return this.wrapped.getLine();
         }
 
-        public int getCol() {
+        public final int getCol() {
             return this.wrapped.getCol();
         }
 
-        public void write(final Writer writer) throws IOException {
+        public final void write(final Writer writer) throws IOException {
             this.wrapped.write(writer);
         }
 
@@ -199,7 +198,7 @@ public class ImmutableMarkup implements IMarkup {
 
 
     private static final class ImmutableText
-            extends AbstractImmutableNode implements IText {
+            extends AbstractImmutableTemplateEvent implements IText {
 
         private final IText wrapped;
 
@@ -232,7 +231,7 @@ public class ImmutableMarkup implements IMarkup {
             ImmutableMarkup.immutableException();
         }
 
-        public IText cloneNode() {
+        public IText cloneEvent() {
             ImmutableMarkup.immutableException();
             return null;
         }
@@ -241,7 +240,7 @@ public class ImmutableMarkup implements IMarkup {
 
 
     private static final class ImmutableCDATASection
-            extends AbstractImmutableNode implements ICDATASection {
+            extends AbstractImmutableTemplateEvent implements ICDATASection {
 
         private final ICDATASection wrapped;
 
@@ -274,7 +273,7 @@ public class ImmutableMarkup implements IMarkup {
             ImmutableMarkup.immutableException();
         }
 
-        public ICDATASection cloneNode() {
+        public ICDATASection cloneEvent() {
             ImmutableMarkup.immutableException();
             return null;
         }
@@ -283,7 +282,7 @@ public class ImmutableMarkup implements IMarkup {
 
 
     private static final class ImmutableComment
-            extends AbstractImmutableNode implements IComment {
+            extends AbstractImmutableTemplateEvent implements IComment {
 
         private final IComment wrapped;
 
@@ -316,7 +315,7 @@ public class ImmutableMarkup implements IMarkup {
             ImmutableMarkup.immutableException();
         }
 
-        public IComment cloneNode() {
+        public IComment cloneEvent() {
             ImmutableMarkup.immutableException();
             return null;
         }
@@ -325,7 +324,7 @@ public class ImmutableMarkup implements IMarkup {
 
 
     private static final class ImmutableDocType
-            extends AbstractImmutableNode implements IDocType {
+            extends AbstractImmutableTemplateEvent implements IDocType {
 
         private final IDocType wrapped;
 
@@ -386,7 +385,7 @@ public class ImmutableMarkup implements IMarkup {
             ImmutableMarkup.immutableException();
         }
 
-        public IDocType cloneNode() {
+        public IDocType cloneEvent() {
             ImmutableMarkup.immutableException();
             return null;
         }
@@ -395,7 +394,7 @@ public class ImmutableMarkup implements IMarkup {
 
 
     private static final class ImmutableProcessingInstruction
-            extends AbstractImmutableNode implements IProcessingInstruction {
+            extends AbstractImmutableTemplateEvent implements IProcessingInstruction {
 
         private final IProcessingInstruction wrapped;
 
@@ -424,7 +423,7 @@ public class ImmutableMarkup implements IMarkup {
             ImmutableMarkup.immutableException();
         }
 
-        public IProcessingInstruction cloneNode() {
+        public IProcessingInstruction cloneEvent() {
             ImmutableMarkup.immutableException();
             return null;
         }
@@ -433,7 +432,7 @@ public class ImmutableMarkup implements IMarkup {
 
 
     private static final class ImmutableXMLDeclaration
-            extends AbstractImmutableNode implements IXMLDeclaration {
+            extends AbstractImmutableTemplateEvent implements IXMLDeclaration {
 
         private final IXMLDeclaration wrapped;
 
@@ -474,7 +473,7 @@ public class ImmutableMarkup implements IMarkup {
             ImmutableMarkup.immutableException();
         }
 
-        public IXMLDeclaration cloneNode() {
+        public IXMLDeclaration cloneEvent() {
             ImmutableMarkup.immutableException();
             return null;
         }
@@ -619,12 +618,12 @@ public class ImmutableMarkup implements IMarkup {
 
 
 
-    private static abstract class AbstractImmutableElementTag implements IElementTag {
+    private static abstract class AbstractImmutableElementTag extends AbstractImmutableTemplateEvent implements IElementTag {
 
         private final IElementTag wrapped;
 
         protected AbstractImmutableElementTag(final IElementTag wrapped) {
-            super();
+            super(wrapped);
             this.wrapped = wrapped;
         }
 
@@ -634,26 +633,6 @@ public class ImmutableMarkup implements IMarkup {
 
         public String getElementName() {
             return this.wrapped.getElementName();
-        }
-
-        public boolean hasLocation() {
-            return this.wrapped.hasLocation();
-        }
-
-        public String getTemplateName() {
-            return this.wrapped.getTemplateName();
-        }
-
-        public int getLine() {
-            return this.wrapped.getLine();
-        }
-
-        public int getCol() {
-            return this.wrapped.getCol();
-        }
-
-        public void write(final Writer writer) throws IOException {
-            this.wrapped.write(writer);
         }
 
     }
@@ -712,7 +691,7 @@ public class ImmutableMarkup implements IMarkup {
             return this.wrapped.isSynthetic();
         }
 
-        public IStandaloneElementTag cloneElementTag() {
+        public IStandaloneElementTag cloneEvent() {
             ImmutableMarkup.immutableException();
             return null;
         }
@@ -735,7 +714,7 @@ public class ImmutableMarkup implements IMarkup {
             return this.wrapped.isSynthetic();
         }
 
-        public IOpenElementTag cloneElementTag() {
+        public IOpenElementTag cloneEvent() {
             ImmutableMarkup.immutableException();
             return null;
         }
@@ -762,7 +741,7 @@ public class ImmutableMarkup implements IMarkup {
             return this.wrapped.isUnmatched();
         }
 
-        public ICloseElementTag cloneElementTag() {
+        public ICloseElementTag cloneEvent() {
             ImmutableMarkup.immutableException();
             return null;
         }

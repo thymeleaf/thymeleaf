@@ -19,19 +19,21 @@
  */
 package org.thymeleaf.model;
 
+import org.thymeleaf.engine.ITemplateEvent;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-public interface ICDATASection extends INode, CharSequence {
+public interface ICDATASection extends ITemplateEvent, CharSequence {
 
     public String getCDATASection();
     public String getContent();
 
     public void setContent(final String content);
 
-    public ICDATASection cloneNode();
+    public ICDATASection cloneEvent();
 
 }

@@ -262,7 +262,7 @@ final class CDATASection
 
 
 
-    public CDATASection cloneNode() {
+    public CDATASection cloneEvent() {
         // When cloning we will protect the buffer as only the instances used themselves as buffers in the 'engine'
         // package should reference a buffer.
         final CDATASection clone = new CDATASection(this.textRepository);
@@ -293,7 +293,7 @@ final class CDATASection
 
         if (cdataSection instanceof CDATASection) {
             if (cloneAlways) {
-                return ((CDATASection) cdataSection).cloneNode();
+                return ((CDATASection) cdataSection).cloneEvent();
             }
             return (CDATASection) cdataSection;
         }

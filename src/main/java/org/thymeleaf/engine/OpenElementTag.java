@@ -107,7 +107,7 @@ final class OpenElementTag
 
 
 
-    public OpenElementTag cloneElementTag() {
+    public OpenElementTag cloneEvent() {
         final OpenElementTag clone = new OpenElementTag();
         clone.resetAsCloneOf(this);
         return clone;
@@ -135,7 +135,7 @@ final class OpenElementTag
 
         if (openElementTag instanceof OpenElementTag) {
             if (cloneAlways) {
-                return ((OpenElementTag) openElementTag).cloneElementTag();
+                return ((OpenElementTag) openElementTag).cloneEvent();
             }
             return (OpenElementTag) openElementTag;
         }

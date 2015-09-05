@@ -19,13 +19,15 @@
  */
 package org.thymeleaf.model;
 
+import org.thymeleaf.engine.ITemplateEvent;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-public interface IProcessingInstruction extends INode {
+public interface IProcessingInstruction extends ITemplateEvent {
 
     public String getTarget();
     public String getContent();
@@ -35,6 +37,6 @@ public interface IProcessingInstruction extends INode {
     public void setTarget(final String target);
     public void setContent(final String content);
 
-    public IProcessingInstruction cloneNode();
+    public IProcessingInstruction cloneEvent();
 
 }

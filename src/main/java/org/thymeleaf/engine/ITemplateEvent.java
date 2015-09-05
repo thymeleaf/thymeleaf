@@ -19,6 +19,9 @@
  */
 package org.thymeleaf.engine;
 
+import java.io.IOException;
+import java.io.Writer;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -31,5 +34,9 @@ public interface ITemplateEvent {
     public String getTemplateName();
     public int getLine();
     public int getCol();
+
+    public ITemplateEvent cloneEvent();
+
+    public void write(final Writer writer) throws IOException;
 
 }

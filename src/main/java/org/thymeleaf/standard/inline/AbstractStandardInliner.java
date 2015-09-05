@@ -22,11 +22,9 @@ package org.thymeleaf.standard.inline;
 import java.io.StringWriter;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.engine.ITemplateEvent;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.inline.IInliner;
-import org.thymeleaf.model.ICDATASection;
-import org.thymeleaf.model.IComment;
-import org.thymeleaf.model.INode;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
@@ -106,36 +104,24 @@ public abstract class AbstractStandardInliner implements IInliner {
 
 
     static String computeTemplateName(final CharSequence text) {
-        if (text instanceof INode) {
-            return ((INode)text).getTemplateName();
+        if (text instanceof ITemplateEvent) {
+            return ((ITemplateEvent)text).getTemplateName();
         }
         return text.toString();
     }
 
 
     static int computeLine(final CharSequence text) {
-        if (text instanceof IText) {
-            return ((IText)text).getLine();
-        }
-        if (text instanceof IComment) {
-            return ((IComment)text).getLine();
-        }
-        if (text instanceof ICDATASection) {
-            return ((ICDATASection)text).getLine();
+        if (text instanceof ITemplateEvent) {
+            return ((ITemplateEvent)text).getLine();
         }
         return Integer.MIN_VALUE; // Negative (line,col) will mean 'no locator'
     }
 
 
     static int computeCol(final CharSequence text) {
-        if (text instanceof IText) {
-            return ((IText)text).getCol();
-        }
-        if (text instanceof IComment) {
-            return ((IComment)text).getCol();
-        }
-        if (text instanceof ICDATASection) {
-            return ((ICDATASection)text).getCol();
+        if (text instanceof ITemplateEvent) {
+            return ((ITemplateEvent)text).getCol();
         }
         return Integer.MIN_VALUE; // Negative (line,col) will mean 'no locator'
     }

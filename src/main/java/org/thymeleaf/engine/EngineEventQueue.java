@@ -130,7 +130,7 @@ final class EngineEventQueue {
         System.arraycopy(this.queue, pos, this.queue, pos + 1, this.queueSize - pos);
 
         // Set the new event in its new position
-        this.queue[pos] = (cloneAlways? cloneEngineEvent(event) : event);
+        this.queue[pos] = (cloneAlways? (IEngineTemplateEvent) event.cloneEvent() : event);
 
         this.queueSize++;
 
@@ -435,44 +435,11 @@ final class EngineEventQueue {
             System.arraycopy(original.queue, 0, this.queue, 0, original.queueSize);
         } else {
             for (int i = 0; i < original.queueSize; i++) {
-                this.queue[i] = cloneEngineEvent(original.queue[i]);
+                this.queue[i] = (IEngineTemplateEvent) original.queue[i].cloneEvent();
             }
         }
 
         // No need to clone the buffers...
-
-    }
-
-
-    private static IEngineTemplateEvent cloneEngineEvent(final IEngineTemplateEvent event) {
-
-        if (event instanceof Text) {
-            return ((Text)event).cloneNode();
-        } else if (event instanceof OpenElementTag) {
-            return ((OpenElementTag)event).cloneElementTag();
-        } else if (event instanceof CloseElementTag) {
-            return ((CloseElementTag)event).cloneElementTag();
-        } else if (event instanceof StandaloneElementTag) {
-            return ((StandaloneElementTag)event).cloneElementTag();
-        } else if (event instanceof Comment) {
-            return ((Comment)event).cloneNode();
-        } else if (event instanceof DocType) {
-            return ((DocType)event).cloneNode();
-        } else if (event instanceof XMLDeclaration) {
-            return ((XMLDeclaration)event).cloneNode();
-        } else if (event instanceof CDATASection) {
-            return ((CDATASection)event).cloneNode();
-        } else if (event instanceof ProcessingInstruction) {
-            return ((ProcessingInstruction)event).cloneNode();
-        } else if (event instanceof DocumentStart) {
-            return ((DocumentStart)event).cloneEvent();
-        } else if (event instanceof DocumentEnd) {
-            return ((DocumentEnd)event).cloneEvent();
-        }
-
-        throw new TemplateProcessingException(
-                "Unrecognized implementation of " + IEngineTemplateEvent.class.getName() + ": " +
-                event.getClass().getName());
 
     }
 

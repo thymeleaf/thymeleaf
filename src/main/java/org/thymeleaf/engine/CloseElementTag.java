@@ -116,7 +116,7 @@ final class CloseElementTag
 
 
 
-    public CloseElementTag cloneElementTag() {
+    public CloseElementTag cloneEvent() {
         final CloseElementTag clone = new CloseElementTag();
         clone.resetAsCloneOf(this);
         return clone;
@@ -146,7 +146,7 @@ final class CloseElementTag
 
         if (closeElementTag instanceof CloseElementTag) {
             if (cloneAlways) {
-                return ((CloseElementTag) closeElementTag).cloneElementTag();
+                return ((CloseElementTag) closeElementTag).cloneEvent();
             }
             return (CloseElementTag) closeElementTag;
         }

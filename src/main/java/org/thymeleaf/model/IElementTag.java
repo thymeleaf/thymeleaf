@@ -40,6 +40,6 @@ public interface IElementTag extends ITemplateEvent {
 
     public void write(final Writer writer) throws IOException;
 
-    public IElementTag cloneElementTag();
+    public IElementTag cloneEvent();
 
 }

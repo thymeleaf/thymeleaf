@@ -19,6 +19,9 @@
  */
 package org.thymeleaf.engine;
 
+import java.io.IOException;
+import java.io.Writer;
+
 import org.thymeleaf.model.IDocumentStart;
 
 /**
@@ -88,6 +91,12 @@ final class DocumentStart
         return "{documentstart}";
     }
 
+
+
+
+    public void write(final Writer writer) throws IOException {
+        // Nothing to be done here -- document end events are not writable to output!
+    }
 
 
     public DocumentStart cloneEvent() {

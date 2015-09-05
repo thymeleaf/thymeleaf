@@ -19,13 +19,15 @@
  */
 package org.thymeleaf.model;
 
+import org.thymeleaf.engine.ITemplateEvent;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-public interface IXMLDeclaration extends INode {
+public interface IXMLDeclaration extends ITemplateEvent {
 
     public String getKeyword();
     public String getVersion();
@@ -37,6 +39,6 @@ public interface IXMLDeclaration extends INode {
     public void setEncoding(final String encoding);
     public void setStandalone(final String standalone);
 
-    public IXMLDeclaration cloneNode();
+    public IXMLDeclaration cloneEvent();
 
 }

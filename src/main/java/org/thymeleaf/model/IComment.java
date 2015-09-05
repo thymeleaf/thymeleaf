@@ -19,19 +19,21 @@
  */
 package org.thymeleaf.model;
 
+import org.thymeleaf.engine.ITemplateEvent;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-public interface IComment extends INode, CharSequence {
+public interface IComment extends ITemplateEvent, CharSequence {
 
     public String getComment();
     public String getContent();
 
     public void setContent(final String content);
 
-    public IComment cloneNode();
+    public IComment cloneEvent();
 
 }

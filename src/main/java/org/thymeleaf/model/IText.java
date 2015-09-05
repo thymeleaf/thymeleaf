@@ -19,23 +19,25 @@
  */
 package org.thymeleaf.model;
 
+import org.thymeleaf.engine.ITemplateEvent;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-public interface IText extends INode, CharSequence {
+public interface IText extends ITemplateEvent, CharSequence {
 
     public String getText();
 
     public void setText(final CharSequence text);
 
-    public IText cloneNode();
-
     /*
      * Note empty texts are NOT considered whitespace
      */
     public boolean isWhitespace();
+
+    public IText cloneEvent();
 
 }

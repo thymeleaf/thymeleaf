@@ -324,7 +324,7 @@ final class DocType
 
 
 
-    public DocType cloneNode() {
+    public DocType cloneEvent() {
         final DocType clone = new DocType(this.textRepository);
         clone.resetAsCloneOf(this);
         return clone;
@@ -356,7 +356,7 @@ final class DocType
 
         if (docType instanceof DocType) {
             if (cloneAlways) {
-                return ((DocType) docType).cloneNode();
+                return ((DocType) docType).cloneEvent();
             }
             return (DocType) docType;
         }

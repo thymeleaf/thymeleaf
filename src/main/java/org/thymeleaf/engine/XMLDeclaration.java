@@ -253,7 +253,7 @@ final class XMLDeclaration
 
 
 
-    public XMLDeclaration cloneNode() {
+    public XMLDeclaration cloneEvent() {
         final XMLDeclaration clone = new XMLDeclaration(this.textRepository);
         clone.resetAsCloneOf(this);
         return clone;
@@ -282,7 +282,7 @@ final class XMLDeclaration
 
         if (xmlDeclaration instanceof XMLDeclaration) {
             if (cloneAlways) {
-                return ((XMLDeclaration) xmlDeclaration).cloneNode();
+                return ((XMLDeclaration) xmlDeclaration).cloneEvent();
             }
             return (XMLDeclaration) xmlDeclaration;
         }
