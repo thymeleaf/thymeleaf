@@ -19,9 +19,6 @@
  */
 package org.thymeleaf.model;
 
-import java.io.IOException;
-import java.io.Writer;
-
 import org.thymeleaf.engine.ElementDefinition;
 import org.thymeleaf.engine.ITemplateEvent;
 
@@ -37,8 +34,6 @@ public interface IElementTag extends ITemplateEvent {
     public String getElementName();
 
     public boolean isSynthetic();
-
-    public void write(final Writer writer) throws IOException;
 
     public IElementTag cloneEvent();
 
