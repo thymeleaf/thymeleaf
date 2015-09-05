@@ -21,7 +21,7 @@ package org.thymeleaf.spring3.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.Model;
+import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -82,7 +82,7 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
 
                 tag.getAttributes().setAttribute(ATTR_NAME, "post");
 
-                final Model hiddenMethodModel = processingContext.getModelFactory().createModel();
+                final IModel hiddenMethodModel = processingContext.getModelFactory().createModel();
 
                 final String type = "hidden";
                 final String name = "_method";
