@@ -48,8 +48,8 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
     private final int lineOffset;
     private final int colOffset;
 
-    private final DocumentStart documentStart;
-    private final DocumentEnd documentEnd;
+    private final TemplateStart templateStart;
+    private final TemplateEnd templateEnd;
 
     private final Text text;
 
@@ -93,8 +93,8 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
         this.colOffset = (colOffset > 0 ? colOffset - 1 : colOffset); // line n for offset will be line 1 for the newly parsed template
 
         // We will be using these as objectual buffers in order to avoid creating too many objects
-        this.documentStart = new DocumentStart();
-        this.documentEnd = new DocumentEnd();
+        this.templateStart = new TemplateStart();
+        this.templateEnd = new TemplateEnd();
 
         this.text = new Text(this.textRepository);
 
@@ -124,8 +124,8 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
         // markup selector, but they are not fragments meant to be included in other higher-level templates being
         // processed.
         if (this.artifactType == ParsableArtifactType.TEMPLATE) {
-            this.documentStart.reset(startTimeNanos, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
-            this.templateHandler.handleDocumentStart(this.documentStart);
+            this.templateStart.reset(startTimeNanos, this.templateName, this.lineOffset + line, (line == 1 ? this.colOffset : 0) + col);
+            this.templateHandler.handleTemplateStart(this.templateStart);
         }
 
     }
@@ -146,8 +146,8 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
         // markup selector, but they are not fragments meant to be included in other higher-level templates being
         // processed.
         if (this.artifactType == ParsableArtifactType.TEMPLATE) {
-            this.documentEnd.reset(endTimeNanos, totalTimeNanos, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
-            this.templateHandler.handleDocumentEnd(this.documentEnd);
+            this.templateEnd.reset(endTimeNanos, totalTimeNanos, this.templateName, this.lineOffset + line, (line == 1 ? this.colOffset : 0) + col);
+            this.templateHandler.handleTemplateEnd(this.templateEnd);
         }
 
     }

@@ -27,11 +27,11 @@ import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
-import org.thymeleaf.model.IDocumentEnd;
-import org.thymeleaf.model.IDocumentStart;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
+import org.thymeleaf.model.ITemplateEnd;
+import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -207,11 +207,11 @@ public final class Markup implements IMarkup {
         if (event instanceof IProcessingInstruction) {
             return ProcessingInstruction.asEngineProcessingInstruction(configuration, (IProcessingInstruction) event, cloneAlways);
         }
-        if (event instanceof IDocumentStart) {
-            return DocumentStart.asEngineDocumentStart((IDocumentStart) event, cloneAlways);
+        if (event instanceof ITemplateStart) {
+            return TemplateStart.asEngineTemplateStart((ITemplateStart) event, cloneAlways);
         }
-        if (event instanceof IDocumentEnd) {
-            return DocumentEnd.asEngineDocumentEnd((IDocumentEnd) event, cloneAlways);
+        if (event instanceof ITemplateEnd) {
+            return TemplateEnd.asEngineTemplateEnd((ITemplateEnd) event, cloneAlways);
         }
         throw new TemplateProcessingException(
                 "Cannot handle in queue event of type: " + event.getClass().getName());

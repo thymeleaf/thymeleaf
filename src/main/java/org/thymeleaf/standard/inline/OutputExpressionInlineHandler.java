@@ -142,7 +142,7 @@ public final class OutputExpressionInlineHandler implements IInlineHandler {
 
         if (this.inlineTemplateModes[this.inlineIndex] != this.inlineTemplateModes[0]) {
             // Even if this text might contain some inlining, it's not something that we can do now - it's inlining
-            // for a template mode different than the document's and therefore we should wait for the corresponding
+            // for a template mode different than the template's and therefore we should wait for the corresponding
             // inlined block to be re-parsed.
             this.next.handleText(buffer, offset, len, line, col);
             return;

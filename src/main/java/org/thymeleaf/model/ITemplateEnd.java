@@ -17,13 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.processor.document;
+package org.thymeleaf.model;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.IDocumentStructureHandler;
-import org.thymeleaf.model.IDocumentEnd;
-import org.thymeleaf.model.IDocumentStart;
-import org.thymeleaf.processor.IProcessor;
+import org.thymeleaf.engine.ITemplateEvent;
 
 /**
  *
@@ -31,16 +27,11 @@ import org.thymeleaf.processor.IProcessor;
  * @since 3.0.0
  * 
  */
-public interface IDocumentProcessor extends IProcessor {
+public interface ITemplateEnd extends ITemplateEvent {
 
-    public void processDocumentStart(
-            final ITemplateProcessingContext processingContext,
-            final IDocumentStart documentStart,
-            final IDocumentStructureHandler structureHandler);
+    public long getEndTimeNanos();
+    public long getTotalTimeNanos();
 
-    public void processDocumentEnd(
-            final ITemplateProcessingContext processingContext,
-            final IDocumentEnd documentEnd,
-            final IDocumentStructureHandler structureHandler);
+    public ITemplateEnd cloneEvent();
 
 }

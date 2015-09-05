@@ -33,7 +33,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-final class DocumentStructureHandler implements IDocumentStructureHandler {
+final class TemplateStructureHandler implements ITemplateStructureHandler {
 
 
     boolean insertText;
@@ -59,7 +59,7 @@ final class DocumentStructureHandler implements IDocumentStructureHandler {
 
 
 
-    DocumentStructureHandler() {
+    TemplateStructureHandler() {
         super();
         reset();
     }

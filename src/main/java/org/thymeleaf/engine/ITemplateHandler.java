@@ -24,11 +24,11 @@ import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
-import org.thymeleaf.model.IDocumentEnd;
-import org.thymeleaf.model.IDocumentStart;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
+import org.thymeleaf.model.ITemplateEnd;
+import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.model.IXMLDeclaration;
 
@@ -46,9 +46,9 @@ public interface ITemplateHandler {
     public void setProcessingContext(final ITemplateProcessingContext processingContext);
 
 
-    public void handleDocumentStart(final IDocumentStart documentStart);
+    public void handleTemplateStart(final ITemplateStart templateStart);
 
-    public void handleDocumentEnd(final IDocumentEnd documentEnd);
+    public void handleTemplateEnd(final ITemplateEnd templateEnd);
 
 
     public void handleXMLDeclaration(final IXMLDeclaration xmlDeclaration);

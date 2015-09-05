@@ -50,8 +50,8 @@ final class EngineEventQueue {
     private final TemplateMode templateMode;
     private final IEngineConfiguration configuration;
 
-    private DocumentStart documentStartBuffer = null;
-    private DocumentEnd documentEndBuffer = null;
+    private TemplateStart templateStartBuffer = null;
+    private TemplateEnd templateEndBuffer = null;
 
     private Text textBuffer = null;
     private Comment commentBuffer = null;
@@ -251,10 +251,10 @@ final class EngineEventQueue {
                 handler.handleXMLDeclaration(bufferize((XMLDeclaration) event));
             } else if (event instanceof ProcessingInstruction) {
                 handler.handleProcessingInstruction(bufferize((ProcessingInstruction) event));
-            } else if (event instanceof DocumentStart) {
-                handler.handleDocumentStart(bufferize((DocumentStart) event));
-            } else if (event instanceof DocumentEnd) {
-                handler.handleDocumentEnd(bufferize((DocumentEnd) event));
+            } else if (event instanceof TemplateStart) {
+                handler.handleTemplateStart(bufferize((TemplateStart) event));
+            } else if (event instanceof TemplateEnd) {
+                handler.handleTemplateEnd(bufferize((TemplateEnd) event));
             } else {
                 throw new TemplateProcessingException(
                         "Cannot handle in queue event of type: " + event.getClass().getName());
@@ -363,22 +363,22 @@ final class EngineEventQueue {
 
 
 
-    DocumentStart bufferize(final DocumentStart event) {
-        if (this.documentStartBuffer == null) {
-            this.documentStartBuffer = new DocumentStart();
+    TemplateStart bufferize(final TemplateStart event) {
+        if (this.templateStartBuffer == null) {
+            this.templateStartBuffer = new TemplateStart();
         }
-        this.documentStartBuffer.resetAsCloneOf(event);
-        return this.documentStartBuffer;
+        this.templateStartBuffer.resetAsCloneOf(event);
+        return this.templateStartBuffer;
     }
 
 
 
-    DocumentEnd bufferize(final DocumentEnd event) {
-        if (this.documentEndBuffer == null) {
-            this.documentEndBuffer = new DocumentEnd();
+    TemplateEnd bufferize(final TemplateEnd event) {
+        if (this.templateEndBuffer == null) {
+            this.templateEndBuffer = new TemplateEnd();
         }
-        this.documentEndBuffer.resetAsCloneOf(event);
-        return this.documentEndBuffer;
+        this.templateEndBuffer.resetAsCloneOf(event);
+        return this.templateEndBuffer;
     }
 
 

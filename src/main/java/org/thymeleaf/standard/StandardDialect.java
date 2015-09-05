@@ -54,7 +54,7 @@ import org.thymeleaf.standard.processor.StandardFragmentTagProcessor;
 import org.thymeleaf.standard.processor.StandardHrefTagProcessor;
 import org.thymeleaf.standard.processor.StandardIfTagProcessor;
 import org.thymeleaf.standard.processor.StandardIncludeTagProcessor;
-import org.thymeleaf.standard.processor.StandardInlineEnablementDocumentProcessor;
+import org.thymeleaf.standard.processor.StandardInlineEnablementTemplateProcessor;
 import org.thymeleaf.standard.processor.StandardInlineHTMLTagProcessor;
 import org.thymeleaf.standard.processor.StandardInlineXMLTagProcessor;
 import org.thymeleaf.standard.processor.StandardInliningTextProcessor;
@@ -405,9 +405,9 @@ public class StandardDialect
         processors.add(new StandardConditionalCommentProcessor());
 
         /*
-         * HTML: DOCUMENT PROCESSORS
+         * HTML: TEMPLATE PROCESSORS
          */
-        processors.add(new StandardInlineEnablementDocumentProcessor(TemplateMode.HTML));
+        processors.add(new StandardInlineEnablementTemplateProcessor(TemplateMode.HTML));
 
 
 
@@ -458,9 +458,9 @@ public class StandardDialect
         processors.add(new StandardInliningTextProcessor(TemplateMode.XML));
 
         /*
-         * XML: DOCUMENT PROCESSORS
+         * XML: TEMPLATE PROCESSORS
          */
-        processors.add(new StandardInlineEnablementDocumentProcessor(TemplateMode.XML));
+        processors.add(new StandardInlineEnablementTemplateProcessor(TemplateMode.XML));
 
 
 
@@ -505,9 +505,9 @@ public class StandardDialect
         processors.add(new StandardInliningTextProcessor(TemplateMode.TEXT));
 
         /*
-         * TEXT: DOCUMENT PROCESSORS
+         * TEXT: TEMPLATE PROCESSORS
          */
-        processors.add(new StandardInlineEnablementDocumentProcessor(TemplateMode.TEXT));
+        processors.add(new StandardInlineEnablementTemplateProcessor(TemplateMode.TEXT));
 
 
 
@@ -552,9 +552,9 @@ public class StandardDialect
         processors.add(new StandardInliningTextProcessor(TemplateMode.JAVASCRIPT));
 
         /*
-         * JAVASCRIPT: DOCUMENT PROCESSORS
+         * JAVASCRIPT: TEMPLATE PROCESSORS
          */
-        processors.add(new StandardInlineEnablementDocumentProcessor(TemplateMode.JAVASCRIPT));
+        processors.add(new StandardInlineEnablementTemplateProcessor(TemplateMode.JAVASCRIPT));
 
 
 
@@ -599,9 +599,9 @@ public class StandardDialect
         processors.add(new StandardInliningTextProcessor(TemplateMode.CSS));
 
         /*
-         * CSS: DOCUMENT PROCESSORS
+         * CSS: TEMPLATE PROCESSORS
          */
-        processors.add(new StandardInlineEnablementDocumentProcessor(TemplateMode.CSS));
+        processors.add(new StandardInlineEnablementTemplateProcessor(TemplateMode.CSS));
 
 
 

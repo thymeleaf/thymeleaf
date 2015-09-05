@@ -27,7 +27,7 @@ package org.thymeleaf.templateparser;
  *    <strong>TEMPLATE</strong> artifacts are complete templates (standalone or nested) in the sense that they are
  *    the templates on which the template engine is executed. Complete templates are resolved by an
  *    {@link org.thymeleaf.templateresolver.ITemplateResolver} (even if they are <em>nested</em>) and they fire
- *    their corresponding <em>document start</em> and <em>document end</em> events.
+ *    their corresponding <em>template start</em> and <em>template end</em> events.
  * </p>
  * <p>
  *    <strong>FRAGMENT</strong> artifacts are not complete templates in the sense that they are not the artifacts

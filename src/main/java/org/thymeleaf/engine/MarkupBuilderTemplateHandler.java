@@ -24,11 +24,11 @@ import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
-import org.thymeleaf.model.IDocumentEnd;
-import org.thymeleaf.model.IDocumentStart;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
+import org.thymeleaf.model.ITemplateEnd;
+import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -74,22 +74,22 @@ public final class MarkupBuilderTemplateHandler extends AbstractTemplateHandler 
 
 
     @Override
-    public void handleDocumentStart(final IDocumentStart documentStart) {
+    public void handleTemplateStart(final ITemplateStart templateStart) {
         if (!this.fragment) {
-            this.markup.add(documentStart);
+            this.markup.add(templateStart);
             // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         }
-        super.handleDocumentStart(documentStart);
+        super.handleTemplateStart(templateStart);
     }
 
 
     @Override
-    public void handleDocumentEnd(final IDocumentEnd documentEnd) {
+    public void handleTemplateEnd(final ITemplateEnd templateEnd) {
         if (!this.fragment) {
-            this.markup.add(documentEnd);
+            this.markup.add(templateEnd);
             // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
         }
-        super.handleDocumentEnd(documentEnd);
+        super.handleTemplateEnd(templateEnd);
     }
 
 

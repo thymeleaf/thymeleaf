@@ -39,21 +39,21 @@ import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
-import org.thymeleaf.model.IDocumentEnd;
-import org.thymeleaf.model.IDocumentStart;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
+import org.thymeleaf.model.ITemplateEnd;
+import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.processor.comment.ICommentProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeProcessor;
-import org.thymeleaf.processor.document.IDocumentProcessor;
 import org.thymeleaf.processor.element.IElementMarkupProcessor;
 import org.thymeleaf.processor.element.IElementProcessor;
 import org.thymeleaf.processor.element.IElementTagProcessor;
 import org.thymeleaf.processor.processinginstruction.IProcessingInstructionProcessor;
+import org.thymeleaf.processor.template.ITemplateProcessor;
 import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -98,7 +98,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     // do things with the processed structures themselves (things that cannot be directly done from the processors like
     // removing structures or iterating elements)
     private final ElementStructureHandler elementStructureHandler;
-    private final DocumentStructureHandler documentStructureHandler;
+    private final TemplateStructureHandler templateStructureHandler;
     private final CDATASectionStructureHandler cdataSectionStructureHandler;
     private final CommentStructureHandler commentStructureHandler;
     private final DocTypeStructureHandler docTypeStructureHandler;
@@ -112,7 +112,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     private ILocalVariableAwareVariablesMap variablesMap;
 
-    private boolean hasDocumentProcessors = false;
+    private boolean hasTemplateProcessors = false;
     private boolean hasCDATASectionProcessors = false;
     private boolean hasCommentProcessors = false;
     private boolean hasDocTypeProcessors = false;
@@ -134,7 +134,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     // processors. This is done so because non-element processors will not change during the execution of the engine
     // (whereas element processors can). And they are kept in the form of an array because they will be faster to
     // iterate than asking every time the configuration object for the Set of processors and creating an iterator for it
-    private IDocumentProcessor[] documentProcessors = null;
+    private ITemplateProcessor[] templateProcessors = null;
     private ICDATASectionProcessor[] cdataSectionProcessors = null;
     private ICommentProcessor[] commentProcessors = null;
     private IDocTypeProcessor[] docTypeProcessors = null;
@@ -206,7 +206,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         Arrays.fill(this.allowedNonElementStructuresByMarkupLevel, true);
 
         this.elementStructureHandler = new ElementStructureHandler();
-        this.documentStructureHandler = new DocumentStructureHandler();
+        this.templateStructureHandler = new TemplateStructureHandler();
         this.cdataSectionStructureHandler = new CDATASectionStructureHandler();
         this.commentStructureHandler = new CommentStructureHandler();
         this.docTypeStructureHandler = new DocTypeStructureHandler();
@@ -259,7 +259,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         this.elementMarkupSpec = new ElementMarkupSpec(this.templateMode, this.configuration);
 
         // Flags used for quickly determining if a non-element structure might have to be processed or not
-        this.hasDocumentProcessors = !this.configuration.getDocumentProcessors(this.templateMode).isEmpty();
+        this.hasTemplateProcessors = !this.configuration.getTemplateProcessors(this.templateMode).isEmpty();
         this.hasCDATASectionProcessors = !this.configuration.getCDATASectionProcessors(this.templateMode).isEmpty();
         this.hasCommentProcessors = !this.configuration.getCommentProcessors(this.templateMode).isEmpty();
         this.hasDocTypeProcessors = !this.configuration.getDocTypeProcessors(this.templateMode).isEmpty();
@@ -268,14 +268,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         this.hasXMLDeclarationProcessors = !this.configuration.getXMLDeclarationProcessors(this.templateMode).isEmpty();
 
         // Initialize arrays containing the processors for all the non-element structures (these do not change during execution)
-        final Set<IDocumentProcessor> documentProcessorSet = this.configuration.getDocumentProcessors(this.templateMode);
+        final Set<ITemplateProcessor> templateProcessorSet = this.configuration.getTemplateProcessors(this.templateMode);
         final Set<ICDATASectionProcessor> cdataSectionProcessorSet = this.configuration.getCDATASectionProcessors(this.templateMode);
         final Set<ICommentProcessor> commentProcessorSet = this.configuration.getCommentProcessors(this.templateMode);
         final Set<IDocTypeProcessor> docTypeProcessorSet = this.configuration.getDocTypeProcessors(this.templateMode);
         final Set<IProcessingInstructionProcessor> processingInstructionProcessorSet = this.configuration.getProcessingInstructionProcessors(this.templateMode);
         final Set<ITextProcessor> textProcessorSet = this.configuration.getTextProcessors(this.templateMode);
         final Set<IXMLDeclarationProcessor> xmlDeclarationProcessorSet = this.configuration.getXMLDeclarationProcessors(this.templateMode);
-        this.documentProcessors = documentProcessorSet.toArray(new IDocumentProcessor[documentProcessorSet.size()]);
+        this.templateProcessors = templateProcessorSet.toArray(new ITemplateProcessor[templateProcessorSet.size()]);
         this.cdataSectionProcessors = cdataSectionProcessorSet.toArray(new ICDATASectionProcessor[cdataSectionProcessorSet.size()]);
         this.commentProcessors = commentProcessorSet.toArray(new ICommentProcessor[commentProcessorSet.size()]);
         this.docTypeProcessors = docTypeProcessorSet.toArray(new IDocTypeProcessor[docTypeProcessorSet.size()]);
@@ -391,14 +391,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleDocumentStart(final IDocumentStart idocumentStart) {
+    public void handleTemplateStart(final ITemplateStart itemplateStart) {
 
         /*
          * FAIL FAST in case this structure has no associated processors.
          */
-        if (!this.hasDocumentProcessors) {
-            super.handleDocumentStart(idocumentStart);
-            increaseHandlerExecLevel(); // Handling document start will always increase the handler exec level
+        if (!this.hasTemplateProcessors) {
+            super.handleTemplateStart(itemplateStart);
+            increaseHandlerExecLevel(); // Handling template start will always increase the handler exec level
             return;
         }
 
@@ -419,55 +419,55 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * EXECUTE PROCESSORS
          */
-        final int processorsLen = this.documentProcessors.length;
+        final int processorsLen = this.templateProcessors.length;
         for (int i = 0; i < processorsLen; i++) {
 
-            this.documentStructureHandler.reset();
+            this.templateStructureHandler.reset();
 
-            this.documentProcessors[i].processDocumentStart(
-                    this.processingContext, idocumentStart, this.documentStructureHandler);
+            this.templateProcessors[i].processTemplateStart(
+                    this.processingContext, itemplateStart, this.templateStructureHandler);
 
-            if (this.documentStructureHandler.setLocalVariable) {
+            if (this.templateStructureHandler.setLocalVariable) {
                 if (this.variablesMap != null) {
-                    this.variablesMap.putAll(this.documentStructureHandler.addedLocalVariables);
+                    this.variablesMap.putAll(this.templateStructureHandler.addedLocalVariables);
                 }
             }
 
-            if (this.documentStructureHandler.removeLocalVariable) {
+            if (this.templateStructureHandler.removeLocalVariable) {
                 if (this.variablesMap != null) {
-                    for (final String variableName : this.documentStructureHandler.removedLocalVariableNames) {
+                    for (final String variableName : this.templateStructureHandler.removedLocalVariableNames) {
                         this.variablesMap.remove(variableName);
                     }
                 }
             }
 
-            if (this.documentStructureHandler.setSelectionTarget) {
+            if (this.templateStructureHandler.setSelectionTarget) {
                 if (this.variablesMap != null) {
-                    this.variablesMap.setSelectionTarget(this.documentStructureHandler.selectionTargetObject);
+                    this.variablesMap.setSelectionTarget(this.templateStructureHandler.selectionTargetObject);
                 }
             }
 
-            if (this.documentStructureHandler.setInliner) {
+            if (this.templateStructureHandler.setInliner) {
                 if (this.variablesMap != null) {
-                    this.variablesMap.setInliner(this.documentStructureHandler.setInlinerValue);
+                    this.variablesMap.setInliner(this.templateStructureHandler.setInlinerValue);
                 }
             }
 
-            if (this.documentStructureHandler.insertText) {
+            if (this.templateStructureHandler.insertText) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.documentStructureHandler.insertTextProcessable;
+                queueProcessable = this.templateStructureHandler.insertTextProcessable;
 
-                this.textBuffer.setText(this.documentStructureHandler.insertTextValue);
+                this.textBuffer.setText(this.templateStructureHandler.insertTextValue);
                 queue.add(this.textBuffer, false);
 
-            } else if (this.documentStructureHandler.insertMarkup) {
+            } else if (this.templateStructureHandler.insertMarkup) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.documentStructureHandler.insertMarkupProcessable;
+                queueProcessable = this.templateStructureHandler.insertMarkupProcessable;
 
                 // Markup will be automatically cloned if mutable
-                queue.addMarkup(this.documentStructureHandler.insertMarkupValue);
+                queue.addMarkup(this.templateStructureHandler.insertMarkupValue);
 
             }
 
@@ -477,7 +477,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE REST OF THE HANDLER CHAIN
          */
-        super.handleDocumentStart(idocumentStart);
+        super.handleTemplateStart(itemplateStart);
 
 
         /*
@@ -487,7 +487,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * HANDLER EXEC LEVEL WILL NOT BE DECREASED until the "documentEnd" event
+         * HANDLER EXEC LEVEL WILL NOT BE DECREASED until the "templateEnd" event
          */
 
     }
@@ -496,14 +496,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleDocumentEnd(final IDocumentEnd idocumentEnd) {
+    public void handleTemplateEnd(final ITemplateEnd itemplateEnd) {
 
         /*
          * FAIL FAST in case this structure has no associated processors.
          */
-        if (!this.hasDocumentProcessors) {
-            decreaseHandlerExecLevel(); // Decrease the level increased during document start
-            super.handleDocumentEnd(idocumentEnd);
+        if (!this.hasTemplateProcessors) {
+            decreaseHandlerExecLevel(); // Decrease the level increased during template start
+            super.handleTemplateEnd(itemplateEnd);
             return;
         }
 
@@ -524,55 +524,55 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * EXECUTE PROCESSORS
          */
-        final int processorsLen = this.documentProcessors.length;
+        final int processorsLen = this.templateProcessors.length;
         for (int i = 0; i < processorsLen; i++) {
 
-            this.documentStructureHandler.reset();
+            this.templateStructureHandler.reset();
 
-            this.documentProcessors[i].processDocumentEnd(
-                    this.processingContext, idocumentEnd, this.documentStructureHandler);
+            this.templateProcessors[i].processTemplateEnd(
+                    this.processingContext, itemplateEnd, this.templateStructureHandler);
 
-            if (this.documentStructureHandler.setLocalVariable) {
+            if (this.templateStructureHandler.setLocalVariable) {
                 if (this.variablesMap != null) {
-                    this.variablesMap.putAll(this.documentStructureHandler.addedLocalVariables);
+                    this.variablesMap.putAll(this.templateStructureHandler.addedLocalVariables);
                 }
             }
 
-            if (this.documentStructureHandler.removeLocalVariable) {
+            if (this.templateStructureHandler.removeLocalVariable) {
                 if (this.variablesMap != null) {
-                    for (final String variableName : this.documentStructureHandler.removedLocalVariableNames) {
+                    for (final String variableName : this.templateStructureHandler.removedLocalVariableNames) {
                         this.variablesMap.remove(variableName);
                     }
                 }
             }
 
-            if (this.documentStructureHandler.setSelectionTarget) {
+            if (this.templateStructureHandler.setSelectionTarget) {
                 if (this.variablesMap != null) {
-                    this.variablesMap.setSelectionTarget(this.documentStructureHandler.selectionTargetObject);
+                    this.variablesMap.setSelectionTarget(this.templateStructureHandler.selectionTargetObject);
                 }
             }
 
-            if (this.documentStructureHandler.setInliner) {
+            if (this.templateStructureHandler.setInliner) {
                 if (this.variablesMap != null) {
-                    this.variablesMap.setInliner(this.documentStructureHandler.setInlinerValue);
+                    this.variablesMap.setInliner(this.templateStructureHandler.setInlinerValue);
                 }
             }
 
-            if (this.documentStructureHandler.insertText) {
+            if (this.templateStructureHandler.insertText) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.documentStructureHandler.insertTextProcessable;
+                queueProcessable = this.templateStructureHandler.insertTextProcessable;
 
-                this.textBuffer.setText(this.documentStructureHandler.insertTextValue);
+                this.textBuffer.setText(this.templateStructureHandler.insertTextValue);
                 queue.add(this.textBuffer, false);
 
-            } else if (this.documentStructureHandler.insertMarkup) {
+            } else if (this.templateStructureHandler.insertMarkup) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.documentStructureHandler.insertMarkupProcessable;
+                queueProcessable = this.templateStructureHandler.insertMarkupProcessable;
 
                 // Markup will be automatically cloned if mutable
-                queue.addMarkup(this.documentStructureHandler.insertMarkupValue);
+                queue.addMarkup(this.templateStructureHandler.insertMarkupValue);
 
             }
 
@@ -594,7 +594,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE REST OF THE HANDLER CHAIN. This is the only case in which it really is the last operation
          */
-        super.handleDocumentEnd(idocumentEnd);
+        super.handleTemplateEnd(itemplateEnd);
 
 
     }

@@ -214,7 +214,7 @@ public final class TemplateManager {
      * Parse methods will create either 'parsed fragment' or 'parsed templates' that are basically collections of
      * events. There are two main differences between parsed templates and parsed fragments:
      *
-     *    * Parsed Fragments don't contain 'document start' and 'document end' events. Parsed Templates do contain them.
+     *    * Parsed Fragments don't contain 'templateStart' and 'templateEnd' events. Parsed Templates do contain them.
      *    * Parsed Templates contain the entire TemplateResolution object, which is required in order to cache template
      *      resolution and not having to resolve templates each time if they are already cached.
      *
@@ -502,11 +502,11 @@ public final class TemplateManager {
      * PROCESS methods
      * ---------------
      *
-     * Note ONLY TEMPLATES can be processed (not fragments). Fragments lack 'document start' and 'document end'
+     * Note ONLY TEMPLATES can be processed (not fragments). Fragments lack 'templateStart' and 'templateEnd'
      * events, and are meant only to be parsed and then added to templates being processed. Templates, on the other
      * hand, can not only be parsed (and then cached), but also completely processed and then its output written
      * to a Writer. The very fact that the output of 'processing' is a Writer output requires the presence of
-     * 'document start' and 'document end' events, so a 'processFragment' set of methods would not make sense.
+     * 'templateStart' and 'templateEnd' events, so a 'processFragment' set of methods would not make sense.
      *
      * Also note that given fragments for a template cannot be parsed/processed for a different template mode than
      * the template's, processing those (probably nested) fragments as complete templates in their required template

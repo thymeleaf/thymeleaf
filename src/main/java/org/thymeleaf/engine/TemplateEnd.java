@@ -22,7 +22,7 @@ package org.thymeleaf.engine;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.thymeleaf.model.IDocumentStart;
+import org.thymeleaf.model.ITemplateEnd;
 
 /**
  *
@@ -30,31 +30,38 @@ import org.thymeleaf.model.IDocumentStart;
  * @since 3.0.0
  * 
  */
-final class DocumentStart extends AbstractTemplateEvent implements IDocumentStart, IEngineTemplateEvent {
+final class TemplateEnd extends AbstractTemplateEvent implements ITemplateEnd, IEngineTemplateEvent {
 
-    private long startTimeNanos;
+    private long endTimeNanos;
+    private long totalTimeNanos;
 
 
 
     // Meant to be called only from the template handler adapter
-    DocumentStart() {
+    TemplateEnd() {
         super();
     }
 
 
 
-    public long getStartTimeNanos() {
-        return this.startTimeNanos;
+    public long getEndTimeNanos() {
+        return this.endTimeNanos;
+    }
+
+    public long getTotalTimeNanos() {
+        return this.totalTimeNanos;
     }
 
 
 
 
-    void reset(final long startTimeNanos,
+    void reset(final long endTimeNanos, final long totalTimeNanos,
                final String templateName, final int line, final int col) {
 
         super.resetTemplateEvent(templateName, line, col);
-        this.startTimeNanos = startTimeNanos;
+
+        this.endTimeNanos = endTimeNanos;
+        this.totalTimeNanos = totalTimeNanos;
 
     }
 
@@ -62,41 +69,44 @@ final class DocumentStart extends AbstractTemplateEvent implements IDocumentStar
 
 
     public void write(final Writer writer) throws IOException {
-        // Nothing to be done here -- document end events are not writable to output!
+        // Nothing to be done here -- template end events are not writable to output!
     }
 
 
-    public DocumentStart cloneEvent() {
+    public TemplateEnd cloneEvent() {
         // When cloning we will protect the buffer as only the instances used themselves as buffers in the 'engine'
         // package should reference a buffer.
-        final DocumentStart clone = new DocumentStart();
+        final TemplateEnd clone = new TemplateEnd();
         clone.resetAsCloneOf(this);
         return clone;
     }
 
 
     // Meant to be called only from within the engine
-    void resetAsCloneOf(final DocumentStart original) {
+    void resetAsCloneOf(final TemplateEnd original) {
 
         super.resetAsCloneOfTemplateEvent(original);
-        this.startTimeNanos = original.startTimeNanos;
+
+        this.endTimeNanos = original.endTimeNanos;
+        this.totalTimeNanos = original.totalTimeNanos;
 
     }
 
 
     // Meant to be called only from within the engine
-    static DocumentStart asEngineDocumentStart(final IDocumentStart documentStart, final boolean cloneAlways) {
+    static TemplateEnd asEngineTemplateEnd(final ITemplateEnd templateEnd, final boolean cloneAlways) {
 
-        if (documentStart instanceof DocumentStart) {
+        if (templateEnd instanceof TemplateEnd) {
             if (cloneAlways) {
-                return ((DocumentStart) documentStart).cloneEvent();
+                return ((TemplateEnd) templateEnd).cloneEvent();
             }
-            return (DocumentStart) documentStart;
+            return (TemplateEnd) templateEnd;
         }
 
-        final DocumentStart newInstance = new DocumentStart();
-        newInstance.startTimeNanos = documentStart.getStartTimeNanos();
-        newInstance.resetTemplateEvent(documentStart.getTemplateName(), documentStart.getLine(), documentStart.getCol());
+        final TemplateEnd newInstance = new TemplateEnd();
+        newInstance.endTimeNanos = templateEnd.getEndTimeNanos();
+        newInstance.totalTimeNanos = templateEnd.getTotalTimeNanos();
+        newInstance.resetTemplateEvent(templateEnd.getTemplateName(), templateEnd.getLine(), templateEnd.getCol());
         return newInstance;
 
     }

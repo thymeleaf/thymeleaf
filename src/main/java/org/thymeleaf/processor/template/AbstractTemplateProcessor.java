@@ -17,13 +17,13 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.processor.document;
+package org.thymeleaf.processor.template;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.IDocumentStructureHandler;
+import org.thymeleaf.engine.ITemplateStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IDocumentEnd;
-import org.thymeleaf.model.IDocumentStart;
+import org.thymeleaf.model.ITemplateEnd;
+import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 
@@ -34,70 +34,70 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-public abstract class AbstractDocumentProcessor
-        extends AbstractProcessor implements IDocumentProcessor {
+public abstract class AbstractTemplateProcessor
+        extends AbstractProcessor implements ITemplateProcessor {
 
 
 
-    public AbstractDocumentProcessor(final TemplateMode templateMode, final int precedence) {
+    public AbstractTemplateProcessor(final TemplateMode templateMode, final int precedence) {
         super(templateMode, precedence);
     }
 
 
 
 
-    public final void processDocumentStart(
+    public final void processTemplateStart(
             final ITemplateProcessingContext processingContext,
-            final IDocumentStart documentStart,
-            final IDocumentStructureHandler structureHandler) {
+            final ITemplateStart templateStart,
+            final ITemplateStructureHandler structureHandler) {
 
         try {
 
-            doProcessDocumentStart(processingContext, documentStart, structureHandler);
+            doProcessTemplateStart(processingContext, templateStart, structureHandler);
 
         } catch (final TemplateProcessingException e) {
-            if (documentStart.hasLocation()) {
+            if (templateStart.hasLocation()) {
                 if (!e.hasTemplateName()) {
-                    e.setTemplateName(documentStart.getTemplateName());
+                    e.setTemplateName(templateStart.getTemplateName());
                 }
                 if (!e.hasLineAndCol()) {
-                    e.setLineAndCol(documentStart.getLine(), documentStart.getCol());
+                    e.setLineAndCol(templateStart.getLine(), templateStart.getCol());
                 }
             }
             throw e;
         } catch (final Exception e) {
             throw new TemplateProcessingException(
                     "Error during execution of processor '" + this.getClass().getName() + "'",
-                    documentStart.getTemplateName(), documentStart.getLine(), documentStart.getCol(), e);
+                    templateStart.getTemplateName(), templateStart.getLine(), templateStart.getCol(), e);
         }
 
     }
 
 
-    public final void processDocumentEnd(
+    public final void processTemplateEnd(
             final ITemplateProcessingContext processingContext,
-            final IDocumentEnd documentEnd,
-            final IDocumentStructureHandler structureHandler) {
+            final ITemplateEnd templateEnd,
+            final ITemplateStructureHandler structureHandler) {
 
         try {
 
-            doProcessDocumentEnd(
-                    processingContext, documentEnd, structureHandler);
+            doProcessTemplateEnd(
+                    processingContext, templateEnd, structureHandler);
 
         } catch (final TemplateProcessingException e) {
-            if (documentEnd.hasLocation()) {
+            if (templateEnd.hasLocation()) {
                 if (!e.hasTemplateName()) {
-                    e.setTemplateName(documentEnd.getTemplateName());
+                    e.setTemplateName(templateEnd.getTemplateName());
                 }
                 if (!e.hasLineAndCol()) {
-                    e.setLineAndCol(documentEnd.getLine(), documentEnd.getCol());
+                    e.setLineAndCol(templateEnd.getLine(), templateEnd.getCol());
                 }
             }
             throw e;
         } catch (final Exception e) {
             throw new TemplateProcessingException(
                     "Error during execution of processor '" + this.getClass().getName() + "'",
-                    documentEnd.getTemplateName(), documentEnd.getLine(), documentEnd.getCol(), e);
+                    templateEnd.getTemplateName(), templateEnd.getLine(), templateEnd.getCol(), e);
         }
 
     }
@@ -106,16 +106,16 @@ public abstract class AbstractDocumentProcessor
 
 
 
-    public abstract void doProcessDocumentStart(
+    public abstract void doProcessTemplateStart(
             final ITemplateProcessingContext processingContext,
-            final IDocumentStart documentStart,
-            final IDocumentStructureHandler structureHandler);
+            final ITemplateStart templateStart,
+            final ITemplateStructureHandler structureHandler);
 
 
-    public abstract void doProcessDocumentEnd(
+    public abstract void doProcessTemplateEnd(
             final ITemplateProcessingContext processingContext,
-            final IDocumentEnd documentEnd,
-            final IDocumentStructureHandler structureHandler);
+            final ITemplateEnd templateEnd,
+            final ITemplateStructureHandler structureHandler);
 
 
 

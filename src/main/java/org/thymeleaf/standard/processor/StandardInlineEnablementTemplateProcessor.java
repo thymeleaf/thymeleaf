@@ -20,11 +20,11 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.IDocumentStructureHandler;
+import org.thymeleaf.engine.ITemplateStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IDocumentEnd;
-import org.thymeleaf.model.IDocumentStart;
-import org.thymeleaf.processor.document.AbstractDocumentProcessor;
+import org.thymeleaf.model.ITemplateEnd;
+import org.thymeleaf.model.ITemplateStart;
+import org.thymeleaf.processor.template.AbstractTemplateProcessor;
 import org.thymeleaf.standard.inline.StandardCSSInliner;
 import org.thymeleaf.standard.inline.StandardHTMLInliner;
 import org.thymeleaf.standard.inline.StandardJavaScriptInliner;
@@ -39,19 +39,19 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-public final class StandardInlineEnablementDocumentProcessor extends AbstractDocumentProcessor {
+public final class StandardInlineEnablementTemplateProcessor extends AbstractTemplateProcessor {
 
     public static final int PRECEDENCE = 10;
 
-    public StandardInlineEnablementDocumentProcessor(final TemplateMode templateMode) {
+    public StandardInlineEnablementTemplateProcessor(final TemplateMode templateMode) {
         super(templateMode, PRECEDENCE);
     }
 
 
     @Override
-    public void doProcessDocumentStart(
-            final ITemplateProcessingContext processingContext, final IDocumentStart documentStart,
-            final IDocumentStructureHandler structureHandler) {
+    public void doProcessTemplateStart(
+            final ITemplateProcessingContext processingContext, final ITemplateStart templateStart,
+            final ITemplateStructureHandler structureHandler) {
 
         switch (getTemplateMode()) {
 
@@ -80,10 +80,10 @@ public final class StandardInlineEnablementDocumentProcessor extends AbstractDoc
 
 
     @Override
-    public void doProcessDocumentEnd(final ITemplateProcessingContext processingContext, final IDocumentEnd documentEnd,
-                                     final IDocumentStructureHandler structureHandler) {
+    public void doProcessTemplateEnd(final ITemplateProcessingContext processingContext, final ITemplateEnd templateEnd,
+                                     final ITemplateStructureHandler structureHandler) {
 
-        // Empty - nothing to be done on document end
+        // Empty - nothing to be done on template end
 
     }
 

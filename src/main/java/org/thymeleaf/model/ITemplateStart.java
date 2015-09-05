@@ -17,9 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine;
+package org.thymeleaf.model;
 
-import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.engine.ITemplateEvent;
 
 /**
  *
@@ -27,19 +27,10 @@ import org.thymeleaf.inline.IInliner;
  * @since 3.0.0
  * 
  */
-public interface IDocumentStructureHandler {
+public interface ITemplateStart extends ITemplateEvent {
 
-    public void reset();
+    public long getStartTimeNanos();
 
-    public void setLocalVariable(final String name, final Object value);
-    public void removeLocalVariable(final String name);
-
-    public void setSelectionTarget(final Object selectionTarget);
-
-    public void setInliner(final IInliner inliner);
-
-    public void insert(final String text, final boolean processable);
-    public void insert(final IMarkup markup, final boolean processable);
+    public ITemplateStart cloneEvent();
 
 }
-
