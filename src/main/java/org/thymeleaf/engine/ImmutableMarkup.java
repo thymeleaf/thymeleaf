@@ -70,7 +70,7 @@ public class ImmutableMarkup implements IMarkup {
     // Only used internally for creating an immutable version of a Markup object
     ImmutableMarkup(final IMarkup markup) {
         super();
-        this.markup = markup.cloneMarkup();
+        this.markup = new Markup(markup);
     }
 
 
@@ -95,6 +95,36 @@ public class ImmutableMarkup implements IMarkup {
     }
 
 
+    public void add(final ITemplateEvent event) {
+        immutableMarkupException();
+    }
+
+
+    public void insert(final int pos, final ITemplateEvent event) {
+        immutableMarkupException();
+    }
+
+
+    public void addMarkup(final IMarkup markup) {
+        immutableMarkupException();
+    }
+
+
+    public void insertMarkup(final int pos, final IMarkup markup) {
+        immutableMarkupException();
+    }
+
+
+    public void remove(final int pos) {
+        immutableMarkupException();
+    }
+
+
+    public void reset() {
+        immutableMarkupException();
+    }
+
+
 
 
     // We don't want anyone to have direct access to the underlying Markup object from outside the engine.
@@ -102,12 +132,6 @@ public class ImmutableMarkup implements IMarkup {
     // to confidently cache these objects without worrying that anyone can modify them
     final Markup getInternalMarkup() {
         return this.markup;
-    }
-
-
-
-    public Markup cloneMarkup() {
-        return this.markup.cloneMarkup();
     }
 
 
@@ -156,13 +180,21 @@ public class ImmutableMarkup implements IMarkup {
 
 
 
-    private static void immutableException() {
+    private static void immutableMarkupException() {
+        throw new UnsupportedOperationException(
+                "Modifications are not allowed on immutable markup objects. This markup object is an immutable " +
+                "implementation of the " + IMarkup.class.getName() + " interface, and no modifications are allowed in " +
+                "order to keep cache consistency and improve performance. To modify markup events, convert first your " +
+                "immutable markup object to a mutable one by means of the " + Markup.class.getName() + " class");
+    }
+
+
+    private static void immutableEventException() {
         throw new UnsupportedOperationException(
                 "Modifications are not allowed on immutable events. This event object was returned by an immutable " +
                 "implementation of the " + IMarkup.class.getName() + " interface, and no modifications are allowed in " +
                 "order to keep cache consistency and improve performance. To modify markup events, convert first your " +
-                "immutable markup object to a mutable one by means of the " +
-                ImmutableMarkup.class.getName() + "#asMutable() method");
+                "immutable markup object to a mutable one by means of the " + Markup.class.getName() + " class");
     }
 
 
@@ -230,11 +262,11 @@ public class ImmutableMarkup implements IMarkup {
         }
 
         public void setText(final CharSequence text) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public IText cloneEvent() {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
             return null;
         }
 
@@ -272,11 +304,11 @@ public class ImmutableMarkup implements IMarkup {
         }
 
         public void setContent(final String content) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public ICDATASection cloneEvent() {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
             return null;
         }
 
@@ -314,11 +346,11 @@ public class ImmutableMarkup implements IMarkup {
         }
 
         public void setContent(final String content) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public IComment cloneEvent() {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
             return null;
         }
 
@@ -364,31 +396,31 @@ public class ImmutableMarkup implements IMarkup {
         }
 
         public void setKeyword(final String keyword) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public void setElementName(final String elementName) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public void setToHTML5() {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public void setIDs(final String publicId, final String systemId) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public void setIDs(final String type, final String publicId, final String systemId) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public void setInternalSubset(final String internalSubset) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public IDocType cloneEvent() {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
             return null;
         }
 
@@ -418,15 +450,15 @@ public class ImmutableMarkup implements IMarkup {
         }
 
         public void setTarget(final String target) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public void setContent(final String content) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public IProcessingInstruction cloneEvent() {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
             return null;
         }
 
@@ -464,19 +496,19 @@ public class ImmutableMarkup implements IMarkup {
         }
 
         public void setVersion(final String version) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public void setEncoding(final String encoding) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public void setStandalone(final String standalone) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public IXMLDeclaration cloneEvent() {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
             return null;
         }
 
@@ -589,31 +621,31 @@ public class ImmutableMarkup implements IMarkup {
         }
 
         public void clearAll() {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public void setAttribute(final String completeName, final String value) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public void setAttribute(final String completeName, final String value, final ValueQuotes valueQuotes) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public void removeAttribute(final String prefix, final String name) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public void removeAttribute(final String completeName) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public void removeAttribute(final AttributeName attributeName) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public void write(final Writer writer) throws IOException {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
     }
@@ -656,7 +688,7 @@ public class ImmutableMarkup implements IMarkup {
         }
 
         public void precomputeAssociatedProcessors() {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public boolean hasAssociatedProcessors() {
@@ -686,7 +718,7 @@ public class ImmutableMarkup implements IMarkup {
         }
 
         public void setMinimized(final boolean minimized) {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
         }
 
         public boolean isSynthetic() {
@@ -694,7 +726,7 @@ public class ImmutableMarkup implements IMarkup {
         }
 
         public IStandaloneElementTag cloneEvent() {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
             return null;
         }
 
@@ -717,7 +749,7 @@ public class ImmutableMarkup implements IMarkup {
         }
 
         public IOpenElementTag cloneEvent() {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
             return null;
         }
 
@@ -744,7 +776,7 @@ public class ImmutableMarkup implements IMarkup {
         }
 
         public ICloseElementTag cloneEvent() {
-            ImmutableMarkup.immutableException();
+            ImmutableMarkup.immutableEventException();
             return null;
         }
 

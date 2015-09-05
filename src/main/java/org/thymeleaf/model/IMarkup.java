@@ -20,7 +20,6 @@
 package org.thymeleaf.model;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.engine.Markup;
 import org.thymeleaf.templatemode.TemplateMode;
 
 
@@ -41,8 +40,16 @@ public interface IMarkup {
 
     public ITemplateEvent get(final int pos);
 
-    public String renderMarkup();
+    public void add(final ITemplateEvent event);
+    public void insert(final int pos, final ITemplateEvent event);
 
-    public Markup cloneMarkup();
+    public void addMarkup(final IMarkup markup);
+    public void insertMarkup(final int pos, final IMarkup markup);
+
+    public void remove(final int pos);
+
+    public void reset();
+
+    public String renderMarkup();
 
 }

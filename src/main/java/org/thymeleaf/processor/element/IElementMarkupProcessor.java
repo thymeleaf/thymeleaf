@@ -20,7 +20,7 @@
 package org.thymeleaf.processor.element;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.Markup;
+import org.thymeleaf.model.IMarkup;
 
 /**
  *
@@ -31,7 +31,7 @@ import org.thymeleaf.engine.Markup;
 public interface IElementMarkupProcessor extends IElementProcessor {
 
 
-    public void process(final ITemplateProcessingContext processingContext, final Markup markup);
+    public void process(final ITemplateProcessingContext processingContext, final IMarkup markup);
 
 
 }

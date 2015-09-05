@@ -56,16 +56,48 @@ public final class Markup implements IMarkup {
 
 
 
+
     // Only to be called from the IMarkupFactory
     public Markup(final IEngineConfiguration configuration, final TemplateMode templateMode) {
         super();
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(templateMode, "Template Mode cannot be null");
-        // Validity CAN be null
         this.configuration = configuration;
         this.templateMode = templateMode;
         this.queue = new EngineEventQueue(this.configuration, this.templateMode, INITIAL_EVENT_QUEUE_SIZE);
     }
+
+
+    public Markup(final IMarkup markup) {
+
+        super();
+
+        Validate.notNull(markup, "Markup cannot be null");
+
+        this.configuration = markup.getConfiguration();
+        this.templateMode = markup.getTemplateMode();
+        this.queue = new EngineEventQueue(this.configuration, this.templateMode, INITIAL_EVENT_QUEUE_SIZE);
+
+        if (markup instanceof Markup) {
+
+            this.queue.resetAsCloneOf(((Markup)markup).queue, true);
+
+        } else if (markup instanceof ImmutableMarkup) {
+
+            this.queue.resetAsCloneOf(((ImmutableMarkup)markup).getInternalMarkup().queue, true);
+
+        } else {
+
+            final int markupSize = markup.size();
+            for (int i = 0; i < markupSize; i++) {
+                this.queue.add(asEngineEvent(this.configuration, this.templateMode, markup.get(i), true), false);
+            }
+
+        }
+
+    }
+
+
 
 
     public final IEngineConfiguration getConfiguration() {
@@ -153,13 +185,6 @@ public final class Markup implements IMarkup {
         final OutputTemplateHandler outputTemplateHandler = new OutputTemplateHandler(writer);
         process(outputTemplateHandler);
         return writer.toString();
-    }
-
-
-    public Markup cloneMarkup() {
-        final Markup clone = new Markup(this.configuration, this.templateMode);
-        clone.queue.resetAsCloneOf(this.queue, true);
-        return clone;
     }
 
 

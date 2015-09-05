@@ -21,8 +21,8 @@ package org.thymeleaf.processor.element;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.Markup;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.IMarkup;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EscapedAttributeUtils;
@@ -54,7 +54,7 @@ public abstract class AbstractAttributeMarkupProcessor extends AbstractElementMa
     @Override
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
-            final Markup markup,
+            final IMarkup markup,
             final String markupTemplateName, final int markupLine, final int markupCol) {
 
         String attributeTemplateName = null;
@@ -104,7 +104,7 @@ public abstract class AbstractAttributeMarkupProcessor extends AbstractElementMa
 
     protected abstract void doProcess(
             final ITemplateProcessingContext processingContext,
-            final Markup markup,
+            final IMarkup markup,
             final AttributeName attributeName,
             final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol);

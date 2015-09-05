@@ -22,8 +22,8 @@ package org.thymeleaf.processor.element;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeNames;
 import org.thymeleaf.engine.ElementNames;
-import org.thymeleaf.engine.Markup;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.IMarkup;
 import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -86,7 +86,7 @@ public abstract class AbstractElementMarkupProcessor
 
     public final void process(
             final ITemplateProcessingContext processingContext,
-            final Markup markup) {
+            final IMarkup markup) {
 
         String markupTemplateName = null;
         int markupLine = -1;
@@ -126,7 +126,7 @@ public abstract class AbstractElementMarkupProcessor
 
     protected abstract void doProcess(
             final ITemplateProcessingContext processingContext,
-            final Markup markup,
+            final IMarkup markup,
             final String markupTemplateName, final int markupLine, final int markupCol);
 
 }

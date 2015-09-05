@@ -180,7 +180,7 @@ final class EngineEventQueue {
         } else {
             // This implementation does not directly come from the parser nor is immutable, so we must clone its events
             // to avoid interactions.
-            markup = imarkup.cloneMarkup();
+            markup = new Markup(imarkup);
         }
 
         final EngineEventQueue markupQueue = markup.getEventQueue();
