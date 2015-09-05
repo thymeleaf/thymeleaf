@@ -33,7 +33,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-final class Comment implements IComment, IEngineTemplateEvent {
+final class Comment extends AbstractTemplateEvent implements IComment, IEngineTemplateEvent {
 
     // Comment nodes do not exist in text parsing, so we are safe expliciting markup structures here
     private static final String COMMENT_PREFIX = "<!--";
@@ -49,10 +49,6 @@ final class Comment implements IComment, IEngineTemplateEvent {
 
     private int commentLength;
     private int contentLength;
-
-    private String templateName;
-    private int line;
-    private int col;
 
 
     /*
@@ -176,6 +172,8 @@ final class Comment implements IComment, IEngineTemplateEvent {
 
         // This is only meant to be called internally, so no need to perform a lot of checks on the input validity
 
+        super.resetTemplateEvent(templateName, line, col);
+
         this.buffer = buffer;
         this.offset = outerOffset;
 
@@ -184,10 +182,6 @@ final class Comment implements IComment, IEngineTemplateEvent {
 
         this.comment = null;
         this.content = null;
-
-        this.templateName = templateName;
-        this.line = line;
-        this.col = col;
 
     }
 
@@ -200,6 +194,8 @@ final class Comment implements IComment, IEngineTemplateEvent {
             throw new IllegalArgumentException("Comment content cannot be null");
         }
 
+        super.resetTemplateEvent(null, -1, -1);
+
         this.content = content;
         this.comment = null;
 
@@ -209,30 +205,6 @@ final class Comment implements IComment, IEngineTemplateEvent {
         this.buffer = null;
         this.offset = -1;
 
-        this.templateName = null;
-        this.line = -1;
-        this.col = -1;
-
-    }
-
-
-
-
-
-    public boolean hasLocation() {
-        return (this.templateName != null && this.line != -1 && this.col != -1);
-    }
-
-    public String getTemplateName() {
-        return this.templateName;
-    }
-
-    public int getLine() {
-        return this.line;
-    }
-
-    public int getCol() {
-        return this.col;
     }
 
 
@@ -255,12 +227,6 @@ final class Comment implements IComment, IEngineTemplateEvent {
 
 
 
-    public String toString() {
-        return getComment();
-    }
-
-
-
 
 
     public Comment cloneEvent() {
@@ -275,15 +241,13 @@ final class Comment implements IComment, IEngineTemplateEvent {
     // Meant to be called only from within the engine
     void resetAsCloneOf(final Comment original) {
 
+        super.resetAsCloneOfTemplateEvent(original);
         this.buffer = null;
         this.offset = -1;
         this.comment = original.getComment(); // Need to call the method in order to force computing -- no buffer cloning!
         this.content = original.getContent(); // Need to call the method in order to force computing -- no buffer cloning!
         this.commentLength = original.commentLength;
         this.contentLength = original.contentLength;
-        this.templateName = original.templateName;
-        this.line = original.line;
-        this.col = original.col;
 
     }
 
@@ -306,9 +270,7 @@ final class Comment implements IComment, IEngineTemplateEvent {
         newInstance.content = comment.getContent();
         newInstance.commentLength = newInstance.comment.length();
         newInstance.contentLength = newInstance.content.length();
-        newInstance.templateName = comment.getTemplateName();
-        newInstance.line = comment.getLine();
-        newInstance.col = comment.getCol();
+        newInstance.resetTemplateEvent(comment.getTemplateName(), comment.getLine(), comment.getCol());
         return newInstance;
 
     }

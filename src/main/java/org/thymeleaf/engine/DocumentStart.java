@@ -30,14 +30,9 @@ import org.thymeleaf.model.IDocumentStart;
  * @since 3.0.0
  * 
  */
-final class DocumentStart
-            implements IDocumentStart, IEngineTemplateEvent {
+final class DocumentStart extends AbstractTemplateEvent implements IDocumentStart, IEngineTemplateEvent {
 
     private long startTimeNanos;
-
-    private String templateName;
-    private int line;
-    private int col;
 
 
 
@@ -58,37 +53,9 @@ final class DocumentStart
     void reset(final long startTimeNanos,
                final String templateName, final int line, final int col) {
 
+        super.resetTemplateEvent(templateName, line, col);
         this.startTimeNanos = startTimeNanos;
 
-        this.templateName = templateName;
-        this.line = line;
-        this.col = col;
-
-    }
-
-
-
-
-    public boolean hasLocation() {
-        return (this.templateName != null && this.line != -1 && this.col != -1);
-    }
-
-    public String getTemplateName() {
-        return this.templateName;
-    }
-
-    public int getLine() {
-        return this.line;
-    }
-
-    public int getCol() {
-        return this.col;
-    }
-
-
-
-    public String toString() {
-        return "{documentstart}";
     }
 
 
@@ -111,10 +78,8 @@ final class DocumentStart
     // Meant to be called only from within the engine
     void resetAsCloneOf(final DocumentStart original) {
 
+        super.resetAsCloneOfTemplateEvent(original);
         this.startTimeNanos = original.startTimeNanos;
-        this.templateName = original.templateName;
-        this.line = original.line;
-        this.col = original.col;
 
     }
 
@@ -131,9 +96,7 @@ final class DocumentStart
 
         final DocumentStart newInstance = new DocumentStart();
         newInstance.startTimeNanos = documentStart.getStartTimeNanos();
-        newInstance.templateName = documentStart.getTemplateName();
-        newInstance.line = documentStart.getLine();
-        newInstance.col = documentStart.getCol();
+        newInstance.resetTemplateEvent(documentStart.getTemplateName(), documentStart.getLine(), documentStart.getCol());
         return newInstance;
 
     }

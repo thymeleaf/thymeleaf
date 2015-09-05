@@ -19,10 +19,6 @@
  */
 package org.thymeleaf.engine;
 
-import java.io.IOException;
-import java.io.StringWriter;
-
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IElementTag;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
@@ -33,7 +29,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-abstract class AbstractElementTag implements IElementTag {
+abstract class AbstractElementTag extends AbstractTemplateEvent implements IElementTag {
 
     protected TemplateMode templateMode;
     protected ElementDefinitions elementDefinitions;
@@ -42,10 +38,6 @@ abstract class AbstractElementTag implements IElementTag {
     protected String elementName;
 
     protected boolean synthetic;
-
-    private String templateName;
-    private int line;
-    private int col;
 
 
 
@@ -108,14 +100,12 @@ abstract class AbstractElementTag implements IElementTag {
             final String elementName, final boolean synthetic,
             final String templateName, final int line, final int col) {
 
+        super.resetTemplateEvent(templateName, line, col);
+
         this.elementName = elementName;
         this.elementDefinition = computeElementDefinition();
 
         this.synthetic = synthetic;
-
-        this.templateName = templateName;
-        this.line = line;
-        this.col = col;
 
     }
 
@@ -140,50 +130,14 @@ abstract class AbstractElementTag implements IElementTag {
 
 
 
-
-    public final boolean hasLocation() {
-        return (this.templateName != null && this.line != -1 && this.col != -1);
-    }
-
-    public final String getTemplateName() {
-        return this.templateName;
-    }
-
-    public final int getLine() {
-        return this.line;
-    }
-
-    public final int getCol() {
-        return this.col;
-    }
-
-
-
-
-
-    public final String toString() {
-        final StringWriter stringWriter = new StringWriter();
-        try {
-            write(stringWriter);
-        } catch (final IOException e) {
-            throw new TemplateProcessingException("Exception while creating String representation of model entity", e);
-        }
-        return stringWriter.toString();
-    }
-
-
-
-
     protected final void resetAsCloneOfElementTag(final AbstractElementTag original) {
+        super.resetAsCloneOfTemplateEvent(original);
         this.templateMode = original.templateMode;
         this.templateMode = original.templateMode;
         this.elementDefinitions = original.elementDefinitions;
         this.elementDefinition = original.elementDefinition;
         this.elementName = original.elementName;
         this.synthetic = original.synthetic;
-        this.templateName = original.templateName;
-        this.line = original.line;
-        this.col = original.col;
     }
 
 }

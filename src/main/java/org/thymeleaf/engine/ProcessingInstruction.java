@@ -33,18 +33,13 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class ProcessingInstruction
-            implements IProcessingInstruction, IEngineTemplateEvent {
+public final class ProcessingInstruction extends AbstractTemplateEvent implements IProcessingInstruction, IEngineTemplateEvent {
 
     private final ITextRepository textRepository;
 
     private String processingInstruction;
     private String target;
     private String content;
-
-    private String templateName;
-    private int line;
-    private int col;
 
 
     /*
@@ -130,14 +125,12 @@ public final class ProcessingInstruction
                final String content,
                final String templateName, final int line, final int col) {
 
+        super.resetTemplateEvent(templateName, line, col);
+
         this.target = target;
         this.content = content;
 
         this.processingInstruction = processingInstruction;
-
-        this.templateName = templateName;
-        this.line = line;
-        this.col = col;
 
     }
 
@@ -151,36 +144,13 @@ public final class ProcessingInstruction
             throw new IllegalArgumentException("Processing Instruction target cannot be null or empty");
         }
 
+        super.resetTemplateEvent(null, -1, -1);
+
         this.target = target;
         this.content = content;
 
         this.processingInstruction = null;
 
-        this.templateName = null;
-        this.line = -1;
-        this.col = -1;
-
-    }
-
-
-
-
-
-
-    public boolean hasLocation() {
-        return (this.templateName != null && this.line != -1 && this.col != -1);
-    }
-
-    public String getTemplateName() {
-        return this.templateName;
-    }
-
-    public int getLine() {
-        return this.line;
-    }
-
-    public int getCol() {
-        return this.col;
     }
 
 
@@ -190,12 +160,6 @@ public final class ProcessingInstruction
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
         writer.write(getProcessingInstruction());
-    }
-
-
-
-    public String toString() {
-        return getProcessingInstruction();
     }
 
 
@@ -213,12 +177,10 @@ public final class ProcessingInstruction
     // Meant to be called only from within the engine
     void resetAsCloneOf(final ProcessingInstruction original) {
 
+        super.resetAsCloneOfTemplateEvent(original);
         this.processingInstruction = original.processingInstruction;
         this.target = original.target;
         this.content = original.content;
-        this.templateName = original.templateName;
-        this.line = original.line;
-        this.col = original.col;
 
     }
 
@@ -238,9 +200,7 @@ public final class ProcessingInstruction
         newInstance.processingInstruction = processingInstruction.getProcessingInstruction();
         newInstance.target = processingInstruction.getTarget();
         newInstance.content = processingInstruction.getContent();
-        newInstance.templateName = processingInstruction.getTemplateName();
-        newInstance.line = processingInstruction.getLine();
-        newInstance.col = processingInstruction.getCol();
+        newInstance.resetTemplateEvent(processingInstruction.getTemplateName(), processingInstruction.getLine(), processingInstruction.getCol());
         return newInstance;
 
     }

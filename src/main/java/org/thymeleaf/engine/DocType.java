@@ -34,8 +34,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-final class DocType
-            implements IDocType, IEngineTemplateEvent {
+final class DocType extends AbstractTemplateEvent implements IDocType, IEngineTemplateEvent {
 
     // DOCTYPE nodes do not exist in text parsing, so we are safe expliciting markup structures here
     public static final String DEFAULT_KEYWORD = "DOCTYPE";
@@ -52,10 +51,6 @@ final class DocType
     private String publicId;
     private String systemId;
     private String internalSubset;
-
-    private String templateName;
-    private int line;
-    private int col;
 
 
     /*
@@ -200,6 +195,8 @@ final class DocType
                final String internalSubset,
                final String templateName, final int line, final int col) {
 
+        super.resetTemplateEvent(templateName, line, col);
+
         this.keyword = keyword;
         this.elementName = elementName;
         this.type = type;
@@ -208,10 +205,6 @@ final class DocType
         this.internalSubset = internalSubset;
 
         this.docType = docType;
-
-        this.templateName = templateName;
-        this.line = line;
-        this.col = col;
 
     }
 
@@ -247,6 +240,8 @@ final class DocType
             throw new IllegalArgumentException("DOCTYPE SYSTEM ID cannot be null if type is non-null");
         }
 
+        super.resetTemplateEvent(null, -1, -1);
+
         this.keyword = keyword;
         this.elementName = elementName;
         this.type = type;
@@ -255,10 +250,6 @@ final class DocType
         this.internalSubset = internalSubset;
 
         this.docType = null;
-
-        this.templateName = null;
-        this.line = -1;
-        this.col = -1;
 
     }
 
@@ -287,36 +278,10 @@ final class DocType
 
 
 
-    public boolean hasLocation() {
-        return (this.templateName != null && this.line != -1 && this.col != -1);
-    }
-
-    public String getTemplateName() {
-        return this.templateName;
-    }
-
-    public int getLine() {
-        return this.line;
-    }
-
-    public int getCol() {
-        return this.col;
-    }
-
-
-
-
-
 
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
         writer.write(getDocType());
-    }
-
-
-
-    public String toString() {
-        return getDocType();
     }
 
 
@@ -335,6 +300,7 @@ final class DocType
     // Meant to be called only from within the engine
     void resetAsCloneOf(final DocType original) {
 
+        super.resetAsCloneOfTemplateEvent(original);
         this.docType = original.docType;
         this.keyword = original.keyword;
         this.elementName = original.elementName;
@@ -342,9 +308,6 @@ final class DocType
         this.publicId = original.publicId;
         this.systemId = original.systemId;
         this.internalSubset = original.internalSubset;
-        this.templateName = original.templateName;
-        this.line = original.line;
-        this.col = original.col;
 
     }
 
@@ -369,9 +332,7 @@ final class DocType
         newInstance.publicId = docType.getPublicId();
         newInstance.systemId = docType.getSystemId();
         newInstance.internalSubset = docType.getInternalSubset();
-        newInstance.templateName = docType.getTemplateName();
-        newInstance.line = docType.getLine();
-        newInstance.col = docType.getCol();
+        newInstance.resetTemplateEvent(docType.getTemplateName(), docType.getLine(), docType.getCol());
         return newInstance;
 
     }

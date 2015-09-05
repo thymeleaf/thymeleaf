@@ -30,15 +30,10 @@ import org.thymeleaf.model.IDocumentEnd;
  * @since 3.0.0
  * 
  */
-final class DocumentEnd
-            implements IDocumentEnd, IEngineTemplateEvent {
+final class DocumentEnd extends AbstractTemplateEvent implements IDocumentEnd, IEngineTemplateEvent {
 
     private long endTimeNanos;
     private long totalTimeNanos;
-
-    private String templateName;
-    private int line;
-    private int col;
 
 
 
@@ -63,38 +58,11 @@ final class DocumentEnd
     void reset(final long endTimeNanos, final long totalTimeNanos,
                final String templateName, final int line, final int col) {
 
+        super.resetTemplateEvent(templateName, line, col);
+
         this.endTimeNanos = endTimeNanos;
         this.totalTimeNanos = totalTimeNanos;
 
-        this.templateName = templateName;
-        this.line = line;
-        this.col = col;
-
-    }
-
-
-
-
-    public boolean hasLocation() {
-        return (this.templateName != null && this.line != -1 && this.col != -1);
-    }
-
-    public String getTemplateName() {
-        return this.templateName;
-    }
-
-    public int getLine() {
-        return this.line;
-    }
-
-    public int getCol() {
-        return this.col;
-    }
-
-
-
-    public String toString() {
-        return "{documentend}";
     }
 
 
@@ -117,11 +85,10 @@ final class DocumentEnd
     // Meant to be called only from within the engine
     void resetAsCloneOf(final DocumentEnd original) {
 
+        super.resetAsCloneOfTemplateEvent(original);
+
         this.endTimeNanos = original.endTimeNanos;
         this.totalTimeNanos = original.totalTimeNanos;
-        this.templateName = original.templateName;
-        this.line = original.line;
-        this.col = original.col;
 
     }
 
@@ -139,9 +106,7 @@ final class DocumentEnd
         final DocumentEnd newInstance = new DocumentEnd();
         newInstance.endTimeNanos = documentEnd.getEndTimeNanos();
         newInstance.totalTimeNanos = documentEnd.getTotalTimeNanos();
-        newInstance.templateName = documentEnd.getTemplateName();
-        newInstance.line = documentEnd.getLine();
-        newInstance.col = documentEnd.getCol();
+        newInstance.resetTemplateEvent(documentEnd.getTemplateName(), documentEnd.getLine(), documentEnd.getCol());
         return newInstance;
 
     }

@@ -33,8 +33,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-final class CDATASection
-            implements ICDATASection, IEngineTemplateEvent {
+final class CDATASection extends AbstractTemplateEvent implements ICDATASection, IEngineTemplateEvent {
 
     // CDATA Section nodes do not exist in text parsing, so we are safe expliciting markup structures here
     private static final String CDATA_PREFIX = "<![CDATA[";
@@ -50,10 +49,6 @@ final class CDATASection
 
     private int cdataSectionLength;
     private int contentLength;
-
-    private String templateName;
-    private int line;
-    private int col;
 
 
     /*
@@ -175,6 +170,8 @@ final class CDATASection
 
         // This is only meant to be called internally, so no need to perform a lot of checks on the input validity
 
+        super.resetTemplateEvent(templateName, line, col);
+
         this.buffer = buffer;
         this.offset = outerOffset;
 
@@ -183,10 +180,6 @@ final class CDATASection
 
         this.cdataSection = null;
         this.content = null;
-
-        this.templateName = templateName;
-        this.line = line;
-        this.col = col;
 
     }
 
@@ -199,6 +192,8 @@ final class CDATASection
             throw new IllegalArgumentException("CDATA Section content cannot be null");
         }
 
+        super.resetTemplateEvent(null, -1, -1);
+
         this.content = content;
         this.cdataSection = null;
 
@@ -208,30 +203,6 @@ final class CDATASection
         this.buffer = null;
         this.offset = -1;
 
-        this.templateName = null;
-        this.line = -1;
-        this.col = -1;
-
-    }
-
-
-
-
-
-    public boolean hasLocation() {
-        return (this.templateName != null && this.line != -1 && this.col != -1);
-    }
-
-    public String getTemplateName() {
-        return this.templateName;
-    }
-
-    public int getLine() {
-        return this.line;
-    }
-
-    public int getCol() {
-        return this.col;
     }
 
 
@@ -254,12 +225,6 @@ final class CDATASection
 
 
 
-    public String toString() {
-        return getCDATASection();
-    }
-
-
-
 
 
     public CDATASection cloneEvent() {
@@ -274,15 +239,13 @@ final class CDATASection
     // Meant to be called only from within the engine
     void resetAsCloneOf(final CDATASection original) {
 
+        super.resetAsCloneOfTemplateEvent(original);
         this.buffer = null;
         this.offset = -1;
         this.cdataSection = original.getCDATASection(); // Need to call the method in order to force computing -- no buffer cloning!
         this.content = original.getContent(); // Need to call the method in order to force computing -- no buffer cloning!
         this.cdataSectionLength = original.cdataSectionLength;
         this.contentLength = original.contentLength;
-        this.templateName = original.templateName;
-        this.line = original.line;
-        this.col = original.col;
 
     }
 
@@ -305,9 +268,7 @@ final class CDATASection
         newInstance.content = cdataSection.getContent();
         newInstance.cdataSectionLength = newInstance.cdataSection.length();
         newInstance.contentLength = newInstance.content.length();
-        newInstance.templateName = cdataSection.getTemplateName();
-        newInstance.line = cdataSection.getLine();
-        newInstance.col = cdataSection.getCol();
+        newInstance.resetTemplateEvent(cdataSection.getTemplateName(), cdataSection.getLine(), cdataSection.getCol());
         return newInstance;
 
     }

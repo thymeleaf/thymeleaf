@@ -34,8 +34,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-final class Text
-            implements IText, IEngineTemplateEvent {
+final class Text extends AbstractTemplateEvent implements IText, IEngineTemplateEvent {
 
     private final ITextRepository textRepository;
 
@@ -47,10 +46,6 @@ final class Text
     private int length;
 
     private Boolean whitespace;
-
-    private String templateName;
-    private int line;
-    private int col;
 
 
 
@@ -168,6 +163,8 @@ final class Text
                final int offset, final int len,
                final String templateName, final int line, final int col) {
 
+        super.resetTemplateEvent(templateName, line, col);
+
         this.buffer = buffer;
         this.offset = offset;
 
@@ -176,10 +173,6 @@ final class Text
         this.text = null;
 
         this.whitespace = null;
-
-        this.templateName = templateName;
-        this.line = line;
-        this.col = col;
 
     }
 
@@ -192,6 +185,8 @@ final class Text
             throw new IllegalArgumentException("Text cannot be null");
         }
 
+        super.resetTemplateEvent(null, -1, -1);
+
         this.text = text;
 
         this.length = text.length();
@@ -201,29 +196,6 @@ final class Text
 
         this.whitespace = null;
 
-        this.templateName = null;
-        this.line = -1;
-        this.col = -1;
-
-    }
-
-
-
-
-    public boolean hasLocation() {
-        return (this.templateName != null && this.line != -1 && this.col != -1);
-    }
-
-    public String getTemplateName() {
-        return this.templateName;
-    }
-
-    public int getLine() {
-        return this.line;
-    }
-
-    public int getCol() {
-        return this.col;
     }
 
 
@@ -248,12 +220,6 @@ final class Text
 
 
 
-    public String toString() {
-        return getText();
-    }
-
-
-
     public Text cloneEvent() {
         // When cloning we will protect the buffer as only the instances used themselves as buffers in the 'engine'
         // package should reference a buffer.
@@ -266,14 +232,12 @@ final class Text
     // Meant to be called only from within the engine
     void resetAsCloneOf(final Text original) {
 
+        super.resetAsCloneOfTemplateEvent(original);
         this.buffer = null;
         this.offset = -1;
         this.text = original.getText(); // Need to call the method in order to force computing -- no buffer cloning!
         this.length = this.text.length();
         this.whitespace = original.whitespace;
-        this.templateName = original.templateName;
-        this.line = original.line;
-        this.col = original.col;
 
     }
 
@@ -295,9 +259,7 @@ final class Text
         newInstance.text = text.getText();
         newInstance.length = newInstance.text.length();
         newInstance.whitespace = null;
-        newInstance.templateName = text.getTemplateName();
-        newInstance.line = text.getLine();
-        newInstance.col = text.getCol();
+        newInstance.resetTemplateEvent(text.getTemplateName(), text.getLine(), text.getCol());
         return newInstance;
 
     }

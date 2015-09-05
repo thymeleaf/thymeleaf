@@ -34,8 +34,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-final class XMLDeclaration
-            implements IXMLDeclaration, IEngineTemplateEvent {
+final class XMLDeclaration extends AbstractTemplateEvent implements IXMLDeclaration, IEngineTemplateEvent {
 
     // XML Declaration nodes do not exist in text parsing, so we are safe expliciting markup structures here
     public static final String DEFAULT_KEYWORD = "xml";
@@ -51,10 +50,6 @@ final class XMLDeclaration
     private String version;
     private String encoding;
     private String standalone;
-
-    private String templateName;
-    private int line;
-    private int col;
 
 
     /*
@@ -172,16 +167,14 @@ final class XMLDeclaration
                final String standalone,
                final String templateName, final int line, final int col) {
 
+        super.resetTemplateEvent(templateName, line, col);
+
         this.keyword = keyword;
         this.version = version;
         this.encoding = encoding;
         this.standalone = standalone;
 
         this.xmlDeclaration = xmlDeclaration;
-
-        this.templateName = templateName;
-        this.line = line;
-        this.col = col;
 
     }
 
@@ -197,6 +190,8 @@ final class XMLDeclaration
             throw new IllegalArgumentException("XML Declaration keyword must be non-null and equal to '" + DEFAULT_KEYWORD + "'");
         }
 
+        super.resetTemplateEvent(null, -1, -1);
+
         this.keyword = keyword;
         this.version = version;
         this.encoding = encoding;
@@ -204,31 +199,6 @@ final class XMLDeclaration
 
         this.xmlDeclaration = null;
 
-        this.templateName = null;
-        this.line = -1;
-        this.col = -1;
-
-    }
-
-
-
-
-
-
-    public boolean hasLocation() {
-        return (this.templateName != null && this.line != -1 && this.col != -1);
-    }
-
-    public String getTemplateName() {
-        return this.templateName;
-    }
-
-    public int getLine() {
-        return this.line;
-    }
-
-    public int getCol() {
-        return this.col;
     }
 
 
@@ -240,12 +210,6 @@ final class XMLDeclaration
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
         writer.write(getXmlDeclaration());
-    }
-
-
-
-    public String toString() {
-        return getXmlDeclaration();
     }
 
 
@@ -264,14 +228,12 @@ final class XMLDeclaration
     // Meant to be called only from within the engine
     void resetAsCloneOf(final XMLDeclaration original) {
 
+        super.resetAsCloneOfTemplateEvent(original);
         this.xmlDeclaration = original.xmlDeclaration;
         this.keyword = original.keyword;
         this.version = original.version;
         this.encoding = original.encoding;
         this.standalone = original.standalone;
-        this.templateName = original.templateName;
-        this.line = original.line;
-        this.col = original.col;
 
     }
 
@@ -293,9 +255,7 @@ final class XMLDeclaration
         newInstance.version = xmlDeclaration.getVersion();
         newInstance.encoding = xmlDeclaration.getEncoding();
         newInstance.standalone = xmlDeclaration.getStandalone();
-        newInstance.templateName = xmlDeclaration.getTemplateName();
-        newInstance.line = xmlDeclaration.getLine();
-        newInstance.col = xmlDeclaration.getCol();
+        newInstance.resetTemplateEvent(xmlDeclaration.getTemplateName(), xmlDeclaration.getLine(), xmlDeclaration.getCol());
         return newInstance;
 
     }
