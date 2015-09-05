@@ -42,8 +42,10 @@ import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.TemplateEngineException;
 import org.thymeleaf.exceptions.TemplateOutputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.messageresolver.IMessageResolver;
-import org.thymeleaf.messageresolver.StandardMessageResolver;
+import org.thymeleaf.message.absent.IAbsentMessageFormatter;
+import org.thymeleaf.message.absent.StandardAbsentMessageFormatter;
+import org.thymeleaf.message.resolver.IMessageResolver;
+import org.thymeleaf.message.resolver.StandardMessageResolver;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ITemplateResolver;
@@ -232,6 +234,7 @@ public class TemplateEngine implements ITemplateEngine {
 
     private IEngineConfiguration configuration = null;
     private TemplateManager templateManager = null;
+    private IAbsentMessageFormatter absentMessageFormatter = new StandardAbsentMessageFormatter();
 
 
 
@@ -309,7 +312,7 @@ public class TemplateEngine implements ITemplateEngine {
                     }
 
                     this.configuration =
-                            new EngineConfiguration(this.templateResolvers, this.messageResolvers, this.dialectConfigurations, this.cacheManager, this.textRepository);
+                            new EngineConfiguration(this.templateResolvers, this.messageResolvers, this.dialectConfigurations, this.cacheManager, this.textRepository, this.absentMessageFormatter);
                     this.templateManager = new TemplateManager(this.configuration);
 
                     initializeSpecific();
@@ -786,12 +789,20 @@ public class TemplateEngine implements ITemplateEngine {
         this.messageResolvers.add(messageResolver);
     }
 
-    
-    
-    
 
-    
-    
+    /**
+     * <p>
+     *     Sets the absent message formatter for this template engine,
+     *     instead of using the default StandardAbsentMessageFormatter.
+     * </p>
+     * @param absentMessageFormatter the absent message formatter to be set.
+     */
+    public void setAbsentMessageFormatter(final IAbsentMessageFormatter absentMessageFormatter) {
+        Validate.notNull(absentMessageFormatter, "Absent Message Formatter cannot be null");
+        this.absentMessageFormatter = absentMessageFormatter;
+    }
+
+
     /**
      * <p>
      *   Completely clears the Template Cache.

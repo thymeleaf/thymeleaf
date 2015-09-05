@@ -29,7 +29,8 @@ import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.ElementDefinitions;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.expression.IExpressionObjectFactory;
-import org.thymeleaf.messageresolver.IMessageResolver;
+import org.thymeleaf.message.absent.IAbsentMessageFormatter;
+import org.thymeleaf.message.resolver.IMessageResolver;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.processor.comment.ICommentProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeProcessor;
@@ -83,5 +84,7 @@ public interface IEngineConfiguration {
     public Map<String,Object> getExecutionAttributes();
 
     public IExpressionObjectFactory getExpressionObjectFactory();
+
+    public IAbsentMessageFormatter getAbsentMessageFormatter();
 
 }

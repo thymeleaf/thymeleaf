@@ -38,7 +38,7 @@ import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.expression.ExpressionObjectDefinition;
 import org.thymeleaf.expression.IExpressionObjectFactory;
-import org.thymeleaf.messageresolver.IMessageResolver;
+import org.thymeleaf.message.resolver.IMessageResolver;
 import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.processor.PrecedenceProcessorComparator;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;

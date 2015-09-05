@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.messageresolver;
+package org.thymeleaf.message.resolver;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 

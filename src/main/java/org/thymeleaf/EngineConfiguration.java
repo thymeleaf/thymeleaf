@@ -33,7 +33,8 @@ import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.ElementDefinitions;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.expression.IExpressionObjectFactory;
-import org.thymeleaf.messageresolver.IMessageResolver;
+import org.thymeleaf.message.absent.IAbsentMessageFormatter;
+import org.thymeleaf.message.resolver.IMessageResolver;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.processor.comment.ICommentProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeProcessor;
@@ -60,6 +61,7 @@ public class EngineConfiguration implements IEngineConfiguration {
     private final Set<ITemplateResolver> templateResolvers;
     private final Set<IMessageResolver> messageResolvers;
     private final ICacheManager cacheManager;
+    private final IAbsentMessageFormatter absentMessageFormatter;
 
 
     public EngineConfiguration(
@@ -67,7 +69,8 @@ public class EngineConfiguration implements IEngineConfiguration {
             final Set<IMessageResolver> messageResolvers,
             final Set<DialectConfiguration> dialectConfigurations,
             final ICacheManager cacheManager,
-            final ITextRepository textRepository) {
+            final ITextRepository textRepository,
+            final IAbsentMessageFormatter absentMessageFormatter) {
 
         super();
 
@@ -91,7 +94,7 @@ public class EngineConfiguration implements IEngineConfiguration {
 
         this.dialectSetConfiguration = DialectSetConfiguration.build(dialectConfigurations);
         this.textRepository = textRepository;
-
+        this.absentMessageFormatter = absentMessageFormatter;
     }
 
 
@@ -204,13 +207,9 @@ public class EngineConfiguration implements IEngineConfiguration {
         return this.dialectSetConfiguration.getExpressionObjectFactory();
     }
 
-
-
-
-
-
-
-
+    public IAbsentMessageFormatter getAbsentMessageFormatter() {
+        return absentMessageFormatter;
+    }
 
 
     private static final class TemplateResolverComparator implements Comparator<ITemplateResolver> {
