@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.engine;
 
+import org.thymeleaf.model.IMarkup;
 import org.thymeleaf.processor.text.ITextStructureHandler;
 import org.thymeleaf.util.Validate;
 

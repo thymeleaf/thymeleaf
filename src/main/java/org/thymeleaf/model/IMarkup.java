@@ -17,9 +17,10 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine;
+package org.thymeleaf.model;
 
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.engine.Markup;
 import org.thymeleaf.templatemode.TemplateMode;
 
 

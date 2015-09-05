@@ -19,8 +19,8 @@
  */
 package org.thymeleaf.processor.template;
 
-import org.thymeleaf.engine.IMarkup;
 import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.model.IMarkup;
 
 /**
  *

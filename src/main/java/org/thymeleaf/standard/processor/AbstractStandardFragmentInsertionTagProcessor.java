@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.ITemplateEvent;
 import org.thymeleaf.engine.ImmutableMarkup;
 import org.thymeleaf.engine.Markup;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -31,6 +30,7 @@ import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.standard.expression.FragmentSelectionUtils;

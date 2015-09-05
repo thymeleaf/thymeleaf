@@ -19,8 +19,8 @@
  */
 package org.thymeleaf.context;
 
-import org.thymeleaf.engine.IMarkupFactory;
 import org.thymeleaf.engine.TemplateManager;
+import org.thymeleaf.model.IMarkupFactory;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.TemplateResolution;
 

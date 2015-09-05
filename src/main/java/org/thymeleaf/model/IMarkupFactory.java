@@ -17,17 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine;
+package org.thymeleaf.model;
 
-import org.thymeleaf.model.ICDATASection;
-import org.thymeleaf.model.ICloseElementTag;
-import org.thymeleaf.model.IComment;
-import org.thymeleaf.model.IDocType;
-import org.thymeleaf.model.IOpenElementTag;
-import org.thymeleaf.model.IProcessingInstruction;
-import org.thymeleaf.model.IStandaloneElementTag;
-import org.thymeleaf.model.IText;
-import org.thymeleaf.model.IXMLDeclaration;
+import org.thymeleaf.engine.Markup;
 
 /**
  *

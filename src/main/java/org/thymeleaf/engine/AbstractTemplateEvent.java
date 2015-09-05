@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.ITemplateEvent;
 
 /**
  *

@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.engine;
 
+import org.thymeleaf.model.ITemplateEvent;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez

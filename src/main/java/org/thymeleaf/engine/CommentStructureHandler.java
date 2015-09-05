@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.engine;
 
+import org.thymeleaf.model.IMarkup;
 import org.thymeleaf.processor.comment.ICommentStructureHandler;
 import org.thymeleaf.util.Validate;
 

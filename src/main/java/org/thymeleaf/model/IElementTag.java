@@ -20,7 +20,6 @@
 package org.thymeleaf.model;
 
 import org.thymeleaf.engine.ElementDefinition;
-import org.thymeleaf.engine.ITemplateEvent;
 
 /**
  *

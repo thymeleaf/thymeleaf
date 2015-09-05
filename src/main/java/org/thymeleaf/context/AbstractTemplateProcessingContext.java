@@ -23,9 +23,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.engine.IMarkupFactory;
 import org.thymeleaf.engine.StandardMarkupFactory;
 import org.thymeleaf.engine.TemplateManager;
+import org.thymeleaf.model.IMarkupFactory;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.util.Validate;

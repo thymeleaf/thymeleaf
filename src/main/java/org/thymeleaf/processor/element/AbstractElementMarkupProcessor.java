@@ -22,9 +22,9 @@ package org.thymeleaf.processor.element;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeNames;
 import org.thymeleaf.engine.ElementNames;
-import org.thymeleaf.engine.ITemplateEvent;
 import org.thymeleaf.engine.Markup;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 

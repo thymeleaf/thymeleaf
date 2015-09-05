@@ -23,6 +23,7 @@ import java.util.Arrays;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.IMarkup;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**

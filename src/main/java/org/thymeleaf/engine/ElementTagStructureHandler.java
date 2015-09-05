@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.model.IMarkup;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.util.Validate;
 

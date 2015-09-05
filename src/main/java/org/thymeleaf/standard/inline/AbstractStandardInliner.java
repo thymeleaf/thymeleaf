@@ -22,9 +22,9 @@ package org.thymeleaf.standard.inline;
 import java.io.StringWriter;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.ITemplateEvent;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;

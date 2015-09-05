@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine;
+package org.thymeleaf.model;
 
 import java.io.IOException;
 import java.io.Writer;

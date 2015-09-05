@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.processor.doctype;
 
-import org.thymeleaf.engine.IMarkup;
+import org.thymeleaf.model.IMarkup;
 
 /**
  *
