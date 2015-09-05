@@ -22,10 +22,10 @@ package org.thymeleaf.extras.springsecurity4.dialect.processor;
 import org.springframework.security.core.Authentication;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.extras.springsecurity4.auth.AuthUtils;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -55,7 +55,7 @@ public final class AuthenticationAttrProcessor extends AbstractAttributeTagProce
             final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
-            final IElementStructureHandler structureHandler) {
+            final IElementTagStructureHandler structureHandler) {
 
         final String attrValue = (attributeValue == null? null : attributeValue.trim());
 
