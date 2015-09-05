@@ -23,9 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.engine.IDocTypeStructureHandler;
 import org.thymeleaf.model.IDocType;
 import org.thymeleaf.processor.doctype.AbstractDocTypeProcessor;
+import org.thymeleaf.processor.doctype.IDocTypeStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**

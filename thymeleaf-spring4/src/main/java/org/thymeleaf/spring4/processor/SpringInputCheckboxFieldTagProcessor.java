@@ -24,11 +24,11 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.engine.Markup;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IStandaloneElementTag;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
 import org.unbescape.html.HtmlEscape;
 
@@ -59,7 +59,7 @@ public final class SpringInputCheckboxFieldTagProcessor
     protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
                              final String attributeTemplateName, final int attributeLine, final int attributeCol,
-                             final BindStatus bindStatus, final IElementStructureHandler structureHandler) {
+                             final BindStatus bindStatus, final IElementTagStructureHandler structureHandler) {
 
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);

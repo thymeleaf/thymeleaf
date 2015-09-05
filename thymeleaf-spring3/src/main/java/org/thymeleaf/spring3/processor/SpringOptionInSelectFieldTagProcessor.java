@@ -21,10 +21,10 @@ package org.thymeleaf.spring3.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractElementTagProcessor;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 
 
@@ -56,7 +56,7 @@ public final class SpringOptionInSelectFieldTagProcessor extends AbstractElement
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final String tagTemplateName, final int tagLine, final int tagCol,
-            final IElementStructureHandler structureHandler) {
+            final IElementTagStructureHandler structureHandler) {
 
         final AttributeName selectAttrNameToAdd =
                 (AttributeName) processingContext.getVariables().getVariable(SpringSelectFieldTagProcessor.OPTION_IN_SELECT_ATTR_NAME);

@@ -27,10 +27,10 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.AttributeNames;
-import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring4.naming.SpringContextVariableNames;
 import org.thymeleaf.spring4.util.FieldUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
@@ -70,7 +70,7 @@ public final class SpringErrorClassTagProcessor extends AbstractAttributeTagProc
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
-            final IElementStructureHandler structureHandler) {
+            final IElementTagStructureHandler structureHandler) {
 
         final BindStatus bindStatus = computeBindStatus(processingContext, tag);
         if (bindStatus == null) {

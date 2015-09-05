@@ -23,9 +23,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.IElementStructureHandler;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.spring3.util.FieldUtils;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -104,7 +104,7 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
-            final IElementStructureHandler structureHandler) {
+            final IElementTagStructureHandler structureHandler) {
 
         /*
          * First thing to check is whether this processor really matches, because so far we have asked the engine only
@@ -146,7 +146,7 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
             final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final BindStatus bindStatus,
-            final IElementStructureHandler structureHandler);
+            final IElementTagStructureHandler structureHandler);
 
 
     
