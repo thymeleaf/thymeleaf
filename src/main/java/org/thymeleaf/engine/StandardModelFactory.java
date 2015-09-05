@@ -92,7 +92,7 @@ public class StandardModelFactory implements IModelFactory {
 
 
 
-    public Model createModel() {
+    public IModel createModel() {
         return new Model(this.configuration, this.templateMode);
     }
 

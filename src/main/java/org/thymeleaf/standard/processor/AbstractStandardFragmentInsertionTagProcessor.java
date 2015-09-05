@@ -23,11 +23,11 @@ import java.util.Map;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.ImmutableModel;
-import org.thymeleaf.engine.Model;
+import org.thymeleaf.engine.ParsedFragmentModel;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IElementAttributes;
+import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.ITemplateEvent;
@@ -111,7 +111,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          */
         final String[] fragments =
                 (processedFragmentSelection.hasFragmentSelector()? new String[] { processedFragmentSelection.getFragmentSelector() } : null);
-        ImmutableModel parsedFragment =
+        final ParsedFragmentModel parsedFragment =
                     processingContext.getTemplateManager().parseStandaloneFragment(
                             processingContext.getConfiguration(),
                             templateName, fragments,
@@ -181,7 +181,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
              * them, along with anything else that is also at that level 0.
              */
 
-            final Model model = new Model(parsedFragment);
+            final IModel model = parsedFragment.cloneModel();
             int modelLevel = 0;
             int n = model.size();
             while (n-- != 0) { // We traverse backwards so that we can modify at the same time
@@ -208,8 +208,13 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
             }
 
-            // Once processed, we convert it to immutable (this way, it won't be cloned anymore)
-            parsedFragment = new ImmutableModel(model);
+            if (this.replaceHost) {
+                structureHandler.replaceWith(model, true);
+            } else {
+                structureHandler.setBody(model, true);
+            }
+
+            return;
 
         }
 

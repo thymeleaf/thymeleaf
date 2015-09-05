@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.model;
 
-import org.thymeleaf.engine.Model;
-
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -30,7 +28,7 @@ import org.thymeleaf.engine.Model;
 public interface IModelFactory {
 
 
-    public Model createModel();
+    public IModel createModel();
 
     public IModel parse(final String fragment);
 

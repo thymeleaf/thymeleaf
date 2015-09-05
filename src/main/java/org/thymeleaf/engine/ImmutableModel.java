@@ -50,7 +50,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public class ImmutableModel implements IModel {
+class ImmutableModel implements IModel {
 
     private final Model model;
 
@@ -61,12 +61,6 @@ public class ImmutableModel implements IModel {
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(templateMode, "Template Mode cannot be null");
         this.model = new Model(configuration, templateMode);
-    }
-
-
-    public ImmutableModel(final IModel model) {
-        super();
-        this.model = new Model(model);
     }
 
 
@@ -132,6 +126,13 @@ public class ImmutableModel implements IModel {
 
 
 
+    public final IModel cloneModel() {
+        return new Model(this);
+    }
+
+
+
+
     public final void write(final Writer writer) throws IOException {
         this.model.write(writer);
     }
@@ -180,7 +181,7 @@ public class ImmutableModel implements IModel {
                 "Modifications are not allowed on immutable model objects. This model object is an immutable " +
                 "implementation of the " + IModel.class.getName() + " interface, and no modifications are allowed in " +
                 "order to keep cache consistency and improve performance. To modify model events, convert first your " +
-                "immutable model object to a mutable one by means of the " + Model.class.getName() + " class");
+                "immutable model object to a mutable one by means of the " + IModel.class.getName() + "#cloneModel() method");
     }
 
 
@@ -189,7 +190,7 @@ public class ImmutableModel implements IModel {
                 "Modifications are not allowed on immutable events. This event object was returned by an immutable " +
                 "implementation of the " + IModel.class.getName() + " interface, and no modifications are allowed in " +
                 "order to keep cache consistency and improve performance. To modify model events, convert first your " +
-                "immutable model object to a mutable one by means of the " + Model.class.getName() + " class");
+                "immutable model object to a mutable one by means of the " + IModel.class.getName() + "#cloneModel() method");
     }
 
 

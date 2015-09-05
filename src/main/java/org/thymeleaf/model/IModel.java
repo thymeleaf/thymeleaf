@@ -53,6 +53,8 @@ public interface IModel {
 
     public void reset();
 
+    public IModel cloneModel();
+
     public void write(final Writer writer) throws IOException;
 
 }

@@ -48,7 +48,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public final class Model implements IModel {
+final class Model implements IModel {
 
     private static final int INITIAL_EVENT_QUEUE_SIZE = 100; // 100 events by default, will auto-grow
 
@@ -60,7 +60,7 @@ public final class Model implements IModel {
 
 
     // Only to be called from the IModelFactory
-    public Model(final IEngineConfiguration configuration, final TemplateMode templateMode) {
+    Model(final IEngineConfiguration configuration, final TemplateMode templateMode) {
         super();
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(templateMode, "Template Mode cannot be null");
@@ -70,7 +70,7 @@ public final class Model implements IModel {
     }
 
 
-    public Model(final IModel model) {
+    Model(final IModel model) {
 
         super();
 
@@ -179,6 +179,13 @@ public final class Model implements IModel {
         eventQueue.process(templateHandler, false);
 
     }
+
+
+
+    public IModel cloneModel() {
+        return new Model(this);
+    }
+
 
 
 
