@@ -27,8 +27,8 @@ import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.cache.StandardCacheManager;
 import org.thymeleaf.cache.TemplateCacheKey;
-import org.thymeleaf.engine.ParsedFragmentMarkup;
-import org.thymeleaf.engine.ParsedTemplateMarkup;
+import org.thymeleaf.engine.ParsedFragmentModel;
+import org.thymeleaf.engine.ParsedTemplateModel;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 
 
@@ -49,13 +49,13 @@ public final class TestCacheManager implements ICacheManager {
     }
 
 
-    public ICache<TemplateCacheKey, ParsedTemplateMarkup> getTemplateCache() {
-        return new TestCache<TemplateCacheKey, ParsedTemplateMarkup>(this.cacheManager.getTemplateCache());
+    public ICache<TemplateCacheKey, ParsedTemplateModel> getTemplateCache() {
+        return new TestCache<TemplateCacheKey, ParsedTemplateModel>(this.cacheManager.getTemplateCache());
     }
 
 
-    public ICache<FragmentCacheKey, ParsedFragmentMarkup> getFragmentCache() {
-        return new TestCache<FragmentCacheKey, ParsedFragmentMarkup>(this.cacheManager.getFragmentCache());
+    public ICache<FragmentCacheKey, ParsedFragmentModel> getFragmentCache() {
+        return new TestCache<FragmentCacheKey, ParsedFragmentModel>(this.cacheManager.getFragmentCache());
     }
 
 
