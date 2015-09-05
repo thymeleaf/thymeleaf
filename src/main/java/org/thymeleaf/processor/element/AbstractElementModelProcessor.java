@@ -23,7 +23,7 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeNames;
 import org.thymeleaf.engine.ElementNames;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IMarkup;
+import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -35,8 +35,8 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-public abstract class AbstractElementMarkupProcessor
-        extends AbstractProcessor implements IElementMarkupProcessor {
+public abstract class AbstractElementModelProcessor
+        extends AbstractProcessor implements IElementModelProcessor {
 
     private final String dialectPrefix;
     private final String elementName;
@@ -46,7 +46,7 @@ public abstract class AbstractElementMarkupProcessor
 
 
 
-    public AbstractElementMarkupProcessor(
+    public AbstractElementModelProcessor(
             final TemplateMode templateMode, final String dialectPrefix,
             final String elementName, final boolean prefixElementName,
             final String attributeName, final boolean prefixAttributeName,
@@ -86,30 +86,30 @@ public abstract class AbstractElementMarkupProcessor
 
     public final void process(
             final ITemplateProcessingContext processingContext,
-            final IMarkup markup) {
+            final IModel model) {
 
-        String markupTemplateName = null;
-        int markupLine = -1;
-        int markupCol = -1;
+        String modelTemplateName = null;
+        int modelLine = -1;
+        int modelCol = -1;
         try {
 
-            final ITemplateEvent firstEvent = markup.get(0);
-            markupTemplateName = firstEvent.getTemplateName();
-            markupLine = firstEvent.getLine();
-            markupCol = firstEvent.getLine();
+            final ITemplateEvent firstEvent = model.get(0);
+            modelTemplateName = firstEvent.getTemplateName();
+            modelLine = firstEvent.getLine();
+            modelCol = firstEvent.getLine();
 
-            doProcess(processingContext, markup, markupTemplateName, markupLine, markupCol);
+            doProcess(processingContext, model, modelTemplateName, modelLine, modelCol);
 
         } catch (final TemplateProcessingException e) {
 
-            if (markupTemplateName != null) {
+            if (modelTemplateName != null) {
                 if (!e.hasTemplateName()) {
-                    e.setTemplateName(markupTemplateName);
+                    e.setTemplateName(modelTemplateName);
                 }
             }
-            if (markupLine != -1 && markupCol != -1) {
+            if (modelLine != -1 && modelCol != -1) {
                 if (!e.hasLineAndCol()) {
-                    e.setLineAndCol(markupLine, markupCol);
+                    e.setLineAndCol(modelLine, modelCol);
                 }
             }
             throw e;
@@ -117,7 +117,7 @@ public abstract class AbstractElementMarkupProcessor
         } catch (final Exception e) {
 
             throw new TemplateProcessingException(
-                    "Error during execution of processor '" + this.getClass().getName() + "'", markupTemplateName, markupLine, markupCol, e);
+                    "Error during execution of processor '" + this.getClass().getName() + "'", modelTemplateName, modelLine, modelCol, e);
 
         }
 
@@ -126,7 +126,7 @@ public abstract class AbstractElementMarkupProcessor
 
     protected abstract void doProcess(
             final ITemplateProcessingContext processingContext,
-            final IMarkup markup,
-            final String markupTemplateName, final int markupLine, final int markupCol);
+            final IModel model,
+            final String modelTemplateName, final int modelLine, final int modelCol);
 
 }

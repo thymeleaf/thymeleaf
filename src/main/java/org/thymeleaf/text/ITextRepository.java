@@ -21,7 +21,7 @@ package org.thymeleaf.text;
 
 /**
  * <p>
- *     Common interface for repositories of text (<tt>String</tt>) instances created by the markup parser or
+ *     Common interface for repositories of text (<tt>String</tt>) instances created by the parser or
  *     document model.
  * </p>
  * <p>

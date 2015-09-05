@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.inline.IInliner;
-import org.thymeleaf.model.IMarkup;
+import org.thymeleaf.model.IModel;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.util.Validate;
 
@@ -42,25 +42,25 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
     String setBodyTextValue;
     boolean setBodyTextProcessable;
 
-    boolean setBodyMarkup;
-    IMarkup setBodyMarkupValue;
-    boolean setBodyMarkupProcessable;
+    boolean setBodyModel;
+    IModel setBodyModelValue;
+    boolean setBodyModelProcessable;
 
-    boolean insertBeforeMarkup;
-    IMarkup insertBeforeMarkupValue;
-    // markup inserted before the current element CANNOT be processable
+    boolean insertBeforeModel;
+    IModel insertBeforeModelValue;
+    // model inserted before the current element CANNOT be processable
 
-    boolean insertAfterMarkup;
-    IMarkup insertAfterMarkupValue;
-    boolean insertAfterMarkupProcessable;
+    boolean insertAfterModel;
+    IModel insertAfterModelValue;
+    boolean insertAfterModelProcessable;
 
     boolean replaceWithText;
     String replaceWithTextValue;
     boolean replaceWithTextProcessable;
 
-    boolean replaceWithMarkup;
-    IMarkup replaceWithMarkupValue;
-    boolean replaceWithMarkupProcessable;
+    boolean replaceWithModel;
+    IModel replaceWithModelValue;
+    boolean replaceWithModelProcessable;
 
     boolean removeElement;
 
@@ -106,30 +106,30 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
     }
 
 
-    public void setBody(final IMarkup markup, final boolean processable) {
+    public void setBody(final IModel model, final boolean processable) {
         resetAllButLocalVariables();
-        Validate.notNull(markup, "Markup cannot be null");
-        this.setBodyMarkup = true;
-        this.setBodyMarkupValue = markup;
-        this.setBodyMarkupProcessable = processable;
+        Validate.notNull(model, "Model cannot be null");
+        this.setBodyModel = true;
+        this.setBodyModelValue = model;
+        this.setBodyModelProcessable = processable;
     }
 
 
-    public void insertBefore(final IMarkup markup) {
+    public void insertBefore(final IModel model) {
         resetAllButLocalVariables();
-        Validate.notNull(markup, "Markup cannot be null");
-        this.insertBeforeMarkup = true;
-        this.insertBeforeMarkupValue = markup;
-        // Markup inserted BEFORE can never be processable
+        Validate.notNull(model, "Model cannot be null");
+        this.insertBeforeModel = true;
+        this.insertBeforeModelValue = model;
+        // Model inserted BEFORE can never be processable
     }
 
 
-    public void insertAfter(final IMarkup markup, final boolean processable) {
+    public void insertAfter(final IModel model, final boolean processable) {
         resetAllButLocalVariables();
-        Validate.notNull(markup, "Markup cannot be null");
-        this.insertAfterMarkup = true;
-        this.insertAfterMarkupValue = markup;
-        this.insertAfterMarkupProcessable = processable;
+        Validate.notNull(model, "Model cannot be null");
+        this.insertAfterModel = true;
+        this.insertAfterModelValue = model;
+        this.insertAfterModelProcessable = processable;
     }
 
 
@@ -142,12 +142,12 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
     }
 
 
-    public void replaceWith(final IMarkup markup, final boolean processable) {
+    public void replaceWith(final IModel model, final boolean processable) {
         resetAllButLocalVariables();
-        Validate.notNull(markup, "Markup cannot be null");
-        this.replaceWithMarkup = true;
-        this.replaceWithMarkupValue = markup;
-        this.replaceWithMarkupProcessable = processable;
+        Validate.notNull(model, "Model cannot be null");
+        this.replaceWithModel = true;
+        this.replaceWithModelValue = model;
+        this.replaceWithModelProcessable = processable;
     }
 
 
@@ -251,25 +251,25 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
         this.setBodyTextValue = null;
         this.setBodyTextProcessable = false;
 
-        this.setBodyMarkup = false;
-        this.setBodyMarkupValue = null;
-        this.setBodyMarkupProcessable = false;
+        this.setBodyModel = false;
+        this.setBodyModelValue = null;
+        this.setBodyModelProcessable = false;
 
-        this.insertBeforeMarkup = false;
-        this.insertBeforeMarkupValue = null;
-        // There is no 'insertBeforeMarkupProcessable'
+        this.insertBeforeModel = false;
+        this.insertBeforeModelValue = null;
+        // There is no 'insertBeforeModelProcessable'
 
-        this.insertAfterMarkup = false;
-        this.insertAfterMarkupValue = null;
-        this.insertAfterMarkupProcessable = false;
+        this.insertAfterModel = false;
+        this.insertAfterModelValue = null;
+        this.insertAfterModelProcessable = false;
 
         this.replaceWithText = false;
         this.replaceWithTextValue = null;
         this.replaceWithTextProcessable = false;
 
-        this.replaceWithMarkup = false;
-        this.replaceWithMarkupValue = null;
-        this.replaceWithMarkupProcessable = false;
+        this.replaceWithModel = false;
+        this.replaceWithModelValue = null;
+        this.replaceWithModelProcessable = false;
 
         this.removeElement = false;
 

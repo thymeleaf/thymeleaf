@@ -111,7 +111,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
         Validate.notNull(artifactType, "Artifact Type cannot be null");
         Validate.notNull(ownerTemplate, "Owner template cannot be null");
         Validate.notNull(resource, "Template cannot be null");
-        // NOTE markup selectors cannot be specified when parsing a nested template
+        // NOTE selectors cannot be specified when parsing a nested template
         Validate.notNull(templateMode, "Template mode cannot be null");
         Validate.isTrue(templateMode.isMarkup(), "Template Mode has to be a markup template mode");
         Validate.notNull(handler, "Template Handler cannot be null");

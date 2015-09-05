@@ -25,8 +25,8 @@ import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
-import org.thymeleaf.model.IMarkup;
-import org.thymeleaf.model.IMarkupFactory;
+import org.thymeleaf.model.IModel;
+import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
@@ -42,7 +42,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public class StandardMarkupFactory implements IMarkupFactory {
+public class StandardModelFactory implements IModelFactory {
 
 
     private final IEngineConfiguration configuration;
@@ -56,7 +56,7 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
 
-    public StandardMarkupFactory(
+    public StandardModelFactory(
             final IEngineConfiguration configuration, final TemplateMode templateMode,
             final String template, final TemplateManager templateManager) {
 
@@ -92,18 +92,18 @@ public class StandardMarkupFactory implements IMarkupFactory {
 
 
 
-    public Markup createMarkup() {
-        return new Markup(this.configuration, this.templateMode);
+    public Model createModel() {
+        return new Model(this.configuration, this.templateMode);
     }
 
 
 
-    public IMarkup parseAsMarkup(final String markup) {
+    public IModel parse(final String fragment) {
         // We will be setting useCache to false because we don't want to pollute the cache with mere String
         // parsing done from here. Also, we are 'artificially' specifying it as nested even if we don't really
-        // know if this markup is exactly a nested text inside the template, but that's not really important...
+        // know if this fragment is exactly a nested text inside the template, but that's not really important...
         return this.templateManager.parseNestedFragment(
-                this.configuration, this.template, markup, 0, 0, this.templateMode, false);
+                this.configuration, this.template, fragment, 0, 0, this.templateMode, false);
     }
 
 

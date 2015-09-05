@@ -41,7 +41,7 @@ final class ElementAttribute {
     /*
      * Note: An Attribute should not be made responsible for converting non-String values to String, or computing
      * the boolean-ness of attributes or their representation. All these should be the responsibility of the
-     * diverse processors being executed. This class is a raw representation of what appears/will appear on markup.
+     * diverse processors being executed. This class is a raw representation of what appears/will appear on template.
      */
 
 

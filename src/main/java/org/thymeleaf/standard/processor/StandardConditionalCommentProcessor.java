@@ -22,7 +22,6 @@ package org.thymeleaf.standard.processor;
 import java.io.StringWriter;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.model.IComment;
@@ -83,7 +82,6 @@ public final class StandardConditionalCommentProcessor extends AbstractCommentPr
          */
         final TemplateManager templateManager = processingContext.getTemplateManager();
         final IEngineConfiguration configuration = processingContext.getConfiguration();
-        final IContext context = processingContext.getVariables();
 
         final String parsableContent =
                 configuration.getTextRepository().getText(

@@ -17,39 +17,21 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.model;
+package org.thymeleaf.processor.element;
 
-import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.templatemode.TemplateMode;
-
+import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.model.IModel;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- *
+ * 
  */
-public interface IMarkup {
+public interface IElementModelProcessor extends IElementProcessor {
 
 
-    public IEngineConfiguration getConfiguration();
+    public void process(final ITemplateProcessingContext processingContext, final IModel model);
 
-    public TemplateMode getTemplateMode();
-
-    public int size();
-
-    public ITemplateEvent get(final int pos);
-
-    public void add(final ITemplateEvent event);
-    public void insert(final int pos, final ITemplateEvent event);
-
-    public void addMarkup(final IMarkup markup);
-    public void insertMarkup(final int pos, final IMarkup markup);
-
-    public void remove(final int pos);
-
-    public void reset();
-
-    public String renderMarkup();
 
 }

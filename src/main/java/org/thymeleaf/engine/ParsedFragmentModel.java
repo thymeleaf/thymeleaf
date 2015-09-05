@@ -30,17 +30,17 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-public final class ParsedFragmentMarkup extends ImmutableMarkup {
+public final class ParsedFragmentModel extends ImmutableModel {
 
     private final ICacheEntryValidity validity;
 
 
     // Package-protected constructor, because we don't want anyone creating these objects from outside the engine.
     // Specifically, they will only be created from the TemplateManager.
-    // If a processor (be it standard or custom-made) wants to create a piece of markup, that should be a Markup
+    // If a processor (be it standard or custom-made) wants to create a piece of model, that should be a Model
     // object, not this.
-    ParsedFragmentMarkup(final IEngineConfiguration configuration, final TemplateMode templateMode,
-                         final ICacheEntryValidity validity) {
+    ParsedFragmentModel(final IEngineConfiguration configuration, final TemplateMode templateMode,
+                        final ICacheEntryValidity validity) {
         super(configuration, templateMode);
         // Validity CAN be null
         this.validity = validity;

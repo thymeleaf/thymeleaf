@@ -36,9 +36,9 @@ public interface ITemplateEngine {
     public IEngineConfiguration getConfiguration();
 
     public String process(final String template, final IContext context);
-    public String process(final String template, final String[] markupSelectors, final IContext context);
+    public String process(final String template, final String[] selectors, final IContext context);
 
     public void process(final String template, final IContext context, final Writer writer);
-    public void process(final String template, final String[] markupSelectors, final IContext context, final Writer writer);
+    public void process(final String template, final String[] selectors, final IContext context, final Writer writer);
 
 }

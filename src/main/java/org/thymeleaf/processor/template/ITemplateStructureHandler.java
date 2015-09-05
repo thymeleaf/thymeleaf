@@ -20,7 +20,7 @@
 package org.thymeleaf.processor.template;
 
 import org.thymeleaf.inline.IInliner;
-import org.thymeleaf.model.IMarkup;
+import org.thymeleaf.model.IModel;
 
 /**
  *
@@ -40,7 +40,7 @@ public interface ITemplateStructureHandler {
     public void setInliner(final IInliner inliner);
 
     public void insert(final String text, final boolean processable);
-    public void insert(final IMarkup markup, final boolean processable);
+    public void insert(final IModel model, final boolean processable);
 
 }
 

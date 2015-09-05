@@ -27,7 +27,7 @@ import org.thymeleaf.util.TextUtils;
 
 /**
  * <p>
- *     Repository of text (<tt>String</tt>) instances created by the markup parser or document model.
+ *     Repository of text (<tt>String</tt>) instances created by the parser or document model.
  * </p>
  * <p>
  *     This repository works in a similar way to {@link String#intern()}, except that it allows the

@@ -23,7 +23,7 @@ import java.util.Arrays;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IMarkup;
+import org.thymeleaf.model.IModel;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -138,68 +138,68 @@ final class EngineEventQueue {
     }
 
 
-    void addMarkup(final IMarkup imarkup) {
-        insertMarkup(this.queueSize, imarkup);
+    void addModel(final IModel imodel) {
+        insertModel(this.queueSize, imodel);
     }
 
 
-    void insertMarkup(final int pos, final IMarkup imarkup) {
+    void insertModel(final int pos, final IModel imodel) {
 
         if (pos < 0 && pos >= this.queueSize) {
             throw new IndexOutOfBoundsException("Requested position " + pos + " of event queue with size " + this.queueSize);
         }
 
-        if (imarkup == null) {
+        if (imodel == null) {
             return;
         }
 
-        if (!this.configuration.equals(imarkup.getConfiguration())) {
+        if (!this.configuration.equals(imodel.getConfiguration())) {
             throw new TemplateProcessingException(
-                    "Cannot add markup of class " + imarkup.getClass().getName() + " to the current template, as " +
+                    "Cannot add model of class " + imodel.getClass().getName() + " to the current template, as " +
                     "it was created using a different Template Engine Configuration.");
         }
 
-        if (this.templateMode != imarkup.getTemplateMode()) {
+        if (this.templateMode != imodel.getTemplateMode()) {
             throw new TemplateProcessingException(
-                    "Cannot add markup of class " + imarkup.getClass().getName() + " to the current template, as " +
-                    "it was created using a different Template Mode: " + imarkup.getTemplateMode() + " instead of " +
+                    "Cannot add model of class " + imodel.getClass().getName() + " to the current template, as " +
+                    "it was created using a different Template Mode: " + imodel.getTemplateMode() + " instead of " +
                     "the current " + this.templateMode);
         }
 
 
-        final Markup markup;
-        if (imarkup instanceof ParsedTemplateMarkup) {
+        final Model model;
+        if (imodel instanceof ParsedTemplateModel) {
             // This is forbidden - we cannot add something that is not a fragment, but an entire, top level template
             throw new TemplateProcessingException(
                     "Cannot add as fragment an entire, top-level template. The specified object should have been " +
                     "parsed as fragment instead of template");
-        } else if (imarkup instanceof ImmutableMarkup) {
-            // No need to clone - argument is an immutable piece of markup and therefore using it without cloning will
+        } else if (imodel instanceof ImmutableModel) {
+            // No need to clone - argument is an immutable piece of model and therefore using it without cloning will
             // produce no side/undesired effects
-            markup = ((ImmutableMarkup) imarkup).getInternalMarkup();
+            model = ((ImmutableModel) imodel).getInternalModel();
         } else {
             // This implementation does not directly come from the parser nor is immutable, so we must clone its events
             // to avoid interactions.
-            markup = new Markup(imarkup);
+            model = new Model(imodel);
         }
 
-        final EngineEventQueue markupQueue = markup.getEventQueue();
+        final EngineEventQueue mdoelQueue = model.getEventQueue();
 
-        if (this.queue.length <= (this.queueSize + markupQueue.queueSize)) {
+        if (this.queue.length <= (this.queueSize + mdoelQueue.queueSize)) {
             // We need to grow the queue!
-            final IEngineTemplateEvent[] newQueue = new IEngineTemplateEvent[Math.max(this.queueSize + markupQueue.queueSize, this.queue.length + 25)];
+            final IEngineTemplateEvent[] newQueue = new IEngineTemplateEvent[Math.max(this.queueSize + mdoelQueue.queueSize, this.queue.length + 25)];
             Arrays.fill(newQueue, null);
             System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
             this.queue = newQueue;
         }
 
         // Make room for the new events (if necessary because pos < this.queueSize)
-        System.arraycopy(this.queue, pos, this.queue, pos + markupQueue.queueSize, this.queueSize - pos);
+        System.arraycopy(this.queue, pos, this.queue, pos + mdoelQueue.queueSize, this.queueSize - pos);
 
         // Copy the new events to their new position (no cloning needed here - if needed it would have been already done)
-        System.arraycopy(markupQueue.queue, 0, this.queue, pos, markupQueue.queueSize);
+        System.arraycopy(mdoelQueue.queue, 0, this.queue, pos, mdoelQueue.queueSize);
 
-        this.queueSize += markupQueue.queueSize;
+        this.queueSize += mdoelQueue.queueSize;
 
     }
 

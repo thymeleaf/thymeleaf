@@ -23,9 +23,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.engine.StandardMarkupFactory;
+import org.thymeleaf.engine.StandardModelFactory;
 import org.thymeleaf.engine.TemplateManager;
-import org.thymeleaf.model.IMarkupFactory;
+import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.util.Validate;
@@ -48,7 +48,7 @@ public abstract class AbstractTemplateProcessingContext
     private final TemplateManager templateManager;
     private final TemplateResolution templateResolution;
     private final TemplateMode templateMode;
-    private final IMarkupFactory markupFactory;
+    private final IModelFactory modelFactory;
     private IdentifierSequences identifierSequences;
 
 
@@ -68,8 +68,8 @@ public abstract class AbstractTemplateProcessingContext
         this.templateManager = templateManager;
         this.templateResolution = templateResolution;
         this.templateMode = this.templateResolution.getTemplateMode();
-        this.markupFactory =
-                new StandardMarkupFactory(
+        this.modelFactory =
+                new StandardModelFactory(
                         getConfiguration(), this.templateMode, this.templateResolution.getTemplateName(), this.templateManager);
         // Most templates will not need this, so we will initialize it lazily
         this.identifierSequences = null;
@@ -91,8 +91,8 @@ public abstract class AbstractTemplateProcessingContext
         this.templateManager = templateManager;
         this.templateResolution = templateResolution;
         this.templateMode = this.templateResolution.getTemplateMode();
-        this.markupFactory =
-                new StandardMarkupFactory(
+        this.modelFactory =
+                new StandardModelFactory(
                         getConfiguration(), this.templateMode, this.templateResolution.getTemplateName(), this.templateManager);
         this.identifierSequences = new IdentifierSequences();
 
@@ -111,8 +111,8 @@ public abstract class AbstractTemplateProcessingContext
         return this.templateMode;
     }
 
-    public final IMarkupFactory getMarkupFactory() {
-        return this.markupFactory;
+    public final IModelFactory getModelFactory() {
+        return this.modelFactory;
     }
 
     public IdentifierSequences getIdentifierSequences() {

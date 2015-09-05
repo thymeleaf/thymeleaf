@@ -44,7 +44,7 @@ import org.thymeleaf.processor.PrecedenceProcessorComparator;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.processor.comment.ICommentProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeProcessor;
-import org.thymeleaf.processor.element.IElementMarkupProcessor;
+import org.thymeleaf.processor.element.IElementModelProcessor;
 import org.thymeleaf.processor.element.IElementProcessor;
 import org.thymeleaf.processor.element.IElementTagProcessor;
 import org.thymeleaf.processor.element.MatchingAttributeName;
@@ -249,7 +249,7 @@ final class ConfigurationPrinterHelper {
         final List<ICommentProcessor> commentProcessors = new ArrayList<ICommentProcessor>();
         final List<IDocTypeProcessor> docTypeProcessors = new ArrayList<IDocTypeProcessor>();
         final List<IElementTagProcessor> elementTagProcessors = new ArrayList<IElementTagProcessor>();
-        final List<IElementMarkupProcessor> elementMarkupProcessors = new ArrayList<IElementMarkupProcessor>();
+        final List<IElementModelProcessor> elementModelProcessors = new ArrayList<IElementModelProcessor>();
         final List<IProcessingInstructionProcessor> processingInstructionProcessors = new ArrayList<IProcessingInstructionProcessor>();
         final List<ITextProcessor> textProcessors = new ArrayList<ITextProcessor>();
         final List<IXMLDeclarationProcessor> xmlDeclarationProcessors = new ArrayList<IXMLDeclarationProcessor>();
@@ -270,8 +270,8 @@ final class ConfigurationPrinterHelper {
                 docTypeProcessors.add((IDocTypeProcessor) processor);
             } else if (processor instanceof IElementTagProcessor) {
                 elementTagProcessors.add((IElementTagProcessor) processor);
-            } else if (processor instanceof IElementMarkupProcessor) {
-                elementMarkupProcessors.add((IElementMarkupProcessor) processor);
+            } else if (processor instanceof IElementModelProcessor) {
+                elementModelProcessors.add((IElementModelProcessor) processor);
             } else if (processor instanceof IProcessingInstructionProcessor) {
                 processingInstructionProcessors.add((IProcessingInstructionProcessor) processor);
             } else if (processor instanceof ITextProcessor) {
@@ -293,7 +293,7 @@ final class ConfigurationPrinterHelper {
         Collections.sort(commentProcessors, PrecedenceProcessorComparator.INSTANCE);
         Collections.sort(docTypeProcessors, PrecedenceProcessorComparator.INSTANCE);
         Collections.sort(elementTagProcessors, PrinterElementProcessorComparator.INSTANCE);
-        Collections.sort(elementMarkupProcessors, PrinterElementProcessorComparator.INSTANCE);
+        Collections.sort(elementModelProcessors, PrinterElementProcessorComparator.INSTANCE);
         Collections.sort(processingInstructionProcessors, PrecedenceProcessorComparator.INSTANCE);
         Collections.sort(textProcessors, PrecedenceProcessorComparator.INSTANCE);
         Collections.sort(xmlDeclarationProcessors, PrecedenceProcessorComparator.INSTANCE);
@@ -309,9 +309,9 @@ final class ConfigurationPrinterHelper {
                         new Object[] {elementName, attributeName, Integer.valueOf(processor.getPrecedence()), processor.getClass().getName()});
             }
         }
-        if (!elementMarkupProcessors.isEmpty()) {
-            logBuilder.line("[THYMELEAF]         * Element Markup Processors by [matching element and attribute name] [precedence]:");
-            for (final IElementMarkupProcessor processor : elementMarkupProcessors) {
+        if (!elementModelProcessors.isEmpty()) {
+            logBuilder.line("[THYMELEAF]         * Element Model Processors by [matching element and attribute name] [precedence]:");
+            for (final IElementModelProcessor processor : elementModelProcessors) {
                 final MatchingElementName matchingElementName = processor.getMatchingElementName();
                 final MatchingAttributeName matchingAttributeName = processor.getMatchingAttributeName();
                 final String elementName = (matchingElementName == null? "*" : matchingElementName.toString());

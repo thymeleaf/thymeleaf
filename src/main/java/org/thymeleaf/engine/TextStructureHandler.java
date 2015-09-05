@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.engine;
 
-import org.thymeleaf.model.IMarkup;
+import org.thymeleaf.model.IModel;
 import org.thymeleaf.processor.text.ITextStructureHandler;
 import org.thymeleaf.util.Validate;
 
@@ -32,9 +32,9 @@ import org.thymeleaf.util.Validate;
 final class TextStructureHandler implements ITextStructureHandler {
 
 
-    boolean replaceWithMarkup;
-    IMarkup replaceWithMarkupValue;
-    boolean replaceWithMarkupProcessable;
+    boolean replaceWithModel;
+    IModel replaceWithModelValue;
+    boolean replaceWithModelProcessable;
 
     boolean removeText;
 
@@ -48,12 +48,12 @@ final class TextStructureHandler implements ITextStructureHandler {
 
 
 
-    public void replaceWith(final IMarkup markup, final boolean processable) {
+    public void replaceWith(final IModel model, final boolean processable) {
         reset();
-        Validate.notNull(markup, "Markup cannot be null");
-        this.replaceWithMarkup = true;
-        this.replaceWithMarkupValue = markup;
-        this.replaceWithMarkupProcessable = processable;
+        Validate.notNull(model, "Model cannot be null");
+        this.replaceWithModel = true;
+        this.replaceWithModelValue = model;
+        this.replaceWithModelProcessable = processable;
     }
 
 
@@ -67,9 +67,9 @@ final class TextStructureHandler implements ITextStructureHandler {
 
     public void reset() {
 
-        this.replaceWithMarkup = false;
-        this.replaceWithMarkupValue = null;
-        this.replaceWithMarkupProcessable = false;
+        this.replaceWithModel = false;
+        this.replaceWithModelValue = null;
+        this.replaceWithModelProcessable = false;
 
         this.removeText = false;
 

@@ -30,7 +30,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public class ParsedTemplateMarkup extends ImmutableMarkup {
+public class ParsedTemplateModel extends ImmutableModel {
 
     private TemplateResolution templateResolution;
 
@@ -38,9 +38,9 @@ public class ParsedTemplateMarkup extends ImmutableMarkup {
 
     // Package-protected constructor, because we don't want anyone creating these objects from outside the engine.
     // Specifically, they will only be created from the TemplateManager.
-    // If a processor (be it standard or custom-made) wants to create a piece of markup, that should be a Markup
+    // If a processor (be it standard or custom-made) wants to create a piece of model, that should be a Model
     // object, not this.
-    ParsedTemplateMarkup(final IEngineConfiguration configuration, final TemplateResolution templateResolution) {
+    ParsedTemplateModel(final IEngineConfiguration configuration, final TemplateResolution templateResolution) {
         super(configuration, (templateResolution == null? null : templateResolution.getTemplateMode()));
         Validate.notNull(templateResolution, "Template Resolution cannot be null");
         this.templateResolution = templateResolution;

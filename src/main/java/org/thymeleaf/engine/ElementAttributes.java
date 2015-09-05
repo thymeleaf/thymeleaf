@@ -104,7 +104,7 @@ public final class ElementAttributes implements IElementAttributes {
 
 
     private int searchAttribute(final String completeName) {
-        // We will first try exact match on the names with which the attributes appear on markup, as an optimization
+        // We will first try exact match on the names with which the attributes appear on template, as an optimization
         // on the base case (use the AttributeDefinition).
         int n = this.attributesSize;
         while (n-- != 0) {

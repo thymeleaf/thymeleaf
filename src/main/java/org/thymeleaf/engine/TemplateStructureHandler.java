@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.inline.IInliner;
-import org.thymeleaf.model.IMarkup;
+import org.thymeleaf.model.IModel;
 import org.thymeleaf.processor.template.ITemplateStructureHandler;
 import org.thymeleaf.util.Validate;
 
@@ -42,9 +42,9 @@ final class TemplateStructureHandler implements ITemplateStructureHandler {
     String insertTextValue;
     boolean insertTextProcessable;
 
-    boolean insertMarkup;
-    IMarkup insertMarkupValue;
-    boolean insertMarkupProcessable;
+    boolean insertModel;
+    IModel insertModelValue;
+    boolean insertModelProcessable;
 
     boolean setLocalVariable;
     Map<String,Object> addedLocalVariables;
@@ -77,12 +77,12 @@ final class TemplateStructureHandler implements ITemplateStructureHandler {
     }
 
 
-    public void insert(final IMarkup markup, final boolean processable) {
+    public void insert(final IModel model, final boolean processable) {
         resetAllButLocalVariables();
-        Validate.notNull(markup, "Markup cannot be null");
-        this.insertMarkup = true;
-        this.insertMarkupValue = markup;
-        this.insertMarkupProcessable = processable;
+        Validate.notNull(model, "Model cannot be null");
+        this.insertModel = true;
+        this.insertModelValue = model;
+        this.insertModelProcessable = processable;
     }
 
 
@@ -150,9 +150,9 @@ final class TemplateStructureHandler implements ITemplateStructureHandler {
         this.insertTextValue = null;
         this.insertTextProcessable = false;
 
-        this.insertMarkup = false;
-        this.insertMarkupValue = null;
-        this.insertMarkupProcessable = false;
+        this.insertModel = false;
+        this.insertModelValue = null;
+        this.insertModelProcessable = false;
 
     }
 

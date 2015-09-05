@@ -22,7 +22,7 @@ package org.thymeleaf.standard.processor;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.ParsedFragmentMarkup;
+import org.thymeleaf.engine.ParsedFragmentModel;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -95,7 +95,7 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
             return;
         }
 
-        final ParsedFragmentMarkup parsedFragment =
+        final ParsedFragmentModel parsedFragment =
                 processingContext.getTemplateManager().parseNestedFragment(
                         processingContext.getConfiguration(),
                         attributeTemplateName, unescapedText,

@@ -19,7 +19,9 @@
  */
 package org.thymeleaf.engine;
 
+import java.io.IOException;
 import java.io.StringWriter;
+import java.io.Writer;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -27,7 +29,7 @@ import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
-import org.thymeleaf.model.IMarkup;
+import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
@@ -46,7 +48,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public final class Markup implements IMarkup {
+public final class Model implements IModel {
 
     private static final int INITIAL_EVENT_QUEUE_SIZE = 100; // 100 events by default, will auto-grow
 
@@ -57,8 +59,8 @@ public final class Markup implements IMarkup {
 
 
 
-    // Only to be called from the IMarkupFactory
-    public Markup(final IEngineConfiguration configuration, final TemplateMode templateMode) {
+    // Only to be called from the IModelFactory
+    public Model(final IEngineConfiguration configuration, final TemplateMode templateMode) {
         super();
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(templateMode, "Template Mode cannot be null");
@@ -68,29 +70,29 @@ public final class Markup implements IMarkup {
     }
 
 
-    public Markup(final IMarkup markup) {
+    public Model(final IModel model) {
 
         super();
 
-        Validate.notNull(markup, "Markup cannot be null");
+        Validate.notNull(model, "Model cannot be null");
 
-        this.configuration = markup.getConfiguration();
-        this.templateMode = markup.getTemplateMode();
+        this.configuration = model.getConfiguration();
+        this.templateMode = model.getTemplateMode();
         this.queue = new EngineEventQueue(this.configuration, this.templateMode, INITIAL_EVENT_QUEUE_SIZE);
 
-        if (markup instanceof Markup) {
+        if (model instanceof Model) {
 
-            this.queue.resetAsCloneOf(((Markup)markup).queue, true);
+            this.queue.resetAsCloneOf(((Model)model).queue, true);
 
-        } else if (markup instanceof ImmutableMarkup) {
+        } else if (model instanceof ImmutableModel) {
 
-            this.queue.resetAsCloneOf(((ImmutableMarkup)markup).getInternalMarkup().queue, true);
+            this.queue.resetAsCloneOf(((ImmutableModel)model).getInternalModel().queue, true);
 
         } else {
 
-            final int markupSize = markup.size();
-            for (int i = 0; i < markupSize; i++) {
-                this.queue.add(asEngineEvent(this.configuration, this.templateMode, markup.get(i), true), false);
+            final int modelSize = model.size();
+            for (int i = 0; i < modelSize; i++) {
+                this.queue.add(asEngineEvent(this.configuration, this.templateMode, model.get(i), true), false);
             }
 
         }
@@ -131,13 +133,13 @@ public final class Markup implements IMarkup {
     }
 
 
-    public void addMarkup(final IMarkup markup) {
-        this.queue.addMarkup(markup);
+    public void addModel(final IModel model) {
+        this.queue.addModel(model);
     }
 
 
-    public void insertMarkup(final int pos, final IMarkup markup) {
-        this.queue.insertMarkup(pos, markup);
+    public void insertModel(final int pos, final IModel model) {
+        this.queue.insertModel(pos, model);
     }
 
 
@@ -180,24 +182,23 @@ public final class Markup implements IMarkup {
 
 
 
-    public final String renderMarkup() {
-        final StringWriter writer = new StringWriter();
+    public void write(final Writer writer) throws IOException {
         final OutputTemplateHandler outputTemplateHandler = new OutputTemplateHandler(writer);
         process(outputTemplateHandler);
-        return writer.toString();
-    }
-
-
-
-    public ImmutableMarkup asImmutable() {
-        return new ImmutableMarkup(this);
     }
 
 
 
     @Override
     public String toString() {
-        return renderMarkup();
+        try {
+            final StringWriter writer = new StringWriter();
+            write(writer);
+            return writer.toString();
+        } catch (final IOException e) {
+            throw new TemplateProcessingException(
+                    "Error while creating String representation of model");
+        }
     }
 
 

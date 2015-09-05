@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.model;
 
-import org.thymeleaf.engine.Markup;
+import org.thymeleaf.engine.Model;
 
 /**
  *
@@ -27,12 +27,12 @@ import org.thymeleaf.engine.Markup;
  * @since 3.0.0
  * 
  */
-public interface IMarkupFactory {
+public interface IModelFactory {
 
 
-    public Markup createMarkup();
+    public Model createModel();
 
-    public IMarkup parseAsMarkup(final String markup);
+    public IModel parse(final String fragment);
 
     public ICDATASection createCDATASection(final String content);
 

@@ -39,7 +39,7 @@ public final class FragmentCacheKey {
 
     private final String ownerTemplate;
     private final String fragment;
-    private final String[] markupSelectors;
+    private final String[] selectors;
     private final int lineOffset;
     private final int colOffset;
     private final TemplateMode templateMode;
@@ -48,23 +48,23 @@ public final class FragmentCacheKey {
 
 
     public FragmentCacheKey(
-            final String ownerTemplate, final String fragment, final String[] markupSelectors,
+            final String ownerTemplate, final String fragment, final String[] selectors,
             final int lineOffset, final int colOffset, final TemplateMode templateMode) {
 
         super();
 
         // ownerTemplate will be null if this fragment is actually a standalone template (that will be included as a template somewhere else)
         Validate.notNull(fragment, "Fragment cannot be null");
-        // markupSelectors can be null if we are selecting the entire fragment
+        // selectors can be null if we are selecting the entire fragment
         // templateMode can be null if this fragment is standalone (no owner template) AND we are forcing a specific template mode for its processing
 
         this.ownerTemplate = ownerTemplate;
         this.fragment = fragment;
-        if (markupSelectors != null && markupSelectors.length > 0) {
-            this.markupSelectors = markupSelectors.clone();
-            Arrays.sort(this.markupSelectors); // we need to sort this so that Arrays.sort() works in equals()
+        if (selectors != null && selectors.length > 0) {
+            this.selectors = selectors.clone();
+            Arrays.sort(this.selectors); // we need to sort this so that Arrays.sort() works in equals()
         } else {
-            this.markupSelectors = null;
+            this.selectors = null;
         }
         this.lineOffset = lineOffset;
         this.colOffset = colOffset;
@@ -77,8 +77,8 @@ public final class FragmentCacheKey {
         return this.ownerTemplate;
     }
 
-    public String[] getMarkupSelectors() {
-        return this.markupSelectors;
+    public String[] getSelectors() {
+        return this.selectors;
     }
 
     public String getFragment() {
@@ -125,7 +125,7 @@ public final class FragmentCacheKey {
         if (!this.fragment.equals(that.fragment)) {
             return false;
         }
-        if (!Arrays.equals(this.markupSelectors, that.markupSelectors)) { // Works because we ordered the arrays
+        if (!Arrays.equals(this.selectors, that.selectors)) { // Works because we ordered the arrays
             return false;
         }
         return this.templateMode == that.templateMode;
@@ -137,7 +137,7 @@ public final class FragmentCacheKey {
     public int hashCode() {
         int result = this.ownerTemplate != null ? this.ownerTemplate.hashCode() : 0;
         result = 31 * result + this.fragment.hashCode();
-        result = 31 * result + (this.markupSelectors != null ? Arrays.hashCode(this.markupSelectors) : 0);
+        result = 31 * result + (this.selectors != null ? Arrays.hashCode(this.selectors) : 0);
         result = 31 * result + this.lineOffset;
         result = 31 * result + this.colOffset;
         result = 31 * result + (this.templateMode != null ? this.templateMode.hashCode() : 0);
@@ -161,9 +161,9 @@ public final class FragmentCacheKey {
             strBuilder.append(this.colOffset);
             strBuilder.append(')');
         }
-        if (this.markupSelectors != null && this.markupSelectors.length > 0) {
+        if (this.selectors != null && this.selectors.length > 0) {
             strBuilder.append("::");
-            strBuilder.append(Arrays.toString(this.markupSelectors));
+            strBuilder.append(Arrays.toString(this.selectors));
         }
         if (this.templateMode != null) {
             strBuilder.append("@(");

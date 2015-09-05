@@ -20,7 +20,7 @@
 package org.thymeleaf.processor.element;
 
 import org.thymeleaf.inline.IInliner;
-import org.thymeleaf.model.IMarkup;
+import org.thymeleaf.model.IModel;
 
 /**
  *
@@ -41,13 +41,13 @@ public interface IElementTagStructureHandler {
     public void setInliner(final IInliner inliner);
 
     public void setBody(final String text, final boolean processable);
-    public void setBody(final IMarkup markup, final boolean processable);
+    public void setBody(final IModel model, final boolean processable);
 
-    public void insertBefore(final IMarkup markup); // cannot be processable
-    public void insertAfter(final IMarkup markup, final boolean processable);
+    public void insertBefore(final IModel model); // cannot be processable
+    public void insertAfter(final IModel model, final boolean processable);
 
     public void replaceWith(final String text, final boolean processable);
-    public void replaceWith(final IMarkup markup, final boolean processable);
+    public void replaceWith(final IModel model, final boolean processable);
 
 
     public void removeElement();

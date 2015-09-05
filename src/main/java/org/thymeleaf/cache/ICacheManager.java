@@ -22,8 +22,8 @@ package org.thymeleaf.cache;
 import java.util.List;
 import java.util.Properties;
 
-import org.thymeleaf.engine.ParsedFragmentMarkup;
-import org.thymeleaf.engine.ParsedTemplateMarkup;
+import org.thymeleaf.engine.ParsedFragmentModel;
+import org.thymeleaf.engine.ParsedTemplateModel;
 
 
 /**
@@ -83,7 +83,7 @@ public interface ICacheManager {
      * 
      * @return the cache of parsed templates.
      */
-    public ICache<TemplateCacheKey,ParsedTemplateMarkup> getTemplateCache();
+    public ICache<TemplateCacheKey,ParsedTemplateModel> getTemplateCache();
     
     /**
      * <p>
@@ -105,7 +105,7 @@ public interface ICacheManager {
      *
      * @return the cache of parsed template code fragments
      */
-    public ICache<FragmentCacheKey,ParsedFragmentMarkup> getFragmentCache();
+    public ICache<FragmentCacheKey,ParsedFragmentModel> getFragmentCache();
     
     /**
      * <p>

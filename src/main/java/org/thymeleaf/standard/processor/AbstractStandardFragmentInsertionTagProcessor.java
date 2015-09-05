@@ -23,8 +23,8 @@ import java.util.Map;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.ImmutableMarkup;
-import org.thymeleaf.engine.Markup;
+import org.thymeleaf.engine.ImmutableModel;
+import org.thymeleaf.engine.Model;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IElementAttributes;
@@ -106,15 +106,15 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
         /*
-         * OBTAIN THE FRAGMENT MARKUP from the TemplateManager. This means the fragment will be parsed and maybe
-         * cached, and we will be returned an immutable markup object (specifically a ParsedFragmentMarkup)
+         * OBTAIN THE FRAGMENT MODEL from the TemplateManager. This means the fragment will be parsed and maybe
+         * cached, and we will be returned an immutable model object (specifically a ParsedFragmentModel)
          */
-        final String[] markupFragments =
+        final String[] fragments =
                 (processedFragmentSelection.hasFragmentSelector()? new String[] { processedFragmentSelection.getFragmentSelector() } : null);
-        ImmutableMarkup parsedFragment =
+        ImmutableModel parsedFragment =
                     processingContext.getTemplateManager().parseStandaloneFragment(
                             processingContext.getConfiguration(),
-                            templateName, markupFragments,
+                            templateName, fragments,
                             // we actually 'force' the template mode of the inserted fragment to be the same. This
                             // gives us a little bit more flexibility including e.g. text templates inside HTML ones,
                             // with the possibility of later applying inlining (text inlining in this case) to process
@@ -124,7 +124,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
         /*
-         * ONCE WE HAVE THE FRAGMENT MARKUP (its events, in fact), CHECK THE FRAGMENT SIGNATURE which might
+         * ONCE WE HAVE THE FRAGMENT MODEL (its events, in fact), CHECK THE FRAGMENT SIGNATURE which might
          * affect the way we apply the parameters to the fragment
          */
         final int parsedFragmentLen = parsedFragment.size();
@@ -177,39 +177,39 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
             /*
              * In the case of th:include, things get a bit complicated because we need to remove the "element envelopes"
              * that contain what we really want to include (these envelopes' contents). So we will need to traverse
-             * the entire returned markup detecting those envelopes (open+close tags at markup level == 0) and remove
+             * the entire returned model detecting those envelopes (open+close tags at model level == 0) and remove
              * them, along with anything else that is also at that level 0.
              */
 
-            final Markup markup = new Markup(parsedFragment);
-            int markupLevel = 0;
-            int n = markup.size();
+            final Model model = new Model(parsedFragment);
+            int modelLevel = 0;
+            int n = model.size();
             while (n-- != 0) { // We traverse backwards so that we can modify at the same time
 
-                final ITemplateEvent event = markup.get(n);
+                final ITemplateEvent event = model.get(n);
 
                 if (event instanceof ICloseElementTag) {
-                    if (markupLevel <= 0) {
-                        markup.remove(n);
+                    if (modelLevel <= 0) {
+                        model.remove(n);
                     }
-                    markupLevel++;
+                    modelLevel++;
                     continue;
                 }
                 if (event instanceof IOpenElementTag) {
-                    markupLevel--;
-                    if (markupLevel <= 0) {
-                        markup.remove(n);
+                    modelLevel--;
+                    if (modelLevel <= 0) {
+                        model.remove(n);
                     }
                     continue;
                 }
-                if (markupLevel <= 0) {
-                    markup.remove(n);
+                if (modelLevel <= 0) {
+                    model.remove(n);
                 }
 
             }
 
             // Once processed, we convert it to immutable (this way, it won't be cloned anymore)
-            parsedFragment = markup.asImmutable();
+            parsedFragment = new ImmutableModel(model);
 
         }
 

@@ -922,16 +922,15 @@ public class TemplateEngine implements ITemplateEngine {
      *
      * @param template the template; depending on the template resolver this might be a template name or even
      *                 the template contents (e.g. StringTemplateResolver).
-     * @param markupSelectors the markup selectors to be used, defining the fragments that should be processed
-     * @param context the context.   @return a String containing the result of evaluating the specified template
-     *         with the provided context.
+     * @param selectors the selectors to be used, defining the fragments that should be processed
+     * @param context the context.
      * @return a String containing the result of evaluating the specified template
      *         with the provided context.
      * @since 3.0.0
      */
-    public final String process(final String template, final String[] markupSelectors, final IContext context) {
+    public final String process(final String template, final String[] selectors, final IContext context) {
         final StringWriter stringWriter = new StringWriter();
-        process(template, markupSelectors, null, context, stringWriter);
+        process(template, selectors, null, context, stringWriter);
         return stringWriter.toString();
     }
 
@@ -953,18 +952,17 @@ public class TemplateEngine implements ITemplateEngine {
      *
      * @param template the template; depending on the template resolver this might be a template name or even
      *                 the template contents (e.g. StringTemplateResolver).
-     * @param markupSelectors the markup selectors to be used, defining the fragments that should be processed
+     * @param selectors the selectors to be used, defining the fragments that should be processed
      * @param templateMode the template mode to be used for processing the template, overriding the one assigned by
      *                     the corresponding template resolver.
-     * @param context the context.   @return a String containing the result of evaluating the specified template
-     *         with the provided context.
+     * @param context the context.
      * @return a String containing the result of evaluating the specified template
      *         with the provided context.
      * @since 3.0.0
      */
-    public final String process(final String template, final String[] markupSelectors, final TemplateMode templateMode, final IContext context) {
+    public final String process(final String template, final String[] selectors, final TemplateMode templateMode, final IContext context) {
         final StringWriter stringWriter = new StringWriter();
-        process(template, markupSelectors, templateMode, context, stringWriter);
+        process(template, selectors, templateMode, context, stringWriter);
         return stringWriter.toString();
     }
 
@@ -1052,13 +1050,13 @@ public class TemplateEngine implements ITemplateEngine {
      *
      * @param template the template; depending on the template resolver this might be a template name or even
      *                 the template contents (e.g. StringTemplateResolver).
-     * @param markupSelectors the markup selectors to be used, defining the fragments that should be processed
+     * @param selectors the selectors to be used, defining the fragments that should be processed
      * @param context the context.
      * @param writer the writer the results will be output to.
      * @since 3.0.0
      */
-    public final void process(final String template, final String[] markupSelectors, final IContext context, final Writer writer) {
-        process(template, markupSelectors, null, context, writer);
+    public final void process(final String template, final String[] selectors, final IContext context, final Writer writer) {
+        process(template, selectors, null, context, writer);
     }
 
 
@@ -1083,15 +1081,14 @@ public class TemplateEngine implements ITemplateEngine {
      * 
      * @param template the template; depending on the template resolver this might be a template name or even
      *                 the template contents (e.g. StringTemplateResolver).
-     * @param markupSelectors the markup selectors to be used, defining the fragments that should be processed
+     * @param selectors the selectors to be used, defining the fragments that should be processed
      * @param templateMode the template mode to be used for processing the template, overriding the one assigned by
      *                     the corresponding template resolver.
      * @param context the context.
-     * @param writer the writer the results will be output to.
-     * @since 3.0.0
+     * @param writer the writer the results will be output to.    @since 3.0.0
      */
     public final void process(
-            final String template, final String[] markupSelectors, final TemplateMode templateMode, final IContext context, final Writer writer) {
+            final String template, final String[] selectors, final TemplateMode templateMode, final IContext context, final Writer writer) {
 
         if (!this.initialized.get()) {
             initialize();
@@ -1102,39 +1099,39 @@ public class TemplateEngine implements ITemplateEngine {
             Validate.notNull(template, "Template cannot be null");
             Validate.notNull(context, "Context cannot be null");
             Validate.notNull(writer, "Writer cannot be null");
-            // markup selectors CAN actually be null if we are going to render the entire template
+            // selectors CAN actually be null if we are going to render the entire template
             // templateMode CAN also be null if we are going to use the mode specified by the template resolver
 
             if (logger.isDebugEnabled()) {
-                if (markupSelectors == null || markupSelectors.length == 0) {
+                if (selectors == null || selectors.length == 0) {
                     logger.debug("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH LOCALE {}",
                             new Object[] {TemplateEngine.threadIndex(), template, context.getLocale()});
                 } else {
-                    logger.debug("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH MARKUP SELECTORS {} AND LOCALE {}",
-                            new Object[] {TemplateEngine.threadIndex(), template, Arrays.asList(markupSelectors), context.getLocale()});
+                    logger.debug("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH SELECTORS {} AND LOCALE {}",
+                            new Object[] {TemplateEngine.threadIndex(), template, Arrays.asList(selectors), context.getLocale()});
                 }
             }
 
             final long startNanos = System.nanoTime();
             
-            this.templateManager.processStandaloneTemplate(this.configuration, template, markupSelectors, templateMode, context, writer, true);
+            this.templateManager.processStandaloneTemplate(this.configuration, template, selectors, templateMode, context, writer, true);
 
             final long endNanos = System.nanoTime();
             
             if (logger.isDebugEnabled()) {
-                if (markupSelectors == null || markupSelectors.length == 0) {
+                if (selectors == null || selectors.length == 0) {
                     logger.debug("[THYMELEAF][{}] FINISHED PROCESS AND OUTPUT OF TEMPLATE \"{}\" WITH LOCALE {}",
                             new Object[] {TemplateEngine.threadIndex(), template, context.getLocale()});
                 } else {
-                    logger.debug("[THYMELEAF][{}] FINISHED PROCESS AND OUTPUT OF TEMPLATE \"{}\" WITH MARKUP SELECTORS {} AND LOCALE {}",
-                            new Object[] {TemplateEngine.threadIndex(), template, Arrays.asList(markupSelectors), context.getLocale()});
+                    logger.debug("[THYMELEAF][{}] FINISHED PROCESS AND OUTPUT OF TEMPLATE \"{}\" WITH SELECTORS {} AND LOCALE {}",
+                            new Object[] {TemplateEngine.threadIndex(), template, Arrays.asList(selectors), context.getLocale()});
                 }
             }
 
             if (timerLogger.isDebugEnabled()) {
                 final BigDecimal elapsed = BigDecimal.valueOf(endNanos - startNanos);
                 final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(NANOS_IN_SECOND), RoundingMode.HALF_UP);
-                if (markupSelectors == null || markupSelectors.length == 0) {
+                if (selectors == null || selectors.length == 0) {
                     timerLogger.debug(
                             "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH LOCALE {} PROCESSED IN {} nanoseconds (approx. {}ms)",
                             new Object[] {TemplateEngine.threadIndex(),
@@ -1142,10 +1139,10 @@ public class TemplateEngine implements ITemplateEngine {
                                     template, context.getLocale(), elapsed, elapsedMs});
                 } else {
                     timerLogger.debug(
-                            "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH MARKUP SELECTORS {} AND LOCALE {} PROCESSED IN {} nanoseconds (approx. {}ms)",
+                            "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH SELECTORS {} AND LOCALE {} PROCESSED IN {} nanoseconds (approx. {}ms)",
                             new Object[] {TemplateEngine.threadIndex(),
                                     template, context.getLocale(), elapsed, elapsedMs,
-                                    template, Arrays.asList(markupSelectors), context.getLocale(), elapsed, elapsedMs});
+                                    template, Arrays.asList(selectors), context.getLocale(), elapsed, elapsedMs});
                 }
             }
             

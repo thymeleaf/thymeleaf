@@ -62,7 +62,7 @@ final class InlinedOutputExpressionTextHandler extends AbstractChainedTextHandle
                         configuration,
                         templateMode,
                         standardDialectPresent, standardDialectPrefix,
-                        new InlineMarkupAdapterHandler(handler));
+                        new InlineTextAdapterHandler(handler));
 
     }
 
@@ -170,12 +170,12 @@ final class InlinedOutputExpressionTextHandler extends AbstractChainedTextHandle
 
 
 
-    private static final class InlineMarkupAdapterHandler implements IInlineHandler {
+    private static final class InlineTextAdapterHandler implements IInlineHandler {
 
         private ITextHandler handler;
 
 
-        InlineMarkupAdapterHandler(final ITextHandler handler) {
+        InlineTextAdapterHandler(final ITextHandler handler) {
             super();
             this.handler = handler;
         }

@@ -45,7 +45,7 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
     /*
      * This class is in charge of managing the map of variables in place at each moment in the template processing,
-     * by taking care of the different markup levels the process is traversing and storing local variables only
+     * by taking care of the different model levels the process is traversing and storing local variables only
      * for the levels they correspond to.
      */
 

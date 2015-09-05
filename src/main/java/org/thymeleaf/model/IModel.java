@@ -17,21 +17,42 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.processor.element;
+package org.thymeleaf.model;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.model.IMarkup;
+import java.io.IOException;
+import java.io.Writer;
+
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.templatemode.TemplateMode;
+
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
-public interface IElementMarkupProcessor extends IElementProcessor {
+public interface IModel {
 
 
-    public void process(final ITemplateProcessingContext processingContext, final IMarkup markup);
+    public IEngineConfiguration getConfiguration();
 
+    public TemplateMode getTemplateMode();
+
+    public int size();
+
+    public ITemplateEvent get(final int pos);
+
+    public void add(final ITemplateEvent event);
+    public void insert(final int pos, final ITemplateEvent event);
+
+    public void addModel(final IModel model);
+    public void insertModel(final int pos, final IModel model);
+
+    public void remove(final int pos);
+
+    public void reset();
+
+    public void write(final Writer writer) throws IOException;
 
 }

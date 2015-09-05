@@ -22,7 +22,7 @@ package org.thymeleaf.processor.element;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IMarkup;
+import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EscapedAttributeUtils;
@@ -34,13 +34,13 @@ import org.thymeleaf.util.EscapedAttributeUtils;
  * @since 3.0.0
  *
  */
-public abstract class AbstractAttributeMarkupProcessor extends AbstractElementMarkupProcessor {
+public abstract class AbstractAttributeModelProcessor extends AbstractElementModelProcessor {
 
 
     private final boolean removeAttribute;
 
 
-    protected AbstractAttributeMarkupProcessor(
+    protected AbstractAttributeModelProcessor(
             final TemplateMode templateMode, final String dialectPrefix,
             final String elementName, final boolean prefixElementName,
             final String attributeName, final boolean prefixAttributeName,
@@ -54,8 +54,8 @@ public abstract class AbstractAttributeMarkupProcessor extends AbstractElementMa
     @Override
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
-            final IMarkup markup,
-            final String markupTemplateName, final int markupLine, final int markupCol) {
+            final IModel model,
+            final String modelTemplateName, final int modelLine, final int modelCol) {
 
         String attributeTemplateName = null;
         int attributeLine = -1;
@@ -64,7 +64,7 @@ public abstract class AbstractAttributeMarkupProcessor extends AbstractElementMa
 
             final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
 
-            final IProcessableElementTag firstEvent = (IProcessableElementTag) markup.get(0);
+            final IProcessableElementTag firstEvent = (IProcessableElementTag) model.get(0);
             attributeTemplateName = firstEvent.getTemplateName();
             attributeLine = firstEvent.getAttributes().getLine(attributeName);
             attributeCol = firstEvent.getAttributes().getCol(attributeName);
@@ -76,7 +76,7 @@ public abstract class AbstractAttributeMarkupProcessor extends AbstractElementMa
                 firstEvent.getAttributes().removeAttribute(attributeName);
             }
 
-            doProcess(processingContext, markup, attributeName, attributeValue, attributeTemplateName, attributeLine, attributeCol);
+            doProcess(processingContext, model, attributeName, attributeValue, attributeTemplateName, attributeLine, attributeCol);
 
         } catch (final TemplateProcessingException e) {
 
@@ -104,7 +104,7 @@ public abstract class AbstractAttributeMarkupProcessor extends AbstractElementMa
 
     protected abstract void doProcess(
             final ITemplateProcessingContext processingContext,
-            final IMarkup markup,
+            final IModel model,
             final AttributeName attributeName,
             final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol);

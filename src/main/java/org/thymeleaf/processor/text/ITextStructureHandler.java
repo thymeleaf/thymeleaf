@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.processor.text;
 
-import org.thymeleaf.model.IMarkup;
+import org.thymeleaf.model.IModel;
 
 /**
  *
@@ -32,7 +32,7 @@ public interface ITextStructureHandler {
 
     public void reset();
 
-    public void replaceWith(final IMarkup markup, final boolean processable);
+    public void replaceWith(final IModel model, final boolean processable);
 
     public void removeText();
 

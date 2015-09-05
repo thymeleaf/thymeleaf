@@ -39,7 +39,7 @@ import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
-import org.thymeleaf.model.IMarkup;
+import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
@@ -50,7 +50,7 @@ import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.processor.comment.ICommentProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeProcessor;
-import org.thymeleaf.processor.element.IElementMarkupProcessor;
+import org.thymeleaf.processor.element.IElementModelProcessor;
 import org.thymeleaf.processor.element.IElementProcessor;
 import org.thymeleaf.processor.element.IElementTagProcessor;
 import org.thymeleaf.processor.processinginstruction.IProcessingInstructionProcessor;
@@ -121,10 +121,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private boolean hasTextProcessors = false;
     private boolean hasXMLDeclarationProcessors = false;
 
-    private int markupLevel = 0;
+    private int modelLevel = 0;
 
-    private boolean[] allowedNonElementStructuresByMarkupLevel;
-    private int[] allowedElementCountByMarkupLevel;
+    private boolean[] allowedNonElementStructuresByModelLevel;
+    private int[] allowedElementCountByModelLevel;
     private LevelArray skipCloseTagLevels = new LevelArray(5);
 
     // We will have just one (reusable) instance of the element processor iterator, which will take into account the
@@ -152,8 +152,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     // Putting a text node to the queue for immediate execution is so common we will have a common buffer object for that
     private Text textBuffer = null;
 
-    // In order to execute IElementMarkupProcessor processors we will use a buffer so that we don't create so many Markup objects
-    private Markup markupBuffer = null;
+    // In order to execute IElementModelProcessor processors we will use a buffer so that we don't create so many Model objects
+    private Model modelBuffer = null;
 
     // Used for suspending the execution of a tag and replacing it for a different event (perhaps after building a
     // queue) or iterating the suspended event and its body.
@@ -161,18 +161,18 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private SuspensionSpec suspensionSpec; // Will be initialized once we have the processing context
     private boolean gatheringIteration = false;
     private IterationSpec iterationSpec = null;
-    private boolean gatheringElementMarkup = false;
-    private ElementMarkupSpec elementMarkupSpec = null;
+    private boolean gatheringElementModel = false;
+    private ElementModelSpec elementModelSpec = null;
 
     // Used during iteration, in order to not create too many queue and processor objects (which in turn might
     // create too many event buffer objects)
     private IterationArtifacts[] iterationArtifacts = null;
     private int iterationArtifactsIndex = 0;
 
-    // Used during element markup processing, in order to not create too many queue and processor objects (which in
+    // Used during element model processing, in order to not create too many queue and processor objects (which in
     // turn might create too many event buffer objects)
-    private ElementMarkupArtifacts[] elementMarkupArtifacts = null;
-    private int elementMarkupArtifactsIndex = 0;
+    private ElementModelArtifacts[] elementModelArtifacts = null;
+    private int elementModelArtifactsIndex = 0;
 
     // Used in the cases when a standalone tag is converted into an open+close one (i.e. a body is added).
     private OpenElementTag[] standaloneOpenTagBuffers = null;
@@ -201,10 +201,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         super();
 
-        this.allowedElementCountByMarkupLevel = new int[10];
-        Arrays.fill(this.allowedElementCountByMarkupLevel, Integer.MAX_VALUE);
-        this.allowedNonElementStructuresByMarkupLevel = new boolean[10];
-        Arrays.fill(this.allowedNonElementStructuresByMarkupLevel, true);
+        this.allowedElementCountByModelLevel = new int[10];
+        Arrays.fill(this.allowedElementCountByModelLevel, Integer.MAX_VALUE);
+        this.allowedNonElementStructuresByModelLevel = new boolean[10];
+        Arrays.fill(this.allowedNonElementStructuresByModelLevel, true);
 
         this.elementStructureHandler = new ElementTagStructureHandler();
         this.templateStructureHandler = new TemplateStructureHandler();
@@ -250,14 +250,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         // Buffer used for text-shaped body replacement in tags (very common operation)
         this.textBuffer = new Text(this.configuration.getTextRepository());
 
-        // Buffer used for executing IElementMarkupProcessor processors
-        this.markupBuffer = new Markup(this.configuration, this.templateMode);
+        // Buffer used for executing IElementModelProcessor processors
+        this.modelBuffer = new Model(this.configuration, this.templateMode);
 
         // Specs containing all the info required for suspending the execution of a processor in order to e.g. change
         // handling method (standalone -> open) or start caching an iteration
         this.suspensionSpec = new SuspensionSpec(this.templateMode, this.configuration);
         this.iterationSpec = new IterationSpec(this.templateMode, this.configuration);
-        this.elementMarkupSpec = new ElementMarkupSpec(this.templateMode, this.configuration);
+        this.elementModelSpec = new ElementModelSpec(this.templateMode, this.configuration);
 
         // Flags used for quickly determining if a non-element structure might have to be processed or not
         this.hasTemplateProcessors = !this.configuration.getTemplateProcessors(this.templateMode).isEmpty();
@@ -289,29 +289,29 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
 
-    private void increaseMarkupLevel() {
+    private void increaseModelLevel() {
 
-        this.markupLevel++;
+        this.modelLevel++;
 
-        if (this.markupLevel == this.allowedElementCountByMarkupLevel.length) {
+        if (this.modelLevel == this.allowedElementCountByModelLevel.length) {
 
-            final int[] newAllowedElementCountByMarkupLevel = new int[this.allowedElementCountByMarkupLevel.length + 10];
-            Arrays.fill(newAllowedElementCountByMarkupLevel, Integer.MAX_VALUE);
-            System.arraycopy(this.allowedElementCountByMarkupLevel, 0, newAllowedElementCountByMarkupLevel, 0, this.allowedElementCountByMarkupLevel.length);
-            this.allowedElementCountByMarkupLevel = newAllowedElementCountByMarkupLevel;
+            final int[] newAllowedElementCountByModelLevel = new int[this.allowedElementCountByModelLevel.length + 10];
+            Arrays.fill(newAllowedElementCountByModelLevel, Integer.MAX_VALUE);
+            System.arraycopy(this.allowedElementCountByModelLevel, 0, newAllowedElementCountByModelLevel, 0, this.allowedElementCountByModelLevel.length);
+            this.allowedElementCountByModelLevel = newAllowedElementCountByModelLevel;
 
-            final boolean[] newAllowedNonElementStructuresByMarkupLevel = new boolean[this.allowedNonElementStructuresByMarkupLevel.length + 10];
-            Arrays.fill(newAllowedNonElementStructuresByMarkupLevel, true);
-            System.arraycopy(this.allowedNonElementStructuresByMarkupLevel, 0, newAllowedNonElementStructuresByMarkupLevel, 0, this.allowedNonElementStructuresByMarkupLevel.length);
-            this.allowedNonElementStructuresByMarkupLevel = newAllowedNonElementStructuresByMarkupLevel;
+            final boolean[] newAllowedNonElementStructuresByModelLevel = new boolean[this.allowedNonElementStructuresByModelLevel.length + 10];
+            Arrays.fill(newAllowedNonElementStructuresByModelLevel, true);
+            System.arraycopy(this.allowedNonElementStructuresByModelLevel, 0, newAllowedNonElementStructuresByModelLevel, 0, this.allowedNonElementStructuresByModelLevel.length);
+            this.allowedNonElementStructuresByModelLevel = newAllowedNonElementStructuresByModelLevel;
 
         }
 
     }
 
 
-    private void decreaseMarkupLevel() {
-        this.markupLevel--;
+    private void decreaseModelLevel() {
+        this.modelLevel--;
     }
 
 
@@ -462,13 +462,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 this.textBuffer.setText(this.templateStructureHandler.insertTextValue);
                 queue.add(this.textBuffer, false);
 
-            } else if (this.templateStructureHandler.insertMarkup) {
+            } else if (this.templateStructureHandler.insertModel) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.templateStructureHandler.insertMarkupProcessable;
+                queueProcessable = this.templateStructureHandler.insertModelProcessable;
 
-                // Markup will be automatically cloned if mutable
-                queue.addMarkup(this.templateStructureHandler.insertMarkupValue);
+                // Model will be automatically cloned if mutable
+                queue.addModel(this.templateStructureHandler.insertModelValue);
 
             }
 
@@ -567,13 +567,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 this.textBuffer.setText(this.templateStructureHandler.insertTextValue);
                 queue.add(this.textBuffer, false);
 
-            } else if (this.templateStructureHandler.insertMarkup) {
+            } else if (this.templateStructureHandler.insertModel) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.templateStructureHandler.insertMarkupProcessable;
+                queueProcessable = this.templateStructureHandler.insertModelProcessable;
 
-                // Markup will be automatically cloned if mutable
-                queue.addMarkup(this.templateStructureHandler.insertMarkupValue);
+                // Model will be automatically cloned if mutable
+                queue.addModel(this.templateStructureHandler.insertModelValue);
 
             }
 
@@ -607,9 +607,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     public void handleText(final IText itext) {
 
         /*
-         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (!this.allowedNonElementStructuresByMarkupLevel[this.markupLevel]) {
+        if (!this.allowedNonElementStructuresByModelLevel[this.modelLevel]) {
             return;
         }
 
@@ -617,17 +617,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+        if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
             this.iterationSpec.iterationQueue.add(Text.asEngineText(this.configuration, itext, true), false);
             return;
         }
 
 
         /*
-         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
-            this.elementMarkupSpec.markupQueue.add(Text.asEngineText(this.configuration, itext, true), false);
+        if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
+            this.elementModelSpec.modelQueue.add(Text.asEngineText(this.configuration, itext, true), false);
             return;
         }
 
@@ -671,13 +671,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.textProcessors[i].process(this.processingContext, itext, this.textStructureHandler);
 
-            if (this.textStructureHandler.replaceWithMarkup) {
+            if (this.textStructureHandler.replaceWithModel) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.textStructureHandler.replaceWithMarkupProcessable;
+                queueProcessable = this.textStructureHandler.replaceWithModelProcessable;
 
-                // Markup will be automatically cloned if mutable
-                queue.addMarkup(this.textStructureHandler.replaceWithMarkupValue);
+                // Model will be automatically cloned if mutable
+                queue.addModel(this.textStructureHandler.replaceWithModelValue);
 
                 structureRemoved = true;
 
@@ -719,9 +719,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     public void handleComment(final IComment icomment) {
 
         /*
-         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (!this.allowedNonElementStructuresByMarkupLevel[this.markupLevel]) {
+        if (!this.allowedNonElementStructuresByModelLevel[this.modelLevel]) {
             return;
         }
 
@@ -729,17 +729,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+        if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
             this.iterationSpec.iterationQueue.add(Comment.asEngineComment(this.configuration, icomment, true), false);
             return;
         }
 
 
         /*
-         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
-            this.elementMarkupSpec.markupQueue.add(Comment.asEngineComment(this.configuration, icomment, true), false);
+        if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
+            this.elementModelSpec.modelQueue.add(Comment.asEngineComment(this.configuration, icomment, true), false);
             return;
         }
 
@@ -783,13 +783,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.commentProcessors[i].process(this.processingContext, icomment, this.commentStructureHandler);
 
-            if (this.commentStructureHandler.replaceWithMarkup) {
+            if (this.commentStructureHandler.replaceWithModel) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.commentStructureHandler.replaceWithMarkupProcessable;
+                queueProcessable = this.commentStructureHandler.replaceWithModelProcessable;
 
-                // Markup will be automatically cloned if mutable
-                queue.addMarkup(this.commentStructureHandler.replaceWithMarkupValue);
+                // Model will be automatically cloned if mutable
+                queue.addModel(this.commentStructureHandler.replaceWithModelValue);
 
                 structureRemoved = true;
 
@@ -830,9 +830,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     public void handleCDATASection(final ICDATASection icdataSection) {
 
         /*
-         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (!this.allowedNonElementStructuresByMarkupLevel[this.markupLevel]) {
+        if (!this.allowedNonElementStructuresByModelLevel[this.modelLevel]) {
             return;
         }
 
@@ -840,17 +840,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+        if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
             this.iterationSpec.iterationQueue.add(CDATASection.asEngineCDATASection(this.configuration, icdataSection, true), false);
             return;
         }
 
 
         /*
-         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
-            this.elementMarkupSpec.markupQueue.add(CDATASection.asEngineCDATASection(this.configuration, icdataSection, true), false);
+        if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
+            this.elementModelSpec.modelQueue.add(CDATASection.asEngineCDATASection(this.configuration, icdataSection, true), false);
             return;
         }
 
@@ -894,13 +894,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.cdataSectionProcessors[i].process(this.processingContext, icdataSection, this.cdataSectionStructureHandler);
 
-            if (this.cdataSectionStructureHandler.replaceWithMarkup) {
+            if (this.cdataSectionStructureHandler.replaceWithModel) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.cdataSectionStructureHandler.replaceWithMarkupProcessable;
+                queueProcessable = this.cdataSectionStructureHandler.replaceWithModelProcessable;
 
-                // Markup will be automatically cloned if mutable
-                queue.addMarkup(this.cdataSectionStructureHandler.replaceWithMarkupValue);
+                // Model will be automatically cloned if mutable
+                queue.addModel(this.cdataSectionStructureHandler.replaceWithModelValue);
 
                 structureRemoved = true;
 
@@ -943,9 +943,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     public void handleStandaloneElement(final IStandaloneElementTag istandaloneElementTag) {
 
         /*
-         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (this.allowedElementCountByMarkupLevel[this.markupLevel]-- <= 0) {
+        if (this.allowedElementCountByModelLevel[this.modelLevel]-- <= 0) {
             return;
         }
 
@@ -953,7 +953,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+        if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
             this.iterationSpec.iterationQueue.add(
                     StandaloneElementTag.asEngineStandaloneElementTag(
                             this.templateMode, this.configuration, istandaloneElementTag, true), false);
@@ -962,10 +962,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
-            this.elementMarkupSpec.markupQueue.add(
+        if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
+            this.elementModelSpec.modelQueue.add(
                     StandaloneElementTag.asEngineStandaloneElementTag(
                             this.templateMode, this.configuration, istandaloneElementTag, true), false);
             return;
@@ -975,7 +975,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * SAVE AND RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
          * Note we will only be interested on it if it is whitespace, in order to add it to iteration queues, so
-         * that iterated markup looks better (by including the last whitespace before the iterated element)
+         * that iterated model looks better (by including the last whitespace before the iterated element)
          * Also, note we do not mind the fact that IText events are reusable buffers and might have changed, because
          * if there is a this.lastTextEvent != null, it means it was the last event and therefore cannot have been
          * reused so far
@@ -1094,7 +1094,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // Set the iteration info in order to start gathering all iterated events
                     this.gatheringIteration = true;
-                    this.iterationSpec.fromMarkupLevel = this.markupLevel + 1;
+                    this.iterationSpec.fromModelLevel = this.modelLevel + 1;
                     this.iterationSpec.iterVariableName = this.elementStructureHandler.iterVariableName;
                     this.iterationSpec.iterStatusVariableName = this.elementStructureHandler.iterStatusVariableName;
                     this.iterationSpec.iteratedObject = this.elementStructureHandler.iteratedObject;
@@ -1187,7 +1187,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Complete exit of the handler method: no more processing to do from here
                     return;
 
-                } else if (this.elementStructureHandler.setBodyMarkup) {
+                } else if (this.elementStructureHandler.setBodyModel) {
 
                     queue.reset(); // Remove any previous results on the queue
 
@@ -1199,8 +1199,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     closeTag.resetAsCloneOf(standaloneElementTag);
 
                     // Prepare the queue (that we will suspend)
-                    // Markup will be automatically cloned if mutable
-                    queue.addMarkup(this.elementStructureHandler.setBodyMarkupValue);
+                    // Model will be automatically cloned if mutable
+                    queue.addModel(this.elementStructureHandler.setBodyModelValue);
 
                     // We are done with using the standalone buffers, so increase the index
                     this.standaloneTagBuffersIndex++;
@@ -1209,7 +1209,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.suspended = true;
                     this.suspensionSpec.allowedElementCountInBody = Integer.MAX_VALUE;
                     this.suspensionSpec.allowedNonElementStructuresInBody = true;
-                    this.suspensionSpec.queueProcessable = this.elementStructureHandler.setBodyMarkupProcessable;
+                    this.suspensionSpec.queueProcessable = this.elementStructureHandler.setBodyModelProcessable;
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
@@ -1233,35 +1233,35 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Complete exit of the handler method: no more processing to do from here
                     return;
 
-                } else if (this.elementStructureHandler.insertBeforeMarkup) {
+                } else if (this.elementStructureHandler.insertBeforeModel) {
 
-                    final IMarkup insertedMarkup = this.elementStructureHandler.insertBeforeMarkupValue;
+                    final IModel insertedModel = this.elementStructureHandler.insertBeforeModelValue;
                     if (queue.size() == 0) {
-                        // The current queue object is empty, so we can use it to process this inserted markup
+                        // The current queue object is empty, so we can use it to process this inserted model
 
-                        queue.addMarkup(insertedMarkup);
-                        // Markup inserted BEFORE is never processable, so we will always use getNext() here
+                        queue.addModel(insertedModel);
+                        // Model inserted BEFORE is never processable, so we will always use getNext() here
                         queue.process(getNext(), true);
 
                     } else {
-                        // The current queue object is not empty :-( so in order to process this inserted markup
+                        // The current queue object is not empty :-( so in order to process this inserted model
                         // we will need to use a new queue...
 
                         final EngineEventQueue newQueue = new EngineEventQueue(this.configuration, this.templateMode, 5);
-                        newQueue.addMarkup(insertedMarkup);
-                        // Markup inserted BEFORE is never processable, so we will always use getNext() here
+                        newQueue.addModel(insertedModel);
+                        // Model inserted BEFORE is never processable, so we will always use getNext() here
                         newQueue.process(getNext(), true);
 
                     }
 
-                } else if (this.elementStructureHandler.insertAfterMarkup) {
+                } else if (this.elementStructureHandler.insertAfterModel) {
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    queueProcessable = this.elementStructureHandler.insertAfterMarkupProcessable;
+                    queueProcessable = this.elementStructureHandler.insertAfterModelProcessable;
 
-                    // Markup will be automatically cloned if mutable
-                    queue.insertMarkup(0, this.elementStructureHandler.insertAfterMarkupValue);
+                    // Model will be automatically cloned if mutable
+                    queue.insertModel(0, this.elementStructureHandler.insertAfterModelValue);
 
                     // No intervention on the body flags - we will not be removing the body, just inserting before it
 
@@ -1277,13 +1277,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     tagRemoved = true;
 
-                } else if (this.elementStructureHandler.replaceWithMarkup) {
+                } else if (this.elementStructureHandler.replaceWithModel) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementStructureHandler.replaceWithMarkupProcessable;
+                    queueProcessable = this.elementStructureHandler.replaceWithModelProcessable;
 
-                    // Markup will be automatically cloned if mutable
-                    queue.addMarkup(this.elementStructureHandler.replaceWithMarkupValue);
+                    // Model will be automatically cloned if mutable
+                    queue.addModel(this.elementStructureHandler.replaceWithModelValue);
 
                     tagRemoved = true;
 
@@ -1302,30 +1302,30 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 }
                 // No way to process 'removeBody' or 'removeAllButFirstChild' on a standalone tag
 
-            } else if (processor instanceof IElementMarkupProcessor) {
+            } else if (processor instanceof IElementModelProcessor) {
 
                 /*
-                 * This is an Element Markup processor, which means that before executing we might need to gather
-                 * all the markup that is inside the element (including the element's events themselves) and then,
-                 * once all markup has been gathered, call the processor. Note this process is quite similar to
+                 * This is an Element Model processor, which means that before executing we might need to gather
+                 * all the model that is inside the element (including the element's events themselves) and then,
+                 * once all model has been gathered, call the processor. Note this process is quite similar to
                  * that of iteration.
                  *
-                 * In order to know whether we need to start the markup gathering process, or if just finished it
+                 * In order to know whether we need to start the model gathering process, or if just finished it
                  * and we need to actually execute the processor, we will ask the elementProcessorIterator to know
                  * if this is the first or the second time we execute this processor.
                  */
 
                 if (!this.elementProcessorIterator.lastWasRepeated()){
 
-                    // Set the element markup info in order to start gathering all the element markup's events
-                    this.gatheringElementMarkup = true;
-                    this.elementMarkupSpec.fromMarkupLevel = this.markupLevel + 1;
-                    this.elementMarkupSpec.markupQueue.reset();
+                    // Set the element model info in order to start gathering all the element model's events
+                    this.gatheringElementModel = true;
+                    this.elementModelSpec.fromModelLevel = this.modelLevel + 1;
+                    this.elementModelSpec.modelQueue.reset();
 
-                    // Set the processor to be executed again, because this time we will just set the "markup gathering" mechanism
+                    // Set the processor to be executed again, because this time we will just set the "model gathering" mechanism
                     this.elementProcessorIterator.setLastToBeRepeated(standaloneElementTag);
 
-                    // Suspend the queue - execution will be restarted by the execution of this event again once markup is gathered
+                    // Suspend the queue - execution will be restarted by the execution of this event again once model is gathered
                     this.suspended = true;
                     this.suspensionSpec.allowedElementCountInBody = Integer.MAX_VALUE;
                     this.suspensionSpec.allowedNonElementStructuresInBody = true;
@@ -1333,8 +1333,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
-                    // Add this standalone tag to the element markup queue
-                    this.elementMarkupSpec.markupQueue.add(standaloneElementTag, true);
+                    // Add this standalone tag to the element model queue
+                    this.elementModelSpec.modelQueue.add(standaloneElementTag, true);
 
                     // Decrease the handler execution level (all important bits are already in suspensionSpec)
                     decreaseHandlerExecLevel();
@@ -1342,7 +1342,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- we need the variables stored there, if any
 
                     // Process the queue by iterating it
-                    processElementMarkup();
+                    processElementModel();
 
                     // Decrease the variables map level
                     if (this.variablesMap != null) {
@@ -1355,33 +1355,33 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 }
 
                 /*
-                 * This is not the first time we try to execute this processor, which means the markup gathering
+                 * This is not the first time we try to execute this processor, which means the model gathering
                  * process has already taken place.
                  */
 
-                final EngineEventQueue gatheredQueue = this.elementMarkupArtifacts[this.elementMarkupArtifactsIndex - 1].markupQueue;
+                final EngineEventQueue gatheredQueue = this.elementModelArtifacts[this.elementModelArtifactsIndex - 1].modelQueue;
 
-                // We will use the markup buffer in order to save in number of Markup objects created. This is safe
-                // because we will only be calling one of these processors at a time, and the markup contents will
+                // We will use the model buffer in order to save in number of Model objects created. This is safe
+                // because we will only be calling one of these processors at a time, and the model contents will
                 // be cloned after execution in order to insert them into the queue.
                 //
                 // NOTE we are not cloning the events themselves here. There should be no need, as we are going to
                 //      re-locate these events into a new queue, and their old position (which will be executed
                 //      anyway) will be ignored.
-                this.markupBuffer.getEventQueue().resetAsCloneOf(gatheredQueue, false);
+                this.modelBuffer.getEventQueue().resetAsCloneOf(gatheredQueue, false);
 
-                ((IElementMarkupProcessor) processor).process(this.processingContext, this.markupBuffer);
+                ((IElementModelProcessor) processor).process(this.processingContext, this.modelBuffer);
 
                 /*
                  * Now we will do the exact equivalent to what is performed for an Element Tag processor, when this
-                 * returns a result of type "replaceWithMarkup".
+                 * returns a result of type "replaceWithModel".
                  */
 
                 queue.reset(); // Remove any previous results on the queue
                 queueProcessable = true; // We actually NEED TO process this queue
 
-                // Markup will be automatically cloned if mutable
-                queue.addMarkup(this.markupBuffer);
+                // Model will be automatically cloned if mutable
+                queue.addModel(this.modelBuffer);
 
                 tagRemoved = true;
 
@@ -1389,7 +1389,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             } else {
                 throw new IllegalStateException(
                         "An element has been found with an associated processor of type " + processor.getClass().getName() +
-                        " which is neither a Tag Element Processor nor a Markup Element Processor.");
+                        " which is neither a Tag Element Processor nor a Model Element Processor.");
             }
 
         }
@@ -1432,12 +1432,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     public void handleOpenElement(final IOpenElementTag iopenElementTag) {
 
         /*
-         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (this.allowedElementCountByMarkupLevel[this.markupLevel] <= 0) { // Note the structure doesn't end here, so we don't decrease until the close tag
-            increaseMarkupLevel();
-            this.allowedElementCountByMarkupLevel[this.markupLevel] = 0; // we make sure all is skipped inside
-            this.allowedNonElementStructuresByMarkupLevel[this.markupLevel] = false; // we make sure all is skipped inside
+        if (this.allowedElementCountByModelLevel[this.modelLevel] <= 0) { // Note the structure doesn't end here, so we don't decrease until the close tag
+            increaseModelLevel();
+            this.allowedElementCountByModelLevel[this.modelLevel] = 0; // we make sure all is skipped inside
+            this.allowedNonElementStructuresByModelLevel[this.modelLevel] = false; // we make sure all is skipped inside
             return;
         }
 
@@ -1445,21 +1445,21 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+        if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
             this.iterationSpec.iterationQueue.add(
                     OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, iopenElementTag, true), false);
-            increaseMarkupLevel();
+            increaseModelLevel();
             return;
         }
 
 
         /*
-         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
-            this.elementMarkupSpec.markupQueue.add(
+        if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
+            this.elementModelSpec.modelQueue.add(
                     OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, iopenElementTag, true), false);
-            increaseMarkupLevel();
+            increaseModelLevel();
             return;
         }
 
@@ -1467,7 +1467,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * SAVE AND RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
          * Note we will only be interested on it if it is whitespace, in order to add it to iteration queues, so
-         * that iterated markup looks better (by including the last whitespace before the iterated element)
+         * that iterated model looks better (by including the last whitespace before the iterated element)
          * Also, note we do not mind the fact that IText events are reusable buffers and might have changed, because
          * if there is a this.lastTextEvent != null, it means it was the last event and therefore cannot have been
          * reused so far
@@ -1482,7 +1482,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          */
         if (!this.suspended && !iopenElementTag.hasAssociatedProcessors()) {
             super.handleOpenElement(iopenElementTag);
-            increaseMarkupLevel();
+            increaseModelLevel();
             if (this.variablesMap != null) {
                 this.variablesMap.increaseLevel();
             }
@@ -1594,7 +1594,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // Set the iteration info in order to start gathering all iterated events
                     this.gatheringIteration = true;
-                    this.iterationSpec.fromMarkupLevel = this.markupLevel + 1;
+                    this.iterationSpec.fromModelLevel = this.modelLevel + 1;
                     this.iterationSpec.iterVariableName = this.elementStructureHandler.iterVariableName;
                     this.iterationSpec.iterStatusVariableName = this.elementStructureHandler.iterStatusVariableName;
                     this.iterationSpec.iteratedObject = this.elementStructureHandler.iteratedObject;
@@ -1628,8 +1628,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Add the tag itself to the iteration queue
                     this.iterationSpec.iterationQueue.add(openElementTag, true);
 
-                    // Increase markup level, as normal with open tags
-                    increaseMarkupLevel();
+                    // Increase model level, as normal with open tags
+                    increaseModelLevel();
 
                     // Decrease the handler execution level (all important bits are already in suspensionSpec)
                     decreaseHandlerExecLevel();
@@ -1654,46 +1654,46 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
-                } else if (this.elementStructureHandler.setBodyMarkup) {
+                } else if (this.elementStructureHandler.setBodyModel) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementStructureHandler.setBodyMarkupProcessable;
+                    queueProcessable = this.elementStructureHandler.setBodyModelProcessable;
 
-                    // Markup will be automatically cloned if mutable
-                    queue.addMarkup(this.elementStructureHandler.setBodyMarkupValue);
+                    // Model will be automatically cloned if mutable
+                    queue.addModel(this.elementStructureHandler.setBodyModelValue);
 
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
-                } else if (this.elementStructureHandler.insertBeforeMarkup) {
+                } else if (this.elementStructureHandler.insertBeforeModel) {
 
-                    final IMarkup insertedMarkup = this.elementStructureHandler.insertBeforeMarkupValue;
+                    final IModel insertedModel = this.elementStructureHandler.insertBeforeModelValue;
                     if (queue.size() == 0) {
-                        // The current queue object is empty, so we can use it to process this inserted markup
+                        // The current queue object is empty, so we can use it to process this inserted model
 
-                        queue.addMarkup(insertedMarkup);
-                        // Markup inserted BEFORE is never processable, so we will always use getNext() here
+                        queue.addModel(insertedModel);
+                        // Model inserted BEFORE is never processable, so we will always use getNext() here
                         queue.process(getNext(), true);
 
                     } else {
-                        // The current queue object is not empty :-( so in order to process this inserted markup
+                        // The current queue object is not empty :-( so in order to process this inserted model
                         // we will need to use a new queue...
 
                         final EngineEventQueue newQueue = new EngineEventQueue(this.configuration, this.templateMode, 5);
-                        newQueue.addMarkup(insertedMarkup);
-                        // Markup inserted BEFORE is never processable, so we will always use getNext() here
+                        newQueue.addModel(insertedModel);
+                        // Model inserted BEFORE is never processable, so we will always use getNext() here
                         newQueue.process(getNext(), true);
 
                     }
 
-                } else if (this.elementStructureHandler.insertAfterMarkup) {
+                } else if (this.elementStructureHandler.insertAfterModel) {
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    queueProcessable = this.elementStructureHandler.insertAfterMarkupProcessable;
+                    queueProcessable = this.elementStructureHandler.insertAfterModelProcessable;
 
-                    // Markup will be automatically cloned if mutable
-                    queue.insertMarkup(0, this.elementStructureHandler.insertAfterMarkupValue);
+                    // Model will be automatically cloned if mutable
+                    queue.insertModel(0, this.elementStructureHandler.insertAfterModelValue);
 
                     // No intervention on the body flags - we will not be removing the body, just inserting before it
 
@@ -1711,13 +1711,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
-                } else if (this.elementStructureHandler.replaceWithMarkup) {
+                } else if (this.elementStructureHandler.replaceWithModel) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementStructureHandler.replaceWithMarkupProcessable;
+                    queueProcessable = this.elementStructureHandler.replaceWithModelProcessable;
 
-                    // Markup will be automatically cloned if mutable
-                    queue.addMarkup(this.elementStructureHandler.replaceWithMarkupValue);
+                    // Model will be automatically cloned if mutable
+                    queue.addModel(this.elementStructureHandler.replaceWithModelValue);
 
                     tagRemoved = true;
                     allowedElementCountInBody = 0;
@@ -1753,36 +1753,36 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 }
 
-            } else if (processor instanceof IElementMarkupProcessor) {
+            } else if (processor instanceof IElementModelProcessor) {
 
                 /*
-                 * This is an Element Markup processor, which means that before executing we might need to gather
-                 * all the markup that is inside the element (including the element's events themselves) and then,
-                 * once all markup has been gathered, call the processor. Note this process is quite similar to
+                 * This is an Element Model processor, which means that before executing we might need to gather
+                 * all the model that is inside the element (including the element's events themselves) and then,
+                 * once all model has been gathered, call the processor. Note this process is quite similar to
                  * that of iteration.
                  *
-                 * In order to know whether we need to start the markup gathering process, or if just finished it
+                 * In order to know whether we need to start the model gathering process, or if just finished it
                  * and we need to actually execute the processor, we will ask the elementProcessorIterator to know
                  * if this is the first or the second time we execute this processor.
                  */
 
                 if (!this.elementProcessorIterator.lastWasRepeated()){
 
-                    // Set the element markup info in order to start gathering all the element markup's events
-                    this.gatheringElementMarkup = true;
-                    this.elementMarkupSpec.fromMarkupLevel = this.markupLevel + 1;
-                    this.elementMarkupSpec.markupQueue.reset();
+                    // Set the element model info in order to start gathering all the element model's events
+                    this.gatheringElementModel = true;
+                    this.elementModelSpec.fromModelLevel = this.modelLevel + 1;
+                    this.elementModelSpec.modelQueue.reset();
 
                     // Before suspending the queue, we have to check if it is the result of a "setBodyText", in
                     // which case it will contain only one non-cloned node: the text buffer. And we will need to clone
-                    // that buffer before suspending the queue to avoid nasty interactions during element markup processing
+                    // that buffer before suspending the queue to avoid nasty interactions during element model processing
                     if (queue.size() == 1 && queue.get(0) == this.textBuffer) {
                         // Replace the text buffer with a clone
                         queue.reset();
                         queue.add(this.textBuffer, true);
                     }
 
-                    // Set the processor to be executed again, because this time we will just set the "markup gathering" mechanism
+                    // Set the processor to be executed again, because this time we will just set the "model gathering" mechanism
                     this.elementProcessorIterator.setLastToBeRepeated(openElementTag);
 
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
@@ -1793,11 +1793,11 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
-                    // Add the tag itself to the element markup queue
-                    this.elementMarkupSpec.markupQueue.add(openElementTag, true);
+                    // Add the tag itself to the element model queue
+                    this.elementModelSpec.modelQueue.add(openElementTag, true);
 
-                    // Increase markup level, as normal with open tags
-                    increaseMarkupLevel();
+                    // Increase model level, as normal with open tags
+                    increaseModelLevel();
 
                     // Decrease the handler execution level (all important bits are already in suspensionSpec)
                     decreaseHandlerExecLevel();
@@ -1810,33 +1810,33 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 }
 
                 /*
-                 * This is not the first time we try to execute this processor, which means the markup gathering
+                 * This is not the first time we try to execute this processor, which means the model gathering
                  * process has already taken place.
                  */
 
-                final EngineEventQueue gatheredQueue = this.elementMarkupArtifacts[this.elementMarkupArtifactsIndex - 1].markupQueue;
+                final EngineEventQueue gatheredQueue = this.elementModelArtifacts[this.elementModelArtifactsIndex - 1].modelQueue;
 
-                // We will use the markup buffer in order to save in number of Markup objects created. This is safe
-                // because we will only be calling one of these processors at a time, and the markup contents will
+                // We will use the model buffer in order to save in number of Model objects created. This is safe
+                // because we will only be calling one of these processors at a time, and the model contents will
                 // be cloned after execution in order to insert them into the queue.
                 //
                 // NOTE we are not cloning the events themselves here. There should be no need, as we are going to
                 //      re-locate these events into a new queue, and their old position (which will be executed
                 //      anyway) will be ignored.
-                this.markupBuffer.getEventQueue().resetAsCloneOf(gatheredQueue, false);
+                this.modelBuffer.getEventQueue().resetAsCloneOf(gatheredQueue, false);
 
-                ((IElementMarkupProcessor) processor).process(this.processingContext, this.markupBuffer);
+                ((IElementModelProcessor) processor).process(this.processingContext, this.modelBuffer);
 
                 /*
                  * Now we will do the exact equivalent to what is performed for an Element Tag processor, when this
-                 * returns a result of type "replaceWithMarkup".
+                 * returns a result of type "replaceWithModel".
                  */
 
                 queue.reset(); // Remove any previous results on the queue
                 queueProcessable = true; // We actually NEED TO process this queue
 
-                // Markup will be automatically cloned if mutable
-                queue.addMarkup(this.markupBuffer);
+                // Model will be automatically cloned if mutable
+                queue.addModel(this.modelBuffer);
 
                 tagRemoved = true;
                 allowedElementCountInBody = 0;
@@ -1846,14 +1846,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             } else {
                 throw new IllegalStateException(
                         "An element has been found with an associated processor of type " + processor.getClass().getName() +
-                        " which is neither a Tag Element Processor nor a Markup Element Processor.");
+                        " which is neither a Tag Element Processor nor a Model Element Processor.");
             }
 
         }
 
 
         /*
-         * PROCESS THE REST OF THE HANDLER CHAIN and INCREASE THE MARKUP LEVEL RIGHT AFTERWARDS
+         * PROCESS THE REST OF THE HANDLER CHAIN and INCREASE THE MODEL LEVEL RIGHT AFTERWARDS
          */
         if (!tagRemoved) {
             super.handleOpenElement(openElementTag);
@@ -1861,9 +1861,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * INCREASE THE MARKUP LEVEL to the value that will be applied to the tag's bodies
+         * INCREASE THE MODEL LEVEL to the value that will be applied to the tag's bodies
          */
-        increaseMarkupLevel();
+        increaseModelLevel();
 
 
         /*
@@ -1876,11 +1876,11 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * SET BODY TO BE SKIPPED, if required
          */
         if (!allowedNonElementStructuresInBody) {
-            this.allowedNonElementStructuresByMarkupLevel[this.markupLevel] = false;
+            this.allowedNonElementStructuresByModelLevel[this.modelLevel] = false;
         }
         if (allowedElementCountInBody != Integer.MAX_VALUE) {
             // We make sure no other nested events will be processed at all
-            this.allowedElementCountByMarkupLevel[this.markupLevel] = allowedElementCountInBody;
+            this.allowedElementCountByModelLevel[this.modelLevel] = allowedElementCountInBody;
         }
 
 
@@ -1888,8 +1888,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * MAKE SURE WE SKIP THE CORRESPONDING CLOSE TAG, if required
          */
         if (tagRemoved) {
-            this.skipCloseTagLevels.add(this.markupLevel - 1);
-            // We cannot decrease here the variables map level because we aren't actually decreasing the markup
+            this.skipCloseTagLevels.add(this.modelLevel - 1);
+            // We cannot decrease here the variables map level because we aren't actually decreasing the model
             // level until we find the corresponding close tag
         }
 
@@ -1916,31 +1916,31 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         /*
-         * DECREASE THE MARKUP LEVEL, as only the body of elements should be considered in a higher level
+         * DECREASE THE MODEL LEVEL, as only the body of elements should be considered in a higher level
          */
-        decreaseMarkupLevel();
+        decreaseModelLevel();
 
         /*
-         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (this.allowedElementCountByMarkupLevel[this.markupLevel]-- <= 0) {
+        if (this.allowedElementCountByModelLevel[this.modelLevel]-- <= 0) {
             return;
         }
 
         /*
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+        if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
             this.iterationSpec.iterationQueue.add(
                     CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true), false);
             return;
         }
 
         /*
-         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
-            this.elementMarkupSpec.markupQueue.add(
+        if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
+            this.elementModelSpec.modelQueue.add(
                     CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true), false);
             return;
         }
@@ -1953,7 +1953,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER WE ARE JUST CLOSING AN ITERATION, and in such case, process it
          */
-        if (this.gatheringIteration && this.markupLevel + 1 == this.iterationSpec.fromMarkupLevel) {
+        if (this.gatheringIteration && this.modelLevel + 1 == this.iterationSpec.fromModelLevel) {
 
             // Add the last tag: the closing one
             this.iterationSpec.iterationQueue.add(
@@ -1972,16 +1972,16 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         /*
-         * CHECK WHETHER WE ARE JUST CLOSING AN ELEMENT's MARKUP GATHERING, and in such case, process it
+         * CHECK WHETHER WE ARE JUST CLOSING AN ELEMENT's MODEL GATHERING, and in such case, process it
          */
-        if (this.gatheringElementMarkup && this.markupLevel + 1 == this.elementMarkupSpec.fromMarkupLevel) {
+        if (this.gatheringElementModel && this.modelLevel + 1 == this.elementModelSpec.fromModelLevel) {
 
             // Add the last tag: the closing one
-            this.elementMarkupSpec.markupQueue.add(
+            this.elementModelSpec.modelQueue.add(
                     CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true), false);
 
             // Process the queue
-            processElementMarkup();
+            processElementModel();
 
             // Decrease the variables map level
             if (this.variablesMap != null) {
@@ -1993,25 +1993,25 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         /*
-         * DECREASE THE VARIABLES MAP LEVEL, once we know this tag was not part of a block of discarded markup
+         * DECREASE THE VARIABLES MAP LEVEL, once we know this tag was not part of a block of discarded model
          */
         if (this.variablesMap != null) {
             this.variablesMap.decreaseLevel();
         }
 
         /*
-         * CHECK WHETHER WE SHOULD KEEP SKIPPING MARKUP or we just got to the end of the discarded block
+         * CHECK WHETHER WE SHOULD KEEP SKIPPING MODEL or we just got to the end of the discarded block
          */
-        if (this.allowedElementCountByMarkupLevel[this.markupLevel + 1] <= 0) {
-            // We've reached the last point where markup should be discarded, so we should reset the variable
-            Arrays.fill(this.allowedElementCountByMarkupLevel, this.markupLevel + 1, this.allowedElementCountByMarkupLevel.length, Integer.MAX_VALUE);
-            Arrays.fill(this.allowedNonElementStructuresByMarkupLevel, this.markupLevel + 1, this.allowedNonElementStructuresByMarkupLevel.length, true);
+        if (this.allowedElementCountByModelLevel[this.modelLevel + 1] <= 0) {
+            // We've reached the last point where model should be discarded, so we should reset the variable
+            Arrays.fill(this.allowedElementCountByModelLevel, this.modelLevel + 1, this.allowedElementCountByModelLevel.length, Integer.MAX_VALUE);
+            Arrays.fill(this.allowedNonElementStructuresByModelLevel, this.modelLevel + 1, this.allowedNonElementStructuresByModelLevel.length, true);
         }
 
         /*
          * CHECK WHETHER THIS CLOSE TAG ITSELF MUST BE DISCARDED because we also discarded the open one (even if not necessarily the body)
          */
-        if (this.skipCloseTagLevels.matchAndPop(this.markupLevel)) {
+        if (this.skipCloseTagLevels.matchAndPop(this.modelLevel)) {
             return;
         }
 
@@ -2028,9 +2028,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private void handleUnmatchedCloseElement(final ICloseElementTag icloseElementTag) {
 
         /*
-         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (!this.allowedNonElementStructuresByMarkupLevel[this.markupLevel]) { // an unmatched is not really an element
+        if (!this.allowedNonElementStructuresByModelLevel[this.modelLevel]) { // an unmatched is not really an element
             return;
         }
 
@@ -2038,17 +2038,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+        if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
             this.iterationSpec.iterationQueue.add(
                     CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true), false);
             return;
         }
 
         /*
-         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
-            this.elementMarkupSpec.markupQueue.add(
+        if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
+            this.elementModelSpec.modelQueue.add(
                     CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true), false);
             return;
         }
@@ -2081,9 +2081,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     public void handleDocType(final IDocType idocType) {
 
         /*
-         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-            if (!this.allowedNonElementStructuresByMarkupLevel[this.markupLevel]) {
+            if (!this.allowedNonElementStructuresByModelLevel[this.modelLevel]) {
             return;
         }
 
@@ -2091,17 +2091,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+        if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
             this.iterationSpec.iterationQueue.add(DocType.asEngineDocType(this.configuration, idocType, true), false);
             return;
         }
 
 
         /*
-         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
-            this.elementMarkupSpec.markupQueue.add(DocType.asEngineDocType(this.configuration, idocType, true), false);
+        if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
+            this.elementModelSpec.modelQueue.add(DocType.asEngineDocType(this.configuration, idocType, true), false);
             return;
         }
 
@@ -2145,13 +2145,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.docTypeProcessors[i].process(this.processingContext, idocType, this.docTypeStructureHandler);
 
-            if (this.docTypeStructureHandler.replaceWithMarkup) {
+            if (this.docTypeStructureHandler.replaceWithModel) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.docTypeStructureHandler.replaceWithMarkupProcessable;
+                queueProcessable = this.docTypeStructureHandler.replaceWithModelProcessable;
 
-                // Markup will be automatically cloned if mutable
-                queue.addMarkup(this.docTypeStructureHandler.replaceWithMarkupValue);
+                // Model will be automatically cloned if mutable
+                queue.addModel(this.docTypeStructureHandler.replaceWithModelValue);
 
                 structureRemoved = true;
 
@@ -2194,9 +2194,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     public void handleXMLDeclaration(final IXMLDeclaration ixmlDeclaration) {
 
         /*
-         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (!this.allowedNonElementStructuresByMarkupLevel[this.markupLevel]) {
+        if (!this.allowedNonElementStructuresByModelLevel[this.modelLevel]) {
             return;
         }
 
@@ -2204,7 +2204,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+        if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
             this.iterationSpec.iterationQueue.add(
                     XMLDeclaration.asEngineXMLDeclaration(this.configuration, ixmlDeclaration, true), false);
             return;
@@ -2212,10 +2212,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
-            this.elementMarkupSpec.markupQueue.add(
+        if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
+            this.elementModelSpec.modelQueue.add(
                     XMLDeclaration.asEngineXMLDeclaration(this.configuration, ixmlDeclaration, true), false);
             return;
         }
@@ -2260,13 +2260,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.xmlDeclarationProcessors[i].process(this.processingContext, ixmlDeclaration, this.xmlDeclarationStructureHandler);
 
-            if (this.xmlDeclarationStructureHandler.replaceWithMarkup) {
+            if (this.xmlDeclarationStructureHandler.replaceWithModel) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.xmlDeclarationStructureHandler.replaceWithMarkupProcessable;
+                queueProcessable = this.xmlDeclarationStructureHandler.replaceWithModelProcessable;
 
-                // Markup will be automatically cloned if mutable
-                queue.addMarkup(this.xmlDeclarationStructureHandler.replaceWithMarkupValue);
+                // Model will be automatically cloned if mutable
+                queue.addModel(this.xmlDeclarationStructureHandler.replaceWithModelValue);
 
                 structureRemoved = true;
 
@@ -2311,14 +2311,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     public void handleProcessingInstruction(final IProcessingInstruction iprocessingInstruction) {
 
         /*
-         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
          */
-        if (!this.allowedNonElementStructuresByMarkupLevel[this.markupLevel]) {
+        if (!this.allowedNonElementStructuresByModelLevel[this.modelLevel]) {
             return;
         }
 
         // Check whether we are in the middle of an iteration and we just need to cache this to the queue (for now)
-        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+        if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
             this.iterationSpec.iterationQueue.add(
                     ProcessingInstruction.asEngineProcessingInstruction(this.configuration, iprocessingInstruction, true), false);
             return;
@@ -2326,10 +2326,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MARKUP and we just need to cache this to the queue (for now)
+         * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
-        if (this.gatheringElementMarkup && this.markupLevel >= this.elementMarkupSpec.fromMarkupLevel) {
-            this.elementMarkupSpec.markupQueue.add(
+        if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
+            this.elementModelSpec.modelQueue.add(
                     ProcessingInstruction.asEngineProcessingInstruction(this.configuration, iprocessingInstruction, true), false);
             return;
         }
@@ -2374,13 +2374,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.processingInstructionProcessors[i].process(this.processingContext, iprocessingInstruction, this.processingInstructionStructureHandler);
 
-            if (this.processingInstructionStructureHandler.replaceWithMarkup) {
+            if (this.processingInstructionStructureHandler.replaceWithModel) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.processingInstructionStructureHandler.replaceWithMarkupProcessable;
+                queueProcessable = this.processingInstructionStructureHandler.replaceWithModelProcessable;
 
-                // Markup will be automatically cloned if mutable
-                queue.addMarkup(this.processingInstructionStructureHandler.replaceWithMarkupValue);
+                // Model will be automatically cloned if mutable
+                queue.addModel(this.processingInstructionStructureHandler.replaceWithModelValue);
 
                 structureRemoved = true;
 
@@ -2518,9 +2518,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.suspended = true;
 
             // We increase the element counter in order to compensate for the fact that the element being iterated
-            // might have been the only one allowed at this markup level (which means all its iterations should
+            // might have been the only one allowed at this model level (which means all its iterations should
             // be allowed)
-            this.allowedElementCountByMarkupLevel[this.markupLevel]++;
+            this.allowedElementCountByModelLevel[this.modelLevel]++;
 
             iterArtifacts.iterationQueue.process(this, false);
 
@@ -2551,46 +2551,46 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
 
-    private void processElementMarkup() {
+    private void processElementModel() {
 
         /*
-         * PREPARE THE ELEMENT MARKUP ARTIFACTS (used in order to being able to reuse the spec in nested execs)
+         * PREPARE THE ELEMENT MODEL ARTIFACTS (used in order to being able to reuse the spec in nested execs)
          */
-        if (this.elementMarkupArtifacts == null) {
-            this.elementMarkupArtifacts = new ElementMarkupArtifacts[2];
-            Arrays.fill(this.elementMarkupArtifacts, null);
+        if (this.elementModelArtifacts == null) {
+            this.elementModelArtifacts = new ElementModelArtifacts[2];
+            Arrays.fill(this.elementModelArtifacts, null);
         }
-        if (this.elementMarkupArtifactsIndex == this.elementMarkupArtifacts.length) {
-            final ElementMarkupArtifacts[] newElementMarkupArtifacts = new ElementMarkupArtifacts[this.elementMarkupArtifacts.length + 2];
-            Arrays.fill(newElementMarkupArtifacts, null);
-            System.arraycopy(this.elementMarkupArtifacts, 0, newElementMarkupArtifacts, 0, this.elementMarkupArtifacts.length);
-            this.elementMarkupArtifacts = newElementMarkupArtifacts;
+        if (this.elementModelArtifactsIndex == this.elementModelArtifacts.length) {
+            final ElementModelArtifacts[] newElementModelArtifacts = new ElementModelArtifacts[this.elementModelArtifacts.length + 2];
+            Arrays.fill(newElementModelArtifacts, null);
+            System.arraycopy(this.elementModelArtifacts, 0, newElementModelArtifacts, 0, this.elementModelArtifacts.length);
+            this.elementModelArtifacts = newElementModelArtifacts;
         }
-        if (this.elementMarkupArtifacts[this.elementMarkupArtifactsIndex] == null) {
-            this.elementMarkupArtifacts[this.elementMarkupArtifactsIndex] = new ElementMarkupArtifacts(this.templateMode, this.configuration);
+        if (this.elementModelArtifacts[this.elementModelArtifactsIndex] == null) {
+            this.elementModelArtifacts[this.elementModelArtifactsIndex] = new ElementModelArtifacts(this.templateMode, this.configuration);
         }
-        final ElementMarkupArtifacts elemArtifacts = this.elementMarkupArtifacts[this.elementMarkupArtifactsIndex];
-        this.elementMarkupArtifactsIndex++;
+        final ElementModelArtifacts elemArtifacts = this.elementModelArtifacts[this.elementModelArtifactsIndex];
+        this.elementModelArtifactsIndex++;
 
         /*
-         * CLONE THE MARKUP EVENTS INTO THE BUFFERIZED ELEMENT MARKUP STRUCTURE FOR PROCESSING
+         * CLONE THE MODEL EVENTS INTO THE BUFFERIZED ELEMENT MODEL STRUCTURE FOR PROCESSING
          */
 
-        elemArtifacts.markupQueue.resetAsCloneOf(this.elementMarkupSpec.markupQueue, false);
+        elemArtifacts.modelQueue.resetAsCloneOf(this.elementModelSpec.modelQueue, false);
 
         // We need to reset it or we won't be able to reuse it in nested executions
-        this.elementMarkupSpec.reset();
-        this.gatheringElementMarkup = false;
+        this.elementModelSpec.reset();
+        this.gatheringElementModel = false;
 
 
         /*
          * PERFORM THE EXECUTION
          */
 
-        elemArtifacts.markupQueue.process(this, false);
+        elemArtifacts.modelQueue.process(this, false);
 
         // Allow the reuse of the artifacts
-        this.elementMarkupArtifactsIndex--;
+        this.elementModelArtifactsIndex--;
 
     }
 
@@ -2710,7 +2710,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     private static final class IterationSpec {
 
-        private int fromMarkupLevel;
+        private int fromModelLevel;
         private Text precedingWhitespace;
         private String iterVariableName;
         private String iterStatusVariableName;
@@ -2724,7 +2724,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         void reset() {
-            this.fromMarkupLevel = Integer.MAX_VALUE;
+            this.fromModelLevel = Integer.MAX_VALUE;
             this.precedingWhitespace = null;
             this.iterVariableName = null;
             this.iterStatusVariableName = null;
@@ -2736,20 +2736,20 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
 
-    private static final class ElementMarkupSpec {
+    private static final class ElementModelSpec {
 
-        private int fromMarkupLevel;
-        final EngineEventQueue markupQueue;
+        private int fromModelLevel;
+        final EngineEventQueue modelQueue;
 
-        ElementMarkupSpec(final TemplateMode templateMode, final IEngineConfiguration configuration) {
+        ElementModelSpec(final TemplateMode templateMode, final IEngineConfiguration configuration) {
             super();
-            this.markupQueue = new EngineEventQueue(configuration, templateMode, 50);
+            this.modelQueue = new EngineEventQueue(configuration, templateMode, 50);
             reset();
         }
 
         void reset() {
-            this.fromMarkupLevel = Integer.MAX_VALUE;
-            this.markupQueue.reset();
+            this.fromModelLevel = Integer.MAX_VALUE;
+            this.modelQueue.reset();
         }
 
     }
@@ -2796,13 +2796,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     }
 
 
-    private static final class ElementMarkupArtifacts {
+    private static final class ElementModelArtifacts {
 
-        final EngineEventQueue markupQueue;
+        final EngineEventQueue modelQueue;
 
-        ElementMarkupArtifacts(final TemplateMode templateMode, final IEngineConfiguration configuration) {
+        ElementModelArtifacts(final TemplateMode templateMode, final IEngineConfiguration configuration) {
             super();
-            this.markupQueue = new EngineEventQueue(configuration, templateMode, 50);
+            this.modelQueue = new EngineEventQueue(configuration, templateMode, 50);
         }
 
     }

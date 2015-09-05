@@ -78,7 +78,7 @@ final class EventProcessorTextHandler extends AbstractChainedTextHandler {
         if (this.elementStackSize > 0) {
             final char[] popped = popFromStack();
             throw new TextParseException(
-                    "Malformed markup: element " +
+                    "Malformed template: element " +
                     "\"" + new String(popped, 0, popped.length) + "\"" +
                     " is never closed (no closing tag at the end of document)");
         }
@@ -210,12 +210,12 @@ final class EventProcessorTextHandler extends AbstractChainedTextHandler {
 
             // does not match...
             throw new TextParseException(
-                    "Malformed markup: " + (peek.length > 0? ("element \"" + new String(peek, 0, peek.length) + "\"") : ("unnamed element")) + " is never closed", line, col);
+                    "Malformed template: " + (peek.length > 0? ("element \"" + new String(peek, 0, peek.length) + "\"") : ("unnamed element")) + " is never closed", line, col);
 
         }
 
         throw new TextParseException(
-                "Malformed markup: " + (peek.length > 0? ("closing element \"" + new String(buffer, offset, len) + "\"") : ("unnamed closing element")) + " is never open", line, col);
+                "Malformed template: " + (peek.length > 0? ("closing element \"" + new String(buffer, offset, len) + "\"") : ("unnamed closing element")) + " is never open", line, col);
 
     }
 
