@@ -181,7 +181,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
              * them, along with anything else that is also at that level 0.
              */
 
-            final Markup markup = parsedFragment.cloneAsMutable();
+            final Markup markup = parsedFragment.cloneMarkup();
             int markupLevel = 0;
             int n = markup.size();
             while (n-- != 0) { // We traverse backwards so that we can modify at the same time
@@ -209,7 +209,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
             }
 
             // Once processed, we convert it to immutable (this way, it won't be cloned anymore)
-            parsedFragment = markup.cloneAsImmutable();
+            parsedFragment = markup.asImmutable();
 
         }
 

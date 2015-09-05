@@ -154,7 +154,7 @@ public final class Markup implements IMarkup {
     }
 
 
-    public Markup cloneAsMutable() {
+    public Markup cloneMarkup() {
         final Markup clone = new Markup(this.configuration, this.templateMode);
         clone.queue.resetAsCloneOf(this.queue, true);
         return clone;
@@ -162,7 +162,7 @@ public final class Markup implements IMarkup {
 
 
 
-    public ImmutableMarkup cloneAsImmutable() {
+    public ImmutableMarkup asImmutable() {
         return new ImmutableMarkup(this);
     }
 

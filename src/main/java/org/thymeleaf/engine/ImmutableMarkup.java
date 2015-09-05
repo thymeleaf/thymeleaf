@@ -69,7 +69,7 @@ public class ImmutableMarkup implements IMarkup {
     // Only used internally for creating an immutable version of a Markup object
     ImmutableMarkup(final IMarkup markup) {
         super();
-        this.markup = markup.cloneAsMutable();
+        this.markup = markup.cloneMarkup();
     }
 
 
@@ -105,8 +105,8 @@ public class ImmutableMarkup implements IMarkup {
 
 
 
-    public Markup cloneAsMutable() {
-        return this.markup.cloneAsMutable();
+    public Markup cloneMarkup() {
+        return this.markup.cloneMarkup();
     }
 
 

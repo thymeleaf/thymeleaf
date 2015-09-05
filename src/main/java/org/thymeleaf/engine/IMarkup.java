@@ -42,6 +42,6 @@ public interface IMarkup {
 
     public String renderMarkup();
 
-    public Markup cloneAsMutable();
+    public Markup cloneMarkup();
 
 }
