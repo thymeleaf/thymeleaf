@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.Markup;
+import org.thymeleaf.engine.Model;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -83,12 +83,12 @@ public final class  SpringActionTagProcessor extends AbstractStandardExpressionA
 
             if (extraHiddenFields != null && extraHiddenFields.size() > 0) {
 
-                final Markup extraHiddenElementTags = processingContext.getMarkupFactory().createMarkup();
+                final Model extraHiddenElementTags = processingContext.getModelFactory().createModel();
 
                 for (final Map.Entry<String,String> extraHiddenField : extraHiddenFields.entrySet()) {
 
                     final IStandaloneElementTag extraHiddenElementTag =
-                            processingContext.getMarkupFactory().createStandaloneElementTag("input", true);
+                            processingContext.getModelFactory().createStandaloneElementTag("input", true);
 
                     extraHiddenElementTag.getAttributes().setAttribute("type", "hidden");
                     extraHiddenElementTag.getAttributes().setAttribute("name", extraHiddenField.getKey());

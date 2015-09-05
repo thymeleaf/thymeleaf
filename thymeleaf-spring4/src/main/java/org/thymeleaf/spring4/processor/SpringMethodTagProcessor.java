@@ -21,7 +21,7 @@ package org.thymeleaf.spring4.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.Markup;
+import org.thymeleaf.engine.Model;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -82,7 +82,7 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
 
                 tag.getAttributes().setAttribute(ATTR_NAME, "post");
 
-                final Markup hiddenMethodMarkup = processingContext.getMarkupFactory().createMarkup();
+                final Model hiddenMethodModel = processingContext.getModelFactory().createModel();
 
                 final String type = "hidden";
                 final String name = "_method";
@@ -90,14 +90,14 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
                         RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, newAttributeValue, type);
 
                 final IStandaloneElementTag hiddenMethodElementTag =
-                        processingContext.getMarkupFactory().createStandaloneElementTag("input", true);
+                        processingContext.getModelFactory().createStandaloneElementTag("input", true);
                 hiddenMethodElementTag.getAttributes().setAttribute("type", type);
                 hiddenMethodElementTag.getAttributes().setAttribute("name", name);
                 hiddenMethodElementTag.getAttributes().setAttribute("value", value); // no need to escape
 
-                hiddenMethodMarkup.add(hiddenMethodElementTag);
+                hiddenMethodModel.add(hiddenMethodElementTag);
 
-                structureHandler.insertAfter(hiddenMethodMarkup, false);
+                structureHandler.insertAfter(hiddenMethodModel, false);
 
             }
 

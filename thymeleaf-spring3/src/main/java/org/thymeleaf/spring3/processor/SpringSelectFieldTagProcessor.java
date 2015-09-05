@@ -23,7 +23,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.Markup;
+import org.thymeleaf.engine.Model;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -72,7 +72,7 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
 
         if (multiple && !isDisabled(tag)) {
 
-            final Markup hiddenMethodElementMarkup = processingContext.getMarkupFactory().createMarkup();
+            final Model hiddenMethodElementModel = processingContext.getModelFactory().createModel();
 
             final String hiddenName = WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name;
             final String type = "hidden";
@@ -80,17 +80,17 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
                     RequestDataValueProcessorUtils.processFormFieldValue(processingContext, hiddenName, "1", type);
 
             final IStandaloneElementTag hiddenMethodElementTag =
-                    processingContext.getMarkupFactory().createStandaloneElementTag("input", true);
+                    processingContext.getModelFactory().createStandaloneElementTag("input", true);
             hiddenMethodElementTag.getAttributes().setAttribute("type", type);
             hiddenMethodElementTag.getAttributes().setAttribute("name", hiddenName);
             hiddenMethodElementTag.getAttributes().setAttribute("value", value);
 
-            hiddenMethodElementMarkup.add(hiddenMethodElementTag);
+            hiddenMethodElementModel.add(hiddenMethodElementTag);
 
             // We insert this hidden before because <select>'s are open element (with body), and if we insert it
             // after the element, we would be inserting the <input type="hidden"> inside the <select>, which would
             // incorrect...
-            structureHandler.insertBefore(hiddenMethodElementMarkup);
+            structureHandler.insertBefore(hiddenMethodElementModel);
 
         }
 
