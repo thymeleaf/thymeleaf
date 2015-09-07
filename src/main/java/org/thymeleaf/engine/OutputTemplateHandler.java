@@ -45,8 +45,6 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     private final Writer writer;
 
 
-    // TODO OutputTemplateHandler should be configurable, and the logic of how an event should be written should not live in the events themselves
-
 
     /**
      * <p>
