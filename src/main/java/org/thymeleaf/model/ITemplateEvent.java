@@ -37,6 +37,8 @@ public interface ITemplateEvent {
 
     public ITemplateEvent cloneEvent();
 
+    public void accept(final IModelVisitor visitor);
+
     public void write(final Writer writer) throws IOException;
 
 }

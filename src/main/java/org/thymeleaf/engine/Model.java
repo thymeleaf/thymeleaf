@@ -30,6 +30,7 @@ import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
 import org.thymeleaf.model.IModel;
+import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
@@ -193,6 +194,19 @@ final class Model implements IModel {
         final OutputTemplateHandler outputTemplateHandler = new OutputTemplateHandler(writer);
         process(outputTemplateHandler);
     }
+
+
+
+
+    public void accept(final IModelVisitor visitor) {
+
+        final int queueSize = this.queue.size();
+        for (int i = 0; i < queueSize; i++) {
+            this.queue.get(i).accept(visitor);
+        }
+
+    }
+
 
 
 

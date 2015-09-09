@@ -24,6 +24,7 @@ import java.io.Writer;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.model.IDocType;
+import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.TextUtils;
 import org.thymeleaf.util.Validate;
@@ -277,6 +278,11 @@ final class DocType extends AbstractTemplateEvent implements IDocType, IEngineTe
 
 
 
+
+
+    public void accept(final IModelVisitor visitor) {
+        visitor.visit(this);
+    }
 
 
     public void write(final Writer writer) throws IOException {

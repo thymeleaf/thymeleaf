@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.Validate;
@@ -155,6 +156,11 @@ public final class ProcessingInstruction extends AbstractTemplateEvent implement
 
 
 
+
+
+    public void accept(final IModelVisitor visitor) {
+        visitor.visit(this);
+    }
 
 
     public void write(final Writer writer) throws IOException {

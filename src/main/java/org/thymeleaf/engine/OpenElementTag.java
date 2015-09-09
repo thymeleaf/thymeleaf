@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.model.IElementAttributes;
+import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
@@ -83,6 +84,11 @@ final class OpenElementTag
     }
 
 
+
+
+    public void accept(final IModelVisitor visitor) {
+        visitor.visit(this);
+    }
 
 
     public void write(final Writer writer) throws IOException {
@@ -158,5 +164,7 @@ final class OpenElementTag
         return newInstance;
 
     }
+
+
 
 }

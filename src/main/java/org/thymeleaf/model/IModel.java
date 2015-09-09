@@ -55,6 +55,8 @@ public interface IModel {
 
     public IModel cloneModel();
 
+    public void accept(final IModelVisitor visitor);
+
     public void write(final Writer writer) throws IOException;
 
 }

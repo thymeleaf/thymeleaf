@@ -28,50 +28,50 @@ package org.thymeleaf.model;
 public abstract class AbstractModelVisitor implements IModelVisitor {
 
 
-    public void visitTemplateStart(final ITemplateStart templateStart) {
+    public void visit(final ITemplateStart templateStart) {
         // Nothing to be done here - just an empty default implementation
     }
 
-    public void visitTemplateEnd(final ITemplateEnd templateEnd) {
-        // Nothing to be done here - just an empty default implementation
-    }
-
-
-    public void visitXMLDeclaration(final IXMLDeclaration xmlDeclaration) {
-        // Nothing to be done here - just an empty default implementation
-    }
-
-    public void visitDocType(final IDocType docType) {
-        // Nothing to be done here - just an empty default implementation
-    }
-
-    public void visitCDATASection(final ICDATASection cdataSection) {
-        // Nothing to be done here - just an empty default implementation
-    }
-
-    public void visitComment(final IComment comment) {
-        // Nothing to be done here - just an empty default implementation
-    }
-
-    public void visitText(final IText text) {
+    public void visit(final ITemplateEnd templateEnd) {
         // Nothing to be done here - just an empty default implementation
     }
 
 
-    public void visitStandaloneElement(final IStandaloneElementTag standaloneElementTag) {
+    public void visit(final IXMLDeclaration xmlDeclaration) {
         // Nothing to be done here - just an empty default implementation
     }
 
-    public void visitOpenElement(final IOpenElementTag openElementTag) {
+    public void visit(final IDocType docType) {
         // Nothing to be done here - just an empty default implementation
     }
 
-    public void visitCloseElement(final ICloseElementTag closeElementTag) {
+    public void visit(final ICDATASection cdataSection) {
+        // Nothing to be done here - just an empty default implementation
+    }
+
+    public void visit(final IComment comment) {
+        // Nothing to be done here - just an empty default implementation
+    }
+
+    public void visit(final IText text) {
         // Nothing to be done here - just an empty default implementation
     }
 
 
-    public void visitProcessingInstruction(final IProcessingInstruction processingInstruction) {
+    public void visit(final IStandaloneElementTag standaloneElementTag) {
+        // Nothing to be done here - just an empty default implementation
+    }
+
+    public void visit(final IOpenElementTag openElementTag) {
+        // Nothing to be done here - just an empty default implementation
+    }
+
+    public void visit(final ICloseElementTag closeElementTag) {
+        // Nothing to be done here - just an empty default implementation
+    }
+
+
+    public void visit(final IProcessingInstruction processingInstruction) {
         // Nothing to be done here - just an empty default implementation
     }
 

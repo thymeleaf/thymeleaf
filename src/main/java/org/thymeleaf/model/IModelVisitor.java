@@ -28,29 +28,29 @@ package org.thymeleaf.model;
 public interface IModelVisitor {
 
 
-    public void visitTemplateStart(final ITemplateStart templateStart);
+    public void visit(final ITemplateStart templateStart);
 
-    public void visitTemplateEnd(final ITemplateEnd templateEnd);
-
-
-    public void visitXMLDeclaration(final IXMLDeclaration xmlDeclaration);
-
-    public void visitDocType(final IDocType docType);
-
-    public void visitCDATASection(final ICDATASection cdataSection);
-
-    public void visitComment(final IComment comment);
-
-    public void visitText(final IText text);
+    public void visit(final ITemplateEnd templateEnd);
 
 
-    public void visitStandaloneElement(final IStandaloneElementTag standaloneElementTag);
+    public void visit(final IXMLDeclaration xmlDeclaration);
 
-    public void visitOpenElement(final IOpenElementTag openElementTag);
+    public void visit(final IDocType docType);
 
-    public void visitCloseElement(final ICloseElementTag closeElementTag);
+    public void visit(final ICDATASection cdataSection);
+
+    public void visit(final IComment comment);
+
+    public void visit(final IText text);
 
 
-    public void visitProcessingInstruction(final IProcessingInstruction processingInstruction);
+    public void visit(final IStandaloneElementTag standaloneElementTag);
+
+    public void visit(final IOpenElementTag openElementTag);
+
+    public void visit(final ICloseElementTag closeElementTag);
+
+
+    public void visit(final IProcessingInstruction processingInstruction);
 
 }

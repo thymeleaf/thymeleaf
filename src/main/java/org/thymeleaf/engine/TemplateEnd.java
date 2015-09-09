@@ -22,6 +22,7 @@ package org.thymeleaf.engine;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.model.ITemplateEnd;
 
 /**
@@ -66,6 +67,11 @@ final class TemplateEnd extends AbstractTemplateEvent implements ITemplateEnd, I
     }
 
 
+
+
+    public void accept(final IModelVisitor visitor) {
+        visitor.visit(this);
+    }
 
 
     public void write(final Writer writer) throws IOException {

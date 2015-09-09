@@ -32,6 +32,7 @@ import org.thymeleaf.model.IDocType;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IElementTag;
 import org.thymeleaf.model.IModel;
+import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
@@ -137,6 +138,19 @@ class ImmutableModel implements IModel {
 
     public final void write(final Writer writer) throws IOException {
         this.model.write(writer);
+    }
+
+
+
+
+    public void accept(final IModelVisitor visitor) {
+
+        final int queueSize = this.model.size();
+        for (int i = 0; i < queueSize; i++) {
+            // We will execute the visitor on the Immutable events, that we need to create during the visit
+            get(i).accept(visitor);
+        }
+
     }
 
 
@@ -323,6 +337,10 @@ class ImmutableModel implements IModel {
             ImmutableModel.immutableEventException();
         }
 
+        public void accept(final IModelVisitor visitor) {
+            visitor.visit(this);
+        }
+
         public IText cloneEvent() {
             ImmutableModel.immutableEventException();
             return null;
@@ -365,6 +383,10 @@ class ImmutableModel implements IModel {
             ImmutableModel.immutableEventException();
         }
 
+        public void accept(final IModelVisitor visitor) {
+            visitor.visit(this);
+        }
+
         public ICDATASection cloneEvent() {
             ImmutableModel.immutableEventException();
             return null;
@@ -405,6 +427,10 @@ class ImmutableModel implements IModel {
 
         public void setContent(final String content) {
             ImmutableModel.immutableEventException();
+        }
+
+        public void accept(final IModelVisitor visitor) {
+            visitor.visit(this);
         }
 
         public IComment cloneEvent() {
@@ -477,6 +503,10 @@ class ImmutableModel implements IModel {
             ImmutableModel.immutableEventException();
         }
 
+        public void accept(final IModelVisitor visitor) {
+            visitor.visit(this);
+        }
+
         public IDocType cloneEvent() {
             ImmutableModel.immutableEventException();
             return null;
@@ -513,6 +543,10 @@ class ImmutableModel implements IModel {
 
         public void setContent(final String content) {
             ImmutableModel.immutableEventException();
+        }
+
+        public void accept(final IModelVisitor visitor) {
+            visitor.visit(this);
         }
 
         public IProcessingInstruction cloneEvent() {
@@ -563,6 +597,10 @@ class ImmutableModel implements IModel {
 
         public void setStandalone(final String standalone) {
             ImmutableModel.immutableEventException();
+        }
+
+        public void accept(final IModelVisitor visitor) {
+            visitor.visit(this);
         }
 
         public IXMLDeclaration cloneEvent() {
@@ -783,6 +821,10 @@ class ImmutableModel implements IModel {
             return this.wrapped.isSynthetic();
         }
 
+        public void accept(final IModelVisitor visitor) {
+            visitor.visit(this);
+        }
+
         public IStandaloneElementTag cloneEvent() {
             ImmutableModel.immutableEventException();
             return null;
@@ -804,6 +846,10 @@ class ImmutableModel implements IModel {
 
         public boolean isSynthetic() {
             return this.wrapped.isSynthetic();
+        }
+
+        public void accept(final IModelVisitor visitor) {
+            visitor.visit(this);
         }
 
         public IOpenElementTag cloneEvent() {
@@ -831,6 +877,10 @@ class ImmutableModel implements IModel {
 
         public boolean isUnmatched() {
             return this.wrapped.isUnmatched();
+        }
+
+        public void accept(final IModelVisitor visitor) {
+            visitor.visit(this);
         }
 
         public ICloseElementTag cloneEvent() {

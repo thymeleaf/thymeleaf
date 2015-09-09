@@ -24,6 +24,7 @@ import java.io.Writer;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.model.ICloseElementTag;
+import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
@@ -92,6 +93,11 @@ final class CloseElementTag
 
 
 
+
+
+    public void accept(final IModelVisitor visitor) {
+        visitor.visit(this);
+    }
 
 
     public void write(final Writer writer) throws IOException {
