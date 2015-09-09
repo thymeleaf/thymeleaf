@@ -36,7 +36,9 @@ import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
+import org.thymeleaf.model.ITemplateEnd;
 import org.thymeleaf.model.ITemplateEvent;
+import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.processor.element.IElementProcessor;
@@ -166,6 +168,10 @@ class ImmutableModel implements IModel {
             return new ImmutableXMLDeclaration((IXMLDeclaration)event);
         } else if (event instanceof IProcessingInstruction) {
             return new ImmutableProcessingInstruction((IProcessingInstruction)event);
+        } else if (event instanceof ITemplateStart) {
+            return new ImmutableTemplateStart((ITemplateStart)event);
+        } else if (event instanceof ITemplateEnd) {
+            return new ImmutableTemplateEnd((ITemplateEnd)event);
         } else {
             throw new TemplateProcessingException(
                     "Cannot process as immutable event of type: " + event.getClass().getName());
@@ -222,6 +228,62 @@ class ImmutableModel implements IModel {
 
         public final void write(final Writer writer) throws IOException {
             this.wrapped.write(writer);
+        }
+
+    }
+
+
+    private static final class ImmutableTemplateStart
+            extends AbstractImmutableTemplateEvent implements ITemplateStart {
+
+        private final ITemplateStart wrapped;
+
+        private ImmutableTemplateStart(final ITemplateStart wrapped) {
+            super(wrapped);
+            this.wrapped = wrapped;
+        }
+
+        public long getStartTimeNanos() {
+            return this.wrapped.getStartTimeNanos();
+        }
+
+        public void accept(final IModelVisitor visitor) {
+            visitor.visit(this);
+        }
+
+        public ITemplateStart cloneEvent() {
+            ImmutableModel.immutableEventException();
+            return null;
+        }
+
+    }
+
+
+    private static final class ImmutableTemplateEnd
+            extends AbstractImmutableTemplateEvent implements ITemplateEnd {
+
+        private final ITemplateEnd wrapped;
+
+        private ImmutableTemplateEnd(final ITemplateEnd wrapped) {
+            super(wrapped);
+            this.wrapped = wrapped;
+        }
+
+        public long getEndTimeNanos() {
+            return this.wrapped.getEndTimeNanos();
+        }
+
+        public long getTotalTimeNanos() {
+            return this.wrapped.getTotalTimeNanos();
+        }
+
+        public void accept(final IModelVisitor visitor) {
+            visitor.visit(this);
+        }
+
+        public ITemplateEnd cloneEvent() {
+            ImmutableModel.immutableEventException();
+            return null;
         }
 
     }
