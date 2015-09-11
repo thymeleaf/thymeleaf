@@ -1,0 +1,11 @@
+Lagerwey designs and produces Direct Drive wind turbines 'in house' and offers an efficient and reliable product
+in the multi megawatt range. We deliver our projects turn-key and provide a complete service and maintenance
+package. Our flexible and transparent approach leads to long lasting relationships with our partners. Together
+with our customers we have been offering the world clean and reliable wind energy since 1979.
+
+Thymeleaf is used for developing a web portal for the Lagerwey customers, asset managers and service personnel.
+Using this portal the Lagerwey wind turbines and wind farms can be monitored and controlled. Thanks to Thymeleaf
+we are able to develop HTML5 pages displaying the wind turbines real time data.
+
+
+LINK: http://www.lagerwey.com
