@@ -20,7 +20,6 @@
 package org.thymeleaf.postprocessor;
 
 import org.thymeleaf.engine.ITemplateHandler;
-import org.thymeleaf.preprocessor.AbstractPreProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -29,7 +28,7 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-public final class PostProcessor extends AbstractPreProcessor {
+public final class PostProcessor extends AbstractPostProcessor {
 
 
     public PostProcessor(
