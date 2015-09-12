@@ -165,6 +165,8 @@ final class ConfigurationPrinterHelper {
             printProcessorsForTemplateMode(logBuilder, processors, TemplateMode.HTML);
             printProcessorsForTemplateMode(logBuilder, processors, TemplateMode.XML);
             printProcessorsForTemplateMode(logBuilder, processors, TemplateMode.TEXT);
+            printProcessorsForTemplateMode(logBuilder, processors, TemplateMode.JAVASCRIPT);
+            printProcessorsForTemplateMode(logBuilder, processors, TemplateMode.CSS);
 
         }
 
