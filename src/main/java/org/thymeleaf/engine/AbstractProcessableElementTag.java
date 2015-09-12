@@ -26,10 +26,10 @@ import java.util.List;
 
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.processor.PrecedenceProcessorComparator;
 import org.thymeleaf.processor.element.IElementProcessor;
 import org.thymeleaf.processor.element.MatchingElementName;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.ProcessorComparators;
 
 /**
  *
@@ -177,7 +177,7 @@ abstract class AbstractProcessableElementTag
 
         if (this.associatedProcessors != null) {
             if (this.associatedProcessorsSize > 1) {
-                Arrays.sort(this.associatedProcessors, 0, this.associatedProcessorsSize, PrecedenceProcessorComparator.INSTANCE);
+                Arrays.sort(this.associatedProcessors, 0, this.associatedProcessorsSize, ProcessorComparators.PROCESSOR_COMPARATOR);
             }
         }
 

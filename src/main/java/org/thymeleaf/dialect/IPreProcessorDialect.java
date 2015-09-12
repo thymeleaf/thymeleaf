@@ -19,9 +19,9 @@
  */
 package org.thymeleaf.dialect;
 
-import java.util.List;
+import java.util.Set;
 
-import org.thymeleaf.engine.ITemplateHandler;
+import org.thymeleaf.preprocessor.IPreProcessor;
 
 
 /**
@@ -32,6 +32,6 @@ import org.thymeleaf.engine.ITemplateHandler;
  */
 public interface IPreProcessorDialect extends IDialect {
 
-    public List<Class<? extends ITemplateHandler>> getPreProcessors();
+    public Set<IPreProcessor> getPreProcessors();
 
 }

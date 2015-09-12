@@ -17,21 +17,22 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.dialect;
+package org.thymeleaf.preprocessor;
 
-import java.util.Set;
-
-import org.thymeleaf.postprocessor.IPostProcessor;
-
+import org.thymeleaf.engine.ITemplateHandler;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- *
+ * 
  */
-public interface IPostProcessorDialect extends IDialect {
+public interface IPreProcessor {
 
-    public Set<IPostProcessor> getPostProcessors();
+    public TemplateMode getTemplateMode();
+    public int getPrecedence();
+
+    public Class<? extends ITemplateHandler> getHandlerClass();
 
 }

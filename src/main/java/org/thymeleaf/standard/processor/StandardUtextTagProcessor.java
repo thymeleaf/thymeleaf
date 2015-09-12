@@ -19,11 +19,14 @@
  */
 package org.thymeleaf.standard.processor;
 
+import java.util.Set;
+
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.ParsedFragmentModel;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.postprocessor.IPostProcessor;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.standard.expression.IStandardExpression;
@@ -78,7 +81,8 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
          * we check if there actually are any post-processors and, if not (most common case), simply output the
          * expression result as if it were a mere (unescaped) text node.
          */
-        if (!processingContext.getConfiguration().hasPostProcessors()) {
+        final Set<IPostProcessor> postProcessors = processingContext.getConfiguration().getPostProcessors(getTemplateMode());
+        if (postProcessors.isEmpty()) {
             structureHandler.setBody(unescapedText, false);
             return;
         }

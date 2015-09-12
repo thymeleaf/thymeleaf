@@ -31,9 +31,10 @@ import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.ElementDefinitions;
-import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.messageresolver.IMessageResolver;
+import org.thymeleaf.postprocessor.IPostProcessor;
+import org.thymeleaf.preprocessor.IPreProcessor;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.processor.comment.ICommentProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeProcessor;
@@ -177,20 +178,13 @@ public class EngineConfiguration implements IEngineConfiguration {
         return this.dialectSetConfiguration.getXMLDeclarationProcessors(templateMode);
     }
 
-    public boolean hasPreProcessors() {
-        return this.dialectSetConfiguration.hasPreProcessors();
+
+    public Set<IPreProcessor> getPreProcessors(final TemplateMode templateMode) {
+        return this.dialectSetConfiguration.getPreProcessors(templateMode);
     }
 
-    public List<Class<? extends ITemplateHandler>> getPreProcessors() {
-        return this.dialectSetConfiguration.getPreProcessors();
-    }
-
-    public boolean hasPostProcessors() {
-        return this.dialectSetConfiguration.hasPostProcessors();
-    }
-
-    public List<Class<? extends ITemplateHandler>> getPostProcessors() {
-        return this.dialectSetConfiguration.getPostProcessors();
+    public Set<IPostProcessor> getPostProcessors(final TemplateMode templateMode) {
+        return this.dialectSetConfiguration.getPostProcessors(templateMode);
     }
 
 

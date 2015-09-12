@@ -21,7 +21,6 @@ package org.thymeleaf;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,17 +34,16 @@ import org.thymeleaf.dialect.IExpressionObjectsDialect;
 import org.thymeleaf.dialect.IPostProcessorDialect;
 import org.thymeleaf.dialect.IPreProcessorDialect;
 import org.thymeleaf.dialect.IProcessorDialect;
-import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.expression.ExpressionObjectDefinition;
 import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.messageresolver.IMessageResolver;
+import org.thymeleaf.postprocessor.IPostProcessor;
+import org.thymeleaf.preprocessor.IPreProcessor;
 import org.thymeleaf.processor.IProcessor;
-import org.thymeleaf.processor.PrecedenceProcessorComparator;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.processor.comment.ICommentProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeProcessor;
 import org.thymeleaf.processor.element.IElementModelProcessor;
-import org.thymeleaf.processor.element.IElementProcessor;
 import org.thymeleaf.processor.element.IElementTagProcessor;
 import org.thymeleaf.processor.element.MatchingAttributeName;
 import org.thymeleaf.processor.element.MatchingElementName;
@@ -54,6 +52,7 @@ import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ITemplateResolver;
+import org.thymeleaf.util.ProcessorComparators;
 import org.thymeleaf.util.StringUtils;
 
 /**
@@ -174,26 +173,25 @@ final class ConfigurationPrinterHelper {
 
             final IPreProcessorDialect dialect = (IPreProcessorDialect)idialect;
 
-            final List<Class<? extends ITemplateHandler>> preProcessors = dialect.getPreProcessors();
-            if (preProcessors != null && !preProcessors.isEmpty()) {
-                logBuilder.line("[THYMELEAF]     * Pre-Processors:");
-                for (final Class<? extends ITemplateHandler> preProcessor : preProcessors) {
-                    logBuilder.line("[THYMELEAF]         * {}", preProcessor.getName());
-                }
-            }
+            final Set<IPreProcessor> preProcessors = dialect.getPreProcessors();
+            printPreProcessorsForTemplateMode(logBuilder, preProcessors, TemplateMode.HTML);
+            printPreProcessorsForTemplateMode(logBuilder, preProcessors, TemplateMode.XML);
+            printPreProcessorsForTemplateMode(logBuilder, preProcessors, TemplateMode.TEXT);
+            printPreProcessorsForTemplateMode(logBuilder, preProcessors, TemplateMode.JAVASCRIPT);
+            printPreProcessorsForTemplateMode(logBuilder, preProcessors, TemplateMode.CSS);
 
         }
 
         if (idialect instanceof IPostProcessorDialect) {
+
             final IPostProcessorDialect dialect = (IPostProcessorDialect)idialect;
 
-            final List<Class<? extends ITemplateHandler>> postProcessors = dialect.getPostProcessors();
-            if (postProcessors != null && !postProcessors.isEmpty()) {
-                logBuilder.line("[THYMELEAF]     * Post-Processors:");
-                for (final Class<? extends ITemplateHandler> postProcessor : postProcessors) {
-                    logBuilder.line("[THYMELEAF]         * {}", postProcessor.getName());
-                }
-            }
+            final Set<IPostProcessor> postProcessors = dialect.getPostProcessors();
+            printPostProcessorsForTemplateMode(logBuilder, postProcessors, TemplateMode.HTML);
+            printPostProcessorsForTemplateMode(logBuilder, postProcessors, TemplateMode.XML);
+            printPostProcessorsForTemplateMode(logBuilder, postProcessors, TemplateMode.TEXT);
+            printPostProcessorsForTemplateMode(logBuilder, postProcessors, TemplateMode.JAVASCRIPT);
+            printPostProcessorsForTemplateMode(logBuilder, postProcessors, TemplateMode.CSS);
 
         }
 
@@ -291,14 +289,14 @@ final class ConfigurationPrinterHelper {
 
         logBuilder.line("[THYMELEAF]     * Processors for Template Mode: {}", templateMode);
 
-        Collections.sort(cdataSectionProcessors, PrecedenceProcessorComparator.INSTANCE);
-        Collections.sort(commentProcessors, PrecedenceProcessorComparator.INSTANCE);
-        Collections.sort(docTypeProcessors, PrecedenceProcessorComparator.INSTANCE);
-        Collections.sort(elementTagProcessors, PrinterElementProcessorComparator.INSTANCE);
-        Collections.sort(elementModelProcessors, PrinterElementProcessorComparator.INSTANCE);
-        Collections.sort(processingInstructionProcessors, PrecedenceProcessorComparator.INSTANCE);
-        Collections.sort(textProcessors, PrecedenceProcessorComparator.INSTANCE);
-        Collections.sort(xmlDeclarationProcessors, PrecedenceProcessorComparator.INSTANCE);
+        Collections.sort(cdataSectionProcessors, ProcessorComparators.PROCESSOR_COMPARATOR);
+        Collections.sort(commentProcessors, ProcessorComparators.PROCESSOR_COMPARATOR);
+        Collections.sort(docTypeProcessors, ProcessorComparators.PROCESSOR_COMPARATOR);
+        Collections.sort(elementTagProcessors, ProcessorComparators.PROCESSOR_COMPARATOR);
+        Collections.sort(elementModelProcessors, ProcessorComparators.PROCESSOR_COMPARATOR);
+        Collections.sort(processingInstructionProcessors, ProcessorComparators.PROCESSOR_COMPARATOR);
+        Collections.sort(textProcessors, ProcessorComparators.PROCESSOR_COMPARATOR);
+        Collections.sort(xmlDeclarationProcessors, ProcessorComparators.PROCESSOR_COMPARATOR);
 
         if (!elementTagProcessors.isEmpty()) {
             logBuilder.line("[THYMELEAF]         * Element Tag Processors by [matching element and attribute name] [precedence]:");
@@ -369,6 +367,72 @@ final class ConfigurationPrinterHelper {
 
 
 
+
+    private static void printPreProcessorsForTemplateMode(final ConfigLogBuilder logBuilder, final Set<IPreProcessor> preProcessors, final TemplateMode templateMode) {
+
+        if (preProcessors == null || preProcessors.isEmpty()) {
+            return;
+        }
+
+        final List<IPreProcessor> preProcessorsForTemplateMode = new ArrayList<IPreProcessor>();
+
+        for (final IPreProcessor preProcessor : preProcessors) {
+            if (!templateMode.equals(preProcessor.getTemplateMode())) {
+                continue;
+            }
+            preProcessorsForTemplateMode.add(preProcessor);
+        }
+
+        if (preProcessorsForTemplateMode.isEmpty()) {
+            // Nothing to show, there are no artifacts for this template mode
+            return;
+        }
+
+        Collections.sort(preProcessorsForTemplateMode, ProcessorComparators.PRE_PROCESSOR_COMPARATOR);
+
+        logBuilder.line("[THYMELEAF]     * Pre-Processors for Template Mode: {} by [precedence]", templateMode);
+        for (final IPreProcessor preProcessor : preProcessorsForTemplateMode) {
+            logBuilder.line("[THYMELEAF]             * [{}]: {}",
+                    new Object[] {Integer.valueOf(preProcessor.getPrecedence()), preProcessor.getClass().getName()});
+        }
+
+    }
+
+
+
+
+    private static void printPostProcessorsForTemplateMode(final ConfigLogBuilder logBuilder, final Set<IPostProcessor> postProcessors, final TemplateMode templateMode) {
+
+        if (postProcessors == null || postProcessors.isEmpty()) {
+            return;
+        }
+
+        final List<IPostProcessor> postProcessorsForTemplateMode = new ArrayList<IPostProcessor>();
+
+        for (final IPostProcessor postProcessor : postProcessors) {
+            if (!templateMode.equals(postProcessor.getTemplateMode())) {
+                continue;
+            }
+            postProcessorsForTemplateMode.add(postProcessor);
+        }
+
+        if (postProcessorsForTemplateMode.isEmpty()) {
+            // Nothing to show, there are no artifacts for this template mode
+            return;
+        }
+
+        Collections.sort(postProcessorsForTemplateMode, ProcessorComparators.POST_PROCESSOR_COMPARATOR);
+
+        logBuilder.line("[THYMELEAF]     * Post-Processors for Template Mode: {} by [precedence]", templateMode);
+        for (final IPostProcessor postProcessor : postProcessorsForTemplateMode) {
+            logBuilder.line("[THYMELEAF]             * [{}]: {}",
+                    new Object[]{Integer.valueOf(postProcessor.getPrecedence()), postProcessor.getClass().getName()});
+        }
+
+    }
+
+
+
     
     
     private static final class ConfigLogBuilder {
@@ -418,7 +482,7 @@ final class ConfigurationPrinterHelper {
             if (p == null) {
                 return null;
             }
-            return p.toString().replaceAll("\\$","\\.");
+            return p.toString().replaceAll("\\$", "\\.");
         }
         
     }
@@ -428,51 +492,6 @@ final class ConfigurationPrinterHelper {
     
     private ConfigurationPrinterHelper() {
         super();
-    }
-
-
-
-
-
-    private static final class PrinterElementProcessorComparator implements Comparator<IElementProcessor> {
-
-        private static PrinterElementProcessorComparator INSTANCE = new PrinterElementProcessorComparator();
-
-        public int compare(final IElementProcessor o1, final IElementProcessor o2) {
-            // First compare by matching element name, then by matching attribute name, then precedence
-            final MatchingElementName o1Element = o1.getMatchingElementName();
-            final MatchingElementName o2Element = o2.getMatchingElementName();
-            if (o1Element != null) {
-                if (o2Element == null) {
-                    return 1;
-                }
-                final int nameCmp = o1Element.toString().compareTo(o2Element.toString());
-                if (nameCmp != 0) {
-                    return nameCmp;
-                }
-            } else {
-                if (o2Element != null) {
-                    return -1;
-                }
-            }
-            final MatchingAttributeName o1Attribute = o1.getMatchingAttributeName();
-            final MatchingAttributeName o2Attribute = o2.getMatchingAttributeName();
-            if (o1Attribute != null) {
-                if (o2Attribute == null) {
-                    return 1;
-                }
-                final int nameCmp = o1Attribute.toString().compareTo(o2Attribute.toString());
-                if (nameCmp != 0) {
-                    return nameCmp;
-                }
-            } else {
-                if (o2Attribute != null) {
-                    return -1;
-                }
-            }
-            return PrecedenceProcessorComparator.INSTANCE.compare(o1, o2);
-        }
-
     }
 
 

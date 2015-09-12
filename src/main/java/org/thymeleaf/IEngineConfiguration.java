@@ -19,7 +19,6 @@
  */
 package org.thymeleaf;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,9 +26,10 @@ import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.ElementDefinitions;
-import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.messageresolver.IMessageResolver;
+import org.thymeleaf.postprocessor.IPostProcessor;
+import org.thymeleaf.preprocessor.IPreProcessor;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.processor.comment.ICommentProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeProcessor;
@@ -74,11 +74,8 @@ public interface IEngineConfiguration {
     public Set<IProcessingInstructionProcessor> getProcessingInstructionProcessors(final TemplateMode templateMode);
     public Set<IXMLDeclarationProcessor> getXMLDeclarationProcessors(final TemplateMode templateMode);
 
-    public boolean hasPreProcessors();
-    public List<Class<? extends ITemplateHandler>> getPreProcessors();
-
-    public boolean hasPostProcessors();
-    public List<Class<? extends ITemplateHandler>> getPostProcessors();
+    public Set<IPreProcessor> getPreProcessors(final TemplateMode templateMode);
+    public Set<IPostProcessor> getPostProcessors(final TemplateMode templateMode);
 
     public Map<String,Object> getExecutionAttributes();
 

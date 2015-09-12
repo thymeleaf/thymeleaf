@@ -22,8 +22,8 @@ package org.thymeleaf.engine;
 import java.util.Arrays;
 
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.processor.PrecedenceProcessorComparator;
 import org.thymeleaf.processor.element.IElementProcessor;
+import org.thymeleaf.util.ProcessorComparators;
 
 /**
  *
@@ -226,8 +226,7 @@ final class ElementProcessorIterator {
 
             // Doesn't match. Either we have a new processor, or an previous one was removed
 
-            final int comp =
-                    PrecedenceProcessorComparator.INSTANCE.compare(this.auxProcessors[i], this.processors[j]);
+            final int comp = ProcessorComparators.PROCESSOR_COMPARATOR.compare(this.auxProcessors[i], this.processors[j]);
 
             if (comp == 0) {
                 // This should never happen. The comparator should make sure the only case in which comp == 0 is when

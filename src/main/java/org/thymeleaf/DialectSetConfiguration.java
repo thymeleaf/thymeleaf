@@ -41,8 +41,9 @@ import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.expression.ExpressionObjectDefinition;
 import org.thymeleaf.expression.IExpressionObjectFactory;
+import org.thymeleaf.postprocessor.IPostProcessor;
+import org.thymeleaf.preprocessor.IPreProcessor;
 import org.thymeleaf.processor.IProcessor;
-import org.thymeleaf.processor.PrecedenceProcessorComparator;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.processor.comment.ICommentProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeProcessor;
@@ -53,6 +54,7 @@ import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.ProcessorComparators;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -84,11 +86,8 @@ final class DialectSetConfiguration {
     private final EnumMap<TemplateMode,Set<ITextProcessor>> textProcessorsByTemplateMode;
     private final EnumMap<TemplateMode,Set<IXMLDeclarationProcessor>> xmlDeclarationProcessorsByTemplateMode;
 
-    private boolean hasPreProcessors;
-    private final List<Class<? extends ITemplateHandler>> preProcessors;
-
-    private boolean hasPostProcessors;
-    private final List<Class<? extends ITemplateHandler>> postProcessors;
+    private final EnumMap<TemplateMode,Set<IPreProcessor>> preProcessors;
+    private final EnumMap<TemplateMode,Set<IPostProcessor>> postProcessors;
 
 
 
@@ -110,9 +109,6 @@ final class DialectSetConfiguration {
         // This will aggregate all the expression object factories provided by the different dialects
         final AggregateExpressionObjectFactory aggregateExpressionObjectFactory = new AggregateExpressionObjectFactory();
 
-        // This allProcessors set will be used for certifying that no processor instances are repeated accross dialects
-        final Set<IProcessor> allProcessors = new LinkedHashSet<IProcessor>(80);
-
         // EnumMaps for each type of processor (depending on the structures that they can be applied to)
         final EnumMap<TemplateMode, List<ITemplateProcessor>> templateProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<ITemplateProcessor>>(TemplateMode.class);
         final EnumMap<TemplateMode, List<ICDATASectionProcessor>> cdataSectionProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<ICDATASectionProcessor>>(TemplateMode.class);
@@ -124,8 +120,8 @@ final class DialectSetConfiguration {
         final EnumMap<TemplateMode, List<IXMLDeclarationProcessor>> xmlDeclarationProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IXMLDeclarationProcessor>>(TemplateMode.class);
 
         // Lists for merging all pre and postprocessors from all dialects
-        final List<Class<? extends ITemplateHandler>> preProcessors = new ArrayList<Class<? extends ITemplateHandler>>(5);
-        final List<Class<? extends ITemplateHandler>> postProcessors = new ArrayList<Class<? extends ITemplateHandler>>(5);
+        final EnumMap<TemplateMode, List<IPreProcessor>> preProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IPreProcessor>>(TemplateMode.class);
+        final EnumMap<TemplateMode, List<IPostProcessor>> postProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IPostProcessor>>(TemplateMode.class);
 
         /*
          * ITERATE ALL DIALECTS, processing each one according to its features
@@ -159,19 +155,6 @@ final class DialectSetConfiguration {
                         throw new ConfigurationException("Dialect should not return null processor in processor set: " + dialect.getClass().getName());
                     }
 
-                    // Check that the processor instance is unique among all the dialect instances - this is a requirement
-                    // due to the fact that processors have to be initialized by setting them a prefix and a dialect
-                    if (allProcessors.contains(dialectProcessor)) {
-                        throw new ConfigurationException(
-                                "The same processor of class " + dialectProcessor.getClass().getName() + " has been " +
-                                "specified more than one (probably in different dialects). Processor instances should " +
-                                "be unique among all configured dialects.");
-                    }
-
-                    // Add the processor to the "all processors" set
-                    allProcessors.add(dialectProcessor);
-
-
                     // Obtain and check template mode
                     final TemplateMode templateMode = dialectProcessor.getTemplateMode();
                     if (templateMode == null) {
@@ -186,7 +169,7 @@ final class DialectSetConfiguration {
                             elementProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
                         processorsForTemplateMode.add((IElementProcessor)dialectProcessor);
-                        Collections.sort(processorsForTemplateMode, PrecedenceProcessorComparator.INSTANCE);
+                        Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
 
                     } else if (dialectProcessor instanceof ITemplateProcessor) {
@@ -197,7 +180,7 @@ final class DialectSetConfiguration {
                             templateProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
                         processorsForTemplateMode.add((ITemplateProcessor)dialectProcessor);
-                        Collections.sort(processorsForTemplateMode, PrecedenceProcessorComparator.INSTANCE);
+                        Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
                     } else if (dialectProcessor instanceof ICDATASectionProcessor) {
 
@@ -207,7 +190,7 @@ final class DialectSetConfiguration {
                             cdataSectionProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
                         processorsForTemplateMode.add((ICDATASectionProcessor)dialectProcessor);
-                        Collections.sort(processorsForTemplateMode, PrecedenceProcessorComparator.INSTANCE);
+                        Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
                     } else if (dialectProcessor instanceof ICommentProcessor) {
 
@@ -217,7 +200,7 @@ final class DialectSetConfiguration {
                             commentProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
                         processorsForTemplateMode.add((ICommentProcessor)dialectProcessor);
-                        Collections.sort(processorsForTemplateMode, PrecedenceProcessorComparator.INSTANCE);
+                        Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
                     } else if (dialectProcessor instanceof IDocTypeProcessor) {
 
@@ -227,7 +210,7 @@ final class DialectSetConfiguration {
                             docTypeProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
                         processorsForTemplateMode.add((IDocTypeProcessor)dialectProcessor);
-                        Collections.sort(processorsForTemplateMode, PrecedenceProcessorComparator.INSTANCE);
+                        Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
                     } else if (dialectProcessor instanceof IProcessingInstructionProcessor) {
 
@@ -237,7 +220,7 @@ final class DialectSetConfiguration {
                             processingInstructionProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
                         processorsForTemplateMode.add((IProcessingInstructionProcessor)dialectProcessor);
-                        Collections.sort(processorsForTemplateMode, PrecedenceProcessorComparator.INSTANCE);
+                        Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
                     } else if (dialectProcessor instanceof ITextProcessor) {
 
@@ -247,7 +230,7 @@ final class DialectSetConfiguration {
                             textProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
                         processorsForTemplateMode.add((ITextProcessor)dialectProcessor);
-                        Collections.sort(processorsForTemplateMode, PrecedenceProcessorComparator.INSTANCE);
+                        Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
                     } else if (dialectProcessor instanceof IXMLDeclarationProcessor) {
 
@@ -257,7 +240,7 @@ final class DialectSetConfiguration {
                             xmlDeclarationProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
                         processorsForTemplateMode.add((IXMLDeclarationProcessor)dialectProcessor);
-                        Collections.sort(processorsForTemplateMode, PrecedenceProcessorComparator.INSTANCE);
+                        Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
                     }
 
@@ -305,31 +288,64 @@ final class DialectSetConfiguration {
              * STEP FOUR for each dialect: aggregate pre-processors (and check the correctness of the list)
              */
             if (dialect instanceof IPreProcessorDialect) {
-                final List<Class<? extends ITemplateHandler>> dialectPreProcessors = ((IPreProcessorDialect)dialect).getPreProcessors();
+
+                final Set<IPreProcessor> dialectPreProcessors = ((IPreProcessorDialect)dialect).getPreProcessors();
                 if (dialectPreProcessors != null) {
-                    for (final Class<? extends ITemplateHandler> dialectPreProcessorClass : dialectPreProcessors) {
-                        if (dialectPreProcessorClass == null) {
+
+                    for (final IPreProcessor preProcessor : dialectPreProcessors) {
+
+                        if (preProcessor == null) {
                             throw new ConfigurationException(
-                                    "Pre-Processor list for dialect " + dialect.getClass().getName() + " includes a null entry, which is forbidden.");
+                                    "Pre-Processor list for dialect " + dialect.getClass().getName() + " includes a " +
+                                    "null entry, which is forbidden.");
                         }
-                        if (!ITemplateHandler.class.isAssignableFrom(dialectPreProcessorClass)) {
+
+                        // Obtain and check template mode
+                        final TemplateMode templateMode = preProcessor.getTemplateMode();
+                        if (templateMode == null) {
                             throw new ConfigurationException(
-                                    "Pre-Processor class " + dialectPreProcessorClass.getName() + " specified for " +
-                                    "dialect " + dialect.getClass().getName() + " does not implement required " +
+                                    "Template mode cannot be null (pre-processor: " + preProcessor.getClass().getName() +
+                                    ", dialect" + dialect.getClass().getName() + ")");
+                        }
+
+                        // Check the handler class: should extend ITemplateHandler and have an empty constructor
+                        final Class<?> handlerClass = preProcessor.getHandlerClass();
+                        if (handlerClass == null) {
+                            throw new ConfigurationException(
+                                    "Pre-Processor " + preProcessor.getClass().getName() + " for dialect " +
+                                    preProcessor.getClass().getName() + " returns a null handler class, which is forbidden.");
+                        }
+                        if (!ITemplateHandler.class.isAssignableFrom(handlerClass)) {
+                            throw new ConfigurationException(
+                                    "Handler class " + handlerClass.getName() + " specified for " +
+                                    "pre-processor " + preProcessor.getClass().getName() + " in dialect " +
+                                    dialect.getClass().getName() + " does not implement required " +
                                     "interface " + ITemplateHandler.class.getName());
                         }
                         try {
                             // Check the empty constructor is present -- we will need to use it for creating new instances
-                            dialectPreProcessorClass.getConstructor(new Class[0]);
+                            handlerClass.getConstructor(new Class[0]);
                         } catch (final NoSuchMethodException e) {
                             throw new ConfigurationException(
-                                    "Pre-Processor class " + dialectPreProcessorClass.getName() + " specified for " +
-                                    "dialect " + dialect.getClass().getName() + " does not implement required " +
+                                    "Pre-Processor class " + handlerClass.getName() + " specified for " +
+                                    "pre-processor " + preProcessor.getClass().getName() + " in dialect " +
+                                    dialect.getClass().getName() + " does not implement required " +
                                     "zero-argument constructor.", e);
                         }
-                        preProcessors.add(dialectPreProcessorClass);
+
+                        // Add the pre-processor to its corresponding map and sort
+                        List<IPreProcessor> preProcessorsForTemplateMode = preProcessorListsByTemplateMode.get(templateMode);
+                        if (preProcessorsForTemplateMode == null) {
+                            preProcessorsForTemplateMode = new ArrayList<IPreProcessor>(5);
+                            preProcessorListsByTemplateMode.put(templateMode, preProcessorsForTemplateMode);
+                        }
+                        preProcessorsForTemplateMode.add(preProcessor);
+                        Collections.sort(preProcessorsForTemplateMode, ProcessorComparators.PRE_PROCESSOR_COMPARATOR);
+
                     }
+
                 }
+
             }
 
 
@@ -337,31 +353,64 @@ final class DialectSetConfiguration {
              * STEP FIVE for each dialect: aggregate post-processors (and check the correctness of the list)
              */
             if (dialect instanceof IPostProcessorDialect) {
-                final List<Class<? extends ITemplateHandler>> dialectPostProcessors = ((IPostProcessorDialect)dialect).getPostProcessors();
+
+                final Set<IPostProcessor> dialectPostProcessors = ((IPostProcessorDialect)dialect).getPostProcessors();
                 if (dialectPostProcessors != null) {
-                    for (final Class<? extends ITemplateHandler> dialectPostProcessorClass : dialectPostProcessors) {
-                        if (dialectPostProcessorClass == null) {
+
+                    for (final IPostProcessor postProcessor : dialectPostProcessors) {
+
+                        if (postProcessor == null) {
                             throw new ConfigurationException(
-                                    "Post-Processor list for dialect " + dialect.getClass().getName() + " includes a null entry, which is forbidden.");
+                                    "Post-Processor list for dialect " + dialect.getClass().getName() + " includes a " +
+                                    "null entry, which is forbidden.");
                         }
-                        if (!ITemplateHandler.class.isAssignableFrom(dialectPostProcessorClass)) {
+
+                        // Obtain and check template mode
+                        final TemplateMode templateMode = postProcessor.getTemplateMode();
+                        if (templateMode == null) {
                             throw new ConfigurationException(
-                                    "Post-Processor class " + dialectPostProcessorClass.getName() + " specified for " +
-                                    "dialect " + dialect.getClass().getName() + " does not implement required " +
+                                    "Template mode cannot be null (post-processor: " + postProcessor.getClass().getName() +
+                                    ", dialect" + dialect.getClass().getName() + ")");
+                        }
+
+                        // Check the handler class: should extend ITemplateHandler and have an empty constructor
+                        final Class<?> handlerClass = postProcessor.getHandlerClass();
+                        if (handlerClass == null) {
+                            throw new ConfigurationException(
+                                    "Post-Processor " + postProcessor.getClass().getName() + " for dialect " +
+                                    postProcessor.getClass().getName() + " returns a null handler class, which is forbidden.");
+                        }
+                        if (!ITemplateHandler.class.isAssignableFrom(handlerClass)) {
+                            throw new ConfigurationException(
+                                    "Handler class " + handlerClass.getName() + " specified for " +
+                                    "post-processor " + postProcessor.getClass().getName() + " in dialect " +
+                                    dialect.getClass().getName() + " does not implement required " +
                                     "interface " + ITemplateHandler.class.getName());
                         }
                         try {
                             // Check the empty constructor is present -- we will need to use it for creating new instances
-                            dialectPostProcessorClass.getConstructor(new Class[0]);
+                            handlerClass.getConstructor(new Class[0]);
                         } catch (final NoSuchMethodException e) {
                             throw new ConfigurationException(
-                                    "Post-Processor class " + dialectPostProcessorClass.getName() + " specified for " +
-                                    "dialect " + dialect.getClass().getName() + " does not implement required " +
+                                    "Post-Processor class " + handlerClass.getName() + " specified for " +
+                                    "post-processor " + postProcessor.getClass().getName() + " in dialect " +
+                                    dialect.getClass().getName() + " does not implement required " +
                                     "zero-argument constructor.", e);
                         }
-                        postProcessors.add(dialectPostProcessorClass);
+
+                        // Add the pre-processor to its corresponding map and sort
+                        List<IPostProcessor> postProcessorsForTemplateMode = postProcessorListsByTemplateMode.get(templateMode);
+                        if (postProcessorsForTemplateMode == null) {
+                            postProcessorsForTemplateMode = new ArrayList<IPostProcessor>(5);
+                            postProcessorListsByTemplateMode.put(templateMode, postProcessorsForTemplateMode);
+                        }
+                        postProcessorsForTemplateMode.add(postProcessor);
+                        Collections.sort(postProcessorsForTemplateMode, ProcessorComparators.POST_PROCESSOR_COMPARATOR);
+
                     }
+
                 }
+
             }
 
 
@@ -383,6 +432,8 @@ final class DialectSetConfiguration {
         final EnumMap<TemplateMode, Set<IProcessingInstructionProcessor>> processingInstructionProcessorsByTemplateMode = listMapToSetMap(processingInstructionProcessorListsByTemplateMode);
         final EnumMap<TemplateMode, Set<ITextProcessor>> textProcessorsByTemplateMode = listMapToSetMap(textProcessorListsByTemplateMode);
         final EnumMap<TemplateMode, Set<IXMLDeclarationProcessor>> xmlDeclarationProcessorsByTemplateMode = listMapToSetMap(xmlDeclarationProcessorListsByTemplateMode);
+        final EnumMap<TemplateMode, Set<IPreProcessor>> preProcessorsByTemplateMode = listMapToSetMap(preProcessorListsByTemplateMode);
+        final EnumMap<TemplateMode, Set<IPostProcessor>> postProcessorsByTemplateMode = listMapToSetMap(postProcessorListsByTemplateMode);
 
 
         // Initialize the ElementDefinitions and AttributeDefinitions structures -- they need the element processors so that these
@@ -402,13 +453,13 @@ final class DialectSetConfiguration {
                 cdataSectionProcessorsByTemplateMode, commentProcessorsByTemplateMode, docTypeProcessorsByTemplateMode,
                 elementProcessorsByTemplateMode, processingInstructionProcessorsByTemplateMode,
                 textProcessorsByTemplateMode, xmlDeclarationProcessorsByTemplateMode,
-                preProcessors, postProcessors);
+                preProcessorsByTemplateMode, postProcessorsByTemplateMode);
 
     }
 
 
 
-    private static <T extends IProcessor> EnumMap<TemplateMode, Set<T>> listMapToSetMap(final EnumMap<TemplateMode, List<T>> map) {
+    private static <T> EnumMap<TemplateMode, Set<T>> listMapToSetMap(final EnumMap<TemplateMode, List<T>> map) {
         final EnumMap<TemplateMode, Set<T>> newMap = new EnumMap<TemplateMode, Set<T>>(TemplateMode.class);
         for (final Map.Entry<TemplateMode, List<T>> entry : map.entrySet()) {
             newMap.put(entry.getKey(), new LinkedHashSet<T>(entry.getValue()));
@@ -437,8 +488,8 @@ final class DialectSetConfiguration {
             final EnumMap<TemplateMode, Set<IProcessingInstructionProcessor>> processingInstructionProcessorsByTemplateMode,
             final EnumMap<TemplateMode, Set<ITextProcessor>> textProcessorsByTemplateMode,
             final EnumMap<TemplateMode, Set<IXMLDeclarationProcessor>> xmlDeclarationProcessorsByTemplateMode,
-            final List<Class<? extends ITemplateHandler>> preProcessors,
-            final List<Class<? extends ITemplateHandler>> postProcessors) {
+            final EnumMap<TemplateMode, Set<IPreProcessor>> preProcessors,
+            final EnumMap<TemplateMode, Set<IPostProcessor>> postProcessors) {
 
         super();
 
@@ -459,9 +510,7 @@ final class DialectSetConfiguration {
         this.textProcessorsByTemplateMode = textProcessorsByTemplateMode;
         this.xmlDeclarationProcessorsByTemplateMode = xmlDeclarationProcessorsByTemplateMode;
         this.preProcessors = preProcessors;
-        this.hasPreProcessors = this.preProcessors != null && this.preProcessors.size() > 0;
         this.postProcessors = postProcessors;
-        this.hasPostProcessors = this.postProcessors != null && this.postProcessors.size() > 0;
 
     }
 
@@ -576,21 +625,23 @@ final class DialectSetConfiguration {
     }
 
 
-    public boolean hasPreProcessors() {
-        return this.hasPreProcessors;
+    public Set<IPreProcessor> getPreProcessors(final TemplateMode templateMode) {
+        Validate.notNull(templateMode, "Template mode cannot be null");
+        final Set<IPreProcessor> preProcessors = this.preProcessors.get(templateMode);
+        if (preProcessors == null) {
+            return Collections.EMPTY_SET;
+        }
+        return preProcessors;
     }
 
-    public List<Class<? extends ITemplateHandler>> getPreProcessors() {
-        return this.preProcessors;
-    }
 
-
-    public boolean hasPostProcessors() {
-        return this.hasPostProcessors;
-    }
-
-    public List<Class<? extends ITemplateHandler>> getPostProcessors() {
-        return this.postProcessors;
+    public Set<IPostProcessor> getPostProcessors(final TemplateMode templateMode) {
+        Validate.notNull(templateMode, "Template mode cannot be null");
+        final Set<IPostProcessor> postProcessors = this.postProcessors.get(templateMode);
+        if (postProcessors == null) {
+            return Collections.EMPTY_SET;
+        }
+        return postProcessors;
     }
 
 

@@ -23,7 +23,6 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -42,6 +41,8 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.context.TemplateProcessingContext;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.postprocessor.IPostProcessor;
+import org.thymeleaf.preprocessor.IPreProcessor;
 import org.thymeleaf.resource.IResource;
 import org.thymeleaf.resource.StringResource;
 import org.thymeleaf.resourceresolver.IResourceResolver;
@@ -874,25 +875,26 @@ public final class TemplateManager {
         /*
          * First type of handlers to be added: pre-processors (if any)
          */
-        final List<Class<? extends ITemplateHandler>> preProcessors = configuration.getPreProcessors();
+        final Set<IPreProcessor> preProcessors = configuration.getPreProcessors(processingContext.getTemplateMode());
         if (preProcessors != null) {
-            for (final Class<? extends ITemplateHandler> preProcessorClass : preProcessors) {
-                final ITemplateHandler preProcessor;
+            for (final IPreProcessor preProcessor : preProcessors) {
+                final Class<? extends ITemplateHandler> preProcessorClass = preProcessor.getHandlerClass();
+                final ITemplateHandler preProcessorHandler;
                 try {
-                    preProcessor = preProcessorClass.newInstance();
+                    preProcessorHandler = preProcessorClass.newInstance();
                 } catch (final Exception e) {
                     // This should never happen - class was already checked during configuration to contain a zero-arg constructor
                     throw new TemplateProcessingException(
                             "An exception happened during the creation of a new instance of pre-processor " + preProcessorClass.getClass().getName(), e);
                 }
                 // Initialize the pre-processor
-                preProcessor.setProcessingContext(processingContext);
+                preProcessorHandler.setProcessingContext(processingContext);
                 if (firstHandler == null) {
-                    firstHandler = preProcessor;
-                    lastHandler = preProcessor;
+                    firstHandler = preProcessorHandler;
+                    lastHandler = preProcessorHandler;
                 } else {
-                    lastHandler.setNext(preProcessor);
-                    lastHandler = preProcessor;
+                    lastHandler.setNext(preProcessorHandler);
+                    lastHandler = preProcessorHandler;
                 }
             }
         }
@@ -915,25 +917,26 @@ public final class TemplateManager {
         /*
          * After the Processor Handler, we now must add the post-processors (if any)
          */
-        final List<Class<? extends ITemplateHandler>> postProcessors = configuration.getPostProcessors();
+        final Set<IPostProcessor> postProcessors = configuration.getPostProcessors(processingContext.getTemplateMode());
         if (postProcessors != null) {
-            for (final Class<? extends ITemplateHandler> postProcessorClass : postProcessors) {
-                final ITemplateHandler postProcessor;
+            for (final IPostProcessor postProcessor : postProcessors) {
+                final Class<? extends ITemplateHandler> postProcessorClass = postProcessor.getHandlerClass();
+                final ITemplateHandler postProcessorHandler;
                 try {
-                    postProcessor = postProcessorClass.newInstance();
+                    postProcessorHandler = postProcessorClass.newInstance();
                 } catch (final Exception e) {
                     // This should never happen - class was already checked during configuration to contain a zero-arg constructor
                     throw new TemplateProcessingException(
                             "An exception happened during the creation of a new instance of post-processor " + postProcessorClass.getClass().getName(), e);
                 }
                 // Initialize the pre-processor
-                postProcessor.setProcessingContext(processingContext);
+                postProcessorHandler.setProcessingContext(processingContext);
                 if (firstHandler == null) {
-                    firstHandler = postProcessor;
-                    lastHandler = postProcessor;
+                    firstHandler = postProcessorHandler;
+                    lastHandler = postProcessorHandler;
                 } else {
-                    lastHandler.setNext(postProcessor);
-                    lastHandler = postProcessor;
+                    lastHandler.setNext(postProcessorHandler);
+                    lastHandler = postProcessorHandler;
                 }
             }
         }
