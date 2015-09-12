@@ -651,7 +651,7 @@ final class DialectSetConfiguration {
                 return this.firstExpressionObjectFactory.buildObject(processingContext, expressionObjectName);
             }
             if (this.expressionObjectFactoryList == null) {
-                return false;
+                return null;
             }
             int n = this.expressionObjectFactoryList.size();
             while (n-- != 0) {
@@ -659,7 +659,7 @@ final class DialectSetConfiguration {
                     return this.expressionObjectFactoryList.get(n).buildObject(processingContext, expressionObjectName);
                 }
             }
-            return false;
+            return null;
         }
 
     }
