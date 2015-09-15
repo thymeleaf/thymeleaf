@@ -2693,13 +2693,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         }
 
-        boolean matchOrHigher(final int level) {
-            if (this.size > 0 && this.array[this.size - 1] <= level) {
-                return true;
-            }
-            return false;
-        }
-
         boolean matchAndPop(final int level) {
             if (this.size > 0 && this.array[this.size - 1] == level) {
                 this.size--;
