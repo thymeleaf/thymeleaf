@@ -119,28 +119,6 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
     }
 
 
-    /*
-     * Note this method IS NOT a part of the IText interface
-     */
-    public void precomputeFlags() {
-        isWhitespace();
-    }
-
-
-    public boolean isWhitespace() {
-
-        if (this.whitespace == null) {
-            if (this.buffer != null) {
-                this.whitespace = Boolean.valueOf(computeIsWhitespace(this.buffer, this.offset, this.length));
-            } else {
-                this.whitespace = Boolean.valueOf(computeIsWhitespace(this.text));
-            }
-        }
-
-        return this.whitespace.booleanValue();
-    }
-
-
     public CharSequence subSequence(final int start, final int end) {
 
         // no need to perform index bounds checking: it would slow down traversing operations a lot, and
@@ -270,6 +248,22 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
 
     }
 
+
+
+
+
+    boolean isWhitespace() {
+
+        if (this.whitespace == null) {
+            if (this.buffer != null) {
+                this.whitespace = Boolean.valueOf(computeIsWhitespace(this.buffer, this.offset, this.length));
+            } else {
+                this.whitespace = Boolean.valueOf(computeIsWhitespace(this.text));
+            }
+        }
+
+        return this.whitespace.booleanValue();
+    }
 
 
 

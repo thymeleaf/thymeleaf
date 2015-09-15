@@ -161,13 +161,6 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             final int line, final int col)
             throws TextParseException {
         this.text.reset(buffer, offset, len, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
-        // Precompute some flag in texts - this should help performance, especially when using a template cache.
-        // Example flags are: 'whitespace' (marking when a text only contains whitespace) or the internal 'inlineable'
-        // (marking when a text might contain inlined expressions according to the Standard Dialects).
-        // NOTE we are doing this only for those text nodes that are parsed, i.e. come from the template and therefore
-        // will probably be processed (and their 'whitespace' flag queried), whereas we still save the need to call this
-        // 'isWhitespace' computation on Text nodes added during processing itself (which might be many more, and larger)
-        this.text.precomputeFlags();
         this.templateHandler.handleText(this.text);
     }
 

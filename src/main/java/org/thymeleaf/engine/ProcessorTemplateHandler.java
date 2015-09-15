@@ -1101,11 +1101,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.iterationSpec.iterationQueue.reset();
 
                     // If there is a preceding whitespace, add it to the iteration spec
-                    if (lastText != null && lastText.isWhitespace() &&
-                            (this.templateMode == TemplateMode.XML ||
-                                    (this.templateMode == TemplateMode.HTML && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(standaloneElementTag.elementDefinition.elementName)))) {
-                        this.iterationSpec.precedingWhitespace =
-                                Text.asEngineText(this.configuration, lastText, true);
+                    if (lastText != null &&
+                            ((this.templateMode == TemplateMode.XML) ||
+                             (this.templateMode == TemplateMode.HTML && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(standaloneElementTag.elementDefinition.elementName)))) {
+                        final Text lastEngineText = Text.asEngineText(this.configuration, lastText, true);
+                        if (lastEngineText.isWhitespace()) {
+                            this.iterationSpec.precedingWhitespace = lastEngineText;
+                        }
                     }
 
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
@@ -1601,11 +1603,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.iterationSpec.iterationQueue.reset();
 
                     // If there is a preceding whitespace, add it to the iteration spec
-                    if (lastText != null && lastText.isWhitespace() &&
-                            (this.templateMode == TemplateMode.XML ||
+                    if (lastText != null &&
+                            ((this.templateMode == TemplateMode.XML) ||
                                     (this.templateMode == TemplateMode.HTML && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(openElementTag.elementDefinition.elementName)))) {
-                        this.iterationSpec.precedingWhitespace =
-                                Text.asEngineText(this.configuration, lastText, true);
+                        final Text lastEngineText = Text.asEngineText(this.configuration, lastText, true);
+                        if (lastEngineText.isWhitespace()) {
+                            this.iterationSpec.precedingWhitespace = lastEngineText;
+                        }
                     }
 
                     // Before suspending the queue, we have to check if it is the result of a "setBodyText", in

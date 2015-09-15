@@ -25,7 +25,6 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.ITemplateEvent;
-import org.thymeleaf.model.IText;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
@@ -62,20 +61,6 @@ public abstract class AbstractStandardInliner implements IInliner {
          */
 
         if (context.getTemplateMode() != this.templateMode) {
-
-            if (text instanceof IText) {
-
-                final IText itext = (IText) text;
-
-                /*
-                 * If all the text to be inlined is whitespace (we know this from the moment it was parsed), then just return,
-                 * because there is no way we can do anything with just whitespace.
-                 */
-                if (itext.isWhitespace()) {
-                    return text;
-                }
-
-            }
 
             final StringWriter stringWriter = new StringWriter();
 

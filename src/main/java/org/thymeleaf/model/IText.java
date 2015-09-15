@@ -31,11 +31,6 @@ public interface IText extends ITemplateEvent, CharSequence {
 
     public void setText(final CharSequence text);
 
-    /*
-     * Note empty texts are NOT considered whitespace
-     */
-    public boolean isWhitespace();
-
     public IText cloneEvent();
 
 }
