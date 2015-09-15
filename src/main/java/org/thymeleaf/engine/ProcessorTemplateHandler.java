@@ -44,6 +44,7 @@ import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.model.ITemplateEnd;
+import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.model.IXMLDeclaration;
@@ -2468,7 +2469,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             iterStatusVariableName = iterVariableName + DEFAULT_STATUS_VAR_SUFFIX;
         }
         final Object iteratedObject = this.iterationSpec.iteratedObject;
-        iterArtifacts.iterationQueue.resetAsCloneOf(this.iterationSpec.iterationQueue, false);
+
+        /*
+         * Copy the gathered iterated queue into the real queue that will be executed (at iterArtifacts)
+         */
+        iterArtifacts.iterationQueue.resetAsCloneOf(iterationSpec.iterationQueue, false);
+
+        /*
+         * This will compute whether transformations on the first/last body events need to be performed
+         * (e.g. if we need to remove some whitespace when iterating in TEXT mode)
+         */
+        prepareIterationEvents(this.configuration, this.templateMode, this.iterationSpec, iterArtifacts);
 
         /*
          * Depending on the class of the iterated object, we will iterate it in one way or another. And also we
@@ -2504,9 +2515,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * PERFORM THE ITERATION
          */
 
-        while (iterator.hasNext()) {
+        boolean iterHasNext = iterator.hasNext();
+        while (iterHasNext) {
 
             status.current = iterator.next();
+
+            // we precompute this in order to know when we are at the last element
+            iterHasNext = iterator.hasNext();
 
             this.variablesMap.increaseLevel();
 
@@ -2526,13 +2541,18 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             // be allowed)
             this.allowedElementCountByModelLevel[this.modelLevel]++;
 
+            // We might need to perform some modifications to the iteration queue for this iteration
+            // For example, in text modes we might modify the first whitespaces in the body of the iterated element
+            prepareIterationQueueForIteration(iterArtifacts, status.index, !iterHasNext);
+
+            // Execute the queue itself
             iterArtifacts.iterationQueue.process(this, false);
 
             this.variablesMap.decreaseLevel();
 
             // We will use the index in order to determine the moment we need to insert the preceding whitespace into
             // the iteration queue. This is because the preceding text event will have already been issued by the moment
-            // we start iterating, and we want to avoid a double whitespace before the fist iteration
+            // we start iterating, and we want to avoid a double whitespace before the first iteration
             if (status.index == 0 && precedingWhitespace != null) {
                 iterArtifacts.iterationQueue.insert(0, precedingWhitespace, false);
             }
@@ -2606,10 +2626,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return Integer.valueOf(0);
         }
         if (iteratedObject instanceof Collection<?>) {
-            return Integer.valueOf(((Collection<?>)iteratedObject).size());
+            return Integer.valueOf(((Collection<?>) iteratedObject).size());
         }
         if (iteratedObject instanceof Map<?,?>) {
-            return Integer.valueOf(((Map<?,?>)iteratedObject).size());
+            return Integer.valueOf(((Map<?, ?>) iteratedObject).size());
         }
         if (iteratedObject.getClass().isArray()) {
             return Integer.valueOf(Array.getLength(iteratedObject));
@@ -2662,6 +2682,190 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return (Iterator<?>)iteratedObject;
         }
         return Collections.singletonList(iteratedObject).iterator();
+    }
+
+
+
+
+    private static void prepareIterationEvents(
+            final IEngineConfiguration configuration, final TemplateMode templateMode,
+            final IterationSpec iterationSpec, final IterationArtifacts iterArtifacts) {
+
+        if (!templateMode.isText() || iterationSpec.iterationQueue.size() <= 2) {
+            // This is not a text-mode template, so we will just ignore those first/last events
+            // (or either it is a text-mode template, but it only contains the open + close element events)
+            iterArtifacts.performBodyFirstLastSwitch = false;
+            return;
+        }
+
+        /*
+         * We are in a textual template mode, and it might be possible to fiddle a bit with whitespaces at the beginning
+         * and end of the body, so that iterations look better.
+         *
+         * The goal is that this:
+         *
+         * ---------------------
+         * List:
+         * [# th:each="i : ${items}"]
+         *   - [[${i}]]
+         * [/]
+         * ---------------------
+         *
+         * ...doesn't look like:
+         *
+         * ---------------------
+         * List:
+         *
+         *   - [[${i}]]
+         *
+         *   - [[${i}]]
+         *
+         *   - [[${i}]]
+         * ---------------------
+         *
+         * ...but instead like:
+         *
+         * ---------------------
+         * List:
+         *
+         *   - [[${i}]]
+         *   - [[${i}]]
+         *   - [[${i}]]
+         * ---------------------
+         *
+         * And in order to do this, the steps to be taken will be:
+         *
+         *   - Check that the iterated block starts with an 'open element' and ends with a 'close element'. If not,
+         *     don't apply any of this.
+         *   - Except for the first iteration, remove all whitespace after the 'open element', until the
+         *     first '\n' (and remove that too).
+         *   - Except for the last iteration, remove all whitespace after the last '\n' (not including it) and before
+         *     the 'close element'.
+         */
+
+        int firstBodyEventCutPoint = -1;
+        int lastBodyEventCutPoint = -1;
+
+        final ITemplateEvent firstBodyEvent = iterArtifacts.iterationQueue.get(1); // we know there is at least one body event
+        Text firstTextBodyEvent = null;
+        if (iterArtifacts.iterationQueue.get(0) instanceof OpenElementTag && firstBodyEvent instanceof IText) {
+
+            firstTextBodyEvent = Text.asEngineText(configuration, (Text)firstBodyEvent, false);
+
+            final int firstTextEventLen = firstTextBodyEvent.length();
+            int i = 0;
+            char c;
+            while (i < firstTextEventLen && firstBodyEventCutPoint < 0) {
+                c = firstTextBodyEvent.charAt(i);
+                if (c == '\n') {
+                    firstBodyEventCutPoint = i + 1;
+                    break; // we've already assigned the value we were looking for
+                } else if (Character.isWhitespace(c)) {
+                    i++;
+                    continue;
+                } else {
+                    // We will not be able to perform any whitespace reduction here
+                    break;
+                }
+            }
+
+        }
+
+        final ITemplateEvent lastBodyEvent = iterArtifacts.iterationQueue.get(iterArtifacts.iterationQueue.size() - 2);
+        Text lastTextBodyEvent = null;
+        if (firstBodyEventCutPoint >= 0 &&
+                iterArtifacts.iterationQueue.get(iterArtifacts.iterationQueue.size() - 1) instanceof CloseElementTag && lastBodyEvent instanceof IText) {
+
+            lastTextBodyEvent = Text.asEngineText(configuration, (IText)lastBodyEvent, false);
+
+            final int lastTextEventLen = lastTextBodyEvent.length();
+            int i = lastTextEventLen - 1;
+            char c;
+            while (i >= 0 && lastBodyEventCutPoint < 0) {
+                c = lastTextBodyEvent.charAt(i);
+                if (c == '\n') {
+                    lastBodyEventCutPoint = i + 1;
+                    break; // we've already assigned the value we were looking for
+                } else if (Character.isWhitespace(c)) {
+                    i--;
+                    continue;
+                } else {
+                    // We will not be able to perform any whitespace reduction here
+                    break;
+                }
+            }
+
+        }
+
+        if (firstBodyEventCutPoint < 0 || lastBodyEventCutPoint < 0) {
+            // We don't have the scenario required for performing the needed whitespace collapsing operation
+            iterArtifacts.performBodyFirstLastSwitch = false;
+            return;
+        }
+
+        // At this point, we are sure that we will want to perform modifications on the first/last whitespaces
+        iterArtifacts.performBodyFirstLastSwitch = true;
+
+        if (firstBodyEvent == lastBodyEvent) {
+            // If the first and the last event are actually the same, we need to take better care of how we manage whitespace
+            final CharSequence textFor0 = lastTextBodyEvent.subSequence(0, lastBodyEventCutPoint);
+            final CharSequence textForMax = firstTextBodyEvent.subSequence(firstBodyEventCutPoint, firstTextBodyEvent.length());
+            final CharSequence textForN = firstTextBodyEvent.subSequence(firstBodyEventCutPoint, lastBodyEventCutPoint);
+
+            iterArtifacts.iterationFirstBodyEventIter0.setText(textFor0);
+            iterArtifacts.iterationFirstBodyEventIterN.setText(textForN);
+            iterArtifacts.iterationLastBodyEventIterMax.setText(textForMax);
+            iterArtifacts.iterationLastBodyEventIterN.setText(textForN);
+            return;
+        }
+
+        // At this point, we know the first and last body events are different objects
+
+        iterArtifacts.iterationFirstBodyEventIter0.resetAsCloneOf(firstTextBodyEvent);
+        iterArtifacts.iterationLastBodyEventIterMax.resetAsCloneOf(lastTextBodyEvent);
+
+        if (firstBodyEventCutPoint == 0) {
+            iterArtifacts.iterationFirstBodyEventIterN.resetAsCloneOf(firstTextBodyEvent);
+        } else {
+            iterArtifacts.iterationFirstBodyEventIterN.setText(firstTextBodyEvent.subSequence(firstBodyEventCutPoint, firstTextBodyEvent.length()));
+        }
+
+        if (lastBodyEventCutPoint == lastTextBodyEvent.length()) {
+            iterArtifacts.iterationLastBodyEventIterN.resetAsCloneOf(lastTextBodyEvent);
+        } else {
+            iterArtifacts.iterationLastBodyEventIterN.setText(lastTextBodyEvent.subSequence(0, lastBodyEventCutPoint));
+        }
+
+
+    }
+
+
+
+
+    private static void prepareIterationQueueForIteration(
+            final IterationArtifacts iterArtifacts, final int iterationIndex, final boolean last) {
+
+        if (!iterArtifacts.performBodyFirstLastSwitch || (iterationIndex > 1 && !last)) {
+            // No modifications to be done to the iteration queue here
+            return;
+        }
+
+        final EngineEventQueue queue = iterArtifacts.iterationQueue;
+
+        if (iterationIndex == 0) {
+            ((Text)queue.get(1)).resetAsCloneOf(iterArtifacts.iterationFirstBodyEventIter0);
+            ((Text)queue.get(queue.size() - 2)).resetAsCloneOf(iterArtifacts.iterationLastBodyEventIterN);
+        }
+
+        if (iterationIndex == 1) {
+            ((Text)queue.get(1)).resetAsCloneOf(iterArtifacts.iterationFirstBodyEventIterN);
+        }
+
+        if (last) {
+            ((Text)queue.get(queue.size() - 2)).resetAsCloneOf(iterArtifacts.iterationLastBodyEventIterMax);
+        }
+
+
     }
 
 
@@ -2732,21 +2936,26 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     }
 
 
+    private static final class IterationArtifacts {
 
-    private static final class ElementModelSpec {
+        boolean performBodyFirstLastSwitch = false;
+        final Text iterationFirstBodyEventIter0;
+        final Text iterationFirstBodyEventIterN;
+        final EngineEventQueue iterationQueue;
+        final Text iterationLastBodyEventIterN;
+        final Text iterationLastBodyEventIterMax;
+        final EngineEventQueue suspendedQueue;
+        final ElementProcessorIterator suspendedElementProcessorIterator;
 
-        private int fromModelLevel;
-        final EngineEventQueue modelQueue;
-
-        ElementModelSpec(final TemplateMode templateMode, final IEngineConfiguration configuration) {
+        IterationArtifacts(final TemplateMode templateMode, final IEngineConfiguration configuration) {
             super();
-            this.modelQueue = new EngineEventQueue(configuration, templateMode, 50);
-            reset();
-        }
-
-        void reset() {
-            this.fromModelLevel = Integer.MAX_VALUE;
-            this.modelQueue.reset();
+            this.iterationFirstBodyEventIter0 = new Text(configuration.getTextRepository());
+            this.iterationFirstBodyEventIterN = new Text(configuration.getTextRepository());
+            this.iterationQueue = new EngineEventQueue(configuration, templateMode, 50);
+            this.iterationLastBodyEventIterN = new Text(configuration.getTextRepository());
+            this.iterationLastBodyEventIterMax = new Text(configuration.getTextRepository());
+            this.suspendedQueue = new EngineEventQueue(configuration, templateMode, 5);
+            this.suspendedElementProcessorIterator = new ElementProcessorIterator();
         }
 
     }
@@ -2777,17 +2986,21 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     }
 
 
-    private static final class IterationArtifacts {
 
-        final EngineEventQueue iterationQueue;
-        final EngineEventQueue suspendedQueue;
-        final ElementProcessorIterator suspendedElementProcessorIterator;
+    private static final class ElementModelSpec {
 
-        IterationArtifacts(final TemplateMode templateMode, final IEngineConfiguration configuration) {
+        private int fromModelLevel;
+        final EngineEventQueue modelQueue;
+
+        ElementModelSpec(final TemplateMode templateMode, final IEngineConfiguration configuration) {
             super();
-            this.iterationQueue = new EngineEventQueue(configuration, templateMode, 50);
-            this.suspendedQueue = new EngineEventQueue(configuration, templateMode, 5);
-            this.suspendedElementProcessorIterator = new ElementProcessorIterator();
+            this.modelQueue = new EngineEventQueue(configuration, templateMode, 50);
+            reset();
+        }
+
+        void reset() {
+            this.fromModelLevel = Integer.MAX_VALUE;
+            this.modelQueue.reset();
         }
 
     }
