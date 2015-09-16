@@ -186,6 +186,7 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
             final Map<String,Object[]> parameters, final Locale locale) {
 
         final String mimeType = "text/html";
+        final String characterEncoding = "UTF-8";
         final String method = "GET";
         final String contextName = "/testing";
         final String protocol = "HTTP/1.1";
@@ -196,10 +197,13 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         final String requestURI = contextName + servletPath;
         final String requestURL = scheme + "://" + serverName + requestURI;
         final String queryString = buildQueryString(parameters);
+        final int contentLength = -1; // -1 is HTTP standard for 'unknown'
+        final Enumeration<String> headerNames = new ObjectEnumeration<String>(null);
         
         final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
         Mockito.when(request.getContentType()).thenReturn(mimeType);
+        Mockito.when(request.getCharacterEncoding()).thenReturn(characterEncoding);
         Mockito.when(request.getMethod()).thenReturn(method);
         Mockito.when(request.getProtocol()).thenReturn(protocol);
         Mockito.when(request.getScheme()).thenReturn(scheme);
@@ -212,7 +216,9 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         Mockito.when(request.getQueryString()).thenReturn(queryString);
         Mockito.when(request.getLocale()).thenReturn(locale);
         Mockito.when(request.getLocales()).thenReturn(new ObjectEnumeration<Locale>(Arrays.asList(new Locale[]{locale})));
-        
+        Mockito.when(Integer.valueOf(request.getContentLength())).thenReturn(Integer.valueOf(contentLength));
+        Mockito.when(request.getHeaderNames()).thenReturn(headerNames);
+
         Mockito.when(request.getSession()).thenReturn(session);
         Mockito.when(request.getSession(Matchers.anyBoolean())).thenReturn(session);
 
