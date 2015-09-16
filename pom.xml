@@ -110,7 +110,7 @@
     <thymeleaf.version>3.0.0-SNAPSHOT</thymeleaf.version>
     <attoparser.version>2.0.0-SNAPSHOT</attoparser.version>
     <servlet-api.version>2.5</servlet-api.version>
-    <mockito.version>1.9.5</mockito.version>
+    <mockito.version>1.10.19</mockito.version>
     <springframework.version>3.0.7.RELEASE</springframework.version>
     <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
     <ognl.version>3.0.11</ognl.version>
