@@ -49,7 +49,7 @@ public abstract class AbstractStandardAttributeModifierTagProcessor extends Abst
     protected AbstractStandardAttributeModifierTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix, final String attrName, final String targetAttrName,
             final int precedence, final boolean removeIfEmpty) {
-        super(templateMode, dialectPrefix, attrName, precedence, true);
+        super(templateMode, dialectPrefix, attrName, precedence, false);
         this.targetAttrName = targetAttrName;
         this.removeIfEmpty = removeIfEmpty;
     }
@@ -73,9 +73,10 @@ public abstract class AbstractStandardAttributeModifierTagProcessor extends Abst
         if (this.removeIfEmpty && (newAttributeValue == null || newAttributeValue.length() == 0)) {
             // We are removing the equivalent attribute name, without the prefix...
             tag.getAttributes().removeAttribute(newAttributeName);
+            tag.getAttributes().removeAttribute(attributeName);
         } else {
             // We are setting the equivalent attribute name, without the prefix...
-            tag.getAttributes().setAttribute(newAttributeName, (newAttributeValue == null? "" : newAttributeValue));
+            tag.getAttributes().replaceAttribute(attributeName, newAttributeName, (newAttributeValue == null? "" : newAttributeValue));
         }
 
     }

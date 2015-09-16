@@ -724,6 +724,14 @@ class ImmutableModel implements IModel {
             ImmutableModel.immutableEventException();
         }
 
+        public void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value) {
+            ImmutableModel.immutableEventException();
+        }
+
+        public void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value, final ValueQuotes valueQuotes) {
+            ImmutableModel.immutableEventException();
+        }
+
         public void removeAttribute(final String prefix, final String name) {
             ImmutableModel.immutableEventException();
         }

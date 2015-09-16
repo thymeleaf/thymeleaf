@@ -352,6 +352,8 @@ public final class ElementAttributes implements IElementAttributes {
 
 
 
+
+
     public final void setAttribute(final String completeName, final String value) {
         setAttribute(completeName, null, value, null, -1, -1, true);
     }
@@ -447,6 +449,84 @@ public final class ElementAttributes implements IElementAttributes {
         this.version++;
 
     }
+
+
+
+
+
+
+    public final void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value) {
+        replaceAttribute(oldName, completeNewName, null, value, null, -1, -1, true);
+    }
+
+
+    public final void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value, final ValueQuotes valueQuotes) {
+        Validate.isTrue(
+                !(ValueQuotes.NONE.equals(valueQuotes) && this.templateMode == TemplateMode.XML),
+                "Cannot set no-quote attributes when in XML template mode");
+        Validate.isTrue(
+                !(ValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
+                "Cannot set an empty-string value to an attribute with no quotes");
+        replaceAttribute(oldName, completeNewName, null, value, valueQuotes, -1, -1, true);
+    }
+
+
+    // Meant to be used from within the engine
+    final void replaceAttribute(
+            final AttributeName oldName, final String completeNewName, final String operator, final String value, final ValueQuotes valueQuotes,
+            final int line, final int col, final boolean autoWhiteSpace) {
+
+        Validate.notNull(oldName, "Attribute old name cannot be null");
+        Validate.notNull(completeNewName, "Attribute new name cannot be null");
+
+        Validate.isTrue(value != null || this.templateMode != TemplateMode.XML, "Cannot set null-value attributes in XML template mode");
+
+        if (this.attributes == null) {
+
+            setAttribute(completeNewName, operator, value, valueQuotes, line, col, autoWhiteSpace);
+            // no need to remove the old one -- we didn't have any attributes!
+            return;
+
+        }
+
+
+        int existingIdx = searchAttribute(completeNewName);
+        if (existingIdx >= 0) {
+            // New Attribute already exists! Must simply change its properties
+
+            final ElementAttribute existingAttribute = this.attributes[existingIdx];
+            existingAttribute.reset(completeNewName, operator, value, valueQuotes, line, col);
+
+            this.version++;
+
+            removeAttribute(oldName); // We will remove the old one as we don't need its position
+
+            return;
+
+        }
+
+
+        existingIdx = searchAttribute(oldName);
+        if (existingIdx >= 0) {
+            // Attribute already exists! Must simply change its properties
+
+            final ElementAttribute existingAttribute = this.attributes[existingIdx];
+            existingAttribute.reset(completeNewName, operator, value, valueQuotes, line, col);
+
+            this.version++;
+
+            // No need to remove the old one as we have just rewritten it
+
+            return;
+
+        }
+
+        // Neither the old nor the new attribute seem to exist, so this should work exactly as a 'set' operation
+        setAttribute(completeNewName, operator, value, valueQuotes, line, col, autoWhiteSpace);
+
+    }
+
+
 
 
 

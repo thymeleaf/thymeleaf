@@ -75,6 +75,9 @@ public interface IElementAttributes {
     public void setAttribute(final String completeName, final String value);
     public void setAttribute(final String completeName, final String value, final ValueQuotes valueQuotes);
 
+    public void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value);
+    public void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value, final ValueQuotes valueQuotes);
+
     public void removeAttribute(final String prefix, final String name);
     public void removeAttribute(final String completeName);
     public void removeAttribute(final AttributeName attributeName);
