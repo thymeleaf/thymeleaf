@@ -49,7 +49,7 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
 
 
     public SpringActionTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, true);
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, false);
     }
 
 
@@ -73,7 +73,7 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
         newAttributeValue = RequestDataValueProcessorUtils.processAction(processingContext, newAttributeValue, httpMethod);
 
         // Set the 'action' attribute
-        tag.getAttributes().setAttribute(ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
+        tag.getAttributes().replaceAttribute(attributeName, ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
 
         // If this th:action is in a <form> tag, we might need to add a hidden field (depending on Spring configuration)
         if ("form".equalsIgnoreCase(tag.getElementName())) {

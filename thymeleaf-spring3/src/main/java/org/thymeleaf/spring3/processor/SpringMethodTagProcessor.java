@@ -47,7 +47,7 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
 
 
     public SpringMethodTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, true);
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, false);
     }
 
 
@@ -66,8 +66,9 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
         // Set the 'method' attribute, or remove it if evaluated to null
         if (newAttributeValue == null || newAttributeValue.length() == 0) {
             tag.getAttributes().removeAttribute(ATTR_NAME);
+            tag.getAttributes().removeAttribute(attributeName);
         } else {
-            tag.getAttributes().setAttribute(ATTR_NAME, newAttributeValue);
+            tag.getAttributes().replaceAttribute(attributeName, ATTR_NAME, newAttributeValue);
         }
 
         // If this th:action is in a <form> tag, we might need to add a hidden field for non-supported HTTP methods

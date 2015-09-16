@@ -45,7 +45,7 @@ public final class SpringSrcTagProcessor extends AbstractStandardExpressionAttri
 
 
     public SpringSrcTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, true);
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, false);
     }
 
 
@@ -65,7 +65,7 @@ public final class SpringSrcTagProcessor extends AbstractStandardExpressionAttri
         newAttributeValue = RequestDataValueProcessorUtils.processUrl(processingContext, newAttributeValue);
 
         // Set the real, non prefixed attribute
-        tag.getAttributes().setAttribute(ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
+        tag.getAttributes().replaceAttribute(attributeName, ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
 
     }
 
