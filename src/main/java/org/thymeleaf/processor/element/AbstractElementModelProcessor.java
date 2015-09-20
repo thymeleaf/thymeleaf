@@ -86,7 +86,7 @@ public abstract class AbstractElementModelProcessor
 
     public final void process(
             final ITemplateProcessingContext processingContext,
-            final IModel model) {
+            final IModel model, final IElementModelStructureHandler structureHandler) {
 
         String modelTemplateName = null;
         int modelLine = -1;
@@ -98,7 +98,7 @@ public abstract class AbstractElementModelProcessor
             modelLine = firstEvent.getLine();
             modelCol = firstEvent.getLine();
 
-            doProcess(processingContext, model, modelTemplateName, modelLine, modelCol);
+            doProcess(processingContext, model, modelTemplateName, modelLine, modelCol, structureHandler);
 
         } catch (final TemplateProcessingException e) {
 
@@ -127,6 +127,7 @@ public abstract class AbstractElementModelProcessor
     protected abstract void doProcess(
             final ITemplateProcessingContext processingContext,
             final IModel model,
-            final String modelTemplateName, final int modelLine, final int modelCol);
+            final String modelTemplateName, final int modelLine, final int modelCol,
+            final IElementModelStructureHandler structureHandler);
 
 }

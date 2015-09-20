@@ -99,7 +99,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     // Structure handlers are reusable objects that will be used by processors in order to instruct the engine to
     // do things with the processed structures themselves (things that cannot be directly done from the processors like
     // removing structures or iterating elements)
-    private final ElementTagStructureHandler elementStructureHandler;
+    private final ElementTagStructureHandler elementTagStructureHandler;
+    private final ElementModelStructureHandler elementModelStructureHandler;
     private final TemplateStructureHandler templateStructureHandler;
     private final CDATASectionStructureHandler cdataSectionStructureHandler;
     private final CommentStructureHandler commentStructureHandler;
@@ -207,7 +208,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         this.allowedNonElementStructuresByModelLevel = new boolean[10];
         Arrays.fill(this.allowedNonElementStructuresByModelLevel, true);
 
-        this.elementStructureHandler = new ElementTagStructureHandler();
+        this.elementTagStructureHandler = new ElementTagStructureHandler();
+        this.elementModelStructureHandler = new ElementModelStructureHandler();
         this.templateStructureHandler = new TemplateStructureHandler();
         this.cdataSectionStructureHandler = new CDATASectionStructureHandler();
         this.commentStructureHandler = new CommentStructureHandler();
@@ -1058,47 +1060,48 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         IElementProcessor processor;
         while (!tagRemoved && (processor = this.elementProcessorIterator.next(standaloneElementTag)) != null) {
 
-            this.elementStructureHandler.reset();
+            this.elementTagStructureHandler.reset();
+            this.elementModelStructureHandler.reset();
 
             if (processor instanceof IElementTagProcessor) {
 
                 final IElementTagProcessor elementProcessor = ((IElementTagProcessor)processor);
-                elementProcessor.process(this.processingContext, standaloneElementTag, this.elementStructureHandler);
+                elementProcessor.process(this.processingContext, standaloneElementTag, this.elementTagStructureHandler);
 
-                if (this.elementStructureHandler.setLocalVariable) {
+                if (this.elementTagStructureHandler.setLocalVariable) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.putAll(this.elementStructureHandler.addedLocalVariables);
+                        this.variablesMap.putAll(this.elementTagStructureHandler.addedLocalVariables);
                     }
                 }
 
-                if (this.elementStructureHandler.removeLocalVariable) {
+                if (this.elementTagStructureHandler.removeLocalVariable) {
                     if (this.variablesMap != null) {
-                        for (final String variableName : this.elementStructureHandler.removedLocalVariableNames) {
+                        for (final String variableName : this.elementTagStructureHandler.removedLocalVariableNames) {
                             this.variablesMap.remove(variableName);
                         }
                     }
                 }
 
-                if (this.elementStructureHandler.setSelectionTarget) {
+                if (this.elementTagStructureHandler.setSelectionTarget) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.setSelectionTarget(this.elementStructureHandler.selectionTargetObject);
+                        this.variablesMap.setSelectionTarget(this.elementTagStructureHandler.selectionTargetObject);
                     }
                 }
 
-                if (this.elementStructureHandler.setInliner) {
+                if (this.elementTagStructureHandler.setInliner) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.setInliner(this.elementStructureHandler.setInlinerValue);
+                        this.variablesMap.setInliner(this.elementTagStructureHandler.setInlinerValue);
                     }
                 }
 
-                if (this.elementStructureHandler.iterateElement) {
+                if (this.elementTagStructureHandler.iterateElement) {
 
                     // Set the iteration info in order to start gathering all iterated events
                     this.gatheringIteration = true;
                     this.iterationSpec.fromModelLevel = this.modelLevel + 1;
-                    this.iterationSpec.iterVariableName = this.elementStructureHandler.iterVariableName;
-                    this.iterationSpec.iterStatusVariableName = this.elementStructureHandler.iterStatusVariableName;
-                    this.iterationSpec.iteratedObject = this.elementStructureHandler.iteratedObject;
+                    this.iterationSpec.iterVariableName = this.elementTagStructureHandler.iterVariableName;
+                    this.iterationSpec.iterStatusVariableName = this.elementTagStructureHandler.iterStatusVariableName;
+                    this.iterationSpec.iteratedObject = this.elementTagStructureHandler.iteratedObject;
                     this.iterationSpec.iterationQueue.reset();
 
                     // If there is a preceding whitespace, add it to the iteration spec
@@ -1138,7 +1141,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Complete exit of the handler method: no more processing to do from here
                     return;
 
-                } else if (this.elementStructureHandler.setBodyText) {
+                } else if (this.elementTagStructureHandler.setBodyText) {
 
                     queue.reset(); // Remove any previous results on the queue
 
@@ -1156,7 +1159,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // best option is take one from our own, specialized standalone-oriented buffer in order to limit
                     // the amount of objects created in these cases
                     final Text text = this.standaloneTextBuffers[this.standaloneTagBuffersIndex];
-                    text.setText(this.elementStructureHandler.setBodyTextValue);
+                    text.setText(this.elementTagStructureHandler.setBodyTextValue);
                     queue.add(text, false);
 
                     // We are done with using the standalone buffers, so increase the index
@@ -1166,7 +1169,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.suspended = true;
                     this.suspensionSpec.allowedElementCountInBody = Integer.MAX_VALUE;
                     this.suspensionSpec.allowedNonElementStructuresInBody = true;
-                    this.suspensionSpec.queueProcessable = this.elementStructureHandler.setBodyTextProcessable;
+                    this.suspensionSpec.queueProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
@@ -1190,7 +1193,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Complete exit of the handler method: no more processing to do from here
                     return;
 
-                } else if (this.elementStructureHandler.setBodyModel) {
+                } else if (this.elementTagStructureHandler.setBodyModel) {
 
                     queue.reset(); // Remove any previous results on the queue
 
@@ -1203,7 +1206,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // Prepare the queue (that we will suspend)
                     // Model will be automatically cloned if mutable
-                    queue.addModel(this.elementStructureHandler.setBodyModelValue);
+                    queue.addModel(this.elementTagStructureHandler.setBodyModelValue);
 
                     // We are done with using the standalone buffers, so increase the index
                     this.standaloneTagBuffersIndex++;
@@ -1212,7 +1215,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.suspended = true;
                     this.suspensionSpec.allowedElementCountInBody = Integer.MAX_VALUE;
                     this.suspensionSpec.allowedNonElementStructuresInBody = true;
-                    this.suspensionSpec.queueProcessable = this.elementStructureHandler.setBodyModelProcessable;
+                    this.suspensionSpec.queueProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
@@ -1236,9 +1239,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Complete exit of the handler method: no more processing to do from here
                     return;
 
-                } else if (this.elementStructureHandler.insertBeforeModel) {
+                } else if (this.elementTagStructureHandler.insertBeforeModel) {
 
-                    final IModel insertedModel = this.elementStructureHandler.insertBeforeModelValue;
+                    final IModel insertedModel = this.elementTagStructureHandler.insertBeforeModelValue;
                     if (queue.size() == 0) {
                         // The current queue object is empty, so we can use it to process this inserted model
 
@@ -1257,46 +1260,46 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     }
 
-                } else if (this.elementStructureHandler.insertAfterModel) {
+                } else if (this.elementTagStructureHandler.insertAfterModel) {
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    queueProcessable = this.elementStructureHandler.insertAfterModelProcessable;
+                    queueProcessable = this.elementTagStructureHandler.insertAfterModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    queue.insertModel(0, this.elementStructureHandler.insertAfterModelValue);
+                    queue.insertModel(0, this.elementTagStructureHandler.insertAfterModelValue);
 
                     // No intervention on the body flags - we will not be removing the body, just inserting before it
 
-                } else if (this.elementStructureHandler.replaceWithText) {
+                } else if (this.elementTagStructureHandler.replaceWithText) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementStructureHandler.replaceWithTextProcessable;
+                    queueProcessable = this.elementTagStructureHandler.replaceWithTextProcessable;
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
-                    this.textBuffer.setText(this.elementStructureHandler.replaceWithTextValue);
+                    this.textBuffer.setText(this.elementTagStructureHandler.replaceWithTextValue);
                     queue.add(this.textBuffer, false);
 
                     tagRemoved = true;
 
-                } else if (this.elementStructureHandler.replaceWithModel) {
+                } else if (this.elementTagStructureHandler.replaceWithModel) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementStructureHandler.replaceWithModelProcessable;
+                    queueProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    queue.addModel(this.elementStructureHandler.replaceWithModelValue);
+                    queue.addModel(this.elementTagStructureHandler.replaceWithModelValue);
 
                     tagRemoved = true;
 
-                } else if (this.elementStructureHandler.removeElement) {
+                } else if (this.elementTagStructureHandler.removeElement) {
 
                     queue.reset(); // Remove any previous results on the queue
 
                     tagRemoved = true;
 
-                } else if (this.elementStructureHandler.removeTag) {
+                } else if (this.elementTagStructureHandler.removeTag) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
 
@@ -1373,7 +1376,33 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 //      anyway) will be ignored.
                 this.modelBuffer.getEventQueue().resetAsCloneOf(gatheredQueue, false);
 
-                ((IElementModelProcessor) processor).process(this.processingContext, this.modelBuffer);
+                ((IElementModelProcessor) processor).process(this.processingContext, this.modelBuffer, this.elementModelStructureHandler);
+
+                if (this.elementModelStructureHandler.setLocalVariable) {
+                    if (this.variablesMap != null) {
+                        this.variablesMap.putAll(this.elementModelStructureHandler.addedLocalVariables);
+                    }
+                }
+
+                if (this.elementModelStructureHandler.removeLocalVariable) {
+                    if (this.variablesMap != null) {
+                        for (final String variableName : this.elementModelStructureHandler.removedLocalVariableNames) {
+                            this.variablesMap.remove(variableName);
+                        }
+                    }
+                }
+
+                if (this.elementModelStructureHandler.setSelectionTarget) {
+                    if (this.variablesMap != null) {
+                        this.variablesMap.setSelectionTarget(this.elementModelStructureHandler.selectionTargetObject);
+                    }
+                }
+
+                if (this.elementModelStructureHandler.setInliner) {
+                    if (this.variablesMap != null) {
+                        this.variablesMap.setInliner(this.elementModelStructureHandler.setInlinerValue);
+                    }
+                }
 
                 /*
                  * Now we will do the exact equivalent to what is performed for an Element Tag processor, when this
@@ -1560,47 +1589,48 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         IElementProcessor processor;
         while (!tagRemoved && (processor = this.elementProcessorIterator.next(openElementTag)) != null) {
 
-            this.elementStructureHandler.reset();
+            this.elementTagStructureHandler.reset();
+            this.elementModelStructureHandler.reset();
 
             if (processor instanceof IElementTagProcessor) {
 
                 final IElementTagProcessor elementProcessor = ((IElementTagProcessor)processor);
-                elementProcessor.process(this.processingContext, openElementTag, this.elementStructureHandler);
+                elementProcessor.process(this.processingContext, openElementTag, this.elementTagStructureHandler);
 
-                if (this.elementStructureHandler.setLocalVariable) {
+                if (this.elementTagStructureHandler.setLocalVariable) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.putAll(this.elementStructureHandler.addedLocalVariables);
+                        this.variablesMap.putAll(this.elementTagStructureHandler.addedLocalVariables);
                     }
                 }
 
-                if (this.elementStructureHandler.removeLocalVariable) {
+                if (this.elementTagStructureHandler.removeLocalVariable) {
                     if (this.variablesMap != null) {
-                        for (final String variableName : this.elementStructureHandler.removedLocalVariableNames) {
+                        for (final String variableName : this.elementTagStructureHandler.removedLocalVariableNames) {
                             this.variablesMap.remove(variableName);
                         }
                     }
                 }
 
-                if (this.elementStructureHandler.setSelectionTarget) {
+                if (this.elementTagStructureHandler.setSelectionTarget) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.setSelectionTarget(this.elementStructureHandler.selectionTargetObject);
+                        this.variablesMap.setSelectionTarget(this.elementTagStructureHandler.selectionTargetObject);
                     }
                 }
 
-                if (this.elementStructureHandler.setInliner) {
+                if (this.elementTagStructureHandler.setInliner) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.setInliner(this.elementStructureHandler.setInlinerValue);
+                        this.variablesMap.setInliner(this.elementTagStructureHandler.setInlinerValue);
                     }
                 }
 
-                if (this.elementStructureHandler.iterateElement) {
+                if (this.elementTagStructureHandler.iterateElement) {
 
                     // Set the iteration info in order to start gathering all iterated events
                     this.gatheringIteration = true;
                     this.iterationSpec.fromModelLevel = this.modelLevel + 1;
-                    this.iterationSpec.iterVariableName = this.elementStructureHandler.iterVariableName;
-                    this.iterationSpec.iterStatusVariableName = this.elementStructureHandler.iterStatusVariableName;
-                    this.iterationSpec.iteratedObject = this.elementStructureHandler.iteratedObject;
+                    this.iterationSpec.iterVariableName = this.elementTagStructureHandler.iterVariableName;
+                    this.iterationSpec.iterStatusVariableName = this.elementTagStructureHandler.iterStatusVariableName;
+                    this.iterationSpec.iteratedObject = this.elementTagStructureHandler.iteratedObject;
                     this.iterationSpec.iterationQueue.reset();
 
                     // If there is a preceding whitespace, add it to the iteration spec
@@ -1644,35 +1674,35 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Nothing else to be done by this handler... let's just queue the rest of the events to be iterated
                     return;
 
-                } else if (this.elementStructureHandler.setBodyText) {
+                } else if (this.elementTagStructureHandler.setBodyText) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementStructureHandler.setBodyTextProcessable;
+                    queueProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
 
                     // For now we will not be cloning the buffer and just hoping it will be executed as is. This is
                     // the most common case (th:text) and this will save us a good number of Text nodes. But note that
                     // if this element is iterated AFTER we set this, we will need to clone this node before suspending
                     // the queue, or we might have nasty interactions with each of the subsequent iterations
-                    this.textBuffer.setText(this.elementStructureHandler.setBodyTextValue);
+                    this.textBuffer.setText(this.elementTagStructureHandler.setBodyTextValue);
                     queue.add(this.textBuffer, false);
 
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
-                } else if (this.elementStructureHandler.setBodyModel) {
+                } else if (this.elementTagStructureHandler.setBodyModel) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementStructureHandler.setBodyModelProcessable;
+                    queueProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    queue.addModel(this.elementStructureHandler.setBodyModelValue);
+                    queue.addModel(this.elementTagStructureHandler.setBodyModelValue);
 
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
-                } else if (this.elementStructureHandler.insertBeforeModel) {
+                } else if (this.elementTagStructureHandler.insertBeforeModel) {
 
-                    final IModel insertedModel = this.elementStructureHandler.insertBeforeModelValue;
+                    final IModel insertedModel = this.elementTagStructureHandler.insertBeforeModelValue;
                     if (queue.size() == 0) {
                         // The current queue object is empty, so we can use it to process this inserted model
 
@@ -1691,44 +1721,44 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     }
 
-                } else if (this.elementStructureHandler.insertAfterModel) {
+                } else if (this.elementTagStructureHandler.insertAfterModel) {
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    queueProcessable = this.elementStructureHandler.insertAfterModelProcessable;
+                    queueProcessable = this.elementTagStructureHandler.insertAfterModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    queue.insertModel(0, this.elementStructureHandler.insertAfterModelValue);
+                    queue.insertModel(0, this.elementTagStructureHandler.insertAfterModelValue);
 
                     // No intervention on the body flags - we will not be removing the body, just inserting before it
 
-                } else if (this.elementStructureHandler.replaceWithText) {
+                } else if (this.elementTagStructureHandler.replaceWithText) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementStructureHandler.replaceWithTextProcessable;
+                    queueProcessable = this.elementTagStructureHandler.replaceWithTextProcessable;
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
-                    this.textBuffer.setText(this.elementStructureHandler.replaceWithTextValue);
+                    this.textBuffer.setText(this.elementTagStructureHandler.replaceWithTextValue);
                     queue.add(this.textBuffer, false);
 
                     tagRemoved = true;
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
-                } else if (this.elementStructureHandler.replaceWithModel) {
+                } else if (this.elementTagStructureHandler.replaceWithModel) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementStructureHandler.replaceWithModelProcessable;
+                    queueProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    queue.addModel(this.elementStructureHandler.replaceWithModelValue);
+                    queue.addModel(this.elementTagStructureHandler.replaceWithModelValue);
 
                     tagRemoved = true;
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
-                } else if (this.elementStructureHandler.removeElement) {
+                } else if (this.elementTagStructureHandler.removeElement) {
 
                     queue.reset(); // Remove any previous results on the queue
 
@@ -1736,20 +1766,20 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
-                } else if (this.elementStructureHandler.removeTag) {
+                } else if (this.elementTagStructureHandler.removeTag) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
 
                     tagRemoved = true;
 
-                } else if (this.elementStructureHandler.removeBody) {
+                } else if (this.elementTagStructureHandler.removeBody) {
 
                     queue.reset(); // Remove any previous results on the queue
 
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
-                } else if (this.elementStructureHandler.removeAllButFirstChild) {
+                } else if (this.elementTagStructureHandler.removeAllButFirstChild) {
 
                     queue.reset(); // Remove any previous results on the queue
 
@@ -1830,7 +1860,33 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 //      anyway) will be ignored.
                 this.modelBuffer.getEventQueue().resetAsCloneOf(gatheredQueue, false);
 
-                ((IElementModelProcessor) processor).process(this.processingContext, this.modelBuffer);
+                ((IElementModelProcessor) processor).process(this.processingContext, this.modelBuffer, this.elementModelStructureHandler);
+
+                if (this.elementModelStructureHandler.setLocalVariable) {
+                    if (this.variablesMap != null) {
+                        this.variablesMap.putAll(this.elementModelStructureHandler.addedLocalVariables);
+                    }
+                }
+
+                if (this.elementModelStructureHandler.removeLocalVariable) {
+                    if (this.variablesMap != null) {
+                        for (final String variableName : this.elementModelStructureHandler.removedLocalVariableNames) {
+                            this.variablesMap.remove(variableName);
+                        }
+                    }
+                }
+
+                if (this.elementModelStructureHandler.setSelectionTarget) {
+                    if (this.variablesMap != null) {
+                        this.variablesMap.setSelectionTarget(this.elementModelStructureHandler.selectionTargetObject);
+                    }
+                }
+
+                if (this.elementModelStructureHandler.setInliner) {
+                    if (this.variablesMap != null) {
+                        this.variablesMap.setInliner(this.elementModelStructureHandler.setInlinerValue);
+                    }
+                }
 
                 /*
                  * Now we will do the exact equivalent to what is performed for an Element Tag processor, when this

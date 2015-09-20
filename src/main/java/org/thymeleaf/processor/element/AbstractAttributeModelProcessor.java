@@ -55,7 +55,8 @@ public abstract class AbstractAttributeModelProcessor extends AbstractElementMod
     protected final void doProcess(
             final ITemplateProcessingContext processingContext,
             final IModel model,
-            final String modelTemplateName, final int modelLine, final int modelCol) {
+            final String modelTemplateName, final int modelLine, final int modelCol,
+            final IElementModelStructureHandler structureHandler) {
 
         String attributeTemplateName = null;
         int attributeLine = -1;
@@ -76,7 +77,7 @@ public abstract class AbstractAttributeModelProcessor extends AbstractElementMod
                 firstEvent.getAttributes().removeAttribute(attributeName);
             }
 
-            doProcess(processingContext, model, attributeName, attributeValue, attributeTemplateName, attributeLine, attributeCol);
+            doProcess(processingContext, model, attributeName, attributeValue, attributeTemplateName, attributeLine, attributeCol, structureHandler);
 
         } catch (final TemplateProcessingException e) {
 
@@ -107,7 +108,8 @@ public abstract class AbstractAttributeModelProcessor extends AbstractElementMod
             final IModel model,
             final AttributeName attributeName,
             final String attributeValue,
-            final String attributeTemplateName, final int attributeLine, final int attributeCol);
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
+            final IElementModelStructureHandler structureHandler);
 
 
 

@@ -19,8 +19,7 @@
  */
 package org.thymeleaf.processor.element;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.model.IModel;
+import org.thymeleaf.inline.IInliner;
 
 /**
  *
@@ -28,12 +27,17 @@ import org.thymeleaf.model.IModel;
  * @since 3.0.0
  * 
  */
-public interface IElementModelProcessor extends IElementProcessor {
+public interface IElementModelStructureHandler {
 
 
-    public void process(
-            final ITemplateProcessingContext processingContext, final IModel model,
-            final IElementModelStructureHandler structureHandler);
+    public void reset();
 
+    public void setLocalVariable(final String name, final Object value);
+    public void removeLocalVariable(final String name);
+
+    public void setSelectionTarget(final Object selectionTarget);
+
+    public void setInliner(final IInliner inliner);
 
 }
+

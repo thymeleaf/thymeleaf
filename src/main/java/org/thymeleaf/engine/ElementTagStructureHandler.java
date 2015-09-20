@@ -227,12 +227,12 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
         resetAllButLocalVariables();
 
         this.setLocalVariable = false;
-        if (this.addedLocalVariables != null) {
+        if (this.addedLocalVariables != null && this.addedLocalVariables.size() > 0) {
             this.addedLocalVariables.clear();
         }
 
         this.removeLocalVariable = false;
-        if (this.removedLocalVariableNames != null) {
+        if (this.removedLocalVariableNames != null && this.removedLocalVariableNames.size() > 0) {
             this.removedLocalVariableNames.clear();
         }
 
