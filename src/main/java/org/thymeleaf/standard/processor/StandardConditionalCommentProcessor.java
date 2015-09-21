@@ -23,6 +23,7 @@ import java.io.StringWriter;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.processor.comment.AbstractCommentProcessor;
@@ -44,8 +45,8 @@ public final class StandardConditionalCommentProcessor extends AbstractCommentPr
 
 
 
-    public StandardConditionalCommentProcessor() {
-        super(TemplateMode.HTML, PRECEDENCE);
+    public StandardConditionalCommentProcessor(final IProcessorDialect dialect) {
+        super(dialect, TemplateMode.HTML, PRECEDENCE);
     }
 
 

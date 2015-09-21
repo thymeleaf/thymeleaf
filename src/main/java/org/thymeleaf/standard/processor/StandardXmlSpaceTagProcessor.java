@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.standard.processor;
 
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -34,8 +35,8 @@ public final class StandardXmlSpaceTagProcessor extends AbstractStandardAttribut
     public static final String ATTR_NAME = "xmlspace";
     public static final String TARGET_ATTR_NAME = "xml:space";
 
-    public StandardXmlSpaceTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, TARGET_ATTR_NAME, PRECEDENCE, true);
+    public StandardXmlSpaceTagProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
+        super(dialect, TemplateMode.HTML, dialectPrefix, ATTR_NAME, TARGET_ATTR_NAME, PRECEDENCE, true);
     }
 
 

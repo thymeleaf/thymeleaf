@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.context.IVariablesMap;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -54,8 +55,8 @@ public final class StandardCaseTagProcessor extends AbstractStandardConditionalV
 
 
 
-    public StandardCaseTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
+    public StandardCaseTagProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix) {
+        super(dialect, templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

@@ -22,6 +22,7 @@ package org.thymeleaf.standard.processor;
 import java.util.Map;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
@@ -42,8 +43,8 @@ public abstract class AbstractStandardTargetSelectionTagProcessor extends Abstra
 
 
     protected AbstractStandardTargetSelectionTagProcessor(
-            final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence) {
-        super(templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
+            final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence) {
+        super(dialect, templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
     }
 
 

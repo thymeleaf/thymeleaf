@@ -20,6 +20,7 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -50,8 +51,8 @@ public final class StandardConditionalFixedValueTagProcessor extends AbstractSta
 
 
 
-    public StandardConditionalFixedValueTagProcessor(final String dialectPrefix, final String attrName) {
-        super(TemplateMode.HTML, dialectPrefix, attrName, PRECEDENCE, true);
+    public StandardConditionalFixedValueTagProcessor(final IProcessorDialect dialect, final String dialectPrefix, final String attrName) {
+        super(dialect, TemplateMode.HTML, dialectPrefix, attrName, PRECEDENCE, true);
     }
 
 

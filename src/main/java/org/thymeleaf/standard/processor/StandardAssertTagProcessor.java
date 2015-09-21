@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.standard.processor;
 
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -34,8 +35,8 @@ public final class StandardAssertTagProcessor extends AbstractStandardAssertionT
     public static final String ATTR_NAME = "assert";
 
 
-    public StandardAssertTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
+    public StandardAssertTagProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix) {
+        super(dialect, templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

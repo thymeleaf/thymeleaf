@@ -20,6 +20,7 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
 import org.thymeleaf.model.IText;
@@ -38,8 +39,8 @@ public final class StandardInliningTextProcessor extends AbstractTextProcessor {
 
     public static final int PRECEDENCE = 1000;
 
-    public StandardInliningTextProcessor(final TemplateMode templateMode) {
-        super(templateMode, PRECEDENCE);
+    public StandardInliningTextProcessor(final IProcessorDialect dialect, final TemplateMode templateMode) {
+        super(dialect, templateMode, PRECEDENCE);
     }
 
 

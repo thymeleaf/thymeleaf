@@ -20,6 +20,7 @@
 package org.thymeleaf.processor.comment;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.processor.AbstractProcessor;
@@ -37,8 +38,8 @@ public abstract class AbstractCommentProcessor
 
 
 
-    public AbstractCommentProcessor(final TemplateMode templateMode, final int precedence) {
-        super(templateMode, precedence);
+    public AbstractCommentProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final int precedence) {
+        super(dialect, templateMode, precedence);
     }
 
 

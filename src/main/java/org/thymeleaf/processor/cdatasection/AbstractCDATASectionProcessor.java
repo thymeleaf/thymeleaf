@@ -20,6 +20,7 @@
 package org.thymeleaf.processor.cdatasection;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.processor.AbstractProcessor;
@@ -37,8 +38,8 @@ public abstract class AbstractCDATASectionProcessor
 
 
 
-    public AbstractCDATASectionProcessor(final TemplateMode templateMode, final int precedence) {
-        super(templateMode, precedence);
+    public AbstractCDATASectionProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final int precedence) {
+        super(dialect, templateMode, precedence);
     }
 
 

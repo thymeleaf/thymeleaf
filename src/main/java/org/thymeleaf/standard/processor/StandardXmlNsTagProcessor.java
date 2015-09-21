@@ -20,6 +20,7 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
@@ -40,8 +41,8 @@ public final class StandardXmlNsTagProcessor extends AbstractAttributeTagProcess
 
 
 
-    public StandardXmlNsTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, null, null, false, ATTR_NAME_PREFIX + dialectPrefix, false, PRECEDENCE, true);
+    public StandardXmlNsTagProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix) {
+        super(dialect, templateMode, null, null, false, ATTR_NAME_PREFIX + dialectPrefix, false, PRECEDENCE, true);
     }
 
 

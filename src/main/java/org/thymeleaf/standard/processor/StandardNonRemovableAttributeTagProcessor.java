@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.standard.processor;
 
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -42,8 +43,8 @@ public final class StandardNonRemovableAttributeTagProcessor extends AbstractSta
             };
 
 
-    public StandardNonRemovableAttributeTagProcessor(final String dialectPrefix, final String attrName) {
-        super(TemplateMode.HTML, dialectPrefix, attrName, PRECEDENCE, false);
+    public StandardNonRemovableAttributeTagProcessor(final IProcessorDialect dialect, final String dialectPrefix, final String attrName) {
+        super(dialect, TemplateMode.HTML, dialectPrefix, attrName, PRECEDENCE, false);
     }
 
 

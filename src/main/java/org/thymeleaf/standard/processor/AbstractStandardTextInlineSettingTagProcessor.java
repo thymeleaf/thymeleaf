@@ -22,6 +22,7 @@ package org.thymeleaf.standard.processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -54,8 +55,8 @@ public abstract class AbstractStandardTextInlineSettingTagProcessor extends Abst
 
 
     protected AbstractStandardTextInlineSettingTagProcessor(
-            final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence) {
-        super(templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
+            final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence) {
+        super(dialect, templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
     }
 
 

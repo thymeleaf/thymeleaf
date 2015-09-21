@@ -21,6 +21,7 @@ package org.thymeleaf.standard.processor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
@@ -48,8 +49,8 @@ public final class StandardInlineHTMLTagProcessor extends AbstractStandardTextIn
 
 
 
-    public StandardInlineHTMLTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE);
+    public StandardInlineHTMLTagProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
+        super(dialect, TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

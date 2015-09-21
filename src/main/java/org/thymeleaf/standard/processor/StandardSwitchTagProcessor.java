@@ -20,6 +20,7 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
@@ -44,8 +45,8 @@ public final class StandardSwitchTagProcessor extends AbstractAttributeTagProces
     public static final String SWITCH_VARIABLE_NAME = "%%SWITCH_EXPR%%";
 
 
-    public StandardSwitchTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE, true);
+    public StandardSwitchTagProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix) {
+        super(dialect, templateMode, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE, true);
     }
 
 

@@ -21,6 +21,7 @@ package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
@@ -42,8 +43,9 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
 
 
     protected AbstractStandardExpressionAttributeTagProcessor(
-            final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence, final boolean removeAttribute) {
-        super(templateMode, dialectPrefix, null, false, attrName, true, precedence, removeAttribute);
+            final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix,
+            final String attrName, final int precedence, final boolean removeAttribute) {
+        super(dialect, templateMode, dialectPrefix, null, false, attrName, true, precedence, removeAttribute);
     }
 
 

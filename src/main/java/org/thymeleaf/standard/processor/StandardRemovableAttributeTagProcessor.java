@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.standard.processor;
 
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -137,8 +138,8 @@ public final class StandardRemovableAttributeTagProcessor extends AbstractStanda
             };
 
 
-    public StandardRemovableAttributeTagProcessor(final String dialectPrefix, final String attrName) {
-        super(TemplateMode.HTML, dialectPrefix, attrName, PRECEDENCE, true);
+    public StandardRemovableAttributeTagProcessor(final IProcessorDialect dialect, final String dialectPrefix, final String attrName) {
+        super(dialect, TemplateMode.HTML, dialectPrefix, attrName, PRECEDENCE, true);
     }
 
 

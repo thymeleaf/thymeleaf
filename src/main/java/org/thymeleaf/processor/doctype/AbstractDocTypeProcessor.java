@@ -20,6 +20,7 @@
 package org.thymeleaf.processor.doctype;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IDocType;
 import org.thymeleaf.processor.AbstractProcessor;
@@ -37,8 +38,8 @@ public abstract class AbstractDocTypeProcessor
 
 
 
-    public AbstractDocTypeProcessor(final TemplateMode templateMode, final int precedence) {
-        super(templateMode, precedence);
+    public AbstractDocTypeProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final int precedence) {
+        super(dialect, templateMode, precedence);
     }
 
 

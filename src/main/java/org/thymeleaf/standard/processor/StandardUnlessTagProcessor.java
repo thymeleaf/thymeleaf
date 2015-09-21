@@ -20,6 +20,7 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.standard.expression.IStandardExpression;
@@ -40,8 +41,8 @@ public final class StandardUnlessTagProcessor extends AbstractStandardConditiona
     public static final int PRECEDENCE = 400;
     public static final String ATTR_NAME = "unless";
 
-    public StandardUnlessTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
+    public StandardUnlessTagProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix) {
+        super(dialect, templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

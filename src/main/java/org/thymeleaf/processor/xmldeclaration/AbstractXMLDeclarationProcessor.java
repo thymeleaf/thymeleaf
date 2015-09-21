@@ -20,6 +20,7 @@
 package org.thymeleaf.processor.xmldeclaration;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.processor.AbstractProcessor;
@@ -37,8 +38,8 @@ public abstract class AbstractXMLDeclarationProcessor
 
 
 
-    public AbstractXMLDeclarationProcessor(final TemplateMode templateMode, final int precedence) {
-        super(templateMode, precedence);
+    public AbstractXMLDeclarationProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final int precedence) {
+        super(dialect, templateMode, precedence);
     }
 
 

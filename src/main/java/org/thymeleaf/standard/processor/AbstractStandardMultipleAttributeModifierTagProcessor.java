@@ -22,6 +22,7 @@ package org.thymeleaf.standard.processor;
 import java.util.List;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -54,9 +55,10 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
 
 
     protected AbstractStandardMultipleAttributeModifierTagProcessor(
-            final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
+            final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix,
+            final String attrName, final int precedence,
             final ModificationType modificationType) {
-        super(templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
+        super(dialect, templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
         this.modificationType = modificationType;
     }
 

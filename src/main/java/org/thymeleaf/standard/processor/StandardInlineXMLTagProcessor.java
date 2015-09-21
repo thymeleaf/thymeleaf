@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.standard.processor;
 
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
@@ -42,8 +43,8 @@ public final class StandardInlineXMLTagProcessor extends AbstractStandardTextInl
 
 
 
-    public StandardInlineXMLTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.XML, dialectPrefix, ATTR_NAME, PRECEDENCE);
+    public StandardInlineXMLTagProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
+        super(dialect, TemplateMode.XML, dialectPrefix, ATTR_NAME, PRECEDENCE);
     }
 
 

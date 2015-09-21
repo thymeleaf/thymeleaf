@@ -20,6 +20,7 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.processor.element.IElementTagProcessor;
@@ -46,8 +47,8 @@ public final class StandardDefaultAttributesTagProcessor
 
 
 
-    public StandardDefaultAttributesTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, PRECEDENCE);
+    public StandardDefaultAttributesTagProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix) {
+        super(dialect, templateMode, PRECEDENCE);
         this.matchingAttributeName = MatchingAttributeName.forAllAttributesWithPrefix(getTemplateMode(), dialectPrefix);
     }
 

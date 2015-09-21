@@ -22,6 +22,7 @@ package org.thymeleaf.standard.processor;
 import java.util.Map;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.ParsedFragmentModel;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -62,9 +63,9 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
     protected AbstractStandardFragmentInsertionTagProcessor(
-            final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
+            final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
             final boolean replaceHost, final boolean insertOnlyContents) {
-        super(templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
+        super(dialect, templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
         this.replaceHost = replaceHost;
         this.insertOnlyContents = insertOnlyContents;
     }
