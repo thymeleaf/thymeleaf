@@ -44,14 +44,16 @@ import org.thymeleaf.templatemode.TemplateMode;
 public class SpringSecurityDialect 
         extends AbstractDialect implements IProcessorDialect, IExpressionObjectsDialect {
 
+    public static final String NAME = "SpringSecurity";
     public static final String DEFAULT_PREFIX = "sec";
-    
+    public static final int PROCESSOR_PRECEDENCE = 800;
+
     public static final IExpressionObjectFactory EXPRESSION_OBJECT_FACTORY = new SpringSecurityExpressionObjectFactory();
 
 
 
     public SpringSecurityDialect() {
-        super("SpringSecurity");
+        super(NAME);
     }
 
     
@@ -60,11 +62,16 @@ public class SpringSecurityDialect
         return DEFAULT_PREFIX;
     }
 
-    
 
 
 
-    
+    public int getDialectProcessorPrecedence() {
+        return PROCESSOR_PRECEDENCE;
+    }
+
+
+
+
     public Set<IProcessor> getProcessors(final String dialectPrefix) {
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
         processors.add(new AuthenticationAttrProcessor(this, dialectPrefix));
