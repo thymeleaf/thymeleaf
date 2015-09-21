@@ -1323,6 +1323,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 if (!this.elementProcessorIterator.lastWasRepeated()){
 
+                    if (queue.size() > 0) {
+                        throw new TemplateProcessingException(
+                                "Cannot execute model processor " + processor.getClass().getName() + " as the body " +
+                                        "of the target element has already been modified by a previously executed processor " +
+                                        "on the same tag. Model processors cannot execute on already-modified bodies as these " +
+                                        "might contain unprocessable events (e.g. as a result of a 'th:text' or similar)",
+                                standaloneElementTag.getTemplateName(), standaloneElementTag.getLine(), standaloneElementTag.getCol());
+                    }
+
                     // Set the element model info in order to start gathering all the element model's events
                     this.gatheringElementModel = true;
                     this.elementModelSpec.fromModelLevel = this.modelLevel + 1;
@@ -1332,11 +1341,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.elementProcessorIterator.setLastToBeRepeated(standaloneElementTag);
 
                     // Suspend the queue - execution will be restarted by the execution of this event again once model is gathered
+                    // Note there is no queue to be suspended --we've made sure of that before, so we are only suspending the iterator
                     this.suspended = true;
-                    this.suspensionSpec.allowedElementCountInBody = Integer.MAX_VALUE;
-                    this.suspensionSpec.allowedNonElementStructuresInBody = true;
-                    this.suspensionSpec.queueProcessable = queueProcessable;
-                    this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
                     // Add this standalone tag to the element model queue
@@ -1803,29 +1809,26 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 if (!this.elementProcessorIterator.lastWasRepeated()){
 
+                    if (queue.size() > 0) {
+                        throw new TemplateProcessingException(
+                                "Cannot execute model processor " + processor.getClass().getName() + " as the body " +
+                                "of the target element has already been modified by a previously executed processor " +
+                                "on the same tag. Model processors cannot execute on already-modified bodies as these " +
+                                "might contain unprocessable events (e.g. as a result of a 'th:text' or similar)",
+                                openElementTag.getTemplateName(), openElementTag.getLine(), openElementTag.getCol());
+                    }
+
                     // Set the element model info in order to start gathering all the element model's events
                     this.gatheringElementModel = true;
                     this.elementModelSpec.fromModelLevel = this.modelLevel + 1;
                     this.elementModelSpec.modelQueue.reset();
 
-                    // Before suspending the queue, we have to check if it is the result of a "setBodyText", in
-                    // which case it will contain only one non-cloned node: the text buffer. And we will need to clone
-                    // that buffer before suspending the queue to avoid nasty interactions during element model processing
-                    if (queue.size() == 1 && queue.get(0) == this.textBuffer) {
-                        // Replace the text buffer with a clone
-                        queue.reset();
-                        queue.add(this.textBuffer, true);
-                    }
-
                     // Set the processor to be executed again, because this time we will just set the "model gathering" mechanism
                     this.elementProcessorIterator.setLastToBeRepeated(openElementTag);
 
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
+                    // Note there is no queue to be suspended --we've made sure of that before, so we are only suspending the iterator
                     this.suspended = true;
-                    this.suspensionSpec.allowedElementCountInBody = allowedElementCountInBody;
-                    this.suspensionSpec.allowedNonElementStructuresInBody = allowedNonElementStructuresInBody;
-                    this.suspensionSpec.queueProcessable = queueProcessable;
-                    this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
                     // Add the tag itself to the element model queue
