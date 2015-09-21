@@ -33,7 +33,7 @@ import org.thymeleaf.processor.IProcessor;
 public interface IProcessorDialect extends IDialect {
 
     public String getPrefix();
-
+    public int getDialectProcessorPrecedence();
     public Set<IProcessor> getProcessors(final String dialectPrefix);
 
 }

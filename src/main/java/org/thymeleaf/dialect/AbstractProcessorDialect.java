@@ -30,16 +30,23 @@ public abstract class AbstractProcessorDialect extends AbstractDialect implement
 
 
     private final String prefix;
+    private final int processorPrecedence;
 
 
-    protected AbstractProcessorDialect(final String name, final String prefix) {
+    protected AbstractProcessorDialect(final String name, final String prefix, final int processorPrecedence) {
         super(name);
         this.prefix = prefix;
+        this.processorPrecedence = processorPrecedence;
     }
 
 
     public final String getPrefix() {
         return this.prefix;
+    }
+
+
+    public final int getDialectProcessorPrecedence() {
+        return this.processorPrecedence;
     }
 
 }

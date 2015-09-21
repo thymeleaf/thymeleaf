@@ -32,6 +32,7 @@ import org.thymeleaf.postprocessor.IPostProcessor;
  */
 public interface IPostProcessorDialect extends IDialect {
 
+    public int getDialectPostProcessorPrecedence();
     public Set<IPostProcessor> getPostProcessors();
 
 }

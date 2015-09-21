@@ -60,9 +60,13 @@ public final class ProcessorComparators {
                 // This is the only case in which the comparison of two processors will return 0
                 return 0;
             }
-            final int precedenceComp = compareInts(o1.getPrecedence(), o2.getPrecedence());
-            if (precedenceComp != 0) {
-                return precedenceComp;
+            final int dialectPrecedenceComp = compareInts(o1.getDialect().getDialectProcessorPrecedence(), o2.getDialect().getDialectProcessorPrecedence());
+            if (dialectPrecedenceComp != 0) {
+                return dialectPrecedenceComp;
+            }
+            final int processorPrecedenceComp = compareInts(o1.getPrecedence(), o2.getPrecedence());
+            if (processorPrecedenceComp != 0) {
+                return processorPrecedenceComp;
             }
             final int classNameComp = o1.getClass().getName().compareTo(o2.getClass().getName());
             if (classNameComp != 0) {
@@ -94,9 +98,13 @@ public final class ProcessorComparators {
                 // This is the only case in which the comparison of two processors will return 0
                 return 0;
             }
-            final int precedenceComp = compareInts(o1.getPrecedence(), o2.getPrecedence());
-            if (precedenceComp != 0) {
-                return precedenceComp;
+            final int dialectPrecedenceComp = compareInts(o1.getDialect().getDialectPreProcessorPrecedence(), o2.getDialect().getDialectPreProcessorPrecedence());
+            if (dialectPrecedenceComp != 0) {
+                return dialectPrecedenceComp;
+            }
+            final int preProcessorPrecedenceComp = compareInts(o1.getPrecedence(), o2.getPrecedence());
+            if (preProcessorPrecedenceComp != 0) {
+                return preProcessorPrecedenceComp;
             }
             final int classNameComp = o1.getClass().getName().compareTo(o2.getClass().getName());
             if (classNameComp != 0) {
@@ -128,9 +136,13 @@ public final class ProcessorComparators {
                 // This is the only case in which the comparison of two processors will return 0
                 return 0;
             }
-            final int precedenceComp = compareInts(o1.getPrecedence(), o2.getPrecedence());
-            if (precedenceComp != 0) {
-                return precedenceComp;
+            final int dialectPrecedenceComp = compareInts(o1.getDialect().getDialectPostProcessorPrecedence(), o2.getDialect().getDialectPostProcessorPrecedence());
+            if (dialectPrecedenceComp != 0) {
+                return dialectPrecedenceComp;
+            }
+            final int postProcessorPrecedenceComp = compareInts(o1.getPrecedence(), o2.getPrecedence());
+            if (postProcessorPrecedenceComp != 0) {
+                return postProcessorPrecedenceComp;
             }
             final int classNameComp = o1.getClass().getName().compareTo(o2.getClass().getName());
             if (classNameComp != 0) {

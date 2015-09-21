@@ -95,8 +95,9 @@ public class StandardDialect
             extends AbstractProcessorDialect
             implements IExecutionAttributesDialect, IExpressionObjectsDialect {
 
-    private static final String NAME = "Standard";
-    private static final String PREFIX = "th";
+    public static final String NAME = "Standard";
+    public static final String PREFIX = "th";
+    public static final int PROCESSOR_PRECEDENCE = 1000;
 
 
     private final IExpressionObjectFactory STANDARD_EXPRESSION_OBJECTS_FACTORY = new StandardExpressionObjectFactory();
@@ -115,7 +116,7 @@ public class StandardDialect
 
 
     public StandardDialect() {
-        super(NAME, PREFIX);
+        super(NAME, PREFIX, PROCESSOR_PRECEDENCE);
     }
 
 
@@ -123,8 +124,8 @@ public class StandardDialect
      * Meant to be overridden by dialects that do almost the same as this, changing bits here and there
      * (e.g. SpringStandardDialect)
      */
-    protected StandardDialect(final String name, final String prefix) {
-        super(name, prefix);
+    protected StandardDialect(final String name, final String prefix, final int processorPrecedence) {
+        super(name, prefix, processorPrecedence);
     }
 
 
