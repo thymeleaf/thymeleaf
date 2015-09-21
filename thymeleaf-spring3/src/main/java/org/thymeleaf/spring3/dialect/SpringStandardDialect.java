@@ -66,8 +66,9 @@ import org.thymeleaf.templatemode.TemplateMode;
  */
 public class SpringStandardDialect extends StandardDialect {
 
-    private static final String NAME = "SpringStandard";
-    private static final String PREFIX = "th";
+    public static final String NAME = "SpringStandard";
+    public static final String PREFIX = "th";
+    public static final int PROCESSOR_PRECEDENCE = 1000;
 
 
 
@@ -78,7 +79,7 @@ public class SpringStandardDialect extends StandardDialect {
     
     
     public SpringStandardDialect() {
-        super(NAME, PREFIX);
+        super(NAME, PREFIX, PROCESSOR_PRECEDENCE);
     }
 
 
