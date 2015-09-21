@@ -21,6 +21,7 @@ package org.thymeleaf.extras.springsecurity4.dialect.processor;
 
 import org.springframework.security.core.Authentication;
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.extras.springsecurity4.auth.AuthUtils;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -43,8 +44,8 @@ public final class AuthenticationAttrProcessor extends AbstractAttributeTagProce
 
 
 
-    public AuthenticationAttrProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix,  null, false, ATTR_NAME, true, ATTR_PRECEDENCE, true);
+    public AuthenticationAttrProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
+        super(dialect, TemplateMode.HTML, dialectPrefix,  null, false, ATTR_NAME, true, ATTR_PRECEDENCE, true);
     }
 
 
