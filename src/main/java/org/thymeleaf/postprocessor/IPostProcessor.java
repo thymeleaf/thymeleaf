@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.postprocessor;
 
+import org.thymeleaf.dialect.IPostProcessorDialect;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 
@@ -30,6 +31,7 @@ import org.thymeleaf.templatemode.TemplateMode;
  */
 public interface IPostProcessor {
 
+    public IPostProcessorDialect getDialect();
     public TemplateMode getTemplateMode();
     public int getPrecedence();
 

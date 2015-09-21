@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.preprocessor;
 
+import org.thymeleaf.dialect.IPreProcessorDialect;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
@@ -31,24 +32,33 @@ import org.thymeleaf.util.Validate;
  */
 public abstract class AbstractPreProcessor implements IPreProcessor {
 
-    private final int precedence;
+    private IPreProcessorDialect dialect;
     private final TemplateMode templateMode;
     private final Class<? extends ITemplateHandler> handlerClass;
+    private final int precedence;
 
 
 
     public AbstractPreProcessor(
-            final TemplateMode templateMode, final Class<? extends ITemplateHandler> handlerClass, final int precedence) {
+            final IPreProcessorDialect dialect, final TemplateMode templateMode,
+            final Class<? extends ITemplateHandler> handlerClass, final int precedence) {
 
         super();
 
+        Validate.notNull(dialect, "Dialect cannot be null");
         Validate.notNull(templateMode, "Template mode cannot be null");
         Validate.notNull(handlerClass, "Handler class cannot be null");
 
+        this.dialect = dialect;
         this.templateMode = templateMode;
         this.handlerClass = handlerClass;
         this.precedence = precedence;
 
+    }
+
+
+    public final IPreProcessorDialect getDialect() {
+        return this.dialect;
     }
 
 
