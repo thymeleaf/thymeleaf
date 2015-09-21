@@ -22,6 +22,7 @@ package org.thymeleaf.spring3.processor;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -45,8 +46,8 @@ public final class SpringInputRadioFieldTagProcessor extends AbstractSpringField
 
 
     
-    public SpringInputRadioFieldTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { RADIO_INPUT_TYPE_ATTR_VALUE }, true);
+    public SpringInputRadioFieldTagProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
+        super(dialect, dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { RADIO_INPUT_TYPE_ATTR_VALUE }, true);
     }
 
 

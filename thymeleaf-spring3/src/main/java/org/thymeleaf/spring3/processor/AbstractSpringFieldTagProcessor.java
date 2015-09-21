@@ -22,6 +22,7 @@ package org.thymeleaf.spring3.processor;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
@@ -61,10 +62,10 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
 
 
     public AbstractSpringFieldTagProcessor(
-            final String dialectPrefix, final String elementName,
+            final IProcessorDialect dialect, final String dialectPrefix, final String elementName,
             final String discriminatorAttrName, final String[] discriminatorAttrValues,
             final boolean removeAttribute) {
-        super(TemplateMode.HTML, dialectPrefix, elementName, false, ATTR_NAME, true, ATTR_PRECEDENCE, false);
+        super(dialect, TemplateMode.HTML, dialectPrefix, elementName, false, ATTR_NAME, true, ATTR_PRECEDENCE, false);
         this.discriminatorAttrName = discriminatorAttrName;
         this.discriminatorAttrValues = discriminatorAttrValues;
         this.removeAttribute = removeAttribute;

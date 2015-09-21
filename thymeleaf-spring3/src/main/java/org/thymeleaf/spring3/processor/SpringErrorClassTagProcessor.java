@@ -25,6 +25,7 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.AttributeNames;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -57,8 +58,8 @@ public final class SpringErrorClassTagProcessor extends AbstractAttributeTagProc
 
 
 
-    public SpringErrorClassTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, null, false, ATTR_NAME, true,ATTR_PRECEDENCE, true);
+    public SpringErrorClassTagProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
+        super(dialect, TemplateMode.HTML, dialectPrefix, null, false, ATTR_NAME, true,ATTR_PRECEDENCE, true);
     }
 
 

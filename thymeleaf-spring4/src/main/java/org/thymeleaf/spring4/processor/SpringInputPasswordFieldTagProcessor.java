@@ -21,6 +21,7 @@ package org.thymeleaf.spring4.processor;
 
 import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -44,8 +45,8 @@ public final class SpringInputPasswordFieldTagProcessor extends AbstractSpringFi
     
 
     
-    public SpringInputPasswordFieldTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { PASSWORD_INPUT_TYPE_ATTR_VALUE }, true);
+    public SpringInputPasswordFieldTagProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
+        super(dialect, dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { PASSWORD_INPUT_TYPE_ATTR_VALUE }, true);
     }
 
 

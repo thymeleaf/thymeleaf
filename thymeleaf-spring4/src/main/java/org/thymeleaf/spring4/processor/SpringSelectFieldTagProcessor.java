@@ -22,6 +22,7 @@ package org.thymeleaf.spring4.processor;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -45,8 +46,8 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
 
 
 
-    public SpringSelectFieldTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, SELECT_TAG_NAME, null, null, true);
+    public SpringSelectFieldTagProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
+        super(dialect, dialectPrefix, SELECT_TAG_NAME, null, null, true);
     }
 
 

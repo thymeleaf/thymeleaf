@@ -20,6 +20,7 @@
 package org.thymeleaf.spring3.processor;
 
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -46,8 +47,8 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
 
 
 
-    public SpringMethodTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, false);
+    public SpringMethodTagProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
+        super(dialect, TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, false);
     }
 
 

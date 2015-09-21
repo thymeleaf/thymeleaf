@@ -22,6 +22,7 @@ package org.thymeleaf.spring3.processor;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -42,8 +43,8 @@ public final class SpringOptionFieldTagProcessor extends AbstractSpringFieldTagP
 
 
 
-    public SpringOptionFieldTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, OPTION_TAG_NAME, null, null, true);
+    public SpringOptionFieldTagProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
+        super(dialect, dialectPrefix, OPTION_TAG_NAME, null, null, true);
     }
 
 

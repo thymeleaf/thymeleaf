@@ -22,6 +22,7 @@ package org.thymeleaf.spring3.processor;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
@@ -49,8 +50,8 @@ public final class SpringErrorsTagProcessor extends AbstractAttributeTagProcesso
 
     
     
-    public SpringErrorsTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, null, false, ATTR_NAME, true, ATTR_PRECEDENCE, true);
+    public SpringErrorsTagProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
+        super(dialect, TemplateMode.HTML, dialectPrefix, null, false, ATTR_NAME, true, ATTR_PRECEDENCE, true);
     }
 
 
