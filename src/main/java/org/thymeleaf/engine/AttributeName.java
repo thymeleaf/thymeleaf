@@ -81,7 +81,12 @@ public abstract class AttributeName {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof AttributeName)) {
+
+        if (o == null) {
+            return false;
+        }
+
+        if (!o.getClass().equals(this.getClass())) {
             return false;
         }
 
@@ -91,7 +96,8 @@ public abstract class AttributeName {
             return false;
         }
 
-        if (!Arrays.equals(this.completeAttributeNames, that.completeAttributeNames)) {
+        if (!this.completeAttributeNames[0].equals(that.completeAttributeNames[0])) {
+            // No need to check the other names as we have already checked the class
             return false;
         }
 
