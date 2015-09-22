@@ -130,7 +130,7 @@ public final class SpringInputCheckboxFieldTagProcessor
 
             hiddenTagModel.add(hiddenTag);
 
-            structureHandler.insertAfter(hiddenTagModel, false);
+            structureHandler.insertImmediatelyAfter(hiddenTagModel, false);
 
         }
 

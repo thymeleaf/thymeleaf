@@ -99,7 +99,7 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
 
                 hiddenMethodModel.add(hiddenMethodElementTag);
 
-                structureHandler.insertAfter(hiddenMethodModel, false);
+                structureHandler.insertImmediatelyAfter(hiddenMethodModel, false);
 
             }
 

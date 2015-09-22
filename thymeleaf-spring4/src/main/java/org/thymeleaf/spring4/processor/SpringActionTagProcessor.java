@@ -99,7 +99,7 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
 
                 }
 
-                structureHandler.insertAfter(extraHiddenElementTags, false);
+                structureHandler.insertImmediatelyAfter(extraHiddenElementTags, false);
 
             }
 
