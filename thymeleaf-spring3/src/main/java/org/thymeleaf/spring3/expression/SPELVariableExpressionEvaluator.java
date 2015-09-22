@@ -192,7 +192,8 @@ public class SPELVariableExpressionEvaluator
              */
             final IVariablesMap variablesMap = processingContext.getVariables();
             final Object evaluationRoot =
-                    (useSelectionAsRoot && variablesMap.hasSelectionTarget()? variablesMap.getSelectionTarget() : variablesMap);
+                    (useSelectionAsRoot && variablesMap.hasSelectionTarget()?
+                            variablesMap.getSelectionTarget() : new SPELVariablesMapWrapper(variablesMap, thymeleafEvaluationContext));
 
 
             /*

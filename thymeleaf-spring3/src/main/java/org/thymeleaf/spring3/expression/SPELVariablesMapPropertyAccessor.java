@@ -35,7 +35,13 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  *   treat {@link IVariablesMap} objects correctly (map keys will be accessible
  *   as object properties).
  * </p>
- * 
+ * <p>
+ *   Note that, even if {@link IVariablesMap} objects used as expression roots will be accessible as
+ *   <tt>java.util.Map</tt>s thanks to {@link SPELVariablesMapWrapper}, this property accessor
+ *   class is still needed in order to access nested variables map like the <tt>session</tt> or
+ *   <tt>param</tt> maps in web contexts.
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 1.1 (reimplemented in 3.0.0)
@@ -135,7 +141,7 @@ public final class SPELVariablesMapPropertyAccessor implements PropertyAccessor 
      *             StandardExpressionUtils#mightNeedExpressionObjects(...) will be removed in 3.1.
      */
     @Deprecated
-    private static Object checkExecInfo(final String propertyName, final EvaluationContext context) {
+    static Object checkExecInfo(final String propertyName, final EvaluationContext context) {
         if ("execInfo".equals(propertyName)) {
             if (!(context instanceof IThymeleafEvaluationContext)) {
                 throw new TemplateProcessingException(
