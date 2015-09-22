@@ -42,6 +42,7 @@ public final class StandardRemoveTagProcessor extends AbstractStandardExpression
     public static final String VALUE_ALL = "all";
     public static final String VALUE_ALL_BUT_FIRST = "all-but-first";
     public static final String VALUE_TAG = "tag";
+    public static final String VALUE_TAGS = "tags"; // 'tags' is also allowed underneath because that's what it does: remove both open and close tags.
     public static final String VALUE_BODY = "body";
     public static final String VALUE_NONE = "none";
 
@@ -67,8 +68,8 @@ public final class StandardRemoveTagProcessor extends AbstractStandardExpression
 
             if (VALUE_ALL.equalsIgnoreCase(resultStr)) {
                 structureHandler.removeElement();
-            } else if (VALUE_TAG.equalsIgnoreCase(resultStr)) {
-                structureHandler.removeTag();
+            } else if (VALUE_TAG.equalsIgnoreCase(resultStr) || VALUE_TAGS.equalsIgnoreCase(resultStr)) {
+                structureHandler.removeTags();
             } else if (VALUE_ALL_BUT_FIRST.equalsIgnoreCase(resultStr)) {
                 structureHandler.removeAllButFirstChild();
             } else  if (VALUE_BODY.equalsIgnoreCase(resultStr)) {

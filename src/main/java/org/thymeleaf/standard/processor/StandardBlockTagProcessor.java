@@ -52,7 +52,7 @@ public final class StandardBlockTagProcessor extends AbstractElementTagProcessor
                              final IElementTagStructureHandler structureHandler) {
 
         // We are just removing the "<th:block>", leaving whichever contents (body) it might have generated.
-        structureHandler.removeTag();
+        structureHandler.removeTags();
 
     }
 

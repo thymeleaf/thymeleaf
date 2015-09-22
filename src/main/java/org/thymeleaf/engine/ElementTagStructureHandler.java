@@ -50,9 +50,9 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
     IModel insertBeforeModelValue;
     // model inserted before the current element CANNOT be processable
 
-    boolean insertAfterModel;
-    IModel insertAfterModelValue;
-    boolean insertAfterModelProcessable;
+    boolean insertImmediatelyAfterModel;
+    IModel insertImmediatelyAfterModelValue;
+    boolean insertImmediatelyAfterModelProcessable;
 
     boolean replaceWithText;
     String replaceWithTextValue;
@@ -64,7 +64,7 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
 
     boolean removeElement;
 
-    boolean removeTag;
+    boolean removeTags;
 
     boolean removeBody;
 
@@ -124,12 +124,12 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
     }
 
 
-    public void insertAfter(final IModel model, final boolean processable) {
+    public void insertImmediatelyAfter(final IModel model, final boolean processable) {
         resetAllButLocalVariables();
         Validate.notNull(model, "Model cannot be null");
-        this.insertAfterModel = true;
-        this.insertAfterModelValue = model;
-        this.insertAfterModelProcessable = processable;
+        this.insertImmediatelyAfterModel = true;
+        this.insertImmediatelyAfterModelValue = model;
+        this.insertImmediatelyAfterModelProcessable = processable;
     }
 
 
@@ -157,9 +157,9 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
     }
 
 
-    public void removeTag() {
+    public void removeTags() {
         resetAllButLocalVariables();
-        this.removeTag = true;
+        this.removeTags = true;
     }
 
 
@@ -259,9 +259,9 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
         this.insertBeforeModelValue = null;
         // There is no 'insertBeforeModelProcessable'
 
-        this.insertAfterModel = false;
-        this.insertAfterModelValue = null;
-        this.insertAfterModelProcessable = false;
+        this.insertImmediatelyAfterModel = false;
+        this.insertImmediatelyAfterModelValue = null;
+        this.insertImmediatelyAfterModelProcessable = false;
 
         this.replaceWithText = false;
         this.replaceWithTextValue = null;
@@ -273,7 +273,7 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
 
         this.removeElement = false;
 
-        this.removeTag = false;
+        this.removeTags = false;
 
         this.removeBody = false;
 

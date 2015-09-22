@@ -1007,7 +1007,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
          */
-        boolean tagRemoved = false; // If the tag is removed, we have to immediately stop the execution of processors
+        boolean tagsRemoved = false; // If the tag is removed, we have to immediately stop the execution of processors
         boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
 
 
@@ -1058,7 +1058,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * EXECUTE PROCESSORS
          */
         IElementProcessor processor;
-        while (!tagRemoved && (processor = this.elementProcessorIterator.next(standaloneElementTag)) != null) {
+        while (!tagsRemoved && (processor = this.elementProcessorIterator.next(standaloneElementTag)) != null) {
 
             this.elementTagStructureHandler.reset();
             this.elementModelStructureHandler.reset();
@@ -1260,14 +1260,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     }
 
-                } else if (this.elementTagStructureHandler.insertAfterModel) {
+                } else if (this.elementTagStructureHandler.insertImmediatelyAfterModel) {
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    queueProcessable = this.elementTagStructureHandler.insertAfterModelProcessable;
+                    queueProcessable = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    queue.insertModel(0, this.elementTagStructureHandler.insertAfterModelValue);
+                    queue.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
 
                     // No intervention on the body flags - we will not be removing the body, just inserting before it
 
@@ -1281,7 +1281,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.textBuffer.setText(this.elementTagStructureHandler.replaceWithTextValue);
                     queue.add(this.textBuffer, false);
 
-                    tagRemoved = true;
+                    tagsRemoved = true;
 
                 } else if (this.elementTagStructureHandler.replaceWithModel) {
 
@@ -1291,19 +1291,19 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Model will be automatically cloned if mutable
                     queue.addModel(this.elementTagStructureHandler.replaceWithModelValue);
 
-                    tagRemoved = true;
+                    tagsRemoved = true;
 
                 } else if (this.elementTagStructureHandler.removeElement) {
 
                     queue.reset(); // Remove any previous results on the queue
 
-                    tagRemoved = true;
+                    tagsRemoved = true;
 
-                } else if (this.elementTagStructureHandler.removeTag) {
+                } else if (this.elementTagStructureHandler.removeTags) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
 
-                    tagRemoved = true;
+                    tagsRemoved = true;
 
                 }
                 // No way to process 'removeBody' or 'removeAllButFirstChild' on a standalone tag
@@ -1421,7 +1421,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 // Model will be automatically cloned if mutable
                 queue.addModel(this.modelBuffer);
 
-                tagRemoved = true;
+                tagsRemoved = true;
 
 
             } else {
@@ -1436,7 +1436,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE REST OF THE HANDLER CHAIN
          */
-        if (!tagRemoved) {
+        if (!tagsRemoved) {
             super.handleStandaloneElement(standaloneElementTag);
         }
 
@@ -1538,7 +1538,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
          */
-        boolean tagRemoved = false; // If the tag is removed, we have to immediately stop the execution of processors
+        boolean tagsRemoved = false; // If the tag is removed, we have to immediately stop the execution of processors
         boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
         boolean allowedNonElementStructuresInBody = true; // Needed to discard the body, or allow only a certain amount of children to execute
         int allowedElementCountInBody = Integer.MAX_VALUE; // Needed to discard the body, or allow only a certain amount of children to execute
@@ -1593,7 +1593,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * EXECUTE PROCESSORS
          */
         IElementProcessor processor;
-        while (!tagRemoved && (processor = this.elementProcessorIterator.next(openElementTag)) != null) {
+        while (!tagsRemoved && (processor = this.elementProcessorIterator.next(openElementTag)) != null) {
 
             this.elementTagStructureHandler.reset();
             this.elementModelStructureHandler.reset();
@@ -1727,14 +1727,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     }
 
-                } else if (this.elementTagStructureHandler.insertAfterModel) {
+                } else if (this.elementTagStructureHandler.insertImmediatelyAfterModel) {
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    queueProcessable = this.elementTagStructureHandler.insertAfterModelProcessable;
+                    queueProcessable = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    queue.insertModel(0, this.elementTagStructureHandler.insertAfterModelValue);
+                    queue.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
 
                     // No intervention on the body flags - we will not be removing the body, just inserting before it
 
@@ -1748,7 +1748,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.textBuffer.setText(this.elementTagStructureHandler.replaceWithTextValue);
                     queue.add(this.textBuffer, false);
 
-                    tagRemoved = true;
+                    tagsRemoved = true;
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
@@ -1760,7 +1760,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Model will be automatically cloned if mutable
                     queue.addModel(this.elementTagStructureHandler.replaceWithModelValue);
 
-                    tagRemoved = true;
+                    tagsRemoved = true;
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
@@ -1768,15 +1768,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     queue.reset(); // Remove any previous results on the queue
 
-                    tagRemoved = true;
+                    tagsRemoved = true;
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
 
-                } else if (this.elementTagStructureHandler.removeTag) {
+                } else if (this.elementTagStructureHandler.removeTags) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
 
-                    tagRemoved = true;
+                    tagsRemoved = true;
 
                 } else if (this.elementTagStructureHandler.removeBody) {
 
@@ -1902,7 +1902,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 // Model will be automatically cloned if mutable
                 queue.addModel(this.modelBuffer);
 
-                tagRemoved = true;
+                tagsRemoved = true;
                 allowedElementCountInBody = 0;
                 allowedNonElementStructuresInBody = false;
 
@@ -1919,7 +1919,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE REST OF THE HANDLER CHAIN and INCREASE THE MODEL LEVEL RIGHT AFTERWARDS
          */
-        if (!tagRemoved) {
+        if (!tagsRemoved) {
             super.handleOpenElement(openElementTag);
         }
 
@@ -1951,7 +1951,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * MAKE SURE WE SKIP THE CORRESPONDING CLOSE TAG, if required
          */
-        if (tagRemoved) {
+        if (tagsRemoved) {
             this.skipCloseTagLevels.add(this.modelLevel - 1);
             // We cannot decrease here the variables map level because we aren't actually decreasing the model
             // level until we find the corresponding close tag

@@ -44,14 +44,14 @@ public interface IElementTagStructureHandler {
     public void setBody(final IModel model, final boolean processable);
 
     public void insertBefore(final IModel model); // cannot be processable
-    public void insertAfter(final IModel model, final boolean processable);
+    public void insertImmediatelyAfter(final IModel model, final boolean processable);
 
     public void replaceWith(final String text, final boolean processable);
     public void replaceWith(final IModel model, final boolean processable);
 
 
     public void removeElement();
-    public void removeTag();
+    public void removeTags();
     public void removeBody();
     public void removeAllButFirstChild();
 
