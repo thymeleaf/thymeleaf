@@ -55,7 +55,7 @@ import org.thymeleaf.processor.element.IElementModelProcessor;
 import org.thymeleaf.processor.element.IElementProcessor;
 import org.thymeleaf.processor.element.IElementTagProcessor;
 import org.thymeleaf.processor.processinginstruction.IProcessingInstructionProcessor;
-import org.thymeleaf.processor.template.ITemplateProcessor;
+import org.thymeleaf.processor.templateboundaries.ITemplateBoundariesProcessor;
 import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -101,7 +101,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     // removing structures or iterating elements)
     private final ElementTagStructureHandler elementTagStructureHandler;
     private final ElementModelStructureHandler elementModelStructureHandler;
-    private final TemplateStructureHandler templateStructureHandler;
+    private final TemplateBoundariesStructureHandler templateStructureHandler;
     private final CDATASectionStructureHandler cdataSectionStructureHandler;
     private final CommentStructureHandler commentStructureHandler;
     private final DocTypeStructureHandler docTypeStructureHandler;
@@ -115,7 +115,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     private ILocalVariableAwareVariablesMap variablesMap;
 
-    private boolean hasTemplateProcessors = false;
+    private boolean hasTemplateBoundariesProcessors = false;
     private boolean hasCDATASectionProcessors = false;
     private boolean hasCommentProcessors = false;
     private boolean hasDocTypeProcessors = false;
@@ -137,7 +137,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     // processors. This is done so because non-element processors will not change during the execution of the engine
     // (whereas element processors can). And they are kept in the form of an array because they will be faster to
     // iterate than asking every time the configuration object for the Set of processors and creating an iterator for it
-    private ITemplateProcessor[] templateProcessors = null;
+    private ITemplateBoundariesProcessor[] templateBoundariesProcessors = null;
     private ICDATASectionProcessor[] cdataSectionProcessors = null;
     private ICommentProcessor[] commentProcessors = null;
     private IDocTypeProcessor[] docTypeProcessors = null;
@@ -210,7 +210,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         this.elementTagStructureHandler = new ElementTagStructureHandler();
         this.elementModelStructureHandler = new ElementModelStructureHandler();
-        this.templateStructureHandler = new TemplateStructureHandler();
+        this.templateStructureHandler = new TemplateBoundariesStructureHandler();
         this.cdataSectionStructureHandler = new CDATASectionStructureHandler();
         this.commentStructureHandler = new CommentStructureHandler();
         this.docTypeStructureHandler = new DocTypeStructureHandler();
@@ -263,7 +263,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         this.elementModelSpec = new ElementModelSpec(this.templateMode, this.configuration);
 
         // Flags used for quickly determining if a non-element structure might have to be processed or not
-        this.hasTemplateProcessors = !this.configuration.getTemplateProcessors(this.templateMode).isEmpty();
+        this.hasTemplateBoundariesProcessors = !this.configuration.getTemplateBoundariesProcessors(this.templateMode).isEmpty();
         this.hasCDATASectionProcessors = !this.configuration.getCDATASectionProcessors(this.templateMode).isEmpty();
         this.hasCommentProcessors = !this.configuration.getCommentProcessors(this.templateMode).isEmpty();
         this.hasDocTypeProcessors = !this.configuration.getDocTypeProcessors(this.templateMode).isEmpty();
@@ -272,14 +272,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         this.hasXMLDeclarationProcessors = !this.configuration.getXMLDeclarationProcessors(this.templateMode).isEmpty();
 
         // Initialize arrays containing the processors for all the non-element structures (these do not change during execution)
-        final Set<ITemplateProcessor> templateProcessorSet = this.configuration.getTemplateProcessors(this.templateMode);
+        final Set<ITemplateBoundariesProcessor> templateBoundariesProcessorSet = this.configuration.getTemplateBoundariesProcessors(this.templateMode);
         final Set<ICDATASectionProcessor> cdataSectionProcessorSet = this.configuration.getCDATASectionProcessors(this.templateMode);
         final Set<ICommentProcessor> commentProcessorSet = this.configuration.getCommentProcessors(this.templateMode);
         final Set<IDocTypeProcessor> docTypeProcessorSet = this.configuration.getDocTypeProcessors(this.templateMode);
         final Set<IProcessingInstructionProcessor> processingInstructionProcessorSet = this.configuration.getProcessingInstructionProcessors(this.templateMode);
         final Set<ITextProcessor> textProcessorSet = this.configuration.getTextProcessors(this.templateMode);
         final Set<IXMLDeclarationProcessor> xmlDeclarationProcessorSet = this.configuration.getXMLDeclarationProcessors(this.templateMode);
-        this.templateProcessors = templateProcessorSet.toArray(new ITemplateProcessor[templateProcessorSet.size()]);
+        this.templateBoundariesProcessors = templateBoundariesProcessorSet.toArray(new ITemplateBoundariesProcessor[templateBoundariesProcessorSet.size()]);
         this.cdataSectionProcessors = cdataSectionProcessorSet.toArray(new ICDATASectionProcessor[cdataSectionProcessorSet.size()]);
         this.commentProcessors = commentProcessorSet.toArray(new ICommentProcessor[commentProcessorSet.size()]);
         this.docTypeProcessors = docTypeProcessorSet.toArray(new IDocTypeProcessor[docTypeProcessorSet.size()]);
@@ -400,7 +400,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * FAIL FAST in case this structure has no associated processors.
          */
-        if (!this.hasTemplateProcessors) {
+        if (!this.hasTemplateBoundariesProcessors) {
             super.handleTemplateStart(itemplateStart);
             increaseHandlerExecLevel(); // Handling template start will always increase the handler exec level
             return;
@@ -423,12 +423,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * EXECUTE PROCESSORS
          */
-        final int processorsLen = this.templateProcessors.length;
+        final int processorsLen = this.templateBoundariesProcessors.length;
         for (int i = 0; i < processorsLen; i++) {
 
             this.templateStructureHandler.reset();
 
-            this.templateProcessors[i].processTemplateStart(
+            this.templateBoundariesProcessors[i].processTemplateStart(
                     this.processingContext, itemplateStart, this.templateStructureHandler);
 
             if (this.templateStructureHandler.setLocalVariable) {
@@ -505,7 +505,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * FAIL FAST in case this structure has no associated processors.
          */
-        if (!this.hasTemplateProcessors) {
+        if (!this.hasTemplateBoundariesProcessors) {
             decreaseHandlerExecLevel(); // Decrease the level increased during template start
             super.handleTemplateEnd(itemplateEnd);
             return;
@@ -528,12 +528,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * EXECUTE PROCESSORS
          */
-        final int processorsLen = this.templateProcessors.length;
+        final int processorsLen = this.templateBoundariesProcessors.length;
         for (int i = 0; i < processorsLen; i++) {
 
             this.templateStructureHandler.reset();
 
-            this.templateProcessors[i].processTemplateEnd(
+            this.templateBoundariesProcessors[i].processTemplateEnd(
                     this.processingContext, itemplateEnd, this.templateStructureHandler);
 
             if (this.templateStructureHandler.setLocalVariable) {

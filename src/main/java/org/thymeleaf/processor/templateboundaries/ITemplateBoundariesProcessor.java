@@ -17,10 +17,12 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.processor.template;
+package org.thymeleaf.processor.templateboundaries;
 
-import org.thymeleaf.inline.IInliner;
-import org.thymeleaf.model.IModel;
+import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.model.ITemplateEnd;
+import org.thymeleaf.model.ITemplateStart;
+import org.thymeleaf.processor.IProcessor;
 
 /**
  *
@@ -28,19 +30,16 @@ import org.thymeleaf.model.IModel;
  * @since 3.0.0
  * 
  */
-public interface ITemplateStructureHandler {
+public interface ITemplateBoundariesProcessor extends IProcessor {
 
-    public void reset();
+    public void processTemplateStart(
+            final ITemplateProcessingContext processingContext,
+            final ITemplateStart templateStart,
+            final ITemplateBoundariesStructureHandler structureHandler);
 
-    public void setLocalVariable(final String name, final Object value);
-    public void removeLocalVariable(final String name);
-
-    public void setSelectionTarget(final Object selectionTarget);
-
-    public void setInliner(final IInliner inliner);
-
-    public void insert(final String text, final boolean processable);
-    public void insert(final IModel model, final boolean processable);
+    public void processTemplateEnd(
+            final ITemplateProcessingContext processingContext,
+            final ITemplateEnd templateEnd,
+            final ITemplateBoundariesStructureHandler structureHandler);
 
 }
-

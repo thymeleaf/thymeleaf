@@ -35,7 +35,7 @@ import org.thymeleaf.processor.comment.ICommentProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeProcessor;
 import org.thymeleaf.processor.element.IElementProcessor;
 import org.thymeleaf.processor.processinginstruction.IProcessingInstructionProcessor;
-import org.thymeleaf.processor.template.ITemplateProcessor;
+import org.thymeleaf.processor.templateboundaries.ITemplateBoundariesProcessor;
 import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -65,7 +65,7 @@ public interface IEngineConfiguration {
     public ElementDefinitions getElementDefinitions();
     public AttributeDefinitions getAttributeDefinitions();
 
-    public Set<ITemplateProcessor> getTemplateProcessors(final TemplateMode templateMode);
+    public Set<ITemplateBoundariesProcessor> getTemplateBoundariesProcessors(final TemplateMode templateMode);
     public Set<ICDATASectionProcessor> getCDATASectionProcessors(final TemplateMode templateMode);
     public Set<ICommentProcessor> getCommentProcessors(final TemplateMode templateMode);
     public Set<IDocTypeProcessor> getDocTypeProcessors(final TemplateMode templateMode);

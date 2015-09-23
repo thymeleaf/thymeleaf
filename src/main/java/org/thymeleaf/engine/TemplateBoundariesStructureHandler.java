@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.IModel;
-import org.thymeleaf.processor.template.ITemplateStructureHandler;
+import org.thymeleaf.processor.templateboundaries.ITemplateBoundariesStructureHandler;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -35,7 +35,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-final class TemplateStructureHandler implements ITemplateStructureHandler {
+final class TemplateBoundariesStructureHandler implements ITemplateBoundariesStructureHandler {
 
 
     boolean insertText;
@@ -61,7 +61,7 @@ final class TemplateStructureHandler implements ITemplateStructureHandler {
 
 
 
-    TemplateStructureHandler() {
+    TemplateBoundariesStructureHandler() {
         super();
         reset();
     }

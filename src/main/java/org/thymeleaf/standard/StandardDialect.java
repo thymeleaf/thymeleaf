@@ -55,7 +55,7 @@ import org.thymeleaf.standard.processor.StandardFragmentTagProcessor;
 import org.thymeleaf.standard.processor.StandardHrefTagProcessor;
 import org.thymeleaf.standard.processor.StandardIfTagProcessor;
 import org.thymeleaf.standard.processor.StandardIncludeTagProcessor;
-import org.thymeleaf.standard.processor.StandardInlineEnablementTemplateProcessor;
+import org.thymeleaf.standard.processor.StandardInlineEnablementTemplateBoundariesProcessor;
 import org.thymeleaf.standard.processor.StandardInlineHTMLTagProcessor;
 import org.thymeleaf.standard.processor.StandardInlineXMLTagProcessor;
 import org.thymeleaf.standard.processor.StandardInliningTextProcessor;
@@ -407,9 +407,9 @@ public class StandardDialect
         processors.add(new StandardConditionalCommentProcessor(dialect));
 
         /*
-         * HTML: TEMPLATE PROCESSORS
+         * HTML: TEMPLATE BOUNDARIES PROCESSORS
          */
-        processors.add(new StandardInlineEnablementTemplateProcessor(dialect, TemplateMode.HTML));
+        processors.add(new StandardInlineEnablementTemplateBoundariesProcessor(dialect, TemplateMode.HTML));
 
 
 
@@ -460,9 +460,9 @@ public class StandardDialect
         processors.add(new StandardInliningTextProcessor(dialect, TemplateMode.XML));
 
         /*
-         * XML: TEMPLATE PROCESSORS
+         * XML: TEMPLATE BOUNDARIES PROCESSORS
          */
-        processors.add(new StandardInlineEnablementTemplateProcessor(dialect, TemplateMode.XML));
+        processors.add(new StandardInlineEnablementTemplateBoundariesProcessor(dialect, TemplateMode.XML));
 
 
 
@@ -507,9 +507,9 @@ public class StandardDialect
         processors.add(new StandardInliningTextProcessor(dialect, TemplateMode.TEXT));
 
         /*
-         * TEXT: TEMPLATE PROCESSORS
+         * TEXT: TEMPLATE BOUNDARIES PROCESSORS
          */
-        processors.add(new StandardInlineEnablementTemplateProcessor(dialect, TemplateMode.TEXT));
+        processors.add(new StandardInlineEnablementTemplateBoundariesProcessor(dialect, TemplateMode.TEXT));
 
 
 
@@ -554,9 +554,9 @@ public class StandardDialect
         processors.add(new StandardInliningTextProcessor(dialect, TemplateMode.JAVASCRIPT));
 
         /*
-         * JAVASCRIPT: TEMPLATE PROCESSORS
+         * JAVASCRIPT: TEMPLATE BOUNDARIES PROCESSORS
          */
-        processors.add(new StandardInlineEnablementTemplateProcessor(dialect, TemplateMode.JAVASCRIPT));
+        processors.add(new StandardInlineEnablementTemplateBoundariesProcessor(dialect, TemplateMode.JAVASCRIPT));
 
 
 
@@ -601,9 +601,9 @@ public class StandardDialect
         processors.add(new StandardInliningTextProcessor(dialect, TemplateMode.CSS));
 
         /*
-         * CSS: TEMPLATE PROCESSORS
+         * CSS: TEMPLATE BOUNDARIES PROCESSORS
          */
-        processors.add(new StandardInlineEnablementTemplateProcessor(dialect, TemplateMode.CSS));
+        processors.add(new StandardInlineEnablementTemplateBoundariesProcessor(dialect, TemplateMode.CSS));
 
 
 

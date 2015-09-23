@@ -371,7 +371,7 @@ public class TemplateEngine implements ITemplateEngine {
     
     /**
      * <p>
-     *   Returns the template processor. Normally there is no reason why users
+     *   Returns the template manager. Normally there is no reason why users
      *   would want to obtain or use this object directly (and it is not recommended
      *   behaviour).
      * </p>
@@ -380,7 +380,7 @@ public class TemplateEngine implements ITemplateEngine {
      *   any modifications to the configuration will be forbidden from that moment.
      * </p>
      *
-     * @return the template processor
+     * @return the template manager
      */
     public TemplateManager getTemplateManager() {
         if (!this.initialized.get()) {

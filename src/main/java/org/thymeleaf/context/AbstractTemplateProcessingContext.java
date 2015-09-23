@@ -62,7 +62,7 @@ public abstract class AbstractTemplateProcessingContext
         super(configuration, context);
 
         // parent CAN be null, if this is a first-level template
-        Validate.notNull(templateManager, "Template Processor cannot be null");
+        Validate.notNull(templateManager, "Template Manager cannot be null");
         Validate.notNull(templateResolution, "Template Resolution cannot be null");
 
         this.templateManager = templateManager;
@@ -85,7 +85,7 @@ public abstract class AbstractTemplateProcessingContext
         super(configuration, locale, variables);
 
         // parent CAN be null, if this is a first-level template
-        Validate.notNull(templateManager, "Template Processor cannot be null");
+        Validate.notNull(templateManager, "Template Manager cannot be null");
         Validate.notNull(templateResolution, "Template Resolution cannot be null");
 
         this.templateManager = templateManager;

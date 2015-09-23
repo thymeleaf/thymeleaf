@@ -24,8 +24,8 @@ import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ITemplateEnd;
 import org.thymeleaf.model.ITemplateStart;
-import org.thymeleaf.processor.template.AbstractTemplateProcessor;
-import org.thymeleaf.processor.template.ITemplateStructureHandler;
+import org.thymeleaf.processor.templateboundaries.AbstractTemplateBoundariesProcessor;
+import org.thymeleaf.processor.templateboundaries.ITemplateBoundariesStructureHandler;
 import org.thymeleaf.standard.inline.StandardCSSInliner;
 import org.thymeleaf.standard.inline.StandardHTMLInliner;
 import org.thymeleaf.standard.inline.StandardJavaScriptInliner;
@@ -40,11 +40,11 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-public final class StandardInlineEnablementTemplateProcessor extends AbstractTemplateProcessor {
+public final class StandardInlineEnablementTemplateBoundariesProcessor extends AbstractTemplateBoundariesProcessor {
 
     public static final int PRECEDENCE = 10;
 
-    public StandardInlineEnablementTemplateProcessor(final IProcessorDialect dialect, final TemplateMode templateMode) {
+    public StandardInlineEnablementTemplateBoundariesProcessor(final IProcessorDialect dialect, final TemplateMode templateMode) {
         super(dialect, templateMode, PRECEDENCE);
     }
 
@@ -52,7 +52,7 @@ public final class StandardInlineEnablementTemplateProcessor extends AbstractTem
     @Override
     public void doProcessTemplateStart(
             final ITemplateProcessingContext processingContext, final ITemplateStart templateStart,
-            final ITemplateStructureHandler structureHandler) {
+            final ITemplateBoundariesStructureHandler structureHandler) {
 
         switch (getTemplateMode()) {
 
@@ -82,7 +82,7 @@ public final class StandardInlineEnablementTemplateProcessor extends AbstractTem
 
     @Override
     public void doProcessTemplateEnd(final ITemplateProcessingContext processingContext, final ITemplateEnd templateEnd,
-                                     final ITemplateStructureHandler structureHandler) {
+                                     final ITemplateBoundariesStructureHandler structureHandler) {
 
         // Empty - nothing to be done on template end
 

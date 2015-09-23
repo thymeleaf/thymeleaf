@@ -49,7 +49,7 @@ import org.thymeleaf.processor.comment.ICommentProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeProcessor;
 import org.thymeleaf.processor.element.IElementProcessor;
 import org.thymeleaf.processor.processinginstruction.IProcessingInstructionProcessor;
-import org.thymeleaf.processor.template.ITemplateProcessor;
+import org.thymeleaf.processor.templateboundaries.ITemplateBoundariesProcessor;
 import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.standard.StandardDialect;
@@ -77,7 +77,7 @@ final class DialectSetConfiguration {
 
     private final ElementDefinitions elementDefinitions;
     private final AttributeDefinitions attributeDefinitions;
-    private final EnumMap<TemplateMode,Set<ITemplateProcessor>> templateProcessorsByTemplateMode;
+    private final EnumMap<TemplateMode,Set<ITemplateBoundariesProcessor>> templateBoundariesProcessorsByTemplateMode;
     private final EnumMap<TemplateMode,Set<ICDATASectionProcessor>> cdataSectionProcessorsByTemplateMode;
     private final EnumMap<TemplateMode,Set<ICommentProcessor>> commentProcessorsByTemplateMode;
     private final EnumMap<TemplateMode,Set<IDocTypeProcessor>> docTypeProcessorsByTemplateMode;
@@ -110,7 +110,7 @@ final class DialectSetConfiguration {
         final AggregateExpressionObjectFactory aggregateExpressionObjectFactory = new AggregateExpressionObjectFactory();
 
         // EnumMaps for each type of processor (depending on the structures that they can be applied to)
-        final EnumMap<TemplateMode, List<ITemplateProcessor>> templateProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<ITemplateProcessor>>(TemplateMode.class);
+        final EnumMap<TemplateMode, List<ITemplateBoundariesProcessor>> templateBoundariesProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<ITemplateBoundariesProcessor>>(TemplateMode.class);
         final EnumMap<TemplateMode, List<ICDATASectionProcessor>> cdataSectionProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<ICDATASectionProcessor>>(TemplateMode.class);
         final EnumMap<TemplateMode, List<ICommentProcessor>> commentProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<ICommentProcessor>>(TemplateMode.class);
         final EnumMap<TemplateMode, List<IDocTypeProcessor>> docTypeProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IDocTypeProcessor>>(TemplateMode.class);
@@ -172,14 +172,14 @@ final class DialectSetConfiguration {
                         Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
 
-                    } else if (dialectProcessor instanceof ITemplateProcessor) {
+                    } else if (dialectProcessor instanceof ITemplateBoundariesProcessor) {
 
-                        List<ITemplateProcessor> processorsForTemplateMode = templateProcessorListsByTemplateMode.get(templateMode);
+                        List<ITemplateBoundariesProcessor> processorsForTemplateMode = templateBoundariesProcessorListsByTemplateMode.get(templateMode);
                         if (processorsForTemplateMode == null) {
-                            processorsForTemplateMode = new ArrayList<ITemplateProcessor>(5);
-                            templateProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
+                            processorsForTemplateMode = new ArrayList<ITemplateBoundariesProcessor>(5);
+                            templateBoundariesProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
-                        processorsForTemplateMode.add((ITemplateProcessor)dialectProcessor);
+                        processorsForTemplateMode.add((ITemplateBoundariesProcessor)dialectProcessor);
                         Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
                     } else if (dialectProcessor instanceof ICDATASectionProcessor) {
@@ -424,7 +424,7 @@ final class DialectSetConfiguration {
 
 
         // Time to turn the list-based structures into sets -- we needed the lists because we needed a way to order them using Collections.sort()
-        final EnumMap<TemplateMode, Set<ITemplateProcessor>> templateProcessorsByTemplateMode = listMapToSetMap(templateProcessorListsByTemplateMode);
+        final EnumMap<TemplateMode, Set<ITemplateBoundariesProcessor>> templateBoundariesProcessorsByTemplateMode = listMapToSetMap(templateBoundariesProcessorListsByTemplateMode);
         final EnumMap<TemplateMode, Set<ICDATASectionProcessor>> cdataSectionProcessorsByTemplateMode = listMapToSetMap(cdataSectionProcessorListsByTemplateMode);
         final EnumMap<TemplateMode, Set<ICommentProcessor>> commentProcessorsByTemplateMode = listMapToSetMap(commentProcessorListsByTemplateMode);
         final EnumMap<TemplateMode, Set<IDocTypeProcessor>> docTypeProcessorsByTemplateMode = listMapToSetMap(docTypeProcessorListsByTemplateMode);
@@ -449,7 +449,7 @@ final class DialectSetConfiguration {
                 standardDialectPresent, standardDialectPrefix,
                 executionAttributes, aggregateExpressionObjectFactory,
                 elementDefinitions, attributeDefinitions,
-                templateProcessorsByTemplateMode,
+                templateBoundariesProcessorsByTemplateMode,
                 cdataSectionProcessorsByTemplateMode, commentProcessorsByTemplateMode, docTypeProcessorsByTemplateMode,
                 elementProcessorsByTemplateMode, processingInstructionProcessorsByTemplateMode,
                 textProcessorsByTemplateMode, xmlDeclarationProcessorsByTemplateMode,
@@ -480,7 +480,7 @@ final class DialectSetConfiguration {
             final Map<String, Object> executionAttributes,
             final AggregateExpressionObjectFactory expressionObjectFactory,
             final ElementDefinitions elementDefinitions, final AttributeDefinitions attributeDefinitions,
-            final EnumMap<TemplateMode, Set<ITemplateProcessor>> templateProcessorsByTemplateMode,
+            final EnumMap<TemplateMode, Set<ITemplateBoundariesProcessor>> templateBoundariesProcessorsByTemplateMode,
             final EnumMap<TemplateMode, Set<ICDATASectionProcessor>> cdataSectionProcessorsByTemplateMode,
             final EnumMap<TemplateMode, Set<ICommentProcessor>> commentProcessorsByTemplateMode,
             final EnumMap<TemplateMode, Set<IDocTypeProcessor>> docTypeProcessorsByTemplateMode,
@@ -501,7 +501,7 @@ final class DialectSetConfiguration {
         this.expressionObjectFactory = expressionObjectFactory;
         this.elementDefinitions = elementDefinitions;
         this.attributeDefinitions = attributeDefinitions;
-        this.templateProcessorsByTemplateMode = templateProcessorsByTemplateMode;
+        this.templateBoundariesProcessorsByTemplateMode = templateBoundariesProcessorsByTemplateMode;
         this.cdataSectionProcessorsByTemplateMode = cdataSectionProcessorsByTemplateMode;
         this.commentProcessorsByTemplateMode = commentProcessorsByTemplateMode;
         this.docTypeProcessorsByTemplateMode = docTypeProcessorsByTemplateMode;
@@ -552,9 +552,9 @@ final class DialectSetConfiguration {
         return this.attributeDefinitions;
     }
 
-    public Set<ITemplateProcessor> getTemplateProcessors(final TemplateMode templateMode) {
+    public Set<ITemplateBoundariesProcessor> getTemplateBoundariesProcessors(final TemplateMode templateMode) {
         Validate.notNull(templateMode, "Template mode cannot be null");
-        final Set<ITemplateProcessor> processors = this.templateProcessorsByTemplateMode.get(templateMode);
+        final Set<ITemplateBoundariesProcessor> processors = this.templateBoundariesProcessorsByTemplateMode.get(templateMode);
         if (processors == null) {
             return Collections.EMPTY_SET;
         }
