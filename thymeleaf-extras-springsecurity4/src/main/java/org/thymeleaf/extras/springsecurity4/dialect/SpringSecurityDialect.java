@@ -23,7 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.thymeleaf.dialect.AbstractDialect;
-import org.thymeleaf.dialect.IExpressionObjectsDialect;
+import org.thymeleaf.dialect.IExpressionObjectDialect;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.extras.springsecurity4.dialect.expression.SpringSecurityExpressionObjectFactory;
@@ -42,7 +42,7 @@ import org.thymeleaf.templatemode.TemplateMode;
  *
  */
 public class SpringSecurityDialect
-        extends AbstractDialect implements IProcessorDialect, IExpressionObjectsDialect {
+        extends AbstractDialect implements IProcessorDialect, IExpressionObjectDialect {
 
     public static final String NAME = "SpringSecurity";
     public static final String DEFAULT_PREFIX = "sec";
