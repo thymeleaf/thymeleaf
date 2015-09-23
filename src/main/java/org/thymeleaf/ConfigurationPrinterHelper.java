@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dialect.IExecutionAttributesDialect;
-import org.thymeleaf.dialect.IExpressionObjectsDialect;
+import org.thymeleaf.dialect.IExpressionObjectDialect;
 import org.thymeleaf.dialect.IPostProcessorDialect;
 import org.thymeleaf.dialect.IPreProcessorDialect;
 import org.thymeleaf.dialect.IProcessorDialect;
@@ -195,9 +195,9 @@ final class ConfigurationPrinterHelper {
 
         }
 
-        if (idialect instanceof IExpressionObjectsDialect) {
+        if (idialect instanceof IExpressionObjectDialect) {
 
-            final IExpressionObjectsDialect dialect = (IExpressionObjectsDialect)idialect;
+            final IExpressionObjectDialect dialect = (IExpressionObjectDialect)idialect;
 
             final IExpressionObjectFactory expressionObjectFactory = dialect.getExpressionObjectFactory();
             if (expressionObjectFactory != null) {

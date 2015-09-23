@@ -28,7 +28,7 @@ import org.thymeleaf.expression.IExpressionObjectFactory;
  * @since 3.0.0
  *
  */
-public interface IExpressionObjectsDialect extends IDialect {
+public interface IExpressionObjectDialect extends IDialect {
 
     public IExpressionObjectFactory getExpressionObjectFactory();
 

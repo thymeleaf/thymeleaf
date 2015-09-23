@@ -31,7 +31,7 @@ import java.util.Set;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dialect.IExecutionAttributesDialect;
-import org.thymeleaf.dialect.IExpressionObjectsDialect;
+import org.thymeleaf.dialect.IExpressionObjectDialect;
 import org.thymeleaf.dialect.IPostProcessorDialect;
 import org.thymeleaf.dialect.IPreProcessorDialect;
 import org.thymeleaf.dialect.IProcessorDialect;
@@ -274,9 +274,9 @@ final class DialectSetConfiguration {
             /*
              * STEP THREE for each dialect: aggregate all the expression object factories
              */
-            if (dialect instanceof IExpressionObjectsDialect) {
+            if (dialect instanceof IExpressionObjectDialect) {
 
-                final IExpressionObjectFactory factory = ((IExpressionObjectsDialect) dialect).getExpressionObjectFactory();
+                final IExpressionObjectFactory factory = ((IExpressionObjectDialect) dialect).getExpressionObjectFactory();
                 if (factory != null) {
                     aggregateExpressionObjectFactory.add(factory);
                 }
