@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.dialect.AbstractProcessorDialect;
-import org.thymeleaf.dialect.IExecutionAttributesDialect;
+import org.thymeleaf.dialect.IExecutionAttributeDialect;
 import org.thymeleaf.dialect.IExpressionObjectDialect;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.expression.IExpressionObjectFactory;
@@ -93,7 +93,7 @@ import org.thymeleaf.util.Validate;
  */
 public class StandardDialect
             extends AbstractProcessorDialect
-            implements IExecutionAttributesDialect, IExpressionObjectDialect {
+            implements IExecutionAttributeDialect, IExpressionObjectDialect {
 
     public static final String NAME = "Standard";
     public static final String PREFIX = "th";

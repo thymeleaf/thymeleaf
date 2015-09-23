@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.dialect.IExecutionAttributesDialect;
+import org.thymeleaf.dialect.IExecutionAttributeDialect;
 import org.thymeleaf.dialect.IExpressionObjectDialect;
 import org.thymeleaf.dialect.IPostProcessorDialect;
 import org.thymeleaf.dialect.IPreProcessorDialect;
@@ -214,9 +214,9 @@ final class ConfigurationPrinterHelper {
 
         }
 
-        if (idialect instanceof IExecutionAttributesDialect) {
+        if (idialect instanceof IExecutionAttributeDialect) {
 
-            final IExecutionAttributesDialect dialect = (IExecutionAttributesDialect)idialect;
+            final IExecutionAttributeDialect dialect = (IExecutionAttributeDialect)idialect;
 
             final Map<String, Object> executionAttributes = dialect.getExecutionAttributes();
             if (executionAttributes != null && !executionAttributes.isEmpty()) {

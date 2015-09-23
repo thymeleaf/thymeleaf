@@ -28,7 +28,7 @@ import java.util.Map;
  * @since 3.0.0
  *
  */
-public interface IExecutionAttributesDialect extends IDialect {
+public interface IExecutionAttributeDialect extends IDialect {
 
     public Map<String,Object> getExecutionAttributes();
 

@@ -30,7 +30,7 @@ import java.util.Set;
 
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.dialect.IExecutionAttributesDialect;
+import org.thymeleaf.dialect.IExecutionAttributeDialect;
 import org.thymeleaf.dialect.IExpressionObjectDialect;
 import org.thymeleaf.dialect.IPostProcessorDialect;
 import org.thymeleaf.dialect.IPreProcessorDialect;
@@ -253,9 +253,9 @@ final class DialectSetConfiguration {
             /*
              * STEP TWO for each dialect: merge execution attributes
              */
-            if (dialect instanceof IExecutionAttributesDialect) {
+            if (dialect instanceof IExecutionAttributeDialect) {
 
-                final Map<String, Object> dialectExecutionAttributes = ((IExecutionAttributesDialect) dialect).getExecutionAttributes();
+                final Map<String, Object> dialectExecutionAttributes = ((IExecutionAttributeDialect) dialect).getExecutionAttributes();
                 if (dialectExecutionAttributes != null) {
                     for (final Map.Entry<String, Object> entry : dialectExecutionAttributes.entrySet()) {
                         final String executionAttributeName = entry.getKey();
