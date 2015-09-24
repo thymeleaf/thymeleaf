@@ -74,9 +74,10 @@ public final class RequestDataValueProcessorUtils {
                 final Class<?> implClass = Class.forName(SPRING4_DELEGATE_CLASS, true, classLoader);
                 spring4Delegate = (IRequestDataValueProcessorDelegate) implClass.newInstance();
             } catch (final Exception e) {
-                throw new ConfigurationException(
-                        "Environment has been detected to be at least Spring 4, but thymeleaf could not initialize a " +
-                        "delegate of class \"" + SPRING4_DELEGATE_CLASS + "\"", e);
+                throw new ExceptionInInitializerError(
+                        new ConfigurationException(
+                            "Environment has been detected to be at least Spring 4, but thymeleaf could not initialize a " +
+                            "delegate of class \"" + SPRING4_DELEGATE_CLASS + "\"", e));
             }
         } else {
             LOGGER.warn(

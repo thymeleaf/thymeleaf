@@ -50,9 +50,10 @@ public class Mvc {
             final Class<?> implClass = Class.forName(delegateClassName, true, classLoader);
             mvcUriComponentsBuilderDelegate = (MvcUriComponentsBuilderDelegate) implClass.newInstance();
         } catch (final Exception e) {
-            throw new ConfigurationException(
-                    "Thymeleaf could not initialize a delegate of class \"" + delegateClassName + "\" for taking " +
-                    "care of the " + SpringStandardExpressionObjectFactory.MVC_EXPRESSION_OBJECT_NAME + " expression utility object", e);
+            throw new ExceptionInInitializerError(
+                    new ConfigurationException(
+                        "Thymeleaf could not initialize a delegate of class \"" + delegateClassName + "\" for taking " +
+                        "care of the " + SpringStandardExpressionObjectFactory.MVC_EXPRESSION_OBJECT_NAME + " expression utility object", e));
         }
 
     }

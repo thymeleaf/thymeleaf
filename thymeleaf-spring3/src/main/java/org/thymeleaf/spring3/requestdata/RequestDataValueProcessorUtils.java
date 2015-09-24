@@ -74,9 +74,10 @@ public final class RequestDataValueProcessorUtils {
                 final Class<?> implClass = Class.forName(SPRING31_DELEGATE_CLASS, true, classLoader);
                 spring31Delegate = (IRequestDataValueProcessorDelegate) implClass.newInstance();
             } catch (final Exception e) {
-                throw new ConfigurationException(
-                        "Environment has been detected to be at least Spring 3.1, but thymeleaf could not initialize a " +
-                        "delegate of class \"" + SPRING31_DELEGATE_CLASS + "\"", e);
+                throw new ExceptionInInitializerError(
+                        new ConfigurationException(
+                            "Environment has been detected to be at least Spring 3.1, but thymeleaf could not initialize a " +
+                            "delegate of class \"" + SPRING31_DELEGATE_CLASS + "\"", e));
             }
         } else {
             if (isSpring40AtLeast) {
