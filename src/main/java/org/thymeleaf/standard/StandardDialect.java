@@ -50,6 +50,7 @@ import org.thymeleaf.standard.processor.StandardClassappendTagProcessor;
 import org.thymeleaf.standard.processor.StandardConditionalCommentProcessor;
 import org.thymeleaf.standard.processor.StandardConditionalFixedValueTagProcessor;
 import org.thymeleaf.standard.processor.StandardDOMEventAttributeTagProcessor;
+import org.thymeleaf.standard.processor.StandardDefaultAttributesTagProcessor;
 import org.thymeleaf.standard.processor.StandardEachTagProcessor;
 import org.thymeleaf.standard.processor.StandardFragmentTagProcessor;
 import org.thymeleaf.standard.processor.StandardHrefTagProcessor;
@@ -383,8 +384,7 @@ public class StandardDialect
         processors.add(new StandardXmlLangTagProcessor(dialect, dialectPrefix));
         processors.add(new StandardXmlSpaceTagProcessor(dialect, dialectPrefix));
         processors.add(new StandardXmlNsTagProcessor(dialect, TemplateMode.HTML, dialectPrefix));
-        // TODO: Implement default attribute processor
-//        processors.add(new StandardDefaultAttributesTagProcessor(dialect, TemplateMode.HTML));
+        processors.add(new StandardDefaultAttributesTagProcessor(dialect, TemplateMode.HTML, dialectPrefix));
 
         /*
          * HTML: ELEMENT TAG PROCESSORS
@@ -446,8 +446,7 @@ public class StandardDialect
         processors.add(new StandardUtextTagProcessor(dialect, TemplateMode.XML, dialectPrefix));
         processors.add(new StandardWithTagProcessor(dialect, TemplateMode.XML, dialectPrefix));
         processors.add(new StandardXmlNsTagProcessor(dialect, TemplateMode.XML, dialectPrefix));
-// TODO: Implement default attribute processor
-//        processors.add(new StandardDefaultAttributesTagProcessor(dialect, TemplateMode.XML));
+        processors.add(new StandardDefaultAttributesTagProcessor(dialect, TemplateMode.XML, dialectPrefix));
 
         /*
          * XML: ELEMENT TAG PROCESSORS
