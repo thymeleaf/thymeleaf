@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.EvaluationUtils;
 
 
@@ -59,7 +58,7 @@ public final class OrExpression extends BinaryOperationExpression {
             LEFT_ALLOWED_METHOD = OrExpression.class.getDeclaredMethod("isLeftAllowed", IStandardExpression.class);
             RIGHT_ALLOWED_METHOD = OrExpression.class.getDeclaredMethod("isRightAllowed", IStandardExpression.class);
         } catch (final NoSuchMethodException e) {
-            throw new TemplateProcessingException("Cannot register is*Allowed methods in binary operation expression", e);
+            throw new ExceptionInInitializerError(e);
         }
     }
 

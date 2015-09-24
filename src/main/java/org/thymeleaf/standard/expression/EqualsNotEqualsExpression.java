@@ -22,8 +22,6 @@ package org.thymeleaf.standard.expression;
 
 import java.lang.reflect.Method;
 
-import org.thymeleaf.exceptions.TemplateProcessingException;
-
 /**
  * 
  * @author Daniel Fern&aacute;ndez
@@ -60,7 +58,7 @@ public abstract class EqualsNotEqualsExpression extends BinaryOperationExpressio
             LEFT_ALLOWED_METHOD = EqualsNotEqualsExpression.class.getDeclaredMethod("isLeftAllowed", IStandardExpression.class);
             RIGHT_ALLOWED_METHOD = EqualsNotEqualsExpression.class.getDeclaredMethod("isRightAllowed", IStandardExpression.class);
         } catch (final NoSuchMethodException e) {
-            throw new TemplateProcessingException("Cannot register is*Allowed methods in binary operation expression", e);
+            throw new ExceptionInInitializerError(e);
         }
     }
 
