@@ -394,7 +394,7 @@ public final class ElementAttributes implements IElementAttributes {
             // Attribute already exists! Must simply change its properties (might include a name case change!)
 
             final ElementAttribute existingAttribute = this.attributes[existingIdx];
-            existingAttribute.reset(name, operator, value, valueQuotes, line, col);
+            existingAttribute.reset(existingAttribute.definition, name, operator, value, valueQuotes, line, col);
 
             this.version++;
 
@@ -495,7 +495,7 @@ public final class ElementAttributes implements IElementAttributes {
             // New Attribute already exists! Must simply change its properties
 
             final ElementAttribute existingAttribute = this.attributes[existingIdx];
-            existingAttribute.reset(completeNewName, operator, value, valueQuotes, line, col);
+            existingAttribute.reset(existingAttribute.definition, completeNewName, operator, value, valueQuotes, line, col);
 
             this.version++;
 
@@ -508,10 +508,12 @@ public final class ElementAttributes implements IElementAttributes {
 
         existingIdx = searchAttribute(oldName);
         if (existingIdx >= 0) {
-            // Attribute already exists! Must simply change its properties
+            // Old attribute already exists! Must simply change its properties
 
             final ElementAttribute existingAttribute = this.attributes[existingIdx];
-            existingAttribute.reset(completeNewName, operator, value, valueQuotes, line, col);
+            existingAttribute.reset(computeAttributeDefinition(completeNewName), completeNewName, operator, value, valueQuotes, line, col);
+
+            this.attributeNames[existingIdx] = existingAttribute.definition.getAttributeName();
 
             this.version++;
 

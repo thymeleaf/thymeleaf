@@ -22,10 +22,10 @@ package org.thymeleaf.standard.processor;
 import java.util.List;
 
 import org.attoparser.util.TextUtil;
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.AbstractProcessor;
@@ -37,6 +37,8 @@ import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.EscapedAttributeUtils;
+import org.unbescape.html.HtmlEscape;
 
 /**
  *
@@ -82,7 +84,6 @@ public final class StandardDefaultAttributesTagProcessor
             final IProcessableElementTag tag,
             final IElementTagStructureHandler structureHandler) {
 
-
         final TemplateMode templateMode = getTemplateMode();
         final IElementAttributes attributes = tag.getAttributes();
         final List<AttributeName> attributeNames = attributes.getAllAttributeNames();
@@ -94,22 +95,92 @@ public final class StandardDefaultAttributesTagProcessor
             if (attributeName.isPrefixed()) {
                 if (TextUtil.equals(templateMode.isCaseSensitive(), attributeName.getPrefix(), this.dialectPrefix)) {
 
-
+                    // We will process each 'default' attribute separately
+                    processDefaultAttribute(processingContext, tag, attributeName);
 
                 }
             }
 
         }
 
+    }
 
 
-//        final IEngineConfiguration configuration = processingContext.getConfiguration();
-//        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-//
-//        final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
-//        final Object expressionResult = expression.execute(processingContext);
 
-        System.out.println("DEFAULT ACTING ON ELEMENT: " + tag.toString());
+    private static void processDefaultAttribute(
+            final ITemplateProcessingContext processingContext,
+            final IProcessableElementTag tag, final AttributeName attributeName) {
+
+        try {
+
+            final String attributeValue =
+                    EscapedAttributeUtils.unescapeAttribute(
+                            processingContext.getTemplateMode(), tag.getAttributes().getValue(attributeName));
+
+            /*
+             *  Remove the attribute -- we will always remove all attributes with the Standard Dialect prefix
+             */
+            tag.getAttributes().removeAttribute(attributeName);
+
+
+            /*
+             * Compute the new attribute name
+             */
+            final String newAttributeName = attributeName.getAttributeName(); // i.e. the same, without the prefix
+
+
+            /*
+             * Cover the case that the attribute was specified with no value
+             */
+            if (attributeValue == null) {
+                tag.getAttributes().replaceAttribute(attributeName, newAttributeName, null);
+                return;
+            }
+
+
+            /*
+             * Execute the expression inside
+             */
+            final IStandardExpressionParser expressionParser =
+                    StandardExpressions.getExpressionParser(processingContext.getConfiguration());
+
+            final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
+            final Object expressionResult = expression.execute(processingContext);
+
+
+            /*
+             * Compute the new attribute value
+             */
+            final String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? null : expressionResult.toString());
+
+            /*
+             * Set the new value, removing the attribute completely if the expression evaluated to null
+             */
+            if (newAttributeValue == null || newAttributeValue.length() == 0) {
+                // We are removing the equivalent attribute name, without the prefix...
+                tag.getAttributes().removeAttribute(newAttributeName);
+                tag.getAttributes().removeAttribute(attributeName);
+            } else {
+                // We are setting the equivalent attribute name, without the prefix...
+                tag.getAttributes().replaceAttribute(attributeName, newAttributeName, (newAttributeValue == null? "" : newAttributeValue));
+            }
+
+        } catch (final TemplateProcessingException e) {
+            // This is a nice moment to check whether the execution raised an error and, if so, add location information
+            // Note this is similar to what is done at the superclass AbstractElementTagProcessor, but we can be more
+            // specific because we know exactly what attribute was being executed and caused the error
+            if (!e.hasTemplateName()) {
+                e.setTemplateName(tag.getTemplateName());
+            }
+            if (!e.hasLineAndCol()) {
+                e.setLineAndCol(tag.getAttributes().getLine(attributeName), tag.getAttributes().getCol(attributeName));
+            }
+            throw e;
+        } catch (final Exception e) {
+            throw new TemplateProcessingException(
+                    "Error during execution of processor '" + StandardDefaultAttributesTagProcessor.class.getName() + "'",
+                    tag.getTemplateName(), tag.getAttributes().getLine(attributeName), tag.getAttributes().getCol(attributeName), e);
+        }
 
     }
 
