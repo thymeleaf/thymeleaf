@@ -117,11 +117,6 @@ public final class StandardDefaultAttributesTagProcessor
                     EscapedAttributeUtils.unescapeAttribute(
                             processingContext.getTemplateMode(), tag.getAttributes().getValue(attributeName));
 
-            /*
-             *  Remove the attribute -- we will always remove all attributes with the Standard Dialect prefix
-             */
-            tag.getAttributes().removeAttribute(attributeName);
-
 
             /*
              * Compute the new attribute name
@@ -130,22 +125,21 @@ public final class StandardDefaultAttributesTagProcessor
 
 
             /*
-             * Cover the case that the attribute was specified with no value
-             */
-            if (attributeValue == null) {
-                tag.getAttributes().replaceAttribute(attributeName, newAttributeName, null);
-                return;
-            }
-
-
-            /*
-             * Execute the expression inside
+             * Obtain the parser
              */
             final IStandardExpressionParser expressionParser =
                     StandardExpressions.getExpressionParser(processingContext.getConfiguration());
 
-            final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
-            final Object expressionResult = expression.execute(processingContext);
+            /*
+             * Execute the expression, handling nulls in a way consistent with the rest of the Standard Dialect
+             */
+            final Object expressionResult;
+            if (attributeValue != null) {
+                final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
+                expressionResult = expression.execute(processingContext);
+            } else {
+                expressionResult = null;
+            }
 
 
             /*

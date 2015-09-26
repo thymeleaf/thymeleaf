@@ -67,24 +67,6 @@ final class ElementAttribute {
 
 
     // Used internally, only from the engine
-//    void reset(final AttributeDefinition definition,
-//               final String name, final String operator, final String value,
-//               final IElementAttributes.ValueQuotes valueQuotes,
-//               final int line, final int col) {
-//
-//        this.definition = definition;
-//        this.name = name;
-//        this.operator = (operator == null && value != null? ElementAttribute.DEFAULT_OPERATOR : operator);
-//        this.value = value;
-//        this.valueQuotes = (valueQuotes == null? IElementAttributes.ValueQuotes.DOUBLE : valueQuotes);
-//        this.line = line;
-//        this.col = col;
-//
-//    }
-
-
-
-    // Used internally, only from the engine
     void reset(final AttributeDefinition definition,
                final String name, final String operator, final String value,
                final IElementAttributes.ValueQuotes valueQuotes,

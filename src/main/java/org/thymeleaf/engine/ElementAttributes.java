@@ -431,7 +431,12 @@ public final class ElementAttributes implements IElementAttributes {
         }
 
         newAttribute.reset(
-                computeAttributeDefinition(name), name, operator, value, valueQuotes, line, col);
+                computeAttributeDefinition(name),
+                name,
+                (operator == null? ElementAttribute.DEFAULT_OPERATOR : operator),
+                value,
+                (valueQuotes == null? IElementAttributes.ValueQuotes.DOUBLE : valueQuotes),
+                line, col);
 
         this.attributeNames[this.attributesSize] = newAttribute.definition.getAttributeName();
 

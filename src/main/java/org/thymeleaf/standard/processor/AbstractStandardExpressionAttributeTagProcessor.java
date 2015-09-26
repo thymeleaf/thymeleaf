@@ -62,8 +62,13 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
         final IEngineConfiguration configuration = processingContext.getConfiguration();
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
 
-        final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
-        final Object expressionResult = expression.execute(processingContext);
+        final Object expressionResult;
+        if (attributeValue != null) {
+            final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
+            expressionResult = expression.execute(processingContext);
+        } else {
+            expressionResult = null;
+        }
 
         doProcess(
                 processingContext, tag,
