@@ -21,6 +21,7 @@ package org.thymeleaf.testing.templateengine.context.web;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -293,7 +294,7 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         public ObjectEnumeration(final Collection<T> values) {
             super();
             if (values != null) {
-                this.iterator = values.iterator();
+                this.iterator = (new ArrayList<T>(values)).iterator();
             } else {
                 this.iterator = ((List<T>)Collections.emptyList()).iterator();
             }
