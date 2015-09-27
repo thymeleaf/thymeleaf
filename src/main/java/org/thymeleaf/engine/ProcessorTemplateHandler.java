@@ -23,6 +23,7 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -2739,6 +2740,26 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
         if (iteratedObject instanceof Iterator<?>) {
             return (Iterator<?>)iteratedObject;
+        }
+        if (iteratedObject instanceof Enumeration<?>) {
+            return new Iterator<Object>() {
+
+                protected final Enumeration<?> enumeration = (Enumeration<?>)iteratedObject;
+
+
+                public boolean hasNext() {
+                    return this.enumeration.hasMoreElements();
+                }
+
+                public Object next() {
+                    return this.enumeration.nextElement();
+                }
+
+                public void remove() {
+                    throw new UnsupportedOperationException("Cannot remove from an Enumeration iterator");
+                }
+
+            };
         }
         return Collections.singletonList(iteratedObject).iterator();
     }
