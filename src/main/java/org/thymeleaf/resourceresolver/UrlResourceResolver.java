@@ -109,25 +109,14 @@ public final class UrlResourceResolver
 
 
     private static void showException(final String resourceName, final Throwable t) {
-        if (logger.isDebugEnabled()) {
-            if (logger.isTraceEnabled()) {
-                logger.trace(
-                        String.format(
-                                "[THYMELEAF][%s] Resource \"%s\" could not be resolved. This can be normal as " +
-                                        "maybe this resource is not intended to be resolved by this resolver. " +
-                                        "Exception is provided for tracing purposes: ",
-                                TemplateEngine.threadIndex(), resourceName),
-                        t);
-            } else {
-                logger.debug(
-                        String.format(
-                                "[THYMELEAF][%s] Resource \"%s\" could not be resolved. This can be normal as " +
-                                        "maybe this resource is not intended to be resolved by this resolver. " +
-                                        "Exception message is provided (set the log to TRACE for the entire trace): " +
-                                        "%s: %s",
-                                TemplateEngine.threadIndex(), resourceName,
-                                t.getClass().getName(), t.getMessage()));
-            }
+        if (logger.isTraceEnabled()) {
+            logger.trace(
+                    String.format(
+                            "[THYMELEAF][%s] Resource \"%s\" could not be resolved. This can be normal as " +
+                                    "maybe this resource is not intended to be resolved by this resolver. " +
+                                    "Exception is provided for tracing purposes: ",
+                            TemplateEngine.threadIndex(), resourceName),
+                    t);
         }
     }
 

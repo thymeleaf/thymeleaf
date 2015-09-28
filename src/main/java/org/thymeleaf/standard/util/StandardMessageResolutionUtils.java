@@ -89,8 +89,8 @@ public final class StandardMessageResolutionUtils {
         }
         
         if (properties == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("[THYMELEAF][{}] Resolving uncached messages for template \"{}\" and locale \"{}\". Messages will be retrieved from files", new Object[] {TemplateEngine.threadIndex(), templateName, locale});
+            if (logger.isTraceEnabled()) {
+                logger.trace("[THYMELEAF][{}] Resolving uncached messages for template \"{}\" and locale \"{}\". Messages will be retrieved from files", new Object[] {TemplateEngine.threadIndex(), templateName, locale});
             }
             properties = loadMessagesForTemplate(processingContext, defaultMessages);
             if (messagesCache != null) {

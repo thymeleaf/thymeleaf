@@ -143,10 +143,10 @@ final class ConfigurationPrinterHelper {
         /*
          * The following condition makes sense because contents in each case will differ a lot.
          */
-        if (configLogger.isDebugEnabled()) {
+        if (configLogger.isTraceEnabled()) {
+            configLogger.trace(logBuilder.toString());
+        } else if (configLogger.isDebugEnabled()) {
             configLogger.debug(logBuilder.toString());
-        } else if (configLogger.isInfoEnabled()) {
-            configLogger.info(logBuilder.toString());
         }
         
     }

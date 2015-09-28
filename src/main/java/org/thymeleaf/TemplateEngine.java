@@ -298,7 +298,7 @@ public class TemplateEngine implements ITemplateEngine {
 
                 if (!this.initialized.get()) {
 
-                    logger.info("[THYMELEAF] INITIALIZING TEMPLATE ENGINE");
+                    logger.debug("[THYMELEAF] INITIALIZING TEMPLATE ENGINE");
 
                     // We need at least one template resolver at this point - we set the StringTemplateResolver
                     // as default, but someone might have overridden it, so we need to check just in case
@@ -319,7 +319,7 @@ public class TemplateEngine implements ITemplateEngine {
                     // Log configuration details
                     ConfigurationPrinterHelper.printConfiguration(this.configuration);
 
-                    logger.info("[THYMELEAF] TEMPLATE ENGINE INITIALIZED");
+                    logger.debug("[THYMELEAF] TEMPLATE ENGINE INITIALIZED");
 
                 }
 
@@ -1102,12 +1102,12 @@ public class TemplateEngine implements ITemplateEngine {
             // selectors CAN actually be null if we are going to render the entire template
             // templateMode CAN also be null if we are going to use the mode specified by the template resolver
 
-            if (logger.isDebugEnabled()) {
+            if (logger.isTraceEnabled()) {
                 if (selectors == null || selectors.length == 0) {
-                    logger.debug("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH LOCALE {}",
+                    logger.trace("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH LOCALE {}",
                             new Object[] {TemplateEngine.threadIndex(), template, context.getLocale()});
                 } else {
-                    logger.debug("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH SELECTORS {} AND LOCALE {}",
+                    logger.trace("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH SELECTORS {} AND LOCALE {}",
                             new Object[] {TemplateEngine.threadIndex(), template, Arrays.asList(selectors), context.getLocale()});
                 }
             }
@@ -1118,27 +1118,27 @@ public class TemplateEngine implements ITemplateEngine {
 
             final long endNanos = System.nanoTime();
             
-            if (logger.isDebugEnabled()) {
+            if (logger.isTraceEnabled()) {
                 if (selectors == null || selectors.length == 0) {
-                    logger.debug("[THYMELEAF][{}] FINISHED PROCESS AND OUTPUT OF TEMPLATE \"{}\" WITH LOCALE {}",
+                    logger.trace("[THYMELEAF][{}] FINISHED PROCESS AND OUTPUT OF TEMPLATE \"{}\" WITH LOCALE {}",
                             new Object[] {TemplateEngine.threadIndex(), template, context.getLocale()});
                 } else {
-                    logger.debug("[THYMELEAF][{}] FINISHED PROCESS AND OUTPUT OF TEMPLATE \"{}\" WITH SELECTORS {} AND LOCALE {}",
+                    logger.trace("[THYMELEAF][{}] FINISHED PROCESS AND OUTPUT OF TEMPLATE \"{}\" WITH SELECTORS {} AND LOCALE {}",
                             new Object[] {TemplateEngine.threadIndex(), template, Arrays.asList(selectors), context.getLocale()});
                 }
             }
 
-            if (timerLogger.isDebugEnabled()) {
+            if (timerLogger.isTraceEnabled()) {
                 final BigDecimal elapsed = BigDecimal.valueOf(endNanos - startNanos);
                 final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(NANOS_IN_SECOND), RoundingMode.HALF_UP);
                 if (selectors == null || selectors.length == 0) {
-                    timerLogger.debug(
+                    timerLogger.trace(
                             "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH LOCALE {} PROCESSED IN {} nanoseconds (approx. {}ms)",
                             new Object[] {TemplateEngine.threadIndex(),
                                     template, context.getLocale(), elapsed, elapsedMs,
                                     template, context.getLocale(), elapsed, elapsedMs});
                 } else {
-                    timerLogger.debug(
+                    timerLogger.trace(
                             "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH SELECTORS {} AND LOCALE {} PROCESSED IN {} nanoseconds (approx. {}ms)",
                             new Object[] {TemplateEngine.threadIndex(),
                                     template, context.getLocale(), elapsed, elapsedMs,

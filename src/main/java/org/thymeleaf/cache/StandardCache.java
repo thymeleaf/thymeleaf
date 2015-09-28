@@ -114,10 +114,10 @@ public final class StandardCache<K, V> implements ICache<K,V> {
 
         if (this.logger != null) {
             if (this.maxSize < 0) {
-                this.logger.debug("[THYMELEAF][CACHE_INITIALIZE] Initializing cache {}. Soft references {}.", 
+                this.logger.trace("[THYMELEAF][CACHE_INITIALIZE] Initializing cache {}. Soft references {}.",
                         this.name, (this.useSoftReferences? "are used" : "not used"));
             } else {
-                this.logger.debug("[THYMELEAF][CACHE_INITIALIZE] Initializing cache {}. Max size: {}. Soft references {}.", 
+                this.logger.trace("[THYMELEAF][CACHE_INITIALIZE] Initializing cache {}. Max size: {}. Soft references {}.",
                         new Object[] {this.name, Integer.valueOf(this.maxSize), (this.useSoftReferences? "are used" : "not used")});
             }
         }

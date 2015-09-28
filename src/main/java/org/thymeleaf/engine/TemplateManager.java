@@ -731,8 +731,8 @@ public final class TemplateManager {
                                 new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template), LoggingUtils.loggifyTemplateName(resourceName), resourceResolver.getName()});
                     }
                 } else {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(
+                    if (logger.isTraceEnabled()) {
+                        logger.trace(
                                 "[THYMELEAF][{}] Template \"{}\" was correctly resolved as resource \"{}\" in mode {} with resource resolver \"{}\"",
                                 new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template), LoggingUtils.loggifyTemplateName(resourceName), templateResolution.getTemplateMode(), resourceResolver.getName()});
                     }
