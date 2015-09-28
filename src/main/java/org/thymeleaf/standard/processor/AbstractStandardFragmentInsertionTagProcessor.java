@@ -73,7 +73,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
     @Override
-    protected final void doProcess(
+    protected void doProcess(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
