@@ -157,6 +157,13 @@ public interface ICacheManager {
      *   implementations of this interface, and they should use this method
      *   to retrieve them by their name.
      * </p>
+     * <p>
+     *   Note the default {@link StandardCacheManager} will return <tt>null</tt> for every
+     *   call to this method, as it should be custom implementations of this interface (or
+     *   extensions of {@link AbstractCacheManager} or extensions {@link StandardCacheManager})
+     *   who implement these <i>specific caches</i> and offer their names through the
+     *   {@link #getAllSpecificCacheNames()} method.
+     * </p>
      *
      * @param name the name of the needed cache
      * @param <K> the type of the cache keys
@@ -174,7 +181,14 @@ public interface ICacheManager {
      * <p>
      *   Might return null if no specific caches are managed.
      * </p>
-     * 
+     * <p>
+     *   Note the default {@link StandardCacheManager} will return <tt>null</tt>, as it should
+     *   be custom implementations of this interface (or
+     *   extensions of {@link AbstractCacheManager} or extensions {@link StandardCacheManager})
+     *   who implement these <i>specific caches</i> and offer their names through the
+     *   {@link #getAllSpecificCacheNames()} method.
+     * </p>
+     *
      * @return a list with all the names of the "specific caches"
      * @since 2.0.16
      */
