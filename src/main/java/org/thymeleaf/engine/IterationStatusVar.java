@@ -57,7 +57,8 @@ public final class IterationStatusVar {
     }
 
     public boolean isEven() {
-        return (this.index % 2 == 0);
+        // We start counting in 1 in order to be consistent with :nth-child(odd) and :nth-child(even) CSS selectors
+        return ((this.index + 1) % 2 == 0);
     }
 
     public boolean isOdd() {
