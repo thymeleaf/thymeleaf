@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
@@ -39,8 +37,6 @@ import org.thymeleaf.templatemode.TemplateMode;
  *
  */
 public abstract class AbstractStandardTextInlineSettingTagProcessor extends AbstractAttributeTagProcessor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractStandardTextInlineSettingTagProcessor.class);
 
     /*
      * NOTE This class does not extend AbstractStandardExpressionAttributeTagProcessor because expressions are
