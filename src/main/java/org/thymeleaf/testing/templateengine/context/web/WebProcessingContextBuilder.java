@@ -267,12 +267,15 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
     
     private static final ServletContext createServletContext(final Map<String,Object> attributes) {
 
+        final String contextName = "/testing";
+
         final ServletContext servletContext = Mockito.mock(ServletContext.class);
         
         Mockito.when(servletContext.getAttributeNames()).thenAnswer(new GetVariableNamesAnswer(attributes));
         Mockito.when(servletContext.getAttribute(Matchers.anyString())).thenAnswer(new GetAttributeAnswer(attributes));
         Mockito.doAnswer(new SetAttributeAnswer(attributes)).when(servletContext).setAttribute(Matchers.anyString(), Matchers.anyObject());
         Mockito.doAnswer(new RemoveAttributeAnswer(attributes)).when(servletContext).removeAttribute(Matchers.anyString());
+        Mockito.when(servletContext.getContextPath()).thenReturn(contextName);
 
         Mockito.when(servletContext.getInitParameterNames()).thenReturn(new ObjectEnumeration<String>(null));
         Mockito.when(servletContext.getInitParameter(Matchers.anyString())).thenReturn(null);
