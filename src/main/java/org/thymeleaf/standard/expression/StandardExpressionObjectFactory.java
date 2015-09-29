@@ -95,18 +95,31 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
             new ExpressionObjectDefinition(LOCALE_EXPRESSION_OBJECT_NAME, LOCALE_EXPRESSION_OBJECT_DESCRIPTION, LOCALE_EXPRESSION_OBJECT_CACHEABLE);
 
 
+    public static final String REQUEST_EXPRESSION_OBJECT_NAME = "request";
+    private static final String REQUEST_EXPRESSION_OBJECT_DESCRIPTION = "HttpServletRequest object (only in web-enabled templates)";
+    private static final boolean REQUEST_EXPRESSION_OBJECT_CACHEABLE = true;
+    private static final ExpressionObjectDefinition REQUEST_EXPRESSION_OBJECT_DEFINITION =
+            new ExpressionObjectDefinition(REQUEST_EXPRESSION_OBJECT_NAME, REQUEST_EXPRESSION_OBJECT_DESCRIPTION, REQUEST_EXPRESSION_OBJECT_CACHEABLE);
 
-    public static final String HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_NAME = "httpServletRequest";
-    private static final String HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_DESCRIPTION = "HttpServletRequest object (only in web-enabled templates)";
-    private static final boolean HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_NAME, HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_DESCRIPTION, HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_CACHEABLE);
+    public static final String RESPONSE_EXPRESSION_OBJECT_NAME = "response";
+    private static final String RESPONSE_EXPRESSION_OBJECT_DESCRIPTION = "HttpServletResponse object (only in web-enabled templates)";
+    private static final boolean RESPONSE_EXPRESSION_OBJECT_CACHEABLE = true;
+    private static final ExpressionObjectDefinition RESPONSE_EXPRESSION_OBJECT_DEFINITION =
+            new ExpressionObjectDefinition(RESPONSE_EXPRESSION_OBJECT_NAME, RESPONSE_EXPRESSION_OBJECT_DESCRIPTION, RESPONSE_EXPRESSION_OBJECT_CACHEABLE);
 
-    public static final String HTTP_SESSION_EXPRESSION_OBJECT_NAME = "httpSession";
-    private static final String HTTP_SESSION_EXPRESSION_OBJECT_DESCRIPTION = "HttpSession object (only in web-enabled templates)";
-    private static final boolean HTTP_SESSION_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition HTTP_SESSION_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(HTTP_SESSION_EXPRESSION_OBJECT_NAME, HTTP_SESSION_EXPRESSION_OBJECT_DESCRIPTION, HTTP_SESSION_EXPRESSION_OBJECT_CACHEABLE);
+    public static final String SESSION_EXPRESSION_OBJECT_NAME = "session";
+    private static final String SESSION_EXPRESSION_OBJECT_DESCRIPTION = "HttpSession object (only in web-enabled templates)";
+    private static final boolean SESSION_EXPRESSION_OBJECT_CACHEABLE = true;
+    private static final ExpressionObjectDefinition SESSION_EXPRESSION_OBJECT_DEFINITION =
+            new ExpressionObjectDefinition(SESSION_EXPRESSION_OBJECT_NAME, SESSION_EXPRESSION_OBJECT_DESCRIPTION, SESSION_EXPRESSION_OBJECT_CACHEABLE);
+
+    public static final String SERVLET_CONTEXT_EXPRESSION_OBJECT_NAME = "servletContext";
+    private static final String SERVLET_CONTEXT_EXPRESSION_OBJECT_DESCRIPTION = "ServletContext object (only in web-enabled templates)";
+    private static final boolean SERVLET_CONTEXT_EXPRESSION_OBJECT_CACHEABLE = true;
+    private static final ExpressionObjectDefinition SERVLET_CONTEXT_EXPRESSION_OBJECT_DEFINITION =
+            new ExpressionObjectDefinition(SERVLET_CONTEXT_EXPRESSION_OBJECT_NAME, SERVLET_CONTEXT_EXPRESSION_OBJECT_DESCRIPTION, SERVLET_CONTEXT_EXPRESSION_OBJECT_CACHEABLE);
+
+
 
     public static final String CONVERSIONS_EXPRESSION_OBJECT_NAME = "conversions";
     private static final String CONVERSIONS_EXPRESSION_OBJECT_DESCRIPTION = "Converter for reshaping objects into a different data type";
@@ -213,6 +226,28 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
 
 
 
+    /*
+     * These two objects, "#httpServletRequest" and "#httpSession" are still supported but deprecated
+     * since Thymeleaf 3.0. They will start issuing warnings in 3.1, and disappear in 3.2.
+     * They have been replaced by the simpler names "#request" and "#session".
+     */
+
+    public static final String HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_NAME = "httpServletRequest";
+    private static final String HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_DESCRIPTION = "[DEPRECATED] HttpServletRequest object (only in web-enabled templates)";
+    private static final boolean HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_CACHEABLE = true;
+    private static final ExpressionObjectDefinition HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_DEFINITION =
+            new ExpressionObjectDefinition(HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_NAME, HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_DESCRIPTION, HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_CACHEABLE);
+
+    public static final String HTTP_SESSION_EXPRESSION_OBJECT_NAME = "httpSession";
+    private static final String HTTP_SESSION_EXPRESSION_OBJECT_DESCRIPTION = "[DEPRECATED] HttpSession object (only in web-enabled templates)";
+    private static final boolean HTTP_SESSION_EXPRESSION_OBJECT_CACHEABLE = true;
+    private static final ExpressionObjectDefinition HTTP_SESSION_EXPRESSION_OBJECT_DEFINITION =
+            new ExpressionObjectDefinition(HTTP_SESSION_EXPRESSION_OBJECT_NAME, HTTP_SESSION_EXPRESSION_OBJECT_DESCRIPTION, HTTP_SESSION_EXPRESSION_OBJECT_CACHEABLE);
+
+
+
+
+
     private static final Set<ExpressionObjectDefinition> ALL_EXPRESSION_OBJECT_DEFINITIONS_SET =
             Collections.unmodifiableSet(new LinkedHashSet<ExpressionObjectDefinition>(java.util.Arrays.asList(
                     new ExpressionObjectDefinition[]{
@@ -221,8 +256,10 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
                             VARIABLES_EXPRESSION_OBJECT_DEFINITION,
                             SELECTION_TARGET_EXPRESSION_OBJECT_DEFINITION,
                             LOCALE_EXPRESSION_OBJECT_DEFINITION,
-                            HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_DEFINITION,
-                            HTTP_SESSION_EXPRESSION_OBJECT_DEFINITION,
+                            REQUEST_EXPRESSION_OBJECT_DEFINITION,
+                            RESPONSE_EXPRESSION_OBJECT_DEFINITION,
+                            SESSION_EXPRESSION_OBJECT_DEFINITION,
+                            SERVLET_CONTEXT_EXPRESSION_OBJECT_DEFINITION,
                             CONVERSIONS_EXPRESSION_OBJECT_DEFINITION,
                             URIS_EXPRESSION_OBJECT_DEFINITION,
                             CALENDARS_EXPRESSION_OBJECT_DEFINITION,
@@ -238,7 +275,9 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
                             AGGREGATES_EXPRESSION_OBJECT_DEFINITION,
                             MESSAGES_EXPRESSION_OBJECT_DEFINITION,
                             IDS_EXPRESSION_OBJECT_DEFINITION,
-                            EXECUTION_INFO_OBJECT_DEFINITION
+                            EXECUTION_INFO_OBJECT_DEFINITION,
+                            HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_DEFINITION,
+                            HTTP_SESSION_EXPRESSION_OBJECT_DEFINITION
                     }
             )));
     public static final Map<String,ExpressionObjectDefinition> ALL_EXPRESSION_OBJECT_DEFINITIONS;
@@ -303,13 +342,45 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
         if (LOCALE_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
             return processingContext.getLocale();
         }
+        if (REQUEST_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
+            if (processingContext.isWeb()) {
+                return ((IWebVariablesMap) processingContext.getVariables()).getRequest();
+            }
+            return null;
+        }
+        if (RESPONSE_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
+            if (processingContext.isWeb()) {
+                return ((IWebVariablesMap) processingContext.getVariables()).getResponse();
+            }
+            return null;
+        }
+        if (SESSION_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
+            if (processingContext.isWeb()) {
+                return ((IWebVariablesMap) processingContext.getVariables()).getSession();
+            }
+            return null;
+        }
+        if (SERVLET_CONTEXT_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
+            if (processingContext.isWeb()) {
+                return ((IWebVariablesMap) processingContext.getVariables()).getServletContext();
+            }
+            return null;
+        }
         if (HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
+            /*
+             * NOTE "#httpServletRequest" is still usable, but deprecated since Thymeleaf 3.0.
+             * Its usage will issue warnings in 3.1, and the object will be removed in 3.2
+             */
             if (processingContext.isWeb()) {
                 return ((IWebVariablesMap) processingContext.getVariables()).getRequest();
             }
             return null;
         }
         if (HTTP_SESSION_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
+            /*
+             * NOTE "#httpSession" is still usable, but deprecated since Thymeleaf 3.0.
+             * Its usage will issue warnings in 3.1, and the object will be removed in 3.2
+             */
             if (processingContext.isWeb()) {
                 return ((IWebVariablesMap) processingContext.getVariables()).getSession();
             }
