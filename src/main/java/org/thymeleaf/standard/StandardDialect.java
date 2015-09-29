@@ -65,6 +65,7 @@ import org.thymeleaf.standard.processor.StandardLangXmlLangTagProcessor;
 import org.thymeleaf.standard.processor.StandardMethodTagProcessor;
 import org.thymeleaf.standard.processor.StandardNonRemovableAttributeTagProcessor;
 import org.thymeleaf.standard.processor.StandardObjectTagProcessor;
+import org.thymeleaf.standard.processor.StandardRefAttributeTagProcessor;
 import org.thymeleaf.standard.processor.StandardRemovableAttributeTagProcessor;
 import org.thymeleaf.standard.processor.StandardRemoveTagProcessor;
 import org.thymeleaf.standard.processor.StandardReplaceTagProcessor;
@@ -384,6 +385,7 @@ public class StandardDialect
         processors.add(new StandardXmlLangTagProcessor(dialect, dialectPrefix));
         processors.add(new StandardXmlSpaceTagProcessor(dialect, dialectPrefix));
         processors.add(new StandardXmlNsTagProcessor(dialect, TemplateMode.HTML, dialectPrefix));
+        processors.add(new StandardRefAttributeTagProcessor(dialect, TemplateMode.HTML, dialectPrefix));
         processors.add(new StandardDefaultAttributesTagProcessor(dialect, TemplateMode.HTML, dialectPrefix));
 
         /*
@@ -446,6 +448,7 @@ public class StandardDialect
         processors.add(new StandardUtextTagProcessor(dialect, TemplateMode.XML, dialectPrefix));
         processors.add(new StandardWithTagProcessor(dialect, TemplateMode.XML, dialectPrefix));
         processors.add(new StandardXmlNsTagProcessor(dialect, TemplateMode.XML, dialectPrefix));
+        processors.add(new StandardRefAttributeTagProcessor(dialect, TemplateMode.XML, dialectPrefix));
         processors.add(new StandardDefaultAttributesTagProcessor(dialect, TemplateMode.XML, dialectPrefix));
 
         /*

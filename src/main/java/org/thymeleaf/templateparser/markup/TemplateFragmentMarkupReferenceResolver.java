@@ -37,11 +37,15 @@ final class TemplateFragmentMarkupReferenceResolver implements IMarkupSelectorRe
     private static final TemplateFragmentMarkupReferenceResolver XML_INSTANCE_NO_PREFIX;
     private static final ConcurrentHashMap<String,TemplateFragmentMarkupReferenceResolver> XML_INSTANCES_BY_PREFIX;
 
-    private static final String HTML_FORMAT_WITHOUT_PREFIX = "/[fragment='%1$s' or data-fragment='%1$s' or fragment^='%1$s(' or data-fragment^='%1$s(' or fragment^='%1$s (' or data-fragment^='%1$s (']";
-    private static final String HTML_FORMAT_WITH_PREFIX = "/[%1$s:fragment='%%1$s' or data-%1$s-fragment='%%1$s' or %1$s:fragment^='%%1$s(' or data-%1$s-fragment^='%%1$s(' or %1$s:fragment^='%%1$s (' or data-%1$s-fragment^='%%1$s (']";
+    private static final String HTML_FORMAT_WITHOUT_PREFIX =
+            "/[ref='%1$s' or data-ref='%1$s' or fragment='%1$s' or data-fragment='%1$s' or fragment^='%1$s(' or data-fragment^='%1$s(' or fragment^='%1$s (' or data-fragment^='%1$s (']";
+    private static final String HTML_FORMAT_WITH_PREFIX =
+            "/[%1$s:ref='%%1$s' or data-%1$s-ref='%%1$s' or %1$s:fragment='%%1$s' or data-%1$s-fragment='%%1$s' or %1$s:fragment^='%%1$s(' or data-%1$s-fragment^='%%1$s(' or %1$s:fragment^='%%1$s (' or data-%1$s-fragment^='%%1$s (']";
 
-    private static final String XML_FORMAT_WITHOUT_PREFIX = "/[fragment='%1$s' or fragment^='%1$s(' or fragment^='%1$s (']";
-    private static final String XML_FORMAT_WITH_PREFIX = "/[%1$s:fragment='%%1$s' or %1$s:fragment^='%%1$s(' or %1$s:fragment^='%%1$s (']";
+    private static final String XML_FORMAT_WITHOUT_PREFIX =
+            "/[ref='%1$s' or fragment='%1$s' or fragment^='%1$s(' or fragment^='%1$s (']";
+    private static final String XML_FORMAT_WITH_PREFIX =
+            "/[%1$s:ref='%%1$s' or %1$s:fragment='%%1$s' or %1$s:fragment^='%%1$s(' or %1$s:fragment^='%%1$s (']";
 
 
     private final ConcurrentHashMap<String,String> selectorsByReference = new ConcurrentHashMap<String, String>(20);
