@@ -19,10 +19,16 @@
  */
 package org.thymeleaf.context;
 
+import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -73,9 +79,9 @@ public final class WebVariablesMap
     private final ServletContext servletContext;
 
     private final RequestAttributesVariablesMap requestAttributesVariablesMap;
-    private final IVariablesMap requestParametersVariablesMap;
-    private final IVariablesMap sessionAttributesVariablesMap;
-    private final IVariablesMap applicationAttributesVariablesMap;
+    private final Map<String,Object> requestParametersVariablesMap;
+    private final Map<String,Object> sessionAttributesVariablesMap;
+    private final Map<String,Object> applicationAttributesVariablesMap;
 
 
 
@@ -104,9 +110,9 @@ public final class WebVariablesMap
         this.servletContext = servletContext;
 
         this.requestAttributesVariablesMap = new RequestAttributesVariablesMap(this.request, this.locale, variables);
-        this.requestParametersVariablesMap = new RequestParametersVariablesMap(this.request, this.locale);
-        this.applicationAttributesVariablesMap = new ServletContextAttributesVariablesMap(this.servletContext, this.locale);
-        this.sessionAttributesVariablesMap = (this.session == null ? null : new SessionAttributesVariablesMap(this.session, this.locale));
+        this.requestParametersVariablesMap = new RequestParametersMap(this.request);
+        this.applicationAttributesVariablesMap = new ServletContextAttributesMap(this.servletContext);
+        this.sessionAttributesVariablesMap = (this.session == null ? null : new SessionAttributesMap(this.session));
 
     }
 
@@ -275,109 +281,95 @@ public final class WebVariablesMap
 
 
 
-    private static final class SessionAttributesVariablesMap implements IVariablesMap {
+    private static final class SessionAttributesMap extends NoOpMapImpl {
 
         private final HttpSession session;
-        private final Locale locale;
 
-        SessionAttributesVariablesMap(final HttpSession session, final Locale locale) {
+        SessionAttributesMap(final HttpSession session) {
             super();
             this.session = session;
-            this.locale = locale;
-        }
-
-        public Locale getLocale() {
-            return this.locale;
-        }
-
-        public Object getVariable(final String key) {
-            return this.session.getAttribute(key);
-        }
-
-        public boolean containsVariable(final String name) {
-            return existsInEnumeration(this.session.getAttributeNames(), name);
         }
 
 
-        public Set<String> getVariableNames() {
-
-            final Set<String> variableNames = new HashSet<String>();
-            final Enumeration<String> attributeNamesEnum = this.session.getAttributeNames();
-            while (attributeNamesEnum.hasMoreElements()) {
-                variableNames.add(attributeNamesEnum.nextElement());
+        @Override
+        public int size() {
+            int size = 0;
+            final Enumeration<String> attributeNames = this.session.getAttributeNames();
+            while (attributeNames.hasMoreElements()) {
+                size++;
             }
-            return variableNames;
-
+            return size;
         }
 
-        public boolean hasSelectionTarget() {
-            return false;
+        @Override
+        public boolean isEmpty() {
+            final Enumeration<String> attributeNames = this.session.getAttributeNames();
+            return attributeNames.hasMoreElements();
         }
 
-        public Object getSelectionTarget() {
-            return null;
-        }
-
-        public IInliner getInliner() {
-            return null;
-        }
-
-    }
-
-
-
-
-    private static final class ServletContextAttributesVariablesMap implements IVariablesMap {
-
-        private final ServletContext servletContext;
-        private final Locale locale;
-
-        ServletContextAttributesVariablesMap(final ServletContext servletContext, final Locale locale) {
-            super();
-            this.servletContext = servletContext;
-            this.locale = locale;
-        }
-
-        public Locale getLocale() {
-            return this.locale;
-        }
-
-        public Object getVariable(final String key) {
-            return this.servletContext.getAttribute(key);
-        }
-
-        public boolean containsVariable(final String name) {
-            // For most implementations of ServletContext, trying to get a value instead of iterating the
-            // names Enumeration seems faster as a way to know if something exists (in the cases when we are checking
-            // for existing keys a good % of the total times).
-            if (this.servletContext.getAttribute(name) != null) {
+        @Override
+        public boolean containsKey(final Object key) {
+            final String keyStr = (key != null? key.toString() : null);
+            final Object value = this.session.getAttribute(keyStr);
+            if (value != null) {
                 return true;
             }
-            return existsInEnumeration(this.servletContext.getAttributeNames(), name);
+            return existsInEnumeration(this.session.getAttributeNames(), keyStr);
         }
 
-
-        public Set<String> getVariableNames() {
-
-            final Set<String> variableNames = new HashSet<String>();
-            final Enumeration<String> attributeNamesEnum = this.servletContext.getAttributeNames();
-            while (attributeNamesEnum.hasMoreElements()) {
-                variableNames.add(attributeNamesEnum.nextElement());
+        @Override
+        public boolean containsValue(final Object value) {
+            final Enumeration<String> attributeNames = this.session.getAttributeNames();
+            while (attributeNames.hasMoreElements()) {
+                final Object element =  this.session.getAttribute(attributeNames.nextElement());
+                if (value == null) {
+                    if (element == null) {
+                        return true;
+                    }
+                } else {
+                    if (value.equals(element)) {
+                        return true;
+                    }
+                }
             }
-            return variableNames;
-
-        }
-
-        public boolean hasSelectionTarget() {
             return false;
         }
 
-        public Object getSelectionTarget() {
-            return null;
+        @Override
+        public Object get(final Object key) {
+            return this.session.getAttribute(key != null? key.toString() : null);
         }
 
-        public IInliner getInliner() {
-            return null;
+        @Override
+        public Set<String> keySet() {
+            final Set<String> keySet = new LinkedHashSet<String>(5);
+            final Enumeration<String> attributeNames = this.session.getAttributeNames();
+            while (attributeNames.hasMoreElements()) {
+                keySet.add(attributeNames.nextElement());
+            }
+            return keySet;
+        }
+
+        @Override
+        public Collection<Object> values() {
+            final List<Object> values = new ArrayList<Object>(5);
+            final Enumeration<String> attributeNames = this.session.getAttributeNames();
+            while (attributeNames.hasMoreElements()) {
+                values.add(this.session.getAttribute(attributeNames.nextElement()));
+            }
+            return values;
+        }
+
+        @Override
+        public Set<Entry<String,Object>> entrySet() {
+            final Set<Entry<String,Object>> entrySet = new LinkedHashSet<Entry<String, Object>>(5);
+            final Enumeration<String> attributeNames = this.session.getAttributeNames();
+            while (attributeNames.hasMoreElements()) {
+                final String key = attributeNames.nextElement();
+                final Object value = this.session.getAttribute(key);
+                entrySet.add(new MapEntry(key, value));
+            }
+            return entrySet;
         }
 
     }
@@ -385,54 +377,163 @@ public final class WebVariablesMap
 
 
 
-    private static final class RequestParametersVariablesMap implements IVariablesMap {
+    private static final class ServletContextAttributesMap extends NoOpMapImpl {
+
+        private final ServletContext servletContext;
+
+        ServletContextAttributesMap(final ServletContext servletContext) {
+            super();
+            this.servletContext = servletContext;
+        }
+
+
+        @Override
+        public int size() {
+            int size = 0;
+            final Enumeration<String> attributeNames = this.servletContext.getAttributeNames();
+            while (attributeNames.hasMoreElements()) {
+                size++;
+            }
+            return size;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            final Enumeration<String> attributeNames = this.servletContext.getAttributeNames();
+            return attributeNames.hasMoreElements();
+        }
+
+        @Override
+        public boolean containsKey(final Object key) {
+            final String keyStr = (key != null? key.toString() : null);
+            final Object value = this.servletContext.getAttribute(keyStr);
+            if (value != null) {
+                return true;
+            }
+            return existsInEnumeration(this.servletContext.getAttributeNames(), keyStr);
+        }
+
+        @Override
+        public boolean containsValue(final Object value) {
+            final Enumeration<String> attributeNames = this.servletContext.getAttributeNames();
+            while (attributeNames.hasMoreElements()) {
+                final Object element =  this.servletContext.getAttribute(attributeNames.nextElement());
+                if (value == null) {
+                    if (element == null) {
+                        return true;
+                    }
+                } else {
+                    if (value.equals(element)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public Object get(final Object key) {
+            return this.servletContext.getAttribute(key != null? key.toString() : null);
+        }
+
+        @Override
+        public Set<String> keySet() {
+            final Set<String> keySet = new LinkedHashSet<String>(5);
+            final Enumeration<String> attributeNames = this.servletContext.getAttributeNames();
+            while (attributeNames.hasMoreElements()) {
+                keySet.add(attributeNames.nextElement());
+            }
+            return keySet;
+        }
+
+        @Override
+        public Collection<Object> values() {
+            final List<Object> values = new ArrayList<Object>(5);
+            final Enumeration<String> attributeNames = this.servletContext.getAttributeNames();
+            while (attributeNames.hasMoreElements()) {
+                values.add(this.servletContext.getAttribute(attributeNames.nextElement()));
+            }
+            return values;
+        }
+
+        @Override
+        public Set<Map.Entry<String,Object>> entrySet() {
+            final Set<Map.Entry<String,Object>> entrySet = new LinkedHashSet<Map.Entry<String, Object>>(5);
+            final Enumeration<String> attributeNames = this.servletContext.getAttributeNames();
+            while (attributeNames.hasMoreElements()) {
+                final String key = attributeNames.nextElement();
+                final Object value = this.servletContext.getAttribute(key);
+                entrySet.add(new MapEntry(key, value));
+            }
+            return entrySet;
+        }
+
+    }
+
+
+
+
+    private static final class RequestParametersMap extends NoOpMapImpl {
 
         private final HttpServletRequest request;
-        private final Locale locale;
 
-        RequestParametersVariablesMap(final HttpServletRequest request, final Locale locale) {
+        RequestParametersMap(final HttpServletRequest request) {
             super();
             this.request = request;
-            this.locale = locale;
         }
 
-        public Locale getLocale() {
-            return this.locale;
+
+        @Override
+        public int size() {
+            return this.request.getParameterMap().size();
         }
 
-        public Object getVariable(final String key) {
-            // We will always be returning the String[] version of the parameters
-            return this.request.getParameterValues(key);
+        @Override
+        public boolean isEmpty() {
+            return this.request.getParameterMap().isEmpty();
         }
 
-        public boolean containsVariable(final String name) {
+        @Override
+        public boolean containsKey(final Object key) {
             // For most implementations of HttpServletRequest, trying to get a value instead of iterating the
             // names Enumeration or the ParameterMap keys (which might be locked but will be created each time if not)
             // seems faster as a way to know if something exists (in the cases when we are checking
             // for existing keys a good % of the total times).
-            if (this.request.getParameterValues(name) != null) {
+            if (this.request.getParameterValues(key != null? key.toString() : null) != null) {
                 return true;
             }
             // We can still be fast if this parameter map has been locked so that we don't receive a new instance
             // each time we call it (see e.g. org.apache.catalina.connector.Request)
-            return this.request.getParameterMap().containsKey(name);
+            return this.request.getParameterMap().containsKey(key);
         }
 
-        public Set<String> getVariableNames() {
-            // If the parameter map is locked (see e.g. org.apache.catalina.connector.Request) this can be quite fast
+        @Override
+        public boolean containsValue(final Object value) {
+            return this.request.getParameterMap().containsValue(value);
+        }
+
+        @Override
+        public Object get(final Object key) {
+            final String[] parameterValues = this.request.getParameterValues(key != null? key.toString() : null);
+            if (parameterValues == null) {
+                return null;
+            }
+            return new RequestParameterValues(parameterValues);
+        }
+
+        @Override
+        public Set<String> keySet() {
             return this.request.getParameterMap().keySet();
         }
 
-        public boolean hasSelectionTarget() {
-            return false;
+        @Override
+        public Collection<Object> values() {
+            return this.request.getParameterMap().values();
         }
 
-        public Object getSelectionTarget() {
-            return null;
-        }
-
-        public IInliner getInliner() {
-            return null;
+        @Override
+        public Set<Map.Entry<String,Object>> entrySet() {
+            return this.request.getParameterMap().entrySet();
         }
 
     }
@@ -1012,5 +1113,171 @@ public final class WebVariablesMap
         return false;
     }
 
+
+
+
+
+    private abstract static class NoOpMapImpl implements Map<String,Object> {
+
+        protected NoOpMapImpl() {
+            super();
+        }
+
+        public int size() {
+            return 0;
+        }
+
+        public boolean isEmpty() {
+            return true;
+        }
+
+        public boolean containsKey(final Object key) {
+            return false;
+        }
+
+        public boolean containsValue(final Object value) {
+            return false;
+        }
+
+        public Object get(final Object key) {
+            return null;
+        }
+
+        public Object put(final String key, final Object value) {
+            throw new UnsupportedOperationException("Cannot add new entry: map is immutable");
+        }
+
+        public Object remove(final Object key) {
+            throw new UnsupportedOperationException("Cannot remove entry: map is immutable");
+        }
+
+        public void putAll(final Map<? extends String, ? extends Object> m) {
+            throw new UnsupportedOperationException("Cannot add new entry: map is immutable");
+        }
+
+        public void clear() {
+            throw new UnsupportedOperationException("Cannot clear: map is immutable");
+        }
+
+        public Set<String> keySet() {
+            return Collections.emptySet();
+        }
+
+        public Collection<Object> values() {
+            return Collections.emptyList();
+        }
+
+        public Set<Entry<String,Object>> entrySet() {
+            return Collections.emptySet();
+        }
+
+
+        static final class MapEntry implements Map.Entry<String,Object> {
+
+            private final String key;
+            private final Object value;
+
+            MapEntry(final String key, final Object value) {
+                super();
+                this.key = key;
+                this.value = value;
+            }
+
+            public String getKey() {
+                return this.key;
+            }
+
+            public Object getValue() {
+                return this.value;
+            }
+
+            public Object setValue(final Object value) {
+                throw new UnsupportedOperationException("Cannot set value: map is immutable");
+            }
+
+        }
+
+
+    }
+
+
+
+    private static final class RequestParameterValues extends AbstractList<String> {
+
+        private final String[] parameterValues;
+        public final int length;
+
+        RequestParameterValues(final String[] parameterValues) {
+            this.parameterValues = parameterValues;
+            this.length = this.parameterValues.length;
+        }
+
+        @Override
+        public int size() {
+            return this.length;
+        }
+
+        @Override
+        public Object[] toArray() {
+            return this.parameterValues.clone();
+        }
+
+        @Override
+        public <T> T[] toArray(final T[] arr) {
+            if (arr.length < this.length) {
+                return Arrays.copyOf(this.parameterValues, this.length, (Class<? extends T[]>)arr.getClass());
+            }
+            System.arraycopy(this.parameterValues, 0, arr, 0, this.length);
+            if (arr.length > this.length) {
+                arr[this.length] = null;
+            }
+            return arr;
+        }
+
+        @Override
+        public String get(final int index) {
+            return this.parameterValues[index];
+        }
+
+        @Override
+        public int indexOf(final Object obj) {
+            final String[] a = this.parameterValues;
+            if (obj == null) {
+                for (int i = 0; i < a.length; i++) {
+                    if (a[i] == null) {
+                        return i;
+                    }
+                }
+            } else {
+                for (int i = 0; i < a.length; i++) {
+                    if (obj.equals(a[i])) {
+                        return i;
+                    }
+                }
+            }
+            return -1;
+        }
+
+        @Override
+        public boolean contains(final Object obj) {
+            return indexOf(obj) != -1;
+        }
+
+
+        @Override
+        public String toString() {
+            // This toString() method will be responsible of outputting non-indexed request parameters in the
+            // way most people expect, i.e. return parameterValues[0] when accessed without index and parameter is
+            // single-valued (${param.a}), returning ArrayList#toString() when accessed without index and parameter
+            // is multi-valued, and finally return the specific value when accessed with index (${param.a[0]})
+            if (this.length == 0) {
+                return "";
+            }
+            if (this.length == 1) {
+                return this.parameterValues[0];
+            }
+            return super.toString();
+        }
+    }
 
 }
