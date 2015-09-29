@@ -309,30 +309,18 @@ public final class WebVariablesMap
 
         @Override
         public boolean containsKey(final Object key) {
-            final String keyStr = (key != null? key.toString() : null);
-            final Object value = this.session.getAttribute(keyStr);
-            if (value != null) {
-                return true;
-            }
-            return existsInEnumeration(this.session.getAttributeNames(), keyStr);
+            // Even if not completely correct to return 'true' for entries that might not exist, this is needed
+            // in order to avoid Spring's MapAccessor throwing an exception when trying to access an element
+            // that doesn't exist -- in the case of request parameters, session and servletContext attributes most
+            // developers would expect null to be returned in such case, and that's what this 'true' will cause.
+            return true;
         }
 
         @Override
         public boolean containsValue(final Object value) {
-            final Enumeration<String> attributeNames = this.session.getAttributeNames();
-            while (attributeNames.hasMoreElements()) {
-                final Object element =  this.session.getAttribute(attributeNames.nextElement());
-                if (value == null) {
-                    if (element == null) {
-                        return true;
-                    }
-                } else {
-                    if (value.equals(element)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            // It wouldn't be consistent to have an 'ad hoc' implementation of #containsKey() but a 100% correct
+            // implementation of #containsValue(), so we are leaving this as unsupported.
+            throw new UnsupportedOperationException("Map does not support #containsValue()");
         }
 
         @Override
@@ -405,30 +393,18 @@ public final class WebVariablesMap
 
         @Override
         public boolean containsKey(final Object key) {
-            final String keyStr = (key != null? key.toString() : null);
-            final Object value = this.servletContext.getAttribute(keyStr);
-            if (value != null) {
-                return true;
-            }
-            return existsInEnumeration(this.servletContext.getAttributeNames(), keyStr);
+            // Even if not completely correct to return 'true' for entries that might not exist, this is needed
+            // in order to avoid Spring's MapAccessor throwing an exception when trying to access an element
+            // that doesn't exist -- in the case of request parameters, session and servletContext attributes most
+            // developers would expect null to be returned in such case, and that's what this 'true' will cause.
+            return true;
         }
 
         @Override
         public boolean containsValue(final Object value) {
-            final Enumeration<String> attributeNames = this.servletContext.getAttributeNames();
-            while (attributeNames.hasMoreElements()) {
-                final Object element =  this.servletContext.getAttribute(attributeNames.nextElement());
-                if (value == null) {
-                    if (element == null) {
-                        return true;
-                    }
-                } else {
-                    if (value.equals(element)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            // It wouldn't be consistent to have an 'ad hoc' implementation of #containsKey() but a 100% correct
+            // implementation of #containsValue(), so we are leaving this as unsupported.
+            throw new UnsupportedOperationException("Map does not support #containsValue()");
         }
 
         @Override
@@ -495,21 +471,18 @@ public final class WebVariablesMap
 
         @Override
         public boolean containsKey(final Object key) {
-            // For most implementations of HttpServletRequest, trying to get a value instead of iterating the
-            // names Enumeration or the ParameterMap keys (which might be locked but will be created each time if not)
-            // seems faster as a way to know if something exists (in the cases when we are checking
-            // for existing keys a good % of the total times).
-            if (this.request.getParameterValues(key != null? key.toString() : null) != null) {
-                return true;
-            }
-            // We can still be fast if this parameter map has been locked so that we don't receive a new instance
-            // each time we call it (see e.g. org.apache.catalina.connector.Request)
-            return this.request.getParameterMap().containsKey(key);
+            // Even if not completely correct to return 'true' for entries that might not exist, this is needed
+            // in order to avoid Spring's MapAccessor throwing an exception when trying to access an element
+            // that doesn't exist -- in the case of request parameters, session and servletContext attributes most
+            // developers would expect null to be returned in such case, and that's what this 'true' will cause.
+            return true;
         }
 
         @Override
         public boolean containsValue(final Object value) {
-            return this.request.getParameterMap().containsValue(value);
+            // It wouldn't be consistent to have an 'ad hoc' implementation of #containsKey() but a 100% correct
+            // implementation of #containsValue(), so we are leaving this as unsupported.
+            throw new UnsupportedOperationException("Map does not support #containsValue()");
         }
 
         @Override
