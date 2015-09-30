@@ -1,0 +1,3 @@
+Here2Shop is social eCommerce website launched in Taiwan since 2015. We aim to bridge our customers and vendors to a win-win situation based on content marketing and friends sharing eCommerce experiences.
+
+In Here2Shop, we use Thymeleaf for our technical and designer staff to co-work very easily, since it can be served with or without service running. Our whole site views, including front store, vendor and admin management pages, are made by Thymeleaf and Spring MVC.
