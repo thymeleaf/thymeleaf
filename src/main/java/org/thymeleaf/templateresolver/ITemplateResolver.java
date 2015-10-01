@@ -84,6 +84,11 @@ public interface ITemplateResolver {
      *   Return the order in which this template resolver will be executed in the
      *   chain when several template resolvers are set for the same Template Engine.
      * </p>
+     * <p>
+     *   Higher values are interpreted as lower priority. A null value is interpreted
+     *   as lowest priority, and thus the template resolver will appear last in the
+     *   chain.
+     * </p>
      * 
      * @return the order of this resolver in the chain.
      */
