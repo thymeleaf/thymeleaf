@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.thymeleaf.PatternSpec;
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.exceptions.ConfigurationException;
@@ -176,7 +175,7 @@ public class TemplateResolver
      * 
      * @return the prefix.
      */
-    public final String getPrefix() {
+    public String getPrefix() {
         checkInitialized();
         return this.prefix;
     }
@@ -1007,8 +1006,8 @@ public class TemplateResolver
         }
         
         final StringBuilder resourceName = new StringBuilder();
-        if (!StringUtils.isEmptyOrWhitespace(this.prefix)) {
-            resourceName.append(this.prefix);
+        if (!StringUtils.isEmptyOrWhitespace(this.getPrefix())) {
+            resourceName.append(this.getPrefix());
         }
         resourceName.append(unaliasedName);
         if (!StringUtils.isEmptyOrWhitespace(this.suffix)) {

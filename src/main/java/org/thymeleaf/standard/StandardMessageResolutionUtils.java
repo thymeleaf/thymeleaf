@@ -22,7 +22,6 @@ package org.thymeleaf.standard;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.Properties;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
@@ -59,7 +58,9 @@ public final class StandardMessageResolutionUtils {
     private static final String TEMPLATE_CACHE_PREFIX = "{template_msg}";
 
     
-    
+    public static String buildKey(final Arguments arguments) {
+        return arguments.getTemplateResolution().getResourceName()+"##";
+    }
     
     public static String resolveMessageForTemplate(
             final Arguments arguments, final String key, final Object[] messageParameters, 
@@ -72,7 +73,7 @@ public final class StandardMessageResolutionUtils {
         final Locale locale = arguments.getContext().getLocale();
 
         final String templateName = arguments.getTemplateResolution().getTemplateName();
-        final String cacheKey = TEMPLATE_CACHE_PREFIX + templateName + '_' + locale.toString();
+        final String cacheKey = TEMPLATE_CACHE_PREFIX + buildKey(arguments) + templateName + '_' + locale.toString();
 
         Properties properties = null;
         ICache<String,Properties> messagesCache = null;
