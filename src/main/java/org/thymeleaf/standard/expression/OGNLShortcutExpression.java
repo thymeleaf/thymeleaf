@@ -48,6 +48,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
+import org.thymeleaf.context.ILazyContextVariable;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IVariablesMap;
 
@@ -173,7 +174,17 @@ final class OGNLShortcutExpression {
             }
         }
 
-        return ((IVariablesMap) target).getVariable(propertyName);
+        final Object result = ((IVariablesMap) target).getVariable(propertyName);
+
+        /*
+         * Check the possibility that this variable is a lazy one, in which case we should not return it directly
+         * but instead make sure it is initialized and return its value.
+         */
+        if (result != null && result instanceof ILazyContextVariable) {
+            return ((ILazyContextVariable)result).getValue();
+        }
+
+        return result;
 
     }
 

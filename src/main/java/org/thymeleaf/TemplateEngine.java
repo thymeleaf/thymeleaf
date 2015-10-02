@@ -29,7 +29,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -219,7 +218,7 @@ public class TemplateEngine implements ITemplateEngine {
 
     private static final int NANOS_IN_SECOND = 1000000;
 
-    private final AtomicBoolean initialized = new AtomicBoolean(false);
+    private volatile boolean initialized = false;
 
     private final Set<DialectConfiguration> dialectConfigurations = new LinkedHashSet<DialectConfiguration>(3);
     private final Set<ITemplateResolver> templateResolvers = new LinkedHashSet<ITemplateResolver>(3);
@@ -258,7 +257,7 @@ public class TemplateEngine implements ITemplateEngine {
 
 
     private void checkNotInitialized() {
-        if (this.initialized.get()) {
+        if (this.initialized) {
             throw new IllegalStateException(
                     "Template engine has already been initialized (probably because it has already been executed or " +
                     "a fully-built Configuration object has been requested from it. At this state, no modifications on " +
@@ -292,11 +291,11 @@ public class TemplateEngine implements ITemplateEngine {
      */
     private void initialize() {
 
-        if (!this.initialized.get()) {
+        if (!this.initialized) {
 
-            synchronized (this.initialized) {
+            synchronized (this) {
 
-                if (!this.initialized.get()) {
+                if (!this.initialized) {
 
                     logger.debug("[THYMELEAF] INITIALIZING TEMPLATE ENGINE");
 
@@ -314,7 +313,7 @@ public class TemplateEngine implements ITemplateEngine {
 
                     initializeSpecific();
 
-                    this.initialized.set(true);
+                    this.initialized = true;
 
                     // Log configuration details
                     ConfigurationPrinterHelper.printConfiguration(this.configuration);
@@ -362,7 +361,7 @@ public class TemplateEngine implements ITemplateEngine {
      * @return the current configuration
      */
     public IEngineConfiguration getConfiguration() {
-        if (!this.initialized.get()) {
+        if (!this.initialized) {
             initialize();
         }
         return this.configuration;
@@ -383,7 +382,7 @@ public class TemplateEngine implements ITemplateEngine {
      * @return the template manager
      */
     public TemplateManager getTemplateManager() {
-        if (!this.initialized.get()) {
+        if (!this.initialized) {
             initialize();
         }
         return this.templateManager;
@@ -400,7 +399,7 @@ public class TemplateEngine implements ITemplateEngine {
      */
     public final Map<String,Set<IDialect>> getDialectsByPrefix() {
         final Set<DialectConfiguration> dialectConfs;
-        if (this.initialized.get()) {
+        if (this.initialized) {
             dialectConfs = this.configuration.getDialectConfigurations();
         } else {
             dialectConfs = this.dialectConfigurations;
@@ -427,7 +426,7 @@ public class TemplateEngine implements ITemplateEngine {
      * @return the {@link IDialect} instances currently configured.
      */
     public final Set<IDialect> getDialects() {
-        if (this.initialized.get()) {
+        if (this.initialized) {
             return this.configuration.getDialects();
         }
         final Set<IDialect> dialects = new LinkedHashSet<IDialect>(this.dialectConfigurations.size());
@@ -607,7 +606,7 @@ public class TemplateEngine implements ITemplateEngine {
      * @return the template resolvers.
      */
     public final Set<ITemplateResolver> getTemplateResolvers() {
-        if (this.initialized.get()) {
+        if (this.initialized) {
             return this.configuration.getTemplateResolvers();
         }
         return Collections.unmodifiableSet(this.templateResolvers);
@@ -674,7 +673,7 @@ public class TemplateEngine implements ITemplateEngine {
      * @return the cache manager
      */
     public ICacheManager getCacheManager() {
-        if (this.initialized.get()) {
+        if (this.initialized) {
             return this.configuration.getCacheManager();
         }
         return this.cacheManager;
@@ -714,7 +713,7 @@ public class TemplateEngine implements ITemplateEngine {
      * @return the set of message resolvers.
      */
     public final Set<IMessageResolver> getMessageResolvers() {
-        if (this.initialized.get()) {
+        if (this.initialized) {
             return this.configuration.getMessageResolvers();
         }
         return Collections.unmodifiableSet(this.messageResolvers);
@@ -802,7 +801,7 @@ public class TemplateEngine implements ITemplateEngine {
      * </p>
      */
     public void clearTemplateCache() {
-        if (!this.initialized.get()) {
+        if (!this.initialized) {
             initialize();
         }
         this.templateManager.clearCaches();
@@ -823,7 +822,7 @@ public class TemplateEngine implements ITemplateEngine {
      */
     public void clearTemplateCacheFor(final String templateName) {
         Validate.notNull(templateName, "Template name cannot be null");
-        if (!this.initialized.get()) {
+        if (!this.initialized) {
             initialize();
         }
         this.templateManager.clearCachesFor(templateName);
@@ -1090,7 +1089,7 @@ public class TemplateEngine implements ITemplateEngine {
     public final void process(
             final String template, final String[] selectors, final TemplateMode templateMode, final IContext context, final Writer writer) {
 
-        if (!this.initialized.get()) {
+        if (!this.initialized) {
             initialize();
         }
         
