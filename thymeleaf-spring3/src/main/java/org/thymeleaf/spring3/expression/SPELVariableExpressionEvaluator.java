@@ -115,7 +115,7 @@ public class SPELVariableExpressionEvaluator
             /*
              * OBTAIN THE EXPRESSION (SpelExpression OBJECT) FROM THE CACHE, OR PARSE IT
              */
-            final SpelExpression exp = getExpression(configuration, spelExpression);
+            final ComputedSpelExpression exp = getExpression(configuration, spelExpression);
 
 
             /*
@@ -125,7 +125,7 @@ public class SPELVariableExpressionEvaluator
              * needed).
              */
             final IExpressionObjects expressionObjects =
-                    (StandardExpressionUtils.mightNeedExpressionObjects(spelExpression)? processingContext.getExpressionObjects() : null);
+                    (exp.mightNeedExpressionObjects? processingContext.getExpressionObjects() : null);
 
 
             /*
@@ -200,7 +200,7 @@ public class SPELVariableExpressionEvaluator
              * If no conversion is to be made, JUST RETURN
              */
             if (!expContext.getPerformTypeConversion()) {
-                return exp.getValue(thymeleafEvaluationContext, evaluationRoot);
+                return exp.expression.getValue(thymeleafEvaluationContext, evaluationRoot);
             }
 
 
@@ -214,12 +214,12 @@ public class SPELVariableExpressionEvaluator
                 // The conversion service is a mere bridge with the Spring ConversionService, therefore
                 // this makes use of the complete Spring type conversion infrastructure, without needing
                 // to manually execute the conversion.
-                return exp.getValue(thymeleafEvaluationContext, evaluationRoot, String.class);
+                return exp.expression.getValue(thymeleafEvaluationContext, evaluationRoot, String.class);
             }
 
             // We need type conversion, but conversion service is not a mere bridge to the Spring one,
             // so we need manual execution.
-            final Object result = exp.getValue(thymeleafEvaluationContext, evaluationRoot);
+            final Object result = exp.expression.getValue(thymeleafEvaluationContext, evaluationRoot);
             return conversionService.convert(processingContext, result, String.class);
 
 
@@ -233,24 +233,30 @@ public class SPELVariableExpressionEvaluator
     }
 
 
-    private static SpelExpression getExpression(final IEngineConfiguration configuration, final String spelExpression) {
-        
-        SpelExpression exp = null;
+    private static ComputedSpelExpression getExpression(final IEngineConfiguration configuration, final String spelExpression) {
+
+        ComputedSpelExpression exp = null;
         ICache<String, Object> cache = null;
 
         final ICacheManager cacheManager = configuration.getCacheManager();
         if (cacheManager != null) {
             cache = cacheManager.getExpressionCache();
             if (cache != null) {
-                exp = (SpelExpression) cache.get(SPEL_CACHE_PREFIX + spelExpression);
+                exp = (ComputedSpelExpression) cache.get(SPEL_CACHE_PREFIX + spelExpression);
             }
         }
 
         if (exp == null) {
-            exp = (SpelExpression) PARSER.parseExpression(spelExpression);
+
+            final SpelExpression spelExpressionObject = (SpelExpression) PARSER.parseExpression(spelExpression);
+            final boolean mightNeedExpressionObjects = StandardExpressionUtils.mightNeedExpressionObjects(spelExpression);
+
+            exp = new ComputedSpelExpression(spelExpressionObject, mightNeedExpressionObjects);
+
             if (cache != null && null != exp) {
                 cache.put(SPEL_CACHE_PREFIX + spelExpression, exp);
             }
+
         }
 
         return exp;
@@ -284,6 +290,22 @@ public class SPELVariableExpressionEvaluator
     @Override
     public String toString() {
         return "SpringEL";
+    }
+
+
+
+    private static final class ComputedSpelExpression {
+
+        final SpelExpression expression;
+        final boolean mightNeedExpressionObjects;
+
+        ComputedSpelExpression(final SpelExpression expression, final boolean mightNeedExpressionObjects) {
+            super();
+            this.expression = expression;
+            this.mightNeedExpressionObjects = mightNeedExpressionObjects;
+        }
+
+
     }
 
 
