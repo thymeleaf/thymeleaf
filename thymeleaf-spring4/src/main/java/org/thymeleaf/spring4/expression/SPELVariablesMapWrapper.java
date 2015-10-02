@@ -23,8 +23,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.thymeleaf.context.ILazyContextVariable;
 import org.thymeleaf.context.IVariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
@@ -41,8 +40,6 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  *
  */
 public final class SPELVariablesMapWrapper implements Map {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SPELVariablesMapWrapper.class);
 
     private static final String REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME = "param";
 
@@ -129,7 +126,17 @@ public final class SPELVariablesMapWrapper implements Map {
             }
         }
 
-        return this.variablesMap.getVariable(key == null? null : key.toString());
+        final Object result = this.variablesMap.getVariable(key == null? null : key.toString());
+
+        /*
+         * Check the possibility that this variable is a lazy one, in which case we should not return it directly
+         * but instead make sure it is initialized and return its value.
+         */
+        if (result != null && result instanceof ILazyContextVariable) {
+            return ((ILazyContextVariable)result).getValue();
+        }
+
+        return result;
 
     }
 
