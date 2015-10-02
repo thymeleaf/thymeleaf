@@ -105,8 +105,9 @@ public final class OGNLVariableExpressionEvaluator
             }
 
             final IEngineConfiguration configuration = processingContext.getConfiguration();
-            
-            Object parsedExpression = ExpressionCache.getFromCache(configuration, expression, OGNL_CACHE_PREFIX);
+
+            ComputedOGNLExpression parsedExpression =
+                    (ComputedOGNLExpression) ExpressionCache.getFromCache(configuration, expression, OGNL_CACHE_PREFIX);
             if (parsedExpression == null) {
                 // The result of parsing might be an OGNL expression AST or a ShortcutOGNLExpression (for simple cases)
                 parsedExpression = parseExpression(expression, applyOGNLShortcuts);
@@ -114,7 +115,7 @@ public final class OGNLVariableExpressionEvaluator
             }
 
             final Map<String,Object> contextVariablesMap;
-            if (StandardExpressionUtils.mightNeedExpressionObjects(expression)) {
+            if (parsedExpression.mightNeedExpressionObjects) {
 
                 // The IExpressionObjects implementation returned by processing contexts that include the Standard
                 // Dialects will be lazy in the creation of expression objects (i.e. they won't be created until really
@@ -158,7 +159,7 @@ public final class OGNLVariableExpressionEvaluator
             // Execute the expression!
             final Object result;
             try {
-                result = executeExpression(processingContext, parsedExpression, contextVariablesMap, evaluationRoot);
+                result = executeExpression(processingContext, parsedExpression.expression, contextVariablesMap, evaluationRoot);
             } catch (final OGNLShortcutExpression.OGNLShortcutExpressionNotApplicableException notApplicable) {
                 // We tried to apply shortcuts, but it is not possible for this expression even if it parsed OK,
                 // so we need to empty the cache and try again disabling shortcuts. Once processed for the first time,
@@ -205,15 +206,20 @@ public final class OGNLVariableExpressionEvaluator
 
 
 
-    private static Object parseExpression(final String expression, final boolean applyOGNLShortcuts)
+    private static ComputedOGNLExpression parseExpression(final String expression, final boolean applyOGNLShortcuts)
             throws OgnlException {
+
+        final boolean mightNeedExpressionObjects = StandardExpressionUtils.mightNeedExpressionObjects(expression);
+
         if (applyOGNLShortcuts) {
             final String[] parsedExpression = OGNLShortcutExpression.parse(expression);
             if (parsedExpression != null) {
-                return new OGNLShortcutExpression(parsedExpression);
+                return new ComputedOGNLExpression(new OGNLShortcutExpression(parsedExpression), mightNeedExpressionObjects);
             }
         }
-        return ognl.Ognl.parseExpression(expression);
+
+        return new ComputedOGNLExpression(ognl.Ognl.parseExpression(expression), mightNeedExpressionObjects);
+        
     }
 
 
@@ -231,6 +237,23 @@ public final class OGNLVariableExpressionEvaluator
         // creating the OgnlContext empty and then setting the context Map variables one by one
         final OgnlContext ognlContext = new OgnlContext(context);
         return ognl.Ognl.getValue(parsedExpression, ognlContext, root);
+
+    }
+
+
+
+
+    private static final class ComputedOGNLExpression {
+
+        final Object expression;
+        final boolean mightNeedExpressionObjects;
+
+        ComputedOGNLExpression(final Object expression, final boolean mightNeedExpressionObjects) {
+            super();
+            this.expression = expression;
+            this.mightNeedExpressionObjects = mightNeedExpressionObjects;
+        }
+
 
     }
 
