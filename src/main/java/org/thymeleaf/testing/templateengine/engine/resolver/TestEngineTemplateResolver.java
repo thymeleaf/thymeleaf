@@ -131,7 +131,13 @@ public class TestEngineTemplateResolver implements ITemplateResolver {
         final String testName = TestExecutor.getThreadTestName();
 
         // Check template mode
-        final TemplateMode templateMode = test.getTemplateMode();
+        final Map<String, TemplateMode> additionalTemplateModes = test.getAdditionalTemplateModes();
+        final TemplateMode templateMode;
+        if (additionalTemplateModes != null && additionalTemplateModes.containsKey(template)) {
+            templateMode = additionalTemplateModes.get(template);
+        } else {
+            templateMode = test.getTemplateMode();
+        }
         if (templateMode == null) {
             throw new TestEngineExecutionException(
                     "Template mode is null for test \"" + testName + "\", which is forbidden");

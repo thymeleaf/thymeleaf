@@ -39,8 +39,9 @@ public class StandardTest extends Test {
     public static final StandardTestValueType DEFAULT_VALUE_TYPE = StandardTestValueType.SPECIFIED; 
     
     
-    private Map<String,StandardTestValueType> additionalInputsValueTypes = new HashMap<String, StandardTestValueType>(); 
-    private StandardTestValueType contextValueType = StandardTestValueType.NO_VALUE; 
+    private Map<String,StandardTestValueType> additionalInputsValueTypes = new HashMap<String, StandardTestValueType>();
+    private Map<String,StandardTestValueType> additionalTemplateModesValueTypes = new HashMap<String, StandardTestValueType>();
+    private StandardTestValueType contextValueType = StandardTestValueType.NO_VALUE;
     private StandardTestValueType messagesValueType = StandardTestValueType.NO_VALUE; 
     private StandardTestValueType fragmentValueType = StandardTestValueType.NO_VALUE; 
     private StandardTestValueType inputValueType = StandardTestValueType.NO_VALUE;
@@ -93,6 +94,16 @@ public class StandardTest extends Test {
     }
 
     @Override
+    public final void setAdditionalTemplateModes(final Map<String, TemplateMode> additionalTemplateModes) {
+        setAdditionalTemplateModes(additionalTemplateModes, DEFAULT_VALUE_TYPE);
+    }
+
+    @Override
+    public final void setAdditionalTemplateMode(final String name, final TemplateMode templateMode) {
+        setAdditionalTemplateMode(name, templateMode, DEFAULT_VALUE_TYPE);
+    }
+
+    @Override
     public final void setFragmentSpec(final String fragmentSpec) {
         setFragmentSpec(fragmentSpec, DEFAULT_VALUE_TYPE);
     }
@@ -108,7 +119,7 @@ public class StandardTest extends Test {
     }
 
     @Override
-    public final void setAdditionalInput(final String name, ITestResource resource) {
+    public final void setAdditionalInput(final String name, final ITestResource resource) {
         setAdditionalInput(name, resource, DEFAULT_VALUE_TYPE);
     }
 
@@ -162,6 +173,22 @@ public class StandardTest extends Test {
         Validate.notNull(valueType, "Value type cannot be null");
         super.setTemplateMode(templateMode);
         this.templateModeValueType = valueType;
+    }
+
+    public void setAdditionalTemplateModes(final Map<String, TemplateMode> additionalTemplateModes, final StandardTestValueType valueType) {
+        Validate.notNull(valueType, "Value type cannot be null");
+        super.setAdditionalTemplateModes(additionalTemplateModes);
+        if (additionalTemplateModes != null) {
+            for (final String name : additionalTemplateModes.keySet()) {
+                this.additionalTemplateModesValueTypes.put(name, valueType);
+            }
+        }
+    }
+
+    public void setAdditionalTemplateMode(final String name, TemplateMode templateMode, final StandardTestValueType valueType) {
+        Validate.notNull(valueType, "Value type cannot be null");
+        super.setAdditionalTemplateMode(name, templateMode);
+        this.additionalTemplateModesValueTypes.put(name, valueType);
     }
 
     public void setFragmentSpec(final String fragmentSpec, final StandardTestValueType valueType) {

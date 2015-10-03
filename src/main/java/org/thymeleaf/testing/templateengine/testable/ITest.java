@@ -39,6 +39,7 @@ public interface ITest extends ITestable {
     public TemplateMode getTemplateMode();
     public ITestResource getInput();
     public Map<String,ITestResource> getAdditionalInputs();
+    public Map<String,TemplateMode> getAdditionalTemplateModes();
     public boolean isInputCacheable();
     
     public ITestResult evalResult(final String executionId, final String testName, final String result);

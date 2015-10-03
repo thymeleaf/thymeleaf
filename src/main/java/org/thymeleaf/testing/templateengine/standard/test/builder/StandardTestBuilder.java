@@ -75,7 +75,7 @@ public class StandardTestBuilder implements IStandardTestBuilder {
         final StandardTestEvaluatedField cache = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_CACHE);
         final StandardTestEvaluatedField context = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_CONTEXT); 
         final Map<String,StandardTestEvaluatedField> messages = data.getValuesByQualifierForField(StandardTestFieldNaming.FIELD_NAME_MESSAGES); 
-        final StandardTestEvaluatedField templateMode = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_TEMPLATE_MODE); 
+        final Map<String,StandardTestEvaluatedField> templateModes = data.getValuesByQualifierForField(StandardTestFieldNaming.FIELD_NAME_TEMPLATE_MODE);
         final StandardTestEvaluatedField fragmentSpec = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_FRAGMENT);
         final Map<String,StandardTestEvaluatedField> inputs = data.getValuesByQualifierForField(StandardTestFieldNaming.FIELD_NAME_INPUT);
         final StandardTestEvaluatedField output = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_OUTPUT);
@@ -83,6 +83,16 @@ public class StandardTestBuilder implements IStandardTestBuilder {
         final StandardTestEvaluatedField exceptionMessagePattern = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_EXCEPTION_MESSAGE_PATTERN);
         final StandardTestEvaluatedField exactMatch = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_EXACT_MATCH);
         final StandardTestEvaluatedField extendsTest = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_EXTENDS);
+
+
+        /*
+         * Organize template modes
+         */
+        final StandardTestEvaluatedField mainTemplateMode =
+                (templateModes != null ? templateModes.get(StandardTestFieldNaming.FIELD_QUALIFIER_MAIN) : null);
+        final Map<String,StandardTestEvaluatedField> additionalTemplateModes =
+                (templateModes != null ? new HashMap<String, StandardTestEvaluatedField>(templateModes) : new HashMap<String, StandardTestEvaluatedField>());
+        additionalTemplateModes.remove(StandardTestFieldNaming.FIELD_QUALIFIER_MAIN);
 
         
         /*
@@ -134,10 +144,17 @@ public class StandardTestBuilder implements IStandardTestBuilder {
             test.setName((String)name.getValue(), name.getValueType());
         }
         
-        if (templateMode != null && templateMode.hasValue()) {
-            test.setTemplateMode((TemplateMode)templateMode.getValue(), templateMode.getValueType());
+        if (mainTemplateMode != null && mainTemplateMode.hasValue()) {
+            test.setTemplateMode((TemplateMode)mainTemplateMode.getValue(), mainTemplateMode.getValueType());
         }
-        
+
+        for (final Map.Entry<String,StandardTestEvaluatedField> additionalTemplateModeEntry : additionalTemplateModes.entrySet()) {
+            final StandardTestEvaluatedField additionalTemplateModeField = additionalTemplateModeEntry.getValue();
+            if (additionalTemplateModeField != null) {
+                test.setAdditionalTemplateMode(additionalTemplateModeEntry.getKey(), (TemplateMode) additionalTemplateModeField.getValue(), additionalTemplateModeField.getValueType());
+            }
+        }
+
         if (context != null && context.hasValue()) {
             test.setContext((ITestContext)context.getValue(), context.getValueType());
         }

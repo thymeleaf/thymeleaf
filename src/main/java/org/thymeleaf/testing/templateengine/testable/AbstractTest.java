@@ -51,6 +51,7 @@ public abstract class AbstractTest
     private ITestResource input = null;
     private boolean inputCacheable = DEFAULT_INPUT_CACHEABLE;
 
+    private Map<String,TemplateMode> additionalTemplateModes = new HashMap<String, TemplateMode>();
     private Map<String,ITestResource> additionalInputs = new HashMap<String, ITestResource>();
     
     
@@ -92,7 +93,21 @@ public abstract class AbstractTest
     public TemplateMode getTemplateMode() {
         return this.templateMode;
     }
-    
+
+
+
+    public Map<String,TemplateMode> getAdditionalTemplateModes() {
+        return Collections.unmodifiableMap(this.additionalTemplateModes);
+    }
+
+    public void setAdditionalTemplateModes(final Map<String,TemplateMode> additionalTemplateModes) {
+        this.additionalTemplateModes = new HashMap<String,TemplateMode>(additionalTemplateModes);
+    }
+
+    public void setAdditionalTemplateMode(final String name, final TemplateMode templateMode) {
+        this.additionalTemplateModes.put(name, templateMode);
+    }
+
 
     
     public boolean hasFragmentSpec() {

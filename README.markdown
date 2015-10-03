@@ -290,9 +290,10 @@ We can see there that tests are configured by means of *directives*, and that th
 | Name                       | Description |
 |----------------------------|-------------|
 |`%INPUT`                    | Test input, in the form of an HTML template or fragment. A resource name can also be specified between parenthesis, like `%INPUT (file:/home/user/myproject/src/main/resources/templates/mytemplate.html)`. This parameter is *required*. |
-|`%INPUT[qualif]`              | Additional inputs can be specified by adding a *qualifier* to its name. These additional inputs can be used as external template fragments in `th:include="qualif"`, `th:substituteby="qualif :: frag"`, etc. |
+|`%INPUT[qualif]`            | Additional inputs can be specified by adding a *qualifier* to its name. These additional inputs can be used as external template fragments in `th:include="qualif"`, `th:substituteby="qualif :: frag"`, etc. |
 |`%FRAGMENT`                 | Fragment specification (in the same format as used in `th:include` attributes) to be applied on the test input before processing. *Optional*. |
 |`%TEMPLATE_MODE`            | Template mode to be used: `HTML5`, `XHTML`, etc. |
+|`%TEMPLATE_MODE[qualif]`    | Additional template modes can be specified for additional inputs (matching those specified with `%INPUT[qualif]`. |
 |`%CACHE`                    | Whether template cache should be `on` or `off`. If cache is *on*, the input for this test will be parsed only the first time it is processed.|
 
 *Test expected output:*
