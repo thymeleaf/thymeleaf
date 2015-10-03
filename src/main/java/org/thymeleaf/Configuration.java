@@ -920,13 +920,9 @@ public final class Configuration {
         }
 
         public int compare(final ITemplateResolver o1, final ITemplateResolver o2) {
-            if (o1.getOrder() == null) {
-                return -1;
-            }
-            if (o2.getOrder() == null) {
-                return 1;
-            }
-            return o1.getOrder().compareTo(o2.getOrder());
+        	Integer order1 = null == o1.getOrder() ? Integer.MAX_VALUE : o1.getOrder();
+        	Integer order2 = null == o2.getOrder() ? Integer.MAX_VALUE : o2.getOrder();
+        	return order1.compareTo(order2);
         }
 
     }
