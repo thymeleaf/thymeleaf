@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.context;
 
+import java.lang.reflect.Array;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1198,7 +1199,9 @@ public final class WebVariablesMap
         @Override
         public <T> T[] toArray(final T[] arr) {
             if (arr.length < this.length) {
-                return Arrays.copyOf(this.parameterValues, this.length, (Class<? extends T[]>)arr.getClass());
+                final T[] copy = (T[]) Array.newInstance(arr.getClass().getComponentType(), this.length);
+                System.arraycopy(this.parameterValues, 0, copy, 0, this.length);
+                return copy;
             }
             System.arraycopy(this.parameterValues, 0, arr, 0, this.length);
             if (arr.length > this.length) {
