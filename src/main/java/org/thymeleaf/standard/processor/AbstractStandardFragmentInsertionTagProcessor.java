@@ -98,8 +98,13 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
         String templateName = processedFragmentSelection.getTemplateName();
         Map<String,Object> fragmentParameters = processedFragmentSelection.getFragmentParameters();
+        final String[] fragments =
+                (processedFragmentSelection.hasFragmentSelector()? new String[] { processedFragmentSelection.getFragmentSelector() } : null);
 
 
+        /*
+         * MIGHT NEED TO ADJUST THE TEMPLATE NAME if 'this' or an empty name is being used
+         */
         if (StringUtils.isEmptyOrWhitespace(templateName) || TEMPLATE_NAME_CURRENT_TEMPLATE.equals(templateName)) {
             // We will use the same templateName that the host tag comes from
             templateName = attributeTemplateName;
@@ -110,8 +115,6 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          * OBTAIN THE FRAGMENT MODEL from the TemplateManager. This means the fragment will be parsed and maybe
          * cached, and we will be returned an immutable model object (specifically a ParsedFragmentModel)
          */
-        final String[] fragments =
-                (processedFragmentSelection.hasFragmentSelector()? new String[] { processedFragmentSelection.getFragmentSelector() } : null);
         final ParsedFragmentModel parsedFragment =
                     processingContext.getTemplateManager().parseStandaloneFragment(
                             processingContext.getConfiguration(),
