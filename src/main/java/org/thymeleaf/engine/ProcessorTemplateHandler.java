@@ -464,7 +464,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 queueProcessable = this.templateStructureHandler.insertTextProcessable;
 
                 this.textBuffer.setText(this.templateStructureHandler.insertTextValue);
-                queue.add(this.textBuffer, false);
+                queue.build(this.textBuffer);
 
             } else if (this.templateStructureHandler.insertModel) {
 
@@ -569,7 +569,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 queueProcessable = this.templateStructureHandler.insertTextProcessable;
 
                 this.textBuffer.setText(this.templateStructureHandler.insertTextValue);
-                queue.add(this.textBuffer, false);
+                queue.build(this.textBuffer);
 
             } else if (this.templateStructureHandler.insertModel) {
 
@@ -622,7 +622,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
         if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
-            this.iterationSpec.iterationQueue.add(Text.asEngineText(this.configuration, itext, true), false);
+            this.iterationSpec.iterationQueue.build(Text.asEngineText(this.configuration, itext, true));
             return;
         }
 
@@ -631,7 +631,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
         if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
-            this.elementModelSpec.modelQueue.add(Text.asEngineText(this.configuration, itext, true), false);
+            this.elementModelSpec.modelQueue.build(Text.asEngineText(this.configuration, itext, true));
             return;
         }
 
@@ -734,7 +734,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
         if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
-            this.iterationSpec.iterationQueue.add(Comment.asEngineComment(this.configuration, icomment, true), false);
+            this.iterationSpec.iterationQueue.build(Comment.asEngineComment(this.configuration, icomment, true));
             return;
         }
 
@@ -743,7 +743,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
         if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
-            this.elementModelSpec.modelQueue.add(Comment.asEngineComment(this.configuration, icomment, true), false);
+            this.elementModelSpec.modelQueue.build(Comment.asEngineComment(this.configuration, icomment, true));
             return;
         }
 
@@ -845,7 +845,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
         if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
-            this.iterationSpec.iterationQueue.add(CDATASection.asEngineCDATASection(this.configuration, icdataSection, true), false);
+            this.iterationSpec.iterationQueue.build(CDATASection.asEngineCDATASection(this.configuration, icdataSection, true));
             return;
         }
 
@@ -854,7 +854,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
         if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
-            this.elementModelSpec.modelQueue.add(CDATASection.asEngineCDATASection(this.configuration, icdataSection, true), false);
+            this.elementModelSpec.modelQueue.build(CDATASection.asEngineCDATASection(this.configuration, icdataSection, true));
             return;
         }
 
@@ -958,9 +958,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
         if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
-            this.iterationSpec.iterationQueue.add(
+            this.iterationSpec.iterationQueue.build(
                     StandaloneElementTag.asEngineStandaloneElementTag(
-                            this.templateMode, this.configuration, istandaloneElementTag, true), false);
+                            this.templateMode, this.configuration, istandaloneElementTag, true));
             return;
         }
 
@@ -969,9 +969,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
         if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
-            this.elementModelSpec.modelQueue.add(
+            this.elementModelSpec.modelQueue.build(
                     StandaloneElementTag.asEngineStandaloneElementTag(
-                            this.templateMode, this.configuration, istandaloneElementTag, true), false);
+                            this.templateMode, this.configuration, istandaloneElementTag, true));
             return;
         }
 
@@ -1124,7 +1124,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
                     // Add this standalone tag to the iteration queue
-                    this.iterationSpec.iterationQueue.add(standaloneElementTag, true);
+                    this.iterationSpec.iterationQueue.build(standaloneElementTag.cloneEvent());
 
                     // Decrease the handler execution level (all important bits are already in suspensionSpec)
                     decreaseHandlerExecLevel();
@@ -1161,7 +1161,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // the amount of objects created in these cases
                     final Text text = this.standaloneTextBuffers[this.standaloneTagBuffersIndex];
                     text.setText(this.elementTagStructureHandler.setBodyTextValue);
-                    queue.add(text, false);
+                    queue.build(text);
 
                     // We are done with using the standalone buffers, so increase the index
                     this.standaloneTagBuffersIndex++;
@@ -1280,7 +1280,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
                     this.textBuffer.setText(this.elementTagStructureHandler.replaceWithTextValue);
-                    queue.add(this.textBuffer, false);
+                    queue.build(this.textBuffer);
 
                     tagsRemoved = true;
 
@@ -1347,7 +1347,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
                     // Add this standalone tag to the element model queue
-                    this.elementModelSpec.modelQueue.add(standaloneElementTag, true);
+                    this.elementModelSpec.modelQueue.build(standaloneElementTag.cloneEvent());
 
                     // Decrease the handler execution level (all important bits are already in suspensionSpec)
                     decreaseHandlerExecLevel();
@@ -1485,8 +1485,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
         if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
-            this.iterationSpec.iterationQueue.add(
-                    OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, iopenElementTag, true), false);
+            this.iterationSpec.iterationQueue.build(
+                    OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, iopenElementTag, true));
             increaseModelLevel();
             return;
         }
@@ -1496,8 +1496,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
         if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
-            this.elementModelSpec.modelQueue.add(
-                    OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, iopenElementTag, true), false);
+            this.elementModelSpec.modelQueue.build(
+                    OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, iopenElementTag, true));
             increaseModelLevel();
             return;
         }
@@ -1656,7 +1656,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     if (queue.size() == 1 && queue.get(0) == this.textBuffer) {
                         // Replace the text buffer with a clone
                         queue.reset();
-                        queue.add(this.textBuffer, true);
+                        queue.build(this.textBuffer.cloneEvent());
                     }
 
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
@@ -1668,7 +1668,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
                     // Add the tag itself to the iteration queue
-                    this.iterationSpec.iterationQueue.add(openElementTag, true);
+                    this.iterationSpec.iterationQueue.build(openElementTag.cloneEvent());
 
                     // Increase model level, as normal with open tags
                     increaseModelLevel();
@@ -1691,7 +1691,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // if this element is iterated AFTER we set this, we will need to clone this node before suspending
                     // the queue, or we might have nasty interactions with each of the subsequent iterations
                     this.textBuffer.setText(this.elementTagStructureHandler.setBodyTextValue);
-                    queue.add(this.textBuffer, false);
+                    queue.build(this.textBuffer);
 
                     allowedElementCountInBody = 0;
                     allowedNonElementStructuresInBody = false;
@@ -1747,7 +1747,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
                     this.textBuffer.setText(this.elementTagStructureHandler.replaceWithTextValue);
-                    queue.add(this.textBuffer, false);
+                    queue.build(this.textBuffer);
 
                     tagsRemoved = true;
                     allowedElementCountInBody = 0;
@@ -1833,7 +1833,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
                     // Add the tag itself to the element model queue
-                    this.elementModelSpec.modelQueue.add(openElementTag, true);
+                    this.elementModelSpec.modelQueue.build(openElementTag.cloneEvent());
 
                     // Increase model level, as normal with open tags
                     increaseModelLevel();
@@ -1996,8 +1996,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
         if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
-            this.iterationSpec.iterationQueue.add(
-                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true), false);
+            this.iterationSpec.iterationQueue.build(
+                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true));
             return;
         }
 
@@ -2005,8 +2005,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
         if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
-            this.elementModelSpec.modelQueue.add(
-                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true), false);
+            this.elementModelSpec.modelQueue.build(
+                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true));
             return;
         }
 
@@ -2021,8 +2021,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.gatheringIteration && this.modelLevel + 1 == this.iterationSpec.fromModelLevel) {
 
             // Add the last tag: the closing one
-            this.iterationSpec.iterationQueue.add(
-                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true), false);
+            this.iterationSpec.iterationQueue.build(
+                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true));
 
             // Process the queue by iterating it
             processIteration();
@@ -2042,8 +2042,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.gatheringElementModel && this.modelLevel + 1 == this.elementModelSpec.fromModelLevel) {
 
             // Add the last tag: the closing one
-            this.elementModelSpec.modelQueue.add(
-                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true), false);
+            this.elementModelSpec.modelQueue.build(
+                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true));
 
             // Process the queue
             processElementModel();
@@ -2104,8 +2104,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
         if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
-            this.iterationSpec.iterationQueue.add(
-                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true), false);
+            this.iterationSpec.iterationQueue.build(
+                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true));
             return;
         }
 
@@ -2113,8 +2113,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
         if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
-            this.elementModelSpec.modelQueue.add(
-                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true), false);
+            this.elementModelSpec.modelQueue.build(
+                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true));
             return;
         }
 
@@ -2157,7 +2157,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
         if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
-            this.iterationSpec.iterationQueue.add(DocType.asEngineDocType(this.configuration, idocType, true), false);
+            this.iterationSpec.iterationQueue.build(DocType.asEngineDocType(this.configuration, idocType, true));
             return;
         }
 
@@ -2166,7 +2166,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
         if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
-            this.elementModelSpec.modelQueue.add(DocType.asEngineDocType(this.configuration, idocType, true), false);
+            this.elementModelSpec.modelQueue.build(DocType.asEngineDocType(this.configuration, idocType, true));
             return;
         }
 
@@ -2270,8 +2270,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
         if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
-            this.iterationSpec.iterationQueue.add(
-                    XMLDeclaration.asEngineXMLDeclaration(this.configuration, ixmlDeclaration, true), false);
+            this.iterationSpec.iterationQueue.build(
+                    XMLDeclaration.asEngineXMLDeclaration(this.configuration, ixmlDeclaration, true));
             return;
         }
 
@@ -2280,8 +2280,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
         if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
-            this.elementModelSpec.modelQueue.add(
-                    XMLDeclaration.asEngineXMLDeclaration(this.configuration, ixmlDeclaration, true), false);
+            this.elementModelSpec.modelQueue.build(
+                    XMLDeclaration.asEngineXMLDeclaration(this.configuration, ixmlDeclaration, true));
             return;
         }
 
@@ -2384,8 +2384,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         // Check whether we are in the middle of an iteration and we just need to cache this to the queue (for now)
         if (this.gatheringIteration && this.modelLevel >= this.iterationSpec.fromModelLevel) {
-            this.iterationSpec.iterationQueue.add(
-                    ProcessingInstruction.asEngineProcessingInstruction(this.configuration, iprocessingInstruction, true), false);
+            this.iterationSpec.iterationQueue.build(
+                    ProcessingInstruction.asEngineProcessingInstruction(this.configuration, iprocessingInstruction, true));
             return;
         }
 
@@ -2394,8 +2394,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL and we just need to cache this to the queue (for now)
          */
         if (this.gatheringElementModel && this.modelLevel >= this.elementModelSpec.fromModelLevel) {
-            this.elementModelSpec.modelQueue.add(
-                    ProcessingInstruction.asEngineProcessingInstruction(this.configuration, iprocessingInstruction, true), false);
+            this.elementModelSpec.modelQueue.build(
+                    ProcessingInstruction.asEngineProcessingInstruction(this.configuration, iprocessingInstruction, true));
             return;
         }
 
@@ -2614,6 +2614,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             // the iteration queue. This is because the preceding text event will have already been issued by the moment
             // we start iterating, and we want to avoid a double whitespace before the first iteration
             if (status.index == 0 && precedingWhitespace != null) {
+                // We are calling 'insert' instead of 'build' because we need to add it at the beginning and we are
+                // perfectly sure that an iteration queue will never have template start/end events, and therefore
+                // no undesirable interactions with the Text precedingWhitespace event
                 iterArtifacts.iterationQueue.insert(0, precedingWhitespace, false);
             }
 

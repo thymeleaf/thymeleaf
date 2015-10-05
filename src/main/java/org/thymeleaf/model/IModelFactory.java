@@ -30,7 +30,7 @@ public interface IModelFactory {
 
     public IModel createModel();
 
-    public IModel parse(final String fragment);
+    public IModel parse(final String template);
 
     public ICDATASection createCDATASection(final String content);
 

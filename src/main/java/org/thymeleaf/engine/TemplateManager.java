@@ -29,12 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.cache.AlwaysValidCacheEntryValidity;
-import org.thymeleaf.cache.FragmentCacheKey;
 import org.thymeleaf.cache.ICache;
-import org.thymeleaf.cache.ICacheEntryValidity;
 import org.thymeleaf.cache.ICacheManager;
-import org.thymeleaf.cache.NonCacheableCacheEntryValidity;
 import org.thymeleaf.cache.TemplateCacheKey;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.ITemplateProcessingContext;
@@ -44,11 +40,9 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.postprocessor.IPostProcessor;
 import org.thymeleaf.preprocessor.IPreProcessor;
 import org.thymeleaf.resource.IResource;
-import org.thymeleaf.resource.StringResource;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.ITemplateParser;
-import org.thymeleaf.templateparser.ParsableArtifactType;
 import org.thymeleaf.templateparser.markup.HTMLTemplateParser;
 import org.thymeleaf.templateparser.markup.XMLTemplateParser;
 import org.thymeleaf.templateparser.text.CSSTemplateParser;
@@ -85,8 +79,7 @@ public final class TemplateManager {
     private final ITemplateParser cssParser;
 
 
-    private final ICache<TemplateCacheKey,ParsedTemplateModel> templateCache; // might be null! (= no cache)
-    private final ICache<FragmentCacheKey,ParsedFragmentModel> fragmentCache; // might be null! (= no cache)
+    private final ICache<TemplateCacheKey,TemplateModel> templateCache; // might be null! (= no cache)
 
 
 
@@ -108,10 +101,8 @@ public final class TemplateManager {
         final ICacheManager cacheManager = configuration.getCacheManager();
         if (cacheManager == null) {
             this.templateCache = null;
-            this.fragmentCache = null;
         } else {
             this.templateCache = cacheManager.getTemplateCache();
-            this.fragmentCache = cacheManager.getFragmentCache();
         }
 
         final boolean standardDialectPresent = configuration.isStandardDialectPresent();
@@ -132,15 +123,12 @@ public final class TemplateManager {
     
     /**
      * <p>
-     *   Clears all the template-related caches (both template cache and fragment cache).
+     *   Clears the template cache.
      * </p>
      */
     public void clearCaches() {
         if (this.templateCache != null) {
             this.templateCache.clear();
-        }
-        if (this.fragmentCache != null) {
-            this.fragmentCache.clear();
         }
     }
 
@@ -177,29 +165,6 @@ public final class TemplateManager {
                 this.templateCache.clearKey(keyToBeRemoved);
             }
         }
-        if (this.fragmentCache != null) {
-            // We will be removing all entries at the fragment cache related to this template
-            final Set<FragmentCacheKey> keysToBeRemoved = new HashSet<FragmentCacheKey>(4);
-            final Set<FragmentCacheKey> fragmentCacheKeys = this.fragmentCache.keySet();
-            // We are iterating twice and creating a temporary set just in case the 'keySet' Set is still connected
-            // to the original cache store and we provoke ConcurrentModificationExceptions when removing entries
-            for (final FragmentCacheKey fragmentCacheKey : fragmentCacheKeys) {
-                final String ownerTemplate = fragmentCacheKey.getOwnerTemplate();
-                if (ownerTemplate != null) {
-                    // It's not a standalone template, so we are interested on the owner template
-                    if (ownerTemplate.equals(template)) {
-                        keysToBeRemoved.add(fragmentCacheKey);
-                    }
-                } else {
-                    if (fragmentCacheKey.getFragment().equals(template)) {
-                        keysToBeRemoved.add(fragmentCacheKey);
-                    }
-                }
-            }
-            for (final FragmentCacheKey keyToBeRemoved : keysToBeRemoved) {
-                this.fragmentCache.clearKey(keyToBeRemoved);
-            }
-        }
     }
 
 
@@ -212,17 +177,12 @@ public final class TemplateManager {
      * PARSE methods
      * -------------
      *
-     * Parse methods will create either 'parsed fragment' or 'parsed templates' that are basically collections of
-     * events. There are two main differences between parsed templates and parsed fragments:
-     *
-     *    * Parsed Fragments don't contain 'templateStart' and 'templateEnd' events. Parsed Templates do contain them.
-     *    * Parsed Templates contain the entire TemplateResolution object, which is required in order to cache template
-     *      resolution and not having to resolve templates each time if they are already cached.
-     *
+     * Parse methods will create 'template models' that are basically collections of events in the form of an
+     * immutable IModel implementation.
      */
 
 
-    public ParsedTemplateModel parseStandaloneTemplate(
+    public TemplateModel parseStandalone(
             final IEngineConfiguration configuration,
             final String template, final String[] selectors,
             final TemplateMode templateMode,
@@ -235,7 +195,7 @@ public final class TemplateManager {
         // templateMode CAN be null if we are going to use the mode specified by the template resolver
         Validate.notNull(context, "Context cannot be null");
 
-        return parseTemplate(
+        return parse(
                 configuration,
                 null, template, selectors,
                 0, 0,
@@ -246,11 +206,12 @@ public final class TemplateManager {
     }
 
 
-    public ParsedTemplateModel parseNestedTemplate(
+    public TemplateModel parseNested(
             final IEngineConfiguration configuration,
             final String ownerTemplate, final String template,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
+            final IContext context,
             final boolean useCache) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
@@ -258,20 +219,20 @@ public final class TemplateManager {
         Validate.notNull(template, "Template cannot be null");
         // NOTE selectors cannot be specified when parsing a nested template
         Validate.notNull(templateMode, "Template mode cannot be null");
-        // NOTE that context is not needed in this case because we will not be using the TemplateResolvers
+        Validate.notNull(context, "Context cannot be null");
 
-        return parseTemplate(
+        return parse(
                 configuration,
                 ownerTemplate, template, null,
                 lineOffset, colOffset,
                 templateMode,
-                null,
+                context,
                 useCache);
 
     }
 
 
-    private ParsedTemplateModel parseTemplate(
+    private TemplateModel parse(
             final IEngineConfiguration configuration,
             final String ownerTemplate, final String template, final String[] selectors,
             final int lineOffset, final int colOffset,
@@ -287,7 +248,7 @@ public final class TemplateManager {
          * First look at the cache - it might be already cached
          */
         if (useCache && this.templateCache != null) {
-            final ParsedTemplateModel cached =  this.templateCache.get(cacheKey);
+            final TemplateModel cached =  this.templateCache.get(cacheKey);
             if (cached != null) {
                 return cached;
             }
@@ -312,8 +273,8 @@ public final class TemplateManager {
         /*
          *  Create the Template Handler that will be in charge of building a ParsedTemplateModel object as the result of reading the template
          */
-        final ParsedTemplateModel parsedTemplate = new ParsedTemplateModel(configuration, resolution.templateResolution);
-        final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(true, parsedTemplate.getInternalModel());
+        final TemplateModel parsedTemplate = new TemplateModel(configuration, resolution.templateResolution);
+        final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(parsedTemplate.getInternalModel());
 
 
         /*
@@ -321,7 +282,6 @@ public final class TemplateManager {
          */
         processResolvedResource(
                 configuration,
-                ParsableArtifactType.TEMPLATE,
                 ownerTemplate, resolution.resource, selectors,
                 lineOffset, colOffset,
                 resolution.templateResolution.getTemplateMode(),
@@ -346,177 +306,17 @@ public final class TemplateManager {
 
 
 
-
-    public ParsedFragmentModel parseStandaloneFragment(
-            final IEngineConfiguration configuration,
-            final String fragment, final String[] selectors,
-            final TemplateMode templateMode,
-            final IContext context,
-            final boolean useCache) {
-
-        Validate.notNull(configuration, "Engine Configuration cannot be null");
-        Validate.notNull(fragment, "Fragment cannot be null");
-        // selectors CAN be null if we are going to render the entire fragment
-        // templateMode CAN be null if we are going to use the mode specified by the template resolver
-        Validate.notNull(context, "Context cannot be null");
-
-        return parseFragment(
-                configuration,
-                null, fragment, selectors,
-                0, 0,
-                templateMode,
-                context,
-                useCache);
-
-    }
-
-
-    public ParsedFragmentModel parseNestedFragment(
-            final IEngineConfiguration configuration,
-            final String ownerTemplate, final String fragment,
-            final int lineOffset, final int colOffset,
-            final TemplateMode templateMode,
-            final boolean useCache) {
-
-        Validate.notNull(configuration, "Engine Configuration cannot be null");
-        Validate.notNull(ownerTemplate, "Owner template cannot be null");
-        Validate.notNull(fragment, "Fragment cannot be null");
-        // NOTE selectors cannot be specified when parsing a nested fragment
-        Validate.notNull(templateMode, "Template mode cannot be null");
-        // NOTE that context is not needed in this case because we will not be using the TemplateResolvers
-
-        return parseFragment(
-                configuration,
-                ownerTemplate, fragment, null,
-                lineOffset, colOffset,
-                templateMode,
-                null,
-                useCache);
-
-    }
-
-
-    private ParsedFragmentModel parseFragment(
-            final IEngineConfiguration configuration,
-            final String ownerTemplate, final String fragment, final String[] selectors,
-            final int lineOffset, final int colOffset,
-            final TemplateMode templateMode,
-            final IContext context,
-            final boolean useCache) {
-
-
-        final FragmentCacheKey cacheKey =
-                useCache? new FragmentCacheKey(ownerTemplate, fragment, selectors, lineOffset, colOffset, templateMode) : null;
-
-        /*
-         * First look at the cache - it might be already cached
-         */
-        if (useCache && this.fragmentCache != null) {
-            final ParsedFragmentModel cached =  this.fragmentCache.get(cacheKey);
-            if (cached != null) {
-                return cached;
-            }
-        }
-
-
-        final IResource computedResource;
-        final TemplateMode computedTemplateMode;
-        final ICacheEntryValidity computedCacheEntryValidity;
-
-        if (ownerTemplate != null) {
-            // This is a nested fragment (i.e. just a text from a template -- we don't need to resolve a template and
-            // match selectors). Also, we know that in this case, selectors == null.
-
-            /*
-             * Create the Resource (a StringResource, in this case) representing the fragment to parse
-             * Resource name will be its cache key, or the fragment itself if no cache is to be used
-             */
-            computedResource = new StringResource((cacheKey != null? cacheKey.toString() : fragment), fragment);
-
-            /*
-             * Template Mode has to be always specified (forced) for textual fragments
-             */
-            computedTemplateMode = templateMode;
-
-            /*
-             * Cache entry validity for textual fragments will be 'always' if cache is used
-             */
-            computedCacheEntryValidity = useCache? AlwaysValidCacheEntryValidity.INSTANCE : NonCacheableCacheEntryValidity.INSTANCE;
-
-        } else {
-            // This is not a nested fragment -- we need to resolve a template and, maybe, match selectors
-
-            /*
-             * Resolve the template, obtain the IResource and its metadata (TemplateResolution)
-             */
-            final Resolution resolution =
-                    resolve(configuration, configuration.getTemplateResolvers(), fragment, templateMode, context);
-
-            /*
-             * Assign the values
-             */
-            computedResource = resolution.resource;
-            computedTemplateMode = resolution.templateResolution.getTemplateMode();
-            computedCacheEntryValidity = resolution.templateResolution.getValidity();
-
-        }
-
-
-        /*
-         *  Create the Template Handler that will be in charge of building a ParsedTemplateModel object as the result of reading the template
-         */
-        final ParsedFragmentModel parsedFragment = new ParsedFragmentModel(configuration, computedTemplateMode, computedCacheEntryValidity);
-        final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(true, parsedFragment.getInternalModel());
-
-        /*
-         * PROCESS THE TEMPLATE
-         */
-        processResolvedResource(
-                configuration,
-                ParsableArtifactType.FRAGMENT,
-                ownerTemplate, computedResource, selectors,
-                lineOffset, colOffset,
-                computedTemplateMode,
-                builderHandler);
-
-
-        /*
-         * Cache the template if it is cacheable
-         */
-        if (useCache && this.fragmentCache != null) {
-            if (parsedFragment.getValidity().isCacheable()) {
-                this.fragmentCache.put(cacheKey, parsedFragment);
-            }
-        }
-
-        return parsedFragment;
-
-    }
-
-
-
-
-
-
     /*
      * ---------------
      * PROCESS methods
      * ---------------
      *
-     * Note ONLY TEMPLATES can be processed (not fragments). Fragments lack 'templateStart' and 'templateEnd'
-     * events, and are meant only to be parsed and then added to templates being processed. Templates, on the other
-     * hand, can not only be parsed (and then cached), but also completely processed and then its output written
-     * to a Writer. The very fact that the output of 'processing' is a Writer output requires the presence of
-     * 'templateStart' and 'templateEnd' events, so a 'processFragment' set of methods would not make sense.
-     *
-     * Also note that given fragments for a template cannot be parsed/processed for a different template mode than
-     * the template's, processing those (probably nested) fragments as complete templates in their required template
-     * mode is the only way to include them into the containing template. The most prominent example of this
-     * is the inlining mechanism.
+     * Processing is the act of resolving, parsing and executing a template, be it a standalone template or a
+     * nested one like e.g. an unescaped text, a conditional comment, etc.
      */
 
 
-    public void processStandaloneTemplate(
+    public void processStandalone(
             final IEngineConfiguration configuration,
             final String template, final String[] selectors,
             final TemplateMode templateMode,
@@ -531,7 +331,7 @@ public final class TemplateManager {
         Validate.notNull(context, "Context cannot be null");
         Validate.notNull(writer, "Writer cannot be null");
 
-        processTemplate(
+        process(
                 configuration,
                 null, template, selectors,
                 0, 0,
@@ -543,7 +343,7 @@ public final class TemplateManager {
     }
 
 
-    public void processNestedTemplate(
+    public void processNested(
             final IEngineConfiguration configuration,
             final String ownerTemplate, final String template,
             final int lineOffset, final int colOffset,
@@ -560,7 +360,7 @@ public final class TemplateManager {
         Validate.notNull(context, "Context cannot be null");
         Validate.notNull(writer, "Writer cannot be null");
 
-        processTemplate(
+        process(
                 configuration,
                 ownerTemplate, template, null,
                 lineOffset, colOffset,
@@ -572,7 +372,7 @@ public final class TemplateManager {
     }
 
 
-    private void processTemplate(
+    private void process(
             final IEngineConfiguration configuration,
             final String ownerTemplate, final String template, final String[] selectors,
             final int lineOffset, final int colOffset,
@@ -591,7 +391,7 @@ public final class TemplateManager {
          */
         if (useCache && this.templateCache != null) {
 
-            final ParsedTemplateModel cached =  this.templateCache.get(cacheKey);
+            final TemplateModel cached =  this.templateCache.get(cacheKey);
 
             if (cached != null) {
 
@@ -645,12 +445,11 @@ public final class TemplateManager {
          */
         if (useCache && resolution.templateResolution.getValidity().isCacheable() && this.templateCache != null) {
             // Create the handler chain to create the Template object
-            final ParsedTemplateModel parsedTemplate = new ParsedTemplateModel(processingContext.getConfiguration(), resolution.templateResolution);
-            final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(false, parsedTemplate.getInternalModel());
+            final TemplateModel parsedTemplate = new TemplateModel(processingContext.getConfiguration(), resolution.templateResolution);
+            final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(parsedTemplate.getInternalModel());
             // Process the cached template itself
             processResolvedResource(
                     processingContext.getConfiguration(),
-                    ParsableArtifactType.TEMPLATE,
                     ownerTemplate, resolution.resource, selectors,
                     lineOffset, colOffset,
                     processingContext.getTemplateMode(),
@@ -668,7 +467,6 @@ public final class TemplateManager {
          */
         processResolvedResource(
                 processingContext.getConfiguration(),
-                ParsableArtifactType.TEMPLATE,
                 ownerTemplate, resolution.resource, selectors,
                 lineOffset, colOffset,
                 processingContext.getTemplateMode(),
@@ -767,7 +565,6 @@ public final class TemplateManager {
 
     private void processResolvedResource(
             final IEngineConfiguration configuration,
-            final ParsableArtifactType artifactType,
             final String ownerTemplate, final IResource resource, final String[] selectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
@@ -791,33 +588,33 @@ public final class TemplateManager {
          */
         if (templateMode == TemplateMode.HTML) {
             if (ownerTemplate == null) {
-                this.htmlParser.parseStandalone(configuration, artifactType, resource, selectors, templateMode, templateHandler);
+                this.htmlParser.parseStandalone(configuration, resource, selectors, templateMode, templateHandler);
             } else {
-                this.htmlParser.parseNested(configuration, artifactType, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
+                this.htmlParser.parseNested(configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else if (templateMode == TemplateMode.XML) {
             if (ownerTemplate == null) {
-                this.xmlParser.parseStandalone(configuration, artifactType, resource, selectors, templateMode, templateHandler);
+                this.xmlParser.parseStandalone(configuration, resource, selectors, templateMode, templateHandler);
             } else {
-                this.xmlParser.parseNested(configuration, artifactType, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
+                this.xmlParser.parseNested(configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else if (templateMode == TemplateMode.TEXT) {
             if (ownerTemplate == null) {
-                this.textParser.parseStandalone(configuration, artifactType, resource, selectors, templateMode, templateHandler);
+                this.textParser.parseStandalone(configuration, resource, selectors, templateMode, templateHandler);
             } else {
-                this.textParser.parseNested(configuration, artifactType, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
+                this.textParser.parseNested(configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else if (templateMode == TemplateMode.JAVASCRIPT) {
             if (ownerTemplate == null) {
-                this.javascriptParser.parseStandalone(configuration, artifactType, resource, selectors, templateMode, templateHandler);
+                this.javascriptParser.parseStandalone(configuration, resource, selectors, templateMode, templateHandler);
             } else {
-                this.javascriptParser.parseNested(configuration, artifactType, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
+                this.javascriptParser.parseNested(configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else if (templateMode == TemplateMode.CSS) {
             if (ownerTemplate == null) {
-                this.cssParser.parseStandalone(configuration, artifactType, resource, selectors, templateMode, templateHandler);
+                this.cssParser.parseStandalone(configuration, resource, selectors, templateMode, templateHandler);
             } else {
-                this.cssParser.parseNested(configuration, artifactType, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
+                this.cssParser.parseNested(configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else {
             throw new IllegalArgumentException(
@@ -843,7 +640,7 @@ public final class TemplateManager {
 
 
 
-    private static void processParsedModel(final ParsedTemplateModel template, final ITemplateHandler templateHandler) {
+    private static void processParsedModel(final TemplateModel template, final ITemplateHandler templateHandler) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Starting processing of template \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template.getTemplateResolution().getTemplateName()));

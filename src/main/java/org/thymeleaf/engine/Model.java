@@ -85,15 +85,15 @@ final class Model implements IModel {
 
             this.queue.resetAsCloneOf(((Model)model).queue, true);
 
-        } else if (model instanceof ImmutableModel) {
+        } else if (model instanceof TemplateModel) {
 
-            this.queue.resetAsCloneOf(((ImmutableModel)model).getInternalModel().queue, true);
+            this.queue.resetAsCloneOf(((TemplateModel)model).getInternalModel().queue, true);
 
         } else {
 
             final int modelSize = model.size();
             for (int i = 0; i < modelSize; i++) {
-                this.queue.add(asEngineEvent(this.configuration, this.templateMode, model.get(i), true), false);
+                this.queue.build(asEngineEvent(this.configuration, this.templateMode, model.get(i), true));
             }
 
         }

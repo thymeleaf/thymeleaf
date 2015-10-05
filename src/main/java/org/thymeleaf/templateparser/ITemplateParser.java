@@ -36,7 +36,6 @@ public interface ITemplateParser {
 
     public void parseStandalone(
                       final IEngineConfiguration configuration,
-                      final ParsableArtifactType artifactType,
                       final IResource resource,
                       final String[] selectors,
                       final TemplateMode templateMode,
@@ -45,7 +44,6 @@ public interface ITemplateParser {
 
     public void parseNested(
                       final IEngineConfiguration configuration,
-                      final ParsableArtifactType artifactType,
                       final String ownerTemplate,
                       final IResource resource,
                       final int lineOffset, final int colOffset,

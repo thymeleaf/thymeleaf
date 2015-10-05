@@ -23,8 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import org.thymeleaf.engine.ParsedFragmentModel;
-import org.thymeleaf.engine.ParsedTemplateModel;
+import org.thymeleaf.engine.TemplateModel;
 
 
 /**
@@ -43,12 +42,9 @@ import org.thymeleaf.engine.ParsedTemplateModel;
 public abstract class AbstractCacheManager implements ICacheManager {
 
 
-    private volatile ICache<TemplateCacheKey,ParsedTemplateModel> templateCache;
+    private volatile ICache<TemplateCacheKey,TemplateModel> templateCache;
     private volatile boolean templateCacheInitialized = false;
-    
-    private volatile ICache<FragmentCacheKey,ParsedFragmentModel> fragmentCache;
-    private volatile boolean fragmentCacheInitialized = false;
-    
+
     private volatile ICache<String,Object> expressionCache;
     private volatile boolean expressionCacheInitialized = false;
     
@@ -61,7 +57,7 @@ public abstract class AbstractCacheManager implements ICacheManager {
     }
     
     
-    public final ICache<TemplateCacheKey, ParsedTemplateModel> getTemplateCache() {
+    public final ICache<TemplateCacheKey, TemplateModel> getTemplateCache() {
         if (!this.templateCacheInitialized) {
             synchronized(this) {
                 if (!this.templateCacheInitialized) {
@@ -71,19 +67,6 @@ public abstract class AbstractCacheManager implements ICacheManager {
             }
         }
         return this.templateCache;
-    }
-
-    
-    public final ICache<FragmentCacheKey, ParsedFragmentModel> getFragmentCache() {
-        if (!this.fragmentCacheInitialized) {
-            synchronized(this) {
-                if (!this.fragmentCacheInitialized) {
-                    this.fragmentCache = initializeFragmentCache();
-                    this.fragmentCacheInitialized = true;
-                }
-            }
-        }
-        return this.fragmentCache;
     }
 
     
@@ -126,16 +109,11 @@ public abstract class AbstractCacheManager implements ICacheManager {
 
     public void clearAllCaches() {
 
-        final ICache<TemplateCacheKey, ParsedTemplateModel> templateCacheObj = getTemplateCache();
+        final ICache<TemplateCacheKey, TemplateModel> templateCacheObj = getTemplateCache();
         if (templateCacheObj != null) {
             templateCacheObj.clear();
         }
-        
-        final ICache<FragmentCacheKey, ParsedFragmentModel> fragmentCacheObj = getFragmentCache();
-        if (fragmentCacheObj != null) {
-            fragmentCacheObj.clear();
-        }
-        
+
         final ICache<String, Properties> messageCacheObj = getMessageCache();
         if (messageCacheObj != null) {
             messageCacheObj.clear();
@@ -159,10 +137,8 @@ public abstract class AbstractCacheManager implements ICacheManager {
     }
 
 
-    protected abstract ICache<TemplateCacheKey,ParsedTemplateModel> initializeTemplateCache();
+    protected abstract ICache<TemplateCacheKey,TemplateModel> initializeTemplateCache();
 
-    protected abstract ICache<FragmentCacheKey,ParsedFragmentModel> initializeFragmentCache();
-    
     protected abstract ICache<String,Properties> initializeMessageCache();
     
     protected abstract ICache<String,Object> initializeExpressionCache();

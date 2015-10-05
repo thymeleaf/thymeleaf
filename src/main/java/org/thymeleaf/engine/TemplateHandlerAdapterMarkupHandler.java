@@ -24,7 +24,6 @@ import org.attoparser.ParseException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateparser.ParsableArtifactType;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.Validate;
 
@@ -39,7 +38,6 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
     private static final String ATTRIBUTE_EQUALS_OPERATOR = "=";
 
     private final String templateName;
-    private final ParsableArtifactType artifactType;
     private final ITemplateHandler templateHandler;
     private final ITextRepository textRepository;
     private final ElementDefinitions elementDefinitions;
@@ -66,7 +64,6 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
     
     public TemplateHandlerAdapterMarkupHandler(final String templateName,
-                                               final ParsableArtifactType artifactType,
                                                final ITemplateHandler templateHandler,
                                                final ITextRepository textRepository,
                                                final ElementDefinitions elementDefinitions,
@@ -75,7 +72,6 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
                                                final int lineOffset, final int colOffset) {
         super();
 
-        Validate.notNull(artifactType, "Artifact Type cannot be null");
         Validate.notNull(templateHandler, "Template handler cannot be null");
         Validate.notNull(textRepository, "Text Repository cannot be null");
         Validate.notNull(elementDefinitions, "Element Definitions repository cannot be null");
@@ -83,7 +79,6 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         Validate.notNull(templateMode, "Template mode cannot be null");
 
         this.templateName = templateName;
-        this.artifactType = artifactType;
 
         this.templateHandler = templateHandler;
 
@@ -124,19 +119,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final long startTimeNanos, final int line, final int col)
             throws ParseException {
 
-        // We will only be issuing template start/end events on the top level templates, and never on the fragments
-        // being parsed as a part of a th:insert/th:replace etc. in order to add their markup to the top level template.
-        // The reason for this is that it would make no sense to have these events suspended during DOM-tree caching,
-        // or iterations, or any similar processing mechanism, given the fact that these template start/end events do
-        // not model nodes, nor any part of any type of node.
-        // IMPORTANT: note that partial renderings of templates (like e.g. a Spring controller returning "home :: main"
-        // as a template name) are indeed top level templates. These are simply templates that have been applied a
-        // markup selector, but they are not fragments meant to be included in other higher-level templates being
-        // processed.
-        if (this.artifactType == ParsableArtifactType.TEMPLATE) {
-            this.templateStart.reset(startTimeNanos, this.templateName, this.lineOffset + line, (line == 1 ? this.colOffset : 0) + col);
-            this.templateHandler.handleTemplateStart(this.templateStart);
-        }
+        this.templateStart.reset(startTimeNanos, this.templateName, this.lineOffset + line, (line == 1 ? this.colOffset : 0) + col);
+        this.templateHandler.handleTemplateStart(this.templateStart);
 
     }
 
@@ -146,19 +130,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final long endTimeNanos, final long totalTimeNanos, final int line, final int col)
             throws ParseException {
 
-        // We will only be issuing template start/end events on the top level templates, and never on the fragments
-        // being parsed as a part of a th:insert/th:replace etc. in order to add their markup to the top level template.
-        // The reason for this is that it would make no sense to have these events suspended during DOM-tree caching,
-        // or iterations, or any similar processing mechanism, given the fact that these template start/end events do
-        // not model nodes, nor any part of any type of node.
-        // IMPORTANT: note that partial renderings of templates (like e.g. a Spring controller returning "home :: main"
-        // as a template name) are indeed top level templates. These are simply templates that have been applied a
-        // markup selector, but they are not fragments meant to be included in other higher-level templates being
-        // processed.
-        if (this.artifactType == ParsableArtifactType.TEMPLATE) {
-            this.templateEnd.reset(endTimeNanos, totalTimeNanos, this.templateName, this.lineOffset + line, (line == 1 ? this.colOffset : 0) + col);
-            this.templateHandler.handleTemplateEnd(this.templateEnd);
-        }
+        this.templateEnd.reset(endTimeNanos, totalTimeNanos, this.templateName, this.lineOffset + line, (line == 1 ? this.colOffset : 0) + col);
+        this.templateHandler.handleTemplateEnd(this.templateEnd);
 
     }
 

@@ -20,6 +20,7 @@
 package org.thymeleaf.engine;
 
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.Context;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
@@ -98,12 +99,12 @@ public class StandardModelFactory implements IModelFactory {
 
 
 
-    public IModel parse(final String fragment) {
+    public IModel parse(final String template) {
         // We will be setting useCache to false because we don't want to pollute the cache with mere String
         // parsing done from here. Also, we are 'artificially' specifying it as nested even if we don't really
         // know if this fragment is exactly a nested text inside the template, but that's not really important...
-        return this.templateManager.parseNestedFragment(
-                this.configuration, this.template, fragment, 0, 0, this.templateMode, false);
+        return this.templateManager.parseNested(
+                this.configuration, this.template, template, 0, 0, this.templateMode, new Context(), false);
     }
 
 

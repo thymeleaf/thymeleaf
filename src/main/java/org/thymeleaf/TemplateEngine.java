@@ -1104,26 +1104,26 @@ public class TemplateEngine implements ITemplateEngine {
             if (logger.isTraceEnabled()) {
                 if (selectors == null || selectors.length == 0) {
                     logger.trace("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH LOCALE {}",
-                            new Object[] {TemplateEngine.threadIndex(), template, context.getLocale()});
+                            new Object[]{TemplateEngine.threadIndex(), template, context.getLocale()});
                 } else {
                     logger.trace("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH SELECTORS {} AND LOCALE {}",
-                            new Object[] {TemplateEngine.threadIndex(), template, Arrays.asList(selectors), context.getLocale()});
+                            new Object[]{TemplateEngine.threadIndex(), template, Arrays.asList(selectors), context.getLocale()});
                 }
             }
 
             final long startNanos = System.nanoTime();
             
-            this.templateManager.processStandaloneTemplate(this.configuration, template, selectors, templateMode, context, writer, true);
+            this.templateManager.processStandalone(this.configuration, template, selectors, templateMode, context, writer, true);
 
             final long endNanos = System.nanoTime();
             
             if (logger.isTraceEnabled()) {
                 if (selectors == null || selectors.length == 0) {
                     logger.trace("[THYMELEAF][{}] FINISHED PROCESS AND OUTPUT OF TEMPLATE \"{}\" WITH LOCALE {}",
-                            new Object[] {TemplateEngine.threadIndex(), template, context.getLocale()});
+                            new Object[]{TemplateEngine.threadIndex(), template, context.getLocale()});
                 } else {
                     logger.trace("[THYMELEAF][{}] FINISHED PROCESS AND OUTPUT OF TEMPLATE \"{}\" WITH SELECTORS {} AND LOCALE {}",
-                            new Object[] {TemplateEngine.threadIndex(), template, Arrays.asList(selectors), context.getLocale()});
+                            new Object[]{TemplateEngine.threadIndex(), template, Arrays.asList(selectors), context.getLocale()});
                 }
             }
 
@@ -1133,13 +1133,13 @@ public class TemplateEngine implements ITemplateEngine {
                 if (selectors == null || selectors.length == 0) {
                     timerLogger.trace(
                             "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH LOCALE {} PROCESSED IN {} nanoseconds (approx. {}ms)",
-                            new Object[] {TemplateEngine.threadIndex(),
+                            new Object[]{TemplateEngine.threadIndex(),
                                     template, context.getLocale(), elapsed, elapsedMs,
                                     template, context.getLocale(), elapsed, elapsedMs});
                 } else {
                     timerLogger.trace(
                             "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH SELECTORS {} AND LOCALE {} PROCESSED IN {} nanoseconds (approx. {}ms)",
-                            new Object[] {TemplateEngine.threadIndex(),
+                            new Object[]{TemplateEngine.threadIndex(),
                                     template, context.getLocale(), elapsed, elapsedMs,
                                     template, Arrays.asList(selectors), context.getLocale(), elapsed, elapsedMs});
                 }

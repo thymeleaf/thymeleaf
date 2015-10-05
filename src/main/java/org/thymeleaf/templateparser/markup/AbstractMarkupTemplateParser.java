@@ -40,7 +40,6 @@ import org.thymeleaf.resource.ReaderResource;
 import org.thymeleaf.resource.StringResource;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.ITemplateParser;
-import org.thymeleaf.templateparser.ParsableArtifactType;
 import org.thymeleaf.templateparser.reader.ParserLevelCommentMarkupReader;
 import org.thymeleaf.templateparser.reader.PrototypeOnlyCommentMarkupReader;
 import org.thymeleaf.util.Validate;
@@ -79,28 +78,25 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
     public void parseStandalone(
             final IEngineConfiguration configuration,
-            final ParsableArtifactType artifactType,
             final IResource resource,
             final String[] selectors,
             final TemplateMode templateMode,
             final ITemplateHandler handler) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
-        Validate.notNull(artifactType, "Artifact Type cannot be null");
         Validate.notNull(resource, "Resource cannot be null");
         // selectors CAN be null if we are going to render the entire template
         Validate.notNull(templateMode, "Template Mode cannot be null");
         Validate.isTrue(templateMode.isMarkup(), "Template Mode has to be a markup template mode");
         Validate.notNull(handler, "Template Handler cannot be null");
 
-        parse(configuration, artifactType, null, resource, selectors, 0, 0, templateMode, handler);
+        parse(configuration, null, resource, selectors, 0, 0, templateMode, handler);
 
     }
 
 
     public void parseNested(
             final IEngineConfiguration configuration,
-            final ParsableArtifactType artifactType,
             final String ownerTemplate,
             final IResource resource,
             final int lineOffset, final int colOffset,
@@ -108,7 +104,6 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             final ITemplateHandler handler) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
-        Validate.notNull(artifactType, "Artifact Type cannot be null");
         Validate.notNull(ownerTemplate, "Owner template cannot be null");
         Validate.notNull(resource, "Template cannot be null");
         // NOTE selectors cannot be specified when parsing a nested template
@@ -116,7 +111,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
         Validate.isTrue(templateMode.isMarkup(), "Template Mode has to be a markup template mode");
         Validate.notNull(handler, "Template Handler cannot be null");
 
-        parse(configuration, artifactType, ownerTemplate, resource, null, lineOffset, colOffset, templateMode, handler);
+        parse(configuration, ownerTemplate, resource, null, lineOffset, colOffset, templateMode, handler);
 
     }
 
@@ -124,7 +119,6 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
     private void parse(
             final IEngineConfiguration configuration,
-            final ParsableArtifactType artifactType,
             final String ownerTemplate, final IResource resource, final String[] selectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
@@ -148,7 +142,6 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             IMarkupHandler handler =
                         new TemplateHandlerAdapterMarkupHandler(
                                 templateName,
-                                artifactType,
                                 templateHandler,
                                 configuration.getTextRepository(),
                                 configuration.getElementDefinitions(),

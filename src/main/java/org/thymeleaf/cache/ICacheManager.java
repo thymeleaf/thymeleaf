@@ -22,8 +22,7 @@ package org.thymeleaf.cache;
 import java.util.List;
 import java.util.Properties;
 
-import org.thymeleaf.engine.ParsedFragmentModel;
-import org.thymeleaf.engine.ParsedTemplateModel;
+import org.thymeleaf.engine.TemplateModel;
 
 
 /**
@@ -83,30 +82,8 @@ public interface ICacheManager {
      * 
      * @return the cache of parsed templates.
      */
-    public ICache<TemplateCacheKey,ParsedTemplateModel> getTemplateCache();
-    
-    /**
-     * <p>
-     *   Returns the cache of template code fragments.
-     * </p>
-     * <p>
-     *   Typical examples of these fragments are externalized/internationalized messages like:
-     * </p>
-     * <code>
-     *   home.header=Welcome to the &lt;i&gt;fruit market&lt;/i&gt;!
-     * </code>
-     * <p>
-     *   ...which are used in templates like <tt>th:utext="#{home.header}"</tt>.
-     * </p>
-     * <p>
-     *   Keys in this cache are the String representation of fragments themselves along with
-     *   the name of the template they come from.
-     * </p>
-     *
-     * @return the cache of parsed template code fragments
-     */
-    public ICache<FragmentCacheKey,ParsedFragmentModel> getFragmentCache();
-    
+    public ICache<TemplateCacheKey,TemplateModel> getTemplateCache();
+
     /**
      * <p>
      *   Returns the cache used for externalized/internationalized messages.

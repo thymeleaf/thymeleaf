@@ -25,7 +25,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.ParsedFragmentModel;
+import org.thymeleaf.engine.TemplateModel;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.postprocessor.IPostProcessor;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
@@ -100,12 +100,13 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
             return;
         }
 
-        final ParsedFragmentModel parsedFragment =
-                processingContext.getTemplateManager().parseNestedFragment(
+        final TemplateModel parsedFragment =
+                processingContext.getTemplateManager().parseNested(
                         processingContext.getConfiguration(),
                         attributeTemplateName, unescapedText,
                         0, 0, // we won't apply offset here because the inserted text does not really come from the template itself
                         processingContext.getTemplateMode(),
+                        processingContext.getVariables(),
                         false); // useCache == false because we could potentially pollute the cache with too many entries (th:utext is too variable!)
 
         // Setting 'processable' to false avoiding text inliners processing already generated text,

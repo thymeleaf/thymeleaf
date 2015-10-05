@@ -24,7 +24,7 @@ import java.util.Map;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.ParsedFragmentModel;
+import org.thymeleaf.engine.TemplateModel;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IElementAttributes;
@@ -32,6 +32,7 @@ import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.ITemplateEvent;
+import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.standard.expression.FragmentSelectionUtils;
@@ -115,8 +116,8 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          * OBTAIN THE FRAGMENT MODEL from the TemplateManager. This means the fragment will be parsed and maybe
          * cached, and we will be returned an immutable model object (specifically a ParsedFragmentModel)
          */
-        final ParsedFragmentModel parsedFragment =
-                    processingContext.getTemplateManager().parseStandaloneFragment(
+        final TemplateModel parsedFragment =
+                    processingContext.getTemplateManager().parseStandalone(
                             processingContext.getConfiguration(),
                             templateName, fragments,
                             // we actually 'force' the template mode of the inserted fragment to be the same. This
@@ -132,14 +133,17 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          * affect the way we apply the parameters to the fragment
          */
         final int parsedFragmentLen = parsedFragment.size();
-        final ITemplateEvent firstEvent = (parsedFragmentLen >= 1? parsedFragment.get(0) : null);
+        ITemplateEvent fragmentHolderEvent = (parsedFragmentLen >= 1? parsedFragment.get(0) : null);
+        if (fragmentHolderEvent != null && fragmentHolderEvent instanceof ITemplateStart) {
+            fragmentHolderEvent = (parsedFragmentLen >= 3? parsedFragment.get(1) : null);
+        }
 
         // We need to examine the first event just in case it contains a th:fragment matching the one we were looking
-        if (firstEvent instanceof IProcessableElementTag) {
+        if (fragmentHolderEvent instanceof IProcessableElementTag) {
 
             final String dialectPrefix = attributeName.getPrefix();
 
-            final IElementAttributes elementAttributes = ((IProcessableElementTag)firstEvent).getAttributes();
+            final IElementAttributes elementAttributes = ((IProcessableElementTag)fragmentHolderEvent).getAttributes();
             if (elementAttributes.hasAttribute(dialectPrefix, FRAGMENT_ATTR_NAME)) {
                 // The selected fragment actually has a "th:fragment" attribute, so we should process its signature
 

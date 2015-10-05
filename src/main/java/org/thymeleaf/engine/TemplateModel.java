@@ -44,6 +44,7 @@ import org.thymeleaf.model.IText;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.processor.element.IElementProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.util.Validate;
 
 
@@ -53,17 +54,32 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-class ImmutableModel implements IModel {
+public final class TemplateModel implements IModel {
 
     private final Model model;
+    private final TemplateResolution templateResolution;
 
 
-    // Protected constructor, meant only to be called from this class's children
-    protected ImmutableModel(final IEngineConfiguration configuration, final TemplateMode templateMode) {
+
+    // Package-protected constructor, because we don't want anyone creating these objects from outside the engine.
+    // Specifically, they will only be created from the TemplateManager.
+    // If a processor (be it standard or custom-made) wants to create a piece of model, that should be a Model
+    // object, not this.
+    TemplateModel(final IEngineConfiguration configuration, final TemplateResolution templateResolution) {
+        
         super();
+        
         Validate.notNull(configuration, "Engine Configuration cannot be null");
-        Validate.notNull(templateMode, "Template Mode cannot be null");
-        this.model = new Model(configuration, templateMode);
+        Validate.notNull(templateResolution, "Template Resolution cannot be null");
+        
+        this.model = new Model(configuration, templateResolution.getTemplateMode());
+        this.templateResolution = templateResolution;
+        
+    }
+
+
+    public final TemplateResolution getTemplateResolution() {
+        return this.templateResolution;
     }
 
 
@@ -199,18 +215,18 @@ class ImmutableModel implements IModel {
     private static void immutableModelException() {
         throw new UnsupportedOperationException(
                 "Modifications are not allowed on immutable model objects. This model object is an immutable " +
-                "implementation of the " + IModel.class.getName() + " interface, and no modifications are allowed in " +
-                "order to keep cache consistency and improve performance. To modify model events, convert first your " +
-                "immutable model object to a mutable one by means of the " + IModel.class.getName() + "#cloneModel() method");
+                        "implementation of the " + IModel.class.getName() + " interface, and no modifications are allowed in " +
+                        "order to keep cache consistency and improve performance. To modify model events, convert first your " +
+                        "immutable model object to a mutable one by means of the " + IModel.class.getName() + "#cloneModel() method");
     }
 
 
     private static void immutableEventException() {
         throw new UnsupportedOperationException(
                 "Modifications are not allowed on immutable events. This event object was returned by an immutable " +
-                "implementation of the " + IModel.class.getName() + " interface, and no modifications are allowed in " +
-                "order to keep cache consistency and improve performance. To modify model events, convert first your " +
-                "immutable model object to a mutable one by means of the " + IModel.class.getName() + "#cloneModel() method");
+                        "implementation of the " + IModel.class.getName() + " interface, and no modifications are allowed in " +
+                        "order to keep cache consistency and improve performance. To modify model events, convert first your " +
+                        "immutable model object to a mutable one by means of the " + IModel.class.getName() + "#cloneModel() method");
     }
 
 
@@ -266,7 +282,7 @@ class ImmutableModel implements IModel {
         }
 
         public ITemplateStart cloneEvent() {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
             return null;
         }
 
@@ -296,7 +312,7 @@ class ImmutableModel implements IModel {
         }
 
         public ITemplateEnd cloneEvent() {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
             return null;
         }
 
@@ -330,7 +346,7 @@ class ImmutableModel implements IModel {
         }
 
         public void setText(final CharSequence text) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void accept(final IModelVisitor visitor) {
@@ -338,7 +354,7 @@ class ImmutableModel implements IModel {
         }
 
         public IText cloneEvent() {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
             return null;
         }
 
@@ -376,7 +392,7 @@ class ImmutableModel implements IModel {
         }
 
         public void setContent(final String content) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void accept(final IModelVisitor visitor) {
@@ -384,7 +400,7 @@ class ImmutableModel implements IModel {
         }
 
         public ICDATASection cloneEvent() {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
             return null;
         }
 
@@ -422,7 +438,7 @@ class ImmutableModel implements IModel {
         }
 
         public void setContent(final String content) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void accept(final IModelVisitor visitor) {
@@ -430,7 +446,7 @@ class ImmutableModel implements IModel {
         }
 
         public IComment cloneEvent() {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
             return null;
         }
 
@@ -476,27 +492,27 @@ class ImmutableModel implements IModel {
         }
 
         public void setKeyword(final String keyword) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void setElementName(final String elementName) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void setToHTML5() {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void setIDs(final String publicId, final String systemId) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void setIDs(final String type, final String publicId, final String systemId) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void setInternalSubset(final String internalSubset) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void accept(final IModelVisitor visitor) {
@@ -504,7 +520,7 @@ class ImmutableModel implements IModel {
         }
 
         public IDocType cloneEvent() {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
             return null;
         }
 
@@ -534,11 +550,11 @@ class ImmutableModel implements IModel {
         }
 
         public void setTarget(final String target) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void setContent(final String content) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void accept(final IModelVisitor visitor) {
@@ -546,7 +562,7 @@ class ImmutableModel implements IModel {
         }
 
         public IProcessingInstruction cloneEvent() {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
             return null;
         }
 
@@ -584,15 +600,15 @@ class ImmutableModel implements IModel {
         }
 
         public void setVersion(final String version) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void setEncoding(final String encoding) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void setStandalone(final String standalone) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void accept(final IModelVisitor visitor) {
@@ -600,7 +616,7 @@ class ImmutableModel implements IModel {
         }
 
         public IXMLDeclaration cloneEvent() {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
             return null;
         }
 
@@ -713,39 +729,39 @@ class ImmutableModel implements IModel {
         }
 
         public void clearAll() {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void setAttribute(final String completeName, final String value) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void setAttribute(final String completeName, final String value, final ValueQuotes valueQuotes) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value, final ValueQuotes valueQuotes) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void removeAttribute(final String prefix, final String name) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void removeAttribute(final String completeName) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void removeAttribute(final AttributeName attributeName) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public void write(final Writer writer) throws IOException {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
     }
@@ -788,7 +804,7 @@ class ImmutableModel implements IModel {
         }
 
         public void precomputeAssociatedProcessors() {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public boolean hasAssociatedProcessors() {
@@ -818,7 +834,7 @@ class ImmutableModel implements IModel {
         }
 
         public void setMinimized(final boolean minimized) {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
         }
 
         public boolean isSynthetic() {
@@ -830,7 +846,7 @@ class ImmutableModel implements IModel {
         }
 
         public IStandaloneElementTag cloneEvent() {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
             return null;
         }
 
@@ -857,7 +873,7 @@ class ImmutableModel implements IModel {
         }
 
         public IOpenElementTag cloneEvent() {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
             return null;
         }
 
@@ -888,15 +904,11 @@ class ImmutableModel implements IModel {
         }
 
         public ICloseElementTag cloneEvent() {
-            ImmutableModel.immutableEventException();
+            immutableEventException();
             return null;
         }
 
     }
-
-
-
-
 
 
 }

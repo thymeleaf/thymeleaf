@@ -24,6 +24,8 @@ import java.util.Arrays;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IModel;
+import org.thymeleaf.model.ITemplateEnd;
+import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -96,10 +98,32 @@ final class EngineEventQueue {
 
 
     IEngineTemplateEvent get(final int pos) {
-        if (pos < 0 && pos >= this.queueSize) {
+        if (pos < 0 || pos > this.queueSize) {
             throw new IndexOutOfBoundsException("Requested position " + pos + " of event queue with size " + this.queueSize);
         }
         return this.queue[pos];
+    }
+
+
+    void build(final IEngineTemplateEvent event) {
+
+        if (event == null) {
+            return;
+        }
+
+        if (this.queue.length == this.queueSize) {
+            // We need to grow the queue!
+            final IEngineTemplateEvent[] newQueue = new IEngineTemplateEvent[Math.min(this.queue.length + 25, this.queue.length * 2)];
+            Arrays.fill(newQueue, null);
+            System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
+            this.queue = newQueue;
+        }
+
+        // Set the new event in its new position at the end
+        this.queue[this.queueSize] = event;
+
+        this.queueSize++;
+
     }
 
 
@@ -111,7 +135,7 @@ final class EngineEventQueue {
 
     void insert(final int pos, final IEngineTemplateEvent event, final boolean cloneAlways) {
 
-        if (pos < 0 && pos >= this.queueSize) {
+        if (pos < 0 || pos > this.queueSize) {
             throw new IndexOutOfBoundsException("Requested position " + pos + " of event queue with size " + this.queueSize);
         }
 
@@ -119,8 +143,24 @@ final class EngineEventQueue {
             return;
         }
 
+        // Check that the event that is going to be inserted is not a template start/end
+        if (event instanceof ITemplateStart || event instanceof ITemplateEnd) {
+            throw new TemplateProcessingException(
+                    "Cannot insert event of type " + event.getClass().getName() + " manually. Template start/end " +
+                    "events can only be added to models internally during template parsing.");
+        }
+
+        // Check that we are not trying to insert an event before a 'template start', or after a 'template end'
+        if (this.queueSize > 0) {
+            if (pos == 0 && this.queue[0] instanceof ITemplateStart) {
+                throw new TemplateProcessingException("Cannot insert event of type " + event.getClass().getName() + " before a 'template start' event");
+            } else if (pos == this.queueSize && this.queue[this.queueSize - 1] instanceof ITemplateEnd) {
+                throw new TemplateProcessingException("Cannot insert event of type " + event.getClass().getName() + " after a 'template end' event");
+            }
+        }
+
+        // Check there is room for a new event, or grow the queue if not
         if (this.queue.length == this.queueSize) {
-            // We need to grow the queue!
             final IEngineTemplateEvent[] newQueue = new IEngineTemplateEvent[Math.min(this.queue.length + 25, this.queue.length * 2)];
             Arrays.fill(newQueue, null);
             System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
@@ -145,11 +185,11 @@ final class EngineEventQueue {
 
     void insertModel(final int pos, final IModel imodel) {
 
-        if (pos < 0 && pos >= this.queueSize) {
+        if (pos < 0 || pos > this.queueSize) {
             throw new IndexOutOfBoundsException("Requested position " + pos + " of event queue with size " + this.queueSize);
         }
 
-        if (imodel == null) {
+        if (imodel == null || imodel.size() == 0) {
             return;
         }
 
@@ -168,38 +208,58 @@ final class EngineEventQueue {
 
 
         final Model model;
-        if (imodel instanceof ParsedTemplateModel) {
-            // This is forbidden - we cannot add something that is not a fragment, but an entire, top level template
-            throw new TemplateProcessingException(
-                    "Cannot add as fragment an entire, top-level template. The specified object should have been " +
-                    "parsed as fragment instead of template");
-        } else if (imodel instanceof ImmutableModel) {
+        if (imodel instanceof TemplateModel) {
             // No need to clone - argument is an immutable piece of model and therefore using it without cloning will
             // produce no side/undesired effects
-            model = ((ImmutableModel) imodel).getInternalModel();
+            model = ((TemplateModel) imodel).getInternalModel();
         } else {
             // This implementation does not directly come from the parser nor is immutable, so we must clone its events
             // to avoid interactions.
             model = new Model(imodel);
         }
 
-        final EngineEventQueue mdoelQueue = model.getEventQueue();
+        final EngineEventQueue modelQueue = model.getEventQueue();
 
-        if (this.queue.length <= (this.queueSize + mdoelQueue.queueSize)) {
+
+        // Compute whether the model to be inserted is surrounded by 'template start'/'template end' events
+        final boolean modelHasTemplateStart = modelQueue.queue[0] instanceof ITemplateStart;
+        final boolean modelHasTemplateEnd = modelQueue.queue[modelQueue.queueSize - 1] instanceof ITemplateEnd;
+        final boolean modelWrappedInBoundaries = modelHasTemplateStart && modelHasTemplateEnd;
+        if (!modelWrappedInBoundaries && (modelHasTemplateStart || modelHasTemplateEnd)) {
+            throw new TemplateProcessingException(
+                    "Cannot insert malformed model: Model is not properly surrounded by 'template start'/'template end' events. Models " +
+                    "should have either both events (as first and last) or none of them, but not just one of them.");
+        }
+
+        // Check that we are not trying to insert an event before a 'template start', or after a 'template end'
+        if (this.queueSize > 0) {
+            if (pos == 0 && this.queue[0] instanceof ITemplateStart) {
+                throw new TemplateProcessingException("Cannot insert model before a 'template start' event");
+            } else if (pos == this.queueSize && this.queue[this.queueSize - 1] instanceof ITemplateEnd) {
+                throw new TemplateProcessingException("Cannot insert model after a 'template end' event");
+            }
+        }
+
+        // Recompute insertion offset and inserted model size
+        final int insertionOffset = (modelWrappedInBoundaries? 1 : 0);
+        final int insertionSize = (modelWrappedInBoundaries? modelQueue.queueSize - 2 : modelQueue.queueSize);
+
+        // Check there is room for a new event, or grow the queue if not
+        if (this.queue.length <= (this.queueSize + insertionSize)) {
             // We need to grow the queue!
-            final IEngineTemplateEvent[] newQueue = new IEngineTemplateEvent[Math.max(this.queueSize + mdoelQueue.queueSize, this.queue.length + 25)];
+            final IEngineTemplateEvent[] newQueue = new IEngineTemplateEvent[Math.max(this.queueSize + insertionSize, this.queue.length + 25)];
             Arrays.fill(newQueue, null);
             System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
             this.queue = newQueue;
         }
 
         // Make room for the new events (if necessary because pos < this.queueSize)
-        System.arraycopy(this.queue, pos, this.queue, pos + mdoelQueue.queueSize, this.queueSize - pos);
+        System.arraycopy(this.queue, pos, this.queue, pos + insertionSize, this.queueSize - pos);
 
         // Copy the new events to their new position (no cloning needed here - if needed it would have been already done)
-        System.arraycopy(mdoelQueue.queue, 0, this.queue, pos, mdoelQueue.queueSize);
+        System.arraycopy(modelQueue.queue, insertionOffset, this.queue, pos, insertionSize);
 
-        this.queueSize += mdoelQueue.queueSize;
+        this.queueSize += insertionSize;
 
     }
 
@@ -207,7 +267,7 @@ final class EngineEventQueue {
 
     void remove(final int pos) {
 
-        if (pos < 0 && pos >= this.queueSize) {
+        if (pos < 0 || pos > this.queueSize) {
             throw new IndexOutOfBoundsException("Requested position " + pos + " of event queue with size " + this.queueSize);
         }
 
@@ -424,6 +484,9 @@ final class EngineEventQueue {
         this.queueSize = original.queueSize;
 
         if (!cloneEventArray) {
+            // There is only one scenario in which this makes sense: Model#process(ITemplateHandler)
+            // In that case, the EngineEventQueue object is cloned in order to have new buffers, but the queue itself
+            // does not need to.
             this.queue = original.queue;
             return;
         }
