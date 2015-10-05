@@ -21,7 +21,6 @@ package org.thymeleaf.testing.templateengine.engine.cache;
 
 import java.util.Set;
 
-import org.thymeleaf.cache.FragmentCacheKey;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheEntryValidityChecker;
 import org.thymeleaf.cache.TemplateCacheKey;
@@ -56,13 +55,6 @@ public final class TestCache<K,V> implements ICache<K,V> {
             final TemplateCacheKey cacheKey = (TemplateCacheKey)key;
             return new TemplateCacheKey(
                     cacheKey.getOwnerTemplate(), testName + "_" + cacheKey.getTemplate(), cacheKey.getSelectors(),
-                    cacheKey.getLineOffset(), cacheKey.getColOffset(),
-                    cacheKey.getTemplateMode());
-        }
-        if (key instanceof FragmentCacheKey) {
-            final FragmentCacheKey cacheKey = (FragmentCacheKey)key;
-            return new FragmentCacheKey(
-                    cacheKey.getOwnerTemplate(), testName + "_" + cacheKey.getFragment(), cacheKey.getSelectors(),
                     cacheKey.getLineOffset(), cacheKey.getColOffset(),
                     cacheKey.getTemplateMode());
         }
