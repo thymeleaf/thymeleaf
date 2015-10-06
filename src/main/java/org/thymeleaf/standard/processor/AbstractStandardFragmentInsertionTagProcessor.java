@@ -19,9 +19,12 @@
  */
 package org.thymeleaf.standard.processor;
 
+import java.io.StringWriter;
 import java.util.Map;
 
+import org.thymeleaf.context.ILocalVariableAwareVariablesMap;
 import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.IVariablesMap;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.TemplateModel;
@@ -59,11 +62,22 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
     private final boolean replaceHost;
+    // This flag should probably be removed once th:include is removed in 3.2 (deprecated in 3.0)
     private final boolean insertOnlyContents;
 
 
 
     protected AbstractStandardFragmentInsertionTagProcessor(
+            final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
+            final boolean replaceHost) {
+        this(dialect, templateMode, dialectPrefix, attrName, precedence, replaceHost, false);
+    }
+
+    /*
+     * This constructor has package visibility in order to avoid user-created subclasses to use it. This should
+     * only be used by the th:include processor, which was deprecated as of 3.0, and will be removed in 3.2.
+     */
+    AbstractStandardFragmentInsertionTagProcessor(
             final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
             final boolean replaceHost, final boolean insertOnlyContents) {
         super(dialect, templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
@@ -116,26 +130,25 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          * OBTAIN THE FRAGMENT MODEL from the TemplateManager. This means the fragment will be parsed and maybe
          * cached, and we will be returned an immutable model object (specifically a ParsedFragmentModel)
          */
-        final TemplateModel parsedFragment =
+        final TemplateModel fragmentModel =
                     processingContext.getTemplateManager().parseStandalone(
                             processingContext.getConfiguration(),
                             templateName, fragments,
-                            // we actually 'force' the template mode of the inserted fragment to be the same. This
-                            // gives us a little bit more flexibility including e.g. text templates inside HTML ones,
-                            // with the possibility of later applying inlining (text inlining in this case) to process
-                            // them.
-                            processingContext.getTemplateMode(),
+                            null, // we will not force the template mode
                             processingContext.getVariables(), true);
 
 
         /*
          * ONCE WE HAVE THE FRAGMENT MODEL (its events, in fact), CHECK THE FRAGMENT SIGNATURE which might
-         * affect the way we apply the parameters to the fragment
+         * affect the way we apply the parameters to the fragment.
+         *
+         * Note this works whatever the template mode of the inserted fragment, given we are looking for an
+         * element containing a "th:fragment/data-th-fragment" in a generic, non-template-dependent way.
          */
-        final int parsedFragmentLen = parsedFragment.size();
-        ITemplateEvent fragmentHolderEvent = (parsedFragmentLen >= 1? parsedFragment.get(0) : null);
+        final int parsedFragmentLen = fragmentModel.size();
+        ITemplateEvent fragmentHolderEvent = (parsedFragmentLen >= 1? fragmentModel.get(0) : null);
         if (fragmentHolderEvent != null && fragmentHolderEvent instanceof ITemplateStart) {
-            fragmentHolderEvent = (parsedFragmentLen >= 3? parsedFragment.get(1) : null);
+            fragmentHolderEvent = (parsedFragmentLen >= 3? fragmentModel.get(1) : null);
         }
 
         // We need to examine the first event just in case it contains a th:fragment matching the one we were looking
@@ -148,7 +161,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                 // The selected fragment actually has a "th:fragment" attribute, so we should process its signature
 
                 final String fragmentSignatureSpec =
-                        EscapedAttributeUtils.unescapeAttribute(processingContext.getTemplateMode(), elementAttributes.getValue(dialectPrefix, FRAGMENT_ATTR_NAME));
+                        EscapedAttributeUtils.unescapeAttribute(fragmentModel.getTemplateMode(), elementAttributes.getValue(dialectPrefix, FRAGMENT_ATTR_NAME));
                 if (!StringUtils.isEmptyOrWhitespace(fragmentSignatureSpec)) {
 
                     final FragmentSignature fragmentSignature =
@@ -163,6 +176,71 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                 }
 
             }
+
+        }
+
+
+        /*
+         * CHECK WHETHER THIS IS A CROSS-TEMPLATE-MODE INSERTION. Only TemplateModels for the same template mode
+         * can be safely inserted into the template being executed and processed just like any other sequences of
+         * events. If the inserted template has a different template mode, we will need to process it aside and
+         * obtain a String result for it, then insert such String as mere text.
+         *
+         * Note inserting large templates with a different template mode could therefore have a negative effect
+         * on performance and memory usage, as their result needs to be completely stored in memory at some point
+         * before being handled to the following phases of template processing. It is therefore recommended that
+         * cross-template-mode fragment insertion is done only for small fragments, in which case it will work
+         * almost the same as inlining (with the exception that the content to be inlined will be retrieved from
+         * somewhere else by means of template resolution).
+         */
+        if (processingContext.getTemplateMode() != fragmentModel.getTemplateMode()) {
+
+            // Check if this is a th:include. If so, just don't allow
+            if (this.insertOnlyContents) {
+                throw new TemplateProcessingException(
+                        "Template being processed uses template mode " + processingContext.getTemplateMode() + ", " +
+                        "inserted fragment \"" + attributeValue + "\" uses template mode " +
+                        fragmentModel.getTemplateMode() + ". Cross-template-mode fragment insertion is not " +
+                        "allowed using the " + attributeName + " attribute, which is considered deprecated as " +
+                        "of Thymeleaf 3.0. Use {th:insert,data-th-insert} or {th:replace,data-th-replace} " +
+                        "instead, which do not remove the container element from the fragment being inserted.");
+            }
+
+            final IVariablesMap variablesMap = processingContext.getVariables();
+
+            // If there are parameters specified, we will need to add them directly to the variables map instead of
+            // doing it through the structure handler (we are going to perform a nested template processing operation)
+            if (fragmentParameters != null && fragmentParameters.size() > 0) {
+
+                if (!(variablesMap instanceof ILocalVariableAwareVariablesMap)) {
+                    throw new TemplateProcessingException(
+                            "Parameterized fragment insertion is not supported because local variable support is DISABLED. This is due to " +
+                            "the use of an implementation of the " + IVariablesMap.class.getName() + " interface that does " +
+                            "not provide local-variable support. In order to have local-variable support, the variables map " +
+                            "implementation should also implement the " + ILocalVariableAwareVariablesMap.class.getName() +
+                            " interface");
+                }
+
+                final ILocalVariableAwareVariablesMap localVariablesMap = (ILocalVariableAwareVariablesMap) variablesMap;
+
+                for (final Map.Entry<String,Object> fragmentParameterEntry : fragmentParameters.entrySet()) {
+                    localVariablesMap.put(fragmentParameterEntry.getKey(), fragmentParameterEntry.getValue());
+                }
+
+            }
+
+            // Once parameters are in order, just process the template in a nested template engine execution
+            final StringWriter stringWriter = new StringWriter();
+            processingContext.getTemplateManager().process(fragmentModel, variablesMap, stringWriter);
+
+            // We will insert the result as NON-PROCESSABLE text (it's already been processed!)
+            if (this.replaceHost) {
+                structureHandler.replaceWith(stringWriter.toString(), false);
+            } else {
+                structureHandler.setBody(stringWriter.toString(), false);
+            }
+
+            return;
 
         }
 
@@ -189,7 +267,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
              * them, along with anything else that is also at that level 0.
              */
 
-            final IModel model = parsedFragment.cloneModel();
+            final IModel model = fragmentModel.cloneModel();
             int modelLevel = 0;
             int n = model.size();
             while (n-- != 0) { // We traverse backwards so that we can modify at the same time
@@ -228,9 +306,9 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
         if (this.replaceHost) {
-            structureHandler.replaceWith(parsedFragment, true);
+            structureHandler.replaceWith(fragmentModel, true);
         } else {
-            structureHandler.setBody(parsedFragment, true);
+            structureHandler.setBody(fragmentModel, true);
         }
 
     }

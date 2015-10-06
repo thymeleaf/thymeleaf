@@ -39,7 +39,7 @@ public final class StandardInsertTagProcessor extends AbstractStandardFragmentIn
 
 
     public StandardInsertTagProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix) {
-        super(dialect, templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, false, false);
+        super(dialect, templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, false);
     }
 
 

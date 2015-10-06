@@ -311,12 +311,49 @@ public final class TemplateManager {
      * PROCESS methods
      * ---------------
      *
-     * Processing is the act of resolving, parsing and executing a template, be it a standalone template or a
-     * nested one like e.g. an unescaped text, a conditional comment, etc.
+     * Processing means executing a template that has already been parsed into a TemplateModel object
      */
 
 
-    public void processStandalone(
+    public void process(
+            final TemplateModel template,
+            final IContext context,
+            final Writer writer) {
+
+        /*
+         * Create the Processing Context instance that corresponds to this execution of the template engine
+         */
+        final ITemplateProcessingContext processingContext =
+                new TemplateProcessingContext(template.getConfiguration(), this, template.getTemplateResolution(), context);
+
+        /*
+         * Create the handler chain to process the data
+         */
+        final ITemplateHandler processingHandlerChain = createTemplateProcessingHandlerChain(processingContext, writer);
+
+        /*
+         *  Process the template
+         */
+        processTemplateModel(template, processingHandlerChain);
+
+    }
+
+
+
+
+
+
+    /*
+     * -------------------------
+     * PARSE-AND-PROCESS methods
+     * -------------------------
+     *
+     * These methods perform the whole cycle of a template's processing: resolving, parsing and processing it, be
+     * it a standalone template or a nested one like e.g. an unescaped text, a conditional comment, etc.
+     */
+
+
+    public void parseAndProcessStandalone(
             final IEngineConfiguration configuration,
             final String template, final String[] selectors,
             final TemplateMode templateMode,
@@ -331,7 +368,7 @@ public final class TemplateManager {
         Validate.notNull(context, "Context cannot be null");
         Validate.notNull(writer, "Writer cannot be null");
 
-        process(
+        parseAndProcess(
                 configuration,
                 null, template, selectors,
                 0, 0,
@@ -343,7 +380,7 @@ public final class TemplateManager {
     }
 
 
-    public void processNested(
+    public void parseAndProcessNested(
             final IEngineConfiguration configuration,
             final String ownerTemplate, final String template,
             final int lineOffset, final int colOffset,
@@ -360,7 +397,7 @@ public final class TemplateManager {
         Validate.notNull(context, "Context cannot be null");
         Validate.notNull(writer, "Writer cannot be null");
 
-        process(
+        parseAndProcess(
                 configuration,
                 ownerTemplate, template, null,
                 lineOffset, colOffset,
@@ -372,7 +409,7 @@ public final class TemplateManager {
     }
 
 
-    private void process(
+    private void parseAndProcess(
             final IEngineConfiguration configuration,
             final String ownerTemplate, final String template, final String[] selectors,
             final int lineOffset, final int colOffset,
@@ -403,7 +440,7 @@ public final class TemplateManager {
                 final ITemplateHandler processingHandlerChain = createTemplateProcessingHandlerChain(processingContext, writer);
 
                 // Process the cached template itself
-                processParsedModel(cached, processingHandlerChain);
+                processTemplateModel(cached, processingHandlerChain);
 
                 return;
 
@@ -457,7 +494,7 @@ public final class TemplateManager {
             // Put the new template into cache
             this.templateCache.put(cacheKey, parsedTemplate);
             // Process the read (+cached) template itself
-            processParsedModel(parsedTemplate, processingHandlerChain);
+            processTemplateModel(parsedTemplate, processingHandlerChain);
             return;
         }
 
@@ -640,7 +677,7 @@ public final class TemplateManager {
 
 
 
-    private static void processParsedModel(final TemplateModel template, final ITemplateHandler templateHandler) {
+    private static void processTemplateModel(final TemplateModel template, final ITemplateHandler templateHandler) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Starting processing of template \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template.getTemplateResolution().getTemplateName()));
