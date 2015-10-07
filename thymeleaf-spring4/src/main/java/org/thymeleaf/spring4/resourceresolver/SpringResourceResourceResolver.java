@@ -31,7 +31,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.Resource;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IContext;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.resource.IResource;
 import org.thymeleaf.resource.ReaderResource;

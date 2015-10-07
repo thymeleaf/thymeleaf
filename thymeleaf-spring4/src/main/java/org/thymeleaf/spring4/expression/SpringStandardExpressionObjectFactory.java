@@ -21,7 +21,6 @@ package org.thymeleaf.spring4.expression;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.context.IProcessingContext;

@@ -20,9 +20,7 @@
 package org.thymeleaf.spring3.expression;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.context.IProcessingContext;
