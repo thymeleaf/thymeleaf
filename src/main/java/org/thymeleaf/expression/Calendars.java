@@ -33,7 +33,7 @@ import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   Utility class for performing calendar ({@link Calendar}) operations.
+ *   Expression Object for performing calendar ({@link Calendar}) operations inside Thymeleaf Standard Expressions.
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name

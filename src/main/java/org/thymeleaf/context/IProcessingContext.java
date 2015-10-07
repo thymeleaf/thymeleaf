@@ -25,10 +25,23 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.expression.IExpressionObjects;
 
 /**
+ * <p>
+ *   Interface implemented by all classes containing the context required for template processing during
+ *   processing itself.
+ * </p>
+ * <p>
+ *   Objects implementing this interface are created by the engine during processing, not specified
+ *   by the engine's users in template processing calls (the {@link IContext} interface performs
+ *   such function).
+ * </p>
+ * <p>
+ *   Note a class with this name existed since 2.0.9, but it was completely reimplemented
+ *   in Thymeleaf 3.0
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
- * @since 2.0.9 (reimplemented in 3.0.0)
+ * @since 3.0.0
  * 
  */
 public interface IProcessingContext {

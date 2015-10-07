@@ -26,7 +26,7 @@ import org.thymeleaf.util.ArrayUtils;
 
 /**
  * <p>
- *   Utility class for performing array operations.
+ *   Expression Object for performing array operations inside Thymeleaf Standard Expressions.
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name

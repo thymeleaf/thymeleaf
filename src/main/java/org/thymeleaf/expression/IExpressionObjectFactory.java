@@ -25,6 +25,12 @@ import org.thymeleaf.context.IProcessingContext;
 
 
 /**
+ * <p>
+ *   Factory objects for creating {@link IExpressionObjects} instances. These factories are the artifacts
+ *   specified by {@link org.thymeleaf.dialect.IExpressionObjectDialect} implementations, instead of specifying
+ *   the expression objects themselves, so that these expression objects are only created when really needed
+ *   in template expressions.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0

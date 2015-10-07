@@ -30,7 +30,14 @@ import org.thymeleaf.util.Validate;
 
 
 /**
- * 
+ * <p>
+ *   Expression Object for performing String-related operations inside Thymeleaf Standard Expressions.
+ * </p>
+ * <p>
+ *   An object of this class is usually available in variable evaluation expressions with the name
+ *   <tt>#strings</tt>.
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * @author Bernard Le Roux
  * 

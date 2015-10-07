@@ -26,7 +26,8 @@ import org.thymeleaf.util.AggregateUtils;
 
 /**
  * <p>
- *   Utility class for performing aggregation operations on numbers (collections or arrays).
+ *   Expression Object for performing aggregation operations on numbers (collections or arrays)
+ *   inside Thymeleaf Standard Expressions.
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name

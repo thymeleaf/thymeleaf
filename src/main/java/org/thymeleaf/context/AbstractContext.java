@@ -27,10 +27,17 @@ import java.util.Set;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Abstract base class for most {@link IContext} implementations.
+ * </p>
+ * <p>
+ *   Note a class with this name existed since 1.0, but it was completely reimplemented
+ *   in Thymeleaf 3.0
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
- * @since 1.0 (reimplemented in 3.0.0)
+ * @since 3.0.0
  *
  */
 public abstract class AbstractContext implements IContext {

@@ -30,7 +30,7 @@ import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   Utility class for performing operations related to general object management.
+ *   Expression Object for performing operations related to general object management inside Thymeleaf Standard Expressions.
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name

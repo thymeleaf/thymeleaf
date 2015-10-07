@@ -28,10 +28,22 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
+ * <p>
+ *   Basic web-oriented implementation of the {@link IContext} and {@link IWebContext} interfaces.
+ * </p>
+ * <p>
+ *   This context implementation contains all the required Servlet-API artifacts needed for template
+ *   execution in web environments, and should be enough for most web-based scenarios of template
+ *   processing.
+ * </p>
+ * <p>
+ *   Note a class with this name existed since 2.0.9, but it was completely reimplemented
+ *   in Thymeleaf 3.0
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
- * @since 1.0 (reimplemented in 3.0.0)
+ * @since 3.0.0
  *
  */
 public final class WebContext extends AbstractContext implements IWebContext {

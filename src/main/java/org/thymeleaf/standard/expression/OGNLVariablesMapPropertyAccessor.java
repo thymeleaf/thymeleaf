@@ -41,11 +41,15 @@ import org.thymeleaf.context.IVariablesMap;
  *   Note this accessor also has to take care of variable access restrictions (like e.g. forbidding access to
  *   the request parameters in unescaped text or in preprocessing expressions).
  * </p>
+ * <p>
+ *   Note a class with this name existed since 2.0, but it was completely reimplemented
+ *   in Thymeleaf 3.0
+ * </p>
  *
  * @author Michal Kreuzman
  * @author Daniel Fern&aacute;ndez
  * @see PropertyAccessor
- * @since 2.0 (reimplemented in 3.0.0)
+ * @since 3.0.0
  */
 public final class OGNLVariablesMapPropertyAccessor implements PropertyAccessor {
 

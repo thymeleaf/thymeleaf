@@ -28,16 +28,20 @@ import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   Utility class for performing boolean operations.
+ *   Expression object for performing type conversion operations inside Thymeleaf Standard Expressions.
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name
- *   <tt>#bools</tt>.
+ *   <tt>#conversions</tt>.
  * </p>
- * 
+ * <p>
+ *   Note a class with this name existed since 2.1.0, but it was completely reimplemented
+ *   in Thymeleaf 3.0
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.1.0 (reimplemented in 3.0.0)
+ * @since 3.0.0
  *
  */
 public final class Conversions {

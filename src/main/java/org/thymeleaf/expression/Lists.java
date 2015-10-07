@@ -28,7 +28,7 @@ import org.thymeleaf.util.ListUtils;
 
 /**
  * <p>
- *   Utility class for performing list operations.
+ *   Expression Object for performing list operations inside Thymeleaf Standard Expressions.
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name

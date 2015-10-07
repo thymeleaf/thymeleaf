@@ -27,7 +27,7 @@ import org.thymeleaf.util.SetUtils;
 
 /**
  * <p>
- *   Utility class for performing set operations.
+ *   Expression Object for performing set operations inside Thymeleaf Standard Expressions.
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name

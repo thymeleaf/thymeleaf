@@ -23,7 +23,7 @@ import org.unbescape.uri.UriEscape;
 
 /**
  * <p>
- *   Utility class for performing URI/URL operations (esp.escaping/unescaping).
+ *   Expression Object for performing URI/URL operations (esp.escaping/unescaping) inside Thymeleaf Standard Expressions.
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name

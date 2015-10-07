@@ -29,7 +29,14 @@ import org.thymeleaf.util.MessageResolutionUtils;
 import org.thymeleaf.util.Validate;
 
 /**
- * 
+ * <p>
+ *   Expression Object for retrieving externalized/internationalized messages from inside Thymeleaf Standard Expressions.
+ * </p>
+ * <p>
+ *   An object of this class is usually available in variable evaluation expressions with the name
+ *   <tt>#messages</tt>.
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 1.0

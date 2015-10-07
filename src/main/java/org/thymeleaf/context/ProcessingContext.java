@@ -25,10 +25,17 @@ import java.util.Map;
 import org.thymeleaf.IEngineConfiguration;
 
 /**
+ * <p>
+ *   Basic implementation of the {@link IProcessingContext} interface.
+ * </p>
+ * <p>
+ *   Note a class with this name existed since 2.0.9, but it was completely reimplemented
+ *   in Thymeleaf 3.0
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
- * @since 2.0.9 (reimplemented in 3.0.0)
+ * @since 3.0.0
  * 
  */
 public final class ProcessingContext extends AbstractProcessingContext {

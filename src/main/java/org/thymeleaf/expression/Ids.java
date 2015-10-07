@@ -23,7 +23,15 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.util.Validate;
 
 /**
- * 
+ * <p>
+ *   Expression Object for performing operations related to markup <tt>id</tt> attributes inside Thymeleaf
+ *   Standard Expressions.
+ * </p>
+ * <p>
+ *   An object of this class is usually available in variable evaluation expressions with the name
+ *   <tt>#ids</tt>.
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 1.0

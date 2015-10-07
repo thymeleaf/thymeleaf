@@ -65,10 +65,14 @@ import org.thymeleaf.engine.TemplateModel;
  *   <b>Any of these methods could return null</b>, in which case the engine will consider that
  *   no cache must be applied for that specific function.
  * </p>
- * 
+ * <p>
+ *   Note a class with this name existed since 2.0.0, but it was completely reimplemented
+ *   in Thymeleaf 3.0
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.0.0 (reimplemented in 3.0.0)
+ * @since 3.0.0
  *
  */
 public interface ICacheManager {

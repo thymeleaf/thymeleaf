@@ -32,11 +32,15 @@ import org.thymeleaf.engine.TemplateModel;
  *   for taking care of the lazy initialization of cache objects when their
  *   corresponding <tt>getXCache()</tt> methods are called.
  * </p>
- * 
+ * <p>
+ *   Note a class with this name existed since 2.0.0, but it was completely reimplemented
+ *   in Thymeleaf 3.0
+ * </p>
+ *
  *
  * @author Daniel Fern&aacute;ndez
  *
- * @since 2.0.0 (reimplemented in 3.0.0)
+ * @since 3.0.0
  *
  */
 public abstract class AbstractCacheManager implements ICacheManager {

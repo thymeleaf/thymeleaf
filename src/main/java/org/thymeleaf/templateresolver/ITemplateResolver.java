@@ -61,10 +61,14 @@ import org.thymeleaf.templatemode.TemplateMode;
  *   a {@link TemplateResolution} object for each template name. If a template resolver
  *   returns null or its resource resolver does, the next one in the chain is asked. 
  * </p>
+ * <p>
+ *   Note a class with this name existed since 1.0, but it was completely reimplemented
+ *   in Thymeleaf 3.0
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0 (reimplemented in 3.0.0)
+ * @since 3.0.0
  *
  */
 public interface ITemplateResolver {

@@ -27,10 +27,14 @@ package org.thymeleaf.standard.expression;
  *   expression executor (like for instance, whether the expression comes from 
  *   preprocessing or not)
  * </p>
- * 
+ * <p>
+ *   Note a class with this name existed since 2.0.16, but it was completely reimplemented
+ *   in Thymeleaf 3.0
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.0.16 (reimplemented in 3.0.0)
+ * @since 3.0.0
  *
  */
 public final class StandardExpressionExecutionContext {

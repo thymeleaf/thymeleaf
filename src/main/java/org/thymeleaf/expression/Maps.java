@@ -27,7 +27,7 @@ import org.thymeleaf.util.MapUtils;
 
 /**
  * <p>
- *   Utility class for performing map operations.
+ *   Expression Object for performing map operations inside Thymeleaf Standard Expressions.
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name

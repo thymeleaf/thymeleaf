@@ -23,6 +23,10 @@ import org.thymeleaf.util.Validate;
 
 
 /**
+ * <p>
+ *   This class models the definition of a specific expression object returned by a dialect implementing the
+ *   {@link org.thymeleaf.dialect.IExpressionObjectDialect}
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0

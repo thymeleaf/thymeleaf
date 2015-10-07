@@ -33,10 +33,14 @@ import org.thymeleaf.context.IProcessingContext;
  * <p>
  *   Default implementation (used by most of the Thymeleaf core): {@link Expression}.
  * </p>
- * 
+ * <p>
+ *   Note a class with this name existed since 2.1.0, but it was completely reimplemented
+ *   in Thymeleaf 3.0
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.1.0 (reimplemented in 3.0.0)
+ * @since 3.0.0
  *
  */
 public interface IStandardExpression {

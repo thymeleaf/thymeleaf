@@ -30,7 +30,7 @@ import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   Utility class for performing boolean operations.
+ *   Expression Object for performing boolean operations inside Thymeleaf Standard Expressions.
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name

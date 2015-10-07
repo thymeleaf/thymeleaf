@@ -23,10 +23,17 @@ import org.thymeleaf.util.Validate;
 
 
 /**
+ * <p>
+ *   Base abstract implementation of the {@link IDialect} interface.
+ * </p>
+ * <p>
+ *   Note a class with this name existed since 1.0, but it was completely reimplemented
+ *   in Thymeleaf 3.0
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
- * @since 1.0 (reimplemented in 3.0.0)
+ * @since 3.0.0
  *
  */
 public class AbstractDialect implements IDialect {

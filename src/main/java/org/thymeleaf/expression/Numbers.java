@@ -33,7 +33,7 @@ import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   Utility class for performing numeric operations (esp. number formatting).
+ *   Expression Object for performing numeric operations (esp. number formatting) inside Thymeleaf Standard Expressions.
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name

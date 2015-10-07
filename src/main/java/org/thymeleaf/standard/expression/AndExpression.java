@@ -29,10 +29,17 @@ import org.thymeleaf.util.EvaluationUtils;
 
 
 /**
- * 
+ * <p>
+ *   Logical AND complex expression (Thymeleaf Standard Expressions)
+ * </p>
+ * <p>
+ *   Note a class with this name existed since 1.1, but it was completely reimplemented
+ *   in Thymeleaf 3.0
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.1 (reimplemented in 3.0.0)
+ * @since 3.0.0
  *
  */
 public final class AndExpression extends BinaryOperationExpression {

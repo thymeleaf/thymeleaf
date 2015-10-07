@@ -192,10 +192,14 @@ import org.thymeleaf.util.Validate;
  *   will relate to the physical/logical location of the template itself in a way
  *   configured at the template resolver/s. 
  * </p>
- * 
+ * <p>
+ *   Note a class with this name existed since 1.0, but it was completely reimplemented
+ *   in Thymeleaf 3.0
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0 (reimplemented in 3.0.0)
+ * @since 3.0.0
  *
  */
 public class TemplateEngine implements ITemplateEngine {

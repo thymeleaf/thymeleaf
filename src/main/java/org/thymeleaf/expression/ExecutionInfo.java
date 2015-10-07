@@ -26,13 +26,17 @@ import org.thymeleaf.context.ITemplateProcessingContext;
 
 /**
  * <p>
- *   Execution info (<tt>execInfo</tt>) expression utility object providing useful information about the template
- *   being processed.
+ *   Expression Object providing useful information about the template being processed inside Thymeleaf Standard
+ *   Expressions.
  * </p>
- * 
+ * <p>
+ *   An object of this class is usually available in variable evaluation expressions with the name
+ *   <tt>#execInfo</tt>.
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0 (reimplemented in 3.0.0)
+ * @since 3.0.0
  *
  */
 public final class ExecutionInfo {
