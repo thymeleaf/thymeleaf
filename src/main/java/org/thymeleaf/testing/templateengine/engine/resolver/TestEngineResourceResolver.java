@@ -81,7 +81,7 @@ public class TestEngineResourceResolver implements IResourceResolver {
 
 
     public IResource resolveResource(
-            final IEngineConfiguration configuration, final IContext context,
+            final IEngineConfiguration configuration,
             final String resource, final String characterEncoding) {
 
         try {

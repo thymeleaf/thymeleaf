@@ -122,8 +122,7 @@ public class TestEngineTemplateResolver implements ITemplateResolver {
 
 
 
-    public TemplateResolution resolveTemplate(
-            final IEngineConfiguration configuration, final IContext context, final String template) {
+    public TemplateResolution resolveTemplate(final IEngineConfiguration configuration, final String template) {
 
         Validate.notNull(configuration, "Configuration cannot be null");
 
