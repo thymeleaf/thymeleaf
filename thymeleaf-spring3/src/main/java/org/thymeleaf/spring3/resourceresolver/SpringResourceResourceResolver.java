@@ -86,7 +86,7 @@ public final class SpringResourceResourceResolver
 
 
     public IResource resolveResource(
-            final IEngineConfiguration configuration, final IContext context,
+            final IEngineConfiguration configuration,
             final String resource, final String characterEncoding) {
 
         Validate.notNull(resource, "Resource cannot be null");
