@@ -34,7 +34,6 @@ import org.thymeleaf.dialect.IExpressionObjectDialect;
 import org.thymeleaf.dialect.IPostProcessorDialect;
 import org.thymeleaf.dialect.IPreProcessorDialect;
 import org.thymeleaf.dialect.IProcessorDialect;
-import org.thymeleaf.expression.ExpressionObjectDefinition;
 import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.postprocessor.IPostProcessor;
@@ -202,11 +201,11 @@ final class ConfigurationPrinterHelper {
             final IExpressionObjectFactory expressionObjectFactory = dialect.getExpressionObjectFactory();
             if (expressionObjectFactory != null) {
 
-                final Map<String,ExpressionObjectDefinition> expressionObjectDefinitions = expressionObjectFactory.getObjectDefinitions();
-                if (expressionObjectDefinitions != null && !expressionObjectDefinitions.isEmpty()) {
+                final Set<String> expressionObjectNames = expressionObjectFactory.getAllExpressionObjectNames();
+                if (expressionObjectNames != null && !expressionObjectNames.isEmpty()) {
                     logBuilder.line("[THYMELEAF]     * Expression Objects:");
-                    for (final Map.Entry<String,ExpressionObjectDefinition> expressionObjectsEntry : expressionObjectDefinitions.entrySet()) {
-                        logBuilder.line("[THYMELEAF]         * \"#{}\": {}", new Object[] {expressionObjectsEntry.getKey(), expressionObjectsEntry.getValue().getDescription()});
+                    for (final String expressionObjectName : expressionObjectNames) {
+                        logBuilder.line("[THYMELEAF]         * #{}", new Object[] {expressionObjectName});
                     }
                 }
 

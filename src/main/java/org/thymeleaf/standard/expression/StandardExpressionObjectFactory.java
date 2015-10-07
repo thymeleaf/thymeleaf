@@ -20,9 +20,7 @@
 package org.thymeleaf.standard.expression;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.context.IProcessingContext;
@@ -35,7 +33,6 @@ import org.thymeleaf.expression.Calendars;
 import org.thymeleaf.expression.Conversions;
 import org.thymeleaf.expression.Dates;
 import org.thymeleaf.expression.ExecutionInfo;
-import org.thymeleaf.expression.ExpressionObjectDefinition;
 import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.expression.Ids;
 import org.thymeleaf.expression.Lists;
@@ -65,222 +62,79 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
      */
 
     public static final String CONTEXT_EXPRESSION_OBJECT_NAME = "ctx";
-    private static final String CONTEXT_EXPRESSION_OBJECT_DESCRIPTION = "Processing Context object";
-    private static final boolean CONTEXT_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition CONTEXT_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(CONTEXT_EXPRESSION_OBJECT_NAME, CONTEXT_EXPRESSION_OBJECT_DESCRIPTION, CONTEXT_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String ROOT_EXPRESSION_OBJECT_NAME = "root";
-    private static final String ROOT_EXPRESSION_OBJECT_DESCRIPTION = "Expression root object on which expressions are executed";
-    private static final boolean ROOT_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition ROOT_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(ROOT_EXPRESSION_OBJECT_NAME, ROOT_EXPRESSION_OBJECT_DESCRIPTION, ROOT_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String VARIABLES_EXPRESSION_OBJECT_NAME = "vars";
-    private static final String VARIABLES_EXPRESSION_OBJECT_DESCRIPTION = "Variables object (equivalent to the expression root object)";
-    private static final boolean VARIABLES_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition VARIABLES_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(VARIABLES_EXPRESSION_OBJECT_NAME, VARIABLES_EXPRESSION_OBJECT_DESCRIPTION, VARIABLES_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String SELECTION_TARGET_EXPRESSION_OBJECT_NAME = "object";
-    private static final String SELECTION_TARGET_EXPRESSION_OBJECT_DESCRIPTION = "Selection target (if applies)";
-    private static final boolean SELECTION_TARGET_EXPRESSION_OBJECT_CACHEABLE = false;
-    private static final ExpressionObjectDefinition SELECTION_TARGET_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(SELECTION_TARGET_EXPRESSION_OBJECT_NAME, SELECTION_TARGET_EXPRESSION_OBJECT_DESCRIPTION, SELECTION_TARGET_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String LOCALE_EXPRESSION_OBJECT_NAME = "locale";
-    private static final String LOCALE_EXPRESSION_OBJECT_DESCRIPTION = "Locale being applied for executing a template";
-    private static final boolean LOCALE_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition LOCALE_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(LOCALE_EXPRESSION_OBJECT_NAME, LOCALE_EXPRESSION_OBJECT_DESCRIPTION, LOCALE_EXPRESSION_OBJECT_CACHEABLE);
-
 
     public static final String REQUEST_EXPRESSION_OBJECT_NAME = "request";
-    private static final String REQUEST_EXPRESSION_OBJECT_DESCRIPTION = "HttpServletRequest object (only in web-enabled templates)";
-    private static final boolean REQUEST_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition REQUEST_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(REQUEST_EXPRESSION_OBJECT_NAME, REQUEST_EXPRESSION_OBJECT_DESCRIPTION, REQUEST_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String RESPONSE_EXPRESSION_OBJECT_NAME = "response";
-    private static final String RESPONSE_EXPRESSION_OBJECT_DESCRIPTION = "HttpServletResponse object (only in web-enabled templates)";
-    private static final boolean RESPONSE_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition RESPONSE_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(RESPONSE_EXPRESSION_OBJECT_NAME, RESPONSE_EXPRESSION_OBJECT_DESCRIPTION, RESPONSE_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String SESSION_EXPRESSION_OBJECT_NAME = "session";
-    private static final String SESSION_EXPRESSION_OBJECT_DESCRIPTION = "HttpSession object (only in web-enabled templates)";
-    private static final boolean SESSION_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition SESSION_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(SESSION_EXPRESSION_OBJECT_NAME, SESSION_EXPRESSION_OBJECT_DESCRIPTION, SESSION_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String SERVLET_CONTEXT_EXPRESSION_OBJECT_NAME = "servletContext";
-    private static final String SERVLET_CONTEXT_EXPRESSION_OBJECT_DESCRIPTION = "ServletContext object (only in web-enabled templates)";
-    private static final boolean SERVLET_CONTEXT_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition SERVLET_CONTEXT_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(SERVLET_CONTEXT_EXPRESSION_OBJECT_NAME, SERVLET_CONTEXT_EXPRESSION_OBJECT_DESCRIPTION, SERVLET_CONTEXT_EXPRESSION_OBJECT_CACHEABLE);
-
-
 
     public static final String CONVERSIONS_EXPRESSION_OBJECT_NAME = "conversions";
-    private static final String CONVERSIONS_EXPRESSION_OBJECT_DESCRIPTION = "Converter for reshaping objects into a different data type";
-    private static final boolean CONVERSIONS_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition CONVERSIONS_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(CONVERSIONS_EXPRESSION_OBJECT_NAME, CONVERSIONS_EXPRESSION_OBJECT_DESCRIPTION, CONVERSIONS_EXPRESSION_OBJECT_CACHEABLE);
-
-
-
     public static final String URIS_EXPRESSION_OBJECT_NAME = "uris";
-    private static final String URIS_EXPRESSION_OBJECT_DESCRIPTION = "URI-related operations";
-    private static final boolean URIS_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition URIS_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(URIS_EXPRESSION_OBJECT_NAME, URIS_EXPRESSION_OBJECT_DESCRIPTION, URIS_EXPRESSION_OBJECT_CACHEABLE);
-
-
 
     public static final String CALENDARS_EXPRESSION_OBJECT_NAME = "calendars";
-    private static final String CALENDARS_EXPRESSION_OBJECT_DESCRIPTION = "Utilities for dealing with java.util.Calendar objects";
-    private static final boolean CALENDARS_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition CALENDARS_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(CALENDARS_EXPRESSION_OBJECT_NAME, CALENDARS_EXPRESSION_OBJECT_DESCRIPTION, CALENDARS_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String DATES_EXPRESSION_OBJECT_NAME = "dates";
-    private static final String DATES_EXPRESSION_OBJECT_DESCRIPTION = "Utilities for dealing with java.util.Date objects";
-    private static final boolean DATES_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition DATES_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(DATES_EXPRESSION_OBJECT_NAME, DATES_EXPRESSION_OBJECT_DESCRIPTION, DATES_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String BOOLS_EXPRESSION_OBJECT_NAME = "bools";
-    private static final String BOOLS_EXPRESSION_OBJECT_DESCRIPTION = "Boolean utilities";
-    private static final boolean BOOLS_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition BOOLS_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(BOOLS_EXPRESSION_OBJECT_NAME, BOOLS_EXPRESSION_OBJECT_DESCRIPTION, BOOLS_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String NUMBERS_EXPRESSION_OBJECT_NAME = "numbers";
-    private static final String NUMBERS_EXPRESSION_OBJECT_DESCRIPTION = "Utilities for dealing with numbers (formatting, etc.)";
-    private static final boolean NUMBERS_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition NUMBERS_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(NUMBERS_EXPRESSION_OBJECT_NAME, NUMBERS_EXPRESSION_OBJECT_DESCRIPTION, NUMBERS_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String OBJECTS_EXPRESSION_OBJECT_NAME = "objects";
-    private static final String OBJECTS_EXPRESSION_OBJECT_DESCRIPTION = "General utilities for objects";
-    private static final boolean OBJECTS_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition OBJECTS_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(OBJECTS_EXPRESSION_OBJECT_NAME, OBJECTS_EXPRESSION_OBJECT_DESCRIPTION, OBJECTS_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String STRINGS_EXPRESSION_OBJECT_NAME = "strings";
-    private static final String STRINGS_EXPRESSION_OBJECT_DESCRIPTION = "Utilities for dealing with Strings";
-    private static final boolean STRINGS_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition STRINGS_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(STRINGS_EXPRESSION_OBJECT_NAME, STRINGS_EXPRESSION_OBJECT_DESCRIPTION, STRINGS_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String ARRAYS_EXPRESSION_OBJECT_NAME = "arrays";
-    private static final String ARRAYS_EXPRESSION_OBJECT_DESCRIPTION = "Utilities for dealing with arrays";
-    private static final boolean ARRAYS_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition ARRAYS_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(ARRAYS_EXPRESSION_OBJECT_NAME, ARRAYS_EXPRESSION_OBJECT_DESCRIPTION, ARRAYS_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String LISTS_EXPRESSION_OBJECT_NAME = "lists";
-    private static final String LISTS_EXPRESSION_OBJECT_DESCRIPTION = "Utilities for dealing with List objects";
-    private static final boolean LISTS_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition LISTS_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(LISTS_EXPRESSION_OBJECT_NAME, LISTS_EXPRESSION_OBJECT_DESCRIPTION, LISTS_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String SETS_EXPRESSION_OBJECT_NAME = "sets";
-    private static final String SETS_EXPRESSION_OBJECT_DESCRIPTION = "Utilities for dealing with Set objects";
-    private static final boolean SETS_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition SETS_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(SETS_EXPRESSION_OBJECT_NAME, SETS_EXPRESSION_OBJECT_DESCRIPTION, SETS_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String MAPS_EXPRESSION_OBJECT_NAME = "maps";
-    private static final String MAPS_EXPRESSION_OBJECT_DESCRIPTION = "Utilities for dealing with Map objects";
-    private static final boolean MAPS_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition MAPS_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(MAPS_EXPRESSION_OBJECT_NAME, MAPS_EXPRESSION_OBJECT_DESCRIPTION, MAPS_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String AGGREGATES_EXPRESSION_OBJECT_NAME = "aggregates";
-    private static final String AGGREGATES_EXPRESSION_OBJECT_DESCRIPTION = "Utilities for performing aggregation operations (sum, avg...)";
-    private static final boolean AGGREGATES_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition AGGREGATES_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(AGGREGATES_EXPRESSION_OBJECT_NAME, AGGREGATES_EXPRESSION_OBJECT_DESCRIPTION, AGGREGATES_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String MESSAGES_EXPRESSION_OBJECT_NAME = "messages";
-    private static final String MESSAGES_EXPRESSION_OBJECT_DESCRIPTION = "Message externalization/internationalization (i18n) utilities";
-    private static final boolean MESSAGES_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition MESSAGES_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(MESSAGES_EXPRESSION_OBJECT_NAME, MESSAGES_EXPRESSION_OBJECT_DESCRIPTION, MESSAGES_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String IDS_EXPRESSION_OBJECT_NAME = "ids";
-    private static final String IDS_EXPRESSION_OBJECT_DESCRIPTION = "Utilities for generating unique IDs for form fields";
-    private static final boolean IDS_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition IDS_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(IDS_EXPRESSION_OBJECT_NAME, IDS_EXPRESSION_OBJECT_DESCRIPTION, IDS_EXPRESSION_OBJECT_CACHEABLE);
-
-
 
     public static final String EXECUTION_INFO_OBJECT_NAME = "execInfo";
-    private static final String EXECUTION_INFO_OBJECT_DESCRIPTION = "Execution info: template name, current time, etc.";
-    private static final boolean EXECUTION_INFO_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition EXECUTION_INFO_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(EXECUTION_INFO_OBJECT_NAME, EXECUTION_INFO_OBJECT_DESCRIPTION, EXECUTION_INFO_OBJECT_CACHEABLE);
-
-
-
 
     /*
      * These two objects, "#httpServletRequest" and "#httpSession" are still supported but deprecated
      * since Thymeleaf 3.0. They will start issuing warnings in 3.1, and disappear in 3.2.
      * They have been replaced by the simpler names "#request" and "#session".
      */
-
     public static final String HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_NAME = "httpServletRequest";
-    private static final String HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_DESCRIPTION = "[DEPRECATED] HttpServletRequest object (only in web-enabled templates)";
-    private static final boolean HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_NAME, HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_DESCRIPTION, HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String HTTP_SESSION_EXPRESSION_OBJECT_NAME = "httpSession";
-    private static final String HTTP_SESSION_EXPRESSION_OBJECT_DESCRIPTION = "[DEPRECATED] HttpSession object (only in web-enabled templates)";
-    private static final boolean HTTP_SESSION_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition HTTP_SESSION_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(HTTP_SESSION_EXPRESSION_OBJECT_NAME, HTTP_SESSION_EXPRESSION_OBJECT_DESCRIPTION, HTTP_SESSION_EXPRESSION_OBJECT_CACHEABLE);
 
 
 
 
 
-    private static final Set<ExpressionObjectDefinition> ALL_EXPRESSION_OBJECT_DEFINITIONS_SET =
-            Collections.unmodifiableSet(new LinkedHashSet<ExpressionObjectDefinition>(java.util.Arrays.asList(
-                    new ExpressionObjectDefinition[]{
-                            CONTEXT_EXPRESSION_OBJECT_DEFINITION,
-                            ROOT_EXPRESSION_OBJECT_DEFINITION,
-                            VARIABLES_EXPRESSION_OBJECT_DEFINITION,
-                            SELECTION_TARGET_EXPRESSION_OBJECT_DEFINITION,
-                            LOCALE_EXPRESSION_OBJECT_DEFINITION,
-                            REQUEST_EXPRESSION_OBJECT_DEFINITION,
-                            RESPONSE_EXPRESSION_OBJECT_DEFINITION,
-                            SESSION_EXPRESSION_OBJECT_DEFINITION,
-                            SERVLET_CONTEXT_EXPRESSION_OBJECT_DEFINITION,
-                            CONVERSIONS_EXPRESSION_OBJECT_DEFINITION,
-                            URIS_EXPRESSION_OBJECT_DEFINITION,
-                            CALENDARS_EXPRESSION_OBJECT_DEFINITION,
-                            DATES_EXPRESSION_OBJECT_DEFINITION,
-                            BOOLS_EXPRESSION_OBJECT_DEFINITION,
-                            NUMBERS_EXPRESSION_OBJECT_DEFINITION,
-                            OBJECTS_EXPRESSION_OBJECT_DEFINITION,
-                            STRINGS_EXPRESSION_OBJECT_DEFINITION,
-                            ARRAYS_EXPRESSION_OBJECT_DEFINITION,
-                            LISTS_EXPRESSION_OBJECT_DEFINITION,
-                            SETS_EXPRESSION_OBJECT_DEFINITION,
-                            MAPS_EXPRESSION_OBJECT_DEFINITION,
-                            AGGREGATES_EXPRESSION_OBJECT_DEFINITION,
-                            MESSAGES_EXPRESSION_OBJECT_DEFINITION,
-                            IDS_EXPRESSION_OBJECT_DEFINITION,
-                            EXECUTION_INFO_OBJECT_DEFINITION,
-                            HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_DEFINITION,
-                            HTTP_SESSION_EXPRESSION_OBJECT_DEFINITION
+    protected static final Set<String> ALL_EXPRESSION_OBJECT_NAMES =
+            Collections.unmodifiableSet(new LinkedHashSet<String>(java.util.Arrays.asList(
+                    new String[]{
+                            CONTEXT_EXPRESSION_OBJECT_NAME,
+                            ROOT_EXPRESSION_OBJECT_NAME,
+                            VARIABLES_EXPRESSION_OBJECT_NAME,
+                            SELECTION_TARGET_EXPRESSION_OBJECT_NAME,
+                            LOCALE_EXPRESSION_OBJECT_NAME,
+                            REQUEST_EXPRESSION_OBJECT_NAME,
+                            RESPONSE_EXPRESSION_OBJECT_NAME,
+                            SESSION_EXPRESSION_OBJECT_NAME,
+                            SERVLET_CONTEXT_EXPRESSION_OBJECT_NAME,
+                            CONVERSIONS_EXPRESSION_OBJECT_NAME,
+                            URIS_EXPRESSION_OBJECT_NAME,
+                            CALENDARS_EXPRESSION_OBJECT_NAME,
+                            DATES_EXPRESSION_OBJECT_NAME,
+                            BOOLS_EXPRESSION_OBJECT_NAME,
+                            NUMBERS_EXPRESSION_OBJECT_NAME,
+                            OBJECTS_EXPRESSION_OBJECT_NAME,
+                            STRINGS_EXPRESSION_OBJECT_NAME,
+                            ARRAYS_EXPRESSION_OBJECT_NAME,
+                            LISTS_EXPRESSION_OBJECT_NAME,
+                            SETS_EXPRESSION_OBJECT_NAME,
+                            MAPS_EXPRESSION_OBJECT_NAME,
+                            AGGREGATES_EXPRESSION_OBJECT_NAME,
+                            MESSAGES_EXPRESSION_OBJECT_NAME,
+                            IDS_EXPRESSION_OBJECT_NAME,
+                            EXECUTION_INFO_OBJECT_NAME,
+                            HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_NAME,
+                            HTTP_SESSION_EXPRESSION_OBJECT_NAME
                     }
             )));
-    public static final Map<String,ExpressionObjectDefinition> ALL_EXPRESSION_OBJECT_DEFINITIONS;
 
 
 
@@ -296,16 +150,6 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
 
 
 
-    static {
-        final Map<String,ExpressionObjectDefinition> allExpressionObjectDefinitions =
-                new LinkedHashMap<String, ExpressionObjectDefinition>(ALL_EXPRESSION_OBJECT_DEFINITIONS_SET.size());
-        for (final ExpressionObjectDefinition definition : ALL_EXPRESSION_OBJECT_DEFINITIONS_SET) {
-            allExpressionObjectDefinitions.put(definition.getName(), definition);
-        }
-        ALL_EXPRESSION_OBJECT_DEFINITIONS = Collections.unmodifiableMap(allExpressionObjectDefinitions);
-    }
-
-
 
 
     public StandardExpressionObjectFactory() {
@@ -315,8 +159,15 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
 
 
 
-    public Map<String,ExpressionObjectDefinition> getObjectDefinitions() {
-        return ALL_EXPRESSION_OBJECT_DEFINITIONS;
+    public Set<String> getAllExpressionObjectNames() {
+        return ALL_EXPRESSION_OBJECT_NAMES;
+    }
+
+
+
+    public boolean isCacheable(final String expressionObjectName) {
+        // Only #object is non-cacheable (template-scope)
+        return (expressionObjectName != null && !expressionObjectName.equals(SELECTION_TARGET_EXPRESSION_OBJECT_NAME));
     }
 
 

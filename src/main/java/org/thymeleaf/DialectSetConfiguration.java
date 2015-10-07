@@ -39,7 +39,6 @@ import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.ElementDefinitions;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.exceptions.ConfigurationException;
-import org.thymeleaf.expression.ExpressionObjectDefinition;
 import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.postprocessor.IPostProcessor;
 import org.thymeleaf.preprocessor.IPreProcessor;
@@ -682,19 +681,19 @@ final class DialectSetConfiguration {
             this.expressionObjectFactoryList.add(expressionObjectFactory);
         }
 
-        public Map<String,ExpressionObjectDefinition> getObjectDefinitions() {
+        public Set<String> getAllExpressionObjectNames() {
             if (this.firstExpressionObjectFactory != null) {
-                return this.firstExpressionObjectFactory.getObjectDefinitions();
+                return this.firstExpressionObjectFactory.getAllExpressionObjectNames();
             }
             if (this.expressionObjectFactoryList == null) {
                 return null;
             }
-            final Map<String,ExpressionObjectDefinition> objectDefinitions = new LinkedHashMap<String,ExpressionObjectDefinition>(30);
+            final Set<String> expressionObjectNames = new LinkedHashSet<String>(30);
             int n = this.expressionObjectFactoryList.size();
             while (n-- != 0) {
-                objectDefinitions.putAll(this.expressionObjectFactoryList.get(n).getObjectDefinitions());
+                expressionObjectNames.addAll(this.expressionObjectFactoryList.get(n).getAllExpressionObjectNames());
             }
-            return objectDefinitions;
+            return expressionObjectNames;
         }
 
         public Object buildObject(final IProcessingContext processingContext, final String expressionObjectName) {
@@ -706,11 +705,27 @@ final class DialectSetConfiguration {
             }
             int n = this.expressionObjectFactoryList.size();
             while (n-- != 0) {
-                if (this.expressionObjectFactoryList.get(n).getObjectDefinitions().containsKey(expressionObjectName)) {
+                if (this.expressionObjectFactoryList.get(n).getAllExpressionObjectNames().contains(expressionObjectName)) {
                     return this.expressionObjectFactoryList.get(n).buildObject(processingContext, expressionObjectName);
                 }
             }
             return null;
+        }
+
+        public boolean isCacheable(final String expressionObjectName) {
+            if (this.firstExpressionObjectFactory != null) {
+                return this.firstExpressionObjectFactory.isCacheable(expressionObjectName);
+            }
+            if (this.expressionObjectFactoryList == null) {
+                return false;
+            }
+            int n = this.expressionObjectFactoryList.size();
+            while (n-- != 0) {
+                if (this.expressionObjectFactoryList.get(n).getAllExpressionObjectNames().contains(expressionObjectName)) {
+                    return this.expressionObjectFactoryList.get(n).isCacheable(expressionObjectName);
+                }
+            }
+            return false;
         }
 
     }

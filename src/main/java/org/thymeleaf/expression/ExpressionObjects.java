@@ -46,7 +46,7 @@ public class ExpressionObjects implements IExpressionObjects {
 
     private final IProcessingContext processingContext;
     private final IExpressionObjectFactory expressionObjectFactory;
-    private final Map<String,ExpressionObjectDefinition> expressionObjectDefinitions;
+    private final Set<String> expressionObjectNames;
 
     private Map<String,Object> objects;
 
@@ -57,7 +57,7 @@ public class ExpressionObjects implements IExpressionObjects {
         super();
         this.processingContext = processingContext;
         this.expressionObjectFactory = expressionObjectFactory;
-        this.expressionObjectDefinitions = this.expressionObjectFactory.getObjectDefinitions();
+        this.expressionObjectNames = this.expressionObjectFactory.getAllExpressionObjectNames();
     }
 
 
@@ -65,17 +65,17 @@ public class ExpressionObjects implements IExpressionObjects {
 
 
     public int size() {
-        return this.expressionObjectDefinitions.size();
+        return this.expressionObjectNames.size();
     }
 
 
     public boolean containsObject(final String name) {
-        return this.expressionObjectDefinitions.containsKey(name);
+        return this.expressionObjectNames.contains(name);
     }
 
 
     public Set<String> getObjectNames() {
-        return this.expressionObjectDefinitions.keySet();
+        return this.expressionObjectNames;
     }
 
 
@@ -89,13 +89,22 @@ public class ExpressionObjects implements IExpressionObjects {
         }
 
         /*
-         * If the object is not cacheable, we will simply ask the factory and return
+         * If the object is not provided by the factory, simply return null
          */
-        final ExpressionObjectDefinition definition = this.expressionObjectDefinitions.get(name);
-        if (definition == null) {
+        if (!this.expressionObjectNames.contains(name)) {
             return null;
-        } else if (!definition.isCacheable()) {
-            return this.expressionObjectFactory.buildObject(this.processingContext, name);
+        }
+
+        /*
+         * Have the factory build the object
+         */
+        final Object object = this.expressionObjectFactory.buildObject(this.processingContext, name);
+
+        /*
+         * If the object is not cacheable, we will just return it
+         */
+        if (!this.expressionObjectFactory.isCacheable(name)) {
+            return object;
         }
 
         /*
@@ -107,9 +116,8 @@ public class ExpressionObjects implements IExpressionObjects {
         }
 
         /*
-         * We really need to use the factory to create the object and then cache it
+         * Put into cache and return
          */
-        final Object object = this.expressionObjectFactory.buildObject(this.processingContext, name);
         this.objects.put(name, object);
         return object;
 

@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.expression;
 
-import java.util.Map;
+import java.util.Set;
 
 import org.thymeleaf.context.IProcessingContext;
 
@@ -38,8 +38,42 @@ import org.thymeleaf.context.IProcessingContext;
  */
 public interface IExpressionObjectFactory {
 
-    public Map<String,ExpressionObjectDefinition> getObjectDefinitions();
+    /**
+     * <p>
+     *   Return the complete list of expression objects that can be created by this factory.
+     * </p>
+     * <p>
+     *   This list will be used for determining if a factory might actually be asked to build an object, so
+     *   it should contain all possible objects to be built by the factory.
+     * </p>
+     *
+     * @return the list of objects this factory can build.
+     */
+    public Set<String> getAllExpressionObjectNames();
 
+    /**
+     * <p>
+     *   Build the requested object.
+     * </p>
+     *
+     * @param processingContext the processing context being used for processing the template.
+     * @param expressionObjectName the name of the expression object to be built.
+     * @return the built object, or <tt>null</tt> if the object could not be built.
+     */
     public Object buildObject(final IProcessingContext processingContext, final String expressionObjectName);
+
+    /**
+     * <p>
+     *   Returns whether a specific expression object can be cached and reused for all expressions in the
+     *   same template execution or not.
+     * </p>
+     * <p>
+     *   Note this <em>cacheable</em> flag refers only to reuse of the object in expressions in expressions
+     *   executed during a single template execution.
+     * </p>
+     * @param expressionObjectName the name of the expression object.
+     * @return <tt>true</tt> is the object is to be considered cacheable, <tt>false</tt> if not.
+     */
+    public boolean isCacheable(final String expressionObjectName);
 
 }
