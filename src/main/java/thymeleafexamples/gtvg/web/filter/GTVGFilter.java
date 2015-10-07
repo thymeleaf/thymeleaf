@@ -41,6 +41,7 @@ public class GTVGFilter implements Filter {
 
     
     private ServletContext servletContext;
+    private GTVGApplication application;
     
     
     public GTVGFilter() {
@@ -59,6 +60,7 @@ public class GTVGFilter implements Filter {
 
     public void init(final FilterConfig filterConfig) throws ServletException {
         this.servletContext = filterConfig.getServletContext();
+        this.application = new GTVGApplication(this.servletContext);
     }
 
 
@@ -100,7 +102,7 @@ public class GTVGFilter implements Filter {
              * that will process the request. If no controller is available,
              * return false and let other filters/servlets process the request.
              */
-            IGTVGController controller = GTVGApplication.resolveControllerForRequest(request);
+            IGTVGController controller = this.application.resolveControllerForRequest(request);
             if (controller == null) {
                 return false;
             }
@@ -108,7 +110,7 @@ public class GTVGFilter implements Filter {
             /*
              * Obtain the TemplateEngine instance.
              */
-            TemplateEngine templateEngine = GTVGApplication.getTemplateEngine();
+            TemplateEngine templateEngine = this.application.getTemplateEngine();
 
             /*
              * Write the response headers

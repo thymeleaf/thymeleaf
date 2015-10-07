@@ -22,6 +22,7 @@ package thymeleafexamples.gtvg.web.application;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.thymeleaf.TemplateEngine;
@@ -38,24 +39,20 @@ import thymeleafexamples.gtvg.web.controller.UserProfileController;
 
 public class GTVGApplication {
 
-    
-    private static Map<String, IGTVGController> controllersByURL;
-    private static TemplateEngine templateEngine;
-    
-    
-    
-    static {
-        initializeControllersByURL();
-        initializeTemplateEngine();
-    }
+
+    private TemplateEngine templateEngine;
+    private Map<String, IGTVGController> controllersByURL;
+
     
     
-    private static void initializeTemplateEngine() {
-        
-        ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver();
+    public GTVGApplication(final ServletContext servletContext) {
+
+        super();
+
+        ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
         
         // XHTML is the default mode, but we will set it anyway for better understanding of code
-        templateResolver.setTemplateMode("XHTML");
+        templateResolver.setTemplateMode("HTML");
         // This will convert "home" to "/WEB-INF/templates/home.html"
         templateResolver.setPrefix("/WEB-INF/templates/");
         templateResolver.setSuffix(".html");
@@ -66,36 +63,29 @@ public class GTVGApplication {
         // be automatically updated when modified.
         templateResolver.setCacheable(true);
         
-        templateEngine = new TemplateEngine();
-        templateEngine.setTemplateResolver(templateResolver);
-        
-    }
-    
-    
-    private static Map<String, IGTVGController> initializeControllersByURL() {
-        
-        controllersByURL = new HashMap<String, IGTVGController>();
-        controllersByURL.put("/", new HomeController());
-        controllersByURL.put("/product/list", new ProductListController());
-        controllersByURL.put("/product/comments", new ProductCommentsController());
-        controllersByURL.put("/order/list", new OrderListController());
-        controllersByURL.put("/order/details", new OrderDetailsController());
-        controllersByURL.put("/subscribe", new SubscribeController());
-        controllersByURL.put("/userprofile", new UserProfileController());
-        
-        return controllersByURL;
-        
+        this.templateEngine = new TemplateEngine();
+        this.templateEngine.setTemplateResolver(templateResolver);
+
+        this.controllersByURL = new HashMap<String, IGTVGController>();
+        this.controllersByURL.put("/", new HomeController());
+        this.controllersByURL.put("/product/list", new ProductListController());
+        this.controllersByURL.put("/product/comments", new ProductCommentsController());
+        this.controllersByURL.put("/order/list", new OrderListController());
+        this.controllersByURL.put("/order/details", new OrderDetailsController());
+        this.controllersByURL.put("/subscribe", new SubscribeController());
+        this.controllersByURL.put("/userprofile", new UserProfileController());
+
     }
 
     
-    public static IGTVGController resolveControllerForRequest(final HttpServletRequest request) {
+    public IGTVGController resolveControllerForRequest(final HttpServletRequest request) {
         final String path = getRequestPath(request);
-        return controllersByURL.get(path);
+        return this.controllersByURL.get(path);
     }
     
     
-    public static TemplateEngine getTemplateEngine() {
-        return templateEngine;
+    public TemplateEngine getTemplateEngine() {
+        return this.templateEngine;
     }
 
     
@@ -116,11 +106,5 @@ public class GTVGApplication {
         return requestURI;
     }
     
-    
-    
-    private GTVGApplication() {
-        super();
-    }
-    
-    
+
 }
