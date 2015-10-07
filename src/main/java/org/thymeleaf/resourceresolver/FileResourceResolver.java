@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IContext;
 import org.thymeleaf.resource.IResource;
 import org.thymeleaf.resource.ReaderResource;
 import org.thymeleaf.util.StringUtils;

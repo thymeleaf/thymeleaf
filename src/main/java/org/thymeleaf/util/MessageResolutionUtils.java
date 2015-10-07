@@ -35,7 +35,6 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
-import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;

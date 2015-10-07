@@ -22,7 +22,6 @@ package org.thymeleaf.resourceresolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.IContext;
 import org.thymeleaf.resource.IResource;
 import org.thymeleaf.resource.StringResource;
 import org.thymeleaf.util.Validate;

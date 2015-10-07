@@ -20,7 +20,6 @@
 package org.thymeleaf.engine;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.Context;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;

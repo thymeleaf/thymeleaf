@@ -20,7 +20,6 @@
 package org.thymeleaf.templateresolver;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.IContext;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
