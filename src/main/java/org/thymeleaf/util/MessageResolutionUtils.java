@@ -206,12 +206,12 @@ public final class MessageResolutionUtils {
         Class<?> currentClass = targetClass;
         
         String base = getClassNameBase(currentClass);
-        properties.add(loadCombinedMessagesFilesFromBaseName(null, null, null, base, locale, null));
+        properties.add(loadCombinedMessagesFilesFromBaseName(null, null, base, locale, null));
         
         while (!currentClass.getSuperclass().equals(Object.class)) {
             currentClass = currentClass.getSuperclass();
             base = getClassNameBase(currentClass);
-            properties.add(loadCombinedMessagesFilesFromBaseName(null, null, null, base, locale, null));
+            properties.add(loadCombinedMessagesFilesFromBaseName(null, null, base, locale, null));
         }
         
         return combineMessages(properties, null);
@@ -223,7 +223,7 @@ public final class MessageResolutionUtils {
     
     
     public static Properties loadCombinedMessagesFilesFromBaseName(
-            final IEngineConfiguration configuration, final IContext context, final IResourceResolver resourceResolver,
+            final IEngineConfiguration configuration, final IResourceResolver resourceResolver,
             final String baseName, final Locale locale, final Properties defaultMessages) {
 
         /*
@@ -241,8 +241,7 @@ public final class MessageResolutionUtils {
         
         final List<Properties> messages = new ArrayList<Properties>(10);
         for (final String messageResourceName : messageResourceNames) {
-            final IResource messageFileResource =
-                usedResourceResolver.resolveResource(configuration, context, messageResourceName, null);
+            final IResource messageFileResource = usedResourceResolver.resolveResource(configuration, messageResourceName, null);
             if (messageFileResource != null) {
                 messages.add(loadMessages(messageFileResource));
                 if (logger.isTraceEnabled()) {

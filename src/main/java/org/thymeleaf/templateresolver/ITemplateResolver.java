@@ -118,11 +118,10 @@ public interface ITemplateResolver {
      * </p>
      * 
      * @param configuration the engine configuration.
-     * @param context the context being applied to the template execution.
      * @param template the template to be resolved (usually its name)
      * @return a TemplateResolution object containing (maybe valid) resource resolution
      *         info for the template, or null.
      */
-    public TemplateResolution resolveTemplate(final IEngineConfiguration configuration, final IContext context, final String template);
+    public TemplateResolution resolveTemplate(final IEngineConfiguration configuration, final String template);
 
 }

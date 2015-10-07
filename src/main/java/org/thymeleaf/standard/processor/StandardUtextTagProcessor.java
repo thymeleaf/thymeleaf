@@ -106,7 +106,6 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
                         attributeTemplateName, unescapedText,
                         0, 0, // we won't apply offset here because the inserted text does not really come from the template itself
                         processingContext.getTemplateMode(),
-                        processingContext.getVariables(),
                         false); // useCache == false because we could potentially pollute the cache with too many entries (th:utext is too variable!)
 
         // Setting 'processable' to false avoiding text inliners processing already generated text,

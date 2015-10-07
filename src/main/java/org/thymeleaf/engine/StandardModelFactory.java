@@ -104,7 +104,7 @@ public class StandardModelFactory implements IModelFactory {
         // parsing done from here. Also, we are 'artificially' specifying it as nested even if we don't really
         // know if this fragment is exactly a nested text inside the template, but that's not really important...
         return this.templateManager.parseNested(
-                this.configuration, this.template, template, 0, 0, this.templateMode, new Context(), false);
+                this.configuration, this.template, template, 0, 0, this.templateMode, false);
     }
 
 

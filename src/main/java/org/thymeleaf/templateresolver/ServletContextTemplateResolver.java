@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.templateresolver;
 
+import javax.servlet.ServletContext;
+
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.resourceresolver.ServletContextResourceResolver;
@@ -41,9 +43,9 @@ public class ServletContextTemplateResolver
     
     
     
-    public ServletContextTemplateResolver() {
+    public ServletContextTemplateResolver(final ServletContext servletContext) {
         super();
-        super.setResourceResolver(new ServletContextResourceResolver());
+        super.setResourceResolver(new ServletContextResourceResolver(servletContext));
     }
     
     

@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.cache.ICacheEntryValidity;
-import org.thymeleaf.context.IContext;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.PatternSpec;
@@ -192,23 +191,22 @@ public abstract class AbstractTemplateResolver
     
     
     public final TemplateResolution resolveTemplate(
-            final IEngineConfiguration configuration, final IContext context, final String template) {
+            final IEngineConfiguration configuration, final String template) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(template, "Template Name cannot be null");
-        Validate.notNull(context, "Context cannot be null");
 
-        if (!computeResolvable(configuration, context, template)) {
+        if (!computeResolvable(configuration, template)) {
             return null;
         }
         
         return new TemplateResolution(
                 template,
-                computeResourceName(configuration, context, template),
-                computeResourceResolver(configuration, context, template),
-                computeCharacterEncoding(configuration, context, template),
-                computeTemplateMode(configuration, context, template),
-                computeValidity(configuration, context, template));
+                computeResourceName(configuration, template),
+                computeResourceResolver(configuration, template),
+                computeCharacterEncoding(configuration, template),
+                computeTemplateMode(configuration, template),
+                computeValidity(configuration, template));
         
     }
     
@@ -222,12 +220,10 @@ public abstract class AbstractTemplateResolver
      * </p>
      *
      * @param configuration the engine configuration.
-     * @param context the context being applied to the template execution.
      * @param template the template to be resolved (usually its name).
      * @return whether the template is resolvable or not
      */
-    protected boolean computeResolvable(
-            final IEngineConfiguration configuration, final IContext context, final String template) {
+    protected boolean computeResolvable(final IEngineConfiguration configuration, final String template) {
         if (this.resolvablePatternSpec.isEmpty()) {
             return true;
         }
@@ -245,12 +241,10 @@ public abstract class AbstractTemplateResolver
      * </p>
      *
      * @param configuration the engine configuration.
-     * @param context the context being applied to the template execution.
      * @param template the template to be resolved (usually its name).
      * @return the resource name
      */
-    protected abstract String computeResourceName(
-            final IEngineConfiguration configuration, final IContext context, final String template);
+    protected abstract String computeResourceName(final IEngineConfiguration configuration, final String template);
 
     
     
@@ -261,12 +255,10 @@ public abstract class AbstractTemplateResolver
      * </p>
      *
      * @param configuration the engine configuration.
-     * @param context the context being applied to the template execution.
      * @param template the template to be resolved (usually its name).
      * @return the resource resolver to be applied
      */
-    protected abstract IResourceResolver computeResourceResolver(
-            final IEngineConfiguration configuration, final IContext context, final String template);
+    protected abstract IResourceResolver computeResourceResolver(final IEngineConfiguration configuration, final String template);
 
     
     
@@ -277,12 +269,10 @@ public abstract class AbstractTemplateResolver
      * </p>
      *
      * @param configuration the engine configuration.
-     * @param context the context being applied to the template execution.
      * @param template the template to be resolved (usually its name).
      * @return the resource resolver to be applied
      */
-    protected abstract String computeCharacterEncoding(
-            final IEngineConfiguration configuration, final IContext context, final String template);
+    protected abstract String computeCharacterEncoding(final IEngineConfiguration configuration, final String template);
 
     
     
@@ -293,12 +283,10 @@ public abstract class AbstractTemplateResolver
      * </p>
      *
      * @param configuration the engine configuration.
-     * @param context the context being applied to the template execution.
      * @param template the template to be resolved (usually its name).
      * @return the template mode to be applied
      */
-    protected abstract TemplateMode computeTemplateMode(
-            final IEngineConfiguration configuration, final IContext context, final String template);
+    protected abstract TemplateMode computeTemplateMode(final IEngineConfiguration configuration, final String template);
     
     
     
@@ -311,12 +299,10 @@ public abstract class AbstractTemplateResolver
      * </p>
      *
      * @param configuration the engine configuration.
-     * @param context the context being applied to the template execution.
      * @param template the template to be resolved (usually its name).
      * @return the validity
      */
-    protected abstract ICacheEntryValidity computeValidity(
-            final IEngineConfiguration configuration, final IContext context, final String template);
+    protected abstract ICacheEntryValidity computeValidity(final IEngineConfiguration configuration, final String template);
     
     
     

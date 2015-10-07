@@ -28,9 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.context.IWebContext;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.resource.IResource;
 import org.thymeleaf.resource.ReaderResource;
 import org.thymeleaf.util.StringUtils;
@@ -66,11 +63,14 @@ public final class ServletContextResourceResolver
     private static final Logger logger = LoggerFactory.getLogger(ServletContextResourceResolver.class);
 
     public static final String NAME = "SERVLETCONTEXT";
-    
+
+    private final ServletContext servletContext;
 
     
-    public ServletContextResourceResolver() {
+    public ServletContextResourceResolver(final ServletContext servletContext) {
         super();
+        Validate.notNull(servletContext, "Servlet context cannot be null");
+        this.servletContext = servletContext;
     }
     
     
@@ -82,28 +82,14 @@ public final class ServletContextResourceResolver
 
 
     public IResource resolveResource(
-            final IEngineConfiguration configuration, final IContext context,
+            final IEngineConfiguration configuration,
             final String resource, final String characterEncoding) {
         
-        Validate.notNull(context, "Context cannot be null");
         Validate.notNull(resource, "Resource cannot be null");
         
-        if (!(context instanceof IWebContext)) {
-            throw new TemplateProcessingException(
-                    "Resource resolution by ServletContext with " +
-                    this.getClass().getName() + " can only be performed " +
-                    "when context implements " + IWebContext.class.getName() + 
-                    " [current context is of class: " + context.getClass().getName() + "]");
-        }
-        
-        final ServletContext servletContext = ((IWebContext)context).getServletContext();
-        if (servletContext == null) {
-            throw new TemplateProcessingException("Thymeleaf context returned a null ServletContext");
-        }
-
         try {
 
-            final InputStream inputStream = servletContext.getResourceAsStream(resource);
+            final InputStream inputStream = this.servletContext.getResourceAsStream(resource);
             if (inputStream == null) {
                 return null;
             }

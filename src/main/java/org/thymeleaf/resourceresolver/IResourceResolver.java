@@ -20,7 +20,6 @@
 package org.thymeleaf.resourceresolver;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.IContext;
 import org.thymeleaf.resource.IResource;
 
 /**
@@ -66,13 +65,11 @@ public interface IResourceResolver {
      * </p>
      *
      * @param configuration the engine configuration.
-     * @param context the context being applied to the template execution.
      * @param resource the resource to be obtained (usually its name, corresponding with the template name).
      * @param characterEncoding the character encoding to be used for reading the resource.
      * @return an InputStream on the resource
      */
     public IResource resolveResource(
-            final IEngineConfiguration configuration, final IContext context,
-            final String resource, final String characterEncoding);
+            final IEngineConfiguration configuration, final String resource, final String characterEncoding);
     
 }

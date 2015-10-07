@@ -29,7 +29,6 @@ import org.thymeleaf.cache.AlwaysValidCacheEntryValidity;
 import org.thymeleaf.cache.ICacheEntryValidity;
 import org.thymeleaf.cache.NonCacheableCacheEntryValidity;
 import org.thymeleaf.cache.TTLCacheEntryValidity;
-import org.thymeleaf.context.IContext;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.PatternSpec;
@@ -1086,8 +1085,7 @@ public class TemplateResolver
     
     
     @Override
-    protected String computeResourceName(
-            final IEngineConfiguration configuration, final IContext context, final String template) {
+    protected String computeResourceName(final IEngineConfiguration configuration, final String template) {
 
         Validate.notNull(template, "Template name cannot be null");
         
@@ -1122,8 +1120,7 @@ public class TemplateResolver
     
 
     @Override
-    protected TemplateMode computeTemplateMode(
-            final IEngineConfiguration configuration, final IContext context, final String template) {
+    protected TemplateMode computeTemplateMode(final IEngineConfiguration configuration, final String template) {
     
         if (this.xmlTemplateModePatternSpec.matches(template)) {
             return TemplateMode.XML;
@@ -1141,8 +1138,7 @@ public class TemplateResolver
     
 
     @Override
-    protected ICacheEntryValidity computeValidity(
-            final IEngineConfiguration configuration, final IContext context, final String template) {
+    protected ICacheEntryValidity computeValidity(final IEngineConfiguration configuration, final String template) {
 
         if (this.cacheablePatternSpec.matches(template)) {
             if (this.cacheTTLMs != null) {
@@ -1168,16 +1164,14 @@ public class TemplateResolver
     
     
     @Override
-    protected IResourceResolver computeResourceResolver(
-            final IEngineConfiguration configuration, final IContext context, final String template) {
+    protected IResourceResolver computeResourceResolver(final IEngineConfiguration configuration, final String template) {
         return this.resourceResolver;
     }
 
     
 
     @Override
-    protected String computeCharacterEncoding(
-            final IEngineConfiguration configuration, final IContext context, final String template) {
+    protected String computeCharacterEncoding(final IEngineConfiguration configuration, final String template) {
         return this.characterEncoding;
     }
     

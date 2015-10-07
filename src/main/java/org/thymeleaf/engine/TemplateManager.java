@@ -186,21 +186,18 @@ public final class TemplateManager {
             final IEngineConfiguration configuration,
             final String template, final String[] selectors,
             final TemplateMode templateMode,
-            final IContext context,
             final boolean useCache) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(template, "Template cannot be null");
         // selectors CAN be null if we are going to render the entire template
         // templateMode CAN be null if we are going to use the mode specified by the template resolver
-        Validate.notNull(context, "Context cannot be null");
 
         return parse(
                 configuration,
                 null, template, selectors,
                 0, 0,
                 templateMode,
-                context,
                 useCache);
 
     }
@@ -211,7 +208,6 @@ public final class TemplateManager {
             final String ownerTemplate, final String template,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
-            final IContext context,
             final boolean useCache) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
@@ -219,14 +215,12 @@ public final class TemplateManager {
         Validate.notNull(template, "Template cannot be null");
         // NOTE selectors cannot be specified when parsing a nested template
         Validate.notNull(templateMode, "Template mode cannot be null");
-        Validate.notNull(context, "Context cannot be null");
 
         return parse(
                 configuration,
                 ownerTemplate, template, null,
                 lineOffset, colOffset,
                 templateMode,
-                context,
                 useCache);
 
     }
@@ -237,7 +231,6 @@ public final class TemplateManager {
             final String ownerTemplate, final String template, final String[] selectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
-            final IContext context,
             final boolean useCache) {
 
 
@@ -266,8 +259,7 @@ public final class TemplateManager {
         /*
          * Resolve the template, obtain the IResource and its metadata (TemplateResolution)
          */
-        final Resolution resolution =
-                resolve(configuration, templateResolvers, template, templateMode, context);
+        final Resolution resolution = resolve(configuration, templateResolvers, template, templateMode);
 
 
         /*
@@ -460,8 +452,7 @@ public final class TemplateManager {
         /*
          * Resolve the template, obtain the IResource and its metadata (TemplateResolution)
          */
-        final Resolution resolution =
-                resolve(configuration, templateResolvers, template, templateMode, context);
+        final Resolution resolution = resolve(configuration, templateResolvers, template, templateMode);
 
 
         /*
@@ -526,15 +517,14 @@ public final class TemplateManager {
             final IEngineConfiguration configuration,
             final Set<ITemplateResolver> templateResolvers,
             final String template,
-            final TemplateMode templateMode,
-            final IContext context) {
+            final TemplateMode templateMode) {
 
         TemplateResolution templateResolution = null;
         IResource templateResource = null;
 
         for (final ITemplateResolver templateResolver : templateResolvers) {
 
-            templateResolution = templateResolver.resolveTemplate(configuration, context, template);
+            templateResolution = templateResolver.resolveTemplate(configuration, template);
 
             if (templateResolution != null) {
 
@@ -557,7 +547,7 @@ public final class TemplateManager {
                 }
 
                 templateResource =
-                        resourceResolver.resolveResource(configuration, context, resourceName, templateResolution.getCharacterEncoding());
+                        resourceResolver.resolveResource(configuration, resourceName, templateResolution.getCharacterEncoding());
 
                 if (templateResource == null) {
                     if (logger.isTraceEnabled()) {

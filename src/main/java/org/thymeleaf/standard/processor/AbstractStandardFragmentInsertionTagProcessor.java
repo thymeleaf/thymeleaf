@@ -135,7 +135,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                             processingContext.getConfiguration(),
                             templateName, fragments,
                             null, // we will not force the template mode
-                            processingContext.getVariables(), true);
+                            true);  // use the cache if possible, fragments are from template files
 
 
         /*
