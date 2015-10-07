@@ -44,11 +44,19 @@ import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.util.StandardExpressionUtils;
 
 /**
- * 
+ * <p>
+ *   Evaluator for variable expressions (<tt>${...}</tt>) in Thymeleaf Standard Expressions, using the
+ *   SpringEL expression language.
+ * </p>
+ * <p>
+ *   Note a class with this name existed since 2.0.9, but it was completely reimplemented
+ *   in Thymeleaf 3.0
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * @author Guven Demir
  * 
- * @since 2.0.9
+ * @since 3.0.0
  *
  */
 public class SPELVariableExpressionEvaluator

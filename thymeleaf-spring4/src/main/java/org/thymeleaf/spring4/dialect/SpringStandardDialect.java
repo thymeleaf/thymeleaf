@@ -58,10 +58,27 @@ import org.thymeleaf.standard.processor.StandardValueTagProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
+ * <p>
+ *   SpringStandard Dialect. This is the class containing the implementation of Thymeleaf Standard Dialect, including all
+ *   <tt>th:*</tt> processors, expression objects, etc. for Spring-enabled environments.
+ * </p>
+ * <p>
+ *   Note this dialect uses <strong>SpringEL</strong> as an expression language and adds some Spring-specific
+ *   features on top of {@link StandardDialect}, like <tt>th:field</tt> or Spring-related expression objects.
+ * </p>
+ * <p>
+ *   The usual and recommended way of using this dialect is by instancing {@link org.thymeleaf.spring4.SpringTemplateEngine}
+ *   instead of {@link org.thymeleaf.TemplateEngine}. The former will automatically add this dialect and perform
+ *   some specific configuration like e.g. Spring-integrated message resolution.
+ * </p>
+ * <p>
+ *   Note a class with this name existed since 1.0, but it was completely reimplemented
+ *   in Thymeleaf 3.0
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0 (reimplemented in 3.0.0)
+ * @since 3.0.0
  *
  */
 public class SpringStandardDialect extends StandardDialect {

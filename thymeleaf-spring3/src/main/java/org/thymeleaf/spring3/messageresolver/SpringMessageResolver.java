@@ -42,10 +42,14 @@ import org.thymeleaf.util.Validate;
  *   This resolution is done by means of using the available Spring-configured
  *   {@link MessageSource} objects.  
  * </p>
+ * <p>
+ *   Note a class with this name existed since 1.0, but it was completely reimplemented
+ *   in Thymeleaf 3.0
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0 (reimplemented in 3.0.0)
+ * @since 3.0.0
  *
  */
 public final class SpringMessageResolver
