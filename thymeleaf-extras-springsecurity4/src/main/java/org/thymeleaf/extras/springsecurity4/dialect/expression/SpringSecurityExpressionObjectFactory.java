@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebVariablesMap;
-import org.thymeleaf.expression.ExpressionObjectDefinition;
 import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.extras.springsecurity4.auth.AuthUtils;
 import org.thymeleaf.extras.springsecurity4.auth.Authorization;
@@ -55,42 +54,18 @@ public class SpringSecurityExpressionObjectFactory implements IExpressionObjectF
      */
 
     public static final String AUTHENTICATION_EXPRESSION_OBJECT_NAME = "authentication";
-    private static final String AUTHENTICATION_EXPRESSION_OBJECT_DESCRIPTION = "The Spring Security authentication object (org.springframework.security.core.Authentication)";
-    private static final boolean AUTHENTICATION_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition AUTHENTICATION_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(AUTHENTICATION_EXPRESSION_OBJECT_NAME, AUTHENTICATION_EXPRESSION_OBJECT_DESCRIPTION, AUTHENTICATION_EXPRESSION_OBJECT_CACHEABLE);
-
     public static final String AUTHORIZATION_EXPRESSION_OBJECT_NAME = "authorization";
-    private static final String AUTHORIZATION_EXPRESSION_OBJECT_DESCRIPTION = "Utility methods for checking authorization based on expressions, URLs and Access Control Lists";
-    private static final boolean AUTHORIZATION_EXPRESSION_OBJECT_CACHEABLE = true;
-    private static final ExpressionObjectDefinition AUTHORIZATION_EXPRESSION_OBJECT_DEFINITION =
-            new ExpressionObjectDefinition(AUTHORIZATION_EXPRESSION_OBJECT_NAME, AUTHORIZATION_EXPRESSION_OBJECT_DESCRIPTION, AUTHORIZATION_EXPRESSION_OBJECT_CACHEABLE);
 
 
 
 
-    private static final Set<ExpressionObjectDefinition> ALL_EXPRESSION_OBJECT_DEFINITIONS_SET =
-            Collections.unmodifiableSet(new LinkedHashSet<ExpressionObjectDefinition>(java.util.Arrays.asList(
-                    new ExpressionObjectDefinition[]{
-                            AUTHENTICATION_EXPRESSION_OBJECT_DEFINITION,
-                            AUTHORIZATION_EXPRESSION_OBJECT_DEFINITION
+    protected static final Set<String> ALL_EXPRESSION_OBJECT_NAMES =
+            Collections.unmodifiableSet(new LinkedHashSet<String>(java.util.Arrays.asList(
+                    new String[]{
+                            AUTHENTICATION_EXPRESSION_OBJECT_NAME,
+                            AUTHORIZATION_EXPRESSION_OBJECT_NAME
                     }
             )));
-    public static final Map<String,ExpressionObjectDefinition> ALL_EXPRESSION_OBJECT_DEFINITIONS;
-
-
-
-
-
-
-    static {
-        final Map<String,ExpressionObjectDefinition> allExpressionObjectDefinitions =
-                new LinkedHashMap<String, ExpressionObjectDefinition>(ALL_EXPRESSION_OBJECT_DEFINITIONS_SET.size());
-        for (final ExpressionObjectDefinition definition : ALL_EXPRESSION_OBJECT_DEFINITIONS_SET) {
-            allExpressionObjectDefinitions.put(definition.getName(), definition);
-        }
-        ALL_EXPRESSION_OBJECT_DEFINITIONS = Collections.unmodifiableMap(allExpressionObjectDefinitions);
-    }
 
 
 
@@ -102,8 +77,15 @@ public class SpringSecurityExpressionObjectFactory implements IExpressionObjectF
 
 
 
-    public Map<String,ExpressionObjectDefinition> getObjectDefinitions() {
-        return ALL_EXPRESSION_OBJECT_DEFINITIONS;
+    public Set<String> getAllExpressionObjectNames() {
+        return ALL_EXPRESSION_OBJECT_NAMES;
+    }
+
+
+
+    public boolean isCacheable(final String expressionObjectName) {
+        // All expression objects created by this factory are cacheable (template-scope)
+        return true;
     }
 
 
