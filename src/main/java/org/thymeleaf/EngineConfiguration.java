@@ -201,10 +201,20 @@ public class EngineConfiguration implements IEngineConfiguration {
 
 
 
-
-
-
-
+    /**
+     * Compares <tt>Integer</tt> types, taking into account possible <tt>null</tt>
+     * values.  When <tt>null</tt>, then the return value will be such that the
+     * other value will come first in a comparison.  If both values are <tt>null</tt>,
+     * then they are effectively equal.
+     * 
+     * @param o1 The first value to compare.
+     * @param o2 The second value to compare.
+     * @return -1, 0, or 1 if the first value should come before, equal to, or
+     *         after the second.
+     */
+    private static int nullSafeIntegerComparison(Integer o1, Integer o2) {
+        return o1 != null ? o2 != null ? o1.compareTo(o2) : -1 : o2 != null ? 1 : 0;
+    }
 
 
     private static final class TemplateResolverComparator implements Comparator<ITemplateResolver> {
@@ -215,19 +225,10 @@ public class EngineConfiguration implements IEngineConfiguration {
             super();
         }
 
-        public int compare(final ITemplateResolver o1, final ITemplateResolver o2) {
-            if (o1.getOrder() == null) {
-                return -1;
-            }
-            if (o2.getOrder() == null) {
-                return 1;
-            }
-            return o1.getOrder().compareTo(o2.getOrder());
+        public int compare(final ITemplateResolver tr1, final ITemplateResolver tr2) {
+            return nullSafeIntegerComparison(tr1.getOrder(), tr2.getOrder());
         }
-
     }
-
-
 
 
     private static final class MessageResolverComparator implements Comparator<IMessageResolver> {
@@ -238,16 +239,9 @@ public class EngineConfiguration implements IEngineConfiguration {
             super();
         }
 
-        public int compare(final IMessageResolver o1, final IMessageResolver o2) {
-            if (o1.getOrder() == null) {
-                return -1;
-            }
-            if (o2.getOrder() == null) {
-                return 1;
-            }
-            return o1.getOrder().compareTo(o2.getOrder());
+        public int compare(final IMessageResolver mr1, final IMessageResolver mr2) {
+            return nullSafeIntegerComparison(mr1.getOrder(), mr2.getOrder());
         }
-
     }
 
 }
