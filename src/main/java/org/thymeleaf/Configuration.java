@@ -937,13 +937,16 @@ public final class Configuration {
         }
 
         public int compare(final IMessageResolver o1, final IMessageResolver o2) {
-            if (o1.getOrder() == null) {
-                return -1;
+
+            Integer order1 = o1.getOrder();
+            if (order1 == null) {
+                order1 = Integer.MAX_VALUE;
             }
-            if (o2.getOrder() == null) {
-                return 1;
+            Integer order2 = o2.getOrder();
+            if (order2 == null) {
+                order2 = Integer.MAX_VALUE;
             }
-            return o1.getOrder().compareTo(o2.getOrder());
+            return order1.compareTo(order2);
         }
 
     }
