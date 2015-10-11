@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.templateresource;
 
+import java.io.IOException;
 import java.io.Reader;
 
 /**
@@ -32,10 +33,10 @@ public interface ITemplateResource {
 
     public String getName();
 
-    public Reader reader();
-
-    public ITemplateResource relative(final String relativePath);
-
     public boolean exists();
+
+    public Reader reader() throws IOException;
+
+    public ITemplateResource relative(final String relativePath) throws IOException;
 
 }
