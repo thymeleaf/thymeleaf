@@ -456,7 +456,34 @@ public final class StringUtils {
         Validate.notNull(before, "Parameter \"before\" cannot be null");
         Validate.notNull(after, "Parameter \"after\" cannot be null");
 
-        return target.toString().replace(before, after);
+        final String targetStr = target.toString();
+        final int targetStrLen = targetStr.length();
+        final int beforeLen = before.length();
+
+        if (targetStrLen == 0 || beforeLen == 0) {
+            return targetStr;
+        }
+
+        int index = targetStr.indexOf(before);
+        if (index < 0) {
+            return targetStr;
+        }
+
+        final StringBuilder stringBuilder = new StringBuilder(targetStrLen + 10);
+
+        int lastPos = 0;
+        while (index >= 0) {
+
+            stringBuilder.append(targetStr, lastPos, index);
+            stringBuilder.append(after);
+            lastPos = index + beforeLen;
+            index = targetStr.indexOf(before, lastPos);
+
+        }
+
+        stringBuilder.append(targetStr, lastPos, targetStrLen);
+
+        return stringBuilder.toString();
 
     }
 
