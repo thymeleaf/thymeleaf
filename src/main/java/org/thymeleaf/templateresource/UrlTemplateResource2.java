@@ -41,7 +41,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class URLTemplateResource implements ITemplateResource, Serializable {
+public final class UrlTemplateResource2 implements ITemplateResource, Serializable {
 
 
     private final URL url;
@@ -49,7 +49,7 @@ public final class URLTemplateResource implements ITemplateResource, Serializabl
 
 
 
-    public URLTemplateResource(final String path, final String characterEncoding) throws MalformedURLException {
+    public UrlTemplateResource2(final String path, final String characterEncoding) throws MalformedURLException {
 
         super();
 
@@ -62,7 +62,7 @@ public final class URLTemplateResource implements ITemplateResource, Serializabl
     }
 
 
-    public URLTemplateResource(final URL url, final String characterEncoding) {
+    public UrlTemplateResource2(final URL url, final String characterEncoding) {
 
         super();
 
@@ -132,7 +132,7 @@ public final class URLTemplateResource implements ITemplateResource, Serializabl
         final URL relativeURL =
                 new URL(this.url, (relativePath.charAt(0) == '/' ? relativePath.substring(1) : relativePath));
 
-        return new URLTemplateResource(relativeURL, this.characterEncoding);
+        return new UrlTemplateResource2(relativeURL, this.characterEncoding);
 
     }
 
