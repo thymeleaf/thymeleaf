@@ -52,7 +52,8 @@ public final class ClassLoaderTemplateResource implements ITemplateResource {
         // Character encoding CAN be null (system default will be used)
 
         this.classLoader = classLoader;
-        this.path = (path.charAt(0) == '/' ? path.substring(1) : path);
+        final String cleanPath = TemplateResourceUtils.cleanPath(path);
+        this.path = (cleanPath.charAt(0) == '/' ? cleanPath.substring(1) : cleanPath);
         this.characterEncoding = characterEncoding;
 
     }
@@ -89,7 +90,7 @@ public final class ClassLoaderTemplateResource implements ITemplateResource {
 
         Validate.notEmpty(relativePath, "Relative Path cannot be null or empty");
 
-        final String fullRelativePath = createRelativePath(this.path, relativePath);
+        final String fullRelativePath = TemplateResourceUtils.createRelativePath(this.path, relativePath);
         return new ClassLoaderTemplateResource(this.classLoader, fullRelativePath, this.characterEncoding);
 
     }
@@ -99,23 +100,6 @@ public final class ClassLoaderTemplateResource implements ITemplateResource {
 
     public boolean exists() {
         return (this.classLoader.getResource(this.path) != null);
-    }
-
-
-
-
-    static String createRelativePath(final String path, final String relativePath) {
-        final int separatorPos = path.lastIndexOf('/');
-        if (separatorPos != -1) {
-            final StringBuilder pathBuilder = new StringBuilder(path.length() + relativePath.length());
-            pathBuilder.append(path, 0, separatorPos);
-            if (relativePath.charAt(0) != '/') {
-                pathBuilder.append('/');
-            }
-            pathBuilder.append(relativePath);
-            return pathBuilder.toString();
-        }
-        return relativePath;
     }
 
 

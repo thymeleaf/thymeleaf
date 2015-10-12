@@ -210,7 +210,8 @@ public final class URLTemplateResource implements ITemplateResource, Serializabl
 
 
 
-    public static URI toURI(final URL url) throws URISyntaxException {
+
+    private static URI toURI(final URL url) throws URISyntaxException {
 
         String location = url.toString();
         if (location.indexOf(' ') == -1) {
