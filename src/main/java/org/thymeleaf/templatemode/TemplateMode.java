@@ -22,6 +22,7 @@ package org.thymeleaf.templatemode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
 
 /**
  *
@@ -39,7 +40,7 @@ public enum TemplateMode {
     /**
      * Provided only for legacy compatibility reasons for old XML-based configurations (e.g. Spring).
      * <strong>Never</strong> use this value directly. Only to be used internally at
-     * {@link org.thymeleaf.templateresolver.TemplateResolver} implementations.
+     * {@link AbstractConfigurableTemplateResolver} implementations.
      *
      * @deprecated Deprecated in 3.0.0. Use {@link #HTML} instead. Will be REMOVED in 3.1
      */
@@ -49,7 +50,7 @@ public enum TemplateMode {
     /**
      * Provided only for legacy compatibility reasons for old XML-based configurations (e.g. Spring).
      * <strong>Never</strong> use this value directly. Only to be used internally at
-     * {@link org.thymeleaf.templateresolver.TemplateResolver} implementations.
+     * {@link AbstractConfigurableTemplateResolver} implementations.
      *
      * @deprecated Deprecated in 3.0.0. Use {@link #HTML} instead. Will be REMOVED in 3.1
      */
@@ -59,7 +60,7 @@ public enum TemplateMode {
     /**
      * Provided only for legacy compatibility reasons for old XML-based configurations (e.g. Spring).
      * <strong>Never</strong> use this value directly. Only to be used internally at
-     * {@link org.thymeleaf.templateresolver.TemplateResolver} implementations.
+     * {@link AbstractConfigurableTemplateResolver} implementations.
      *
      * @deprecated Deprecated in 3.0.0. Use {@link #HTML} instead. Will be REMOVED in 3.1
      */
@@ -69,7 +70,7 @@ public enum TemplateMode {
     /**
      * Provided only for legacy compatibility reasons for old XML-based configurations (e.g. Spring).
      * <strong>Never</strong> use this value directly. Only to be used internally at
-     * {@link org.thymeleaf.templateresolver.TemplateResolver} implementations.
+     * {@link AbstractConfigurableTemplateResolver} implementations.
      *
      * @deprecated Deprecated in 3.0.0. Use {@link #HTML} instead. Will be REMOVED in 3.1
      */
@@ -79,7 +80,7 @@ public enum TemplateMode {
     /**
      * Provided only for legacy compatibility reasons for old XML-based configurations (e.g. Spring).
      * <strong>Never</strong> use this value directly. Only to be used internally at
-     * {@link org.thymeleaf.templateresolver.TemplateResolver} implementations.
+     * {@link AbstractConfigurableTemplateResolver} implementations.
      *
      * @deprecated Deprecated in 3.0.0. Use {@link #XML} instead. Will be REMOVED in 3.1
      */

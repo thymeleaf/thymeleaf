@@ -21,8 +21,8 @@ package org.thymeleaf.templateparser;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.engine.ITemplateHandler;
-import org.thymeleaf.resource.IResource;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresource.ITemplateResource;
 
 
 /**
@@ -36,7 +36,7 @@ public interface ITemplateParser {
 
     public void parseStandalone(
                       final IEngineConfiguration configuration,
-                      final IResource resource,
+                      final ITemplateResource resource,
                       final String[] selectors,
                       final TemplateMode templateMode,
                       final ITemplateHandler handler);
@@ -45,7 +45,7 @@ public interface ITemplateParser {
     public void parseNested(
                       final IEngineConfiguration configuration,
                       final String ownerTemplate,
-                      final IResource resource,
+                      final ITemplateResource resource,
                       final int lineOffset, final int colOffset,
                       final TemplateMode templateMode,
                       final ITemplateHandler handler);

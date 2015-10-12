@@ -19,55 +19,34 @@
  */
 package org.thymeleaf.templateresolver;
 
-import org.thymeleaf.exceptions.ConfigurationException;
-import org.thymeleaf.resourceresolver.ClassLoaderResourceResolver;
-import org.thymeleaf.resourceresolver.IResourceResolver;
-import org.thymeleaf.resourceresolver.StringResourceResolver;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.templateresource.ITemplateResource;
+import org.thymeleaf.templateresource.StringTemplateResource;
 
 /**
  * <p>
- *   Implementation of {@link ITemplateResolver} that extends {@link TemplateResolver}
- *   and uses a {@link StringResourceResolver} for resource resolution.
+ *   Implementation of {@link ITemplateResolver} that extends {@link AbstractConfigurableTemplateResolver}
+ *   and creates {@link StringTemplateResource} instances for template resources.
  * </p>
- * 
+ *
  * @author Daniel Fern&aacute;ndez
- * 
+ *
  * @since 3.0.0
  *
  */
-public class StringTemplateResolver
-        extends TemplateResolver {
+public class StringTemplateResolver extends AbstractConfigurableTemplateResolver {
 
 
 
     public StringTemplateResolver() {
         super();
-        super.setResourceResolver(new StringResourceResolver());
     }
-    
 
-    
-    /**
-     * <p>
-     *   This method <b>should not be called</b>, because the resource resolver is
-     *   fixed to be {@link ClassLoaderResourceResolver}. Every execution of this method
-     *   will result in an exception.
-     * </p>
-     * <p>
-     *   If you need to select a different resource resolver, use the {@link TemplateResolver}
-     *   class instead.
-     * </p>
-     * 
-     * @param resourceResolver the new resource resolver
-     */
+
     @Override
-    public void setResourceResolver(final IResourceResolver resourceResolver) {
-        throw new ConfigurationException(
-                "Cannot set a resource resolver on " + this.getClass().getName() + ". If " +
-                "you want to set your own resource resolver, use " + TemplateResolver.class.getName() + 
-                "instead");
+    protected ITemplateResource computeTemplateResource(
+            final IEngineConfiguration configuration, final String template, final String resourceName, final String characterEncoding) {
+        return new StringTemplateResource(template, resourceName);
     }
 
-    
-    
 }

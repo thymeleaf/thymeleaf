@@ -81,7 +81,7 @@ public final class StandardMessageResolutionUtils {
         final IEngineConfiguration configuration = processingContext.getConfiguration();
         final Locale locale = processingContext.getLocale();
 
-        final String templateName = processingContext.getTemplateResolution().getTemplateName();
+        final String templateName = processingContext.getTemplateResolution().getTemplate();
         final String cacheKey = TEMPLATE_CACHE_PREFIX + templateName + "_" + computeLocaleToString(locale);
 
         Properties properties = null;

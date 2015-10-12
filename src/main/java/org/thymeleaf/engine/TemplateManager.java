@@ -39,8 +39,6 @@ import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.postprocessor.IPostProcessor;
 import org.thymeleaf.preprocessor.IPreProcessor;
-import org.thymeleaf.resource.IResource;
-import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.templateparser.markup.HTMLTemplateParser;
@@ -51,6 +49,7 @@ import org.thymeleaf.templateparser.text.TextTemplateParser;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolution;
+import org.thymeleaf.templateresource.ITemplateResource;
 import org.thymeleaf.util.LoggingUtils;
 import org.thymeleaf.util.Validate;
 
@@ -274,7 +273,7 @@ public final class TemplateManager {
          */
         processResolvedResource(
                 configuration,
-                ownerTemplate, resolution.resource, selectors,
+                ownerTemplate, resolution.templateResource, selectors,
                 lineOffset, colOffset,
                 resolution.templateResolution.getTemplateMode(),
                 builderHandler);
@@ -478,7 +477,7 @@ public final class TemplateManager {
             // Process the cached template itself
             processResolvedResource(
                     processingContext.getConfiguration(),
-                    ownerTemplate, resolution.resource, selectors,
+                    ownerTemplate, resolution.templateResource, selectors,
                     lineOffset, colOffset,
                     processingContext.getTemplateMode(),
                     builderHandler);
@@ -495,7 +494,7 @@ public final class TemplateManager {
          */
         processResolvedResource(
                 processingContext.getConfiguration(),
-                ownerTemplate, resolution.resource, selectors,
+                ownerTemplate, resolution.templateResource, selectors,
                 lineOffset, colOffset,
                 processingContext.getTemplateMode(),
                 processingHandlerChain);
@@ -520,49 +519,24 @@ public final class TemplateManager {
             final TemplateMode templateMode) {
 
         TemplateResolution templateResolution = null;
-        IResource templateResource = null;
+        ITemplateResource templateResource = null;
 
         for (final ITemplateResolver templateResolver : templateResolvers) {
 
             templateResolution = templateResolver.resolveTemplate(configuration, template);
+            templateResource = (templateResolution != null? templateResolution.getTemplateResource() : null);
 
-            if (templateResolution != null) {
+            if (templateResolution != null && templateResource != null) {
 
                 if (templateMode != null && templateResolution.getTemplateMode() != templateMode) {
                     // We need to force the template mode
                     templateResolution =
                             new TemplateResolution(
-                                    templateResolution.getTemplateName(), templateResolution.getResourceName(),
-                                    templateResolution.getResourceResolver(), templateResolution.getCharacterEncoding(),
+                                    templateResolution.getTemplate(), templateResolution.getTemplateResource(),
                                     templateMode, templateResolution.getValidity());
                 }
 
-                final String resourceName = templateResolution.getResourceName();
-                final IResourceResolver resourceResolver = templateResolution.getResourceResolver();
-
-                if (logger.isTraceEnabled()) {
-                    logger.trace(
-                            "[THYMELEAF][{}] Trying to resolve template \"{}\" as resource \"{}\" with resource resolver \"{}\"",
-                            new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template), LoggingUtils.loggifyTemplateName(resourceName), resourceResolver.getName()});
-                }
-
-                templateResource =
-                        resourceResolver.resolveResource(configuration, resourceName, templateResolution.getCharacterEncoding());
-
-                if (templateResource == null) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace(
-                                "[THYMELEAF][{}] Template \"{}\" could not be resolved as resource \"{}\" with resource resolver \"{}\"",
-                                new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template), LoggingUtils.loggifyTemplateName(resourceName), resourceResolver.getName()});
-                    }
-                } else {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace(
-                                "[THYMELEAF][{}] Template \"{}\" was correctly resolved as resource \"{}\" in mode {} with resource resolver \"{}\"",
-                                new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template), LoggingUtils.loggifyTemplateName(resourceName), templateResolution.getTemplateMode(), resourceResolver.getName()});
-                    }
-                    break;
-                }
+                break;
 
             } else {
 
@@ -592,7 +566,7 @@ public final class TemplateManager {
 
     private void processResolvedResource(
             final IEngineConfiguration configuration,
-            final String ownerTemplate, final IResource resource, final String[] selectors,
+            final String ownerTemplate, final ITemplateResource resource, final String[] selectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
             final ITemplateHandler templateHandler) {
@@ -670,13 +644,13 @@ public final class TemplateManager {
     private static void processTemplateModel(final TemplateModel template, final ITemplateHandler templateHandler) {
 
         if (logger.isTraceEnabled()) {
-            logger.trace("[THYMELEAF][{}] Starting processing of template \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template.getTemplateResolution().getTemplateName()));
+            logger.trace("[THYMELEAF][{}] Starting processing of template \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template.getTemplateResolution().getTemplate()));
         }
 
         template.getInternalModel().process(templateHandler);
 
         if (logger.isTraceEnabled()) {
-            logger.trace("[THYMELEAF][{}] Finished processing of template \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template.getTemplateResolution().getTemplateName()));
+            logger.trace("[THYMELEAF][{}] Finished processing of template \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template.getTemplateResolution().getTemplate()));
         }
 
     }
@@ -788,12 +762,12 @@ public final class TemplateManager {
     private static final class Resolution {
 
         final TemplateResolution templateResolution;
-        final IResource resource;
+        final ITemplateResource templateResource;
 
-        public Resolution(final TemplateResolution templateResolution, final IResource resource) {
+        public Resolution(final TemplateResolution templateResolution, final ITemplateResource templateResource) {
             super();
             this.templateResolution = templateResolution;
-            this.resource = resource;
+            this.templateResource = templateResource;
         }
 
     }

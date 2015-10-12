@@ -20,22 +20,18 @@
 package org.thymeleaf.templateparser.text;
 
 import java.io.BufferedReader;
-import java.io.CharArrayReader;
+import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.engine.TemplateHandlerAdapterTextHandler;
 import org.thymeleaf.exceptions.TemplateInputException;
-import org.thymeleaf.resource.CharArrayResource;
-import org.thymeleaf.resource.IResource;
-import org.thymeleaf.resource.ReaderResource;
-import org.thymeleaf.resource.StringResource;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.templateparser.reader.ParserLevelCommentTextReader;
 import org.thymeleaf.templateparser.reader.PrototypeOnlyCommentTextReader;
+import org.thymeleaf.templateresource.ITemplateResource;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -71,7 +67,7 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
 
     public void parseStandalone(
             final IEngineConfiguration configuration,
-            final IResource resource,
+            final ITemplateResource resource,
             final String[] selectors,
             final TemplateMode templateMode,
             final ITemplateHandler handler) {
@@ -93,7 +89,7 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
     public void parseNested(
             final IEngineConfiguration configuration,
             final String ownerTemplate,
-            final IResource resource,
+            final ITemplateResource resource,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
             final ITemplateHandler handler) {
@@ -114,7 +110,7 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
 
     private void parse(
             final IEngineConfiguration configuration,
-            final String ownerTemplate, final IResource resource, final String[] selectors,
+            final String ownerTemplate, final ITemplateResource resource, final String[] selectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
             final ITemplateHandler templateHandler) {
@@ -144,19 +140,8 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
                                 configuration.getStandardDialectPrefix(),
                                 handler);
 
-            // Compute the base reader, depending on the type of resource
-            Reader templateReader;
-            if (resource instanceof ReaderResource) {
-                templateReader = new BufferedReader(((ReaderResource)resource).getContent());
-            } else if (resource instanceof StringResource) {
-                templateReader = new StringReader(((StringResource)resource).getContent());
-            } else if (resource instanceof CharArrayResource) {
-                final CharArrayResource charArrayResource = (CharArrayResource) resource;
-                templateReader = new CharArrayReader(charArrayResource.getContent(), charArrayResource.getOffset(), charArrayResource.getLen());
-            } else {
-                throw new IllegalArgumentException(
-                        "Cannot parse: unrecognized " + IResource.class.getSimpleName() + " implementation: " + resource.getClass().getName());
-            }
+            // Obtain the resource reader
+            Reader templateReader = new BufferedReader(resource.reader());
 
 
             // Add the required reader wrappers in order to process parser-level and prototype-only comment blocks
@@ -172,6 +157,9 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
             this.parser.parse(templateReader, handler);
 
 
+        } catch (final IOException e) {
+            final String message = "An error happened during template parsing";
+            throw new TemplateInputException(message, resource.getName(), e);
         } catch (final TextParseException e) {
             final String message = "An error happened during template parsing";
             if (e.getLine() != null && e.getCol() != null) {

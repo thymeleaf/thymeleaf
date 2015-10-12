@@ -21,60 +21,43 @@ package org.thymeleaf.templateresolver;
 
 import javax.servlet.ServletContext;
 
-import org.thymeleaf.exceptions.ConfigurationException;
-import org.thymeleaf.resourceresolver.IResourceResolver;
-import org.thymeleaf.resourceresolver.ServletContextResourceResolver;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.templateresource.ITemplateResource;
+import org.thymeleaf.templateresource.ServletContextTemplateResource;
+import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   Implementation of {@link ITemplateResolver} that extends {@link TemplateResolver}
- *   and uses a {@link ServletContextResourceResolver} for resource resolution.
+ *   Implementation of {@link ITemplateResolver} that extends {@link AbstractConfigurableTemplateResolver}
+ *   and creates {@link ServletContextTemplateResource} instances for template resources.
  * </p>
- * 
+ * <p>
+ *   Note a class with this name existed since 1.0, but it was completely rewritten in Thymeleaf 3.0.
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 1.0
+ *
+ * @since 3.0.0
  *
  */
-public class ServletContextTemplateResolver
-        extends TemplateResolver {
+public class ServletContextTemplateResolver extends AbstractConfigurableTemplateResolver {
 
-    
-    
-    
-    
+
+    private final ServletContext servletContext;
+
+
+
     public ServletContextTemplateResolver(final ServletContext servletContext) {
         super();
-        super.setResourceResolver(new ServletContextResourceResolver(servletContext));
-    }
-    
-    
-    
-    
-    
-    /**
-     * <p>
-     *   This method <b>should not be called</b>, because the resource resolver is
-     *   fixed to be {@link ServletContextResourceResolver}. Every execution of this method
-     *   will result in an exception.
-     * </p>
-     * <p>
-     *   If you need to select a different resource resolver, use the {@link TemplateResolver}
-     *   class instead.
-     * </p>
-     * 
-     * @param resourceResolver the new resource resolver
-     */
-    @Override
-    public void setResourceResolver(final IResourceResolver resourceResolver) {
-        throw new ConfigurationException(
-                "Cannot set a resource resolver on " + this.getClass().getName() + ". If " +
-                "you want to set your own resource resolver, use " + TemplateResolver.class.getName() + 
-                "instead");
+        Validate.notNull(servletContext, "ServletContext cannot be null");
+        this.servletContext = servletContext;
     }
 
-    
-    
-    
-    
+
+    @Override
+    protected ITemplateResource computeTemplateResource(
+            final IEngineConfiguration configuration, final String template, final String resourceName, final String characterEncoding) {
+        return new ServletContextTemplateResource(this.servletContext, resourceName, characterEncoding);
+    }
+
 }

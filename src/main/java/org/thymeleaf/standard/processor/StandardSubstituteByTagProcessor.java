@@ -66,7 +66,7 @@ public final class StandardSubstituteByTagProcessor extends AbstractStandardFrag
                     "[THYMELEAF][{}][{}] Deprecated attribute {} found in template {}, line {}, col {}. " +
                     "Please use {} instead, this deprecated attribute will be removed in future versions of Thymeleaf.",
                     new Object[]{
-                            TemplateEngine.threadIndex(), processingContext.getTemplateResolution().getTemplateName(),
+                            TemplateEngine.threadIndex(), processingContext.getTemplateResolution().getTemplate(),
                             attributeName, attributeTemplateName, attributeLine, attributeCol, AttributeNames.forHTMLName(attributeName.getPrefix(), StandardReplaceTagProcessor.ATTR_NAME)});
         }
 

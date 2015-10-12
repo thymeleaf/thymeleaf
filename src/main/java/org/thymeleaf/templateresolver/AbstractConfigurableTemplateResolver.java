@@ -29,8 +29,8 @@ import org.thymeleaf.cache.AlwaysValidCacheEntryValidity;
 import org.thymeleaf.cache.ICacheEntryValidity;
 import org.thymeleaf.cache.NonCacheableCacheEntryValidity;
 import org.thymeleaf.cache.TTLCacheEntryValidity;
-import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresource.ITemplateResource;
 import org.thymeleaf.util.PatternSpec;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
@@ -38,11 +38,9 @@ import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   Basic implementation of {@link ITemplateResolver}.
- * </p>
- * <p>
- *   This class can be used both directly and as a parent class for other Template
- *   Resolver implementations.
+ *   Abstract implementation of {@link ITemplateResolver} extending {@link AbstractTemplateResolver}
+ *   and providing a large set of methods for configuring resource name (from template name), template mode,
+ *   cache validity and character encoding.
  * </p>
  * <p>
  *   Unless overriden, this class will always apply the following validity to 
@@ -56,11 +54,10 @@ import org.thymeleaf.util.Validate;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 3.0.0
  *
  */
-public class TemplateResolver 
-        extends AbstractTemplateResolver {
+public abstract class AbstractConfigurableTemplateResolver extends AbstractTemplateResolver {
 
     
     /**
@@ -92,8 +89,7 @@ public class TemplateResolver
     private TemplateMode templateMode = DEFAULT_TEMPLATE_MODE;
     private boolean cacheable = DEFAULT_CACHEABLE;
     private Long cacheTTLMs = DEFAULT_CACHE_TTL_MS;
-    private IResourceResolver resourceResolver = null;
-    
+
     private final HashMap<String,String> templateAliases = new HashMap<String, String>(8);
     
     private final PatternSpec xmlTemplateModePatternSpec = new PatternSpec();
@@ -107,7 +103,7 @@ public class TemplateResolver
     
     
                    
-    public TemplateResolver() {
+    public AbstractConfigurableTemplateResolver() {
         super();
     }
 
@@ -136,7 +132,7 @@ public class TemplateResolver
      * 
      * @param prefix the prefix to be set.
      */
-    public void setPrefix(final String prefix) {
+    public final void setPrefix(final String prefix) {
         this.prefix = prefix;
     }
     
@@ -162,7 +158,7 @@ public class TemplateResolver
      * 
      * @param suffix the suffix to be set.
      */
-    public void setSuffix(final String suffix) {
+    public final void setSuffix(final String suffix) {
         this.suffix = suffix;
     }
     
@@ -187,7 +183,7 @@ public class TemplateResolver
      * 
      * @param characterEncoding the character encoding to be used.
      */
-    public void setCharacterEncoding(final String characterEncoding) {
+    public final void setCharacterEncoding(final String characterEncoding) {
         this.characterEncoding = characterEncoding;
     }
     
@@ -222,7 +218,7 @@ public class TemplateResolver
      *
      * @param templateMode the template mode.
      */
-    public void setTemplateMode(final TemplateMode templateMode) {
+    public final void setTemplateMode(final TemplateMode templateMode) {
         Validate.notNull(templateMode, "Cannot set a null template mode value");
         // We re-parse the specified template mode so that we make sure we get rid of deprecated values
         this.templateMode = TemplateMode.parse(templateMode.toString());
@@ -244,7 +240,7 @@ public class TemplateResolver
      *
      * @param templateMode the template mode.
      */
-    public void setTemplateMode(final String templateMode) {
+    public final void setTemplateMode(final String templateMode) {
         // Setter overload actually goes against the JavaBeans spec, but having this one is good for legacy
         // compatibility reasons. Besides, given the getter returns TemplateMode, intelligent frameworks like
         // Spring will recognized the property as TemplateMode-typed and simply ignore this setter.
@@ -283,7 +279,7 @@ public class TemplateResolver
      * 
      * @param cacheable whether resolved patterns should be considered cacheable or not.
      */
-    public void setCacheable(final boolean cacheable) {
+    public final void setCacheable(final boolean cacheable) {
         this.cacheable = cacheable;
     }
     
@@ -318,7 +314,7 @@ public class TemplateResolver
      * 
      * @param cacheTTLMs the new cache TTL, or null for using natural LRU eviction.
      */
-    public void setCacheTTLMs(final Long cacheTTLMs) {
+    public final void setCacheTTLMs(final Long cacheTTLMs) {
         this.cacheTTLMs = cacheTTLMs;
     }
 
@@ -356,7 +352,7 @@ public class TemplateResolver
      * 
      * @param templateAliases the new template aliases.
      */
-    public void setTemplateAliases(final Map<String,String> templateAliases) {
+    public final void setTemplateAliases(final Map<String,String> templateAliases) {
         if (templateAliases != null) {
             this.templateAliases.putAll(templateAliases);
         }
@@ -371,7 +367,7 @@ public class TemplateResolver
      * @param alias the new alias name
      * @param templateName the name of the template the alias will be applied to
      */
-    public void addTemplateAlias(final String alias, final String templateName) {
+    public final void addTemplateAlias(final String alias, final String templateName) {
         Validate.notNull(alias, "Alias cannot be null");
         Validate.notNull(templateName, "Template name cannot be null");
         this.templateAliases.put(alias, templateName);
@@ -383,7 +379,7 @@ public class TemplateResolver
      *   Removes all currently configured template aliases.
      * </p>
      */
-    public void clearTemplateAliases() {
+    public final void clearTemplateAliases() {
         this.templateAliases.clear();
     }
 
@@ -1049,43 +1045,16 @@ public class TemplateResolver
     public final void setNonCacheablePatterns(final Set<String> nonCacheablePatterns) {
         this.nonCacheablePatternSpec.setPatterns(nonCacheablePatterns);
     }
-    
-    
-
 
     
     
-    /**
-     * <p>
-     *   Returns the Resource Resolver (implementation of {@link IResourceResolver}) that will
-     *   be used to resolve the <i>resource names</i> that are assigned to templates resolved
-     *   by this template resolver. 
-     * </p>
-     * 
-     * @return the resource resolver
+    
+    
+
+    /*
+     * We will use this method to compute the real name (i.e. including prefix, suffix, alias...) for the resource
      */
-    public IResourceResolver getResourceResolver() {
-        return this.resourceResolver;
-    }
-
-    /**
-     * <p>
-     *   Sets the resource resolver to be included into {@link TemplateResolution} results.
-     * </p>
-     * 
-     * @param resourceResolver the new resource resolver.
-     */
-    public void setResourceResolver(final IResourceResolver resourceResolver) {
-        this.resourceResolver = resourceResolver;
-    }
-    
-    
-    
-    
-    
-    
-    @Override
-    protected String computeResourceName(final IEngineConfiguration configuration, final String template) {
+    private String computeResourceName(final IEngineConfiguration configuration, final String template) {
 
         Validate.notNull(template, "Template name cannot be null");
         
@@ -1164,16 +1133,15 @@ public class TemplateResolver
     
     
     @Override
-    protected IResourceResolver computeResourceResolver(final IEngineConfiguration configuration, final String template) {
-        return this.resourceResolver;
+    protected final ITemplateResource computeTemplateResource(final IEngineConfiguration configuration, final String template) {
+        final String resourceName = computeResourceName(configuration, template);
+        return computeTemplateResource(configuration, template, resourceName, this.characterEncoding);
     }
 
     
 
-    @Override
-    protected String computeCharacterEncoding(final IEngineConfiguration configuration, final String template) {
-        return this.characterEncoding;
-    }
+    protected abstract ITemplateResource computeTemplateResource(
+            final IEngineConfiguration configuration, final String template, final String resourceName, final String characterEncoding);
     
     
     

@@ -19,61 +19,49 @@
  */
 package org.thymeleaf.templateresolver;
 
+import java.net.MalformedURLException;
 import java.util.regex.Pattern;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.cache.ICacheEntryValidity;
 import org.thymeleaf.cache.NonCacheableCacheEntryValidity;
-import org.thymeleaf.exceptions.ConfigurationException;
-import org.thymeleaf.resourceresolver.IResourceResolver;
-import org.thymeleaf.resourceresolver.UrlResourceResolver;
+import org.thymeleaf.templateresource.ITemplateResource;
+import org.thymeleaf.templateresource.UrlTemplateResource;
 
 /**
  * <p>
- *   Implementation of {@link ITemplateResolver} that extends {@link TemplateResolver}
- *   and uses a {@link UrlResourceResolver} for resource resolution.
+ *   Implementation of {@link ITemplateResolver} that extends {@link AbstractConfigurableTemplateResolver}
+ *   and creates {@link UrlTemplateResource} instances for template resources.
  * </p>
- * 
+ * <p>
+ *   Note a class with this name existed since 1.0, but it was completely rewritten in Thymeleaf 3.0.
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 1.0
+ *
+ * @since 3.0.0
  *
  */
-public class UrlTemplateResolver
-        extends TemplateResolver {
+public class UrlTemplateResolver extends AbstractConfigurableTemplateResolver {
 
     private static final Pattern JSESSIONID_PATTERN = Pattern.compile("(.*?);jsessionid(.*?)");
     
     
     public UrlTemplateResolver() {
         super();
-        super.setResourceResolver(new UrlResourceResolver());
     }
-    
-    
-    
 
-    
-    /**
-     * <p>
-     *   This method <b>should not be called</b>, because the resource resolver is
-     *   fixed to be {@link UrlResourceResolver}. Every execution of this method
-     *   will result in an exception.
-     * </p>
-     * <p>
-     *   If you need to select a different resource resolver, use the {@link TemplateResolver}
-     *   class instead.
-     * </p>
-     * 
-     * @param resourceResolver the new resource resolver
-     */
+
     @Override
-    public void setResourceResolver(final IResourceResolver resourceResolver) {
-        throw new ConfigurationException(
-                "Cannot set a resource resolver on " + this.getClass().getName() + ". If " +
-                "you want to set your own resource resolver, use " + TemplateResolver.class.getName() + 
-                "instead");
+    protected ITemplateResource computeTemplateResource(
+            final IEngineConfiguration configuration, final String template, final String resourceName, final String characterEncoding) {
+        try {
+            return new UrlTemplateResource(resourceName, characterEncoding);
+        } catch (final MalformedURLException ignored) {
+            return null;
+        }
     }
+
 
 
 

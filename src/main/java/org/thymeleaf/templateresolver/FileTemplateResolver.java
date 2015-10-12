@@ -19,57 +19,37 @@
  */
 package org.thymeleaf.templateresolver;
 
-import org.thymeleaf.exceptions.ConfigurationException;
-import org.thymeleaf.resourceresolver.FileResourceResolver;
-import org.thymeleaf.resourceresolver.IResourceResolver;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.templateresource.FileTemplateResource;
+import org.thymeleaf.templateresource.ITemplateResource;
 
 /**
  * <p>
- *   Implementation of {@link ITemplateResolver} that extends {@link TemplateResolver}
- *   and uses a {@link FileResourceResolver} for resource resolution.
+ *   Implementation of {@link ITemplateResolver} that extends {@link AbstractConfigurableTemplateResolver}
+ *   and creates {@link FileTemplateResource} instances for template resources.
  * </p>
- * 
+ * <p>
+ *   Note a class with this name existed since 1.0, but it was completely rewritten in Thymeleaf 3.0.
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 1.0
+ *
+ * @since 3.0.0
  *
  */
-public class FileTemplateResolver
-        extends TemplateResolver {
+public class FileTemplateResolver extends AbstractConfigurableTemplateResolver {
 
-    
-    
+
     
     public FileTemplateResolver() {
         super();
-        super.setResourceResolver(new FileResourceResolver());
     }
-    
-    
-    
 
-    
-    /**
-     * <p>
-     *   This method <b>should not be called</b>, because the resource resolver is
-     *   fixed to be {@link FileResourceResolver}. Every execution of this method
-     *   will result in an exception.
-     * </p>
-     * <p>
-     *   If you need to select a different resource resolver, use the {@link TemplateResolver}
-     *   class instead.
-     * </p>
-     * 
-     * @param resourceResolver the new resource resolver
-     */
+
     @Override
-    public void setResourceResolver(final IResourceResolver resourceResolver) {
-        throw new ConfigurationException(
-                "Cannot set a resource resolver on " + this.getClass().getName() + ". If " +
-                "you want to set your own resource resolver, use " + TemplateResolver.class.getName() + 
-                "instead");
+    protected ITemplateResource computeTemplateResource(
+            final IEngineConfiguration configuration, final String template, final String resourceName, final String characterEncoding) {
+        return new FileTemplateResource(resourceName, characterEncoding);
     }
 
-    
-    
 }

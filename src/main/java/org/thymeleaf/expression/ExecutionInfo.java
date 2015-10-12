@@ -47,7 +47,7 @@ public final class ExecutionInfo {
 
     public ExecutionInfo(final ITemplateProcessingContext processingContext) {
         super();
-        this.templateName = processingContext.getTemplateResolution().getTemplateName();
+        this.templateName = processingContext.getTemplateResolution().getTemplate();
         this.now = Calendar.getInstance(processingContext.getLocale());
     }
 

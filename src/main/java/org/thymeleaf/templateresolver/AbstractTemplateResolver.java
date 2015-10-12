@@ -23,8 +23,8 @@ import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.cache.ICacheEntryValidity;
-import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresource.ITemplateResource;
 import org.thymeleaf.util.PatternSpec;
 import org.thymeleaf.util.Validate;
 
@@ -33,14 +33,6 @@ import org.thymeleaf.util.Validate;
  * <p>
  *   Convenience base class for all Template Resolvers.
  * </p>
- * <p>
- *   This class allows configuration of:
- * </p>
- * <ul>
- *   <li>Template Resolver name</li>
- *   <li>Template Resolver order (in chain)</li>
- *   <li>Template Resolver applicability patterns</li>
- * </ul>
  * <p>
  *   Note a class with this name existed since 1.0, but it was completely reimplemented
  *   in Thymeleaf 3.0
@@ -51,12 +43,21 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public abstract class AbstractTemplateResolver 
-        implements ITemplateResolver {
+public abstract class AbstractTemplateResolver implements ITemplateResolver {
+
+    /**
+     * <p>
+     *   By default, resources will not be checked their existence before being returned. This tries to
+     *   avoid a possible performance impact from performing a double access to the resource (one for checking
+     *   existence, another one for reading it).
+     * </p>
+     */
+    public static final boolean DEFAULT_EXISTENCE_CHECK = false;
 
     
     private String name = this.getClass().getName();
     private Integer order = null;
+    private boolean checkExistence = DEFAULT_EXISTENCE_CHECK;
 
     private final PatternSpec resolvablePatternSpec = new PatternSpec();
     
@@ -76,7 +77,7 @@ public abstract class AbstractTemplateResolver
      * 
      * @return the name of the template resolver
      */
-    public String getName() {
+    public final String getName() {
         return this.name;
     }
 
@@ -88,7 +89,7 @@ public abstract class AbstractTemplateResolver
      * 
      * @param name the new name
      */
-    public void setName(final String name) {
+    public final void setName(final String name) {
         this.name = name;
     }
     
@@ -104,7 +105,7 @@ public abstract class AbstractTemplateResolver
      * 
      * @return the order in which this template resolver will be called in the chain.
      */
-    public Integer getOrder() {
+    public final Integer getOrder() {
         return this.order;
     }
 
@@ -116,7 +117,7 @@ public abstract class AbstractTemplateResolver
      * 
      * @param order the new order.
      */
-    public void setOrder(final Integer order) {
+    public final void setOrder(final Integer order) {
         this.order = order;
     }
     
@@ -137,7 +138,7 @@ public abstract class AbstractTemplateResolver
      * 
      * @return the pattern spec
      */
-    public PatternSpec getResolvablePatternSpec() {
+    public final PatternSpec getResolvablePatternSpec() {
         return this.resolvablePatternSpec;
     }
     
@@ -158,7 +159,7 @@ public abstract class AbstractTemplateResolver
      * 
      * @return the pattern spec
      */
-    public Set<String> getResolvablePatterns() {
+    public final Set<String> getResolvablePatterns() {
         return this.resolvablePatternSpec.getPatterns();
     }
 
@@ -179,10 +180,81 @@ public abstract class AbstractTemplateResolver
      * 
      * @param resolvablePatterns the new patterns
      */
-    public void setResolvablePatterns(final Set<String> resolvablePatterns) {
+    public final void setResolvablePatterns(final Set<String> resolvablePatterns) {
         this.resolvablePatternSpec.setPatterns(resolvablePatterns);
     }
-    
+
+
+
+    /**
+     * <p>
+     *   Returns whether template resources will be checked for existence before being returned or not.
+     * </p>
+     * <p>
+     *   Default value is <tt>FALSE</tt>.
+     * </p>
+     * <p>
+     *   Checking resources for existence will make the template resolver execute {@link ITemplateResource#exists()}
+     *   for each resolved resource before returning a {@link TemplateResolution}, returning <tt>null</tt> if the
+     *   resource does not exist.
+     * </p>
+     * <p>
+     *   This allows resolvers to pass control to the next {@link ITemplateResolver} in
+     *   the chain based on real resource existence and not only on the matching performed by the <em>resolvable
+     *   patterns</em> specified at {@link #getResolvablePatterns()}. But at the same time, might pose a performance
+     *   issue on certain scenarios (e.g. HTTP URL resolution) that require actually accessing the resource in order
+     *   to determine its existence, being the resource accessed twice in those cases (once for determining its
+     *   existence, another time for reading it).
+     * </p>
+     * <p>
+     *   If this <em>existence check</em> is enabled and a resource is determined to not exist,
+     *   {@link ITemplateResolver#resolveTemplate(IEngineConfiguration, String)} will return <tt>null</tt>.
+     * </p>
+     *
+     * @return <tt>true</tt> if resource existence will be checked, <tt>false</tt> if not
+     *
+     * @since 3.0.0
+     *
+     */
+    public final boolean getCheckExistence() {
+        return this.checkExistence;
+    }
+
+
+    /**
+     * <p>
+     *   Sets whether template resources will be checked for existence before being returned or not.
+     * </p>
+     * <p>
+     *   Default value is <tt>FALSE</tt>.
+     * </p>
+     * <p>
+     *   Checking resources for existence will make the template resolver execute {@link ITemplateResource#exists()}
+     *   for each resolved resource before returning a {@link TemplateResolution}, returning <tt>null</tt> if the
+     *   resource does not exist.
+     * </p>
+     * <p>
+     *   This allows resolvers to pass control to the next {@link ITemplateResolver} in
+     *   the chain based on real resource existence and not only on the matching performed by the <em>resolvable
+     *   patterns</em> specified at {@link #getResolvablePatterns()}. But at the same time, might pose a performance
+     *   issue on certain scenarios (e.g. HTTP URL resolution) that require actually accessing the resource in order
+     *   to determine its existence, being the resource accessed twice in those cases (once for determining its
+     *   existence, another time for reading it).
+     * </p>
+     * <p>
+     *   If this <em>existence check</em> is enabled and a resource is determined to not exist,
+     *   {@link ITemplateResolver#resolveTemplate(IEngineConfiguration, String)} will return <tt>null</tt>.
+     * </p>
+     *
+     * @param checkExistence <tt>true</tt> if resource existence should be checked, <tt>false</tt> if not
+     *
+     * @since 3.0.0
+     *
+     */
+    public final void setCheckExistence(final boolean checkExistence) {
+        this.checkExistence = checkExistence;
+    }
+
     
     
     
@@ -199,12 +271,19 @@ public abstract class AbstractTemplateResolver
         if (!computeResolvable(configuration, template)) {
             return null;
         }
-        
+
+        final ITemplateResource templateResource = computeTemplateResource(configuration, template);
+        if (templateResource == null) {
+            return null;
+        }
+
+        if (this.checkExistence && !templateResource.exists()) { // will only check if flag set to true
+            return null;
+        }
+
         return new TemplateResolution(
                 template,
-                computeResourceName(configuration, template),
-                computeResourceResolver(configuration, template),
-                computeCharacterEncoding(configuration, template),
+                templateResource,
                 computeTemplateMode(configuration, template),
                 computeValidity(configuration, template));
         
@@ -229,50 +308,22 @@ public abstract class AbstractTemplateResolver
         }
         return this.resolvablePatternSpec.matches(template);
     }
-    
-    
-    
-    
-    /**
-     * <p>
-     *   Computes the resource name from the template name, applying aliases,
-     *   prefix/suffix, or any other artifacts the Template Resolver might need
-     *   to apply. 
-     * </p>
-     *
-     * @param configuration the engine configuration.
-     * @param template the template to be resolved (usually its name).
-     * @return the resource name
-     */
-    protected abstract String computeResourceName(final IEngineConfiguration configuration, final String template);
+
+
+
 
     
     
     /**
      * <p>
-     *   Computes the resource resolver that should be applied to a template, according
-     *   to existing configuration.
+     *   Computes the resolved template resource.
      * </p>
      *
      * @param configuration the engine configuration.
      * @param template the template to be resolved (usually its name).
-     * @return the resource resolver to be applied
+     * @return the template resource, or null if this template cannot be resolved (or the resource does not exist)
      */
-    protected abstract IResourceResolver computeResourceResolver(final IEngineConfiguration configuration, final String template);
-
-    
-    
-    /**
-     * <p>
-     *   Computes the character encoding that should be applied when reading template resource, according
-     *   to existing configuration.
-     * </p>
-     *
-     * @param configuration the engine configuration.
-     * @param template the template to be resolved (usually its name).
-     * @return the resource resolver to be applied
-     */
-    protected abstract String computeCharacterEncoding(final IEngineConfiguration configuration, final String template);
+    protected abstract ITemplateResource computeTemplateResource(final IEngineConfiguration configuration, final String template);
 
     
     

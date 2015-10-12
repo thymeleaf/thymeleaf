@@ -70,7 +70,7 @@ public abstract class AbstractTemplateProcessingContext
         this.templateMode = this.templateResolution.getTemplateMode();
         this.modelFactory =
                 new StandardModelFactory(
-                        getConfiguration(), this.templateMode, this.templateResolution.getTemplateName(), this.templateManager);
+                        getConfiguration(), this.templateMode, this.templateResolution.getTemplate(), this.templateManager);
         // Most templates will not need this, so we will initialize it lazily
         this.identifierSequences = null;
 
@@ -93,7 +93,7 @@ public abstract class AbstractTemplateProcessingContext
         this.templateMode = this.templateResolution.getTemplateMode();
         this.modelFactory =
                 new StandardModelFactory(
-                        getConfiguration(), this.templateMode, this.templateResolution.getTemplateName(), this.templateManager);
+                        getConfiguration(), this.templateMode, this.templateResolution.getTemplate(), this.templateManager);
         this.identifierSequences = new IdentifierSequences();
 
     }
