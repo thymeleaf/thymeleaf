@@ -141,10 +141,10 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         }
         
         
-        final ServletContext servletContext = createServletContext(servletContextAttributes);
-        final HttpSession session = createHttpSession(servletContext,sessionAttributes);
-        final HttpServletRequest request = createHttpServletRequest(test, session, requestAttributes, requestParameters, locale);
-        final HttpServletResponse response = createHttpServletResponse();
+        final ServletContext servletContext = createMockServletContext(servletContextAttributes);
+        final HttpSession session = createMockHttpSession(servletContext, sessionAttributes);
+        final HttpServletRequest request = createMockHttpServletRequest(test, session, requestAttributes, requestParameters, locale);
+        final HttpServletResponse response = createMockHttpServletResponse();
         
         variables.remove(REQUEST_PARAMS_PREFIX);
         variables.remove(REQUEST_ATTRS_PREFIX);
@@ -181,10 +181,10 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
     
     
     
-    private static final HttpServletRequest createHttpServletRequest(
+    public static final HttpServletRequest createMockHttpServletRequest(
             final ITest test,
-            final HttpSession session, final Map<String,Object> attributes, 
-            final Map<String,Object[]> parameters, final Locale locale) {
+            final HttpSession session, final Map<String, Object> attributes,
+            final Map<String, Object[]> parameters, final Locale locale) {
 
         final String mimeType = "text/html";
         final String characterEncoding = "UTF-8";
@@ -237,10 +237,10 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         return request;
         
     }
-    
 
-    
-    private static final HttpSession createHttpSession(final ServletContext context, final Map<String,Object> attributes) {
+
+
+    public static final HttpSession createMockHttpSession(final ServletContext context, final Map<String, Object> attributes) {
         
         final HttpSession session = Mockito.mock(HttpSession.class);
         
@@ -254,18 +254,18 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         return session;
         
     }
-    
-    
-    
-    private static final HttpServletResponse createHttpServletResponse() {
+
+
+
+    public static final HttpServletResponse createMockHttpServletResponse() {
         final HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         Mockito.when(response.encodeURL(Matchers.anyString())).thenAnswer(new EncodeUrlAnswer());
         return response;
     }
 
-    
-    
-    private static final ServletContext createServletContext(final Map<String,Object> attributes) {
+
+
+    public static final ServletContext createMockServletContext(final Map<String, Object> attributes) {
 
         final String contextName = "/testing";
 
