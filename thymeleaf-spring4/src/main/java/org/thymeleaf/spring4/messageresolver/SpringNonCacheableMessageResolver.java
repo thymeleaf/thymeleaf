@@ -133,7 +133,7 @@ public final class SpringNonCacheableMessageResolver
             logger.trace(
                     "[THYMELEAF][{}] Resolving message with key \"{}\" for template \"{}\" and locale \"{}\". " +
                             "Messages will be retrieved from Spring's MessageSource infrastructure.",
-                    new Object[] {TemplateEngine.threadIndex(), key, processingContext.getTemplateResolution().getTemplateName(), processingContext.getLocale()});
+                    new Object[] {TemplateEngine.threadIndex(), key, processingContext.getTemplateResolution().getTemplate(), processingContext.getLocale()});
         }
 
         try {

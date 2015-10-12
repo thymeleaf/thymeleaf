@@ -27,12 +27,12 @@ import org.springframework.context.ApplicationContextAware;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.spring3.resourceresolver.SpringResourceResourceResolver;
-import org.thymeleaf.templateresolver.TemplateResolver;
+import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
 import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   Implementation of {@link org.thymeleaf.templateresolver.ITemplateResolver} that extends {@link TemplateResolver}
+ *   Implementation of {@link org.thymeleaf.templateresolver.ITemplateResolver} that extends {@link AbstractConfigurableTemplateResolver}
  *   and uses a {@link org.thymeleaf.spring3.resourceresolver.SpringResourceResourceResolver} for resource resolution.
  * </p>
  *
@@ -42,7 +42,7 @@ import org.thymeleaf.util.Validate;
  *
  */
 public class SpringResourceTemplateResolver
-        extends TemplateResolver
+        extends AbstractConfigurableTemplateResolver
         implements ApplicationContextAware, InitializingBean {
 
 
@@ -84,7 +84,7 @@ public class SpringResourceTemplateResolver
      *   will result in an exception.
      * </p>
      * <p>
-     *   If you need to select a different resource resolver, use the {@link org.thymeleaf.templateresolver.TemplateResolver}
+     *   If you need to select a different resource resolver, use the {@link AbstractConfigurableTemplateResolver}
      *   class instead.
      * </p>
      * 
@@ -94,7 +94,7 @@ public class SpringResourceTemplateResolver
     public void setResourceResolver(final IResourceResolver resourceResolver) {
         throw new ConfigurationException(
                 "Cannot set a resource resolver on " + this.getClass().getName() + ". If " +
-                "you want to set your own resource resolver, use " + TemplateResolver.class.getName() + 
+                "you want to set your own resource resolver, use " + AbstractConfigurableTemplateResolver.class.getName() +
                 "instead");
     }
 
