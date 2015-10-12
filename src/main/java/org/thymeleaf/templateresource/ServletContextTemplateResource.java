@@ -92,7 +92,7 @@ public final class ServletContextTemplateResource implements ITemplateResource {
 
         Validate.notEmpty(relativePath, "Relative Path cannot be null or empty");
 
-        final String fullRelativePath = createRelativePath(relativePath);
+        final String fullRelativePath = createRelativePath(this.path, relativePath);
         return new ServletContextTemplateResource(this.servletContext, fullRelativePath, this.characterEncoding);
 
     }
@@ -111,11 +111,11 @@ public final class ServletContextTemplateResource implements ITemplateResource {
 
 
 
-    private String createRelativePath(final String relativePath) {
-        int separatorPos = this.path.lastIndexOf('/');
+    static String createRelativePath(final String path, final String relativePath) {
+        final int separatorPos = path.lastIndexOf('/');
         if (separatorPos != -1) {
-            final StringBuilder pathBuilder = new StringBuilder(this.path.length() + relativePath.length());
-            pathBuilder.append(this.path, 0, separatorPos);
+            final StringBuilder pathBuilder = new StringBuilder(path.length() + relativePath.length());
+            pathBuilder.append(path, 0, separatorPos);
             if (relativePath.charAt(0) != '/') {
                 pathBuilder.append('/');
             }
