@@ -20,9 +20,7 @@
 package org.thymeleaf.extras.springsecurity4.dialect.expression;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
@@ -30,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.Authentication;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.context.IWebVariablesMap;
 import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.extras.springsecurity4.auth.AuthUtils;
@@ -90,27 +88,27 @@ public class SpringSecurityExpressionObjectFactory implements IExpressionObjectF
 
 
 
-    public Object buildObject(final IProcessingContext processingContext, final String expressionObjectName) {
+    public Object buildObject(final IExpressionContext context, final String expressionObjectName) {
 
         if (AUTHENTICATION_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            if (processingContext.isWeb()) {
+            if (context.isWeb()) {
                 return AuthUtils.getAuthenticationObject();
             }
         }
 
         if (AUTHORIZATION_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            if (processingContext.isWeb()) {
+            if (context.isWeb()) {
 
                 // We retrieve it like this in order to give it the opportunity to come from cache
                 final Authentication authentication =
-                        (Authentication) processingContext.getExpressionObjects().getObject(AUTHENTICATION_EXPRESSION_OBJECT_NAME);
+                        (Authentication) context.getExpressionObjects().getObject(AUTHENTICATION_EXPRESSION_OBJECT_NAME);
 
-                final IWebVariablesMap webVariablesMap = (IWebVariablesMap)processingContext.getVariables();
+                final IWebVariablesMap webVariablesMap = (IWebVariablesMap)context.getVariables();
                 final HttpServletRequest request = webVariablesMap.getRequest();
                 final HttpServletResponse response = webVariablesMap.getResponse();
                 final ServletContext servletContext = webVariablesMap.getServletContext();
 
-                return new Authorization(processingContext, authentication, request, response, servletContext);
+                return new Authorization(context, authentication, request, response, servletContext);
 
             }
             return null;

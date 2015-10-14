@@ -20,7 +20,7 @@
 package org.thymeleaf.extras.springsecurity3.dialect.processor;
 
 import org.springframework.security.core.Authentication;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
@@ -53,7 +53,7 @@ public final class AuthenticationAttrProcessor extends AbstractAttributeTagProce
 
     @Override
     protected void doProcess(
-            final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+            final ITemplateContext context, final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {

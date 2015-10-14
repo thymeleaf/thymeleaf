@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.Authentication;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
@@ -62,7 +62,7 @@ public final class AuthorizeAttrProcessor extends AbstractStandardConditionalVis
 
     @Override
     protected boolean isVisible(
-            final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+            final ITemplateContext context, final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue) {
 
         final String attrValue = (attributeValue == null? null : attributeValue.trim());
@@ -71,13 +71,13 @@ public final class AuthorizeAttrProcessor extends AbstractStandardConditionalVis
             return false;
         }
 
-        if (!processingContext.isWeb()) {
+        if (!context.isWeb()) {
             throw new ConfigurationException(
                     "Thymeleaf execution context is not a web context (implementation of " +
                     IWebContext.class.getName() + "). Spring Security integration can only be used in " +
                     "web environments.");
         }
-        final IWebContext webContext = (IWebContext) processingContext.getVariables();
+        final IWebContext webContext = (IWebContext) context.getContext();
 
         final HttpServletRequest request = webContext.getRequest();
         final HttpServletResponse response = webContext.getResponse();
@@ -90,7 +90,7 @@ public final class AuthorizeAttrProcessor extends AbstractStandardConditionalVis
         }
 
         return AuthUtils.authorizeUsingAccessExpression(
-                processingContext, attrValue, authentication, request, response, servletContext);
+                context, attrValue, authentication, request, response, servletContext);
 
     }
     

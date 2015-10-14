@@ -23,7 +23,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.core.Authentication;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
@@ -56,7 +56,7 @@ public final class AuthorizeUrlAttrProcessor extends AbstractStandardConditional
 
     @Override
     protected boolean isVisible(
-            final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+            final ITemplateContext context, final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue) {
 
         final String attrValue = (attributeValue == null? null : attributeValue.trim());
@@ -71,13 +71,13 @@ public final class AuthorizeUrlAttrProcessor extends AbstractStandardConditional
         final String method =
                 (spaceIndex < 0? "GET" : attrValue.substring(0, spaceIndex)).trim();
 
-        if (!processingContext.isWeb()) {
+        if (!context.isWeb()) {
             throw new ConfigurationException(
                     "Thymeleaf execution context is not a web context (implementation of " +
                     IWebContext.class.getName() + "). Spring Security integration can only be used in " +
                     "web environments.");
         }
-        final IWebContext webContext = (IWebContext) processingContext.getVariables();
+        final IWebContext webContext = (IWebContext) context.getContext();
         
         final HttpServletRequest request = webContext.getRequest();
         final ServletContext servletContext = webContext.getServletContext();

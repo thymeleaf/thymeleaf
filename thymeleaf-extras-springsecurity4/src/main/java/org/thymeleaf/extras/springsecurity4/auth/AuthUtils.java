@@ -47,7 +47,7 @@ import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.util.Validate;
@@ -157,12 +157,12 @@ public final class AuthUtils {
     
 
     public static boolean authorizeUsingAccessExpression(
-            final IProcessingContext processingContext,
+            final IExpressionContext context,
             final String accessExpression, final Authentication authentication, 
             final HttpServletRequest request, final HttpServletResponse response,
             final ServletContext servletContext) {
     
-        Validate.notNull(processingContext, "Processing context cannot be null");
+        Validate.notNull(context, "Context cannot be null");
         
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Checking authorization using access expression \"{}\" for user \"{}\".",
@@ -198,7 +198,7 @@ public final class AuthUtils {
          * This will allow SpringSecurity expressions to include any variables from
          * the IContext just by accessing them as properties of the "#vars" utility object.
          */
-        IExpressionObjects expressionObjects = processingContext.getExpressionObjects();
+        IExpressionObjects expressionObjects = context.getExpressionObjects();
 
         // We add Thymeleaf's wrapper on top of the SpringSecurity basic evaluation context
         // We need to do this through a version-independent wrapper because the classes we will use for the

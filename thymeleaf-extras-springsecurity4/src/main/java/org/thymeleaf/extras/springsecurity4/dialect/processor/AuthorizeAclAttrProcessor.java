@@ -24,8 +24,8 @@ import javax.servlet.ServletContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
@@ -68,7 +68,7 @@ public final class AuthorizeAclAttrProcessor extends AbstractStandardConditional
 
     @Override
     protected boolean isVisible(
-            final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+            final ITemplateContext context, final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue) {
 
         final String attrValue = (attributeValue == null? null : attributeValue.trim());
@@ -77,14 +77,14 @@ public final class AuthorizeAclAttrProcessor extends AbstractStandardConditional
             return false;
         }
 
-        if (!processingContext.isWeb()) {
+        if (!context.isWeb()) {
             throw new ConfigurationException(
                     "Thymeleaf execution context is not a web context (implementation of " +
                             IWebContext.class.getName() + "). Spring Security integration can only be used in " +
                             "web environments.");
         }
 
-        final IWebContext webContext = (IWebContext) processingContext.getVariables();
+        final IWebContext webContext = (IWebContext) context.getContext();
         final ServletContext servletContext = webContext.getServletContext();
 
         final Authentication authentication = AuthUtils.getAuthenticationObject();
@@ -94,7 +94,7 @@ public final class AuthorizeAclAttrProcessor extends AbstractStandardConditional
 
         final ApplicationContext applicationContext = AuthUtils.getContext(servletContext);
 
-        final IEngineConfiguration configuration = processingContext.getConfiguration();
+        final IEngineConfiguration configuration = context.getConfiguration();
 
         final int separatorPos = attrValue.lastIndexOf(VALUE_SEPARATOR);
         if (separatorPos == -1) {
@@ -109,13 +109,13 @@ public final class AuthorizeAclAttrProcessor extends AbstractStandardConditional
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
 
         final IStandardExpression domainObjectExpr =
-                getExpressionDefaultToLiteral(expressionParser, processingContext, domainObjectExpression);
+                getExpressionDefaultToLiteral(expressionParser, context, domainObjectExpression);
         final IStandardExpression permissionsExpr =
-                getExpressionDefaultToLiteral(expressionParser, processingContext, permissionsExpression);
+                getExpressionDefaultToLiteral(expressionParser, context, permissionsExpression);
 
-        final Object domainObject = domainObjectExpr.execute(processingContext);
+        final Object domainObject = domainObjectExpr.execute(context);
 
-        final Object permissionsObject = permissionsExpr.execute(processingContext);
+        final Object permissionsObject = permissionsExpr.execute(context);
         final String permissionsStr =
                 (permissionsObject == null? null : permissionsObject.toString());
 
@@ -129,9 +129,9 @@ public final class AuthorizeAclAttrProcessor extends AbstractStandardConditional
 
 
     protected static IStandardExpression getExpressionDefaultToLiteral(
-            final IStandardExpressionParser expressionParser, final IProcessingContext processingContext, final String input) {
+            final IStandardExpressionParser expressionParser, final IExpressionContext context, final String input) {
 
-        final IStandardExpression expression = expressionParser.parseExpression(processingContext, input);
+        final IStandardExpression expression = expressionParser.parseExpression(context, input);
         if (expression == null) {
             return new TextLiteralExpression(input);
         }
