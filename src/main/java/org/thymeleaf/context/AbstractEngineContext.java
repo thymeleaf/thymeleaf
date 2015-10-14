@@ -20,11 +20,12 @@
 package org.thymeleaf.context;
 
 import java.util.Locale;
+import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.expression.ExpressionObjects;
 import org.thymeleaf.expression.IExpressionObjects;
+import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
@@ -71,13 +72,16 @@ abstract class AbstractEngineContext implements ITemplateContext {
 
     }
 
+
     public final IEngineConfiguration getConfiguration() {
         return this.configuration;
     }
 
+
     public final Locale getLocale() {
         return this.locale;
     }
+
 
     public final IExpressionObjects getExpressionObjects() {
         // We delay creation of expression objects in case they are not needed at all
@@ -87,9 +91,42 @@ abstract class AbstractEngineContext implements ITemplateContext {
         return this.expressionObjects;
     }
 
+
     public final TemplateMode getTemplateMode() {
         return getTemplateResolution().getTemplateMode();
     }
+
+
+    public String getMessage(final Class<?> origin, final String key, final Object[] messageParameters) {
+
+        // origin CAN be null
+        Validate.notNull(key, "Message key cannot be null");
+        // messageParameter CAN be null
+
+        final Set<IMessageResolver> messageResolvers = this.configuration.getMessageResolvers();
+
+        // Try to resolve the message
+        for (final IMessageResolver messageResolver : messageResolvers) {
+            final String resolvedMessage =
+                    messageResolver.resolveMessage(this, origin, key, messageParameters);
+            if (resolvedMessage != null) {
+                return resolvedMessage;
+            }
+        }
+
+        // Message unresolved: try to create an "absent message representation"
+        for (final IMessageResolver messageResolver : messageResolvers) {
+            final String absentMessageRepresentation =
+                    messageResolver.createAbsentMessageRepresentation(this, origin, key, messageParameters);
+            if (absentMessageRepresentation != null) {
+                return absentMessageRepresentation;
+            }
+        }
+
+        return "";
+
+    }
+
 
     public final IdentifierSequences getIdentifierSequences() {
         // No problem in lazily initializing this here, as context objects should not be used by

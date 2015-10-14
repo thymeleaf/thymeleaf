@@ -29,7 +29,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.MessageResolutionUtils;
@@ -71,17 +71,17 @@ public final class StandardMessageResolutionUtils {
     
     
     public static String resolveMessageForTemplate(
-            final ITemplateProcessingContext processingContext, final String key, final Object[] messageParameters,
+            final ITemplateContext context, final String key, final Object[] messageParameters,
             final Properties defaultMessages) {
 
-        Validate.notNull(processingContext, "Processing Context cannot be null");
-        Validate.notNull(processingContext.getLocale(), "Locale returned by Processing Context cannot be null");
+        Validate.notNull(context, "Context cannot be null");
+        Validate.notNull(context.getLocale(), "Locale returned by context cannot be null");
         Validate.notNull(key, "Message key cannot be null");
 
-        final IEngineConfiguration configuration = processingContext.getConfiguration();
-        final Locale locale = processingContext.getLocale();
+        final IEngineConfiguration configuration = context.getConfiguration();
+        final Locale locale = context.getLocale();
 
-        final String templateName = processingContext.getTemplateResolution().getTemplate();
+        final String templateName = context.getTemplateResolution().getTemplate();
         final String cacheKey = TEMPLATE_CACHE_PREFIX + templateName + "_" + computeLocaleToString(locale);
 
         Properties properties = null;
@@ -99,7 +99,7 @@ public final class StandardMessageResolutionUtils {
             if (logger.isTraceEnabled()) {
                 logger.trace("[THYMELEAF][{}] Resolving uncached messages for template \"{}\" and locale \"{}\". Messages will be retrieved from files", new Object[] {TemplateEngine.threadIndex(), templateName, locale});
             }
-            properties = loadMessagesForTemplate(processingContext, defaultMessages);
+            properties = loadMessagesForTemplate(context, defaultMessages);
             if (messagesCache != null) {
                 messagesCache.put(cacheKey, properties);
             }
@@ -170,17 +170,17 @@ public final class StandardMessageResolutionUtils {
     
     
     private static Properties loadMessagesForTemplate(
-            final ITemplateProcessingContext processingContext, final Properties defaultMessages) {
+            final ITemplateContext context, final Properties defaultMessages) {
 
-        final String resourceName = processingContext.getTemplateResolution().getResourceName();
-        final IResourceResolver resourceResolver = processingContext.getTemplateResolution().getResourceResolver();
-        final Locale locale = processingContext.getLocale();
+        final String resourceName = context.getTemplateResolution().getResourceName();
+        final IResourceResolver resourceResolver = context.getTemplateResolution().getResourceResolver();
+        final Locale locale = context.getLocale();
         
         final String templateBaseName =
-                getTemplateFileNameBase(processingContext.getConfiguration().getTextRepository(), resourceName);
+                getTemplateFileNameBase(context.getConfiguration().getTextRepository(), resourceName);
         
         return MessageResolutionUtils.loadCombinedMessagesFilesFromBaseName(
-                processingContext.getConfiguration(), resourceResolver, templateBaseName, locale, defaultMessages);
+                context.getConfiguration(), resourceResolver, templateBaseName, locale, defaultMessages);
         
     }
     

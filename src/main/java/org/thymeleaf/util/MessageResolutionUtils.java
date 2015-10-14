@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.util;
 
-import java.io.ByteArrayInputStream;
+import java.io.Reader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.messageresolver.IMessageResolver;
@@ -43,6 +43,7 @@ import org.thymeleaf.messageresolver.MessageResolution;
 import org.thymeleaf.resource.IResource;
 import org.thymeleaf.resourceresolver.ClassLoaderResourceResolver;
 import org.thymeleaf.resourceresolver.IResourceResolver;
+import org.thymeleaf.templateresource.ITemplateResource;
 
 
 /**
@@ -73,26 +74,25 @@ public final class MessageResolutionUtils {
 
     
     public static String resolveMessageForTemplate(
-            final ITemplateProcessingContext processingContext, final String messageKey, final Object[] messageParameters) {
-        return resolveMessageForTemplate(processingContext, messageKey, messageParameters, true);
+            final ITemplateContext context, final String messageKey, final Object[] messageParameters) {
+        return resolveMessageForTemplate(context, messageKey, messageParameters, true);
     }
     
     public static String resolveMessageForTemplate(
-            final ITemplateProcessingContext processingContext, final String messageKey, final Object[] messageParameters,
+            final ITemplateContext context, final String messageKey, final Object[] messageParameters,
             final boolean returnStringAlways) {
 
-        Validate.notNull(processingContext, "Processing Context cannot be null");
-        Validate.notNull(processingContext.getVariables(), "Variables Map returned by Processing Context cannot be null");
+        Validate.notNull(context, "Context cannot be null");
         Validate.notNull(messageKey, "Message key cannot be null");
         
-        final Set<IMessageResolver> messageResolvers = 
-            processingContext.getConfiguration().getMessageResolvers();
+        final Set<IMessageResolver> messageResolvers =
+            context.getConfiguration().getMessageResolvers();
         
         MessageResolution messageResolution = null;
         for (final IMessageResolver messageResolver : messageResolvers) {
             if (messageResolution == null) {
                 messageResolution =
-                    messageResolver.resolveMessage(processingContext, messageKey, messageParameters);
+                    messageResolver.resolveMessage(context, messageKey, messageParameters);
             }
         }
         
@@ -102,7 +102,7 @@ public final class MessageResolutionUtils {
                 return null;
             }
             
-            return getAbsentMessageRepresentation(messageKey, processingContext.getLocale());
+            return getAbsentMessageRepresentation(messageKey, context.getLocale());
             
         }
         
@@ -222,17 +222,23 @@ public final class MessageResolutionUtils {
     
     
     public static Properties loadCombinedMessagesFilesFromBaseName(
-            final IEngineConfiguration configuration, final IResourceResolver resourceResolver,
-            final String baseName, final Locale locale, final Properties defaultMessages) {
+            final IEngineConfiguration configuration, final ITemplateResource templateResource,
+            final Locale locale, final Properties defaultMessages) {
 
         /*
          * Both arguments and resource resolver can be null 
          * (will use a ClassLoaderResourceResolver if so).
          */
         
-        Validate.notNull(baseName, "Base name cannot be null");
+        Validate.notNull(templateResource, "Template Resource cannot be null");
         Validate.notNull(locale, "Locale cannot be null");
-        
+
+        final String baseName = templateResource.getBaseName();
+        if (baseName == null) {
+            // This type of resource does not support base name computation
+            return null;
+        }
+
         final List<String> messageResourceNames = getMessageFileNamesFromBase(baseName, locale);
 
         final IResourceResolver usedResourceResolver = 
@@ -260,8 +266,7 @@ public final class MessageResolutionUtils {
         
         Validate.notNull(props, "Message specifications cannot be null");
         
-        final Properties messages =
-            (defaultMessages == null? new Properties() : new Properties(defaultMessages));
+        final Properties messages = (defaultMessages == null? null : new Properties(defaultMessages));
         
         for (final Properties messagesSpecification : props) {
             if (messagesSpecification != null) {
@@ -281,20 +286,23 @@ public final class MessageResolutionUtils {
     
     
     
-    private static Properties loadMessages(final IResource propertiesResource) {
-        if (propertiesResource == null) {
+    private static Properties loadMessages(final Reader propertiesReader) {
+        if (propertiesReader == null) {
             return null;
         }
         final Properties properties = new Properties();
-        // This is not as efficient as it could be, but we avoid using the Properties.load(Reader) method
-        // because it was added in Java 6. Thus we have to do quite complicated and memory-hungry things to
-        // obtain an InputStream from the IResource. Luckily, this is cached most of the times.
-        final String propertiesResourceStr = propertiesResource.readFully();
         try {
-            properties.load(new ByteArrayInputStream(propertiesResourceStr.getBytes("ISO8859-1")));
-            // No need to close this input stream - just iterating a byte[]
+            // Note Properties#load(Reader) this is JavaSE 6 specific, but Thymeleaf 3.0 does
+            // not support Java 5 anymore...
+            properties.load(propertiesReader);
         } catch (final Exception e) {
             throw new TemplateInputException("Exception loading messages file", e);
+        } finally {
+            try {
+                propertiesReader.close();
+            } catch (final Throwable ignored) {
+                // ignore errors closing
+            }
         }
         return properties;
     }
@@ -403,8 +411,8 @@ public final class MessageResolutionUtils {
         return localeStr;
     }
 
-    
-    
+
+
     
     private MessageResolutionUtils() {
         super();

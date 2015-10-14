@@ -21,7 +21,6 @@ package org.thymeleaf.context;
 
 import java.util.List;
 
-import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.TemplateResolution;
@@ -53,6 +52,10 @@ public interface ITemplateContext extends IExpressionContext {
 
     // This will always correspond to the template mode of the current template resolution
     public TemplateMode getTemplateMode();
+
+
+    public String getMessage(final Class<?> origin, final String key, final Object[] messageParameters);
+
 
     public IdentifierSequences getIdentifierSequences();
 

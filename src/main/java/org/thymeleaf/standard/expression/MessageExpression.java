@@ -29,7 +29,6 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.util.MessageResolutionUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -229,9 +228,11 @@ public final class MessageExpression extends SimpleExpression {
                     "where processing context is an implementation of " + ITemplateContext.class.getClass() + ", which it isn't (" +
                     context.getClass().getName() + ")");
         }
-        
+
+        final ITemplateContext templateContext = (ITemplateContext)context;
+
         final IStandardExpression baseExpression = expression.getBase();
-        Object messageKey = baseExpression.execute(context, expContext);
+        Object messageKey = baseExpression.execute(templateContext, expContext);
         messageKey = LiteralValue.unwrap(messageKey);
         if (messageKey != null && !(messageKey instanceof String)) {
             messageKey = messageKey.toString();
@@ -252,7 +253,7 @@ public final class MessageExpression extends SimpleExpression {
             messageParameters = new Object[parameterExpressionValuesLen];
             for (int i = 0; i < parameterExpressionValuesLen; i++) {
                 final IStandardExpression parameterExpression = parameterExpressionValues.get(i);
-                final Object result = parameterExpression.execute(context, expContext);
+                final Object result = parameterExpression.execute(templateContext, expContext);
                 messageParameters[i] = LiteralValue.unwrap(result);
             }
 
@@ -260,8 +261,7 @@ public final class MessageExpression extends SimpleExpression {
             messageParameters = NO_PARAMETERS;
         }
 
-        return MessageResolutionUtils.resolveMessageForTemplate(
-                context, (String)messageKey, messageParameters);
+        return templateContext.getMessage(MessageExpression.class, (String)messageKey, messageParameters);
         
     }
 
