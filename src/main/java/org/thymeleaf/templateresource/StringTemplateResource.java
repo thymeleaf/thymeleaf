@@ -69,6 +69,14 @@ public final class StringTemplateResource implements ITemplateResource {
 
 
 
+    public String getBaseName() {
+        // This kind of resource cannot be used for computing derivative names from its base
+        return null;
+    }
+
+
+
+
     public Reader reader() throws IOException {
         return new StringReader(this.resource);
     }

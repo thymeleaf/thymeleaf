@@ -33,6 +33,8 @@ public interface ITemplateResource {
 
     public String getName();
 
+    public String getBaseName();
+
     public boolean exists();
 
     public Reader reader() throws IOException;

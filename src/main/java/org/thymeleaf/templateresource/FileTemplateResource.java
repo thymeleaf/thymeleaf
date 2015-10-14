@@ -82,6 +82,13 @@ public final class FileTemplateResource implements ITemplateResource, Serializab
 
 
 
+    public String getBaseName() {
+        return TemplateResourceUtils.computeBaseName(this.path);
+    }
+
+
+
+
     public Reader reader() throws IOException {
 
         final InputStream inputStream = new FileInputStream(this.file);
@@ -101,7 +108,7 @@ public final class FileTemplateResource implements ITemplateResource, Serializab
 
         Validate.notEmpty(relativePath, "Relative Path cannot be null or empty");
 
-        final String fullRelativePath = TemplateResourceUtils.createRelativePath(this.path, relativePath);
+        final String fullRelativePath = TemplateResourceUtils.computeRelativePath(this.path, relativePath);
         return new FileTemplateResource(fullRelativePath, this.characterEncoding);
 
     }

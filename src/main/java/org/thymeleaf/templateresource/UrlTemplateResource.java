@@ -84,6 +84,13 @@ public final class UrlTemplateResource implements ITemplateResource, Serializabl
 
 
 
+    public String getBaseName() {
+        return TemplateResourceUtils.computeBaseName(this.url.getPath());
+    }
+
+
+
+
     public Reader reader() throws IOException {
 
         final InputStream inputStream = inputStream();

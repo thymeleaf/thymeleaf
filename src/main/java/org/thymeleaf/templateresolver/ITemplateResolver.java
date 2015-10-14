@@ -21,23 +21,21 @@ package org.thymeleaf.templateresolver;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresource.ITemplateResource;
 
 /**
  * <p>
  *   Interface for all Template Resolvers.
  * </p>
  * <p>
- *   Template resolvers are in charge of resolving templates (usually their names) into
+ *   Template resolvers are in charge of resolving templates into
  *   {@link TemplateResolution} objects that contain additional information related to
  *   the template like:
  * </p>
  * <ul>
- *   <li>Its corresponding <i>resource</i> (usually its name), which will be passed to the
- *       returned Resource Resolver in order to read the template.</li>
- *   <li>The Resource Resolver (implementation of {@link org.thymeleaf.resourceresolver.IResourceResolver})
- *       to be used for trying to read this template.</li>
+ *   <li>Its corresponding <i>template resource</i> (see
+ *       {@link org.thymeleaf.templateresource.ITemplateResource}.</li>
  *   <li>The Template Mode to be applied to this template: {@link TemplateMode}</li>
- *   <li>The character encoding to be used when reading this template.</li>
  *   <li>Whether the template can be cached or not.</li>
  *   <li>If the template can be cached, (optionally) the time it will live in cache.</li>
  * </ul>
@@ -47,18 +45,20 @@ import org.thymeleaf.templatemode.TemplateMode;
  *   implementation will provide its own set of methods for specifying such configurations. 
  * </p>
  * <p>
- *   Note that it is allowed for a Template Resolver to return a result even if a template
- *   will not be resolvable by its Resource Resolver in the end. Many times it is not 
- *   possible to know whether a template can be effectively resolved by a template 
- *   resolver until a read on the template <i>resource</i> is actually attempted so,
- *   in order to avoid two read operations for each template, many times Template Resolvers 
- *   will return a result but Resource Resolvers will return none once executed.
+ *   The fact that a Template Resolver returns a {@link TemplateResolution} does not necessarily
+ *   mean that the resolved template resource exists. It might only be so if the template resolver
+ *   is configured to perform an <em>existence check</em> on the resource before returning a resolution
+ *   result (by means of calling {@link ITemplateResource#exists()}), which might be configurable on
+ *   a per-{@link ITemplateResolver}-implementation basis. Implementations might choose not to check
+ *   resource existance by default in order to avoid the possible performance impact of a double access
+ *   to the resource.
  * </p>
  * <p>
  *   A Template Engine can be configured several template resolvers, and these will
  *   be asked in order (according to the value returned by {@link #getOrder()}) to return
  *   a {@link TemplateResolution} object for each template name. If a template resolver
- *   returns null or its resource resolver does, the next one in the chain is asked. 
+ *   returns null for a specific resolution, the next one in the chain is asked. Template Resolvers
+ *   that are not configured an order will be executed last in the chain.
  * </p>
  * <p>
  *   Note a class with this name existed since 1.0, but it was completely reimplemented
@@ -105,21 +105,18 @@ public interface ITemplateResolver {
      *   return a {@link TemplateResolution} object.
      * </p>
      * <p>
-     *   This method can return null if the template resolver is completely certain
-     *   that a template cannot be resolved by it. But returning a result does not
-     *   mean the contrary, because it could be that the {@link org.thymeleaf.resourceresolver.IResourceResolver}
-     *   object returned in the result is not effectively able to resolve the
-     *   <i>resource</i> corresponding to this template. As sometimes this cannot be known in
-     *   advance (the template resource would have to be read two times
-     *   for that), it will not be until the Template Engine executes the Resource
-     *   Resolver that it will know whether the template was correctly resolved by
-     *   a Template Resolver or not.
+     *   The fact that a Template Resolver returns a {@link TemplateResolution} does not necessarily
+     *   mean that the resolved template resource exists. It might only be so if the template resolver
+     *   is configured to perform an <em>existence check</em> on the resource before returning a resolution
+     *   result (by means of calling {@link ITemplateResource#exists()}), which might be configurable on
+     *   a per-{@link ITemplateResolver}-implementation basis. Implementations might choose not to check
+     *   resource existance by default in order to avoid the possible performance impact of a double access
+     *   to the resource.
      * </p>
      * 
      * @param configuration the engine configuration.
      * @param template the template to be resolved (usually its name)
-     * @return a TemplateResolution object containing (maybe valid) resource resolution
-     *         info for the template, or null.
+     * @return a TemplateResolution object (which might represent an existing resource or not), or null.
      */
     public TemplateResolution resolveTemplate(final IEngineConfiguration configuration, final String template);
 

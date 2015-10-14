@@ -100,7 +100,7 @@ final class TemplateResourceUtils {
 
 
 
-    static String createRelativePath(final String path, final String relativePath) {
+    static String computeRelativePath(final String path, final String relativePath) {
         final int separatorPos = path.lastIndexOf('/');
         if (separatorPos != -1) {
             final StringBuilder pathBuilder = new StringBuilder(path.length() + relativePath.length());
@@ -113,6 +113,28 @@ final class TemplateResourceUtils {
         }
         return relativePath;
     }
+
+
+
+
+    static String computeBaseName(final String path) {
+
+        // First remove a trailing '/' if it exists
+        final String basePath = (path.charAt(path.length() - 1) == '/'? path.substring(0,path.length() - 1) : path);
+
+        final int slashPos = basePath.lastIndexOf('/');
+        if (slashPos != -1) {
+            final int dotPos = basePath.lastIndexOf('.');
+            if (dotPos != -1 && dotPos > slashPos + 1) {
+                return basePath.substring(slashPos + 1, dotPos);
+            }
+            return basePath.substring(slashPos + 1);
+        }
+
+        return basePath;
+
+    }
+
 
 
 
