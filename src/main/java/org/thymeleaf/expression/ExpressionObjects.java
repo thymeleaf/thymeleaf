@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.util.Validate;
 

@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.processor.templateboundaries;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.ITemplateEnd;
 import org.thymeleaf.model.ITemplateStart;

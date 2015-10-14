@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.engine;
 
-import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;

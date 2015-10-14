@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.processor.doctype;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.IDocType;
 import org.thymeleaf.processor.IProcessor;

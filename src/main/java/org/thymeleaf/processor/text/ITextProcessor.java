@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.processor.text;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.processor.IProcessor;

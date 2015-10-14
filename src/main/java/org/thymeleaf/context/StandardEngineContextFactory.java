@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.templateresolver.TemplateResolution;
 
 /**

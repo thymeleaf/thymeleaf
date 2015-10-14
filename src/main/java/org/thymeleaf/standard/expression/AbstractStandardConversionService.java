@@ -20,7 +20,6 @@
 package org.thymeleaf.standard.expression;
 
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.util.Validate;
 

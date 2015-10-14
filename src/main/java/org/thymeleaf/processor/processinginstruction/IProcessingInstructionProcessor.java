@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.processor.processinginstruction;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.processor.IProcessor;

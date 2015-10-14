@@ -21,7 +21,6 @@ package org.thymeleaf.standard.processor;
 
 import java.util.List;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;

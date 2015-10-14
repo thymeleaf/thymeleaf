@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.expression;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.StandardExpressions;

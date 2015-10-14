@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.inline;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateContext;
 
 /**

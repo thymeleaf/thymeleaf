@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.processor.xmldeclaration;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.processor.IProcessor;

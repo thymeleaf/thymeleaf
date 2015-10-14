@@ -22,7 +22,6 @@ package org.thymeleaf.standard.expression;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IExpressionContext;
 
 

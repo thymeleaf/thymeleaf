@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.processor.comment;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.processor.IProcessor;

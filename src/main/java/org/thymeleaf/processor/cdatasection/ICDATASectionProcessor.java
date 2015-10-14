@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.processor.cdatasection;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.processor.IProcessor;

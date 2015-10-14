@@ -21,7 +21,6 @@ package org.thymeleaf.standard.expression;
 
 import java.io.Serializable;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
