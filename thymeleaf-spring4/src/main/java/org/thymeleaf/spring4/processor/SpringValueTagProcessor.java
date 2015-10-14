@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.spring4.processor;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -54,7 +54,7 @@ public final class SpringValueTagProcessor extends AbstractStandardExpressionAtt
 
     @Override
     protected final void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
@@ -72,7 +72,7 @@ public final class SpringValueTagProcessor extends AbstractStandardExpressionAtt
             final String typeValue = tag.getAttributes().getValue("type");
 
             newAttributeValue =
-                    RequestDataValueProcessorUtils.processFormFieldValue(processingContext, nameValue, newAttributeValue, typeValue);
+                    RequestDataValueProcessorUtils.processFormFieldValue(context, nameValue, newAttributeValue, typeValue);
 
         }
 

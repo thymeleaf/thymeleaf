@@ -23,8 +23,8 @@ import java.util.Arrays;
 
 import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.AttributeNames;
@@ -67,13 +67,13 @@ public final class SpringErrorClassTagProcessor extends AbstractAttributeTagProc
 
     @Override
     protected final void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
-        final BindStatus bindStatus = computeBindStatus(processingContext, tag);
+        final BindStatus bindStatus = computeBindStatus(context, tag);
         if (bindStatus == null) {
             final AttributeName fieldAttributeName =
                     AttributeNames.forHTMLName(attributeName.getPrefix(), AbstractSpringFieldTagProcessor.ATTR_NAME);
@@ -85,11 +85,11 @@ public final class SpringErrorClassTagProcessor extends AbstractAttributeTagProc
 
         if (bindStatus.isError()) {
 
-            final IEngineConfiguration configuration = processingContext.getConfiguration();
+            final IEngineConfiguration configuration = context.getConfiguration();
             final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
 
-            final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
-            final Object expressionResult = expression.execute(processingContext);
+            final IStandardExpression expression = expressionParser.parseExpression(context, attributeValue);
+            final Object expressionResult = expression.execute(context);
 
             final String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? null : expressionResult.toString());
 
@@ -120,14 +120,14 @@ public final class SpringErrorClassTagProcessor extends AbstractAttributeTagProc
      * for which a th:field has not been executed, but which should have a "name" attribute (either directly or as
      * the result of executing a th:name) -- in this case, we'll have to build the BuildStatus ourselves.
      */
-    private static BindStatus computeBindStatus(final IProcessingContext processingContext, final IProcessableElementTag tag) {
+    private static BindStatus computeBindStatus(final IExpressionContext context, final IProcessableElementTag tag) {
 
         /*
          * First, try to obtain an already-existing BindStatus resulting from the execution of a th:field attribute
          * in the same element.
          */
         final BindStatus bindStatus =
-                (BindStatus) processingContext.getVariables().getVariable(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS);
+                (BindStatus) context.getVariable(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS);
         if (bindStatus != null) {
             return bindStatus;
         }
@@ -143,11 +143,11 @@ public final class SpringErrorClassTagProcessor extends AbstractAttributeTagProc
         }
 
         final VariableExpression boundExpression =
-                (VariableExpression) processingContext.getVariables().getVariable(SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION);
+                (VariableExpression) context.getVariable(SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION);
 
         if (boundExpression == null) {
             // No bound expression, so just use the field name
-            return FieldUtils.getBindStatusFromParsedExpression(processingContext, false, fieldName);
+            return FieldUtils.getBindStatusFromParsedExpression(context, false, fieldName);
         }
 
         // Bound object and field object names might intersect (e.g. th:object="a.b", name="b.c"), and we must compute
@@ -162,7 +162,7 @@ public final class SpringErrorClassTagProcessor extends AbstractAttributeTagProc
         }
 
         // We set "useRoot" to false because we have already computed that part
-        return FieldUtils.getBindStatusFromParsedExpression(processingContext, false, computedFieldName);
+        return FieldUtils.getBindStatusFromParsedExpression(context, false, computedFieldName);
 
     }
 

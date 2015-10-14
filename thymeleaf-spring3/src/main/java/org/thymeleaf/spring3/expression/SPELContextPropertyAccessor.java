@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring4.expression;
+package org.thymeleaf.spring3.expression;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,24 +26,20 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.PropertyAccessor;
 import org.springframework.expression.TypedValue;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IVariablesMap;
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
 /**
  * <p>
  *   Property accessor used for allowing Spring EL expression evaluators
- *   treat {@link IVariablesMap} objects correctly (map keys will be accessible
+ *   treat {@link IContext} objects correctly (map keys will be accessible
  *   as object properties).
  * </p>
  * <p>
- *   Note that, even if {@link IVariablesMap} objects used as expression roots will be accessible as
- *   <tt>java.util.Map</tt>s thanks to {@link SPELVariablesMapWrapper}, this property accessor
- *   class is still needed in order to access nested variables map like the <tt>session</tt> or
+ *   Note that, even if {@link IContext} objects used as expression roots will be accessible as
+ *   <tt>java.util.Map</tt>s thanks to {@link SPELContextMapWrapper}, this property accessor
+ *   class is still needed in order to access nested context info like the <tt>session</tt> or
  *   <tt>param</tt> maps in web contexts.
- * </p>
- * <p>
- *   Note a class with this name existed since 1.1, but it was completely reimplemented
- *   in Thymeleaf 3.0
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
@@ -51,19 +47,19 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  * @since 3.0.0
  *
  */
-public final class SPELVariablesMapPropertyAccessor implements PropertyAccessor {
+public final class SPELContextPropertyAccessor implements PropertyAccessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SPELVariablesMapPropertyAccessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SPELContextPropertyAccessor.class);
 
-    static final SPELVariablesMapPropertyAccessor INSTANCE = new SPELVariablesMapPropertyAccessor();
+    static final SPELContextPropertyAccessor INSTANCE = new SPELContextPropertyAccessor();
 
     private static final String REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME = "param";
-    private static final Class<?>[] TARGET_CLASSES = new Class<?>[] { IVariablesMap.class };
+    private static final Class<?>[] TARGET_CLASSES = new Class<?>[] { IContext.class };
 
 
 
 
-    SPELVariablesMapPropertyAccessor() {
+    SPELContextPropertyAccessor() {
         super();
     }
 
@@ -91,7 +87,7 @@ public final class SPELVariablesMapPropertyAccessor implements PropertyAccessor 
 
 
 
-    public TypedValue read(final EvaluationContext context, final Object target, final String name)
+    public TypedValue read(final EvaluationContext evaluationContext, final Object target, final String name)
             throws AccessException {
 
         if (target == null) {
@@ -104,19 +100,19 @@ public final class SPELVariablesMapPropertyAccessor implements PropertyAccessor 
              * NOTE we do not check here whether we are being asked for the 'locale', 'request', 'response', etc.
              * because there already are specific expression objects for the most important of them, which should
              * be used instead: #locale, #httpServletRequest, #httpSession, etc.
-             * The variables maps should just be used as a map, without exposure of its more-internal methods...
+             * The context should just be used as a map, without exposure of its more-internal methods...
              */
 
             // 'execInfo' translation from context variable to expression object - deprecated and to be removed in 3.1
             if ("execInfo".equals(name)) { // Quick check to avoid deprecated method call
-                final Object execInfoResult = checkExecInfo(name, context);
+                final Object execInfoResult = checkExecInfo(name, evaluationContext);
                 if (execInfoResult != null) {
                     return new TypedValue(execInfoResult);
                 }
             }
 
-            final IVariablesMap variablesMap = (IVariablesMap) target;
-            return new TypedValue(variablesMap.getVariable(name));
+            final IContext context = (IContext) target;
+            return new TypedValue(context.getVariable(name));
 
         } catch (final ClassCastException e) {
             // This can happen simply because we're applying the same
@@ -171,10 +167,11 @@ public final class SPELVariablesMapPropertyAccessor implements PropertyAccessor 
 
 
 
+
     public boolean canWrite(
             final EvaluationContext context, final Object target, final String name)
             throws AccessException {
-        // There should never be a need to write on a VariablesMap during a template execution
+        // There should never be a need to write on an IContext during a template execution
         return false;
     }
 
@@ -183,8 +180,8 @@ public final class SPELVariablesMapPropertyAccessor implements PropertyAccessor 
     public void write(
             final EvaluationContext context, final Object target, final String name, final Object newValue)
             throws AccessException {
-        // There should never be a need to write on a VariablesMap during a template execution
-        throw new AccessException("Cannot write to " + IVariablesMap.class.getName());
+        // There should never be a need to write on an IContext during a template execution
+        throw new AccessException("Cannot write to " + IContext.class.getName());
     }
 
 

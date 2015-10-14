@@ -23,7 +23,8 @@ package org.thymeleaf.spring3.expression;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.TypeConverter;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.standard.expression.AbstractStandardConversionService;
 
 /**
@@ -56,15 +57,17 @@ public final class SpringStandardConversionService extends AbstractStandardConve
 
 
     @Override
-    protected String convertToString(final IProcessingContext processingContext, final Object object) {
+    protected String convertToString(
+            final IExpressionContext context,
+            final Object object) {
 
         if (object == null) {
             return null;
         }
         final TypeDescriptor objectTypeDescriptor = TypeDescriptor.forObject(object);
-        final TypeConverter typeConverter = getSpringConversionService(processingContext);
+        final TypeConverter typeConverter = getSpringConversionService(context);
         if (typeConverter == null || !typeConverter.canConvert(objectTypeDescriptor, TYPE_STRING)) {
-            return super.convertToString(processingContext, object);
+            return super.convertToString(configuration, context, object);
         }
         return (String) typeConverter.convertValue(object, objectTypeDescriptor, TYPE_STRING);
 
@@ -72,16 +75,18 @@ public final class SpringStandardConversionService extends AbstractStandardConve
 
 
     @Override
-    protected <T> T convertOther(final IProcessingContext processingContext, final Object object, final Class<T> targetClass) {
+    protected <T> T convertOther(
+            final IExpressionContext context,
+            final Object object, final Class<T> targetClass) {
 
         if (object == null) {
             return null;
         }
         final TypeDescriptor objectTypeDescriptor = TypeDescriptor.forObject(object);
         final TypeDescriptor targetTypeDescriptor = TypeDescriptor.valueOf(targetClass);
-        final TypeConverter typeConverter = getSpringConversionService(processingContext);
+        final TypeConverter typeConverter = getSpringConversionService(context);
         if (typeConverter == null || !typeConverter.canConvert(objectTypeDescriptor, targetTypeDescriptor)) {
-            return super.convertOther(processingContext, object, targetClass);
+            return super.convertOther(configuration, context, object, targetClass);
         }
         return (T) typeConverter.convertValue(object, objectTypeDescriptor, targetTypeDescriptor);
 
@@ -93,11 +98,11 @@ public final class SpringStandardConversionService extends AbstractStandardConve
 
 
 
-    private static TypeConverter getSpringConversionService(final IProcessingContext processingContext) {
+    private static TypeConverter getSpringConversionService(final IExpressionContext context) {
 
         final EvaluationContext evaluationContext =
-                (EvaluationContext) processingContext.getVariables().
-                        getVariable(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME);
+                (EvaluationContext) context.getVariable(
+                        ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME);
 
         if (evaluationContext != null) {
             return evaluationContext.getTypeConverter();

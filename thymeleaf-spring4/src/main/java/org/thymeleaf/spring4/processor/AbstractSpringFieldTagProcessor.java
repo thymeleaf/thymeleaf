@@ -21,7 +21,8 @@ package org.thymeleaf.spring4.processor;
 
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.support.BindStatus;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -101,7 +102,7 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
 
     @Override
     protected void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
@@ -124,11 +125,11 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
             tag.getAttributes().removeAttribute(attributeName);
         }
 
-        final BindStatus bindStatus = FieldUtils.getBindStatus(processingContext, attributeValue);
+        final BindStatus bindStatus = FieldUtils.getBindStatus(context, attributeValue);
         structureHandler.setLocalVariable(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS, bindStatus);
 
         doProcess(
-                processingContext, tag,
+                context, tag,
                 attributeName, attributeValue, attributeTemplateName, attributeLine, attributeCol,
                 bindStatus, structureHandler);
 
@@ -138,7 +139,7 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
 
 
     protected abstract void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName,
             final String attributeValue,
@@ -152,7 +153,7 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
     
     // This method is designed to be called from the diverse subclasses
     protected final String computeId(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final String name, final boolean sequence) {
         
@@ -163,7 +164,7 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
 
         id = FieldUtils.idFromName(name);
         if (sequence) {
-            final Integer count = processingContext.getIdentifierSequences().getAndIncrementIDSeq(id);
+            final Integer count = context.getIdentifierSequences().getAndIncrementIDSeq(id);
             return id + count.toString();
         }
         return id;

@@ -21,7 +21,7 @@ package org.thymeleaf.spring4.processor;
 
 import java.util.Map;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IModel;
@@ -57,7 +57,7 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
 
     @Override
     protected final void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
@@ -71,7 +71,7 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
         final String httpMethod = tag.getAttributes().getValue("method");
 
         // Let RequestDataValueProcessor modify the attribute value if needed
-        newAttributeValue = RequestDataValueProcessorUtils.processAction(processingContext, newAttributeValue, httpMethod);
+        newAttributeValue = RequestDataValueProcessorUtils.processAction(context, newAttributeValue, httpMethod);
 
         // Set the 'action' attribute
         tag.getAttributes().replaceAttribute(attributeName, ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
@@ -80,16 +80,16 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
         if ("form".equalsIgnoreCase(tag.getElementName())) {
 
             final Map<String,String> extraHiddenFields =
-                    RequestDataValueProcessorUtils.getExtraHiddenFields(processingContext);
+                    RequestDataValueProcessorUtils.getExtraHiddenFields(context);
 
             if (extraHiddenFields != null && extraHiddenFields.size() > 0) {
 
-                final IModel extraHiddenElementTags = processingContext.getModelFactory().createModel();
+                final IModel extraHiddenElementTags = context.getModelFactory().createModel();
 
                 for (final Map.Entry<String,String> extraHiddenField : extraHiddenFields.entrySet()) {
 
                     final IStandaloneElementTag extraHiddenElementTag =
-                            processingContext.getModelFactory().createStandaloneElementTag("input", true);
+                            context.getModelFactory().createStandaloneElementTag("input", true);
 
                     extraHiddenElementTag.getAttributes().setAttribute("type", "hidden");
                     extraHiddenElementTag.getAttributes().setAttribute("name", extraHiddenField.getKey());

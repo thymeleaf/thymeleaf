@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.spring3.processor;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IModel;
@@ -55,7 +55,7 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
 
     @Override
     protected final void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
@@ -84,15 +84,15 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
 
                 tag.getAttributes().setAttribute(ATTR_NAME, "post");
 
-                final IModel hiddenMethodModel = processingContext.getModelFactory().createModel();
+                final IModel hiddenMethodModel = context.getModelFactory().createModel();
 
                 final String type = "hidden";
                 final String name = "_method";
                 final String value =
-                        RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, newAttributeValue, type);
+                        RequestDataValueProcessorUtils.processFormFieldValue(context, name, newAttributeValue, type);
 
                 final IStandaloneElementTag hiddenMethodElementTag =
-                        processingContext.getModelFactory().createStandaloneElementTag("input", true);
+                        context.getModelFactory().createStandaloneElementTag("input", true);
                 hiddenMethodElementTag.getAttributes().setAttribute("type", type);
                 hiddenMethodElementTag.getAttributes().setAttribute("name", name);
                 hiddenMethodElementTag.getAttributes().setAttribute("value", value); // no need to escape

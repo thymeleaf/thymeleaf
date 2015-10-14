@@ -17,19 +17,19 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring3.expression;
+package org.thymeleaf.spring4.expression;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.ILazyContextVariable;
-import org.thymeleaf.context.IVariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
 /**
  * <p>
- *   Wrapper on {@link IVariablesMap} objects that makes them look like <tt>java.util.Map</tt> objects
+ *   Wrapper on {@link IContext} objects that makes them look like <tt>java.util.Map</tt> objects
  *   in order to be used at the root of SpEL expressions without the need to use custom property accessors
  *   in most scenarios.
  * </p>
@@ -39,19 +39,19 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  * @since 3.0.0
  *
  */
-public final class SPELVariablesMapWrapper implements Map {
+public final class SPELContextMapWrapper implements Map {
 
     private static final String REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME = "param";
 
 
-    private final IVariablesMap variablesMap;
+    private final IContext context;
     private final IThymeleafEvaluationContext evaluationContext;
 
 
 
-    SPELVariablesMapWrapper(final IVariablesMap variablesMap, final IThymeleafEvaluationContext evaluationContext) {
+    SPELContextMapWrapper(final IContext context, final IThymeleafEvaluationContext evaluationContext) {
         super();
-        this.variablesMap = variablesMap;
+        this.context = context;
         this.evaluationContext = evaluationContext;
     }
 
@@ -65,7 +65,7 @@ public final class SPELVariablesMapWrapper implements Map {
 
     public int size() {
         throw new TemplateProcessingException(
-                "Cannot call #size() on an " + IVariablesMap.class.getSimpleName() + " implementation");
+                "Cannot call #size() on an " + IContext.class.getSimpleName() + " implementation");
     }
 
 
@@ -73,7 +73,7 @@ public final class SPELVariablesMapWrapper implements Map {
 
     public boolean isEmpty() {
         throw new TemplateProcessingException(
-                "Cannot call #isEmpty() on an " + IVariablesMap.class.getSimpleName() + " implementation");
+                "Cannot call #isEmpty() on an " + IContext.class.getSimpleName() + " implementation");
     }
 
 
@@ -88,10 +88,10 @@ public final class SPELVariablesMapWrapper implements Map {
                         "unescaped expressions, and also in fragment inclusion specifications.");
             }
         }
-        // We will be NOT calling this.variablesMap.containsVariable(key) as it could be very inefficient in web
+        // We will be NOT calling this.context.containsVariable(key) as it could be very inefficient in web
         // environments (based on HttpServletRequest#getAttributeName()), so we will just consider that every possible
-        // element exists in an IVariablesMap, and simply return null for those not found
-        return this.variablesMap != null;
+        // element exists in an IContext, and simply return null for those not found
+        return this.context != null;
     }
 
 
@@ -99,7 +99,7 @@ public final class SPELVariablesMapWrapper implements Map {
 
     public boolean containsValue(final Object value) {
         throw new TemplateProcessingException(
-                "Cannot call #containsValue(value) on an " + IVariablesMap.class.getSimpleName() + " implementation");
+                "Cannot call #containsValue(value) on an " + IContext.class.getSimpleName() + " implementation");
     }
 
 
@@ -107,7 +107,7 @@ public final class SPELVariablesMapWrapper implements Map {
 
     public Object get(final Object key) {
 
-        if (this.variablesMap == null) {
+        if (this.context == null) {
             throw new TemplateProcessingException("Cannot read property on null target");
         }
 
@@ -115,18 +115,18 @@ public final class SPELVariablesMapWrapper implements Map {
          * NOTE we do not check here whether we are being asked for the 'locale', 'request', 'response', etc.
          * because there already are specific expression objects for the most important of them, which should
          * be used instead: #locale, #httpServletRequest, #httpSession, etc.
-         * The variables maps should just be used as a map, without exposure of its more-internal methods...
+         * The context should just be used as a map, without exposure of its more-internal methods...
          */
 
         // 'execInfo' translation from context variable to expression object - deprecated and to be removed in 3.1
         if ("execInfo".equals(key)) { // Quick check to avoid deprecated method call
-            final Object execInfoResult = SPELVariablesMapPropertyAccessor.checkExecInfo(key.toString(), this.evaluationContext);
+            final Object execInfoResult = SPELContextPropertyAccessor.checkExecInfo(key.toString(), this.evaluationContext);
             if (execInfoResult != null) {
                 return execInfoResult;
             }
         }
 
-        final Object result = this.variablesMap.getVariable(key == null? null : key.toString());
+        final Object result = this.context.getVariable(key == null? null : key.toString());
 
         /*
          * Check the possibility that this variable is a lazy one, in which case we should not return it directly
@@ -145,7 +145,7 @@ public final class SPELVariablesMapWrapper implements Map {
 
     public Object put(final Object key, final Object value) {
         throw new TemplateProcessingException(
-                "Cannot call #put(key,value) on an " + IVariablesMap.class.getSimpleName() + " implementation");
+                "Cannot call #put(key,value) on an " + IContext.class.getSimpleName() + " implementation");
     }
 
 
@@ -153,7 +153,7 @@ public final class SPELVariablesMapWrapper implements Map {
 
     public Object remove(final Object key) {
         throw new TemplateProcessingException(
-                "Cannot call #remove(key) on an " + IVariablesMap.class.getSimpleName() + " implementation");
+                "Cannot call #remove(key) on an " + IContext.class.getSimpleName() + " implementation");
     }
 
 
@@ -161,7 +161,7 @@ public final class SPELVariablesMapWrapper implements Map {
 
     public void putAll(final Map m) {
         throw new TemplateProcessingException(
-                "Cannot call #putAll(m) on an " + IVariablesMap.class.getSimpleName() + " implementation");
+                "Cannot call #putAll(m) on an " + IContext.class.getSimpleName() + " implementation");
     }
 
 
@@ -169,7 +169,7 @@ public final class SPELVariablesMapWrapper implements Map {
 
     public void clear() {
         throw new TemplateProcessingException(
-                "Cannot call #clear() on an " + IVariablesMap.class.getSimpleName() + " implementation");
+                "Cannot call #clear() on an " + IContext.class.getSimpleName() + " implementation");
     }
 
 
@@ -177,7 +177,7 @@ public final class SPELVariablesMapWrapper implements Map {
 
     public Set keySet() {
         throw new TemplateProcessingException(
-                "Cannot call #keySet() on an " + IVariablesMap.class.getSimpleName() + " implementation");
+                "Cannot call #keySet() on an " + IContext.class.getSimpleName() + " implementation");
     }
 
 
@@ -185,7 +185,7 @@ public final class SPELVariablesMapWrapper implements Map {
 
     public Collection values() {
         throw new TemplateProcessingException(
-                "Cannot call #values() on an " + IVariablesMap.class.getSimpleName() + " implementation");
+                "Cannot call #values() on an " + IContext.class.getSimpleName() + " implementation");
     }
 
 
@@ -193,7 +193,7 @@ public final class SPELVariablesMapWrapper implements Map {
 
     public Set<Entry> entrySet() {
         throw new TemplateProcessingException(
-                "Cannot call #entrySet() on an " + IVariablesMap.class.getSimpleName() + " implementation");
+                "Cannot call #entrySet() on an " + IContext.class.getSimpleName() + " implementation");
     }
 
 

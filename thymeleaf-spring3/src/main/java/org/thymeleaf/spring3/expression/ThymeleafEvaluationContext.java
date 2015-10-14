@@ -25,6 +25,7 @@ import org.springframework.context.expression.MapAccessor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.expression.spel.support.StandardTypeConverter;
+import org.thymeleaf.context.ExecutableContext;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.util.Validate;
 
@@ -36,7 +37,7 @@ import org.thymeleaf.util.Validate;
  * <p>
  *   This implementation adds Thymeleaf's own property accessors
  *   (see {@link org.springframework.expression.PropertyAccessor}) for accessing
- *   the {@link org.thymeleaf.context.VariablesMap} object in which variables are stored at the
+ *   the {@link ExecutableContext} object in which variables are stored at the
  *   context.
  * </p>
  * <p>
@@ -83,7 +84,7 @@ public final class ThymeleafEvaluationContext
             this.setTypeConverter(new StandardTypeConverter(conversionService));
         }
 
-        this.addPropertyAccessor(SPELVariablesMapPropertyAccessor.INSTANCE);
+        this.addPropertyAccessor(SPELContextPropertyAccessor.INSTANCE);
         this.addPropertyAccessor(MAP_ACCESSOR_INSTANCE);
 
     }

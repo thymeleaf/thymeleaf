@@ -21,7 +21,8 @@ package org.thymeleaf.spring3.processor;
 
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -50,7 +51,8 @@ public final class SpringOptionFieldTagProcessor extends AbstractSpringFieldTagP
 
 
     @Override
-    protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+    protected void doProcess(final ITemplateContext context,
+                             final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
                              final String attributeTemplateName, final int attributeLine, final int attributeCol,
                              final BindStatus bindStatus, final IElementTagStructureHandler structureHandler) {
@@ -69,7 +71,7 @@ public final class SpringOptionFieldTagProcessor extends AbstractSpringFieldTagP
 
         tag.getAttributes().setAttribute(
                 "value",
-                RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, value, "option"));
+                RequestDataValueProcessorUtils.processFormFieldValue(context, name, value, "option"));
 
         if (selected) {
             tag.getAttributes().setAttribute("selected", "selected");

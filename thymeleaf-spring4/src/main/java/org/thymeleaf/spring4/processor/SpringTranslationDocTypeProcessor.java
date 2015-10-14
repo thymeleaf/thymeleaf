@@ -22,7 +22,7 @@ package org.thymeleaf.spring4.processor;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.model.IDocType;
 import org.thymeleaf.processor.doctype.AbstractDocTypeProcessor;
@@ -129,7 +129,7 @@ public final class SpringTranslationDocTypeProcessor extends AbstractDocTypeProc
 
     @Override
     protected void doProcess(
-            final ITemplateProcessingContext processingContext, final IDocType docType,
+            final ITemplateContext context, final IDocType docType,
             final IDocTypeStructureHandler structureHandler) {
 
 

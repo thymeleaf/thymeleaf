@@ -21,7 +21,7 @@ package org.thymeleaf.spring4.processor;
 
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -59,12 +59,12 @@ public final class SpringErrorsTagProcessor extends AbstractAttributeTagProcesso
 
     @Override
     protected void doProcess(
-            final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+            final ITemplateContext context, final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
-        final BindStatus bindStatus = FieldUtils.getBindStatus(processingContext, attributeValue);
+        final BindStatus bindStatus = FieldUtils.getBindStatus(context, attributeValue);
 
         if (bindStatus.isError()) {
 

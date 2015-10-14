@@ -31,9 +31,8 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
-import org.thymeleaf.context.ILocalVariableAwareVariablesMap;
-import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.context.IVariablesMap;
+import org.thymeleaf.context.IMutableVariablesMap;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.spring3.util.FieldUtils;
@@ -84,7 +83,7 @@ public class SPELVariableExpressionEvaluator
     
     
     public final Object evaluate(
-            final IProcessingContext processingContext, final String spelExpression,
+            final IExpressionContext context, final String spelExpression,
             final StandardExpressionExecutionContext expContext, final boolean useSelectionAsRoot) {
         
         if (logger.isTraceEnabled()) {
@@ -99,14 +98,14 @@ public class SPELVariableExpressionEvaluator
             if (expContext.getPerformTypeConversion()) {
                 // This is a {{...}} expression, so we should use binding info (if available) for formatting.
 
-                if (useSelectionAsRoot || !isLocalVariableOverriding(processingContext, spelExpression)) {
+                if (useSelectionAsRoot || !isLocalVariableOverriding(context, spelExpression)) {
                     // The "local variable override" check avoids scenarios where a locally defined variable
                     // (e.g. the iterated variable in a th:each) has the same name as a bound object (e.g. a
                     // form-backing bean). If this was not detected, the bound object value would be always used
                     // instead of the local variable's
 
                     final BindStatus bindStatus =
-                            FieldUtils.getBindStatusFromParsedExpression(processingContext, true, useSelectionAsRoot, spelExpression);
+                            FieldUtils.getBindStatusFromParsedExpression(context, true, useSelectionAsRoot, spelExpression);
 
                     if (bindStatus != null) {
                         // The expression goes against a bound object! Let Spring do its magic for displaying it...
@@ -117,7 +116,7 @@ public class SPELVariableExpressionEvaluator
 
             }
 
-            final IEngineConfiguration configuration = processingContext.getConfiguration();
+            final IEngineConfiguration configuration = context.getConfiguration();
 
 
             /*
@@ -133,14 +132,14 @@ public class SPELVariableExpressionEvaluator
              * needed).
              */
             final IExpressionObjects expressionObjects =
-                    (exp.mightNeedExpressionObjects? processingContext.getExpressionObjects() : null);
+                    (exp.mightNeedExpressionObjects? context.getExpressionObjects() : null);
 
 
             /*
              * CREATE/OBTAIN THE SPEL EVALUATION CONTEXT OBJECT
              */
             EvaluationContext evaluationContext =
-                    (EvaluationContext) processingContext.getVariables().
+                    (EvaluationContext) context.getVariables().
                             getVariable(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME);
 
             if (evaluationContext == null) {
@@ -157,9 +156,9 @@ public class SPELVariableExpressionEvaluator
                 // several ConcurrentHashMaps.
                 evaluationContext = new ThymeleafEvaluationContextWrapper(new StandardEvaluationContext());
 
-                final IVariablesMap variablesMap = processingContext.getVariables();
-                if (variablesMap instanceof ILocalVariableAwareVariablesMap) {
-                    ((ILocalVariableAwareVariablesMap)variablesMap).put(
+                final IExecutableContext variablesMap = context.getVariables();
+                if (variablesMap instanceof IMutableVariablesMap) {
+                    ((IMutableVariablesMap)variablesMap).put(
                             ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
                 }
 
@@ -167,9 +166,9 @@ public class SPELVariableExpressionEvaluator
 
                 evaluationContext = new ThymeleafEvaluationContextWrapper(evaluationContext);
 
-                final IVariablesMap variablesMap = processingContext.getVariables();
-                if (variablesMap instanceof ILocalVariableAwareVariablesMap) {
-                    ((ILocalVariableAwareVariablesMap)variablesMap).put(
+                final IExecutableContext variablesMap = context.getVariables();
+                if (variablesMap instanceof IMutableVariablesMap) {
+                    ((IMutableVariablesMap)variablesMap).put(
                             ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
                 }
 
@@ -198,10 +197,10 @@ public class SPELVariableExpressionEvaluator
             /*
              * RESOLVE THE EVALUATION ROOT
              */
-            final IVariablesMap variablesMap = processingContext.getVariables();
+            final IExecutableContext variablesMap = context.getVariables();
             final Object evaluationRoot =
                     (useSelectionAsRoot && variablesMap.hasSelectionTarget()?
-                            variablesMap.getSelectionTarget() : new SPELVariablesMapWrapper(variablesMap, thymeleafEvaluationContext));
+                            variablesMap.getSelectionTarget() : new SPELContextMapWrapper(variablesMap, thymeleafEvaluationContext));
 
 
             /*
@@ -228,7 +227,7 @@ public class SPELVariableExpressionEvaluator
             // We need type conversion, but conversion service is not a mere bridge to the Spring one,
             // so we need manual execution.
             final Object result = exp.expression.getValue(thymeleafEvaluationContext, evaluationRoot);
-            return conversionService.convert(processingContext, result, String.class);
+            return conversionService.convert(context, result, String.class);
 
 
         } catch (final TemplateProcessingException e) {
@@ -273,14 +272,16 @@ public class SPELVariableExpressionEvaluator
 
 
 
-    private static boolean isLocalVariableOverriding(final IProcessingContext processingContext, final String expression) {
+    private static boolean isLocalVariableOverriding(final IExpressionContext context, final String expression) {
 
-        final IVariablesMap variablesMap = processingContext.getVariables();
-        if (!(variablesMap instanceof ILocalVariableAwareVariablesMap)) {
+        final IExecutableContext variablesMap = context.getVariables();
+        if (!(variablesMap instanceof IMutableVariablesMap)) {
             // We don't even have support for local variables!
             return false;
         }
-        final ILocalVariableAwareVariablesMap localVariableAwareVariablesMap = (ILocalVariableAwareVariablesMap) variablesMap;
+
+        // NOTE this IMutableVariablesMap interface is internal and should not be used in users' code
+        final IMutableVariablesMap mutableVariablesMap = (IMutableVariablesMap) variablesMap;
 
         final int dotPos = expression.indexOf('.');
         if (dotPos == -1) {
@@ -288,7 +289,7 @@ public class SPELVariableExpressionEvaluator
         }
         // Once we extract the first part of the expression, we check whether it is a local variable...
         final String expressionFirstComponent = expression.substring(0, dotPos);
-        return localVariableAwareVariablesMap.isVariableLocal(expressionFirstComponent);
+        return mutableVariablesMap.isVariableLocal(expressionFirstComponent);
 
     }
 

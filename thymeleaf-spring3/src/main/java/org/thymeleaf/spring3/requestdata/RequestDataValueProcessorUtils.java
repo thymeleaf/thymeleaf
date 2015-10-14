@@ -24,7 +24,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.support.RequestContext;
-import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebVariablesMap;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -96,13 +95,11 @@ public final class RequestDataValueProcessorUtils {
 
 
     public static String processAction(
-            final IProcessingContext processingContext, final String action, final String httpMethod) {
+            final IWebVariablesMap variablesMap, final String action, final String httpMethod) {
 
-        if (!canApply || !processingContext.isWeb()) {
+        if (!canApply || !variablesMap.isWeb()) {
             return action;
         }
-
-        final IWebVariablesMap variablesMap = (IWebVariablesMap) processingContext.getVariables();
 
         final RequestContext requestContext =
                 (RequestContext) variablesMap.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
@@ -123,13 +120,11 @@ public final class RequestDataValueProcessorUtils {
 
 
     public static String processFormFieldValue(
-            final IProcessingContext processingContext, final String name, final String value, final String type) {
+            final IWebVariablesMap variablesMap, final String name, final String value, final String type) {
 
-        if (!canApply || !processingContext.isWeb()) {
+        if (!canApply || !variablesMap.isWeb()) {
             return value;
         }
-
-        final IWebVariablesMap variablesMap = (IWebVariablesMap) processingContext.getVariables();
 
         final RequestContext requestContext =
                 (RequestContext) variablesMap.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
@@ -149,13 +144,11 @@ public final class RequestDataValueProcessorUtils {
 
 
 
-    public static Map<String, String> getExtraHiddenFields(final IProcessingContext processingContext) {
+    public static Map<String, String> getExtraHiddenFields(final IWebVariablesMap variablesMap) {
 
-        if (!canApply || !processingContext.isWeb()) {
+        if (!canApply || !variablesMap.isWeb()) {
             return null;
         }
-
-        final IWebVariablesMap variablesMap = (IWebVariablesMap) processingContext.getVariables();
 
         final RequestContext requestContext =
                 (RequestContext) variablesMap.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
@@ -175,13 +168,11 @@ public final class RequestDataValueProcessorUtils {
 
 
 
-    public static String processUrl(final IProcessingContext processingContext, final String url) {
+    public static String processUrl(final IWebVariablesMap variablesMap, final String url) {
 
-        if (!canApply || !processingContext.isWeb()) {
+        if (!canApply || !variablesMap.isWeb()) {
             return url;
         }
-
-        final IWebVariablesMap variablesMap = (IWebVariablesMap) processingContext.getVariables();
 
         final RequestContext requestContext =
                 (RequestContext) variablesMap.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);

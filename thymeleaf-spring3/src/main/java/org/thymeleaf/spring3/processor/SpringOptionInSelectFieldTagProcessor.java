@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.spring3.processor;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -54,13 +54,13 @@ public final class SpringOptionInSelectFieldTagProcessor extends AbstractElement
 
     @Override
     protected void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final String tagTemplateName, final int tagLine, final int tagCol,
             final IElementTagStructureHandler structureHandler) {
 
         final AttributeName selectAttrNameToAdd =
-                (AttributeName) processingContext.getVariables().getVariable(SpringSelectFieldTagProcessor.OPTION_IN_SELECT_ATTR_NAME);
+                (AttributeName) context.getVariable(SpringSelectFieldTagProcessor.OPTION_IN_SELECT_ATTR_NAME);
         if (selectAttrNameToAdd == null) {
             // Nothing to do
             return;
@@ -70,7 +70,7 @@ public final class SpringOptionInSelectFieldTagProcessor extends AbstractElement
         // as a local variable the name and value of the attribute to be added
 
         final String selectAttrValueToAdd =
-                (String) processingContext.getVariables().getVariable(SpringSelectFieldTagProcessor.OPTION_IN_SELECT_ATTR_VALUE);
+                (String) context.getVariable(SpringSelectFieldTagProcessor.OPTION_IN_SELECT_ATTR_VALUE);
 
         if (tag.getAttributes().hasAttribute(selectAttrNameToAdd)) {
             if (!selectAttrValueToAdd.equals(tag.getAttributes().getValue(selectAttrNameToAdd))) {

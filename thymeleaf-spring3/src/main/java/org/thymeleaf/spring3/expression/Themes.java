@@ -24,7 +24,7 @@ import java.util.Locale;
 
 import org.springframework.ui.context.Theme;
 import org.springframework.web.servlet.support.RequestContext;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 
@@ -44,14 +44,14 @@ public class Themes {
      * Constructor, obtains the current theme and locale from the processing
      * context for code lookups later.
      * 
-     * @param processingContext the processing context being used
+     * @param context the processing context being used
      */
-    public Themes(final IProcessingContext processingContext) {
+    public Themes(final IExpressionContext context) {
 
         super();
-        this.locale = processingContext.getLocale();
-        final RequestContext requestContext = (RequestContext) processingContext.getVariables()
-        		.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+        this.locale = context.getLocale();
+        final RequestContext requestContext =
+                (RequestContext) context.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
         this.theme = requestContext != null ? requestContext.getTheme() : null;
     }
 

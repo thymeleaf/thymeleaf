@@ -21,7 +21,8 @@ package org.thymeleaf.spring4.processor;
 
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -90,7 +91,8 @@ public final class SpringInputGeneralFieldTagProcessor
 
 
     @Override
-    protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+    protected void doProcess(final ITemplateContext context,
+                             final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
                              final String attributeTemplateName, final int attributeLine, final int attributeCol,
                              final BindStatus bindStatus, final IElementTagStructureHandler structureHandler) {
@@ -98,7 +100,7 @@ public final class SpringInputGeneralFieldTagProcessor
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
 
-        final String id = computeId(processingContext, tag, name, false);
+        final String id = computeId(context, tag, name, false);
 
         // Thanks to precedence, this should have already been computed
         final String type = tag.getAttributes().getValue("type");
@@ -114,7 +116,7 @@ public final class SpringInputGeneralFieldTagProcessor
         tag.getAttributes().setAttribute("name", name); // No need to escape: this is a java-valid token
 
         tag.getAttributes().setAttribute(
-                "value", RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, value, type));
+                "value", RequestDataValueProcessorUtils.processFormFieldValue(context, name, value, type));
 
     }
 

@@ -22,7 +22,8 @@ package org.thymeleaf.spring4.processor;
 import java.util.Collections;
 import java.util.Map;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -59,7 +60,8 @@ public final class SpringObjectTagProcessor extends AbstractStandardTargetSelect
     
 
     @Override
-    protected void validateSelectionValue(final ITemplateProcessingContext processingContext,
+    protected void validateSelectionValue(final IEngineConfiguration configuration,
+                                          final ITemplateContext context,
                                           final IProcessableElementTag tag,
                                           final AttributeName attributeName, final String attributeValue,
                                           final IStandardExpression expression) {
@@ -82,7 +84,7 @@ public final class SpringObjectTagProcessor extends AbstractStandardTargetSelect
 
     @Override
     protected Map<String, Object> computeAdditionalLocalVariables(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final IStandardExpression expression) {

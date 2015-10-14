@@ -21,7 +21,8 @@ package org.thymeleaf.spring3.processor;
 
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -47,7 +48,8 @@ public final class SpringTextareaFieldTagProcessor extends AbstractSpringFieldTa
 
 
     @Override
-    protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+    protected void doProcess(final ITemplateContext context,
+                             final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
                              final String attributeTemplateName, final int attributeLine, final int attributeCol,
                              final BindStatus bindStatus, final IElementTagStructureHandler structureHandler) {
@@ -55,12 +57,12 @@ public final class SpringTextareaFieldTagProcessor extends AbstractSpringFieldTa
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
 
-        final String id = computeId(processingContext, tag, name, false);
+        final String id = computeId(context, tag, name, false);
 
         final String value = ValueFormatterWrapper.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), true);
 
         final String processedValue =
-                RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, value, "textarea");
+                RequestDataValueProcessorUtils.processFormFieldValue(context, name, value, "textarea");
 
         tag.getAttributes().setAttribute("id", id); // No need to escape: this comes from an existing 'id' or from a token
         tag.getAttributes().setAttribute("name", name); // No need to escape: this is a java-valid token

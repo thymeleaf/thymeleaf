@@ -25,9 +25,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.context.NoSuchMessageException;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.messageresolver.AbstractMessageResolver;
+import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.MessageResolution;
 import org.thymeleaf.util.Validate;
 
@@ -35,7 +36,7 @@ import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   Implementation of {@link org.thymeleaf.messageresolver.IMessageResolver} that
+ *   Implementation of {@link IMessageResolver} that
  *   integrates the standard Spring way of resolving messages into Thymeleaf.
  * </p>
  * <p>
@@ -118,10 +119,10 @@ public final class SpringMessageResolver
 
 
     public MessageResolution resolveMessage(
-            final ITemplateProcessingContext processingContext, final String key, final Object[] messageParameters) {
+            final ITemplateContext context, final String key, final Object[] messageParameters) {
         
-        Validate.notNull(processingContext, "Processing Context cannot be null");
-        Validate.notNull(processingContext.getLocale(), "Locale in context cannot be null");
+        Validate.notNull(context, "Processing Context cannot be null");
+        Validate.notNull(context.getLocale(), "Locale in context cannot be null");
         Validate.notNull(key, "Message key cannot be null");
 
         checkMessageSourceInitialized();
@@ -129,14 +130,14 @@ public final class SpringMessageResolver
         if (logger.isTraceEnabled()) {
             logger.trace(
                     "[THYMELEAF][{}] Resolving message with key \"{}\" for template \"{}\" and locale \"{}\". " +
-                    "Messages will be retrieved from Spring's MessageSource infrastructure.",
-                    new Object[] {TemplateEngine.threadIndex(), key, processingContext.getTemplateResolution().getTemplate(), processingContext.getLocale()});
+                            "Messages will be retrieved from Spring's MessageSource infrastructure.",
+                    new Object[]{TemplateEngine.threadIndex(), key, context.getTemplateResolution().getTemplate(), context.getLocale()});
         }
         
         try {
             
             final String resolvedMessage =
-                this.messageSource.getMessage(key, messageParameters, processingContext.getLocale());
+                this.messageSource.getMessage(key, messageParameters, context.getLocale());
             
             return new MessageResolution(resolvedMessage);
             

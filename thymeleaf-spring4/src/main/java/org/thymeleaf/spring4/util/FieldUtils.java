@@ -32,7 +32,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring4.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.IStandardExpression;
@@ -66,35 +66,35 @@ public final class FieldUtils {
 
 
 
-    public static boolean hasErrors(final IProcessingContext processingContext, final String field) {
-        return checkErrors(processingContext, convertToFieldExpression(field));
+    public static boolean hasErrors(final IExpressionContext context, final String field) {
+        return checkErrors(configuration, context, convertToFieldExpression(field));
     }
 
-    public static boolean hasAnyErrors(final IProcessingContext processingContext) {
-        return checkErrors(processingContext, ALL_EXPRESSION);
+    public static boolean hasAnyErrors(final IExpressionContext context) {
+        return checkErrors(configuration, context, ALL_EXPRESSION);
     }
 
-    public static boolean hasGlobalErrors(final IProcessingContext processingContext) {
-        return checkErrors(processingContext, GLOBAL_EXPRESSION);
+    public static boolean hasGlobalErrors(final IExpressionContext context) {
+        return checkErrors(configuration, context, GLOBAL_EXPRESSION);
     }
 
 
 
-    public static List<String> errors(final IProcessingContext processingContext, final String field) {
-        return computeErrors(processingContext, convertToFieldExpression(field));
+    public static List<String> errors(final IExpressionContext context, final String field) {
+        return computeErrors(configuration, context, convertToFieldExpression(field));
     }
 
-    public static List<String> errors(final IProcessingContext processingContext) {
-        return computeErrors(processingContext, ALL_EXPRESSION);
+    public static List<String> errors(final IExpressionContext context) {
+        return computeErrors(configuration, context, ALL_EXPRESSION);
     }
 
-    public static List<String> globalErrors(final IProcessingContext processingContext) {
-        return computeErrors(processingContext, GLOBAL_EXPRESSION);
+    public static List<String> globalErrors(final IExpressionContext context) {
+        return computeErrors(configuration, context, GLOBAL_EXPRESSION);
     }
 
-    private static List<String> computeErrors(final IProcessingContext processingContext, final String fieldExpression) {
+    private static List<String> computeErrors(final IExpressionContext context, final String fieldExpression) {
 
-        final BindStatus bindStatus = FieldUtils.getBindStatus(processingContext, fieldExpression);
+        final BindStatus bindStatus = FieldUtils.getBindStatus(configuration, context, fieldExpression);
         if (bindStatus == null) {
             return Collections.EMPTY_LIST;
         }
@@ -109,17 +109,17 @@ public final class FieldUtils {
     }
 
 
-    public static List<DetailedError> detailedErrors(final IProcessingContext processingContext) {
-        return computeDetailedErrors(processingContext, ALL_EXPRESSION, true, true);
+    public static List<DetailedError> detailedErrors(final IExpressionContext context) {
+        return computeDetailedErrors(configuration, context, ALL_EXPRESSION, true, true);
     }
 
 
     private static List<DetailedError> computeDetailedErrors(
-            final IProcessingContext processingContext, final String fieldExpression,
+            final IExpressionContext context, final String fieldExpression,
             final boolean includeGlobalErrors, final boolean includeFieldErrors) {
 
         final BindStatus bindStatus =
-                FieldUtils.getBindStatus(processingContext, fieldExpression);
+                FieldUtils.getBindStatus(configuration, context, fieldExpression);
         if (bindStatus == null) {
             return Collections.EMPTY_LIST;
         }
@@ -130,7 +130,7 @@ public final class FieldUtils {
         }
 
         final RequestContext requestContext =
-                (RequestContext) processingContext.getVariables().getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+                (RequestContext) context.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
         if (requestContext == null) {
             return Collections.EMPTY_LIST;
         }
@@ -196,34 +196,35 @@ public final class FieldUtils {
 
 
 
-    private static boolean checkErrors(final IProcessingContext processingContext, final String expression) {
-        final BindStatus bindStatus = FieldUtils.getBindStatus(processingContext, expression);
+    private static boolean checkErrors(
+            final IExpressionContext context, final String expression) {
+        final BindStatus bindStatus = FieldUtils.getBindStatus(configuration, context, expression);
         return bindStatus.isError();
     }
 
 
 
 
-    public static BindStatus getBindStatus(final IProcessingContext processingContext, final String expression) {
-        return getBindStatus(processingContext, false, expression);
+    public static BindStatus getBindStatus(
+            final IExpressionContext context, final String expression) {
+        return getBindStatus(configuration, context, false, expression);
     }
 
 
     public static BindStatus getBindStatus(
-            final IProcessingContext processingContext, final boolean optional, final String expression) {
+            final IExpressionContext context,
+            final boolean optional, final String expression) {
 
         Validate.notNull(expression, "Expression cannot be null");
 
         if (GLOBAL_EXPRESSION.equals(expression) || ALL_EXPRESSION.equals(expression) || ALL_FIELDS.equals(expression)) {
             // If "global", "all" or "*" are used without prefix, they must be inside a form, so we add *{...}
             final String completeExpression = "*{" + expression + "}";
-            return getBindStatus(processingContext, optional, completeExpression);
+            return getBindStatus(configuration, context, optional, completeExpression);
         }
 
-        final IEngineConfiguration configuration = processingContext.getConfiguration();
-
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        final IStandardExpression expressionObj = expressionParser.parseExpression(processingContext, expression);
+        final IStandardExpression expressionObj = expressionParser.parseExpression(configuration, context, expression);
 
         if (expressionObj == null) {
             throw new TemplateProcessingException(
@@ -232,12 +233,12 @@ public final class FieldUtils {
 
         if (expressionObj instanceof SelectionVariableExpression) {
             final String bindExpression = ((SelectionVariableExpression)expressionObj).getExpression();
-            return getBindStatusFromParsedExpression(processingContext, optional, true, bindExpression);
+            return getBindStatusFromParsedExpression(configuration, context, optional, true, bindExpression);
         }
 
         if (expressionObj instanceof VariableExpression) {
             final String bindExpression = ((VariableExpression)expressionObj).getExpression();
-            return getBindStatusFromParsedExpression(processingContext, optional, false, bindExpression);
+            return getBindStatusFromParsedExpression(configuration, context, optional, false, bindExpression);
         }
 
         throw new TemplateProcessingException(
@@ -249,18 +250,18 @@ public final class FieldUtils {
 
 
     public static BindStatus getBindStatusFromParsedExpression(
-            final IProcessingContext processingContext,
+            final IExpressionContext context,
             final boolean useSelectionAsRoot, final String expression) {
 
         return getBindStatusFromParsedExpression(
-                processingContext, false, useSelectionAsRoot, expression);
+                configuration, context, false, useSelectionAsRoot, expression);
 
     }
 
 
 
     public static BindStatus getBindStatusFromParsedExpression(
-            final IProcessingContext processingContext,
+            final IExpressionContext context,
             final boolean optional, final boolean useSelectionAsRoot, final String expression) {
 
         /*
@@ -272,13 +273,13 @@ public final class FieldUtils {
         // This method will return null if no binding is found and optional == true
 
         final RequestContext requestContext =
-                (RequestContext) processingContext.getVariables().getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+                (RequestContext) context.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
         if (requestContext == null) {
             return null;
         }
 
         final String completeExpression =
-                FieldUtils.validateAndGetValueExpression(processingContext, useSelectionAsRoot, expression);
+                FieldUtils.validateAndGetValueExpression(context, useSelectionAsRoot, expression);
 
         if (completeExpression == null) {
             return null;
@@ -308,7 +309,7 @@ public final class FieldUtils {
 
 
     private static String validateAndGetValueExpression(
-            final IProcessingContext processingContext, final boolean useSelectionAsRoot, final String expression) {
+            final IExpressionContext context, final boolean useSelectionAsRoot, final String expression) {
 
         /*
          * Only asterisk syntax (selection variable expressions) are allowed here.
@@ -317,7 +318,7 @@ public final class FieldUtils {
         if (useSelectionAsRoot) {
 
             VariableExpression boundObjectValue =
-                    (VariableExpression) processingContext.getVariables().getVariable(SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION);
+                    (VariableExpression) context.getVariable(SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION);
 
             final String boundObjectExpression =
                     (boundObjectValue == null? null : boundObjectValue.getExpression());

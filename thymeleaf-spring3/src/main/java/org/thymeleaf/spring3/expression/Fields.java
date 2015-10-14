@@ -21,7 +21,8 @@ package org.thymeleaf.spring3.expression;
 
 import java.util.List;
 
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.spring3.util.DetailedError;
 import org.thymeleaf.spring3.util.FieldUtils;
 
@@ -45,38 +46,39 @@ import org.thymeleaf.spring3.util.FieldUtils;
  */
 public final class Fields {
 
-    private final IProcessingContext processingContext;
+    private final IEngineConfiguration configuration;
+    private final IExpressionContext context;
     
     public boolean hasAnyErrors() {
-        return FieldUtils.hasAnyErrors(this.processingContext);
+        return FieldUtils.hasAnyErrors(this.configuration, this.context);
     }
     
     public boolean hasErrors() {
-        return FieldUtils.hasAnyErrors(this.processingContext);
+        return FieldUtils.hasAnyErrors(this.configuration, this.context);
     }
     
     public boolean hasErrors(final String field) {
-        return FieldUtils.hasErrors(this.processingContext, field);
+        return FieldUtils.hasErrors(this.configuration, this.context, field);
     }
     
     public boolean hasGlobalErrors() {
-        return FieldUtils.hasGlobalErrors(this.processingContext);
+        return FieldUtils.hasGlobalErrors(this.configuration, this.context);
     }
 
     public List<String> allErrors() {
-        return FieldUtils.errors(this.processingContext);
+        return FieldUtils.errors(this.configuration, this.context);
     }
 
     public List<String> errors() {
-        return FieldUtils.errors(this.processingContext);
+        return FieldUtils.errors(this.configuration, this.context);
     }
 
     public List<String> errors(final String field) {
-        return FieldUtils.errors(this.processingContext, field);
+        return FieldUtils.errors(this.configuration, this.context, field);
     }
     
     public List<String> globalErrors() {
-        return FieldUtils.globalErrors(this.processingContext);
+        return FieldUtils.globalErrors(this.configuration, this.context);
     }
 
     
@@ -87,14 +89,15 @@ public final class Fields {
 
 
     public List<DetailedError> detailedErrors() {
-        return FieldUtils.detailedErrors(this.processingContext);
+        return FieldUtils.detailedErrors(this.configuration, this.context);
     }
 
 
     
-    public Fields(final IProcessingContext processingContext) {
+    public Fields(final IExpressionContext context) {
         super();
-        this.processingContext = processingContext;
+        this.configuration = configuration;
+        this.context = context;
     }
 
     

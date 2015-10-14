@@ -36,7 +36,7 @@ import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.ITemplateEngine;
-import org.thymeleaf.context.ProcessingContext;
+import org.thymeleaf.context.ExpressionContext;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.spring4.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring4.naming.SpringContextVariableNames;
@@ -261,16 +261,16 @@ public class ThymeleafView
             // Template name contains a fragment name, so we should parse it as such
 
             final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
-            final ProcessingContext processingContext = new ProcessingContext(configuration, context);
+            final ExpressionContext expressionContext = new ExpressionContext(configuration, context);
 
             final ParsedFragmentSelection parsedFragmentSelection =
-                    FragmentSelectionUtils.parseFragmentSelection(processingContext, viewTemplateName);
+                    FragmentSelectionUtils.parseFragmentSelection(expressionContext, viewTemplateName);
             if (parsedFragmentSelection == null) {
                 throw new IllegalArgumentException("Invalid template name specification: '" + viewTemplateName + "'");
             }
 
             final ProcessedFragmentSelection processedFragmentSelection =
-                    FragmentSelectionUtils.processFragmentSelection(processingContext, parsedFragmentSelection);
+                    FragmentSelectionUtils.processFragmentSelection(expressionContext, parsedFragmentSelection);
 
             templateName = processedFragmentSelection.getTemplateName();
             markupSelectors = new String[] {processedFragmentSelection.getFragmentSelector()};

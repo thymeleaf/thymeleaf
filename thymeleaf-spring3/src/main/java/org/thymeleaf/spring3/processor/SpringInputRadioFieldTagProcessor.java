@@ -21,7 +21,8 @@ package org.thymeleaf.spring3.processor;
 
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -54,7 +55,8 @@ public final class SpringInputRadioFieldTagProcessor extends AbstractSpringField
 
 
     @Override
-    protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+    protected void doProcess(final ITemplateContext context,
+                             final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
                              final String attributeTemplateName, final int attributeLine, final int attributeCol,
                              final BindStatus bindStatus, final IElementTagStructureHandler structureHandler) {
@@ -62,7 +64,7 @@ public final class SpringInputRadioFieldTagProcessor extends AbstractSpringField
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
 
-        final String id = computeId(processingContext, tag, name, true);
+        final String id = computeId(context, tag, name, true);
 
         final String value = tag.getAttributes().getValue("value");
         if (value == null) {
@@ -77,7 +79,7 @@ public final class SpringInputRadioFieldTagProcessor extends AbstractSpringField
         tag.getAttributes().setAttribute("id", id); // No need to escape: this comes from an existing 'id' or from a token
         tag.getAttributes().setAttribute("name", name); // No need to escape: this is a java-valid token
         tag.getAttributes().setAttribute(
-                "value", RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, value, "radio"));
+                "value", RequestDataValueProcessorUtils.processFormFieldValue(context, name, value, "radio"));
 
         if (checked) {
             tag.getAttributes().setAttribute("checked", "checked");

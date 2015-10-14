@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.standard.expression.StandardExpressionObjectFactory;
 
 /**
@@ -82,20 +82,20 @@ public class SpringStandardExpressionObjectFactory extends StandardExpressionObj
 
 
 
-    public Object buildObject(final IProcessingContext processingContext, final String expressionObjectName) {
+    public Object buildObject(final IExpressionContext context, final String expressionObjectName) {
 
 
         if (MVC_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
             return MVC_EXPRESSION_OBJECT;
         }
         if (THEMES_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            return new Themes(processingContext);
+            return new Themes(context);
         }
         if (FIELDS_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            return new Fields(processingContext);
+            return new Fields(context);
         }
 
-        return super.buildObject(processingContext, expressionObjectName);
+        return super.buildObject(context, expressionObjectName);
 
     }
 

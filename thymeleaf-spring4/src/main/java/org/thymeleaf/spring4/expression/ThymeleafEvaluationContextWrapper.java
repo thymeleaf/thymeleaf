@@ -86,7 +86,7 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
 
         } else if (this.delegate instanceof StandardEvaluationContext) {
 
-            ((StandardEvaluationContext) this.delegate).addPropertyAccessor(SPELVariablesMapPropertyAccessor.INSTANCE);
+            ((StandardEvaluationContext) this.delegate).addPropertyAccessor(SPELContextPropertyAccessor.INSTANCE);
             ((StandardEvaluationContext) this.delegate).addPropertyAccessor(MAP_ACCESSOR_INSTANCE);
             this.propertyAccessors = null; // No need to initialize our own list
 
@@ -96,7 +96,7 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
 
             this.propertyAccessors = new ArrayList<PropertyAccessor>(5);
             this.propertyAccessors.addAll(this.delegate.getPropertyAccessors());
-            this.propertyAccessors.add(SPELVariablesMapPropertyAccessor.INSTANCE);
+            this.propertyAccessors.add(SPELContextPropertyAccessor.INSTANCE);
             this.propertyAccessors.add(MAP_ACCESSOR_INSTANCE);
 
         }

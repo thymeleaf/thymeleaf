@@ -21,7 +21,8 @@ package org.thymeleaf.spring3.processor;
 
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.servlet.support.BindStatus;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IModel;
@@ -53,7 +54,8 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
 
 
     @Override
-    protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+    protected void doProcess(final ITemplateContext context,
+                             final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
                              final String attributeTemplateName, final int attributeLine, final int attributeCol,
                              final BindStatus bindStatus, final IElementTagStructureHandler structureHandler) {
@@ -61,7 +63,7 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
 
-        final String id = computeId(processingContext, tag, name, false);
+        final String id = computeId(context, tag, name, false);
 
         final boolean multiple = tag.getAttributes().hasAttribute("multiple");
 
@@ -73,15 +75,15 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
 
         if (multiple && !isDisabled(tag)) {
 
-            final IModel hiddenMethodElementModel = processingContext.getModelFactory().createModel();
+            final IModel hiddenMethodElementModel = context.getModelFactory().createModel();
 
             final String hiddenName = WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name;
             final String type = "hidden";
             final String value =
-                    RequestDataValueProcessorUtils.processFormFieldValue(processingContext, hiddenName, "1", type);
+                    RequestDataValueProcessorUtils.processFormFieldValue(context, hiddenName, "1", type);
 
             final IStandaloneElementTag hiddenMethodElementTag =
-                    processingContext.getModelFactory().createStandaloneElementTag("input", true);
+                    context.getModelFactory().createStandaloneElementTag("input", true);
             hiddenMethodElementTag.getAttributes().setAttribute("type", type);
             hiddenMethodElementTag.getAttributes().setAttribute("name", hiddenName);
             hiddenMethodElementTag.getAttributes().setAttribute("value", value);

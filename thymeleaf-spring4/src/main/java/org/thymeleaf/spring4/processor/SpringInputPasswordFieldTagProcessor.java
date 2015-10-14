@@ -20,7 +20,8 @@
 package org.thymeleaf.spring4.processor;
 
 import org.springframework.web.servlet.support.BindStatus;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -53,7 +54,8 @@ public final class SpringInputPasswordFieldTagProcessor extends AbstractSpringFi
 
 
     @Override
-    protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+    protected void doProcess(final ITemplateContext context,
+                             final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
                              final String attributeTemplateName, final int attributeLine, final int attributeCol,
                              final BindStatus bindStatus, final IElementTagStructureHandler structureHandler) {
@@ -61,13 +63,13 @@ public final class SpringInputPasswordFieldTagProcessor extends AbstractSpringFi
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
 
-        final String id = computeId(processingContext, tag, name, false);
+        final String id = computeId(context, tag, name, false);
 
         tag.getAttributes().setAttribute("id", id); // No need to escape: this comes from an existing 'id' or from a token
         tag.getAttributes().setAttribute("name", name); // No need to escape: this is a java-valid token
 
         tag.getAttributes().setAttribute(
-                "value", RequestDataValueProcessorUtils.processFormFieldValue(processingContext, name, "", "password"));
+                "value", RequestDataValueProcessorUtils.processFormFieldValue(context, name, "", "password"));
 
     }
 
