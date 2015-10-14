@@ -489,8 +489,8 @@
 	<!-- ============================ -->
 
 	<expression-object name="ctx"                class="org.thymeleaf.context.IContext"/>
-	<expression-object name="root"               class="org.thymeleaf.context.VariablesMap"/>
-	<expression-object name="vars"               class="org.thymeleaf.context.VariablesMap"/>
+	<expression-object name="root"               class="org.thymeleaf.context.IContext"/>
+	<expression-object name="vars"               class="org.thymeleaf.context.IContext"/>
 	<expression-object name="locale"             class="java.util.Locale"/>
 	<expression-object name="httpServletRequest" class="javax.servlet.http.HttpServletRequest"/>
 	<expression-object name="httpSession"        class="javax.servlet.http.HttpSession"/>

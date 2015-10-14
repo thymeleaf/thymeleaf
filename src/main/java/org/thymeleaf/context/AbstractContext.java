@@ -42,6 +42,7 @@ import org.thymeleaf.util.Validate;
  */
 public abstract class AbstractContext implements IContext {
 
+
     private final Map<String,Object> variables;
     private Locale locale;
 
@@ -62,6 +63,7 @@ public abstract class AbstractContext implements IContext {
     protected AbstractContext(final Locale locale, final Map<String, Object> variables) {
         super();
         Validate.notNull(locale, "Locale cannot be null");
+        Validate.notNull(variables, "Variables map cannot be null");
         this.locale = locale;
         this.variables = new LinkedHashMap<String, Object>(variables);
     }

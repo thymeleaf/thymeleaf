@@ -22,7 +22,8 @@ package org.thymeleaf.standard.expression;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IExpressionContext;
 
 
 /**
@@ -50,14 +51,16 @@ final class StandardExpressionPreprocessor {
 
 
 
-    static String preprocess(final IProcessingContext processingContext, final String input) {
+    static String preprocess(
+            final IExpressionContext context,
+            final String input) {
 
         if (input.indexOf(PREPROCESS_DELIMITER) == -1) {
             // Fail quick
             return input;
         }
 
-        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(processingContext.getConfiguration());
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
         if (!(expressionParser instanceof StandardExpressionParser)) {
             // Preprocess will be only available for the StandardExpressionParser, because the preprocessor
             // depends on this specific implementation of the parser.
@@ -81,12 +84,12 @@ final class StandardExpressionPreprocessor {
                 strBuilder.append(previousText);
                 
                 final IStandardExpression expression =
-                        StandardExpressionParser.parseExpression(processingContext, expressionText, false);
+                        StandardExpressionParser.parseExpression(context, expressionText, false);
                 if (expression == null) {
                     return null;
                 }
                 
-                final Object result = expression.execute(processingContext, StandardExpressionExecutionContext.RESTRICTED);
+                final Object result = expression.execute(context, StandardExpressionExecutionContext.RESTRICTED);
                 
                 strBuilder.append(result);
                 

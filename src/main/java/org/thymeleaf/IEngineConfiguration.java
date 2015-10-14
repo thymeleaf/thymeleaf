@@ -26,8 +26,10 @@ import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.ElementDefinitions;
+import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.messageresolver.IMessageResolver;
+import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.postprocessor.IPostProcessor;
 import org.thymeleaf.preprocessor.IPreProcessor;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
@@ -80,5 +82,9 @@ public interface IEngineConfiguration {
     public Map<String,Object> getExecutionAttributes();
 
     public IExpressionObjectFactory getExpressionObjectFactory();
+
+    public TemplateManager getTemplateManager();
+
+    public IModelFactory getModelFactory(final TemplateMode templateMode);
 
 }

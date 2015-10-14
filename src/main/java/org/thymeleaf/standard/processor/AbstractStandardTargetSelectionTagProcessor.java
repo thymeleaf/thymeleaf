@@ -21,7 +21,8 @@ package org.thymeleaf.standard.processor;
 
 import java.util.Map;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -51,23 +52,23 @@ public abstract class AbstractStandardTargetSelectionTagProcessor extends Abstra
 
     @Override
     protected final void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
-        final IStandardExpressionParser expressionParser =
-                StandardExpressions.getExpressionParser(processingContext.getConfiguration());
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
 
-        final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
+        final IStandardExpression expression =
+                expressionParser.parseExpression(context, attributeValue);
 
-        validateSelectionValue(processingContext, tag, attributeName, attributeValue, expression);
+        validateSelectionValue(context, tag, attributeName, attributeValue, expression);
 
-        final Object newSelectionTarget = expression.execute(processingContext);
+        final Object newSelectionTarget = expression.execute(context);
 
         final Map<String,Object> additionalLocalVariables =
-                computeAdditionalLocalVariables(processingContext, tag, attributeName, attributeValue, expression);
+                computeAdditionalLocalVariables(context, tag, attributeName, attributeValue, expression);
         if (additionalLocalVariables != null && additionalLocalVariables.size() > 0) {
             for (final Map.Entry<String,Object> variableEntry : additionalLocalVariables.entrySet()) {
                 structureHandler.setLocalVariable(variableEntry.getKey(), variableEntry.getValue());
@@ -83,7 +84,7 @@ public abstract class AbstractStandardTargetSelectionTagProcessor extends Abstra
 
 
     protected void validateSelectionValue(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final IStandardExpression expression) {
@@ -92,7 +93,7 @@ public abstract class AbstractStandardTargetSelectionTagProcessor extends Abstra
 
 
     protected Map<String,Object> computeAdditionalLocalVariables(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final IStandardExpression expression) {

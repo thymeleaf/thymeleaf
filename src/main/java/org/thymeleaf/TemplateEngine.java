@@ -234,7 +234,6 @@ public class TemplateEngine implements ITemplateEngine {
 
 
     private IEngineConfiguration configuration = null;
-    private TemplateManager templateManager = null;
 
 
 
@@ -313,7 +312,7 @@ public class TemplateEngine implements ITemplateEngine {
 
                     this.configuration =
                             new EngineConfiguration(this.templateResolvers, this.messageResolvers, this.dialectConfigurations, this.cacheManager, this.textRepository);
-                    this.templateManager = new TemplateManager(this.configuration);
+                    ((EngineConfiguration)this.configuration).initialize();
 
                     initializeSpecific();
 
@@ -369,27 +368,6 @@ public class TemplateEngine implements ITemplateEngine {
             initialize();
         }
         return this.configuration;
-    }
-    
-    
-    /**
-     * <p>
-     *   Returns the template manager. Normally there is no reason why users
-     *   would want to obtain or use this object directly (and it is not recommended
-     *   behaviour).
-     * </p>
-     * <p>
-     *   Note that calling this method will effectively <em>initialize</em> the engine object, and therefore
-     *   any modifications to the configuration will be forbidden from that moment.
-     * </p>
-     *
-     * @return the template manager
-     */
-    public TemplateManager getTemplateManager() {
-        if (!this.initialized) {
-            initialize();
-        }
-        return this.templateManager;
     }
 
     
@@ -808,7 +786,7 @@ public class TemplateEngine implements ITemplateEngine {
         if (!this.initialized) {
             initialize();
         }
-        this.templateManager.clearCaches();
+        this.configuration.getTemplateManager().clearCaches();
     }
 
 
@@ -829,7 +807,7 @@ public class TemplateEngine implements ITemplateEngine {
         if (!this.initialized) {
             initialize();
         }
-        this.templateManager.clearCachesFor(templateName);
+        this.configuration.getTemplateManager().clearCachesFor(templateName);
     }
     
     
@@ -1116,8 +1094,9 @@ public class TemplateEngine implements ITemplateEngine {
             }
 
             final long startNanos = System.nanoTime();
-            
-            this.templateManager.parseAndProcessStandalone(this.configuration, template, selectors, templateMode, context, writer, true);
+
+            final TemplateManager templateManager = this.configuration.getTemplateManager();
+            templateManager.parseAndProcessStandalone(template, selectors, templateMode, context, writer, true);
 
             final long endNanos = System.nanoTime();
             

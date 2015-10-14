@@ -23,8 +23,9 @@ import java.math.BigDecimal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.EvaluationUtils;
 
@@ -70,15 +71,16 @@ public final class RemainderExpression extends MultiplicationDivisionRemainderEx
     
     
     
-    static Object executeRemainder(final IProcessingContext processingContext,
+    static Object executeRemainder(
+            final IExpressionContext context,
             final RemainderExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating remainder expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
-        Object leftValue = expression.getLeft().execute(processingContext, expContext);
-        Object rightValue = expression.getRight().execute(processingContext, expContext);
+        Object leftValue = expression.getLeft().execute(context, expContext);
+        Object rightValue = expression.getRight().execute(context, expContext);
 
         if (leftValue == null) {
             leftValue = "null";

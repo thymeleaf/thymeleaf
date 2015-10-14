@@ -21,7 +21,8 @@ package org.thymeleaf.standard.processor;
 
 import java.util.List;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateAssertionException;
@@ -55,7 +56,7 @@ public abstract class AbstractStandardAssertionTagProcessor extends AbstractAttr
 
     @Override
     protected final void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
@@ -66,12 +67,12 @@ public abstract class AbstractStandardAssertionTagProcessor extends AbstractAttr
         }
 
         final ExpressionSequence expressionSequence =
-                ExpressionSequenceUtils.parseExpressionSequence(processingContext, attributeValue);
+                ExpressionSequenceUtils.parseExpressionSequence(context, attributeValue);
 
         final List<IStandardExpression> expressions = expressionSequence.getExpressions();
 
         for (final IStandardExpression expression : expressions) {
-            final Object expressionResult = expression.execute(processingContext);
+            final Object expressionResult = expression.execute(context);
             final boolean expressionBooleanResult = EvaluationUtils.evaluateAsBoolean(expressionResult);
             if (!expressionBooleanResult) {
                 throw new TemplateAssertionException(

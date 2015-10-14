@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.templateboundaries;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ITemplateEnd;
@@ -48,13 +49,13 @@ public abstract class AbstractTemplateBoundariesProcessor
 
 
     public final void processTemplateStart(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final ITemplateStart templateStart,
             final ITemplateBoundariesStructureHandler structureHandler) {
 
         try {
 
-            doProcessTemplateStart(processingContext, templateStart, structureHandler);
+            doProcessTemplateStart(context, templateStart, structureHandler);
 
         } catch (final TemplateProcessingException e) {
             if (templateStart.hasLocation()) {
@@ -76,14 +77,13 @@ public abstract class AbstractTemplateBoundariesProcessor
 
 
     public final void processTemplateEnd(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final ITemplateEnd templateEnd,
             final ITemplateBoundariesStructureHandler structureHandler) {
 
         try {
 
-            doProcessTemplateEnd(
-                    processingContext, templateEnd, structureHandler);
+            doProcessTemplateEnd(context, templateEnd, structureHandler);
 
         } catch (final TemplateProcessingException e) {
             if (templateEnd.hasLocation()) {
@@ -108,13 +108,13 @@ public abstract class AbstractTemplateBoundariesProcessor
 
 
     public abstract void doProcessTemplateStart(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final ITemplateStart templateStart,
             final ITemplateBoundariesStructureHandler structureHandler);
 
 
     public abstract void doProcessTemplateEnd(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final ITemplateEnd templateEnd,
             final ITemplateBoundariesStructureHandler structureHandler);
 

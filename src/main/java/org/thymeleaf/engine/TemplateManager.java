@@ -30,11 +30,13 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
+import org.thymeleaf.cache.ICacheEntryValidity;
 import org.thymeleaf.cache.ICacheManager;
+import org.thymeleaf.cache.NonCacheableCacheEntryValidity;
 import org.thymeleaf.cache.TemplateCacheKey;
 import org.thymeleaf.context.IContext;
-import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.context.TemplateProcessingContext;
+import org.thymeleaf.context.IEngineContext;
+import org.thymeleaf.context.StandardEngineContextFactory;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.postprocessor.IPostProcessor;
@@ -71,6 +73,8 @@ public final class TemplateManager {
     private static final Set<ITemplateResolver> STRING_TEMPLATE_RESOLVER_SET =
             Collections.singleton((ITemplateResolver)new StringTemplateResolver());
 
+    private final IEngineConfiguration configuration;
+
     private final ITemplateParser htmlParser;
     private final ITemplateParser xmlParser;
     private final ITemplateParser textParser;
@@ -89,23 +93,26 @@ public final class TemplateManager {
      *   This constructor should only be called directly for <strong>testing purposes</strong>.
      * </p>
      *
-     * @param configuration the configuration being currently used.
+     * @param configuration the engine configuration
      */
     public TemplateManager(final IEngineConfiguration configuration) {
         
         super();
-        
-        Validate.notNull(configuration, "Configuration object cannot be null");
-        
-        final ICacheManager cacheManager = configuration.getCacheManager();
+
+        Validate.notNull(configuration, "Configuration cannot be null");
+
+        this.configuration = configuration;
+
+        final ICacheManager cacheManager = this.configuration.getCacheManager();
+
         if (cacheManager == null) {
             this.templateCache = null;
         } else {
             this.templateCache = cacheManager.getTemplateCache();
         }
 
-        final boolean standardDialectPresent = configuration.isStandardDialectPresent();
-        final String standardDialectPrefix = configuration.getStandardDialectPrefix();
+        final boolean standardDialectPresent = this.configuration.isStandardDialectPresent();
+        final String standardDialectPrefix = this.configuration.getStandardDialectPrefix();
 
         // TODO Make these parser implementations configurable: one parser per template mode, then make default implementations extensible/configurable (e.g. AttoParser config)
         this.htmlParser = new HTMLTemplateParser(DEFAULT_PARSER_POOL_SIZE,DEFAULT_PARSER_BLOCK_SIZE);
@@ -182,18 +189,15 @@ public final class TemplateManager {
 
 
     public TemplateModel parseStandalone(
-            final IEngineConfiguration configuration,
             final String template, final String[] selectors,
             final TemplateMode templateMode,
             final boolean useCache) {
 
-        Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(template, "Template cannot be null");
         // selectors CAN be null if we are going to render the entire template
         // templateMode CAN be null if we are going to use the mode specified by the template resolver
 
         return parse(
-                configuration,
                 null, template, selectors,
                 0, 0,
                 templateMode,
@@ -203,20 +207,17 @@ public final class TemplateManager {
 
 
     public TemplateModel parseNested(
-            final IEngineConfiguration configuration,
             final String ownerTemplate, final String template,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
             final boolean useCache) {
 
-        Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(ownerTemplate, "Owner template cannot be null");
         Validate.notNull(template, "Template cannot be null");
         // NOTE selectors cannot be specified when parsing a nested template
         Validate.notNull(templateMode, "Template mode cannot be null");
 
         return parse(
-                configuration,
                 ownerTemplate, template, null,
                 lineOffset, colOffset,
                 templateMode,
@@ -226,7 +227,6 @@ public final class TemplateManager {
 
 
     private TemplateModel parse(
-            final IEngineConfiguration configuration,
             final String ownerTemplate, final String template, final String[] selectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
@@ -252,19 +252,19 @@ public final class TemplateManager {
          * as a String object), we need to force the use of a StringTemplateResolver for resolution
          */
         final Set<ITemplateResolver> templateResolvers =
-                (ownerTemplate != null? STRING_TEMPLATE_RESOLVER_SET : configuration.getTemplateResolvers());
+                (ownerTemplate != null? STRING_TEMPLATE_RESOLVER_SET : this.configuration.getTemplateResolvers());
 
 
         /*
          * Resolve the template, obtain the IResource and its metadata (TemplateResolution)
          */
-        final Resolution resolution = resolve(configuration, templateResolvers, template, templateMode);
+        final Resolution resolution = resolve(this.configuration, templateResolvers, template, templateMode, useCache);
 
 
         /*
          *  Create the Template Handler that will be in charge of building a ParsedTemplateModel object as the result of reading the template
          */
-        final TemplateModel parsedTemplate = new TemplateModel(configuration, resolution.templateResolution);
+        final TemplateModel parsedTemplate = new TemplateModel(this.configuration, resolution.templateResolution);
         final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(parsedTemplate.getInternalModel());
 
 
@@ -272,7 +272,6 @@ public final class TemplateManager {
          * PROCESS THE TEMPLATE
          */
         processResolvedResource(
-                configuration,
                 ownerTemplate, resolution.templateResource, selectors,
                 lineOffset, colOffset,
                 resolution.templateResolution.getTemplateMode(),
@@ -311,16 +310,20 @@ public final class TemplateManager {
             final IContext context,
             final Writer writer) {
 
+        Validate.isTrue(
+                this.configuration == template.getConfiguration(),
+                "Specified template was built by a different Template Engine instance");
+
         /*
-         * Create the Processing Context instance that corresponds to this execution of the template engine
+         * Create the context instance that corresponds to this execution of the template engine
          */
-        final ITemplateProcessingContext processingContext =
-                new TemplateProcessingContext(template.getConfiguration(), this, template.getTemplateResolution(), context);
+        final IEngineContext engineContext =
+                StandardEngineContextFactory.buildEngineContext(this.configuration, template.getTemplateResolution(), context);
 
         /*
          * Create the handler chain to process the data
          */
-        final ITemplateHandler processingHandlerChain = createTemplateProcessingHandlerChain(processingContext, writer);
+        final ITemplateHandler processingHandlerChain = createTemplateProcessingHandlerChain(engineContext, writer);
 
         /*
          *  Process the template
@@ -345,14 +348,12 @@ public final class TemplateManager {
 
 
     public void parseAndProcessStandalone(
-            final IEngineConfiguration configuration,
             final String template, final String[] selectors,
             final TemplateMode templateMode,
             final IContext context,
             final Writer writer,
             final boolean useCache) {
 
-        Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(template, "Template cannot be null");
         // selectors CAN actually be null if we are going to process the entire template
         // templateMode CAN be null if we are going to use the mode specified by the template resolver
@@ -360,7 +361,6 @@ public final class TemplateManager {
         Validate.notNull(writer, "Writer cannot be null");
 
         parseAndProcess(
-                configuration,
                 null, template, selectors,
                 0, 0,
                 templateMode,
@@ -372,7 +372,6 @@ public final class TemplateManager {
 
 
     public void parseAndProcessNested(
-            final IEngineConfiguration configuration,
             final String ownerTemplate, final String template,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
@@ -380,7 +379,6 @@ public final class TemplateManager {
             final Writer writer,
             final boolean useCache) {
 
-        Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(ownerTemplate, "Owner Template cannot be null");
         Validate.notNull(template, "Template cannot be null");
         // NOTE selectors cannot be specified when processing a nested template
@@ -389,7 +387,6 @@ public final class TemplateManager {
         Validate.notNull(writer, "Writer cannot be null");
 
         parseAndProcess(
-                configuration,
                 ownerTemplate, template, null,
                 lineOffset, colOffset,
                 templateMode,
@@ -401,7 +398,6 @@ public final class TemplateManager {
 
 
     private void parseAndProcess(
-            final IEngineConfiguration configuration,
             final String ownerTemplate, final String template, final String[] selectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
@@ -423,12 +419,12 @@ public final class TemplateManager {
 
             if (cached != null) {
 
-                // Create the Processing Context instance that corresponds to this execution of the template engine
-                final ITemplateProcessingContext processingContext =
-                            new TemplateProcessingContext(configuration, this, cached.getTemplateResolution(), context);
+                // Create the Context instance that corresponds to this execution of the template engine
+                final IEngineContext engineContext =
+                        StandardEngineContextFactory.buildEngineContext(this.configuration, cached.getTemplateResolution(), context);
 
                 // Create the handler chain to process the data
-                final ITemplateHandler processingHandlerChain = createTemplateProcessingHandlerChain(processingContext, writer);
+                final ITemplateHandler processingHandlerChain = createTemplateProcessingHandlerChain(engineContext, writer);
 
                 // Process the cached template itself
                 processTemplateModel(cached, processingHandlerChain);
@@ -445,26 +441,26 @@ public final class TemplateManager {
          * as a String object), we need to force the use of a StringTemplateResolver for resolution
          */
         final Set<ITemplateResolver> templateResolvers =
-                (ownerTemplate != null? STRING_TEMPLATE_RESOLVER_SET : configuration.getTemplateResolvers());
+                (ownerTemplate != null? STRING_TEMPLATE_RESOLVER_SET : this.configuration.getTemplateResolvers());
 
 
         /*
          * Resolve the template, obtain the IResource and its metadata (TemplateResolution)
          */
-        final Resolution resolution = resolve(configuration, templateResolvers, template, templateMode);
+        final Resolution resolution = resolve(this.configuration, templateResolvers, template, templateMode, useCache);
 
 
         /*
-         * Create the Processing Context instance that corresponds to this execution of the template engine
+         * Create the context instance that corresponds to this execution of the template engine
          */
-        final ITemplateProcessingContext processingContext =
-                    new TemplateProcessingContext(configuration, this, resolution.templateResolution, context);
+        final IEngineContext engineContext =
+                StandardEngineContextFactory.buildEngineContext(this.configuration, resolution.templateResolution, context);
 
 
         /*
          * Create the handler chain to process the data
          */
-        final ITemplateHandler processingHandlerChain = createTemplateProcessingHandlerChain(processingContext, writer);
+        final ITemplateHandler processingHandlerChain = createTemplateProcessingHandlerChain(engineContext, writer);
 
 
         /*
@@ -472,14 +468,13 @@ public final class TemplateManager {
          */
         if (useCache && resolution.templateResolution.getValidity().isCacheable() && this.templateCache != null) {
             // Create the handler chain to create the Template object
-            final TemplateModel parsedTemplate = new TemplateModel(processingContext.getConfiguration(), resolution.templateResolution);
+            final TemplateModel parsedTemplate = new TemplateModel(this.configuration, resolution.templateResolution);
             final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(parsedTemplate.getInternalModel());
             // Process the cached template itself
             processResolvedResource(
-                    processingContext.getConfiguration(),
                     ownerTemplate, resolution.templateResource, selectors,
                     lineOffset, colOffset,
-                    processingContext.getTemplateMode(),
+                    engineContext.getTemplateMode(),
                     builderHandler);
             // Put the new template into cache
             this.templateCache.put(cacheKey, parsedTemplate);
@@ -493,10 +488,9 @@ public final class TemplateManager {
          *  Process the template, which is not cacheable (so no worry about caching)
          */
         processResolvedResource(
-                processingContext.getConfiguration(),
                 ownerTemplate, resolution.templateResource, selectors,
                 lineOffset, colOffset,
-                processingContext.getTemplateMode(),
+                engineContext.getTemplateMode(),
                 processingHandlerChain);
 
     }
@@ -516,7 +510,8 @@ public final class TemplateManager {
             final IEngineConfiguration configuration,
             final Set<ITemplateResolver> templateResolvers,
             final String template,
-            final TemplateMode templateMode) {
+            final TemplateMode templateMode,
+            final boolean useCache) {
 
         TemplateResolution templateResolution = null;
         ITemplateResource templateResource = null;
@@ -528,12 +523,17 @@ public final class TemplateManager {
 
             if (templateResolution != null && templateResource != null) {
 
-                if (templateMode != null && templateResolution.getTemplateMode() != templateMode) {
-                    // We need to force the template mode
+                final TemplateMode expectedTemplateMode =
+                        (templateMode == null ? templateResolution.getTemplateMode() : templateMode);
+                final ICacheEntryValidity expectedCacheEntryValidity =
+                        (useCache? templateResolution.getValidity() : NonCacheableCacheEntryValidity.INSTANCE);
+
+                if (templateMode != null || !useCache) {
+                    // We need to force the template mode or the cache entry validity
                     templateResolution =
                             new TemplateResolution(
                                     templateResolution.getTemplate(), templateResolution.getTemplateResource(),
-                                    templateMode, templateResolution.getValidity());
+                                    expectedTemplateMode, expectedCacheEntryValidity);
                 }
 
                 break;
@@ -565,7 +565,6 @@ public final class TemplateManager {
 
 
     private void processResolvedResource(
-            final IEngineConfiguration configuration,
             final String ownerTemplate, final ITemplateResource resource, final String[] selectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
@@ -589,33 +588,33 @@ public final class TemplateManager {
          */
         if (templateMode == TemplateMode.HTML) {
             if (ownerTemplate == null) {
-                this.htmlParser.parseStandalone(configuration, resource, selectors, templateMode, templateHandler);
+                this.htmlParser.parseStandalone(this.configuration, resource, selectors, templateMode, templateHandler);
             } else {
-                this.htmlParser.parseNested(configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
+                this.htmlParser.parseNested(this.configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else if (templateMode == TemplateMode.XML) {
             if (ownerTemplate == null) {
-                this.xmlParser.parseStandalone(configuration, resource, selectors, templateMode, templateHandler);
+                this.xmlParser.parseStandalone(this.configuration, resource, selectors, templateMode, templateHandler);
             } else {
-                this.xmlParser.parseNested(configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
+                this.xmlParser.parseNested(this.configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else if (templateMode == TemplateMode.TEXT) {
             if (ownerTemplate == null) {
-                this.textParser.parseStandalone(configuration, resource, selectors, templateMode, templateHandler);
+                this.textParser.parseStandalone(this.configuration, resource, selectors, templateMode, templateHandler);
             } else {
-                this.textParser.parseNested(configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
+                this.textParser.parseNested(this.configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else if (templateMode == TemplateMode.JAVASCRIPT) {
             if (ownerTemplate == null) {
-                this.javascriptParser.parseStandalone(configuration, resource, selectors, templateMode, templateHandler);
+                this.javascriptParser.parseStandalone(this.configuration, resource, selectors, templateMode, templateHandler);
             } else {
-                this.javascriptParser.parseNested(configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
+                this.javascriptParser.parseNested(this.configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else if (templateMode == TemplateMode.CSS) {
             if (ownerTemplate == null) {
-                this.cssParser.parseStandalone(configuration, resource, selectors, templateMode, templateHandler);
+                this.cssParser.parseStandalone(this.configuration, resource, selectors, templateMode, templateHandler);
             } else {
-                this.cssParser.parseNested(configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
+                this.cssParser.parseNested(this.configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else {
             throw new IllegalArgumentException(
@@ -660,9 +659,10 @@ public final class TemplateManager {
 
 
     private static ITemplateHandler createTemplateProcessingHandlerChain(
-            final ITemplateProcessingContext processingContext, final Writer writer) {
+            final IEngineContext context,
+            final Writer writer) {
 
-        final IEngineConfiguration configuration = processingContext.getConfiguration();
+        final IEngineConfiguration configuration = context.getConfiguration();
 
         /*
          * Declare the pair of pointers that will allow us to build the chain of template handlers
@@ -673,7 +673,7 @@ public final class TemplateManager {
         /*
          * First type of handlers to be added: pre-processors (if any)
          */
-        final Set<IPreProcessor> preProcessors = configuration.getPreProcessors(processingContext.getTemplateMode());
+        final Set<IPreProcessor> preProcessors = configuration.getPreProcessors(context.getTemplateMode());
         if (preProcessors != null) {
             for (final IPreProcessor preProcessor : preProcessors) {
                 final Class<? extends ITemplateHandler> preProcessorClass = preProcessor.getHandlerClass();
@@ -686,7 +686,7 @@ public final class TemplateManager {
                             "An exception happened during the creation of a new instance of pre-processor " + preProcessorClass.getClass().getName(), e);
                 }
                 // Initialize the pre-processor
-                preProcessorHandler.setProcessingContext(processingContext);
+                preProcessorHandler.setContext(context);
                 if (firstHandler == null) {
                     firstHandler = preProcessorHandler;
                     lastHandler = preProcessorHandler;
@@ -702,7 +702,7 @@ public final class TemplateManager {
          * Initialize and add to the chain te Processor Handler itself, the central piece of the chain
          */
         final ProcessorTemplateHandler processorHandler = new ProcessorTemplateHandler();
-        processorHandler.setProcessingContext(processingContext);
+        processorHandler.setContext(context);
         if (firstHandler == null) {
             firstHandler = processorHandler;
             lastHandler = processorHandler;
@@ -715,7 +715,7 @@ public final class TemplateManager {
         /*
          * After the Processor Handler, we now must add the post-processors (if any)
          */
-        final Set<IPostProcessor> postProcessors = configuration.getPostProcessors(processingContext.getTemplateMode());
+        final Set<IPostProcessor> postProcessors = configuration.getPostProcessors(context.getTemplateMode());
         if (postProcessors != null) {
             for (final IPostProcessor postProcessor : postProcessors) {
                 final Class<? extends ITemplateHandler> postProcessorClass = postProcessor.getHandlerClass();
@@ -728,7 +728,7 @@ public final class TemplateManager {
                             "An exception happened during the creation of a new instance of post-processor " + postProcessorClass.getClass().getName(), e);
                 }
                 // Initialize the pre-processor
-                postProcessorHandler.setProcessingContext(processingContext);
+                postProcessorHandler.setContext(context);
                 if (firstHandler == null) {
                     firstHandler = postProcessorHandler;
                     lastHandler = postProcessorHandler;
@@ -744,7 +744,7 @@ public final class TemplateManager {
          * Last step: the OUTPUT HANDLER
          */
         final OutputTemplateHandler outputHandler = new OutputTemplateHandler(writer);
-        outputHandler.setProcessingContext(processingContext);
+        outputHandler.setContext(context);
         if (firstHandler == null) {
             firstHandler = outputHandler;
         } else {

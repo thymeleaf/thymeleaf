@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.element;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -53,7 +54,7 @@ public abstract class AbstractAttributeTagProcessor extends AbstractElementTagPr
 
     @Override
     protected final void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final String tagTemplateName, final int tagLine, final int tagCol,
             final IElementTagStructureHandler structureHandler) {
@@ -68,13 +69,16 @@ public abstract class AbstractAttributeTagProcessor extends AbstractElementTagPr
             attributeCol = tag.getAttributes().getCol(attributeName);
 
             final String attributeValue =
-                    EscapedAttributeUtils.unescapeAttribute(processingContext.getTemplateMode(), tag.getAttributes().getValue(attributeName));
+                    EscapedAttributeUtils.unescapeAttribute(context.getTemplateMode(), tag.getAttributes().getValue(attributeName));
 
             if (this.removeAttribute) {
                 tag.getAttributes().removeAttribute(attributeName);
             }
 
-            doProcess(processingContext, tag, attributeName, attributeValue, tagTemplateName, attributeLine, attributeCol, structureHandler);
+            doProcess(
+                    context, tag,
+                    attributeName, attributeValue,
+                    tagTemplateName, attributeLine, attributeCol, structureHandler);
 
         } catch (final TemplateProcessingException e) {
             // This is a nice moment to check whether the execution raised an error and, if so, add location information
@@ -109,7 +113,7 @@ public abstract class AbstractAttributeTagProcessor extends AbstractElementTagPr
 
 
     protected abstract void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName,
             final String attributeValue,

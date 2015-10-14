@@ -21,9 +21,9 @@ package org.thymeleaf.standard.processor;
 
 import java.util.List;
 
-import org.thymeleaf.context.ILocalVariableAwareVariablesMap;
-import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.context.IVariablesMap;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IEngineContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -57,7 +57,7 @@ public final class StandardWithTagProcessor extends AbstractAttributeTagProcesso
 
     @Override
     protected void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
@@ -65,7 +65,7 @@ public final class StandardWithTagProcessor extends AbstractAttributeTagProcesso
 
         final AssignationSequence assignations =
                 AssignationUtils.parseAssignationSequence(
-                        processingContext, attributeValue, false /* no parameters without value */);
+                        context, attributeValue, false /* no parameters without value */);
         if (assignations == null) {
             throw new TemplateProcessingException(
                     "Could not parse value as attribute assignations: \"" + attributeValue + "\"");
@@ -73,13 +73,13 @@ public final class StandardWithTagProcessor extends AbstractAttributeTagProcesso
 
         // Normally we would just allow the structure handler to be in charge of declaring the local variables
         // by using structureHandler.setLocalVariable(...) but in this case we want each variable defined at an
-        // expression to be available for the next expressions, and that forces us to cast our Variables Map into
+        // expression to be available for the next expressions, and that forces us to cast our ITemplateContext into
         // a more specific interface --which shouldn't be used directly except in this specific, special case-- and
         // put the local variables directly into it.
-        final IVariablesMap variablesMap = processingContext.getVariables();
-        ILocalVariableAwareVariablesMap localVariableAwareVariablesMap = null;
-        if (variablesMap instanceof ILocalVariableAwareVariablesMap) {
-            localVariableAwareVariablesMap = (ILocalVariableAwareVariablesMap) variablesMap;
+        IEngineContext engineContext = null;
+        if (context instanceof IEngineContext) {
+            // NOTE this interface is internal and should not be used in users' code
+            engineContext = (IEngineContext) context;
         }
 
         final List<Assignation> assignationValues = assignations.getAssignations();
@@ -90,10 +90,10 @@ public final class StandardWithTagProcessor extends AbstractAttributeTagProcesso
             final Assignation assignation = assignationValues.get(i);
 
             final IStandardExpression leftExpr = assignation.getLeft();
-            final Object leftValue = leftExpr.execute(processingContext);
+            final Object leftValue = leftExpr.execute(context);
 
             final IStandardExpression rightExpr = assignation.getRight();
-            final Object rightValue = rightExpr.execute(processingContext);
+            final Object rightValue = rightExpr.execute(context);
 
             final String newVariableName = (leftValue == null? null : leftValue.toString());
             if (StringUtils.isEmptyOrWhitespace(newVariableName)) {
@@ -101,8 +101,10 @@ public final class StandardWithTagProcessor extends AbstractAttributeTagProcesso
                         "Variable name expression evaluated as null or empty: \"" + leftExpr + "\"");
             }
 
-            if (localVariableAwareVariablesMap != null) {
-                localVariableAwareVariablesMap.put(newVariableName, rightValue);
+            if (engineContext != null) {
+                // The advantage of this vs. using the structure handler is that we will be able to
+                // use this newly created value in other expressions in the same 'th:with'
+                engineContext.setVariable(newVariableName, rightValue);
             } else {
                 // The problem is, these won't be available until we execute the next processor
                 structureHandler.setLocalVariable(newVariableName, rightValue);

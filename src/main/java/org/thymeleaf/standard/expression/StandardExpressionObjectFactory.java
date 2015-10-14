@@ -23,9 +23,9 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.context.IWebVariablesMap;
+import org.thymeleaf.context.IExpressionContext;
+import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.expression.Aggregates;
 import org.thymeleaf.expression.Arrays;
 import org.thymeleaf.expression.Bools;
@@ -172,48 +172,53 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
 
 
 
-    public Object buildObject(final IProcessingContext processingContext, final String expressionObjectName) {
+    public Object buildObject(
+            final IExpressionContext context,
+            final String expressionObjectName) {
 
         if (SELECTION_TARGET_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            if (processingContext.getVariables().hasSelectionTarget()) {
-                return processingContext.getVariables().getSelectionTarget();
+            if (context instanceof ITemplateContext) {
+                final ITemplateContext templateContext = (ITemplateContext) context;
+                if (templateContext.hasSelectionTarget()) {
+                    return templateContext.getSelectionTarget();
+                }
             }
-            return processingContext.getVariables();
+            return context;
         }
 
         if (ROOT_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            return processingContext.getVariables();
+            return context;
         }
         if (VARIABLES_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            return processingContext.getVariables();
+            return context;
         }
         if (CONTEXT_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            return processingContext;
+            return context;
         }
         if (LOCALE_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            return processingContext.getLocale();
+            return context.getLocale();
         }
         if (REQUEST_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            if (processingContext.isWeb()) {
-                return ((IWebVariablesMap) processingContext.getVariables()).getRequest();
+            if (context instanceof IWebContext) {
+                return ((IWebContext) context).getRequest();
             }
             return null;
         }
         if (RESPONSE_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            if (processingContext.isWeb()) {
-                return ((IWebVariablesMap) processingContext.getVariables()).getResponse();
+            if (context instanceof IWebContext) {
+                return ((IWebContext) context).getResponse();
             }
             return null;
         }
         if (SESSION_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            if (processingContext.isWeb()) {
-                return ((IWebVariablesMap) processingContext.getVariables()).getSession();
+            if (context instanceof IWebContext) {
+                return ((IWebContext) context).getSession();
             }
             return null;
         }
         if (SERVLET_CONTEXT_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            if (processingContext.isWeb()) {
-                return ((IWebVariablesMap) processingContext.getVariables()).getServletContext();
+            if (context instanceof IWebContext) {
+                return ((IWebContext) context).getServletContext();
             }
             return null;
         }
@@ -222,8 +227,8 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
              * NOTE "#httpServletRequest" is still usable, but deprecated since Thymeleaf 3.0.
              * Its usage will issue warnings in 3.1, and the object will be removed in 3.2
              */
-            if (processingContext.isWeb()) {
-                return ((IWebVariablesMap) processingContext.getVariables()).getRequest();
+            if (context instanceof IWebContext) {
+                return ((IWebContext) context).getRequest();
             }
             return null;
         }
@@ -232,34 +237,34 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
              * NOTE "#httpSession" is still usable, but deprecated since Thymeleaf 3.0.
              * Its usage will issue warnings in 3.1, and the object will be removed in 3.2
              */
-            if (processingContext.isWeb()) {
-                return ((IWebVariablesMap) processingContext.getVariables()).getSession();
+            if (context instanceof IWebContext) {
+                return ((IWebContext) context).getSession();
             }
             return null;
         }
         if (CONVERSIONS_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            return new Conversions(processingContext);
+            return new Conversions(context);
         }
         if (URIS_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
             return URIS_EXPRESSION_OBJECT;
         }
         if (CALENDARS_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            return new Calendars(processingContext.getLocale());
+            return new Calendars(context.getLocale());
         }
         if (DATES_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            return new Dates(processingContext.getLocale());
+            return new Dates(context.getLocale());
         }
         if (BOOLS_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
             return BOOLS_EXPRESSION_OBJECT;
         }
         if (NUMBERS_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            return new Numbers(processingContext.getLocale());
+            return new Numbers(context.getLocale());
         }
         if (OBJECTS_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
             return OBJECTS_EXPRESSION_OBJECT;
         }
         if (STRINGS_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            return new Strings(processingContext.getLocale());
+            return new Strings(context.getLocale());
         }
         if (ARRAYS_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
             return ARRAYS_EXPRESSION_OBJECT;
@@ -277,20 +282,20 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
             return AGGREGATES_EXPRESSION_OBJECT;
         }
         if (MESSAGES_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            if (processingContext instanceof ITemplateProcessingContext) {
-                return new Messages((ITemplateProcessingContext) processingContext);
+            if (context instanceof ITemplateContext) {
+                return new Messages((ITemplateContext) context);
             }
             return null;
         }
         if (IDS_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            if (processingContext instanceof ITemplateProcessingContext) {
-                return new Ids((ITemplateProcessingContext) processingContext);
+            if (context instanceof ITemplateContext) {
+                return new Ids((ITemplateContext) context);
             }
             return null;
         }
         if (EXECUTION_INFO_OBJECT_NAME.equals(expressionObjectName)) {
-            if (processingContext instanceof ITemplateProcessingContext) {
-                return new ExecutionInfo((ITemplateProcessingContext) processingContext);
+            if (context instanceof ITemplateContext) {
+                return new ExecutionInfo((ITemplateContext) context);
             }
             return null;
         }

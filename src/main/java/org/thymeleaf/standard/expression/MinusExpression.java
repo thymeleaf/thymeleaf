@@ -23,8 +23,9 @@ import java.math.BigDecimal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.EvaluationUtils;
 import org.thymeleaf.util.StringUtils;
@@ -132,14 +133,15 @@ public final class MinusExpression extends ComplexExpression {
     
     
 
-    static Object executeMinus(final IProcessingContext processingContext,
+    static Object executeMinus(
+            final IExpressionContext context,
             final MinusExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating minus expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
-        Object operandValue = expression.getOperand().execute(processingContext, expContext);
+        Object operandValue = expression.getOperand().execute(context, expContext);
         
         if (operandValue == null) {
             operandValue = "null";

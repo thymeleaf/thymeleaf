@@ -21,8 +21,9 @@ package org.thymeleaf.standard.expression;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 
 
 /**
@@ -71,9 +72,9 @@ public final class NullTokenExpression extends Token {
 
     
     static Object executeNullToken(
-            @SuppressWarnings("unused") final IProcessingContext processingContext,
+            final IExpressionContext context,
             final NullTokenExpression expression,
-            @SuppressWarnings("unused") final StandardExpressionExecutionContext expContext) {
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating null token: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());

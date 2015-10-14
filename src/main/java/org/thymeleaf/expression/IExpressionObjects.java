@@ -21,7 +21,7 @@ package org.thymeleaf.expression;
 
 import java.util.Set;
 
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 
 
 /**
@@ -29,7 +29,7 @@ import org.thymeleaf.context.IProcessingContext;
  *   Container object for all the expression utility objects to be made available in expressions. The aim of objects
  *   implementing this interface is to keep most expression utility objects instanced for the complete execution of
  *   a template, always being able to update themselves at any moment in time by means of a reference to the
- *   {@link IProcessingContext} that is using them.
+ *   {@link IExpressionContext} that is using them.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez

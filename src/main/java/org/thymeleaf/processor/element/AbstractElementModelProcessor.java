@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.element;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeNames;
 import org.thymeleaf.engine.ElementNames;
@@ -86,7 +87,7 @@ public abstract class AbstractElementModelProcessor
 
 
     public final void process(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IModel model, final IElementModelStructureHandler structureHandler) {
 
         String modelTemplateName = null;
@@ -99,7 +100,7 @@ public abstract class AbstractElementModelProcessor
             modelLine = firstEvent.getLine();
             modelCol = firstEvent.getLine();
 
-            doProcess(processingContext, model, modelTemplateName, modelLine, modelCol, structureHandler);
+            doProcess(context, model, modelTemplateName, modelLine, modelCol, structureHandler);
 
         } catch (final TemplateProcessingException e) {
 
@@ -126,7 +127,7 @@ public abstract class AbstractElementModelProcessor
 
 
     protected abstract void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IModel model,
             final String modelTemplateName, final int modelLine, final int modelCol,
             final IElementModelStructureHandler structureHandler);

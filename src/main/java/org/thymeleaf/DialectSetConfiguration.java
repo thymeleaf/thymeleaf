@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dialect.IExecutionAttributeDialect;
 import org.thymeleaf.dialect.IExpressionObjectDialect;
@@ -696,9 +696,9 @@ final class DialectSetConfiguration {
             return expressionObjectNames;
         }
 
-        public Object buildObject(final IProcessingContext processingContext, final String expressionObjectName) {
+        public Object buildObject(final IExpressionContext context, final String expressionObjectName) {
             if (this.firstExpressionObjectFactory != null) {
-                return this.firstExpressionObjectFactory.buildObject(processingContext, expressionObjectName);
+                return this.firstExpressionObjectFactory.buildObject(context, expressionObjectName);
             }
             if (this.expressionObjectFactoryList == null) {
                 return null;
@@ -706,7 +706,7 @@ final class DialectSetConfiguration {
             int n = this.expressionObjectFactoryList.size();
             while (n-- != 0) {
                 if (this.expressionObjectFactoryList.get(n).getAllExpressionObjectNames().contains(expressionObjectName)) {
-                    return this.expressionObjectFactoryList.get(n).buildObject(processingContext, expressionObjectName);
+                    return this.expressionObjectFactoryList.get(n).buildObject(context, expressionObjectName);
                 }
             }
             return null;

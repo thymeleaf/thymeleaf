@@ -26,13 +26,17 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.ElementDefinitions;
+import org.thymeleaf.engine.StandardModelFactory;
+import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.messageresolver.IMessageResolver;
+import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.postprocessor.IPostProcessor;
 import org.thymeleaf.preprocessor.IPreProcessor;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
@@ -61,9 +65,14 @@ public class EngineConfiguration implements IEngineConfiguration {
     private final Set<ITemplateResolver> templateResolvers;
     private final Set<IMessageResolver> messageResolvers;
     private final ICacheManager cacheManager;
+    private TemplateManager templateManager;
+    private final ConcurrentHashMap<TemplateMode,IModelFactory> modelFactories;
 
 
-    public EngineConfiguration(
+    /*
+     * There is no reason at all why anyone would want to manually create an instance of this.
+     */
+    EngineConfiguration(
             final Set<ITemplateResolver> templateResolvers,
             final Set<IMessageResolver> messageResolvers,
             final Set<DialectConfiguration> dialectConfigurations,
@@ -72,9 +81,9 @@ public class EngineConfiguration implements IEngineConfiguration {
 
         super();
 
-        Validate.notNull(templateResolvers, "Template Reolver set cannot be null");
-        Validate.isTrue(templateResolvers.size() > 0, "Template Reolver set cannot be empty");
-        Validate.containsNoNulls(templateResolvers, "Template Reolver set cannot contain any nulls");
+        Validate.notNull(templateResolvers, "Template Resolver set cannot be null");
+        Validate.isTrue(templateResolvers.size() > 0, "Template Resolver set cannot be empty");
+        Validate.containsNoNulls(templateResolvers, "Template Resolver set cannot contain any nulls");
         Validate.notNull(messageResolvers, "Message Resolver set cannot be null");
         Validate.notNull(dialectConfigurations, "Dialect configuration set cannot be null");
         // Cache Manager CAN be null
@@ -93,8 +102,20 @@ public class EngineConfiguration implements IEngineConfiguration {
         this.dialectSetConfiguration = DialectSetConfiguration.build(dialectConfigurations);
         this.textRepository = textRepository;
 
+        // NOTE we are NOT initializing the templateManager here, but in #initialize()
+
+        this.modelFactories = new ConcurrentHashMap<TemplateMode, IModelFactory>(6,1.0f);
+
     }
 
+
+    /*
+     * We need this method basically in order to initialize variables that have a dependency on the engine configuration
+     * object itself, and therefore should not be instanced at the constructor.
+     */
+    void initialize() {
+        this.templateManager = new TemplateManager(this);
+    }
 
 
 
@@ -199,6 +220,20 @@ public class EngineConfiguration implements IEngineConfiguration {
     }
 
 
+    public TemplateManager getTemplateManager() {
+        return this.templateManager;
+    }
+
+
+    public IModelFactory getModelFactory(final TemplateMode templateMode) {
+        if (this.modelFactories.containsKey(templateMode)) {
+            return this.modelFactories.get(templateMode);
+        }
+        // TODO The classes to be instanced for creating model factories should be configurable
+        final IModelFactory modelFactory = new StandardModelFactory(this, templateMode);
+        this.modelFactories.putIfAbsent(templateMode, modelFactory);
+        return this.modelFactories.get(templateMode);
+    }
 
 
     /**

@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.doctype;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IDocType;
@@ -43,12 +44,13 @@ public abstract class AbstractDocTypeProcessor
     }
 
 
-    public final void process(final ITemplateProcessingContext processingContext, final IDocType docType,
-                        final IDocTypeStructureHandler structureHandler) {
+    public final void process(
+            final ITemplateContext context,
+            final IDocType docType, final IDocTypeStructureHandler structureHandler) {
 
         try {
 
-            doProcess(processingContext, docType, structureHandler);
+            doProcess(context, docType, structureHandler);
 
         } catch (final TemplateProcessingException e) {
             if (docType.hasLocation()) {
@@ -69,8 +71,9 @@ public abstract class AbstractDocTypeProcessor
     }
 
 
-    protected abstract void doProcess(final ITemplateProcessingContext processingContext, final IDocType docType,
-                        final IDocTypeStructureHandler structureHandler);
+    protected abstract void doProcess(
+            final ITemplateContext context,
+            final IDocType docType, final IDocTypeStructureHandler structureHandler);
 
 
 }

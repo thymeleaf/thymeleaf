@@ -29,8 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.context.IVariablesMap;
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.context.IExpressionContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.standard.util.StandardExpressionUtils;
@@ -64,8 +65,8 @@ public final class OGNLVariableExpressionEvaluator
 
     private static Map<String,Object> CONTEXT_VARIABLES_MAP_NOEXPOBJECTS_RESTRICTIONS =
             (Map<String,Object>) (Map<?,?>)Collections.singletonMap(
-                    OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS,
-                    OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
+                    OGNLContextPropertyAccessor.RESTRICT_REQUEST_PARAMETERS,
+                    OGNLContextPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
 
     private static boolean booleanFixApplied = false;
 
@@ -84,8 +85,8 @@ public final class OGNLVariableExpressionEvaluator
         /*
          * INITIALIZE AND REGISTER THE PROPERTY ACCESSOR
          */
-        final OGNLVariablesMapPropertyAccessor accessor = new OGNLVariablesMapPropertyAccessor();
-        OgnlRuntime.setPropertyAccessor(IVariablesMap.class, accessor);
+        final OGNLContextPropertyAccessor accessor = new OGNLContextPropertyAccessor();
+        OgnlRuntime.setPropertyAccessor(IContext.class, accessor);
 
     }
 
@@ -93,16 +94,16 @@ public final class OGNLVariableExpressionEvaluator
 
 
     public final Object evaluate(
-            final IProcessingContext processingContext, final String expression,
+            final IExpressionContext context, final String expression,
             final StandardExpressionExecutionContext expContext, final boolean useSelectionAsRoot) {
-        return evaluate(processingContext, expression, expContext, useSelectionAsRoot, this.applyOGNLShortcuts);
+        return evaluate(context, expression, expContext, useSelectionAsRoot, this.applyOGNLShortcuts);
     }
 
 
 
 
     private static Object evaluate(
-        final IProcessingContext processingContext, final String expression,
+        final IExpressionContext context, final String expression,
         final StandardExpressionExecutionContext expContext, final boolean useSelectionAsRoot,
         final boolean applyOGNLShortcuts) {
        
@@ -112,7 +113,7 @@ public final class OGNLVariableExpressionEvaluator
                 logger.trace("[THYMELEAF][{}] OGNL expression: evaluating expression \"{}\" on target", TemplateEngine.threadIndex(), expression);
             }
 
-            final IEngineConfiguration configuration = processingContext.getConfiguration();
+            final IEngineConfiguration configuration = context.getConfiguration();
 
             ComputedOGNLExpression parsedExpression =
                     (ComputedOGNLExpression) ExpressionCache.getFromCache(configuration, expression, OGNL_CACHE_PREFIX);
@@ -134,17 +135,17 @@ public final class OGNLVariableExpressionEvaluator
                 // Note this will never happen with shortcut expressions, as the '#' character with which all
                 // expression object names start is not allowed by the OGNLShortcutExpression parser.
 
-                final IExpressionObjects expressionObjects = processingContext.getExpressionObjects();
-                contextVariablesMap = new OGNLContextExpressionObjectsWrapper(expressionObjects);
+                final IExpressionObjects expressionObjects = context.getExpressionObjects();
+                contextVariablesMap = new OGNLExpressionObjectsWrapper(expressionObjects);
 
                 // We might need to apply restrictions on the request parameters. In the case of OGNL, the only way we
                 // can actually communicate with the PropertyAccessor, (OGNLVariablesMapPropertyAccessor), which is the
                 // agent in charge of applying such restrictions, is by adding a context variable that the property accessor
                 // can later lookup during evaluation.
                 if (expContext.getRestrictVariableAccess()) {
-                    contextVariablesMap.put(OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS, OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
+                    contextVariablesMap.put(OGNLContextPropertyAccessor.RESTRICT_REQUEST_PARAMETERS, OGNLContextPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
                 } else {
-                    contextVariablesMap.remove(OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
+                    contextVariablesMap.remove(OGNLContextPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
                 }
 
             } else {
@@ -160,21 +161,21 @@ public final class OGNLVariableExpressionEvaluator
 
             // The root object on which we will evaluate expressions will depend on whether a selection target is
             // active or not...
-            final IVariablesMap variablesMap = processingContext.getVariables();
+            final ITemplateContext templateContext = (context instanceof ITemplateContext ? (ITemplateContext) context : null);
             final Object evaluationRoot =
-                    (useSelectionAsRoot && variablesMap.hasSelectionTarget()? variablesMap.getSelectionTarget() : variablesMap);
+                    (useSelectionAsRoot && templateContext != null && templateContext.hasSelectionTarget()? templateContext.getSelectionTarget() : templateContext);
 
             // Execute the expression!
             final Object result;
             try {
-                result = executeExpression(processingContext, parsedExpression.expression, contextVariablesMap, evaluationRoot);
+                result = executeExpression(configuration, parsedExpression.expression, contextVariablesMap, evaluationRoot);
             } catch (final OGNLShortcutExpression.OGNLShortcutExpressionNotApplicableException notApplicable) {
                 // We tried to apply shortcuts, but it is not possible for this expression even if it parsed OK,
                 // so we need to empty the cache and try again disabling shortcuts. Once processed for the first time,
                 // an OGNL (non-shortcut) parsed expression will already be cached and this exception will not be
                 // thrown again
                 ExpressionCache.removeFromCache(configuration, expression, OGNL_CACHE_PREFIX);
-                return evaluate(processingContext, expression, expContext, useSelectionAsRoot, false);
+                return evaluate(context, expression, expContext, useSelectionAsRoot, false);
             }
 
             if (!expContext.getPerformTypeConversion()) {
@@ -184,7 +185,7 @@ public final class OGNLVariableExpressionEvaluator
             final IStandardConversionService conversionService =
                     StandardExpressions.getConversionService(configuration);
 
-            return conversionService.convert(processingContext, result, String.class);
+            return conversionService.convert(context, result, String.class);
             
         } catch (final Exception e) {
             throw new TemplateProcessingException(
@@ -233,12 +234,12 @@ public final class OGNLVariableExpressionEvaluator
 
 
     private static Object executeExpression(
-            final IProcessingContext processingContext, final Object parsedExpression,
+            final IEngineConfiguration configuration, final Object parsedExpression,
             final Map<String,Object> context, final Object root)
             throws Exception {
 
         if (parsedExpression instanceof OGNLShortcutExpression) {
-            return ((OGNLShortcutExpression) parsedExpression).evaluate(processingContext, context, root);
+            return ((OGNLShortcutExpression) parsedExpression).evaluate(configuration, context, root);
         }
 
         // We create the OgnlContext here instead of just sending the Map as context because that prevents OGNL from

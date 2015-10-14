@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -47,10 +48,12 @@ public final class StandardXmlNsTagProcessor extends AbstractAttributeTagProcess
 
 
     @Override
-    protected void doProcess(final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
-                             final AttributeName attributeName, final String attributeValue,
-                             final String attributeTemplateName, final int attributeLine, final int attributeCol,
-                             final IElementTagStructureHandler structureHandler) {
+    protected void doProcess(
+            final ITemplateContext context,
+            final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue,
+            final String attributeTemplateName, final int attributeLine, final int attributeCol,
+            final IElementTagStructureHandler structureHandler) {
 
         // Nothing to do really, we are just removing the "xmlns:th" (or equivalent) attribute
 

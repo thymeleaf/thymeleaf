@@ -32,9 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.context.IWebContext;
-import org.thymeleaf.context.IWebVariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
@@ -233,8 +232,8 @@ public final class LinkExpression extends SimpleExpression {
 
 
     static Object executeLink(
-            final IProcessingContext processingContext, final LinkExpression expression,
-            final StandardExpressionExecutionContext expContext) {
+            final IExpressionContext context,
+            final LinkExpression expression, final StandardExpressionExecutionContext expContext) {
 
         /*
          *  DEVELOPMENT NOTE: Reasons why Spring's RequestDataValueProcessor#processUrl(...) is not applied here
@@ -255,7 +254,7 @@ public final class LinkExpression extends SimpleExpression {
         }
 
         final IStandardExpression baseExpression = expression.getBase();
-        Object base = baseExpression.execute(processingContext, expContext);
+        Object base = baseExpression.execute(context, expContext);
 
         base = LiteralValue.unwrap(base);
         if (base != null && !(base instanceof String)) {
@@ -270,7 +269,8 @@ public final class LinkExpression extends SimpleExpression {
         final boolean linkBaseServerRelative = !linkBaseAbsolute && !linkBaseContextRelative && isLinkBaseServerRelative((String) base);
         final boolean linkBaseRelative = !linkBaseAbsolute && !linkBaseContextRelative && !linkBaseServerRelative;
 
-        if (!processingContext.isWeb() && linkBaseContextRelative) {
+        final IWebContext webContext = (context instanceof IWebContext? (IWebContext)context : null);
+        if (webContext != null && linkBaseContextRelative) {
             throw new TemplateProcessingException(
                     "Link base \"" + base + "\" cannot be context relative (/...) unless the context " +
                     "used for executing the engine implements the " + IWebContext.class.getName() + " interface");
@@ -281,7 +281,7 @@ public final class LinkExpression extends SimpleExpression {
          * Resolve the parameters from the expression into a LinkParameters object.
          * Note the parameters variable might be null if there are no parameters
          */
-        final LinkParameters parameters = resolveParameters(processingContext, expression, expContext);
+        final LinkParameters parameters = resolveParameters(context, expression, expContext);
 
 
         /*
@@ -305,8 +305,7 @@ public final class LinkExpression extends SimpleExpression {
         final String contextPath;
         if (linkBaseContextRelative) {
             // If it is context-relative, it has to be a web context
-            final IWebVariablesMap webVariablesMap = (IWebVariablesMap) processingContext.getVariables();
-            final HttpServletRequest request = webVariablesMap.getRequest();
+            final HttpServletRequest request = webContext.getRequest();
             contextPath = request.getContextPath();
         } else {
             contextPath = null;
@@ -323,9 +322,8 @@ public final class LinkExpression extends SimpleExpression {
         if (contextPathEmpty && !linkBaseServerRelative &&
                 (parameters == null || parameters.size() == 0) && hashPosition < 0 && !mightHaveVariableTemplates) {
 
-            if (processingContext.isWeb()) {
-                final IWebVariablesMap webVariablesMap = (IWebVariablesMap) processingContext.getVariables();
-                final HttpServletResponse response = webVariablesMap.getResponse();
+            if (webContext != null) {
+                final HttpServletResponse response = webContext.getResponse();
                 return (response != null? response.encodeURL((String) base) : base);
             }
             // Processing context is not web, no need to HttpServletResponse-encode
@@ -405,7 +403,7 @@ public final class LinkExpression extends SimpleExpression {
          * Context is not web: URLs can only be absolute or server-relative and we will not be doing any
          * HttpServletRespons#encodeURL(...) because there is no response object, of course...
          */
-        if (!processingContext.isWeb()) {
+        if (webContext == null) {
             return linkBase.toString();
         }
         
@@ -414,8 +412,7 @@ public final class LinkExpression extends SimpleExpression {
          * Context is web 
          */
         
-        final IWebVariablesMap webVariablesMap = (IWebVariablesMap) processingContext.getVariables();
-        final HttpServletResponse response = webVariablesMap.getResponse();
+        final HttpServletResponse response = webContext.getResponse();
 
         if (linkBaseContextRelative && !contextPathEmpty) {
             // Add the application's context path at the beginning
@@ -489,8 +486,8 @@ public final class LinkExpression extends SimpleExpression {
     
     
     private static LinkParameters resolveParameters(
-            final IProcessingContext processingContext, final LinkExpression expression,
-            final StandardExpressionExecutionContext expContext) {
+            final IExpressionContext context,
+            final LinkExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (!expression.hasParameters()) {
             return null;
@@ -509,7 +506,7 @@ public final class LinkExpression extends SimpleExpression {
             final IStandardExpression parameterValueExpr = assignationValue.getRight();
 
             // We know parameterNameExpr cannot be null (the Assignation class would not allow it)
-            final Object parameterNameValue = parameterNameExpr.execute(processingContext, expContext);
+            final Object parameterNameValue = parameterNameExpr.execute(context, expContext);
             final String parameterName = (parameterNameValue == null? null : parameterNameValue.toString());
 
             if (StringUtils.isEmptyOrWhitespace(parameterName)) {
@@ -525,7 +522,7 @@ public final class LinkExpression extends SimpleExpression {
                 // also without an equals sign.
                 parameterValue = URL_PARAM_NO_VALUE;
             } else {
-                final Object value = parameterValueExpr.execute(processingContext, expContext);
+                final Object value = parameterValueExpr.execute(context, expContext);
                 if (value == null) {
                     // Not the same as not specifying a value!
                     parameterValue = "";

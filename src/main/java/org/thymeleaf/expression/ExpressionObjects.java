@@ -23,7 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IExpressionContext;
+import org.thymeleaf.util.Validate;
 
 
 /**
@@ -44,7 +46,7 @@ public class ExpressionObjects implements IExpressionObjects {
      */
     private static final int EXPRESSION_OBJECT_MAP_DEFAULT_SIZE = 3;
 
-    private final IProcessingContext processingContext;
+    private final IExpressionContext context;
     private final IExpressionObjectFactory expressionObjectFactory;
     private final Set<String> expressionObjectNames;
 
@@ -53,9 +55,15 @@ public class ExpressionObjects implements IExpressionObjects {
 
 
     public ExpressionObjects(
-            final IProcessingContext processingContext, final IExpressionObjectFactory expressionObjectFactory) {
+            final IExpressionContext context,
+            final IExpressionObjectFactory expressionObjectFactory) {
+
         super();
-        this.processingContext = processingContext;
+
+        Validate.notNull(context, "Context cannot be null");
+        Validate.notNull(expressionObjectFactory, "Expression Object Factory cannot be null");
+
+        this.context = context;
         this.expressionObjectFactory = expressionObjectFactory;
         this.expressionObjectNames = this.expressionObjectFactory.getAllExpressionObjectNames();
     }
@@ -98,7 +106,7 @@ public class ExpressionObjects implements IExpressionObjects {
         /*
          * Have the factory build the object
          */
-        final Object object = this.expressionObjectFactory.buildObject(this.processingContext, name);
+        final Object object = this.expressionObjectFactory.buildObject(this.context, name);
 
         /*
          * If the object is not cacheable, we will just return it

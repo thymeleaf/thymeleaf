@@ -21,7 +21,7 @@ package org.thymeleaf.standard.inline;
 
 import java.io.StringWriter;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.ITemplateEvent;
@@ -49,7 +49,7 @@ public abstract class AbstractStandardInliner implements IInliner {
     }
 
 
-    public final CharSequence inline(final ITemplateProcessingContext context, final CharSequence text) {
+    public final CharSequence inline(final ITemplateContext context, final CharSequence text) {
 
         Validate.notNull(context, "Context cannot be null");
         Validate.notNull(text, "Text cannot be null");
@@ -64,12 +64,11 @@ public abstract class AbstractStandardInliner implements IInliner {
 
             final StringWriter stringWriter = new StringWriter();
 
-            final TemplateManager templateManager = context.getTemplateManager();
+            final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
             templateManager.parseAndProcessNested(
-                    context.getConfiguration(),
                     computeTemplateName(text), text.toString(),
                     computeLine(text), computeCol(text),
-                    this.templateMode, context.getVariables(), stringWriter, true);
+                    this.templateMode, context, stringWriter, true);
 
             return stringWriter.toString();
 

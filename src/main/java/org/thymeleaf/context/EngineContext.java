@@ -30,18 +30,32 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
+import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Basic non-web implementation of the {@link IEngineContext} interface.
+ * </p>
+ * <p>
+ *   This is the context implementation that will be used by default for non-web processing. Note this is an
+ *   internal implementation, and that there is no reason for users' code to directly reference or use it instead
+ *   of its implemented interfaces.
+ * </p>
+ * <p>
+ *   This class is NOT thread-safe. Thread-safety is not a requirement for context implementations.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
  * @since 3.0.0
  *
  */
-public final class VariablesMap implements ILocalVariableAwareVariablesMap {
+final class EngineContext extends AbstractEngineContext implements IEngineContext {
 
     /*
      * This class is in charge of managing the map of variables in place at each moment in the template processing,
@@ -52,7 +66,6 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
     private static final int DEFAULT_LEVELS_SIZE = 3;
     private static final int DEFAULT_MAP_SIZE = 5;
 
-    private final Locale locale;
 
     private int level = 0;
     private int index = 0;
@@ -60,6 +73,13 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
     private HashMap<String,Object>[] maps;
     private SelectionTarget[] selectionTargets;
     private IInliner[] inliners;
+    private TemplateResolution[] templateResolutions;
+
+    private SelectionTarget lastSelectionTarget = null;
+    private IInliner lastInliner = null;
+    private TemplateResolution lastTemplateResolution = null;
+
+    private final List<TemplateResolution> templateResolutionStack;
 
     private static final Object NON_EXISTING = new Object() {
         @Override
@@ -74,35 +94,35 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
      * There is no reason for a user to directly create an instance of this - they should create Context or
      * WebContext instances instead.
      */
-    VariablesMap(final Locale locale, final Map<String, Object> variables) {
+    EngineContext(
+            final IEngineConfiguration configuration,
+            final TemplateResolution templateResolution,
+            final Locale locale,
+            final Map<String, Object> variables) {
 
-        super();
-
-        Validate.notNull(locale, "Locale cannot be null in web variables map");
-
-        this.locale = locale;
+        super(configuration, locale);
 
         this.levels = new int[DEFAULT_LEVELS_SIZE];
         this.maps = (HashMap<String, Object>[]) new HashMap<?,?>[DEFAULT_LEVELS_SIZE];
         this.selectionTargets = new SelectionTarget[DEFAULT_LEVELS_SIZE];
         this.inliners = new IInliner[DEFAULT_LEVELS_SIZE];
+        this.templateResolutions = new TemplateResolution[DEFAULT_LEVELS_SIZE];
         Arrays.fill(this.levels, Integer.MAX_VALUE);
         Arrays.fill(this.maps, null);
         Arrays.fill(this.selectionTargets, null);
         Arrays.fill(this.inliners, null);
+        Arrays.fill(this.templateResolutions, null);
         this.levels[0] = 0;
+        this.templateResolutions[0] = templateResolution;
+
+        this.templateResolutionStack = new ArrayList<TemplateResolution>(DEFAULT_LEVELS_SIZE);
+        this.templateResolutionStack.add(templateResolution);
 
         if (variables != null) {
-            putAll(variables);
+            setVariables(variables);
         }
 
     }
-
-
-    public Locale getLocale() {
-        return this.locale;
-    }
-
 
 
     public boolean containsVariable(final String name) {
@@ -154,37 +174,37 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
     }
 
 
-    public void put(final String key, final Object value) {
+    public void setVariable(final String name, final Object value) {
 
         ensureLevelInitialized(DEFAULT_MAP_SIZE);
 
         if (value == NON_EXISTING && this.level == 0) {
-            this.maps[this.index].remove(key);
+            this.maps[this.index].remove(name);
         } else {
-            this.maps[this.index].put(key, value);
+            this.maps[this.index].put(name, value);
         }
 
     }
 
 
-    public void putAll(final Map<String, Object> map) {
+    public void setVariables(final Map<String, Object> variables) {
 
-        if (map == null) {
+        if (variables == null || variables.isEmpty()) {
             return;
         }
 
-        ensureLevelInitialized(Math.max(DEFAULT_MAP_SIZE, map.size() + 2));
+        ensureLevelInitialized(Math.max(DEFAULT_MAP_SIZE, variables.size() + 2));
 
-        this.maps[this.index].putAll(map);
+        this.maps[this.index].putAll(variables);
 
     }
 
 
 
 
-    public void remove(final String key) {
-        if (containsVariable(key)) {
-            put(key, NON_EXISTING);
+    public void removeVariable(final String name) {
+        if (containsVariable(name)) {
+            setVariable(name, NON_EXISTING);
         }
     }
 
@@ -209,6 +229,9 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
 
     public boolean hasSelectionTarget() {
+        if (this.lastSelectionTarget != null) {
+            return true;
+        }
         int n = this.index + 1;
         while (n-- != 0) {
             if (this.selectionTargets[n] != null) {
@@ -220,10 +243,14 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
 
     public Object getSelectionTarget() {
+        if (this.lastSelectionTarget != null) {
+            return this.lastSelectionTarget.selectionTarget;
+        }
         int n = this.index + 1;
         while (n-- != 0) {
             if (this.selectionTargets[n] != null) {
-                return this.selectionTargets[n].selectionTarget;
+                this.lastSelectionTarget = this.selectionTargets[n];
+                return this.lastSelectionTarget.selectionTarget;
             }
         }
         return null;
@@ -232,20 +259,28 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
     public void setSelectionTarget(final Object selectionTarget) {
         ensureLevelInitialized(DEFAULT_MAP_SIZE);
-        this.selectionTargets[this.index] = new SelectionTarget(selectionTarget);
+        this.lastSelectionTarget = new SelectionTarget(selectionTarget);
+        this.selectionTargets[this.index] = this.lastSelectionTarget;
     }
 
 
 
 
     public IInliner getInliner() {
+        if (this.lastInliner != null) {
+            if (this.lastInliner == NoOpInliner.INSTANCE) {
+                return null;
+            }
+            return this.lastInliner;
+        }
         int n = this.index + 1;
         while (n-- != 0) {
             if (this.inliners[n] != null) {
-                if (this.inliners[n] == NoOpInliner.INSTANCE) {
+                this.lastInliner = this.inliners[n];
+                if (this.lastInliner == NoOpInliner.INSTANCE) {
                     return null;
                 }
-                return this.inliners[n];
+                return this.lastInliner;
             }
         }
         return null;
@@ -255,7 +290,54 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
     public void setInliner(final IInliner inliner) {
         ensureLevelInitialized(DEFAULT_MAP_SIZE);
         // We use NoOpInliner.INSTACE in order to signal when inlining has actually been disabled
-        this.inliners[this.index] = (inliner == null? NoOpInliner.INSTANCE : inliner);
+        this.lastInliner = (inliner == null? NoOpInliner.INSTANCE : inliner);
+        this.inliners[this.index] = this.lastInliner;
+    }
+
+
+
+
+    public TemplateResolution getTemplateResolution() {
+        if (this.lastTemplateResolution != null) {
+            return this.lastTemplateResolution;
+        }
+        int n = this.index + 1;
+        while (n-- != 0) {
+            if (this.templateResolutions[n] != null) {
+                this.lastTemplateResolution = this.templateResolutions[n];
+                return this.lastTemplateResolution;
+            }
+        }
+        return null;
+    }
+
+
+    public void setTemplateResolution(final TemplateResolution templateResolution) {
+        Validate.notNull(templateResolution, "Template Resolution cannot be null");
+        ensureLevelInitialized(DEFAULT_MAP_SIZE);
+        this.lastTemplateResolution = templateResolution;
+        this.templateResolutions[this.index] = this.lastTemplateResolution;
+        this.templateResolutionStack.clear();
+    }
+
+
+
+
+    public List<TemplateResolution> getTemplateResolutionStack() {
+        if (!this.templateResolutionStack.isEmpty()) {
+            // If would have been empty if we had just decreased a level or added a new resolution
+            return Collections.unmodifiableList(this.templateResolutionStack);
+        }
+        int n = this.index + 1;
+        int i = 0;
+        while (n-- != 0) {
+            if (this.templateResolutions[i] != null) {
+                this.templateResolutionStack.add(this.templateResolutions[i]);
+            }
+            i++;
+        }
+
+        return Collections.unmodifiableList(this.templateResolutionStack);
     }
 
 
@@ -275,18 +357,22 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
                 final HashMap<String,Object>[] newMaps = (HashMap<String, Object>[]) new HashMap<?,?>[this.maps.length + DEFAULT_LEVELS_SIZE];
                 final SelectionTarget[] newSelectionTargets = new SelectionTarget[this.selectionTargets.length + DEFAULT_LEVELS_SIZE];
                 final IInliner[] newInliners = new IInliner[this.inliners.length + DEFAULT_LEVELS_SIZE];
+                final TemplateResolution[] newTemplateResolutions = new TemplateResolution[this.templateResolutions.length + DEFAULT_LEVELS_SIZE];
                 Arrays.fill(newLevels, Integer.MAX_VALUE);
                 Arrays.fill(newMaps, null);
                 Arrays.fill(newSelectionTargets, null);
                 Arrays.fill(newInliners, null);
+                Arrays.fill(newTemplateResolutions, null);
                 System.arraycopy(this.levels, 0, newLevels, 0, this.levels.length);
                 System.arraycopy(this.maps, 0, newMaps, 0, this.maps.length);
                 System.arraycopy(this.selectionTargets, 0, newSelectionTargets, 0, this.selectionTargets.length);
                 System.arraycopy(this.inliners, 0, newInliners, 0, this.inliners.length);
+                System.arraycopy(this.templateResolutions, 0, newTemplateResolutions, 0, this.templateResolutions.length);
                 this.levels = newLevels;
                 this.maps = newMaps;
                 this.selectionTargets = newSelectionTargets;
                 this.inliners = newInliners;
+                this.templateResolutions = newTemplateResolutions;
             }
 
             this.levels[this.index] = this.level;
@@ -303,28 +389,36 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
 
 
-    public int level() {
-        return this.level;
-    }
-
-
     public void increaseLevel() {
         this.level++;
     }
 
 
     public void decreaseLevel() {
+
         Validate.isTrue(this.level > 0, "Cannot decrease variable map level below 0");
+
         if (this.levels[this.index] == this.level) {
+
             this.levels[this.index] = Integer.MAX_VALUE;
             if (this.maps[this.index] != null) {
                 this.maps[this.index].clear();
             }
             this.selectionTargets[this.index] = null;
             this.inliners[this.index] = null;
+            this.templateResolutions[this.index] = null;
             this.index--;
+
+            // These might not belong to this level, but just in case...
+            this.lastSelectionTarget = null;
+            this.lastInliner = null;
+            this.lastTemplateResolution = null;
+            this.templateResolutionStack.clear();
+
         }
+
         this.level--;
+
     }
 
 
@@ -356,7 +450,7 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
                     levelVars.put(name, value);
                 }
             }
-            if (n == 0 || !levelVars.isEmpty() || this.selectionTargets[n] != null || this.inliners[n] != null) {
+            if (n == 0 || !levelVars.isEmpty() || this.selectionTargets[n] != null || this.inliners[n] != null || this.templateResolutions[n] != null) {
                 if (strBuilder.length() > 1) {
                     strBuilder.append(',');
                 }
@@ -369,6 +463,9 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
                 }
                 if (this.inliners[n] != null) {
                     strBuilder.append("[" + this.inliners[n].getName() + "]");
+                }
+                if (this.templateResolutions[n] != null) {
+                    strBuilder.append("(" + this.templateResolutions[n].getTemplate() + ")");
                 }
             }
         }
@@ -404,7 +501,8 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
             i++;
         }
         final String textInliningStr = (getInliner() != null? "[" + getInliner().getName() + "]" : "" );
-        return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "") + textInliningStr;
+        final String templateResolutionStr = "(" + getTemplateResolution().getTemplate() + ")";
+        return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "") + textInliningStr + templateResolutionStr;
 
     }
 

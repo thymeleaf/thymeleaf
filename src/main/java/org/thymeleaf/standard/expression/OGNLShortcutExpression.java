@@ -48,9 +48,8 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.ILazyContextVariable;
-import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.context.IVariablesMap;
 
 /**
  *
@@ -75,10 +74,10 @@ final class OGNLShortcutExpression {
     }
 
 
-    Object evaluate(final IProcessingContext processingContext, final Map<String, Object> context, final Object root)
+    Object evaluate(
+            final IEngineConfiguration configuration, final Map<String, Object> context, final Object root)
             throws Exception {
 
-        final IEngineConfiguration configuration = processingContext.getConfiguration();
         final ICacheManager cacheManager = configuration.getCacheManager();
         final ICache<String, Object> expressionCache = (cacheManager == null? null : cacheManager.getExpressionCache());
 
@@ -104,9 +103,9 @@ final class OGNLShortcutExpression {
                 // something we avoid by means of this shortcut
                 target = getObjectProperty(expressionCache, propertyName, target);
 
-            } else if (OGNLVariablesMapPropertyAccessor.class.equals(ognlPropertyAccessor.getClass())) {
+            } else if (OGNLContextPropertyAccessor.class.equals(ognlPropertyAccessor.getClass())) {
 
-                target = getVariablesMapProperty(propertyName, context, target);
+                target = getContextProperty(propertyName, context, target);
 
             } else if (ObjectPropertyAccessor.class.equals(ognlPropertyAccessor.getClass())) {
 
@@ -154,12 +153,12 @@ final class OGNLShortcutExpression {
 
 
 
-    private static Object getVariablesMapProperty(
+    private static Object getContextProperty(
             final String propertyName, final Map<String, Object> context, final Object target)
             throws OgnlException {
 
-        if (OGNLVariablesMapPropertyAccessor.REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME.equals(propertyName) &&
-                context != null && context.containsKey(OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS)) {
+        if (OGNLContextPropertyAccessor.REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME.equals(propertyName) &&
+                context != null && context.containsKey(OGNLContextPropertyAccessor.RESTRICT_REQUEST_PARAMETERS)) {
             throw new OgnlException(
                     "Access to variable \"" + propertyName + "\" is forbidden in this context. Note some restrictions apply to " +
                     "variable access. For example, accessing request parameters is forbidden in preprocessing and " +
@@ -174,7 +173,7 @@ final class OGNLShortcutExpression {
             }
         }
 
-        final Object result = ((IVariablesMap) target).getVariable(propertyName);
+        final Object result = ((IContext) target).getVariable(propertyName);
 
         /*
          * Check the possibility that this variable is a lazy one, in which case we should not return it directly

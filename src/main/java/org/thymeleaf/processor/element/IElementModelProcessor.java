@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.element;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.IModel;
 
 /**
@@ -32,8 +33,8 @@ public interface IElementModelProcessor extends IElementProcessor {
 
 
     public void process(
-            final ITemplateProcessingContext processingContext, final IModel model,
-            final IElementModelStructureHandler structureHandler);
+            final ITemplateContext context,
+            final IModel model, final IElementModelStructureHandler structureHandler);
 
 
 }

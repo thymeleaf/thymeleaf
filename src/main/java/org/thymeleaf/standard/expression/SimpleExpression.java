@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
 
@@ -58,35 +59,36 @@ public abstract class SimpleExpression extends Expression {
     
     
     
-    static Object executeSimple(final IProcessingContext processingContext, final SimpleExpression expression,
+    static Object executeSimple(
+            final IExpressionContext context, final SimpleExpression expression,
             final IStandardVariableExpressionEvaluator expressionEvaluator, final StandardExpressionExecutionContext expContext) {
         
         if (expression instanceof VariableExpression) {
-            return VariableExpression.executeVariable(processingContext, (VariableExpression)expression, expressionEvaluator, expContext);
+            return VariableExpression.executeVariable(context, (VariableExpression)expression, expressionEvaluator, expContext);
         }
         if (expression instanceof MessageExpression) {
-            return MessageExpression.executeMessage(processingContext, (MessageExpression)expression, expContext);
+            return MessageExpression.executeMessage(context, (MessageExpression)expression, expContext);
         }
         if (expression instanceof TextLiteralExpression) {
-            return TextLiteralExpression.executeTextLiteral(processingContext, (TextLiteralExpression)expression, expContext);
+            return TextLiteralExpression.executeTextLiteral(context, (TextLiteralExpression)expression, expContext);
         }
         if (expression instanceof NumberTokenExpression) {
-            return NumberTokenExpression.executeNumberToken(processingContext, (NumberTokenExpression) expression, expContext);
+            return NumberTokenExpression.executeNumberToken(context, (NumberTokenExpression) expression, expContext);
         }
         if (expression instanceof BooleanTokenExpression) {
-            return BooleanTokenExpression.executeBooleanToken(processingContext, (BooleanTokenExpression) expression, expContext);
+            return BooleanTokenExpression.executeBooleanToken(context, (BooleanTokenExpression) expression, expContext);
         }
         if (expression instanceof NullTokenExpression) {
-            return NullTokenExpression.executeNullToken(processingContext, (NullTokenExpression) expression, expContext);
+            return NullTokenExpression.executeNullToken(context, (NullTokenExpression) expression, expContext);
         }
         if (expression instanceof LinkExpression) {
-            return LinkExpression.executeLink(processingContext, (LinkExpression)expression, expContext);
+            return LinkExpression.executeLink(context, (LinkExpression)expression, expContext);
         }
         if (expression instanceof SelectionVariableExpression) {
-            return SelectionVariableExpression.executeSelectionVariable(processingContext, (SelectionVariableExpression)expression, expressionEvaluator, expContext);
+            return SelectionVariableExpression.executeSelectionVariable(context, (SelectionVariableExpression)expression, expressionEvaluator, expContext);
         }
         if (expression instanceof GenericTokenExpression) {
-            return GenericTokenExpression.executeGenericToken(processingContext, (GenericTokenExpression) expression, expContext);
+            return GenericTokenExpression.executeGenericToken(context, (GenericTokenExpression) expression, expContext);
         }
 
         throw new TemplateProcessingException("Unrecognized simple expression: " + expression.getClass().getName());

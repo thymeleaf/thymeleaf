@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -54,13 +55,13 @@ public abstract class AbstractStandardConditionalVisibilityTagProcessor extends 
 
     @Override
     protected final void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
-        final boolean visible = isVisible(processingContext, tag, attributeName, attributeValue);
+        final boolean visible = isVisible(context, tag, attributeName, attributeValue);
 
         if (!visible) {
             structureHandler.removeElement();
@@ -70,7 +71,7 @@ public abstract class AbstractStandardConditionalVisibilityTagProcessor extends 
 
 
     protected abstract boolean isVisible(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue);
 

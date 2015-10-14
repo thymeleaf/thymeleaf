@@ -22,7 +22,7 @@ package org.thymeleaf.standard.processor;
 import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.TemplateModel;
@@ -56,18 +56,19 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
 
     @Override
     protected void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName,
             final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
-        final IEngineConfiguration configuration = processingContext.getConfiguration();
+        final IEngineConfiguration configuration = context.getConfiguration();
+
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
 
-        final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
-        final Object expressionResult = expression.execute(processingContext, StandardExpressionExecutionContext.RESTRICTED);
+        final IStandardExpression expression = expressionParser.parseExpression(context, attributeValue);
+        final Object expressionResult = expression.execute(context, StandardExpressionExecutionContext.RESTRICTED);
 
         final String unescapedText = (expressionResult == null ? "" : expressionResult.toString());
 
@@ -82,7 +83,7 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
          * we check if there actually are any post-processors and, if not (most common case), simply output the
          * expression result as if it were a mere (unescaped) text node.
          */
-        final Set<IPostProcessor> postProcessors = processingContext.getConfiguration().getPostProcessors(getTemplateMode());
+        final Set<IPostProcessor> postProcessors = configuration.getPostProcessors(getTemplateMode());
         if (postProcessors.isEmpty()) {
             structureHandler.setBody(unescapedText, false);
             return;
@@ -101,11 +102,10 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
         }
 
         final TemplateModel parsedFragment =
-                processingContext.getTemplateManager().parseNested(
-                        processingContext.getConfiguration(),
+                configuration.getTemplateManager().parseNested(
                         attributeTemplateName, unescapedText,
                         0, 0, // we won't apply offset here because the inserted text does not really come from the template itself
-                        processingContext.getTemplateMode(),
+                        context.getTemplateMode(),
                         false); // useCache == false because we could potentially pollute the cache with too many entries (th:utext is too variable!)
 
         // Setting 'processable' to false avoiding text inliners processing already generated text,

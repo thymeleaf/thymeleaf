@@ -23,8 +23,9 @@ import java.math.BigDecimal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.util.StringUtils;
 
 
@@ -98,9 +99,9 @@ public final class NumberTokenExpression extends Token {
 
     
     static Object executeNumberToken(
-            @SuppressWarnings("unused") final IProcessingContext processingContext,
+            final IExpressionContext context,
             final NumberTokenExpression expression,
-            @SuppressWarnings("unused") final StandardExpressionExecutionContext expContext) {
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating number token: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());

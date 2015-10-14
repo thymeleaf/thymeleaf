@@ -19,8 +19,10 @@
  */
 package org.thymeleaf.processor;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
+import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.MessageResolutionUtils;
 import org.thymeleaf.util.Validate;
@@ -80,26 +82,26 @@ public abstract class AbstractProcessor implements IProcessor {
     /**
      * <p>
      *   Resolves a message, trying to resolve it first as a <i>template message</i>
-     *   (see {@link #getMessageForTemplate(ITemplateProcessingContext, String, Object[])}) and,
-     *   if not found, as a <i>processor message</i> (see {@link #getMessageForProcessor(ITemplateProcessingContext, String, Object[])}.
+     *   (see {@link #getMessageForTemplate(ITemplateContext, String, Object[])}) and,
+     *   if not found, as a <i>processor message</i> (see {@link #getMessageForProcessor(ITemplateContext, String, Object[])}.
      * </p>
      * <p>
      *   This method always returns a result: if no message is found for the specified
      *   key, a default placeholder message is returned (as a String).
      * </p>
      *
-     * @param processingContext the execution arguments, containing Template Engine configuration and
-     *                  execution context.
+     * @param context the template context
      * @param messageKey the message key
      * @param messageParameters the (optional) message parameters
      * @return the resolved message
      */
     protected final String getMessage(
-            final ITemplateProcessingContext processingContext, final String messageKey, final Object[] messageParameters) {
+            final ITemplateContext context,
+            final String messageKey, final Object[] messageParameters) {
 
         final String templateMessage =
                 MessageResolutionUtils.resolveMessageForTemplate(
-                        processingContext, messageKey, messageParameters, false);
+                        context, messageKey, messageParameters, false);
 
         if (templateMessage != null) {
             return templateMessage;
@@ -107,8 +109,8 @@ public abstract class AbstractProcessor implements IProcessor {
 
         final String processorMessage =
                 MessageResolutionUtils.resolveMessageForClass(
-                        processingContext.getConfiguration(), this.getClass(),
-                        processingContext.getLocale(), messageKey,
+                        context.getConfiguration(), this.getClass(),
+                        context.getLocale(), messageKey,
                         messageParameters, false);
 
         if (processorMessage != null) {
@@ -116,7 +118,7 @@ public abstract class AbstractProcessor implements IProcessor {
         }
 
         return MessageResolutionUtils.getAbsentMessageRepresentation(
-                messageKey, processingContext.getLocale());
+                messageKey, context.getLocale());
 
     }
 
@@ -128,7 +130,7 @@ public abstract class AbstractProcessor implements IProcessor {
      * </p>
      * <p>
      *   <i>Template messages</i> are resolved by the <i>Message Resolver</i>
-     *   ({@link org.thymeleaf.messageresolver.IMessageResolver}) instances
+     *   ({@link IMessageResolver}) instances
      *   configured at the Template Engine (executed in chain) in exactly the same way as,
      *   for example, a <tt>#{...}</tt> expression would when using the <i>Standard
      *   Dialect</i> or the <i>SpringStandard Dialect</i>.
@@ -138,15 +140,16 @@ public abstract class AbstractProcessor implements IProcessor {
      *   key, a default placeholder message is returned (as a String).
      * </p>
      *
-     * @param processingContext the processing context
+     * @param context the template context
      * @param messageKey the message key
      * @param messageParameters the (optional) message parameters
      * @return the resolved message
      */
     protected final String getMessageForTemplate(
-            final ITemplateProcessingContext processingContext, final String messageKey, final Object[] messageParameters) {
+            final ITemplateContext context,
+            final String messageKey, final Object[] messageParameters) {
         return MessageResolutionUtils.resolveMessageForTemplate(
-                processingContext, messageKey, messageParameters);
+                context, messageKey, messageParameters);
     }
 
 
@@ -175,17 +178,18 @@ public abstract class AbstractProcessor implements IProcessor {
      * </p>
      *
      *
-     * @param processingContext the processing context
+     * @param context the processing context
      * @param messageKey the message key
      * @param messageParameters the (optional) message parameters
      * @return the resolved message
      */
     protected final String getMessageForProcessor(
-            final ITemplateProcessingContext processingContext, final String messageKey, final Object[] messageParameters) {
-        Validate.notNull(processingContext.getLocale(), "Locale in processing context cannot be null");
+            final ITemplateContext context,
+            final String messageKey, final Object[] messageParameters) {
+        Validate.notNull(context.getLocale(), "Locale in processing context cannot be null");
         return MessageResolutionUtils.resolveMessageForClass(
-                processingContext.getConfiguration(), this.getClass(),
-                processingContext.getLocale(), messageKey, messageParameters);
+                context.getConfiguration(), this.getClass(),
+                context.getLocale(), messageKey, messageParameters);
     }
 
 

@@ -19,18 +19,21 @@
  */
 package org.thymeleaf.context;
 
-import java.util.Locale;
-import java.util.Map;
-
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.expression.IExpressionObjects;
 
 /**
  * <p>
- *   Basic implementation of the {@link IProcessingContext} interface.
+ *   Interface implemented by all classes containing the context required for expression processing.
  * </p>
  * <p>
- *   Note a class with this name existed since 2.0.9, but it was completely reimplemented
- *   in Thymeleaf 3.0
+ *   This interface extends {@link IContext} by adding the required information needed to execute
+ *   expressions.
+ * </p>
+ * <p>
+ *   Note that implementations of this interface do not have to be thread-safe, and in fact should not be
+ *   shared by different threads or template executions. They are meant to be local to a specific template
+ *   engine execution.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
@@ -38,18 +41,10 @@ import org.thymeleaf.IEngineConfiguration;
  * @since 3.0.0
  * 
  */
-public final class ProcessingContext extends AbstractProcessingContext {
+public interface IExpressionContext extends IContext {
 
+    public IEngineConfiguration getConfiguration();
 
-    public ProcessingContext(
-            final IEngineConfiguration configuration, final Locale locale, final Map<String, Object> variables) {
-        super(configuration, locale, variables);
-    }
-
-
-    public ProcessingContext(
-            final IEngineConfiguration configuration, final IContext context) {
-        super(configuration, context);
-    }
+    public IExpressionObjects getExpressionObjects();
 
 }

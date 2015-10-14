@@ -21,8 +21,9 @@ package org.thymeleaf.standard.expression;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.util.EvaluationUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
@@ -198,20 +199,21 @@ public final class ConditionalExpression extends ComplexExpression {
 
 
     
-    static Object executeConditional(final IProcessingContext processingContext,
+    static Object executeConditional(
+            final IExpressionContext context,
             final ConditionalExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating conditional expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
 
-        final Object condObj = expression.getConditionExpression().execute(processingContext, expContext);
+        final Object condObj = expression.getConditionExpression().execute(context, expContext);
         final boolean cond = EvaluationUtils.evaluateAsBoolean(condObj);
         
         if (cond) {
-            return expression.getThenExpression().execute(processingContext, expContext);
+            return expression.getThenExpression().execute(context, expContext);
         }
-        return expression.getElseExpression().execute(processingContext, expContext);
+        return expression.getElseExpression().execute(context, expContext);
         
     }
     

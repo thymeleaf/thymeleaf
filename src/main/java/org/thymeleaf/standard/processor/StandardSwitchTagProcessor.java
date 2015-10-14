@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -52,15 +53,15 @@ public final class StandardSwitchTagProcessor extends AbstractAttributeTagProces
 
     @Override
     protected void doProcess(
-            final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+            final ITemplateContext context, final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
-        final IStandardExpressionParser expressionParser =
-                StandardExpressions.getExpressionParser(processingContext.getConfiguration());
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
 
-        final IStandardExpression switchExpression = expressionParser.parseExpression(processingContext, attributeValue);
+        final IStandardExpression switchExpression =
+                expressionParser.parseExpression(context, attributeValue);
 
         structureHandler.setLocalVariable(SWITCH_VARIABLE_NAME, new SwitchStructure(switchExpression));
 

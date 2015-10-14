@@ -21,8 +21,9 @@ package org.thymeleaf.standard.processor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.AttributeNames;
@@ -55,7 +56,7 @@ public final class StandardSubstituteByTagProcessor extends AbstractStandardFrag
 
     @Override
     protected void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
@@ -66,11 +67,12 @@ public final class StandardSubstituteByTagProcessor extends AbstractStandardFrag
                     "[THYMELEAF][{}][{}] Deprecated attribute {} found in template {}, line {}, col {}. " +
                     "Please use {} instead, this deprecated attribute will be removed in future versions of Thymeleaf.",
                     new Object[]{
-                            TemplateEngine.threadIndex(), processingContext.getTemplateResolution().getTemplate(),
-                            attributeName, attributeTemplateName, attributeLine, attributeCol, AttributeNames.forHTMLName(attributeName.getPrefix(), StandardReplaceTagProcessor.ATTR_NAME)});
+                            TemplateEngine.threadIndex(), context.getTemplateResolution().getTemplate(),
+                            attributeName, attributeTemplateName, Integer.valueOf(attributeLine), Integer.valueOf(attributeCol),
+                            AttributeNames.forHTMLName(attributeName.getPrefix(), StandardReplaceTagProcessor.ATTR_NAME)});
         }
 
-        super.doProcess(processingContext, tag, attributeName, attributeValue, attributeTemplateName, attributeLine, attributeCol, structureHandler);
+        super.doProcess(context, tag, attributeName, attributeValue, attributeTemplateName, attributeLine, attributeCol, structureHandler);
 
     }
 

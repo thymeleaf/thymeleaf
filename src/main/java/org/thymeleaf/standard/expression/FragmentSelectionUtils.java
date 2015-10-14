@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
@@ -51,8 +51,9 @@ public final class FragmentSelectionUtils {
 
 
     public static boolean hasSyntheticParameters(
+            final IEngineConfiguration configuration,
+            final IExpressionContext context,
             final ParsedFragmentSelection fragmentSelection,
-            final IProcessingContext processingContext,
             final StandardExpressionExecutionContext expContext) {
 
         // The parameter sequence will be considered "synthetically named" if its variable names are all synthetic
@@ -67,7 +68,7 @@ public final class FragmentSelectionUtils {
         for (final Assignation assignation : fragmentSelectionParameters.getAssignations()) {
 
             final IStandardExpression variableNameExpr = assignation.getLeft();
-            final Object variableNameValue = variableNameExpr.execute(processingContext, expContext);
+            final Object variableNameValue = variableNameExpr.execute(context, expContext);
 
             final String variableName = (variableNameValue == null? null : variableNameValue.toString());
 
@@ -84,15 +85,15 @@ public final class FragmentSelectionUtils {
 
 
     public static ParsedFragmentSelection parseFragmentSelection(
-            final IProcessingContext processingContext, final String input) {
+            final IExpressionContext context, final String input) {
 
-        Validate.notNull(processingContext, "Processing Context cannot be null");
+        Validate.notNull(context, "Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
 
-        final IEngineConfiguration configuration = processingContext.getConfiguration();
+        final IEngineConfiguration configuration = context.getConfiguration();
 
         final String preprocessedInput =
-                StandardExpressionPreprocessor.preprocess(processingContext, input);
+                StandardExpressionPreprocessor.preprocess(context, input);
 
         if (configuration != null) {
             final ParsedFragmentSelection cachedFragmentSelection =
@@ -349,9 +350,10 @@ public final class FragmentSelectionUtils {
 
 
     public static ProcessedFragmentSelection processFragmentSelection(
-            final IProcessingContext processingContext, final ParsedFragmentSelection fragmentSelection) {
+            final IExpressionContext context,
+            final ParsedFragmentSelection fragmentSelection) {
 
-        Validate.notNull(processingContext, "Processing Context cannot be null");
+        Validate.notNull(context, "Context cannot be null");
         Validate.notNull(fragmentSelection, "Fragment Selection cannot be null");
 
         /*
@@ -362,7 +364,7 @@ public final class FragmentSelectionUtils {
         if (templateNameExpression != null) {
             // Note we will apply restricted variable access for resolving template names in fragment specs. This
             // protects against the possibility of code injection attacks from request parameters.
-            final Object templateNameObject = templateNameExpression.execute(processingContext, StandardExpressionExecutionContext.RESTRICTED);
+            final Object templateNameObject = templateNameExpression.execute(context, StandardExpressionExecutionContext.RESTRICTED);
             if (templateNameObject == null) {
                 throw new TemplateProcessingException(
                         "Evaluation of template name from spec \"" + fragmentSelection.getStringRepresentation() + "\" returned null.");
@@ -384,7 +386,7 @@ public final class FragmentSelectionUtils {
          * RESOLVE FRAGMENT PARAMETERS if specified (null if not)
          */
         final Map<String, Object> fragmentParameters =
-                resolveProcessedFragmentParameters(processingContext, fragmentSelection.getParameters());
+                resolveProcessedFragmentParameters(context, fragmentSelection.getParameters());
 
         /*
          * COMPUTE THE FRAGMENT SELECTOR
@@ -393,7 +395,7 @@ public final class FragmentSelectionUtils {
         if (fragmentSelection.hasFragmentSelector()) {
 
             final Object fragmentSelectorObject =
-                    fragmentSelection.getFragmentSelector().execute(processingContext);
+                    fragmentSelection.getFragmentSelector().execute(context);
             if (fragmentSelectorObject == null) {
                 throw new TemplateProcessingException(
                         "Evaluation of fragment selector from spec \"" + fragmentSelection + "\" returned null.");
@@ -418,7 +420,7 @@ public final class FragmentSelectionUtils {
 
 
     private static Map<String,Object> resolveProcessedFragmentParameters(
-            final IProcessingContext processingContext, final AssignationSequence parameters) {
+            final IExpressionContext context, final AssignationSequence parameters) {
 
         if (parameters == null || parameters.size() == 0) {
             return null;
@@ -433,12 +435,12 @@ public final class FragmentSelectionUtils {
             final Assignation assignation = assignationValues.get(i);
 
             final IStandardExpression parameterNameExpr = assignation.getLeft();
-            final Object parameterNameValue = parameterNameExpr.execute(processingContext);
+            final Object parameterNameValue = parameterNameExpr.execute(context);
 
             final String parameterName = (parameterNameValue == null? null : parameterNameValue.toString());
 
             final IStandardExpression parameterValueExpr = assignation.getRight();
-            final Object parameterValueValue = parameterValueExpr.execute(processingContext);
+            final Object parameterValueValue = parameterValueExpr.execute(context);
 
             parameterValues.put(parameterName, parameterValueValue);
 

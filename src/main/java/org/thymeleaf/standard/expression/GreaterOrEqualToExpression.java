@@ -23,8 +23,9 @@ import java.math.BigDecimal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.EvaluationUtils;
 
@@ -65,11 +66,12 @@ public final class GreaterOrEqualToExpression extends GreaterLesserExpression {
 
     
     @SuppressWarnings("unchecked")
-    static Object executeGreaterOrEqualTo(final IProcessingContext processingContext,
+    static Object executeGreaterOrEqualTo(
+            final IExpressionContext context,
             final GreaterOrEqualToExpression expression, final StandardExpressionExecutionContext expContext) {
         
-        Object leftValue = expression.getLeft().execute(processingContext, expContext);
-        Object rightValue = expression.getRight().execute(processingContext, expContext);
+        Object leftValue = expression.getLeft().execute(context, expContext);
+        Object rightValue = expression.getRight().execute(context, expContext);
 
         leftValue = LiteralValue.unwrap(leftValue);
         rightValue = LiteralValue.unwrap(rightValue);

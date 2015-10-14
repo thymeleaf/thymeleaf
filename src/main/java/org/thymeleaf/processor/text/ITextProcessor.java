@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.text;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.processor.IProcessor;
 
@@ -32,7 +33,7 @@ import org.thymeleaf.processor.IProcessor;
 public interface ITextProcessor extends IProcessor {
 
     public void process(
-            final ITemplateProcessingContext processingContext, final IText text,
-            final ITextStructureHandler structureHandler);
+            final ITemplateContext context,
+            final IText text, final ITextStructureHandler structureHandler);
 
 }

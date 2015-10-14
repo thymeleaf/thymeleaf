@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.processinginstruction;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.processor.IProcessor;
 
@@ -32,7 +33,7 @@ import org.thymeleaf.processor.IProcessor;
 public interface IProcessingInstructionProcessor extends IProcessor {
 
     public void process(
-            final ITemplateProcessingContext processingContext, final IProcessingInstruction processingInstruction,
-            final IProcessingInstructionStructureHandler structureHandler);
+            final ITemplateContext context,
+            final IProcessingInstruction processingInstruction, final IProcessingInstructionStructureHandler structureHandler);
 
 }

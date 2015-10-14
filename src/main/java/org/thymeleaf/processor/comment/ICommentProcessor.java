@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.comment;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.processor.IProcessor;
 
@@ -32,7 +33,7 @@ import org.thymeleaf.processor.IProcessor;
 public interface ICommentProcessor extends IProcessor {
 
     public void process(
-            final ITemplateProcessingContext processingContext, final IComment comment,
-            final ICommentStructureHandler structureHandler);
+            final ITemplateContext context,
+            final IComment comment, final ICommentStructureHandler structureHandler);
 
 }

@@ -127,6 +127,10 @@ public class StandardDialect
 
 
 
+    // TODO All setters here should probably be removed (modifications --> extension)
+
+    // TODO Wouldn't it be cleaner if getProcessors() didn't receive the String with the dialectPrefix?
+
 
 
 

@@ -50,33 +50,24 @@ public class StandardModelFactory implements IModelFactory {
     private final AttributeDefinitions attributeDefinitions;
     private final ElementDefinitions elementDefinitions;
     private final TemplateMode templateMode;
-    private final String template;
-    private final TemplateManager templateManager;
 
 
 
-
-    public StandardModelFactory(
-            final IEngineConfiguration configuration, final TemplateMode templateMode,
-            final String template, final TemplateManager templateManager) {
+    public StandardModelFactory(final IEngineConfiguration configuration, final TemplateMode templateMode) {
 
         super();
 
         Validate.notNull(configuration, "Configuration cannot be null");
-        Validate.notNull(templateMode, "Template Mode cannot be null");
         Validate.notNull(configuration.getTextRepository(), "Text Repository returned by Engine Configuration cannot be null");
         Validate.notNull(configuration.getAttributeDefinitions(), "Attribute Definitions returned by Engine Configuration cannot be null");
         Validate.notNull(configuration.getElementDefinitions(), "Element Definitions returned by Engine Configuration cannot be null");
-        Validate.notNull(template, "Template cannot be null");
-        Validate.notNull(templateManager, "Template Manager cannot be null");
+        Validate.notNull(templateMode, "Template Mode cannot be null");
 
         this.configuration = configuration;
         this.textRepository = this.configuration.getTextRepository();
         this.attributeDefinitions = this.configuration.getAttributeDefinitions();
         this.elementDefinitions = this.configuration.getElementDefinitions();
         this.templateMode = templateMode;
-        this.template = template;
-        this.templateManager = templateManager;
 
     }
 
@@ -98,12 +89,11 @@ public class StandardModelFactory implements IModelFactory {
 
 
 
-    public IModel parse(final String template) {
+    public IModel parse(final String ownerTemplate, final String template) {
         // We will be setting useCache to false because we don't want to pollute the cache with mere String
         // parsing done from here. Also, we are 'artificially' specifying it as nested even if we don't really
         // know if this fragment is exactly a nested text inside the template, but that's not really important...
-        return this.templateManager.parseNested(
-                this.configuration, this.template, template, 0, 0, this.templateMode, false);
+        return this.configuration.getTemplateManager().parseNested(ownerTemplate, template, 0, 0, this.templateMode, false);
     }
 
 

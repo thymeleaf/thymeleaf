@@ -22,7 +22,8 @@ package org.thymeleaf.standard.processor;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.model.IDocType;
 import org.thymeleaf.processor.doctype.AbstractDocTypeProcessor;
@@ -129,8 +130,8 @@ public final class StandardTranslationDocTypeProcessor extends AbstractDocTypePr
 
     @Override
     protected void doProcess(
-            final ITemplateProcessingContext processingContext, final IDocType docType,
-            final IDocTypeStructureHandler structureHandler) {
+            final ITemplateContext context,
+            final IDocType docType, final IDocTypeStructureHandler structureHandler) {
 
 
         if ("SYSTEM".equalsIgnoreCase(docType.getType())) {

@@ -20,7 +20,8 @@
 package org.thymeleaf.engine;
 
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.IEngineContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
@@ -44,7 +45,7 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
 
     private ITemplateHandler next = null;
-    private ITemplateProcessingContext processingContext = null;
+    private ITemplateContext context = null;
 
 
     /**
@@ -96,11 +97,11 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
      *   This method is called always before starting the parsing and processing of a template.
      * </p>
      *
-     * @param processingContext the processing context.
+     * @param context the processing context.
      */
-    public void setProcessingContext(final ITemplateProcessingContext processingContext) {
-        Validate.notNull(processingContext, "Processing Context cannot be null");
-        this.processingContext = processingContext;
+    public void setContext(final ITemplateContext context) {
+        Validate.notNull(context, "Context cannot be null");
+        this.context = context;
     }
 
 
@@ -124,8 +125,8 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
      *
      * @return the processing context
      */
-    protected final ITemplateProcessingContext getProcessingContext() {
-        return this.processingContext;
+    protected final ITemplateContext getContext() {
+        return this.context;
     }
 
 

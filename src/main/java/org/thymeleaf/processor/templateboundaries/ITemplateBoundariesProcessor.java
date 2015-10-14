@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.templateboundaries;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.ITemplateEnd;
 import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.processor.IProcessor;
@@ -33,13 +34,11 @@ import org.thymeleaf.processor.IProcessor;
 public interface ITemplateBoundariesProcessor extends IProcessor {
 
     public void processTemplateStart(
-            final ITemplateProcessingContext processingContext,
-            final ITemplateStart templateStart,
-            final ITemplateBoundariesStructureHandler structureHandler);
+            final ITemplateContext context,
+            final ITemplateStart templateStart, final ITemplateBoundariesStructureHandler structureHandler);
 
     public void processTemplateEnd(
-            final ITemplateProcessingContext processingContext,
-            final ITemplateEnd templateEnd,
-            final ITemplateBoundariesStructureHandler structureHandler);
+            final ITemplateContext context,
+            final ITemplateEnd templateEnd, final ITemplateBoundariesStructureHandler structureHandler);
 
 }

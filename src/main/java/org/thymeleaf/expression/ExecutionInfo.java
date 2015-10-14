@@ -21,7 +21,7 @@ package org.thymeleaf.expression;
 
 import java.util.Calendar;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 
 
 /**
@@ -45,10 +45,10 @@ public final class ExecutionInfo {
     private final Calendar now;
 
 
-    public ExecutionInfo(final ITemplateProcessingContext processingContext) {
+    public ExecutionInfo(final ITemplateContext context) {
         super();
-        this.templateName = processingContext.getTemplateResolution().getTemplate();
-        this.now = Calendar.getInstance(processingContext.getLocale());
+        this.templateName = context.getTemplateResolution().getTemplate();
+        this.now = Calendar.getInstance(context.getLocale());
     }
 
 

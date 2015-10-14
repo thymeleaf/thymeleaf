@@ -22,8 +22,7 @@ package org.thymeleaf.standard.processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.context.IVariablesMap;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -62,8 +61,8 @@ public final class StandardCaseTagProcessor extends AbstractStandardConditionalV
 
     @Override
     protected boolean isVisible(
-            final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
-            final AttributeName attributeName, final String attributeValue) {
+            final ITemplateContext context,
+            final IProcessableElementTag tag, final AttributeName attributeName, final String attributeValue) {
 
         /*
          * Note the th:case processors must admit the concept of SHORTCUT inside the enclosing th:switch, which means
@@ -72,10 +71,8 @@ public final class StandardCaseTagProcessor extends AbstractStandardConditionalV
          * this code.
          */
 
-        final IVariablesMap variables = processingContext.getVariables();
-
         final StandardSwitchTagProcessor.SwitchStructure switchStructure =
-                (StandardSwitchTagProcessor.SwitchStructure) variables.getVariable(StandardSwitchTagProcessor.SWITCH_VARIABLE_NAME);
+                (StandardSwitchTagProcessor.SwitchStructure) context.getVariable(StandardSwitchTagProcessor.SWITCH_VARIABLE_NAME);
 
         if (switchStructure == null) {
             throw new TemplateProcessingException(
@@ -91,7 +88,7 @@ public final class StandardCaseTagProcessor extends AbstractStandardConditionalV
 
             if (this.logger.isTraceEnabled()) {
                 this.logger.trace("[THYMELEAF][{}][{}] Case expression \"{}\" in attribute \"{}\" has been evaluated as: \"{}\"",
-                        new Object[] {TemplateEngine.threadIndex(), processingContext.getTemplateResolution().getTemplate(), attributeValue, attributeName, attributeValue, Boolean.TRUE});
+                        new Object[] {TemplateEngine.threadIndex(), context.getTemplateResolution().getTemplate(), attributeValue, attributeName, attributeValue, Boolean.TRUE});
             }
 
             switchStructure.setExecuted(true);
@@ -99,20 +96,20 @@ public final class StandardCaseTagProcessor extends AbstractStandardConditionalV
 
         }
 
-        final IStandardExpressionParser expressionParser =
-                StandardExpressions.getExpressionParser(processingContext.getConfiguration());
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
 
-        final IStandardExpression caseExpression = expressionParser.parseExpression(processingContext, attributeValue);
+        final IStandardExpression caseExpression =
+                expressionParser.parseExpression(context, attributeValue);
 
         final EqualsExpression equalsExpression = new EqualsExpression(switchStructure.getExpression(), caseExpression);
 
-        final Object value = equalsExpression.execute(processingContext);
+        final Object value = equalsExpression.execute(context);
 
         final boolean visible = EvaluationUtils.evaluateAsBoolean(value);
 
         if (this.logger.isTraceEnabled()) {
             this.logger.trace("[THYMELEAF][{}][{}] Case expression \"{}\" in attribute \"{}\" has been evaluated as: \"{}\"",
-                    new Object[] {TemplateEngine.threadIndex(), processingContext.getTemplateResolution().getTemplate(), attributeValue, attributeName, attributeValue, Boolean.valueOf(visible)});
+                    new Object[] {TemplateEngine.threadIndex(), context.getTemplateResolution().getTemplate(), attributeValue, attributeName, attributeValue, Boolean.valueOf(visible)});
         }
 
         if (visible) {

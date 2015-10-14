@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.doctype;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.IDocType;
 import org.thymeleaf.processor.IProcessor;
 
@@ -32,7 +33,7 @@ import org.thymeleaf.processor.IProcessor;
 public interface IDocTypeProcessor extends IProcessor {
 
     public void process(
-            final ITemplateProcessingContext processingContext, final IDocType docType,
-            final IDocTypeStructureHandler structureHandler);
+            final ITemplateContext context,
+            final IDocType docType, final IDocTypeStructureHandler structureHandler);
 
 }

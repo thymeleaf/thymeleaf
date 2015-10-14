@@ -20,7 +20,7 @@
 package org.thymeleaf.standard.expression;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
@@ -51,84 +51,68 @@ public final class StandardExpressionParser implements IStandardExpressionParser
     }
 
 
-    /**
-     * 
-     * @param processingContext the processing context object.
-     * @param input the expression to be parsed, as an input String.
-     * @return the result
-     * @since 3.0.0
-     */
-    public Expression parseExpression(final IProcessingContext processingContext, final String input) {
-        Validate.notNull(processingContext, "Processing Context cannot be null");
+
+
+
+    public Expression parseExpression(
+            final IExpressionContext context,
+            final String input) {
+        Validate.notNull(context, "Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return (Expression) parseExpression(processingContext, input, true);
+        return (Expression) parseExpression(context, input, true);
     }
 
-    /**
-     * 
-     * @param processingContext processingContext
-     * @param input input
-     * @param allowParametersWithoutValue allowParametersWithoutValue
-     * @return the result
-     * @since 3.0.0
-     */
+
+
+
     public AssignationSequence parseAssignationSequence(
-            final IProcessingContext processingContext, final String input, final boolean allowParametersWithoutValue) {
-        Validate.notNull(processingContext, "Processing Context cannot be null");
+            final IExpressionContext context,
+            final String input, final boolean allowParametersWithoutValue) {
+        Validate.notNull(context, "Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return AssignationUtils.parseAssignationSequence(processingContext, input, allowParametersWithoutValue);
+        return AssignationUtils.parseAssignationSequence(context, input, allowParametersWithoutValue);
     }
 
-    /**
-     * 
-     * @param processingContext processingContext
-     * @param input input
-     * @return the result
-     * @since 3.0.0
-     */
-    public ExpressionSequence parseExpressionSequence(final IProcessingContext processingContext, final String input) {
-        Validate.notNull(processingContext, "Processing Context cannot be null");
+
+
+
+    public ExpressionSequence parseExpressionSequence(
+            final IExpressionContext context,
+            final String input) {
+        Validate.notNull(context, "Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return ExpressionSequenceUtils.parseExpressionSequence(processingContext, input);
+        return ExpressionSequenceUtils.parseExpressionSequence(context, input);
     }
 
-    /**
-     * 
-     * @param processingContext processingContext
-     * @param input input
-     * @return the result
-     * @since 3.0.0
-     */
-    public Each parseEach(final IProcessingContext processingContext, final String input) {
-        Validate.notNull(processingContext, "Processing Context cannot be null");
+
+
+
+    public Each parseEach(
+            final IExpressionContext context,
+            final String input) {
+        Validate.notNull(context, "Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return EachUtils.parseEach(processingContext, input);
-    }
-
-    /**
-     * 
-     * @param processingContext processingContext
-     * @param input input
-     * @return the result
-     * @since 3.0.0
-     */
-    public ParsedFragmentSelection parseFragmentSelection(final IProcessingContext processingContext, final String input) {
-        return FragmentSelectionUtils.parseFragmentSelection(processingContext, input);
+        return EachUtils.parseEach(context, input);
     }
 
 
 
-    /**
-     * 
-     * @param processingContext processingContext
-     * @param input input
-     * @return the result
-     * @since 3.0.0
-     */
-    public FragmentSignature parseFragmentSignature(final IProcessingContext processingContext, final String input) {
-        Validate.notNull(processingContext, "Processing Context cannot be null");
+
+    public ParsedFragmentSelection parseFragmentSelection(
+            final IExpressionContext context,
+            final String input) {
+        Validate.notNull(context, "Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return FragmentSignatureUtils.parseFragmentSignature(processingContext.getConfiguration(), input);
+        return FragmentSelectionUtils.parseFragmentSelection(context, input);
+    }
+
+
+
+
+    public FragmentSignature parseFragmentSignature(final IEngineConfiguration configuration, final String input) {
+        Validate.notNull(configuration, "Configuration cannot be null");
+        Validate.notNull(input, "Input cannot be null");
+        return FragmentSignatureUtils.parseFragmentSignature(configuration, input);
     }
 
 
@@ -137,15 +121,14 @@ public final class StandardExpressionParser implements IStandardExpressionParser
 
 
 
-    static IStandardExpression parseExpression(final IProcessingContext processingContext, final String input, final boolean preprocess) {
+    static IStandardExpression parseExpression(
+            final IExpressionContext context,
+            final String input, final boolean preprocess) {
 
-        final IEngineConfiguration configuration = processingContext.getConfiguration();
-        if (configuration == null) {
-            throw new IllegalArgumentException("Engine Configuration returned by Processing Context returned null, which is forbidden");
-        }
+        final IEngineConfiguration configuration = context.getConfiguration();
 
         final String preprocessedInput =
-            (preprocess? StandardExpressionPreprocessor.preprocess(processingContext, input) : input);
+            (preprocess? StandardExpressionPreprocessor.preprocess(context, input) : input);
 
         final IStandardExpression cachedExpression =
                 ExpressionCache.getExpressionFromCache(configuration, preprocessedInput);

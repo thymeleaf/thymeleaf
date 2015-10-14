@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.engine;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.IEngineContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
@@ -43,7 +44,7 @@ public interface ITemplateHandler {
 
     public void setNext(final ITemplateHandler next);
 
-    public void setProcessingContext(final ITemplateProcessingContext processingContext);
+    public void setContext(final ITemplateContext context);
 
 
     public void handleTemplateStart(final ITemplateStart templateStart);

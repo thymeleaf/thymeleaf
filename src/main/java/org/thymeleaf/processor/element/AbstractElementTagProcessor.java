@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.element;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeNames;
 import org.thymeleaf.engine.ElementNames;
@@ -85,7 +86,7 @@ public abstract class AbstractElementTagProcessor
 
 
     public final void process(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final IElementTagStructureHandler structureHandler) {
 
@@ -98,7 +99,7 @@ public abstract class AbstractElementTagProcessor
             tagLine = tag.getLine();
             tagCol = tag.getLine();
 
-            doProcess(processingContext, tag, tagTemplateName, tagLine, tagCol, structureHandler);
+            doProcess(context, tag, tagTemplateName, tagLine, tagCol, structureHandler);
 
         } catch (final TemplateProcessingException e) {
             // This is a nice moment to check whether the execution raised an error and, if so, add location information
@@ -122,7 +123,7 @@ public abstract class AbstractElementTagProcessor
 
 
     protected abstract void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final String tagTemplateName, final int tagLine, final int tagCol,
             final IElementTagStructureHandler structureHandler);

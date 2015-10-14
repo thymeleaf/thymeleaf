@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.processinginstruction;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessingInstruction;
@@ -43,12 +44,13 @@ public abstract class AbstractProcessingInstructionProcessor
     }
 
 
-    public final void process(final ITemplateProcessingContext processingContext, final IProcessingInstruction processingInstruction,
-                        final IProcessingInstructionStructureHandler structureHandler) {
+    public final void process(
+            final ITemplateContext context,
+            final IProcessingInstruction processingInstruction, final IProcessingInstructionStructureHandler structureHandler) {
 
         try {
 
-            doProcess(processingContext, processingInstruction, structureHandler);
+            doProcess(context, processingInstruction, structureHandler);
 
         } catch (final TemplateProcessingException e) {
             if (processingInstruction.hasLocation()) {
@@ -69,7 +71,8 @@ public abstract class AbstractProcessingInstructionProcessor
     }
 
 
-    protected abstract void doProcess(final ITemplateProcessingContext processingContext, final IProcessingInstruction processingInstruction,
-                        final IProcessingInstructionStructureHandler structureHandler);
+    protected abstract void doProcess(
+            final ITemplateContext context,
+            final IProcessingInstruction processingInstruction, final IProcessingInstructionStructureHandler structureHandler);
 
 }

@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.xmldeclaration;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.processor.IProcessor;
 
@@ -32,7 +33,7 @@ import org.thymeleaf.processor.IProcessor;
 public interface IXMLDeclarationProcessor extends IProcessor {
 
     public void process(
-            final ITemplateProcessingContext processingContext, final IXMLDeclaration xmlDeclaration,
-            final IXMLDeclarationStructureHandler structureHandler);
+            final ITemplateContext context,
+            final IXMLDeclaration xmlDeclaration, final IXMLDeclarationStructureHandler structureHandler);
 
 }

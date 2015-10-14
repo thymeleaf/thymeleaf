@@ -21,7 +21,7 @@ package org.thymeleaf.expression;
 
 import java.util.Set;
 
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 
 
 /**
@@ -56,11 +56,11 @@ public interface IExpressionObjectFactory {
      *   Build the requested object.
      * </p>
      *
-     * @param processingContext the processing context being used for processing the template.
+     * @param context the context being used for processing the template.
      * @param expressionObjectName the name of the expression object to be built.
      * @return the built object, or <tt>null</tt> if the object could not be built.
      */
-    public Object buildObject(final IProcessingContext processingContext, final String expressionObjectName);
+    public Object buildObject(final IExpressionContext context, final String expressionObjectName);
 
     /**
      * <p>

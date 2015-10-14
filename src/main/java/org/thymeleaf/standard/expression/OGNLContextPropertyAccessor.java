@@ -29,12 +29,12 @@ import ognl.enhance.UnsupportedCompilationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.ILazyContextVariable;
-import org.thymeleaf.context.IVariablesMap;
 
 /**
  * <p>
- *   Implementation of {@code PropertyAccessor} that allows OGNL to access the contents of {@link IVariablesMap}
+ *   Implementation of {@code PropertyAccessor} that allows OGNL to access the contents of {@link IContext}
  *   implementations as if they were a Map.
  * </p>
  * <p>
@@ -51,30 +51,30 @@ import org.thymeleaf.context.IVariablesMap;
  * @see PropertyAccessor
  * @since 3.0.0
  */
-public final class OGNLVariablesMapPropertyAccessor implements PropertyAccessor {
+public final class OGNLContextPropertyAccessor implements PropertyAccessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OGNLVariablesMapPropertyAccessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OGNLContextPropertyAccessor.class);
 
     public static final String RESTRICT_REQUEST_PARAMETERS = "%RESTRICT_REQUEST_PARAMETERS%";
     static final String REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME = "param";
 
 
-    OGNLVariablesMapPropertyAccessor() {
+    OGNLContextPropertyAccessor() {
         super();
     }
 
 
 
 
-    public Object getProperty(final Map context, final Object target, final Object name) throws OgnlException {
+    public Object getProperty(final Map ognlContext, final Object target, final Object name) throws OgnlException {
 
-        if (!(target instanceof IVariablesMap)) {
+        if (!(target instanceof IContext)) {
             throw new IllegalStateException(
-                    "Wrong target type. This property accessor is only usable for IVariableMap implementations, and " +
+                    "Wrong target type. This property accessor is only usable for " + IContext.class.getName() + " implementations, and " +
                     "in this case the target object is " + (target == null? "null" : ("of class " + target.getClass().getName())));
         }
 
-        if (REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME.equals(name) && context != null && context.containsKey(RESTRICT_REQUEST_PARAMETERS)) {
+        if (REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME.equals(name) && ognlContext != null && ognlContext.containsKey(RESTRICT_REQUEST_PARAMETERS)) {
             throw new OgnlException(
                     "Access to variable \"" + name + "\" is forbidden in this context. Note some restrictions apply to " +
                     "variable access. For example, accessing request parameters is forbidden in preprocessing and " +
@@ -84,7 +84,7 @@ public final class OGNLVariablesMapPropertyAccessor implements PropertyAccessor 
         final String propertyName = (name == null? null : name.toString());
 
         // 'execInfo' translation from context variable to expression object - deprecated and to be removed in 3.1
-        final Object execInfoResult = checkExecInfo(propertyName, context);
+        final Object execInfoResult = checkExecInfo(propertyName, ognlContext);
         if (execInfoResult != null) {
             return execInfoResult;
         }
@@ -95,8 +95,8 @@ public final class OGNLVariablesMapPropertyAccessor implements PropertyAccessor 
          * be used instead: #locale, #httpServletRequest, #httpSession, etc.
          * The variables maps should just be used as a map, without exposure of its more-internal methods...
          */
-        final IVariablesMap map = (IVariablesMap) target;
-        final Object result = map.getVariable(propertyName);
+        final IContext context = (IContext) target;
+        final Object result = context.getVariable(propertyName);
 
         /*
          * Check the possibility that this variable is a lazy one, in which case we should not return it directly
@@ -158,7 +158,7 @@ public final class OGNLVariablesMapPropertyAccessor implements PropertyAccessor 
         // what is done at MapPropertyAccessor#getSourceAccessor() method, removing all the parts related to indexed
         // access, which do not apply to IVariablesMap implementations.
 
-        context.setCurrentAccessor(IVariablesMap.class);
+        context.setCurrentAccessor(IContext.class);
         context.setCurrentType(Object.class);
 
         return ".getVariable(" + index + ")";

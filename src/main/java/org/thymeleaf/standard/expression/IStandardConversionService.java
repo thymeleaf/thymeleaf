@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IExpressionContext;
 
 /**
  * <p>
@@ -64,13 +65,13 @@ public interface IStandardConversionService {
      *   for the specified object and the target class.
      * </p>
      *
-     * @param processingContext the processing context object.
+     * @param <T> the type of the target class
+     * @param context the context object.
      * @param object the object to be converted.
      * @param targetClass the target class the object should be converted to.
-     * @param <T> the type of the target class
      * @return the object, converted. Or an exception if the conversion has not been possible.
      */
-    public <T> T convert(final IProcessingContext processingContext,
+    public <T> T convert(final IExpressionContext context,
                          final Object object, final Class<T> targetClass);
 
 }

@@ -21,8 +21,9 @@ package org.thymeleaf.standard.expression;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 
 
 /**
@@ -66,9 +67,9 @@ public final class BooleanTokenExpression extends Token {
 
     
     static Object executeBooleanToken(
-            @SuppressWarnings("unused") final IProcessingContext processingContext,
+            final IExpressionContext context,
             final BooleanTokenExpression expression,
-            @SuppressWarnings("unused") final StandardExpressionExecutionContext expContext) {
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating boolean token: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());

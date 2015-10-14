@@ -20,7 +20,8 @@
 package org.thymeleaf.standard.expression;
 
 
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -48,7 +49,9 @@ public abstract class AbstractStandardConversionService implements IStandardConv
 
 
 
-    public final <T> T convert(final IProcessingContext processingContext, final Object object, final Class<T> targetClass) {
+    public final <T> T convert(
+            final IExpressionContext context,
+            final Object object, final Class<T> targetClass) {
 
         Validate.notNull(targetClass, "Target class cannot be null");
 
@@ -59,19 +62,21 @@ public abstract class AbstractStandardConversionService implements IStandardConv
             if (object == null || object instanceof String) {
                 return (T) object;
             }
-            return (T) convertToString(processingContext, object);
+            return (T) convertToString(context, object);
         }
 
         /*
          * OTHER CONVERSIONS
          */
-        return convertOther(processingContext, object, targetClass);
+        return convertOther(context, object, targetClass);
 
     }
 
 
 
-    protected String convertToString(final IProcessingContext processingContext, final Object object) {
+    protected String convertToString(
+            final IExpressionContext context,
+            final Object object) {
         if (object == null) {
             return null;
         }
@@ -79,7 +84,9 @@ public abstract class AbstractStandardConversionService implements IStandardConv
     }
 
 
-    protected <T> T convertOther(final IProcessingContext processingContext, final Object object, final Class<T> targetClass) {
+    protected <T> T convertOther(
+            final IExpressionContext context,
+            final Object object, final Class<T> targetClass) {
         throw new IllegalArgumentException("No available conversion for target class \"" + targetClass.getName() + "\"");
     }
 

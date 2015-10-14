@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractElementTagProcessor;
@@ -46,7 +47,7 @@ public final class StandardBlockTagProcessor extends AbstractElementTagProcessor
 
 
     @Override
-    protected void doProcess(final ITemplateProcessingContext processingContext,
+    protected void doProcess(final ITemplateContext context,
                              final IProcessableElementTag tag,
                              final String tagTemplateName, final int tagLine, final int tagCol,
                              final IElementTagStructureHandler structureHandler) {

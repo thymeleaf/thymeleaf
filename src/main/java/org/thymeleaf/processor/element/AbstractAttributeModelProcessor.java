@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.element;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -54,7 +55,7 @@ public abstract class AbstractAttributeModelProcessor extends AbstractElementMod
 
     @Override
     protected final void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IModel model,
             final String modelTemplateName, final int modelLine, final int modelCol,
             final IElementModelStructureHandler structureHandler) {
@@ -72,13 +73,16 @@ public abstract class AbstractAttributeModelProcessor extends AbstractElementMod
             attributeCol = firstEvent.getAttributes().getCol(attributeName);
 
             final String attributeValue =
-                    EscapedAttributeUtils.unescapeAttribute(processingContext.getTemplateMode(), firstEvent.getAttributes().getValue(attributeName));
+                    EscapedAttributeUtils.unescapeAttribute(context.getTemplateMode(), firstEvent.getAttributes().getValue(attributeName));
 
             if (this.removeAttribute) {
                 firstEvent.getAttributes().removeAttribute(attributeName);
             }
 
-            doProcess(processingContext, model, attributeName, attributeValue, attributeTemplateName, attributeLine, attributeCol, structureHandler);
+            doProcess(
+                    context,
+                    model, attributeName, attributeValue,
+                    attributeTemplateName, attributeLine, attributeCol, structureHandler);
 
         } catch (final TemplateProcessingException e) {
 
@@ -105,7 +109,7 @@ public abstract class AbstractAttributeModelProcessor extends AbstractElementMod
 
 
     protected abstract void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IModel model,
             final AttributeName attributeName,
             final String attributeValue,

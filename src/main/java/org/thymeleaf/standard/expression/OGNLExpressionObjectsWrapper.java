@@ -34,13 +34,13 @@ import org.thymeleaf.expression.IExpressionObjects;
  * @since 3.0.0
  *
  */
-final class OGNLContextExpressionObjectsWrapper extends HashMap<String, Object> {
+final class OGNLExpressionObjectsWrapper extends HashMap<String, Object> {
 
 
     private final IExpressionObjects expressionObjects;
 
 
-    OGNLContextExpressionObjectsWrapper(final IExpressionObjects expressionObjects) {
+    OGNLExpressionObjectsWrapper(final IExpressionObjects expressionObjects) {
         super(5);
         this.expressionObjects = expressionObjects;
     }

@@ -32,9 +32,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.ILocalVariableAwareVariablesMap;
-import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.context.IVariablesMap;
+import org.thymeleaf.context.IEngineContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
@@ -110,11 +109,11 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private final TextStructureHandler textStructureHandler;
     private final XMLDeclarationStructureHandler xmlDeclarationStructureHandler;
 
-    private ITemplateProcessingContext processingContext;
     private IEngineConfiguration configuration;
     private TemplateMode templateMode;
 
-    private ILocalVariableAwareVariablesMap variablesMap;
+    private ITemplateContext context;
+    private IEngineContext engineContext;
 
     private boolean hasTemplateBoundariesProcessors = false;
     private boolean hasCDATASectionProcessors = false;
@@ -225,30 +224,31 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void setProcessingContext(final ITemplateProcessingContext processingContext) {
+    public void setContext(final ITemplateContext context) {
 
-        super.setProcessingContext(processingContext);
+        super.setContext(context);
 
-        this.processingContext = processingContext;
-        Validate.notNull(this.processingContext, "Processing Context cannot be null");
-        Validate.notNull(this.processingContext.getTemplateMode(), "Template Mode returned by Processing Context cannot be null");
+        this.context = context;
+        Validate.notNull(this.context, "Context cannot be null");
+        Validate.notNull(this.context.getTemplateMode(), "Template Mode returned by context cannot be null");
 
-        this.configuration = processingContext.getConfiguration();
-        Validate.notNull(this.configuration, "Engine Configuration returned by Processing Context cannot be null");
+        this.configuration = context.getConfiguration();
+        Validate.notNull(this.configuration, "Engine Configuration returned by context cannot be null");
         Validate.notNull(this.configuration.getTextRepository(), "Text Repository returned by the Engine Configuration cannot be null");
         Validate.notNull(this.configuration.getElementDefinitions(), "Element Definitions returned by the Engine Configuration cannot be null");
         Validate.notNull(this.configuration.getAttributeDefinitions(), "Attribute Definitions returned by the Engine Configuration cannot be null");
 
-        this.templateMode = this.processingContext.getTemplateMode(); // Just a way to avoid doing the call each time
+        this.templateMode = this.context.getTemplateMode(); // Just a way to avoid doing the call each time
 
-        final IVariablesMap variablesMap = processingContext.getVariables();
-        Validate.notNull(variablesMap, "Variables Map returned by Processing Context cannot be null");
-        if (variablesMap instanceof ILocalVariableAwareVariablesMap) {
-            this.variablesMap = (ILocalVariableAwareVariablesMap) variablesMap;
+        if (this.context instanceof IEngineContext) {
+            this.engineContext = (IEngineContext) this.context;
         } else {
-            logger.warn("Unknown implementation of the " + IVariablesMap.class.getName() + " interface: " +
-                        variablesMap.getClass().getName() + ". Local variable support will be DISABLED (this " +
-                        "includes iteration, target selection and inlining)");
+            logger.warn("Unknown implementation of the " + ITemplateContext.class.getName() + " interface: " +
+                        this.context.getClass().getName() + ". Local variable support will be DISABLED (this " +
+                        "includes iteration, target selection and inlining). In order to enable these, context " +
+                        "implementations should also implement the " + IEngineContext.class.getName() +
+                        " interface.");
+            this.engineContext = null;
         }
 
         // Buffer used for text-shaped body replacement in tags (very common operation)
@@ -430,31 +430,31 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.templateStructureHandler.reset();
 
             this.templateBoundariesProcessors[i].processTemplateStart(
-                    this.processingContext, itemplateStart, this.templateStructureHandler);
+                    this.context, itemplateStart, this.templateStructureHandler);
 
             if (this.templateStructureHandler.setLocalVariable) {
-                if (this.variablesMap != null) {
-                    this.variablesMap.putAll(this.templateStructureHandler.addedLocalVariables);
+                if (this.engineContext != null) {
+                    this.engineContext.setVariables(this.templateStructureHandler.addedLocalVariables);
                 }
             }
 
             if (this.templateStructureHandler.removeLocalVariable) {
-                if (this.variablesMap != null) {
+                if (this.engineContext != null) {
                     for (final String variableName : this.templateStructureHandler.removedLocalVariableNames) {
-                        this.variablesMap.remove(variableName);
+                        this.engineContext.removeVariable(variableName);
                     }
                 }
             }
 
             if (this.templateStructureHandler.setSelectionTarget) {
-                if (this.variablesMap != null) {
-                    this.variablesMap.setSelectionTarget(this.templateStructureHandler.selectionTargetObject);
+                if (this.engineContext != null) {
+                    this.engineContext.setSelectionTarget(this.templateStructureHandler.selectionTargetObject);
                 }
             }
 
             if (this.templateStructureHandler.setInliner) {
-                if (this.variablesMap != null) {
-                    this.variablesMap.setInliner(this.templateStructureHandler.setInlinerValue);
+                if (this.engineContext != null) {
+                    this.engineContext.setInliner(this.templateStructureHandler.setInlinerValue);
                 }
             }
 
@@ -535,31 +535,31 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.templateStructureHandler.reset();
 
             this.templateBoundariesProcessors[i].processTemplateEnd(
-                    this.processingContext, itemplateEnd, this.templateStructureHandler);
+                    this.context, itemplateEnd, this.templateStructureHandler);
 
             if (this.templateStructureHandler.setLocalVariable) {
-                if (this.variablesMap != null) {
-                    this.variablesMap.putAll(this.templateStructureHandler.addedLocalVariables);
+                if (this.engineContext != null) {
+                    this.engineContext.setVariables(this.templateStructureHandler.addedLocalVariables);
                 }
             }
 
             if (this.templateStructureHandler.removeLocalVariable) {
-                if (this.variablesMap != null) {
+                if (this.engineContext != null) {
                     for (final String variableName : this.templateStructureHandler.removedLocalVariableNames) {
-                        this.variablesMap.remove(variableName);
+                        this.engineContext.removeVariable(variableName);
                     }
                 }
             }
 
             if (this.templateStructureHandler.setSelectionTarget) {
-                if (this.variablesMap != null) {
-                    this.variablesMap.setSelectionTarget(this.templateStructureHandler.selectionTargetObject);
+                if (this.engineContext != null) {
+                    this.engineContext.setSelectionTarget(this.templateStructureHandler.selectionTargetObject);
                 }
             }
 
             if (this.templateStructureHandler.setInliner) {
-                if (this.variablesMap != null) {
-                    this.variablesMap.setInliner(this.templateStructureHandler.setInlinerValue);
+                if (this.engineContext != null) {
+                    this.engineContext.setInliner(this.templateStructureHandler.setInlinerValue);
                 }
             }
 
@@ -673,7 +673,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.textStructureHandler.reset();
 
-            this.textProcessors[i].process(this.processingContext, itext, this.textStructureHandler);
+            this.textProcessors[i].process(this.context, itext, this.textStructureHandler);
 
             if (this.textStructureHandler.replaceWithModel) {
 
@@ -785,7 +785,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.commentStructureHandler.reset();
 
-            this.commentProcessors[i].process(this.processingContext, icomment, this.commentStructureHandler);
+            this.commentProcessors[i].process(this.context, icomment, this.commentStructureHandler);
 
             if (this.commentStructureHandler.replaceWithModel) {
 
@@ -896,7 +896,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.cdataSectionStructureHandler.reset();
 
-            this.cdataSectionProcessors[i].process(this.processingContext, icdataSection, this.cdataSectionStructureHandler);
+            this.cdataSectionProcessors[i].process(this.context, icdataSection, this.cdataSectionStructureHandler);
 
             if (this.cdataSectionStructureHandler.replaceWithModel) {
 
@@ -1020,11 +1020,11 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * INCREASE THE VARIABLES MAP LEVEL so that all local variables created during the execution of processors
+         * INCREASE THE CONTEXT LEVEL so that all local variables created during the execution of processors
          * are available for the rest of the processors as well as the body of the tag
          */
-        if (this.variablesMap != null) {
-            this.variablesMap.increaseLevel();
+        if (this.engineContext != null) {
+            this.engineContext.increaseLevel();
         }
 
 
@@ -1067,31 +1067,31 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             if (processor instanceof IElementTagProcessor) {
 
                 final IElementTagProcessor elementProcessor = ((IElementTagProcessor)processor);
-                elementProcessor.process(this.processingContext, standaloneElementTag, this.elementTagStructureHandler);
+                elementProcessor.process(this.context, standaloneElementTag, this.elementTagStructureHandler);
 
                 if (this.elementTagStructureHandler.setLocalVariable) {
-                    if (this.variablesMap != null) {
-                        this.variablesMap.putAll(this.elementTagStructureHandler.addedLocalVariables);
+                    if (this.engineContext != null) {
+                        this.engineContext.setVariables(this.elementTagStructureHandler.addedLocalVariables);
                     }
                 }
 
                 if (this.elementTagStructureHandler.removeLocalVariable) {
-                    if (this.variablesMap != null) {
+                    if (this.engineContext != null) {
                         for (final String variableName : this.elementTagStructureHandler.removedLocalVariableNames) {
-                            this.variablesMap.remove(variableName);
+                            this.engineContext.removeVariable(variableName);
                         }
                     }
                 }
 
                 if (this.elementTagStructureHandler.setSelectionTarget) {
-                    if (this.variablesMap != null) {
-                        this.variablesMap.setSelectionTarget(this.elementTagStructureHandler.selectionTargetObject);
+                    if (this.engineContext != null) {
+                        this.engineContext.setSelectionTarget(this.elementTagStructureHandler.selectionTargetObject);
                     }
                 }
 
                 if (this.elementTagStructureHandler.setInliner) {
-                    if (this.variablesMap != null) {
-                        this.variablesMap.setInliner(this.elementTagStructureHandler.setInlinerValue);
+                    if (this.engineContext != null) {
+                        this.engineContext.setInliner(this.elementTagStructureHandler.setInlinerValue);
                     }
                 }
 
@@ -1129,14 +1129,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Decrease the handler execution level (all important bits are already in suspensionSpec)
                     decreaseHandlerExecLevel();
 
-                    // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- we need the variables stored there, if any
+                    // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Process the queue by iterating it
                     processIteration();
 
-                    // Decrease the variables map level
-                    if (this.variablesMap != null) {
-                        this.variablesMap.decreaseLevel();
+                    // Decrease the context level
+                    if (this.engineContext != null) {
+                        this.engineContext.decreaseLevel();
                     }
 
                     // Complete exit of the handler method: no more processing to do from here
@@ -1177,7 +1177,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Decrease the handler execution level (all important bits are already in suspensionSpec)
                     decreaseHandlerExecLevel();
 
-                    // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- we need the variables stored there, if any
+                    // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Fire the now-equivalent events. Note the handleOpenElement event will take care of the suspended queue
                     handleOpenElement(openTag);
@@ -1186,9 +1186,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // We can free the buffers we just used
                     this.standaloneTagBuffersIndex--;
 
-                    // Decrease the variables map level
-                    if (this.variablesMap != null) {
-                        this.variablesMap.decreaseLevel();
+                    // Decrease the context level
+                    if (this.engineContext != null) {
+                        this.engineContext.decreaseLevel();
                     }
 
                     // Complete exit of the handler method: no more processing to do from here
@@ -1223,7 +1223,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Decrease the handler execution level (all important bits are already in suspensionSpec)
                     decreaseHandlerExecLevel();
 
-                    // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- we need the variables stored there, if any
+                    // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Fire the now-equivalent events. Note the handleOpenElement event will take care of the suspended queue
                     handleOpenElement(openTag);
@@ -1232,9 +1232,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // We can free the buffers we just used
                     this.standaloneTagBuffersIndex--;
 
-                    // Decrease the variables map level
-                    if (this.variablesMap != null) {
-                        this.variablesMap.decreaseLevel();
+                    // Decrease the context level
+                    if (this.engineContext != null) {
+                        this.engineContext.decreaseLevel();
                     }
 
                     // Complete exit of the handler method: no more processing to do from here
@@ -1352,14 +1352,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Decrease the handler execution level (all important bits are already in suspensionSpec)
                     decreaseHandlerExecLevel();
 
-                    // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- we need the variables stored there, if any
+                    // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Process the queue by iterating it
                     processElementModel();
 
-                    // Decrease the variables map level
-                    if (this.variablesMap != null) {
-                        this.variablesMap.decreaseLevel();
+                    // Decrease the context level
+                    if (this.engineContext != null) {
+                        this.engineContext.decreaseLevel();
                     }
 
                     // Complete exit of the handler method: no more processing to do from here
@@ -1383,31 +1383,31 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 //      anyway) will be ignored.
                 this.modelBuffer.getEventQueue().resetAsCloneOf(gatheredQueue, false);
 
-                ((IElementModelProcessor) processor).process(this.processingContext, this.modelBuffer, this.elementModelStructureHandler);
+                ((IElementModelProcessor) processor).process(this.context, this.modelBuffer, this.elementModelStructureHandler);
 
                 if (this.elementModelStructureHandler.setLocalVariable) {
-                    if (this.variablesMap != null) {
-                        this.variablesMap.putAll(this.elementModelStructureHandler.addedLocalVariables);
+                    if (this.engineContext != null) {
+                        this.engineContext.setVariables(this.elementModelStructureHandler.addedLocalVariables);
                     }
                 }
 
                 if (this.elementModelStructureHandler.removeLocalVariable) {
-                    if (this.variablesMap != null) {
+                    if (this.engineContext != null) {
                         for (final String variableName : this.elementModelStructureHandler.removedLocalVariableNames) {
-                            this.variablesMap.remove(variableName);
+                            this.engineContext.removeVariable(variableName);
                         }
                     }
                 }
 
                 if (this.elementModelStructureHandler.setSelectionTarget) {
-                    if (this.variablesMap != null) {
-                        this.variablesMap.setSelectionTarget(this.elementModelStructureHandler.selectionTargetObject);
+                    if (this.engineContext != null) {
+                        this.engineContext.setSelectionTarget(this.elementModelStructureHandler.selectionTargetObject);
                     }
                 }
 
                 if (this.elementModelStructureHandler.setInliner) {
-                    if (this.variablesMap != null) {
-                        this.variablesMap.setInliner(this.elementModelStructureHandler.setInlinerValue);
+                    if (this.engineContext != null) {
+                        this.engineContext.setInliner(this.elementModelStructureHandler.setInlinerValue);
                     }
                 }
 
@@ -1449,11 +1449,11 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * DECREASE THE VARIABLES MAP LEVEL once we have executed all the processors (and maybe a body if we added
+         * DECREASE THE CONTEXT LEVEL once we have executed all the processors (and maybe a body if we added
          * one to the tag converting it into an open tag)
          */
-        if (this.variablesMap != null) {
-            this.variablesMap.decreaseLevel();
+        if (this.engineContext != null) {
+            this.engineContext.decreaseLevel();
         }
 
 
@@ -1522,8 +1522,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (!this.suspended && !iopenElementTag.hasAssociatedProcessors()) {
             super.handleOpenElement(iopenElementTag);
             increaseModelLevel();
-            if (this.variablesMap != null) {
-                this.variablesMap.increaseLevel();
+            if (this.engineContext != null) {
+                this.engineContext.increaseLevel();
             }
             return;
         }
@@ -1553,11 +1553,11 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * INCREASE THE VARIABLES MAP LEVEL so that all local variables created during the execution of processors
+         * INCREASE THE CONTEXT LEVEL so that all local variables created during the execution of processors
          * are available for the rest of the processors as well as the body of the tag
          */
-        if (this.variablesMap != null) {
-            this.variablesMap.increaseLevel();
+        if (this.engineContext != null) {
+            this.engineContext.increaseLevel();
         }
 
 
@@ -1602,31 +1602,31 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             if (processor instanceof IElementTagProcessor) {
 
                 final IElementTagProcessor elementProcessor = ((IElementTagProcessor)processor);
-                elementProcessor.process(this.processingContext, openElementTag, this.elementTagStructureHandler);
+                elementProcessor.process(this.context, openElementTag, this.elementTagStructureHandler);
 
                 if (this.elementTagStructureHandler.setLocalVariable) {
-                    if (this.variablesMap != null) {
-                        this.variablesMap.putAll(this.elementTagStructureHandler.addedLocalVariables);
+                    if (this.engineContext != null) {
+                        this.engineContext.setVariables(this.elementTagStructureHandler.addedLocalVariables);
                     }
                 }
 
                 if (this.elementTagStructureHandler.removeLocalVariable) {
-                    if (this.variablesMap != null) {
+                    if (this.engineContext != null) {
                         for (final String variableName : this.elementTagStructureHandler.removedLocalVariableNames) {
-                            this.variablesMap.remove(variableName);
+                            this.engineContext.removeVariable(variableName);
                         }
                     }
                 }
 
                 if (this.elementTagStructureHandler.setSelectionTarget) {
-                    if (this.variablesMap != null) {
-                        this.variablesMap.setSelectionTarget(this.elementTagStructureHandler.selectionTargetObject);
+                    if (this.engineContext != null) {
+                        this.engineContext.setSelectionTarget(this.elementTagStructureHandler.selectionTargetObject);
                     }
                 }
 
                 if (this.elementTagStructureHandler.setInliner) {
-                    if (this.variablesMap != null) {
-                        this.variablesMap.setInliner(this.elementTagStructureHandler.setInlinerValue);
+                    if (this.engineContext != null) {
+                        this.engineContext.setInliner(this.elementTagStructureHandler.setInlinerValue);
                     }
                 }
 
@@ -1676,7 +1676,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Decrease the handler execution level (all important bits are already in suspensionSpec)
                     decreaseHandlerExecLevel();
 
-                    // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- that's the responsibility of the close event
+                    // Note we DO NOT DECREASE THE CONTEXT LEVEL -- that's the responsibility of the close event
 
                     // Nothing else to be done by this handler... let's just queue the rest of the events to be iterated
                     return;
@@ -1841,7 +1841,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Decrease the handler execution level (all important bits are already in suspensionSpec)
                     decreaseHandlerExecLevel();
 
-                    // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- that's the responsibility of the close event
+                    // Note we DO NOT DECREASE THE CONTEXT LEVEL -- that's the responsibility of the close event
 
                     // Nothing else to be done by this handler... let's just queue the rest of the events in this element
                     return;
@@ -1864,31 +1864,31 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 //      anyway) will be ignored.
                 this.modelBuffer.getEventQueue().resetAsCloneOf(gatheredQueue, false);
 
-                ((IElementModelProcessor) processor).process(this.processingContext, this.modelBuffer, this.elementModelStructureHandler);
+                ((IElementModelProcessor) processor).process(this.context, this.modelBuffer, this.elementModelStructureHandler);
 
                 if (this.elementModelStructureHandler.setLocalVariable) {
-                    if (this.variablesMap != null) {
-                        this.variablesMap.putAll(this.elementModelStructureHandler.addedLocalVariables);
+                    if (this.engineContext != null) {
+                        this.engineContext.setVariables(this.elementModelStructureHandler.addedLocalVariables);
                     }
                 }
 
                 if (this.elementModelStructureHandler.removeLocalVariable) {
-                    if (this.variablesMap != null) {
+                    if (this.engineContext != null) {
                         for (final String variableName : this.elementModelStructureHandler.removedLocalVariableNames) {
-                            this.variablesMap.remove(variableName);
+                            this.engineContext.removeVariable(variableName);
                         }
                     }
                 }
 
                 if (this.elementModelStructureHandler.setSelectionTarget) {
-                    if (this.variablesMap != null) {
-                        this.variablesMap.setSelectionTarget(this.elementModelStructureHandler.selectionTargetObject);
+                    if (this.engineContext != null) {
+                        this.engineContext.setSelectionTarget(this.elementModelStructureHandler.selectionTargetObject);
                     }
                 }
 
                 if (this.elementModelStructureHandler.setInliner) {
-                    if (this.variablesMap != null) {
-                        this.variablesMap.setInliner(this.elementModelStructureHandler.setInlinerValue);
+                    if (this.engineContext != null) {
+                        this.engineContext.setInliner(this.elementModelStructureHandler.setInlinerValue);
                     }
                 }
 
@@ -1954,7 +1954,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          */
         if (tagsRemoved) {
             this.skipCloseTagLevels.add(this.modelLevel - 1);
-            // We cannot decrease here the variables map level because we aren't actually decreasing the model
+            // We cannot decrease here the context level because we aren't actually decreasing the model
             // level until we find the corresponding close tag
         }
 
@@ -2027,9 +2027,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             // Process the queue by iterating it
             processIteration();
 
-            // Decrease the variables map level
-            if (this.variablesMap != null) {
-                this.variablesMap.decreaseLevel();
+            // Decrease the context level
+            if (this.engineContext != null) {
+                this.engineContext.decreaseLevel();
             }
 
             return;
@@ -2048,9 +2048,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             // Process the queue
             processElementModel();
 
-            // Decrease the variables map level
-            if (this.variablesMap != null) {
-                this.variablesMap.decreaseLevel();
+            // Decrease the context level
+            if (this.engineContext != null) {
+                this.engineContext.decreaseLevel();
             }
 
             return;
@@ -2058,10 +2058,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         /*
-         * DECREASE THE VARIABLES MAP LEVEL, once we know this tag was not part of a block of discarded model
+         * DECREASE THE CONTEXT LEVEL, once we know this tag was not part of a block of discarded model
          */
-        if (this.variablesMap != null) {
-            this.variablesMap.decreaseLevel();
+        if (this.engineContext != null) {
+            this.engineContext.decreaseLevel();
         }
 
         /*
@@ -2208,7 +2208,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.docTypeStructureHandler.reset();
 
-            this.docTypeProcessors[i].process(this.processingContext, idocType, this.docTypeStructureHandler);
+            this.docTypeProcessors[i].process(this.context, idocType, this.docTypeStructureHandler);
 
             if (this.docTypeStructureHandler.replaceWithModel) {
 
@@ -2323,7 +2323,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.xmlDeclarationStructureHandler.reset();
 
-            this.xmlDeclarationProcessors[i].process(this.processingContext, ixmlDeclaration, this.xmlDeclarationStructureHandler);
+            this.xmlDeclarationProcessors[i].process(this.context, ixmlDeclaration, this.xmlDeclarationStructureHandler);
 
             if (this.xmlDeclarationStructureHandler.replaceWithModel) {
 
@@ -2437,7 +2437,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.processingInstructionStructureHandler.reset();
 
-            this.processingInstructionProcessors[i].process(this.processingContext, iprocessingInstruction, this.processingInstructionStructureHandler);
+            this.processingInstructionProcessors[i].process(this.context, iprocessingInstruction, this.processingInstructionStructureHandler);
 
             if (this.processingInstructionStructureHandler.replaceWithModel) {
 
@@ -2488,12 +2488,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     private void processIteration() {
 
-        if (this.variablesMap == null) {
+        if (this.engineContext == null) {
             throw new TemplateProcessingException(
                     "Iteration is not supported because local variable support is DISABLED. This is due to " +
-                    "the use of an implementation of the " + IVariablesMap.class.getName() + " interface that does " +
-                    "not provide local-variable support. In order to have local-variable support, the variables map " +
-                    "implementation should also implement the " + ILocalVariableAwareVariablesMap.class.getName() +
+                    "the use of an implementation of the " + ITemplateContext.class.getName() + " interface that does " +
+                    "not provide local-variable support. In order to have local-variable support, the context " +
+                    "implementation should also implement the " + IEngineContext.class.getName() +
                     " interface");
         }
 
@@ -2583,10 +2583,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             // we precompute this in order to know when we are at the last element
             iterHasNext = iterator.hasNext();
 
-            this.variablesMap.increaseLevel();
+            this.engineContext.increaseLevel();
 
-            this.variablesMap.put(iterVariableName, status.current);
-            this.variablesMap.put(iterStatusVariableName, status);
+            this.engineContext.setVariable(iterVariableName, status.current);
+            this.engineContext.setVariable(iterStatusVariableName, status);
 
             // We will initialize the suspension artifacts just as if we had just suspended it
             this.suspensionSpec.allowedElementCountInBody = suspendedAllowedElementCountInBody;
@@ -2608,7 +2608,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             // Execute the queue itself
             iterArtifacts.iterationQueue.process(this, false);
 
-            this.variablesMap.decreaseLevel();
+            this.engineContext.decreaseLevel();
 
             // We will use the index in order to determine the moment we need to insert the preceding whitespace into
             // the iteration queue. This is because the preceding text event will have already been issued by the moment

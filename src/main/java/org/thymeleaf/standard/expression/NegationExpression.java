@@ -21,8 +21,9 @@ package org.thymeleaf.standard.expression;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.util.EvaluationUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
@@ -138,14 +139,15 @@ public final class NegationExpression extends ComplexExpression {
     
     
 
-    static Object executeNegation(final IProcessingContext processingContext,
+    static Object executeNegation(
+            final IExpressionContext context,
             final NegationExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating negation expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
 
-        final Object operandValue = expression.getOperand().execute(processingContext, expContext);
+        final Object operandValue = expression.getOperand().execute(context, expContext);
 
         final boolean operandBooleanValue = EvaluationUtils.evaluateAsBoolean(operandValue);
         

@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.cdatasection;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.processor.IProcessor;
 
@@ -32,7 +33,7 @@ import org.thymeleaf.processor.IProcessor;
 public interface ICDATASectionProcessor extends IProcessor {
 
     public void process(
-            final ITemplateProcessingContext processingContext, final ICDATASection cdataSection,
-            final ICDATASectionStructureHandler structureHandler);
+            final ITemplateContext context,
+            final ICDATASection cdataSection, final ICDATASectionStructureHandler structureHandler);
 
 }

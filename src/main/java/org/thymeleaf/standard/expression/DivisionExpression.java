@@ -24,8 +24,9 @@ import java.math.RoundingMode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.EvaluationUtils;
 
@@ -71,16 +72,17 @@ public final class DivisionExpression extends MultiplicationDivisionRemainderExp
     
     
     
-    static Object executeDivision(final IProcessingContext processingContext,
+    static Object executeDivision(
+            final IExpressionContext context,
             final DivisionExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating division expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
-        Object leftValue = expression.getLeft().execute(processingContext, expContext);
+        Object leftValue = expression.getLeft().execute(context, expContext);
 
-        Object rightValue = expression.getRight().execute(processingContext, expContext);
+        Object rightValue = expression.getRight().execute(context, expContext);
         
         if (leftValue == null) {
             leftValue = "null";

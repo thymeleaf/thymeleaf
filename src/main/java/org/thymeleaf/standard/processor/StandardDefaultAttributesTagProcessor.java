@@ -22,7 +22,8 @@ package org.thymeleaf.standard.processor;
 import java.util.List;
 
 import org.attoparser.util.TextUtil;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -80,7 +81,7 @@ public final class StandardDefaultAttributesTagProcessor
 
     // Default implementation - meant to be overridden by subclasses if needed
     public void process(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final IElementTagStructureHandler structureHandler) {
 
@@ -96,7 +97,7 @@ public final class StandardDefaultAttributesTagProcessor
                 if (TextUtil.equals(templateMode.isCaseSensitive(), attributeName.getPrefix(), this.dialectPrefix)) {
 
                     // We will process each 'default' attribute separately
-                    processDefaultAttribute(processingContext, tag, attributeName);
+                    processDefaultAttribute(context, tag, attributeName);
 
                 }
             }
@@ -108,14 +109,14 @@ public final class StandardDefaultAttributesTagProcessor
 
 
     private static void processDefaultAttribute(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag, final AttributeName attributeName) {
 
         try {
 
             final String attributeValue =
                     EscapedAttributeUtils.unescapeAttribute(
-                            processingContext.getTemplateMode(), tag.getAttributes().getValue(attributeName));
+                            context.getTemplateMode(), tag.getAttributes().getValue(attributeName));
 
 
             /*
@@ -127,16 +128,16 @@ public final class StandardDefaultAttributesTagProcessor
             /*
              * Obtain the parser
              */
-            final IStandardExpressionParser expressionParser =
-                    StandardExpressions.getExpressionParser(processingContext.getConfiguration());
+            final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
 
             /*
              * Execute the expression, handling nulls in a way consistent with the rest of the Standard Dialect
              */
             final Object expressionResult;
             if (attributeValue != null) {
-                final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
-                expressionResult = expression.execute(processingContext);
+                final IStandardExpression expression =
+                        expressionParser.parseExpression(context, attributeValue);
+                expressionResult = expression.execute(context);
             } else {
                 expressionResult = null;
             }

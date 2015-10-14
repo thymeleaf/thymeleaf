@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.inline;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 
 /**
  *
@@ -31,6 +32,6 @@ public interface IInliner {
 
     public String getName();
 
-    public CharSequence inline(final ITemplateProcessingContext context, final CharSequence text);
+    public CharSequence inline(final ITemplateContext context, final CharSequence text);
 
 }

@@ -68,7 +68,7 @@ public final class ModelBuilderTemplateHandler extends AbstractTemplateHandler {
     }
 
 
-    // Note we are NOT implementing the setProcessingContext method, because we don't need it at all when just using
+    // Note we are NOT implementing the setContext method, because we don't need it at all when just using
     // this handler for parsing (we are not processing anything!)
 
 

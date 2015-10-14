@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.expression;
 
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.ClassLoaderUtils;
@@ -46,13 +47,13 @@ import org.thymeleaf.util.Validate;
  */
 public final class Conversions {
 
-    private final IProcessingContext processingContext;
+    private final IExpressionContext context;
 
 
-    public Conversions(final IProcessingContext processingContext) {
+    public Conversions(final IExpressionContext context) {
         super();
-        Validate.notNull(processingContext, "Processing Context cannot be null");
-        this.processingContext = processingContext;
+        Validate.notNull(context, "Context cannot be null");
+        this.context = context;
     }
 
 
@@ -79,8 +80,8 @@ public final class Conversions {
     public Object convert(final Object target, final Class<?> clazz) {
 
         final IStandardConversionService conversionService =
-                StandardExpressions.getConversionService(this.processingContext.getConfiguration());
-        return conversionService.convert(this.processingContext, target, clazz);
+                StandardExpressions.getConversionService(this.context.getConfiguration());
+        return conversionService.convert(this.context, target, clazz);
     }
 
 

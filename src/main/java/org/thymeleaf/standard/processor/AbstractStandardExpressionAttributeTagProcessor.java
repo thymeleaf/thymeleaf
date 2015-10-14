@@ -20,7 +20,7 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -52,26 +52,25 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
 
     @Override
     protected final void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName,
             final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
-        final IEngineConfiguration configuration = processingContext.getConfiguration();
-        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
 
         final Object expressionResult;
         if (attributeValue != null) {
-            final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
-            expressionResult = expression.execute(processingContext);
+            final IStandardExpression expression = expressionParser.parseExpression(context, attributeValue);
+            expressionResult = expression.execute(context);
         } else {
             expressionResult = null;
         }
 
         doProcess(
-                processingContext, tag,
+                context, tag,
                 attributeName, attributeValue, attributeTemplateName, attributeLine, attributeCol,
                 expressionResult, structureHandler);
 
@@ -79,7 +78,7 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
 
 
     protected abstract void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName,
             final String attributeValue,

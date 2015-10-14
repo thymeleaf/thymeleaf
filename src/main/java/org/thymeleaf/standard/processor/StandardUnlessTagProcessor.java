@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -49,15 +50,14 @@ public final class StandardUnlessTagProcessor extends AbstractStandardConditiona
 
     @Override
     protected boolean isVisible(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue) {
 
-        final IStandardExpressionParser expressionParser =
-                StandardExpressions.getExpressionParser(processingContext.getConfiguration());
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
 
-        final IStandardExpression expression = expressionParser.parseExpression(processingContext, attributeValue);
-        final Object value = expression.execute(processingContext);
+        final IStandardExpression expression = expressionParser.parseExpression(context, attributeValue);
+        final Object value = expression.execute(context);
 
         return !EvaluationUtils.evaluateAsBoolean(value);
 

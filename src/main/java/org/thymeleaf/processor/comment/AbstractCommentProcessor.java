@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.comment;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IComment;
@@ -43,12 +44,13 @@ public abstract class AbstractCommentProcessor
     }
 
 
-    public final void process(final ITemplateProcessingContext processingContext, final IComment comment,
-                        final ICommentStructureHandler structureHandler) {
+    public final void process(
+            final ITemplateContext context,
+            final IComment comment, final ICommentStructureHandler structureHandler) {
 
         try {
 
-            doProcess(processingContext, comment, structureHandler);
+            doProcess(context, comment, structureHandler);
 
         } catch (final TemplateProcessingException e) {
             if (comment.hasLocation()) {
@@ -69,8 +71,9 @@ public abstract class AbstractCommentProcessor
     }
 
 
-    protected abstract void doProcess(final ITemplateProcessingContext processingContext, final IComment comment,
-                        final ICommentStructureHandler structureHandler);
+    protected abstract void doProcess(
+            final ITemplateContext context,
+            final IComment comment, final ICommentStructureHandler structureHandler);
 
 
 }

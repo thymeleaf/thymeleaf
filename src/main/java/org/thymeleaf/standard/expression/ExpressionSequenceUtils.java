@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
@@ -42,15 +42,15 @@ public final class ExpressionSequenceUtils {
 
 
     public static ExpressionSequence parseExpressionSequence(
-            final IProcessingContext processingContext, final String input) {
+            final IExpressionContext context, final String input) {
 
-        Validate.notNull(processingContext, "Processing Context cannot be null");
+        Validate.notNull(context, "Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
 
-        final IEngineConfiguration configuration = processingContext.getConfiguration();
-
         final String preprocessedInput =
-                        StandardExpressionPreprocessor.preprocess(processingContext, input);
+                StandardExpressionPreprocessor.preprocess(context, input);
+
+        final IEngineConfiguration configuration = context.getConfiguration();
 
         if (configuration != null) {
             final ExpressionSequence cachedExpressionSequence =

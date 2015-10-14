@@ -22,9 +22,9 @@ package org.thymeleaf.standard.processor;
 import java.io.StringWriter;
 import java.util.Map;
 
-import org.thymeleaf.context.ILocalVariableAwareVariablesMap;
-import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.context.IVariablesMap;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IEngineContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.TemplateModel;
@@ -89,17 +89,20 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
     @Override
     protected void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
+
+        final IEngineConfiguration configuration = context.getConfiguration();
+
         /*
          * PARSE THE FRAGMENT SELECTION SPEC and resolve each of its components
          */
         final ParsedFragmentSelection parsedFragmentSelection =
-                FragmentSelectionUtils.parseFragmentSelection(processingContext, attributeValue);
+                FragmentSelectionUtils.parseFragmentSelection(context, attributeValue);
         if (parsedFragmentSelection == null) {
             throw new TemplateProcessingException("Could not parse as fragment selection: \"" + attributeValue + "\"");
         }
@@ -109,7 +112,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          * PROCESS THE PARSED FRAGMENT SELECTION
          */
         final ProcessedFragmentSelection processedFragmentSelection =
-                FragmentSelectionUtils.processFragmentSelection(processingContext, parsedFragmentSelection);
+                FragmentSelectionUtils.processFragmentSelection(context, parsedFragmentSelection);
 
         String templateName = processedFragmentSelection.getTemplateName();
         Map<String,Object> fragmentParameters = processedFragmentSelection.getFragmentParameters();
@@ -131,8 +134,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          * cached, and we will be returned an immutable model object (specifically a ParsedFragmentModel)
          */
         final TemplateModel fragmentModel =
-                    processingContext.getTemplateManager().parseStandalone(
-                            processingContext.getConfiguration(),
+                    configuration.getTemplateManager().parseStandalone(
                             templateName, fragments,
                             null, // we will not force the template mode
                             true);  // use the cache if possible, fragments are from template files
@@ -165,7 +167,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                 if (!StringUtils.isEmptyOrWhitespace(fragmentSignatureSpec)) {
 
                     final FragmentSignature fragmentSignature =
-                            FragmentSignatureUtils.parseFragmentSignature(processingContext.getConfiguration(), fragmentSignatureSpec);
+                            FragmentSignatureUtils.parseFragmentSignature(configuration, fragmentSignatureSpec);
                     if (fragmentSignature != null) {
 
                         // Reshape the fragment parameters into the ones that we will actually use, according to the signature
@@ -193,12 +195,12 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          * almost the same as inlining (with the exception that the content to be inlined will be retrieved from
          * somewhere else by means of template resolution).
          */
-        if (processingContext.getTemplateMode() != fragmentModel.getTemplateMode()) {
+        if (context.getTemplateMode() != fragmentModel.getTemplateMode()) {
 
             // Check if this is a th:include. If so, just don't allow
             if (this.insertOnlyContents) {
                 throw new TemplateProcessingException(
-                        "Template being processed uses template mode " + processingContext.getTemplateMode() + ", " +
+                        "Template being processed uses template mode " + context.getTemplateMode() + ", " +
                         "inserted fragment \"" + attributeValue + "\" uses template mode " +
                         fragmentModel.getTemplateMode() + ". Cross-template-mode fragment insertion is not " +
                         "allowed using the " + attributeName + " attribute, which is considered deprecated as " +
@@ -206,32 +208,27 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                         "instead, which do not remove the container element from the fragment being inserted.");
             }
 
-            final IVariablesMap variablesMap = processingContext.getVariables();
-
             // If there are parameters specified, we will need to add them directly to the variables map instead of
             // doing it through the structure handler (we are going to perform a nested template processing operation)
             if (fragmentParameters != null && fragmentParameters.size() > 0) {
 
-                if (!(variablesMap instanceof ILocalVariableAwareVariablesMap)) {
+                if (!(context instanceof IEngineContext)) {
                     throw new TemplateProcessingException(
                             "Parameterized fragment insertion is not supported because local variable support is DISABLED. This is due to " +
-                            "the use of an implementation of the " + IVariablesMap.class.getName() + " interface that does " +
+                            "the use of an implementation of the " + ITemplateContext.class.getName() + " interface that does " +
                             "not provide local-variable support. In order to have local-variable support, the variables map " +
-                            "implementation should also implement the " + ILocalVariableAwareVariablesMap.class.getName() +
+                            "implementation should also implement the " + IEngineContext.class.getName() +
                             " interface");
                 }
 
-                final ILocalVariableAwareVariablesMap localVariablesMap = (ILocalVariableAwareVariablesMap) variablesMap;
-
-                for (final Map.Entry<String,Object> fragmentParameterEntry : fragmentParameters.entrySet()) {
-                    localVariablesMap.put(fragmentParameterEntry.getKey(), fragmentParameterEntry.getValue());
-                }
+                // NOTE this IEngineContext interface is internal and should not be used in users' code
+                ((IEngineContext) context).setVariables(fragmentParameters);
 
             }
 
             // Once parameters are in order, just process the template in a nested template engine execution
             final StringWriter stringWriter = new StringWriter();
-            processingContext.getTemplateManager().process(fragmentModel, variablesMap, stringWriter);
+            configuration.getTemplateManager().process(fragmentModel, context, stringWriter);
 
             // We will insert the result as NON-PROCESSABLE text (it's already been processed!)
             if (this.replaceHost) {

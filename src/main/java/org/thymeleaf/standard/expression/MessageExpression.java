@@ -25,9 +25,10 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.MessageResolutionUtils;
 import org.thymeleaf.util.StringUtils;
@@ -215,25 +216,23 @@ public final class MessageExpression extends SimpleExpression {
     
 
     static Object executeMessage(
-            final IProcessingContext processingContext, final MessageExpression expression, 
-            final StandardExpressionExecutionContext expContext) {
+            final IExpressionContext context,
+            final MessageExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating message: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
 
-        if (!(processingContext instanceof ITemplateProcessingContext)) {
+        if (!(context instanceof ITemplateContext)) {
             throw new TemplateProcessingException(
                     "Cannot evaluate expression \"" + expression + "\". Message externalization expressions " +
                     "can only be evaluated in a template-processing environment (as a part of an in-template expression) " +
-                    "where processing context is an implementation of " + ITemplateProcessingContext.class.getClass() + ", which it isn't (" +
-                    processingContext.getClass().getName() + ")");
+                    "where processing context is an implementation of " + ITemplateContext.class.getClass() + ", which it isn't (" +
+                    context.getClass().getName() + ")");
         }
         
-        final ITemplateProcessingContext templateProcessingContext = (ITemplateProcessingContext) processingContext;
-
         final IStandardExpression baseExpression = expression.getBase();
-        Object messageKey = baseExpression.execute(templateProcessingContext, expContext);
+        Object messageKey = baseExpression.execute(context, expContext);
         messageKey = LiteralValue.unwrap(messageKey);
         if (messageKey != null && !(messageKey instanceof String)) {
             messageKey = messageKey.toString();
@@ -254,7 +253,7 @@ public final class MessageExpression extends SimpleExpression {
             messageParameters = new Object[parameterExpressionValuesLen];
             for (int i = 0; i < parameterExpressionValuesLen; i++) {
                 final IStandardExpression parameterExpression = parameterExpressionValues.get(i);
-                final Object result = parameterExpression.execute(templateProcessingContext, expContext);
+                final Object result = parameterExpression.execute(context, expContext);
                 messageParameters[i] = LiteralValue.unwrap(result);
             }
 
@@ -263,7 +262,7 @@ public final class MessageExpression extends SimpleExpression {
         }
 
         return MessageResolutionUtils.resolveMessageForTemplate(
-                templateProcessingContext, (String)messageKey, messageParameters);
+                context, (String)messageKey, messageParameters);
         
     }
 

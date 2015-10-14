@@ -39,6 +39,19 @@ import java.util.Set;
  */
 public interface IContext {
 
+    /*
+     * NOTE it is not a great idea to make IContext extend java.util.Map or its implementations extend from
+     * HashMap. Such thing would give us the advantage to directly feed OGNL or SpringEL IContext instances
+     * as expression roots, but at the expense of moving to these implementations of IContext the diverse checks
+     * and internal operations needed to control aspects such as context security (e.g. no access to request
+     * parameters from unescaped or pre-processing expressions).
+     *
+     * The problem of moving such controls to these context implementations is that these classes might
+     * be user defined, and therefore such security controls bypassed by a careless implementation. Also, the
+     * way these restrictions and controls has to be implemented is definitely expression-language-dependant,
+     * so we are better off by using PropertyAccessors in OGNL and a Map wrapper in SpringEL.
+     */
+
     public Locale getLocale();
 
     public boolean containsVariable(final String name);

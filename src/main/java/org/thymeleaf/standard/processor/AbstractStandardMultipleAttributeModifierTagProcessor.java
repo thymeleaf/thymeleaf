@@ -21,7 +21,8 @@ package org.thymeleaf.standard.processor;
 
 import java.util.List;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -67,7 +68,7 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
 
     @Override
     protected final void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
@@ -76,7 +77,7 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
 
         final AssignationSequence assignations =
                 AssignationUtils.parseAssignationSequence(
-                        processingContext, attributeValue, false /* no parameters without value */);
+                        context, attributeValue, false /* no parameters without value */);
         if (assignations == null) {
             throw new TemplateProcessingException(
                     "Could not parse value as attribute assignations: \"" + attributeValue + "\"");
@@ -90,10 +91,10 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
             final Assignation assignation = assignationValues.get(i);
 
             final IStandardExpression leftExpr = assignation.getLeft();
-            final Object leftValue = leftExpr.execute(processingContext);
+            final Object leftValue = leftExpr.execute(context);
 
             final IStandardExpression rightExpr = assignation.getRight();
-            final Object rightValue = rightExpr.execute(processingContext);
+            final Object rightValue = rightExpr.execute(context);
 
             final String newAttributeName = (leftValue == null? null : leftValue.toString());
             if (StringUtils.isEmptyOrWhitespace(newAttributeName)) {

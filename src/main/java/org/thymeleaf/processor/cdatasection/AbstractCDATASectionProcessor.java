@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.cdatasection;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICDATASection;
@@ -43,12 +44,13 @@ public abstract class AbstractCDATASectionProcessor
     }
 
 
-    public final void process(final ITemplateProcessingContext processingContext, final ICDATASection cdataSection,
-                        final ICDATASectionStructureHandler structureHandler) {
+    public final void process(
+            final ITemplateContext context,
+            final ICDATASection cdataSection, final ICDATASectionStructureHandler structureHandler) {
 
         try {
 
-            doProcess(processingContext, cdataSection, structureHandler);
+            doProcess(context, cdataSection, structureHandler);
 
         } catch (final TemplateProcessingException e) {
             if (cdataSection.hasLocation()) {
@@ -69,8 +71,9 @@ public abstract class AbstractCDATASectionProcessor
     }
 
 
-    protected abstract void doProcess(final ITemplateProcessingContext processingContext, final ICDATASection cdataSection,
-                        final ICDATASectionStructureHandler structureHandler);
+    protected abstract void doProcess(
+            final ITemplateContext context,
+            final ICDATASection cdataSection, final ICDATASectionStructureHandler structureHandler);
 
 
 }

@@ -23,8 +23,9 @@ import java.math.BigDecimal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.util.EvaluationUtils;
 
 
@@ -66,7 +67,8 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
     
     
     
-    static Object executeAddition(final IProcessingContext processingContext,
+    static Object executeAddition(
+            final IExpressionContext context,
             final AdditionExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
@@ -74,7 +76,7 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
         }
 
         final IStandardVariableExpressionEvaluator expressionEvaluator =
-                StandardExpressions.getVariableExpressionEvaluator(processingContext.getConfiguration());
+                StandardExpressions.getVariableExpressionEvaluator(context.getConfiguration());
 
         final IStandardExpression leftExpr = expression.getLeft();
         final IStandardExpression rightExpr = expression.getRight();
@@ -85,16 +87,16 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
         Object leftValue;
         if (leftExpr instanceof Expression) {
             // This avoids literal-unwrap
-            leftValue = Expression.execute(processingContext, (Expression)leftExpr, expressionEvaluator, expContext);
+            leftValue = Expression.execute(context, (Expression)leftExpr, expressionEvaluator, expContext);
         } else{
-            leftValue = leftExpr.execute(processingContext, expContext);
+            leftValue = leftExpr.execute(context, expContext);
         }
         Object rightValue;
         if (rightExpr instanceof Expression) {
             // This avoids literal-unwrap
-            rightValue = Expression.execute(processingContext, (Expression)rightExpr, expressionEvaluator, expContext);
+            rightValue = Expression.execute(context, (Expression)rightExpr, expressionEvaluator, expContext);
         } else{
-            rightValue = rightExpr.execute(processingContext, expContext);
+            rightValue = rightExpr.execute(context, expContext);
         }
 
         if (leftValue == null) {

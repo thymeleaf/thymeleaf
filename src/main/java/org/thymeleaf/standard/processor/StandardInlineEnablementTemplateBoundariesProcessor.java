@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ITemplateEnd;
@@ -51,8 +52,8 @@ public final class StandardInlineEnablementTemplateBoundariesProcessor extends A
 
     @Override
     public void doProcessTemplateStart(
-            final ITemplateProcessingContext processingContext, final ITemplateStart templateStart,
-            final ITemplateBoundariesStructureHandler structureHandler) {
+            final ITemplateContext context,
+            final ITemplateStart templateStart, final ITemplateBoundariesStructureHandler structureHandler) {
 
         switch (getTemplateMode()) {
 
@@ -81,8 +82,9 @@ public final class StandardInlineEnablementTemplateBoundariesProcessor extends A
 
 
     @Override
-    public void doProcessTemplateEnd(final ITemplateProcessingContext processingContext, final ITemplateEnd templateEnd,
-                                     final ITemplateBoundariesStructureHandler structureHandler) {
+    public void doProcessTemplateEnd(
+            final ITemplateContext context,
+            final ITemplateEnd templateEnd, final ITemplateBoundariesStructureHandler structureHandler) {
 
         // Empty - nothing to be done on template end
 

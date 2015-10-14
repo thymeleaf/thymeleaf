@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -52,27 +53,27 @@ public final class StandardEachTagProcessor extends AbstractAttributeTagProcesso
 
     @Override
     protected void doProcess(
-            final ITemplateProcessingContext processingContext,
+            final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
             final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
-        final Each each = EachUtils.parseEach(processingContext, attributeValue);
+        final Each each = EachUtils.parseEach(context, attributeValue);
 
         final IStandardExpression iterVarExpr = each.getIterVar();
-        final Object iterVarValue = iterVarExpr.execute(processingContext);
+        final Object iterVarValue = iterVarExpr.execute(context);
 
         final IStandardExpression statusVarExpr = each.getStatusVar();
         final Object statusVarValue;
         if (statusVarExpr != null) {
-            statusVarValue = statusVarExpr.execute(processingContext);
+            statusVarValue = statusVarExpr.execute(context);
         } else {
             statusVarValue = null; // Will provoke the default behaviour: iterVarValue + 'Stat'
         }
 
         final IStandardExpression iterableExpr = each.getIterable();
-        final Object iteratedValue = iterableExpr.execute(processingContext);
+        final Object iteratedValue = iterableExpr.execute(context);
 
         final String iterVarName = (iterVarValue == null? null : iterVarValue.toString());
         if (StringUtils.isEmptyOrWhitespace(iterVarName)) {

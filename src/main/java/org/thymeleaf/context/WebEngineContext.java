@@ -39,19 +39,31 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
+import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Basic web implementation of the {@link IEngineContext} interface.
+ * </p>
+ * <p>
+ *   This is the context implementation that will be used by default for web processing. Note this is an
+ *   internal implementation, and that there is no reason for users' code to directly reference or use it instead
+ *   of its implemented interfaces.
+ * </p>
+ * <p>
+ *   This class is NOT thread-safe. Thread-safety is not a requirement for context implementations.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
  * @since 3.0.0
  *
  */
-public final class WebVariablesMap
-        implements IWebVariablesMap, ILocalVariableAwareVariablesMap {
+final class WebEngineContext extends AbstractEngineContext implements IEngineContext, IWebContext {
 
     /*
      * ---------------------------------------------------------------------------
@@ -72,8 +84,6 @@ public final class WebVariablesMap
     private static final String SESSION_VARIABLE_NAME = "session";
     private static final String APPLICATION_VARIABLE_NAME = "application";
 
-    private final Locale locale;
-
     private final HttpServletRequest request;
     private final HttpServletResponse response;
     private final HttpSession session;
@@ -91,38 +101,32 @@ public final class WebVariablesMap
      * There is no reason for a user to directly create an instance of this - they should create Context or
      * WebContext instances instead.
      */
-    WebVariablesMap(
+    WebEngineContext(
+            final IEngineConfiguration configuration,
+            final TemplateResolution templateResolution,
             final HttpServletRequest request, final HttpServletResponse response,
             final ServletContext servletContext,
-            final Locale locale, final Map<String, Object> variables) {
+            final Locale locale,
+            final Map<String, Object> variables) {
 
-        super();
+        super(configuration, locale);
 
         Validate.notNull(request, "Request cannot be null in web variables map");
         Validate.notNull(response, "Response cannot be null in web variables map");
         Validate.notNull(servletContext, "Servlet Context cannot be null in web variables map");
-        Validate.notNull(locale, "Locale cannot be null in web variables map");
-
-        this.locale = locale;
 
         this.request = request;
         this.response = response;
         this.session = request.getSession(false);
         this.servletContext = servletContext;
 
-        this.requestAttributesVariablesMap = new RequestAttributesVariablesMap(this.request, this.locale, variables);
+        this.requestAttributesVariablesMap =
+                new RequestAttributesVariablesMap(configuration, templateResolution, this.request, locale, variables);
         this.requestParametersVariablesMap = new RequestParametersMap(this.request);
         this.applicationAttributesVariablesMap = new ServletContextAttributesMap(this.servletContext);
         this.sessionAttributesVariablesMap = (this.session == null ? null : new SessionAttributesMap(this.session));
 
     }
-
-
-    public Locale getLocale() {
-        return this.locale;
-    }
-
-
 
 
     public HttpServletRequest getRequest() {
@@ -180,37 +184,42 @@ public final class WebVariablesMap
     }
 
 
-    public void put(final String key, final Object value) {
-        if (SESSION_VARIABLE_NAME.equals(key) ||
-                PARAM_VARIABLE_NAME.equals(key) ||
-                APPLICATION_VARIABLE_NAME.equals(key)) {
+    public void setVariable(final String name, final Object value) {
+        if (SESSION_VARIABLE_NAME.equals(name) ||
+                PARAM_VARIABLE_NAME.equals(name) ||
+                APPLICATION_VARIABLE_NAME.equals(name)) {
             throw new IllegalArgumentException(
-                    "Cannot set variable called '" + key + "' into web variables map: such name is a reserved word");
+                    "Cannot set variable called '" + name + "' into web variables map: such name is a reserved word");
         }
-        this.requestAttributesVariablesMap.put(key, value);
+        this.requestAttributesVariablesMap.setVariable(name, value);
     }
 
 
-    public void putAll(final Map<String, Object> map) {
-        // We will not delegate to requestAttributesVariablesMap because we need to perform the reserved-name check
-        // for each variable being set.
-        if (map == null) {
+    public void setVariables(final Map<String, Object> variables) {
+        if (variables == null || variables.isEmpty()) {
             return;
         }
-        for (final Map.Entry<String,Object> entry : map.entrySet()) {
-            put(entry.getKey(), entry.getValue());
+        // First perform reserved word check on every variable name to be inserted
+        for (final String name : variables.keySet()) {
+            if (SESSION_VARIABLE_NAME.equals(name) ||
+                    PARAM_VARIABLE_NAME.equals(name) ||
+                    APPLICATION_VARIABLE_NAME.equals(name)) {
+                throw new IllegalArgumentException(
+                        "Cannot set variable called '" + name + "' into web variables map: such name is a reserved word");
+            }
         }
+        this.requestAttributesVariablesMap.setVariables(variables);
     }
 
 
-    public void remove(final String key) {
-        if (SESSION_VARIABLE_NAME.equals(key) ||
-                PARAM_VARIABLE_NAME.equals(key) ||
-                APPLICATION_VARIABLE_NAME.equals(key)) {
+    public void removeVariable(final String name) {
+        if (SESSION_VARIABLE_NAME.equals(name) ||
+                PARAM_VARIABLE_NAME.equals(name) ||
+                APPLICATION_VARIABLE_NAME.equals(name)) {
             throw new IllegalArgumentException(
-                    "Cannot remove variable called '" + key + "' in web variables map: such name is a reserved word");
+                    "Cannot remove variable called '" + name + "' in web variables map: such name is a reserved word");
         }
-        this.requestAttributesVariablesMap.remove(key);
+        this.requestAttributesVariablesMap.removeVariable(name);
     }
 
 
@@ -247,9 +256,19 @@ public final class WebVariablesMap
 
 
 
-    public int level() {
-        return this.requestAttributesVariablesMap.level();
+    public TemplateResolution getTemplateResolution() {
+        return this.requestAttributesVariablesMap.getTemplateResolution();
     }
+
+    public void setTemplateResolution(final TemplateResolution templateResolution) {
+        this.requestAttributesVariablesMap.setTemplateResolution(templateResolution);
+    }
+
+
+    public List<TemplateResolution> getTemplateResolutionStack() {
+        return this.requestAttributesVariablesMap.getTemplateResolutionStack();
+    }
+
 
 
     public void increaseLevel() {
@@ -515,12 +534,10 @@ public final class WebVariablesMap
 
 
 
-    private static final class RequestAttributesVariablesMap implements IVariablesMap, ILocalVariableAwareVariablesMap {
+    private static final class RequestAttributesVariablesMap extends AbstractEngineContext implements IEngineContext {
 
         private static final int DEFAULT_LEVELS_SIZE = 3;
         private static final int DEFAULT_LEVELARRAYS_SIZE = 5;
-
-        private final Locale locale;
 
         private final HttpServletRequest request;
 
@@ -534,6 +551,13 @@ public final class WebVariablesMap
         private int[] levelSizes;
         private SelectionTarget[] selectionTargets;
         private IInliner[] inliners;
+        private TemplateResolution[] templateResolutions;
+
+        private SelectionTarget lastSelectionTarget = null;
+        private IInliner lastInliner = null;
+        private TemplateResolution lastTemplateResolution = null;
+
+        private final List<TemplateResolution> templateResolutionStack;
 
         private static final Object NON_EXISTING = new Object() {
             @Override
@@ -543,12 +567,17 @@ public final class WebVariablesMap
         };
 
 
-        RequestAttributesVariablesMap(final HttpServletRequest request, final Locale locale, final Map<String, Object> variables) {
 
-            super();
+        RequestAttributesVariablesMap(
+                final IEngineConfiguration configuration,
+                final TemplateResolution templateResolution,
+                final HttpServletRequest request,
+                final Locale locale,
+                final Map<String, Object> variables) {
+
+            super(configuration, locale);
 
             this.request = request;
-            this.locale = locale;
 
             this.levels = new int[DEFAULT_LEVELS_SIZE];
             this.names = new String[DEFAULT_LEVELS_SIZE][];
@@ -557,6 +586,7 @@ public final class WebVariablesMap
             this.levelSizes = new int[DEFAULT_LEVELS_SIZE];
             this.selectionTargets = new SelectionTarget[DEFAULT_LEVELS_SIZE];
             this.inliners = new IInliner[DEFAULT_LEVELS_SIZE];
+            this.templateResolutions = new TemplateResolution[DEFAULT_LEVELS_SIZE];
             Arrays.fill(this.levels, Integer.MAX_VALUE);
             Arrays.fill(this.names, null);
             Arrays.fill(this.oldValues, null);
@@ -564,16 +594,17 @@ public final class WebVariablesMap
             Arrays.fill(this.levelSizes, 0);
             Arrays.fill(this.selectionTargets, null);
             Arrays.fill(this.inliners, null);
+            Arrays.fill(this.templateResolutions, null);
             this.levels[0] = 0;
+            this.templateResolutions[0] = templateResolution;
+
+            this.templateResolutionStack = new ArrayList<TemplateResolution>(DEFAULT_LEVELS_SIZE);
+            this.templateResolutionStack.add(templateResolution);
 
             if (variables != null) {
-                putAll(variables);
+                setVariables(variables);
             }
 
-        }
-
-        public Locale getLocale() {
-            return this.locale;
         }
 
         public boolean containsVariable(final String name) {
@@ -639,20 +670,24 @@ public final class WebVariablesMap
         }
 
 
+        // TODO According to the JavaDoc of HttpServletRequest#setAttribute(...), setting an attribute to null has
+        // the exact same effect as HttpServletRequest#removeAttribute(...), so there is no such thing as an
+        // existing request attribute set to null. This should allow us simplify the #setVariable(...) method
+        // esp. by avoiding calls to containsVariable(), and therefore to HttpServletRequest#getAttributeNames()
 
 
-        public void put(final String key, final Object value) {
-            put(key, value, null);
+        public void setVariable(final String name, final Object value) {
+            setVariable(name, value, null);
         }
 
-        private void put(final String key, final Object value, final Set<String> alreadyContainedNames) {
+        private void setVariable(final String name, final Object value, final Set<String> alreadyContainedNames) {
 
             ensureLevelInitialized();
 
             if (this.level > 0) {
                 // We will only take care of new/old values if we are not on level 0
 
-                int levelIndex = searchNameInIndex(key,this.index);
+                int levelIndex = searchNameInIndex(name,this.index);
                 if (levelIndex >= 0) {
 
                     // There already is a registered movement for this key - we should modify it instead of creating a new one
@@ -680,12 +715,13 @@ public final class WebVariablesMap
 
                     levelIndex = this.levelSizes[this.index]; // We will add at the end
 
-                    this.names[this.index][levelIndex] = key;
+                    this.names[this.index][levelIndex] = name;
+
                     // By checking the 'alreadyContainedNames' argument, we try to save calls to the very slow
-                    // HttpServletRequest#getAttributeNames() in the case we are calling this from putAll(...)
-                    if ((alreadyContainedNames == null && containsVariable(key)) ||
-                            (alreadyContainedNames != null && alreadyContainedNames.contains(key))) {
-                        this.oldValues[this.index][levelIndex] = this.request.getAttribute(key);
+                    // HttpServletRequest#getAttributeNames() in the case we are calling this from setVariables(...)
+                    if ((alreadyContainedNames == null && containsVariable(name)) ||
+                            (alreadyContainedNames != null && alreadyContainedNames.contains(name))) {
+                        this.oldValues[this.index][levelIndex] = this.request.getAttribute(name);
                     } else {
                         this.oldValues[this.index][levelIndex] = NON_EXISTING;
                     }
@@ -698,16 +734,16 @@ public final class WebVariablesMap
             }
 
             if (value == NON_EXISTING) {
-                this.request.removeAttribute(key);
+                this.request.removeAttribute(name);
             } else {
-                this.request.setAttribute(key, value);
+                this.request.setAttribute(name, value);
             }
 
         }
 
 
-        public void putAll(final Map<String, Object> map) {
-            if (map == null || map.isEmpty()) {
+        public void setVariables(final Map<String, Object> variables) {
+            if (variables == null || variables.isEmpty()) {
                 return;
             }
             // By precomputing here a 'alreadyContainedNames' set, we try to save calls to the very slow
@@ -715,15 +751,15 @@ public final class WebVariablesMap
             // variable already exists or not (and would otherwise call "containsVariable()")
             // Also note this is only required when level > 0
             final Set<String> alreadyContainedNames = (this.level > 0? getVariableNames() : null);
-            for (final Map.Entry<String,Object> entry : map.entrySet()) {
-                put(entry.getKey(), entry.getValue(), alreadyContainedNames);
+            for (final Map.Entry<String,Object> entry : variables.entrySet()) {
+                setVariable(entry.getKey(), entry.getValue(), alreadyContainedNames);
             }
         }
 
 
-        public void remove(final String key) {
-            if (containsVariable(key)) {
-                put(key, NON_EXISTING);
+        public void removeVariable(final String name) {
+            if (containsVariable(name)) {
+                setVariable(name, NON_EXISTING);
             }
         }
 
@@ -753,6 +789,9 @@ public final class WebVariablesMap
 
 
         public boolean hasSelectionTarget() {
+            if (this.lastSelectionTarget != null) {
+                return true;
+            }
             int n = this.index + 1;
             while (n-- != 0) {
                 if (this.selectionTargets[n] != null) {
@@ -764,10 +803,14 @@ public final class WebVariablesMap
 
 
         public Object getSelectionTarget() {
+            if (this.lastSelectionTarget != null) {
+                return this.lastSelectionTarget.selectionTarget;
+            }
             int n = this.index + 1;
             while (n-- != 0) {
                 if (this.selectionTargets[n] != null) {
-                    return this.selectionTargets[n].selectionTarget;
+                    this.lastSelectionTarget = this.selectionTargets[n];
+                    return this.lastSelectionTarget.selectionTarget;
                 }
             }
             return null;
@@ -776,20 +819,28 @@ public final class WebVariablesMap
 
         public void setSelectionTarget(final Object selectionTarget) {
             ensureLevelInitialized();
-            this.selectionTargets[this.index] = new SelectionTarget(selectionTarget);
+            this.lastSelectionTarget = new SelectionTarget(selectionTarget);
+            this.selectionTargets[this.index] = this.lastSelectionTarget;
         }
 
 
 
 
         public IInliner getInliner() {
+            if (this.lastInliner != null) {
+                if (this.lastInliner == NoOpInliner.INSTANCE) {
+                    return null;
+                }
+                return this.lastInliner;
+            }
             int n = this.index + 1;
             while (n-- != 0) {
                 if (this.inliners[n] != null) {
-                    if (this.inliners[n] == NoOpInliner.INSTANCE) {
+                    this.lastInliner = this.inliners[n];
+                    if (this.lastInliner == NoOpInliner.INSTANCE) {
                         return null;
                     }
-                    return this.inliners[n];
+                    return this.lastInliner;
                 }
             }
             return null;
@@ -799,8 +850,56 @@ public final class WebVariablesMap
         public void setInliner(final IInliner inliner) {
             ensureLevelInitialized();
             // We use NoOpInliner.INSTACE in order to signal when inlining has actually been disabled
-            this.inliners[this.index] = (inliner == null? NoOpInliner.INSTANCE : inliner);
+            this.lastInliner = (inliner == null? NoOpInliner.INSTANCE : inliner);
+            this.inliners[this.index] = this.lastInliner;
         }
+
+
+
+
+        public TemplateResolution getTemplateResolution() {
+            if (this.lastTemplateResolution != null) {
+                return this.lastTemplateResolution;
+            }
+            int n = this.index + 1;
+            while (n-- != 0) {
+                if (this.templateResolutions[n] != null) {
+                    this.lastTemplateResolution = this.templateResolutions[n];
+                    return this.lastTemplateResolution;
+                }
+            }
+            return null;
+        }
+
+
+        public void setTemplateResolution(final TemplateResolution templateResolution) {
+            Validate.notNull(templateResolution, "Template Resolution cannot be null");
+            ensureLevelInitialized();
+            this.lastTemplateResolution = templateResolution;
+            this.templateResolutions[this.index] = this.lastTemplateResolution;
+            this.templateResolutionStack.clear();
+        }
+
+
+
+
+        public List<TemplateResolution> getTemplateResolutionStack() {
+            if (!this.templateResolutionStack.isEmpty()) {
+                // If would have been empty if we had just decreased a level or added a new resolution
+                return Collections.unmodifiableList(this.templateResolutionStack);
+            }
+            int n = this.index + 1;
+            int i = 0;
+            while (n-- != 0) {
+                if (this.templateResolutions[i] != null) {
+                    this.templateResolutionStack.add(this.templateResolutions[i]);
+                }
+                i++;
+            }
+
+            return Collections.unmodifiableList(this.templateResolutionStack);
+        }
+
 
 
 
@@ -874,11 +973,6 @@ public final class WebVariablesMap
 
 
 
-        public int level() {
-            return this.level;
-        }
-
-
         public void increaseLevel() {
             this.level++;
         }
@@ -922,8 +1016,14 @@ public final class WebVariablesMap
 
                 this.selectionTargets[this.index] = null;
                 this.inliners[this.index] = null;
-
+                this.templateResolutions[this.index] = null;
                 this.index--;
+
+                // These might not belong to this level, but just in case...
+                this.lastSelectionTarget = null;
+                this.lastInliner = null;
+                this.lastTemplateResolution = null;
+                this.templateResolutionStack.clear();
 
             }
             this.level--;
@@ -986,6 +1086,9 @@ public final class WebVariablesMap
                     if (this.inliners[n] != null) {
                         strBuilder.append("[" + this.inliners[n].getName() + "]");
                     }
+                    if (this.templateResolutions[n] != null) {
+                        strBuilder.append("(" + this.templateResolutions[n].getTemplate() + ")");
+                    }
                 }
             }
             final Map<String,Object> requestAttributes = new LinkedHashMap<String, Object>();
@@ -1022,6 +1125,9 @@ public final class WebVariablesMap
             if (this.inliners[0] != null) {
                 strBuilder.append("[" + this.inliners[0].getName() + "]");
             }
+            if (this.templateResolutions[0] != null) {
+                strBuilder.append("(" + this.templateResolutions[0].getTemplate() + ")");
+            }
             strBuilder.append("}[");
             strBuilder.append(this.level);
             strBuilder.append(']');
@@ -1042,7 +1148,8 @@ public final class WebVariablesMap
                 equivalentMap.put(name, this.request.getAttribute(name));
             }
             final String textInliningStr = (getInliner() != null? "[" + getInliner().getName() + "]" : "" );
-            return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "") + textInliningStr;
+            final String templateResolutionStr = "(" + getTemplateResolution().getTemplate() + ")";
+            return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "") + textInliningStr + templateResolutionStr;
 
         }
 

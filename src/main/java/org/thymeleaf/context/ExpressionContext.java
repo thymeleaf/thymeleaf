@@ -19,15 +19,40 @@
  */
 package org.thymeleaf.context;
 
+import java.util.Locale;
+import java.util.Map;
+
+import org.thymeleaf.IEngineConfiguration;
+
 /**
+ * <p>
+ *   Basic implementation of the {@link IExpressionContext} interface.
+ * </p>
+ * <p>
+ *   This class is not thread-safe, and should not be shared across executions of templates.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
  * @since 3.0.0
- *
+ * 
  */
-public interface IWebVariablesMap extends IVariablesMap, IWebContext {
+public final class ExpressionContext extends AbstractExpressionContext {
 
-    // Just an aggregation interface, adding the IWebContext methods to the ones coming from IVariablesMap
+
+    public ExpressionContext(final IEngineConfiguration configuration) {
+        super(configuration);
+    }
+
+
+    public ExpressionContext(final IEngineConfiguration configuration, final Locale locale) {
+        super(configuration, locale);
+    }
+
+
+    public ExpressionContext(
+            final IEngineConfiguration configuration, final Locale locale, final Map<String, Object> variables) {
+        super(configuration, locale, variables);
+    }
 
 }

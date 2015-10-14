@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.expression;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -40,33 +40,33 @@ import org.thymeleaf.util.Validate;
 public class Ids {
 
     
-    private final ITemplateProcessingContext processingContext;
+    private final ITemplateContext context;
     
     
     public String seq(final Object id) {
         Validate.notNull(id, "ID cannot be null");
         final String str = id.toString();
-        return str + this.processingContext.getIdentifierSequences().getAndIncrementIDSeq(str);
+        return str + this.context.getIdentifierSequences().getAndIncrementIDSeq(str);
     }
     
     public String next(final Object id) {
         Validate.notNull(id, "ID cannot be null");
         final String str = id.toString();
-        return str + this.processingContext.getIdentifierSequences().getNextIDSeq(str);
+        return str + this.context.getIdentifierSequences().getNextIDSeq(str);
     }
     
     public String prev(final Object id) {
         Validate.notNull(id, "ID cannot be null");
         final String str = id.toString();
-        return str + this.processingContext.getIdentifierSequences().getPreviousIDSeq(str);
+        return str + this.context.getIdentifierSequences().getPreviousIDSeq(str);
     }
     
 
     
-    public Ids(final ITemplateProcessingContext processingContext) {
+    public Ids(final ITemplateContext context) {
         super();
-        Validate.notNull(processingContext, "Processing Context cannot be null");
-        this.processingContext = processingContext;
+        Validate.notNull(context, "Context cannot be null");
+        this.context = context;
     }
     
 }

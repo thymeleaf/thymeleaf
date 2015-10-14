@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.processor.xmldeclaration;
 
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IXMLDeclaration;
@@ -43,12 +44,13 @@ public abstract class AbstractXMLDeclarationProcessor
     }
 
 
-    public final void process(final ITemplateProcessingContext processingContext, final IXMLDeclaration xmlDeclaration,
-                        final IXMLDeclarationStructureHandler structureHandler) {
+    public final void process(
+            final ITemplateContext context,
+            final IXMLDeclaration xmlDeclaration, final IXMLDeclarationStructureHandler structureHandler) {
 
         try {
 
-            doProcess(processingContext, xmlDeclaration, structureHandler);
+            doProcess(context, xmlDeclaration, structureHandler);
 
         } catch (final TemplateProcessingException e) {
             if (xmlDeclaration.hasLocation()) {
@@ -69,8 +71,9 @@ public abstract class AbstractXMLDeclarationProcessor
     }
 
 
-    protected abstract void doProcess(final ITemplateProcessingContext processingContext, final IXMLDeclaration xmlDeclaration,
-                        final IXMLDeclarationStructureHandler structureHandler);
+    protected abstract void doProcess(
+            final ITemplateContext context,
+            final IXMLDeclaration xmlDeclaration, final IXMLDeclarationStructureHandler structureHandler);
 
 
 }

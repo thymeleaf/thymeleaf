@@ -20,7 +20,7 @@
 package org.thymeleaf.standard.expression;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
@@ -43,15 +43,17 @@ public final class EachUtils {
 
 
 
-    public static Each parseEach(final IProcessingContext processingContext, final String input) {
+    public static Each parseEach(
+            final IExpressionContext context,
+            final String input) {
 
-        Validate.notNull(processingContext, "Processing Context cannot be null");
+        Validate.notNull(context, "Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
 
-        final IEngineConfiguration configuration = processingContext.getConfiguration();
-
         final String preprocessedInput =
-                    StandardExpressionPreprocessor.preprocess(processingContext, input);
+                    StandardExpressionPreprocessor.preprocess(context, input);
+
+        final IEngineConfiguration configuration = context.getConfiguration();
 
         if (configuration != null) {
             final Each cachedEach = ExpressionCache.getEachFromCache(configuration, preprocessedInput);

@@ -22,7 +22,7 @@ package org.thymeleaf.standard.processor;
 import java.io.StringWriter;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.model.IComment;
@@ -53,8 +53,8 @@ public final class StandardConditionalCommentProcessor extends AbstractCommentPr
 
     @Override
     protected void doProcess(
-            final ITemplateProcessingContext processingContext, final IComment comment,
-            final ICommentStructureHandler structureHandler) {
+            final ITemplateContext context,
+            final IComment comment, final ICommentStructureHandler structureHandler) {
 
 
         final StandardConditionalCommentUtils.ConditionalCommentParsingResult parsingResult =
@@ -81,19 +81,19 @@ public final class StandardConditionalCommentProcessor extends AbstractCommentPr
          * we must process it as a template itself (a template fragment) so that all thymeleaf attributes and
          * structures inside this content execute correctly, including references to context variables.
          */
-        final TemplateManager templateManager = processingContext.getTemplateManager();
-        final IEngineConfiguration configuration = processingContext.getConfiguration();
+        final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
+
+        final IEngineConfiguration configuration = context.getConfiguration();
 
         final String parsableContent =
                 configuration.getTextRepository().getText(
                         commentStr, parsingResult.getContentOffset(), parsingResult.getContentOffset() + parsingResult.getContentLen());
 
         templateManager.parseAndProcessNested(
-                processingContext.getConfiguration(),
                 comment.getTemplateName(), parsableContent,
                 comment.getLine(), comment.getCol(),
-                processingContext.getTemplateMode(),
-                processingContext.getVariables(),
+                context.getTemplateMode(),
+                context,
                 writer, true);
 
         /*

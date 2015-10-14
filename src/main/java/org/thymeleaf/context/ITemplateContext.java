@@ -19,29 +19,47 @@
  */
 package org.thymeleaf.context;
 
+import java.util.List;
+
+import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.TemplateResolution;
 
 /**
+ * <p>
+ *   Interface implemented by all classes containing the context required for template processing.
+ * </p>
+ * <p>
+ *   This interface extends {@link IExpressionContext} and {@link IContext} by adding the required
+ *   information needed to process templates.
+ * </p>
+ * <p>
+ *   Note that, in order for the template engine to use a custom-made implementation of this interface
+ *   for template processing instead of cloning its data, such implementation should also implement
+ *   the {@link IEngineContext} interface.
+ * </p>
+ * <p>
+ *   Also note these implementations do not have to be thread-safe, and in fact should not be shared by different
+ *   threads or template executions. They are meant to be local to a specific template engine execution.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
  * @since 3.0.0
- *
+ * 
  */
-public interface IVariablesMap extends IContext {
+public interface ITemplateContext extends IExpressionContext {
 
-    /*
-     * There is no need to make VariablesMap instances implement java.util.Map or extend from HashMap. Such thing
-     * would give us no advantage when expression languages execute expressions on them, because we need to
-     * specify property accessors anyway (both for SpringEL and OGNL/MVEL). And besides, we don't need write support
-     * on the variable maps (even if they have to allow local variables and also be aware of any changes performed
-     * on underlying data storage structures like HttpServletRequest).
-     *
-     * Also, note any SECURITY RESTRICTIONS (like e.g. not allowing access to request parameters from unescaped
-     * or preprocessing expressions) should be managed at the property accessors themselves (in fact, SpringEL
-     * PropertyAccessors have a 'canRead' method that is the point where these restrictions should be applied).
-     */
+    // This will always correspond to the template mode of the current template resolution
+    public TemplateMode getTemplateMode();
 
+    public IdentifierSequences getIdentifierSequences();
+
+    // Template Resolution works as a local variable so that it can be nested when a fragment is inserted
+    public TemplateResolution getTemplateResolution();
+
+    public List<TemplateResolution> getTemplateResolutionStack();
 
     // Selection target works as a local variable, but is used so often that it has its own methods in order to allow
     // specific performance improvements to be designed for them

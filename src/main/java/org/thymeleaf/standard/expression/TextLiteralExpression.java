@@ -21,8 +21,9 @@ package org.thymeleaf.standard.expression;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.util.Validate;
 
 
@@ -95,9 +96,9 @@ public final class TextLiteralExpression extends SimpleExpression {
 
     
     static Object executeTextLiteral(
-            @SuppressWarnings("unused") final IProcessingContext processingContext, 
+            final IExpressionContext context,
             final TextLiteralExpression expression,
-            @SuppressWarnings("unused") final StandardExpressionExecutionContext expContext) {
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating text literal: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());

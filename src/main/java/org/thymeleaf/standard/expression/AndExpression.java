@@ -23,8 +23,9 @@ import java.lang.reflect.Method;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.util.EvaluationUtils;
 
 
@@ -104,14 +105,15 @@ public final class AndExpression extends BinaryOperationExpression {
     
 
     
-    static Object executeAnd(final IProcessingContext processingContext,
+    static Object executeAnd(
+            final IExpressionContext context,
             final AndExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating AND expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
-        final Object leftValue = expression.getLeft().execute(processingContext, expContext);
+        final Object leftValue = expression.getLeft().execute(context, expContext);
 
         // Short circuit
         final boolean leftBooleanValue = EvaluationUtils.evaluateAsBoolean(leftValue);
@@ -119,7 +121,7 @@ public final class AndExpression extends BinaryOperationExpression {
             return Boolean.FALSE;
         }
 
-        final Object rightValue = expression.getRight().execute(processingContext, expContext);
+        final Object rightValue = expression.getRight().execute(context, expContext);
         
         final boolean rightBooleanValue = EvaluationUtils.evaluateAsBoolean(rightValue);
         return Boolean.valueOf(rightBooleanValue);
