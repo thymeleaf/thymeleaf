@@ -29,7 +29,7 @@ import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.messageresolver.AbstractMessageResolver;
 import org.thymeleaf.messageresolver.IMessageResolver;
-import org.thymeleaf.messageresolver.MessageResolution;
+import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.util.Validate;
 
 
@@ -40,12 +40,11 @@ import org.thymeleaf.util.Validate;
  *   integrates the standard Spring way of resolving messages into Thymeleaf.
  * </p>
  * <p>
- *   This resolution is done by means of using the available Spring-configured
+ *   Template-based resolution is done by means of using the available Spring-configured
  *   {@link MessageSource} objects.  
  * </p>
  * <p>
- *   Note a class with this name existed since 1.0, but it was completely reimplemented
- *   in Thymeleaf 3.0
+ *   Origin-based resolution is done in exactly the same way as in {@link StandardMessageResolver}.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
@@ -53,7 +52,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public final class SpringMessageResolver
+public class SpringMessageResolver
         extends AbstractMessageResolver 
         implements MessageSourceAware {
 
@@ -61,11 +60,13 @@ public final class SpringMessageResolver
     private static final Logger logger = LoggerFactory.getLogger(SpringMessageResolver.class);
 
 
+    private final StandardMessageResolver standardMessageResolver;
     private MessageSource messageSource;
 
 
     public SpringMessageResolver() {
         super();
+        this.standardMessageResolver = new StandardMessageResolver();
     }
 
 
@@ -79,10 +80,10 @@ public final class SpringMessageResolver
         if (this.messageSource == null) {
             throw new ConfigurationException(
                     "Cannot initialize " + SpringMessageResolver.class.getSimpleName() +
-                            ": MessageSource has not been set. Either define this object as " +
-                            "a Spring bean (which will automatically set the MessageSource) or, " +
-                            "if you instance it directly, set the MessageSource manually using its "+
-                            "corresponding setter method.");
+                    ": MessageSource has not been set. Either define this object as " +
+                    "a Spring bean (which will automatically set the MessageSource) or, " +
+                    "if you instance it directly, set the MessageSource manually using its "+
+                    "corresponding setter method.");
         }
     }
 
@@ -118,35 +119,59 @@ public final class SpringMessageResolver
 
 
 
-    public MessageResolution resolveMessage(
-            final ITemplateContext context, final String key, final Object[] messageParameters) {
+    public final String resolveMessage(
+            final ITemplateContext context, final Class<?> origin, final String key, final Object[] messageParameters) {
 
-        Validate.notNull(context, "Processing Context cannot be null");
         Validate.notNull(context.getLocale(), "Locale in context cannot be null");
         Validate.notNull(key, "Message key cannot be null");
 
-        checkMessageSourceInitialized();
+        /*
+         * FIRST STEP: Look for the message using template-based resolution
+         */
+        if (context != null) {
 
-        if (logger.isTraceEnabled()) {
-            logger.trace(
-                    "[THYMELEAF][{}] Resolving message with key \"{}\" for template \"{}\" and locale \"{}\". " +
-                            "Messages will be retrieved from Spring's MessageSource infrastructure.",
-                    new Object[]{TemplateEngine.threadIndex(), key, context.getTemplateResolution().getTemplate(), context.getLocale()});
+            checkMessageSourceInitialized();
+
+            if (logger.isTraceEnabled()) {
+                logger.trace(
+                        "[THYMELEAF][{}] Resolving message with key \"{}\" for template \"{}\" and locale \"{}\". " +
+                        "Messages will be retrieved from Spring's MessageSource infrastructure.",
+                        new Object[]{TemplateEngine.threadIndex(), key, context.getTemplateResolution().getTemplate(), context.getLocale()});
+            }
+
+            try {
+                return this.messageSource.getMessage(key, messageParameters, context.getLocale());
+            } catch (NoSuchMessageException e) {
+                // Try other methods
+            }
+
         }
 
-        try {
-
-            final String resolvedMessage =
-                    this.messageSource.getMessage(key, messageParameters, context.getLocale());
-
-            return new MessageResolution(resolvedMessage);
-
-        } catch (NoSuchMessageException e) {
-            return null;
+        /*
+         * SECOND STEP: Look for the message using origin-based resolution, delegated to the StandardMessageResolver
+         */
+        if (origin != null) {
+            // We will be using context == null when delegating so that only origin-based resolution is performed
+            final String message = this.standardMessageResolver.resolveMessage(null, origin, key, messageParameters);
+            if (message != null) {
+                return message;
+            }
         }
+
+
+        /*
+         * NOT FOUND, return null
+         */
+        return null;
 
     }
 
 
+
+
+    public String createAbsentMessageRepresentation(
+            final ITemplateContext context, final Class<?> origin, final String key, final Object[] messageParameters) {
+        return this.standardMessageResolver.createAbsentMessageRepresentation(context, origin, key, messageParameters);
+    }
 
 }
