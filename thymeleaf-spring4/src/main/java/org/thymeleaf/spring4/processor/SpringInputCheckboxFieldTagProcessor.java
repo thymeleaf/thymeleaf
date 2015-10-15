@@ -22,12 +22,16 @@ package org.thymeleaf.spring4.processor;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
+<<<<<<< HEAD
+=======
 import org.thymeleaf.IEngineConfiguration;
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IModel;
+import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -118,13 +122,23 @@ public final class SpringInputCheckboxFieldTagProcessor
              * never displayed or is disabled.
              */
 
+<<<<<<< HEAD
+            final IModelFactory modelFactory = context.getConfiguration().getModelFactory(context.getTemplateMode());
+
+            final IModel hiddenTagModel = modelFactory.createModel();
+=======
             final IModel hiddenTagModel = context.getModelFactory().createModel();
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 
             final String hiddenName = WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name;
             final String hiddenValue = "on";
 
             final IStandaloneElementTag hiddenTag =
+<<<<<<< HEAD
+                    modelFactory.createStandaloneElementTag(INPUT_TAG_NAME, true);
+=======
                     context.getModelFactory().createStandaloneElementTag(INPUT_TAG_NAME, true);
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
             hiddenTag.getAttributes().setAttribute("type", "hidden");
             hiddenTag.getAttributes().setAttribute("name", hiddenName);
             hiddenTag.getAttributes().setAttribute(

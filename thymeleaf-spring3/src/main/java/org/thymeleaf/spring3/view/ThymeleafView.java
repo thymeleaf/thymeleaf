@@ -38,6 +38,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.ExpressionContext;
 import org.thymeleaf.context.WebContext;
+import org.thymeleaf.context.WebExpressionContext;
 import org.thymeleaf.spring3.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.FragmentSelectionUtils;
@@ -246,7 +247,8 @@ public class ThymeleafView
         mergedModel.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
 
         
-        final WebContext context = new WebContext(request, response, servletContext, getLocale(), mergedModel);
+        final WebExpressionContext context =
+                new WebExpressionContext(viewTemplateEngine.getConfiguration(), request, response, servletContext, getLocale(), mergedModel);
 
 
         final String templateName;
@@ -260,17 +262,26 @@ public class ThymeleafView
         } else {
             // Template name contains a fragment name, so we should parse it as such
 
+<<<<<<< HEAD
+            final ParsedFragmentSelection parsedFragmentSelection =
+                    FragmentSelectionUtils.parseFragmentSelection(context, viewTemplateName);
+=======
             final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
             final ExpressionContext expressionContext = new ExpressionContext(configuration, context);
 
             final ParsedFragmentSelection parsedFragmentSelection =
                     FragmentSelectionUtils.parseFragmentSelection(expressionContext, viewTemplateName);
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
             if (parsedFragmentSelection == null) {
                 throw new IllegalArgumentException("Invalid template name specification: '" + viewTemplateName + "'");
             }
 
             final ProcessedFragmentSelection processedFragmentSelection =
+<<<<<<< HEAD
+                    FragmentSelectionUtils.processFragmentSelection(context, parsedFragmentSelection);
+=======
                     FragmentSelectionUtils.processFragmentSelection(expressionContext, parsedFragmentSelection);
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 
             templateName = processedFragmentSelection.getTemplateName();
             markupSelectors = new String[] {processedFragmentSelection.getFragmentSelector()};

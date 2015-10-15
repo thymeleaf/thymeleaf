@@ -31,8 +31,14 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
+<<<<<<< HEAD
+import org.thymeleaf.context.IEngineContext;
+import org.thymeleaf.context.IExpressionContext;
+import org.thymeleaf.context.ITemplateContext;
+=======
 import org.thymeleaf.context.IMutableVariablesMap;
 import org.thymeleaf.context.IExpressionContext;
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.spring4.util.FieldUtils;
@@ -139,7 +145,11 @@ public class SPELVariableExpressionEvaluator
              * CREATE/OBTAIN THE SPEL EVALUATION CONTEXT OBJECT
              */
             EvaluationContext evaluationContext =
+<<<<<<< HEAD
+                    (EvaluationContext) context.
+=======
                     (EvaluationContext) context.getVariables().
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
                             getVariable(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME);
 
             if (evaluationContext == null) {
@@ -156,19 +166,29 @@ public class SPELVariableExpressionEvaluator
                 // several ConcurrentHashMaps.
                 evaluationContext = new ThymeleafEvaluationContextWrapper(new StandardEvaluationContext());
 
+<<<<<<< HEAD
+                if (context instanceof IEngineContext) {
+                    ((IEngineContext)context).setVariable(
+=======
                 final IExecutableContext variablesMap = context.getVariables();
                 if (variablesMap instanceof IMutableVariablesMap) {
                     ((IMutableVariablesMap)variablesMap).put(
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
                             ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
                 }
 
-            } else if (!(evaluationContext instanceof  IThymeleafEvaluationContext)) {
+            } else if (!(evaluationContext instanceof IThymeleafEvaluationContext)) {
 
                 evaluationContext = new ThymeleafEvaluationContextWrapper(evaluationContext);
 
+<<<<<<< HEAD
+                if (context instanceof IEngineContext) {
+                    ((IEngineContext)context).setVariable(
+=======
                 final IExecutableContext variablesMap = context.getVariables();
                 if (variablesMap instanceof IMutableVariablesMap) {
                     ((IMutableVariablesMap)variablesMap).put(
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
                             ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
                 }
 
@@ -197,10 +217,17 @@ public class SPELVariableExpressionEvaluator
             /*
              * RESOLVE THE EVALUATION ROOT
              */
+<<<<<<< HEAD
+            final ITemplateContext templateContext = (context instanceof ITemplateContext ? (ITemplateContext) context : null);
+            final Object evaluationRoot =
+                    (useSelectionAsRoot && templateContext != null && templateContext.hasSelectionTarget()?
+                            templateContext.getSelectionTarget() : new SPELContextMapWrapper(context, thymeleafEvaluationContext));
+=======
             final IExecutableContext variablesMap = context.getVariables();
             final Object evaluationRoot =
                     (useSelectionAsRoot && variablesMap.hasSelectionTarget()?
                             variablesMap.getSelectionTarget() : new SPELContextMapWrapper(variablesMap, thymeleafEvaluationContext));
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 
 
             /*
@@ -274,14 +301,23 @@ public class SPELVariableExpressionEvaluator
 
     private static boolean isLocalVariableOverriding(final IExpressionContext context, final String expression) {
 
+<<<<<<< HEAD
+        if (!(context instanceof IEngineContext)) {
+=======
         final IExecutableContext variablesMap = context.getVariables();
         if (!(variablesMap instanceof IMutableVariablesMap)) {
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
             // We don't even have support for local variables!
             return false;
         }
 
+<<<<<<< HEAD
+        // NOTE this IEngineContext interface is internal and should not be used in users' code
+        final IEngineContext engineContext = (IEngineContext) context;
+=======
         // NOTE this IMutableVariablesMap interface is internal and should not be used in users' code
         final IMutableVariablesMap mutableVariablesMap = (IMutableVariablesMap) variablesMap;
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 
         final int dotPos = expression.indexOf('.');
         if (dotPos == -1) {
@@ -289,7 +325,11 @@ public class SPELVariableExpressionEvaluator
         }
         // Once we extract the first part of the expression, we check whether it is a local variable...
         final String expressionFirstComponent = expression.substring(0, dotPos);
+<<<<<<< HEAD
+        return engineContext.isVariableLocal(expressionFirstComponent);
+=======
         return mutableVariablesMap.isVariableLocal(expressionFirstComponent);
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 
     }
 

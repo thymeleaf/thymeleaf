@@ -23,7 +23,10 @@ package org.thymeleaf.spring4.expression;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.TypeConverter;
+<<<<<<< HEAD
+=======
 import org.thymeleaf.IEngineConfiguration;
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.standard.expression.AbstractStandardConversionService;
 
@@ -67,7 +70,11 @@ public final class SpringStandardConversionService extends AbstractStandardConve
         final TypeDescriptor objectTypeDescriptor = TypeDescriptor.forObject(object);
         final TypeConverter typeConverter = getSpringConversionService(context);
         if (typeConverter == null || !typeConverter.canConvert(objectTypeDescriptor, TYPE_STRING)) {
+<<<<<<< HEAD
+            return super.convertToString(context, object);
+=======
             return super.convertToString(configuration, context, object);
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
         }
         return (String) typeConverter.convertValue(object, objectTypeDescriptor, TYPE_STRING);
 
@@ -86,7 +93,11 @@ public final class SpringStandardConversionService extends AbstractStandardConve
         final TypeDescriptor targetTypeDescriptor = TypeDescriptor.valueOf(targetClass);
         final TypeConverter typeConverter = getSpringConversionService(context);
         if (typeConverter == null || !typeConverter.canConvert(objectTypeDescriptor, targetTypeDescriptor)) {
+<<<<<<< HEAD
+            return super.convertOther(context, object, targetClass);
+=======
             return super.convertOther(configuration, context, object, targetClass);
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
         }
         return (T) typeConverter.convertValue(object, objectTypeDescriptor, targetTypeDescriptor);
 

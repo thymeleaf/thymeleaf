@@ -24,7 +24,12 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.support.RequestContext;
+<<<<<<< HEAD
+import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.context.IWebContext;
+=======
 import org.thymeleaf.context.IWebVariablesMap;
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
@@ -95,20 +100,26 @@ public final class RequestDataValueProcessorUtils {
 
 
     public static String processAction(
+<<<<<<< HEAD
+            final ITemplateContext context, final String action, final String httpMethod) {
+
+        if (!canApply || !(context instanceof IWebContext)) {
+=======
             final IWebVariablesMap variablesMap, final String action, final String httpMethod) {
 
         if (!canApply || !variablesMap.isWeb()) {
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
             return action;
         }
 
         final RequestContext requestContext =
-                (RequestContext) variablesMap.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+                (RequestContext) context.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
         if (requestContext == null) {
             return action;
         }
 
         if (spring31Delegate != null) {
-            return spring31Delegate.processAction(requestContext, variablesMap.getRequest(), action, httpMethod);
+            return spring31Delegate.processAction(requestContext, ((IWebContext)context).getRequest(), action, httpMethod);
         }
 
         throw new TemplateProcessingException(
@@ -120,20 +131,26 @@ public final class RequestDataValueProcessorUtils {
 
 
     public static String processFormFieldValue(
+<<<<<<< HEAD
+            final ITemplateContext context, final String name, final String value, final String type) {
+
+        if (!canApply || !(context instanceof IWebContext)) {
+=======
             final IWebVariablesMap variablesMap, final String name, final String value, final String type) {
 
         if (!canApply || !variablesMap.isWeb()) {
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
             return value;
         }
 
         final RequestContext requestContext =
-                (RequestContext) variablesMap.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+                (RequestContext) context.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
         if (requestContext == null) {
             return value;
         }
 
         if (spring31Delegate != null) {
-            return spring31Delegate.processFormFieldValue(requestContext, variablesMap.getRequest(), name, value, type);
+            return spring31Delegate.processFormFieldValue(requestContext, ((IWebContext)context).getRequest(), name, value, type);
         }
 
         throw new TemplateProcessingException(
@@ -144,20 +161,26 @@ public final class RequestDataValueProcessorUtils {
 
 
 
+<<<<<<< HEAD
+    public static Map<String, String> getExtraHiddenFields(final ITemplateContext context) {
+
+        if (!canApply || !(context instanceof IWebContext)) {
+=======
     public static Map<String, String> getExtraHiddenFields(final IWebVariablesMap variablesMap) {
 
         if (!canApply || !variablesMap.isWeb()) {
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
             return null;
         }
 
         final RequestContext requestContext =
-                (RequestContext) variablesMap.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+                (RequestContext) context.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
         if (requestContext == null) {
             return null;
         }
 
         if (spring31Delegate != null) {
-            return spring31Delegate.getExtraHiddenFields(requestContext, variablesMap.getRequest());
+            return spring31Delegate.getExtraHiddenFields(requestContext, ((IWebContext)context).getRequest());
         }
 
         throw new TemplateProcessingException(
@@ -168,20 +191,26 @@ public final class RequestDataValueProcessorUtils {
 
 
 
+<<<<<<< HEAD
+    public static String processUrl(final ITemplateContext context, final String url) {
+
+        if (!canApply || !(context instanceof IWebContext)) {
+=======
     public static String processUrl(final IWebVariablesMap variablesMap, final String url) {
 
         if (!canApply || !variablesMap.isWeb()) {
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
             return url;
         }
 
         final RequestContext requestContext =
-                (RequestContext) variablesMap.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+                (RequestContext) context.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
         if (requestContext == null) {
             return url;
         }
 
         if (spring31Delegate != null) {
-            return spring31Delegate.processUrl(requestContext, variablesMap.getRequest(), url);
+            return spring31Delegate.processUrl(requestContext, ((IWebContext)context).getRequest(), url);
         }
 
         throw new TemplateProcessingException(

@@ -37,8 +37,12 @@ import org.thymeleaf.util.Validate;
  * <p>
  *   This implementation adds Thymeleaf's own property accessors
  *   (see {@link org.springframework.expression.PropertyAccessor}) for accessing
+<<<<<<< HEAD
+ *   the {@link org.thymeleaf.context.IContext} object in which variables are stored.
+=======
  *   the {@link ExecutableContext} object in which variables are stored at the
  *   context.
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
  * </p>
  * <p>
  *   Also, this evaluation context (which is usually instanced at the

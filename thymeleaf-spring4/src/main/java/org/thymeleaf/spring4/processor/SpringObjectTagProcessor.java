@@ -22,7 +22,10 @@ package org.thymeleaf.spring4.processor;
 import java.util.Collections;
 import java.util.Map;
 
+<<<<<<< HEAD
+=======
 import org.thymeleaf.IEngineConfiguration;
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
@@ -60,8 +63,12 @@ public final class SpringObjectTagProcessor extends AbstractStandardTargetSelect
     
 
     @Override
+<<<<<<< HEAD
+    protected void validateSelectionValue(final ITemplateContext context,
+=======
     protected void validateSelectionValue(final IEngineConfiguration configuration,
                                           final ITemplateContext context,
+>>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
                                           final IProcessableElementTag tag,
                                           final AttributeName attributeName, final String attributeValue,
                                           final IStandardExpression expression) {
