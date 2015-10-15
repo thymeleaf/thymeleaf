@@ -21,7 +21,6 @@ package org.thymeleaf.cache;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 import org.thymeleaf.engine.TemplateModel;
 
@@ -51,9 +50,6 @@ public abstract class AbstractCacheManager implements ICacheManager {
 
     private volatile ICache<String,Object> expressionCache;
     private volatile boolean expressionCacheInitialized = false;
-    
-    private volatile ICache<String,Properties> messageCache;
-    private volatile boolean messageCacheInitialized = false;
 
     
     protected AbstractCacheManager() {
@@ -71,19 +67,6 @@ public abstract class AbstractCacheManager implements ICacheManager {
             }
         }
         return this.templateCache;
-    }
-
-    
-    public final ICache<String, Properties> getMessageCache() {
-        if (!this.messageCacheInitialized) {
-            synchronized(this) {
-                if (!this.messageCacheInitialized) {
-                    this.messageCache = initializeMessageCache();
-                    this.messageCacheInitialized = true;
-                }
-            }
-        }
-        return this.messageCache;
     }
 
     public final ICache<String, Object> getExpressionCache() {
@@ -118,11 +101,6 @@ public abstract class AbstractCacheManager implements ICacheManager {
             templateCacheObj.clear();
         }
 
-        final ICache<String, Properties> messageCacheObj = getMessageCache();
-        if (messageCacheObj != null) {
-            messageCacheObj.clear();
-        }
-        
         final ICache<String, Object> expressionCacheObj = getExpressionCache();
         if (expressionCacheObj != null) {
             expressionCacheObj.clear();
@@ -143,8 +121,6 @@ public abstract class AbstractCacheManager implements ICacheManager {
 
     protected abstract ICache<TemplateCacheKey,TemplateModel> initializeTemplateCache();
 
-    protected abstract ICache<String,Properties> initializeMessageCache();
-    
     protected abstract ICache<String,Object> initializeExpressionCache();
     
 }

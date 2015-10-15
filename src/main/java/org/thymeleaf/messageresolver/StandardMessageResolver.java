@@ -226,6 +226,9 @@ public class StandardMessageResolver extends AbstractMessageResolver {
     public final String resolveMessage(
             final ITemplateContext context, final Class<?> origin, final String key, final Object[] messageParameters) {
 
+        Validate.notNull(context, "Context cannot be null");
+        Validate.notNull(context.getLocale(), "Locale in context cannot be null");
+        Validate.notNull(key, "Message key cannot be null");
 
         final Locale locale = context.getLocale();
 

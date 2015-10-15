@@ -20,7 +20,6 @@
 package org.thymeleaf.cache;
 
 import java.util.List;
-import java.util.Properties;
 
 import org.thymeleaf.engine.TemplateModel;
 
@@ -37,26 +36,20 @@ import org.thymeleaf.engine.TemplateModel;
  *   is requested).
  * </p>
  * <p>
- *   Four caches are predefined:
+ *   These caches are predefined:
  * </p>
  * <ul>
  *   <li>A <b>template cache</b>, used for storing parsed templates referenced
- *       by their <i>template name</i>.</li>
- *   <li>A <b>fragment cache</b>, used for storing <i>fragments</i>: parts of templates like
- *       for example messages coming from
- *       <tt>.properties</tt> files with HTML tags that are included in results using
- *       <tt>th:utext</tt> processors.</li>
- *   <li>A <b>message cache</b>, used for storing messages (usually from internationalization
- *       files) referenced by template name and locale (like "home_gl_ES").</li>
+ *       by their <i>template name</i> and other resolution info (see {@link TemplateCacheKey}).</li>
  *   <li>An <b>expression cache</b>, used for storing expression evaluation artifacts
  *       (for example, {@link org.thymeleaf.standard.expression.Expression} parsed trees,
  *       OGNL/Spring EL parsed trees, etc). Given that this cache can usually store objects
  *       of different classes (referenced by their String representation), prefixes are
  *       normally applied to the String keys in order to being able to differentiate these
- *       differente classes when retrieving cache entries.</li>
+ *       classes when retrieving cache entries.</li>
  * </ul>
  * <p>
- *   Only these four caches are needed by the template engine when the <i>standard</i> dialects
+ *   Only the caches listed above are needed by the template engine when the <i>standard</i> dialects
  *   are being used, but users might want to define new dialects and use new types of caches,
  *   which can be provided by the cache manager using the {@link #getSpecificCache(String)}
  *   method.
@@ -88,21 +81,6 @@ public interface ICacheManager {
      */
     public ICache<TemplateCacheKey,TemplateModel> getTemplateCache();
 
-    /**
-     * <p>
-     *   Returns the cache used for externalized/internationalized messages.
-     * </p>
-     * <p>
-     *   This cache uses as keys the template names (as specified at
-     *   {@link org.thymeleaf.TemplateEngine#process(String, org.thymeleaf.context.IContext)})
-     *   along with the locale the messages refer to (like "main_gl_ES"), and
-     *   as values the <tt>Properties</tt> object containing the messages.
-     * </p>
-     * 
-     * @return the message cache
-     */
-    public ICache<String,Properties> getMessageCache();
-    
     
     /**
      * <p>

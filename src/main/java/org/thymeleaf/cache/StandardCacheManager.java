@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.cache;
 
-import java.util.Properties;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
@@ -103,38 +101,6 @@ public class StandardCacheManager extends AbstractCacheManager {
      */
     public static final ICacheEntryValidityChecker<TemplateCacheKey,TemplateModel> DEFAULT_TEMPLATE_CACHE_VALIDITY_CHECKER = new StandardParsedTemplateEntryValidator();
 
-
-    
-    /**
-     * Default message cache name: "MESSAGE_CACHE"
-     */
-    public static final String DEFAULT_MESSAGE_CACHE_NAME = "MESSAGE_CACHE";
-    
-    /**
-     * Default message cache initial size: 20
-     */
-    public static final int DEFAULT_MESSAGE_CACHE_INITIAL_SIZE = 20;
-    
-    /**
-     * Default message cache maximum size: 300
-     */
-    public static final int DEFAULT_MESSAGE_CACHE_MAX_SIZE = 300;
-    
-    /**
-     * Default message cache "use soft references" flag: true
-     */
-    public static final boolean DEFAULT_MESSAGE_CACHE_USE_SOFT_REFERENCES = true;
-    
-    /**
-     * Default message cache logger name: null (default behaviour = org.thymeleaf.TemplateEngine.cache.MESSAGE_CACHE)
-     */
-    public static final String DEFAULT_MESSAGE_CACHE_LOGGER_NAME = null;
-    
-    /**
-     * Default message cache validity checker: null
-     */
-    public static final ICacheEntryValidityChecker<String,Properties> DEFAULT_MESSAGE_CACHE_VALIDITY_CHECKER = null;
-
     
     /**
      * Default expression cache name: "EXPRESSION_CACHE"
@@ -176,13 +142,6 @@ public class StandardCacheManager extends AbstractCacheManager {
     private String templateCacheLoggerName = DEFAULT_TEMPLATE_CACHE_LOGGER_NAME;
     private ICacheEntryValidityChecker<TemplateCacheKey,TemplateModel> templateCacheValidityChecker = DEFAULT_TEMPLATE_CACHE_VALIDITY_CHECKER;
 
-    private String messageCacheName = DEFAULT_MESSAGE_CACHE_NAME;
-    private int messageCacheInitialSize = DEFAULT_MESSAGE_CACHE_INITIAL_SIZE;
-    private int messageCacheMaxSize = DEFAULT_MESSAGE_CACHE_MAX_SIZE;
-    private boolean messageCacheUseSoftReferences = DEFAULT_MESSAGE_CACHE_USE_SOFT_REFERENCES;
-    private String messageCacheLoggerName = DEFAULT_MESSAGE_CACHE_LOGGER_NAME;
-    private ICacheEntryValidityChecker<String,Properties> messageCacheValidityChecker = DEFAULT_MESSAGE_CACHE_VALIDITY_CHECKER;
-    
     private String expressionCacheName = DEFAULT_EXPRESSION_CACHE_NAME;
     private int expressionCacheInitialSize = DEFAULT_EXPRESSION_CACHE_INITIAL_SIZE;
     private int expressionCacheMaxSize = DEFAULT_EXPRESSION_CACHE_MAX_SIZE;
@@ -208,19 +167,6 @@ public class StandardCacheManager extends AbstractCacheManager {
                 getTemplateCacheName(), getTemplateCacheUseSoftReferences(), 
                 getTemplateCacheInitialSize(), maxSize, 
                 getTemplateCacheValidityChecker(), getTemplateCacheLogger());
-    }
-
-    
-    @Override
-    protected final ICache<String, Properties> initializeMessageCache() {
-        final int maxSize = getMessageCacheMaxSize();
-        if (maxSize == 0) {
-            return null;
-        }
-        return new StandardCache<String, Properties>(
-                getMessageCacheName(), getMessageCacheUseSoftReferences(), 
-                getMessageCacheInitialSize(), maxSize, 
-                getMessageCacheValidityChecker(), getMessageCacheLogger());
     }
 
     
@@ -269,41 +215,6 @@ public class StandardCacheManager extends AbstractCacheManager {
             return LoggerFactory.getLogger(loggerName);
         }
         return LoggerFactory.getLogger(TemplateEngine.class.getName() + ".cache." + getTemplateCacheName());
-    }
-
-    
-    
-    
-    public String getMessageCacheName() {
-        return this.messageCacheName;
-    }
-    
-    public boolean getMessageCacheUseSoftReferences() {
-        return this.messageCacheUseSoftReferences;
-    }
-    
-    public int getMessageCacheInitialSize() {
-        return this.messageCacheInitialSize;
-    }
-    
-    public int getMessageCacheMaxSize() {
-        return this.messageCacheMaxSize;
-    }
-    
-    public String getMessageCacheLoggerName() {
-        return this.messageCacheLoggerName;
-    }
-    
-    public ICacheEntryValidityChecker<String,Properties> getMessageCacheValidityChecker() {
-        return this.messageCacheValidityChecker;
-    }
-
-    public final Logger getMessageCacheLogger() {
-        final String loggerName = getMessageCacheLoggerName();
-        if (loggerName != null) {
-            return LoggerFactory.getLogger(loggerName);
-        }
-        return LoggerFactory.getLogger(TemplateEngine.class.getName() + ".cache." + getMessageCacheName());
     }
 
     
@@ -367,32 +278,6 @@ public class StandardCacheManager extends AbstractCacheManager {
 
     public void setTemplateCacheValidityChecker(final ICacheEntryValidityChecker<TemplateCacheKey, TemplateModel> templateCacheValidityChecker) {
         this.templateCacheValidityChecker = templateCacheValidityChecker;
-    }
-
-
-
-    public void setMessageCacheName(final String messageCacheName) {
-        this.messageCacheName = messageCacheName;
-    }
-
-    public void setMessageCacheInitialSize(final int messageCacheInitialSize) {
-        this.messageCacheInitialSize = messageCacheInitialSize;
-    }
-
-    public void setMessageCacheMaxSize(final int messageCacheMaxSize) {
-        this.messageCacheMaxSize = messageCacheMaxSize;
-    }
-
-    public void setMessageCacheUseSoftReferences(final boolean messageCacheUseSoftReferences) {
-        this.messageCacheUseSoftReferences = messageCacheUseSoftReferences;
-    }
-
-    public void setMessageCacheLoggerName(final String messageCacheLoggerName) {
-        this.messageCacheLoggerName = messageCacheLoggerName;
-    }
-    
-    public void setMessageCacheValidityChecker(final ICacheEntryValidityChecker<String, Properties> messageCacheValidityChecker) {
-        this.messageCacheValidityChecker = messageCacheValidityChecker;
     }
 
     
