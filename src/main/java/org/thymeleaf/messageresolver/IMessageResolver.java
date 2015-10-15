@@ -85,7 +85,7 @@ public interface IMessageResolver {
      *   the {@link org.thymeleaf.standard.expression.MessageExpression} class).
      * </p>
      *
-     * @param context the {@link ITemplateContext} object being used for template processing.
+     * @param context the {@link ITemplateContext} object being used for template processing. Can be null.
      * @param origin the origin of the message request, usually a processor or expression class. Can be null.
      * @param key the message key.
      * @param messageParameters the (optional) message parameters.
@@ -106,7 +106,7 @@ public interface IMessageResolver {
      *   so on until a resolver returns a non-null result. The empty String will be used if all resolvers return null.
      * </p>
      *
-     * @param context the {@link ITemplateContext} object being used for template processing.
+     * @param context the {@link ITemplateContext} object being used for template processing. Can be null.
      * @param origin the origin of the message request, usually a processor or expression class. Can be null.
      * @param key the message key.
      * @param messageParameters the (optional) message parameters.
