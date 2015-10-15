@@ -21,10 +21,6 @@ package org.thymeleaf.spring3.expression;
 
 import java.util.List;
 
-<<<<<<< HEAD
-=======
-import org.thymeleaf.IEngineConfiguration;
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.spring3.util.DetailedError;
 import org.thymeleaf.spring3.util.FieldUtils;
@@ -49,7 +45,6 @@ import org.thymeleaf.spring3.util.FieldUtils;
  */
 public final class Fields {
 
-<<<<<<< HEAD
     private final IExpressionContext context;
     
     public boolean hasAnyErrors() {
@@ -82,41 +77,6 @@ public final class Fields {
     
     public List<String> globalErrors() {
         return FieldUtils.globalErrors(this.context);
-=======
-    private final IEngineConfiguration configuration;
-    private final IExpressionContext context;
-    
-    public boolean hasAnyErrors() {
-        return FieldUtils.hasAnyErrors(this.configuration, this.context);
-    }
-    
-    public boolean hasErrors() {
-        return FieldUtils.hasAnyErrors(this.configuration, this.context);
-    }
-    
-    public boolean hasErrors(final String field) {
-        return FieldUtils.hasErrors(this.configuration, this.context, field);
-    }
-    
-    public boolean hasGlobalErrors() {
-        return FieldUtils.hasGlobalErrors(this.configuration, this.context);
-    }
-
-    public List<String> allErrors() {
-        return FieldUtils.errors(this.configuration, this.context);
-    }
-
-    public List<String> errors() {
-        return FieldUtils.errors(this.configuration, this.context);
-    }
-
-    public List<String> errors(final String field) {
-        return FieldUtils.errors(this.configuration, this.context, field);
-    }
-    
-    public List<String> globalErrors() {
-        return FieldUtils.globalErrors(this.configuration, this.context);
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
     }
 
     
@@ -127,21 +87,13 @@ public final class Fields {
 
 
     public List<DetailedError> detailedErrors() {
-<<<<<<< HEAD
         return FieldUtils.detailedErrors(this.context);
-=======
-        return FieldUtils.detailedErrors(this.configuration, this.context);
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
     }
 
 
     
     public Fields(final IExpressionContext context) {
         super();
-<<<<<<< HEAD
-=======
-        this.configuration = configuration;
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
         this.context = context;
     }
 

@@ -24,12 +24,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.support.RequestContext;
-<<<<<<< HEAD
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.context.IWebContext;
-=======
-import org.thymeleaf.context.IWebVariablesMap;
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring4.naming.SpringContextVariableNames;
@@ -98,15 +94,9 @@ public final class RequestDataValueProcessorUtils {
 
 
     public static String processAction(
-<<<<<<< HEAD
             final ITemplateContext context, final String action, final String httpMethod) {
 
         if (!canApply || !(context instanceof IWebContext)) {
-=======
-            final IWebVariablesMap variablesMap, final String action, final String httpMethod) {
-
-        if (!canApply || !variablesMap.isWeb()) {
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
             return action;
         }
 
@@ -129,15 +119,9 @@ public final class RequestDataValueProcessorUtils {
 
 
     public static String processFormFieldValue(
-<<<<<<< HEAD
             final ITemplateContext context, final String name, final String value, final String type) {
 
         if (!canApply || !(context instanceof IWebContext)) {
-=======
-            final IWebVariablesMap variablesMap, final String name, final String value, final String type) {
-
-        if (!canApply || !variablesMap.isWeb()) {
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
             return value;
         }
 
@@ -159,15 +143,9 @@ public final class RequestDataValueProcessorUtils {
 
 
 
-<<<<<<< HEAD
     public static Map<String, String> getExtraHiddenFields(final ITemplateContext context) {
 
         if (!canApply || !(context instanceof IWebContext)) {
-=======
-    public static Map<String, String> getExtraHiddenFields(final IWebVariablesMap variablesMap) {
-
-        if (!canApply || !variablesMap.isWeb()) {
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
             return null;
         }
 
@@ -189,15 +167,9 @@ public final class RequestDataValueProcessorUtils {
 
 
 
-<<<<<<< HEAD
     public static String processUrl(final ITemplateContext context, final String url) {
 
         if (!canApply || !(context instanceof IWebContext)) {
-=======
-    public static String processUrl(final IWebVariablesMap variablesMap, final String url) {
-
-        if (!canApply || !variablesMap.isWeb()) {
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
             return url;
         }
 

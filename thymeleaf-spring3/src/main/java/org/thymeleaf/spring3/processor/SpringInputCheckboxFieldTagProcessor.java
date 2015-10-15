@@ -22,10 +22,7 @@ package org.thymeleaf.spring3.processor;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
-<<<<<<< HEAD
-=======
 import org.thymeleaf.IEngineConfiguration;
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
