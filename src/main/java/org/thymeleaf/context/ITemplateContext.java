@@ -54,7 +54,8 @@ public interface ITemplateContext extends IExpressionContext {
     public TemplateMode getTemplateMode();
 
 
-    public String getMessage(final Class<?> origin, final String key, final Object[] messageParameters);
+    public String getMessage(
+            final Class<?> origin, final String key, final Object[] messageParameters, final boolean useAbsentMessageRepresentation);
 
 
     public IdentifierSequences getIdentifierSequences();

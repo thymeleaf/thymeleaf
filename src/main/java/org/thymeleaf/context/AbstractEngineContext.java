@@ -97,7 +97,8 @@ abstract class AbstractEngineContext implements ITemplateContext {
     }
 
 
-    public String getMessage(final Class<?> origin, final String key, final Object[] messageParameters) {
+    public String getMessage(
+            final Class<?> origin, final String key, final Object[] messageParameters, final boolean useAbsentMessageRepresentation) {
 
         // origin CAN be null
         Validate.notNull(key, "Message key cannot be null");
@@ -114,16 +115,20 @@ abstract class AbstractEngineContext implements ITemplateContext {
             }
         }
 
-        // Message unresolved: try to create an "absent message representation"
-        for (final IMessageResolver messageResolver : messageResolvers) {
-            final String absentMessageRepresentation =
-                    messageResolver.createAbsentMessageRepresentation(this, origin, key, messageParameters);
-            if (absentMessageRepresentation != null) {
-                return absentMessageRepresentation;
+        // Message unresolved: try to create an "absent message representation" (if specified to do so)
+        if (useAbsentMessageRepresentation) {
+
+            for (final IMessageResolver messageResolver : messageResolvers) {
+                final String absentMessageRepresentation =
+                        messageResolver.createAbsentMessageRepresentation(this, origin, key, messageParameters);
+                if (absentMessageRepresentation != null) {
+                    return absentMessageRepresentation;
+                }
             }
+
         }
 
-        return "";
+        return null;
 
     }
 

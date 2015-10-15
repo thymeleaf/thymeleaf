@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.util.MessageResolutionUtils;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -67,8 +66,7 @@ public class Messages {
     }
     
     public String msgWithParams(final String messageKey, final Object[] messageParameters) {
-        return MessageResolutionUtils.resolveMessageForTemplate(
-                this.context, messageKey, messageParameters, true);
+        return this.context.getMessage(null, messageKey, messageParameters, true);
     }
 
     
@@ -91,8 +89,7 @@ public class Messages {
     }
     
     public String msgOrNullWithParams(final String messageKey, final Object[] messageParameters) {
-        return MessageResolutionUtils.resolveMessageForTemplate(
-                this.context, messageKey, messageParameters, false);
+        return this.context.getMessage(null, messageKey, messageParameters, false);
     }
 
     
@@ -120,9 +117,8 @@ public class Messages {
         Validate.notNull(messageKeys, "Message keys cannot be null");
         final String[] result = new String[messageKeys.length];
         for (int i = 0; i < messageKeys.length; i++) {
-            result[i] = 
-                MessageResolutionUtils.resolveMessageForTemplate(
-                    this.context, (String)messageKeys[i], messageParameters, true);
+            result[i] =
+               this.context.getMessage(null, (String)messageKeys[i], messageParameters, true);
         }
         return result;
     }
@@ -151,9 +147,8 @@ public class Messages {
         Validate.notNull(messageKeys, "Message keys cannot be null");
         final String[] result = new String[messageKeys.length];
         for (int i = 0; i < messageKeys.length; i++) {
-            result[i] = 
-                MessageResolutionUtils.resolveMessageForTemplate(
-                    this.context, (String)messageKeys[i], messageParameters, false);
+            result[i] =
+                    this.context.getMessage(null, (String) messageKeys[i], messageParameters, false);
         }
         return result;
     }
@@ -267,12 +262,11 @@ public class Messages {
     
     
     
-    private List<String> doMsg(final boolean returnStringAlways, final Iterable<String> messageKeys, final Object... messageParameters) {
+    private List<String> doMsg(final boolean useAbsentMessageRepresentation, final Iterable<String> messageKeys, final Object... messageParameters) {
         final List<String> result = new ArrayList<String>(5);
         for (final String messageKey : messageKeys) {
             result.add(
-                    MessageResolutionUtils.resolveMessageForTemplate(
-                        this.context, messageKey, messageParameters, returnStringAlways));
+                    this.context.getMessage(null, messageKey, messageParameters, useAbsentMessageRepresentation));
         }
         return result;
     }

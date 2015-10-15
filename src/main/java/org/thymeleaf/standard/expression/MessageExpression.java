@@ -261,7 +261,8 @@ public final class MessageExpression extends SimpleExpression {
             messageParameters = NO_PARAMETERS;
         }
 
-        return templateContext.getMessage(MessageExpression.class, (String)messageKey, messageParameters);
+        // Note message expressions will always return an absent representation if message does not exist
+        return templateContext.getMessage(null, (String)messageKey, messageParameters, true);
         
     }
 

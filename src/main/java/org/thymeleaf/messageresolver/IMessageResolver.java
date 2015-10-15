@@ -32,8 +32,16 @@ import org.thymeleaf.context.ITemplateContext;
  *   method.
  * </p>
  * <p>
- *   Note a class with this name existed since 1.0, but it was completely reimplemented
- *   in Thymeleaf 3.0
+ *   Note that message resolution will return null if no message is found, in which case callers will have the
+ *   possibility to choose between asking the resolver to create an <em>absent message representation</em> or not.
+ *   This is precisely what the <tt>useAbsentMessageRepresentation</tt> flag does in
+ *   {@link ITemplateContext#getMessage(Class, String, Object[], boolean)}.
+ * </p>
+ * <p>
+ *   An absent message representation looks like <tt>??mymessage_gl_ES??</tt> and is useful to quickly determine
+ *   when a message is lacking from the application's configuration. Note <tt>#{...}</tt> message expressions will
+ *   always ask for an <tt>absent message representation</tt>, whereas methods in the <tt>#messages</tt>
+ *   expression object will do it depending on the specific method being called.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
