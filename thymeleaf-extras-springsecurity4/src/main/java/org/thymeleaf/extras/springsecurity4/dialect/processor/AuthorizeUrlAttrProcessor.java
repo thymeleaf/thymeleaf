@@ -71,13 +71,13 @@ public final class AuthorizeUrlAttrProcessor extends AbstractStandardConditional
         final String method =
                 (spaceIndex < 0? "GET" : attrValue.substring(0, spaceIndex)).trim();
 
-        if (!context.isWeb()) {
+        if (!(context instanceof IWebContext)) {
             throw new ConfigurationException(
                     "Thymeleaf execution context is not a web context (implementation of " +
                             IWebContext.class.getName() + "). Spring Security integration can only be used in " +
                             "web environments.");
         }
-        final IWebContext webContext = (IWebContext) context.getContext();
+        final IWebContext webContext = (IWebContext) context;
 
         final HttpServletRequest request = webContext.getRequest();
         final ServletContext servletContext = webContext.getServletContext();

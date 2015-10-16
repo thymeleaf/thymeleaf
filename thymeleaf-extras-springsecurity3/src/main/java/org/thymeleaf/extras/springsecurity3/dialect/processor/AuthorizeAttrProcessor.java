@@ -71,13 +71,13 @@ public final class AuthorizeAttrProcessor extends AbstractStandardConditionalVis
             return false;
         }
 
-        if (!context.isWeb()) {
+        if (!(context instanceof IWebContext)) {
             throw new ConfigurationException(
                     "Thymeleaf execution context is not a web context (implementation of " +
                     IWebContext.class.getName() + "). Spring Security integration can only be used in " +
                     "web environments.");
         }
-        final IWebContext webContext = (IWebContext) context.getContext();
+        final IWebContext webContext = (IWebContext) context;
         
         final HttpServletRequest request = webContext.getRequest();
         final HttpServletResponse response = webContext.getResponse();
