@@ -64,7 +64,7 @@ public final class ServletContextTemplateResource implements ITemplateResource {
 
 
 
-    public String getName() {
+    public String getDescription() {
         return this.path;
     }
 

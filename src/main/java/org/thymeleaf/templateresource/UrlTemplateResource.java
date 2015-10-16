@@ -77,7 +77,7 @@ public final class UrlTemplateResource implements ITemplateResource, Serializabl
 
 
 
-    public String getName() {
+    public String getDescription() {
         return this.url.toString();
     }
 

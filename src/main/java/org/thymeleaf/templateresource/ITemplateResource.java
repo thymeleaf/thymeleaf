@@ -31,7 +31,7 @@ import java.io.Reader;
 public interface ITemplateResource {
 
 
-    public String getName();
+    public String getDescription();
 
     public String getBaseName();
 

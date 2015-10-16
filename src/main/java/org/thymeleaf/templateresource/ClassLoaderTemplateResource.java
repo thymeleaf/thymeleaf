@@ -61,7 +61,7 @@ public final class ClassLoaderTemplateResource implements ITemplateResource {
 
 
 
-    public String getName() {
+    public String getDescription() {
         return this.path;
     }
 

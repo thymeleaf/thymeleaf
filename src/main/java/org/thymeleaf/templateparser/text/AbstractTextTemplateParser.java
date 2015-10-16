@@ -163,13 +163,13 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
 
         } catch (final IOException e) {
             final String message = "An error happened during template parsing";
-            throw new TemplateInputException(message, resource.getName(), e);
+            throw new TemplateInputException(message, resource.getDescription(), e);
         } catch (final TextParseException e) {
             final String message = "An error happened during template parsing";
             if (e.getLine() != null && e.getCol() != null) {
-                throw new TemplateInputException(message, resource.getName(), e.getLine().intValue(), e.getCol().intValue(), e);
+                throw new TemplateInputException(message, resource.getDescription(), e.getLine().intValue(), e.getCol().intValue(), e);
             }
-            throw new TemplateInputException(message, resource.getName(), e);
+            throw new TemplateInputException(message, resource.getDescription(), e);
         }
 
     }

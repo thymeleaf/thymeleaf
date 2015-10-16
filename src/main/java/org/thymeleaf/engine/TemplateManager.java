@@ -574,12 +574,12 @@ public final class TemplateManager {
             if (templateHandler instanceof ModelBuilderTemplateHandler) {
                 if (selectors != null) {
                     logger.trace("[THYMELEAF][{}] Starting parsing of \"{}\" with selector/s \"{}\"",
-                            new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getName()), Arrays.toString(selectors)});
+                            new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getDescription()), Arrays.toString(selectors)});
                 } else {
-                    logger.trace("[THYMELEAF][{}] Starting parsing of \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getName()));
+                    logger.trace("[THYMELEAF][{}] Starting parsing of \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getDescription()));
                 }
             } else {
-                logger.trace("[THYMELEAF][{}] Starting processing of \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getName()));
+                logger.trace("[THYMELEAF][{}] Starting processing of \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getDescription()));
             }
         }
 
@@ -618,7 +618,7 @@ public final class TemplateManager {
             }
         } else {
             throw new IllegalArgumentException(
-                "Cannot process \"" + LoggingUtils.loggifyTemplateName(resource.getName()) + "\" " +
+                "Cannot process \"" + LoggingUtils.loggifyTemplateName(resource.getDescription()) + "\" " +
                 "with unsupported template mode: " + templateMode);
         }
 
@@ -626,12 +626,12 @@ public final class TemplateManager {
             if (templateHandler instanceof ModelBuilderTemplateHandler) {
                 if (selectors != null) {
                     logger.trace("[THYMELEAF][{}] Finished parsing of \"{}\" with selector/s \"{}\"",
-                            new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getName()), Arrays.toString(selectors)});
+                            new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getDescription()), Arrays.toString(selectors)});
                 } else {
-                    logger.trace("[THYMELEAF][{}] Finished parsing of \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getName()));
+                    logger.trace("[THYMELEAF][{}] Finished parsing of \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getDescription()));
                 }
             } else {
-                logger.trace("[THYMELEAF][{}] Finished processing of \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getName()));
+                logger.trace("[THYMELEAF][{}] Finished processing of \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getDescription()));
             }
         }
 

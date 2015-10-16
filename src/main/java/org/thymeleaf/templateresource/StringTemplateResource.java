@@ -62,7 +62,7 @@ public final class StringTemplateResource implements ITemplateResource {
 
 
 
-    public String getName() {
+    public String getDescription() {
         return this.name;
     }
 

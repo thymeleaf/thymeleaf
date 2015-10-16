@@ -75,7 +75,7 @@ public final class FileTemplateResource implements ITemplateResource, Serializab
 
 
 
-    public String getName() {
+    public String getDescription() {
         return this.file.getAbsolutePath();
     }
 
