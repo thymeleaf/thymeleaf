@@ -74,19 +74,21 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
     public void parseStandalone(
             final IEngineConfiguration configuration,
+            final String template,
             final ITemplateResource resource,
             final String[] selectors,
             final TemplateMode templateMode,
             final ITemplateHandler handler) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
-        Validate.notNull(resource, "Resource cannot be null");
+        Validate.notNull(template, "Template cannot be null");
+        Validate.notNull(resource, "Template Resource cannot be null");
         // selectors CAN be null if we are going to render the entire template
         Validate.notNull(templateMode, "Template Mode cannot be null");
         Validate.isTrue(templateMode.isMarkup(), "Template Mode has to be a markup template mode");
         Validate.notNull(handler, "Template Handler cannot be null");
 
-        parse(configuration, null, resource, selectors, 0, 0, templateMode, handler);
+        parse(configuration, null, template, resource, selectors, 0, 0, templateMode, handler);
 
     }
 
@@ -94,6 +96,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
     public void parseNested(
             final IEngineConfiguration configuration,
             final String ownerTemplate,
+            final String template,
             final ITemplateResource resource,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
@@ -101,13 +104,14 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(ownerTemplate, "Owner template cannot be null");
-        Validate.notNull(resource, "Template cannot be null");
+        Validate.notNull(template, "Template cannot be null");
+        Validate.notNull(resource, "Template Resource cannot be null");
         // NOTE selectors cannot be specified when parsing a nested template
         Validate.notNull(templateMode, "Template mode cannot be null");
         Validate.isTrue(templateMode.isMarkup(), "Template Mode has to be a markup template mode");
         Validate.notNull(handler, "Template Handler cannot be null");
 
-        parse(configuration, ownerTemplate, resource, null, lineOffset, colOffset, templateMode, handler);
+        parse(configuration, ownerTemplate, template, resource, null, lineOffset, colOffset, templateMode, handler);
 
     }
 
@@ -115,7 +119,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
     private void parse(
             final IEngineConfiguration configuration,
-            final String ownerTemplate, final ITemplateResource resource, final String[] selectors,
+            final String ownerTemplate, final String template, final ITemplateResource resource, final String[] selectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
             final ITemplateHandler templateHandler) {
@@ -130,7 +134,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                     "has been specified: " + templateMode);
         }
 
-        final String templateName = (ownerTemplate != null? ownerTemplate : resource.getName());
+        final String templateName = (ownerTemplate != null? ownerTemplate : template);
 
         try {
 

@@ -272,7 +272,7 @@ public final class TemplateManager {
          * PROCESS THE TEMPLATE
          */
         processResolvedResource(
-                ownerTemplate, resolution.templateResource, selectors,
+                ownerTemplate, template, resolution.templateResource, selectors,
                 lineOffset, colOffset,
                 resolution.templateResolution.getTemplateMode(),
                 builderHandler);
@@ -472,7 +472,7 @@ public final class TemplateManager {
             final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(parsedTemplate.getInternalModel());
             // Process the cached template itself
             processResolvedResource(
-                    ownerTemplate, resolution.templateResource, selectors,
+                    ownerTemplate, template, resolution.templateResource, selectors,
                     lineOffset, colOffset,
                     engineContext.getTemplateMode(),
                     builderHandler);
@@ -488,7 +488,7 @@ public final class TemplateManager {
          *  Process the template, which is not cacheable (so no worry about caching)
          */
         processResolvedResource(
-                ownerTemplate, resolution.templateResource, selectors,
+                ownerTemplate, template, resolution.templateResource, selectors,
                 lineOffset, colOffset,
                 engineContext.getTemplateMode(),
                 processingHandlerChain);
@@ -565,7 +565,7 @@ public final class TemplateManager {
 
 
     private void processResolvedResource(
-            final String ownerTemplate, final ITemplateResource resource, final String[] selectors,
+            final String ownerTemplate, final String template, final ITemplateResource resource, final String[] selectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
             final ITemplateHandler templateHandler) {
@@ -588,33 +588,33 @@ public final class TemplateManager {
          */
         if (templateMode == TemplateMode.HTML) {
             if (ownerTemplate == null) {
-                this.htmlParser.parseStandalone(this.configuration, resource, selectors, templateMode, templateHandler);
+                this.htmlParser.parseStandalone(this.configuration, template, resource, selectors, templateMode, templateHandler);
             } else {
-                this.htmlParser.parseNested(this.configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
+                this.htmlParser.parseNested(this.configuration, ownerTemplate, template, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else if (templateMode == TemplateMode.XML) {
             if (ownerTemplate == null) {
-                this.xmlParser.parseStandalone(this.configuration, resource, selectors, templateMode, templateHandler);
+                this.xmlParser.parseStandalone(this.configuration, template, resource, selectors, templateMode, templateHandler);
             } else {
-                this.xmlParser.parseNested(this.configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
+                this.xmlParser.parseNested(this.configuration, ownerTemplate, template, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else if (templateMode == TemplateMode.TEXT) {
             if (ownerTemplate == null) {
-                this.textParser.parseStandalone(this.configuration, resource, selectors, templateMode, templateHandler);
+                this.textParser.parseStandalone(this.configuration, template, resource, selectors, templateMode, templateHandler);
             } else {
-                this.textParser.parseNested(this.configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
+                this.textParser.parseNested(this.configuration, ownerTemplate, template, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else if (templateMode == TemplateMode.JAVASCRIPT) {
             if (ownerTemplate == null) {
-                this.javascriptParser.parseStandalone(this.configuration, resource, selectors, templateMode, templateHandler);
+                this.javascriptParser.parseStandalone(this.configuration, template, resource, selectors, templateMode, templateHandler);
             } else {
-                this.javascriptParser.parseNested(this.configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
+                this.javascriptParser.parseNested(this.configuration, ownerTemplate, template, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else if (templateMode == TemplateMode.CSS) {
             if (ownerTemplate == null) {
-                this.cssParser.parseStandalone(this.configuration, resource, selectors, templateMode, templateHandler);
+                this.cssParser.parseStandalone(this.configuration, template, resource, selectors, templateMode, templateHandler);
             } else {
-                this.cssParser.parseNested(this.configuration, ownerTemplate, resource, lineOffset, colOffset, templateMode, templateHandler);
+                this.cssParser.parseNested(this.configuration, ownerTemplate, template, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else {
             throw new IllegalArgumentException(
