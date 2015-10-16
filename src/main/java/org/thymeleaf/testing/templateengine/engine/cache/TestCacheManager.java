@@ -20,7 +20,6 @@
 package org.thymeleaf.testing.templateengine.engine.cache;
 
 import java.util.List;
-import java.util.Properties;
 
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
@@ -49,11 +48,6 @@ public final class TestCacheManager implements ICacheManager {
 
     public ICache<TemplateCacheKey, TemplateModel> getTemplateCache() {
         return new TestCache<TemplateCacheKey, TemplateModel>(this.cacheManager.getTemplateCache());
-    }
-
-
-    public ICache<String, Properties> getMessageCache() {
-        return new TestCache<String, Properties>(this.cacheManager.getMessageCache());
     }
 
 
