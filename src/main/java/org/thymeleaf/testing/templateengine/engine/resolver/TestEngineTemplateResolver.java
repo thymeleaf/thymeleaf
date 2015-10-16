@@ -19,24 +19,20 @@
  */
 package org.thymeleaf.testing.templateengine.engine.resolver;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.cache.AlwaysValidCacheEntryValidity;
 import org.thymeleaf.cache.ICacheEntryValidity;
 import org.thymeleaf.cache.NonCacheableCacheEntryValidity;
-import org.thymeleaf.context.IContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolution;
+import org.thymeleaf.templateresource.ITemplateResource;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.testable.ITest;
-import org.thymeleaf.util.PatternSpec;
 import org.thymeleaf.util.Validate;
 
 
@@ -48,15 +44,11 @@ import org.thymeleaf.util.Validate;
 public class TestEngineTemplateResolver implements ITemplateResolver {
 
     public static final String TEST_TEMPLATE_CONVERSION_CHARSET = "UTF-8";
-    
-    private static final Logger logger = LoggerFactory.getLogger(TestEngineTemplateResolver.class);
 
 
     private String name = this.getClass().getName();
     private Integer order = null;
 
-    private final PatternSpec resolvablePatternSpec = new PatternSpec();
-    
 
 
 
@@ -149,19 +141,27 @@ public class TestEngineTemplateResolver implements ITemplateResolver {
             throw new TestEngineExecutionException(
                     "Input is null for test \"" + testName + "\", which is forbidden");
         }
-        
-        // Organize inputs
-        final Map<String,ITestResource> allInputs = new HashMap<String,ITestResource>();
-        final Map<String,ITestResource> additionalInputs = test.getAdditionalInputs();
-        if (additionalInputs != null) {
-            allInputs.putAll(additionalInputs);
+
+        final ITestResource testResource;
+        if (testName.equals(template)) {
+            // We have been asked for the main test resource
+            testResource = test.getInput();
+        } else {
+            if (test.getAdditionalInputs() != null) {
+                testResource = test.getAdditionalInputs().get(template);
+            } else {
+                testResource = null;
+            }
         }
-        allInputs.put(testName, test.getInput());
-        
-        // The resource resolver is created instead of reusing one for concurrency reasons 
-        final TestEngineResourceResolver resourceResolver = 
-                new TestEngineResourceResolver(allInputs, TEST_TEMPLATE_CONVERSION_CHARSET);
-        
+
+        if (testResource == null) {
+            // Not found!
+            return null;
+        }
+
+        final ITemplateResource templateResource =
+                new TestEngineTemplateResource(testResource, TEST_TEMPLATE_CONVERSION_CHARSET);
+
         // Compute validity according to the "inputCacheable" property established at the test
         final ICacheEntryValidity validity =
                 (test.isInputCacheable()?
@@ -173,10 +173,8 @@ public class TestEngineTemplateResolver implements ITemplateResolver {
         // Create the template resolution object with all the gathered info
         return new TemplateResolution(
                 template,
-                template,
-                resourceResolver, 
-                TEST_TEMPLATE_CONVERSION_CHARSET, 
-                templateMode, 
+                templateResource,
+                templateMode,
                 validity);
         
     }
