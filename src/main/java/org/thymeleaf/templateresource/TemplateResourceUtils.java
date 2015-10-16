@@ -119,6 +119,10 @@ final class TemplateResourceUtils {
 
     static String computeBaseName(final String path) {
 
+        if (path == null) {
+            return null;
+        }
+
         // First remove a trailing '/' if it exists
         final String basePath = (path.charAt(path.length() - 1) == '/'? path.substring(0,path.length() - 1) : path);
 
