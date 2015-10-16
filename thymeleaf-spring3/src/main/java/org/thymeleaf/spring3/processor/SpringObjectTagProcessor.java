@@ -22,7 +22,6 @@ package org.thymeleaf.spring3.processor;
 import java.util.Collections;
 import java.util.Map;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;

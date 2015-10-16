@@ -85,22 +85,14 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
 
             if (extraHiddenFields != null && extraHiddenFields.size() > 0) {
 
-<<<<<<< HEAD
                 final IModelFactory modelFactory = context.getConfiguration().getModelFactory(context.getTemplateMode());
 
                 final IModel extraHiddenElementTags = modelFactory.createModel();
-=======
-                final IModel extraHiddenElementTags = context.getModelFactory().createModel();
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 
                 for (final Map.Entry<String,String> extraHiddenField : extraHiddenFields.entrySet()) {
 
                     final IStandaloneElementTag extraHiddenElementTag =
-<<<<<<< HEAD
                             modelFactory.createStandaloneElementTag("input", true);
-=======
-                            context.getModelFactory().createStandaloneElementTag("input", true);
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 
                     extraHiddenElementTag.getAttributes().setAttribute("type", "hidden");
                     extraHiddenElementTag.getAttributes().setAttribute("name", extraHiddenField.getKey());

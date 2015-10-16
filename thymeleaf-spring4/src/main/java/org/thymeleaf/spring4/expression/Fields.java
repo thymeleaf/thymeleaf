@@ -21,7 +21,6 @@ package org.thymeleaf.spring4.expression;
 
 import java.util.List;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.spring4.util.DetailedError;
 import org.thymeleaf.spring4.util.FieldUtils;

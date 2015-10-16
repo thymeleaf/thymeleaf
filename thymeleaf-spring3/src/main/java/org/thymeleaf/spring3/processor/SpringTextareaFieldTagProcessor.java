@@ -21,7 +21,6 @@ package org.thymeleaf.spring3.processor;
 
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;

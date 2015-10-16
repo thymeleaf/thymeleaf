@@ -85,13 +85,9 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
 
                 tag.getAttributes().setAttribute(ATTR_NAME, "post");
 
-<<<<<<< HEAD
                 final IModelFactory modelFactory = context.getConfiguration().getModelFactory(context.getTemplateMode());
 
                 final IModel hiddenMethodModel = modelFactory.createModel();
-=======
-                final IModel hiddenMethodModel = context.getModelFactory().createModel();
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 
                 final String type = "hidden";
                 final String name = "_method";
@@ -99,11 +95,7 @@ public final class SpringMethodTagProcessor extends AbstractStandardExpressionAt
                         RequestDataValueProcessorUtils.processFormFieldValue(context, name, newAttributeValue, type);
 
                 final IStandaloneElementTag hiddenMethodElementTag =
-<<<<<<< HEAD
                         modelFactory.createStandaloneElementTag("input", true);
-=======
-                        context.getModelFactory().createStandaloneElementTag("input", true);
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
                 hiddenMethodElementTag.getAttributes().setAttribute("type", type);
                 hiddenMethodElementTag.getAttributes().setAttribute("name", name);
                 hiddenMethodElementTag.getAttributes().setAttribute("value", value); // no need to escape

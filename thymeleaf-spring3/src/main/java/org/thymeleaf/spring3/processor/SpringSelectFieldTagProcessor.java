@@ -21,10 +21,6 @@ package org.thymeleaf.spring3.processor;
 
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.servlet.support.BindStatus;
-<<<<<<< HEAD
-=======
-import org.thymeleaf.IEngineConfiguration;
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
@@ -79,13 +75,9 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
 
         if (multiple && !isDisabled(tag)) {
 
-<<<<<<< HEAD
             final IModelFactory modelFactory = context.getConfiguration().getModelFactory(context.getTemplateMode());
 
             final IModel hiddenMethodElementModel = modelFactory.createModel();
-=======
-            final IModel hiddenMethodElementModel = context.getModelFactory().createModel();
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 
             final String hiddenName = WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name;
             final String type = "hidden";
@@ -93,11 +85,7 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
                     RequestDataValueProcessorUtils.processFormFieldValue(context, hiddenName, "1", type);
 
             final IStandaloneElementTag hiddenMethodElementTag =
-<<<<<<< HEAD
                     modelFactory.createStandaloneElementTag("input", true);
-=======
-                    context.getModelFactory().createStandaloneElementTag("input", true);
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
             hiddenMethodElementTag.getAttributes().setAttribute("type", type);
             hiddenMethodElementTag.getAttributes().setAttribute("name", hiddenName);
             hiddenMethodElementTag.getAttributes().setAttribute("value", value);

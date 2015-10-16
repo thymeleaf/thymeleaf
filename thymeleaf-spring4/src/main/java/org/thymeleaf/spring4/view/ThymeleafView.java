@@ -34,10 +34,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.ITemplateEngine;
-import org.thymeleaf.context.ExpressionContext;
-import org.thymeleaf.context.WebContext;
 import org.thymeleaf.context.WebExpressionContext;
 import org.thymeleaf.spring4.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring4.naming.SpringContextVariableNames;
@@ -262,26 +259,14 @@ public class ThymeleafView
         } else {
             // Template name contains a fragment name, so we should parse it as such
 
-<<<<<<< HEAD
             final ParsedFragmentSelection parsedFragmentSelection =
                     FragmentSelectionUtils.parseFragmentSelection(context, viewTemplateName);
-=======
-            final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
-            final ExpressionContext expressionContext = new ExpressionContext(configuration, context);
-
-            final ParsedFragmentSelection parsedFragmentSelection =
-                    FragmentSelectionUtils.parseFragmentSelection(expressionContext, viewTemplateName);
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
             if (parsedFragmentSelection == null) {
                 throw new IllegalArgumentException("Invalid template name specification: '" + viewTemplateName + "'");
             }
 
             final ProcessedFragmentSelection processedFragmentSelection =
-<<<<<<< HEAD
                     FragmentSelectionUtils.processFragmentSelection(context, parsedFragmentSelection);
-=======
-                    FragmentSelectionUtils.processFragmentSelection(expressionContext, parsedFragmentSelection);
->>>>>>> 1b08adb4a3731da6645541808b99ed79cda36c40
 
             templateName = processedFragmentSelection.getTemplateName();
             markupSelectors = new String[] {processedFragmentSelection.getFragmentSelector()};
