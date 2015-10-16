@@ -20,20 +20,19 @@
 package org.thymeleaf.spring4.templateresolver;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.thymeleaf.exceptions.ConfigurationException;
-import org.thymeleaf.resourceresolver.IResourceResolver;
-import org.thymeleaf.spring4.resourceresolver.SpringResourceResourceResolver;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.spring4.templateresource.SpringResourceTemplateResource;
 import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
-import org.thymeleaf.util.Validate;
+import org.thymeleaf.templateresource.ITemplateResource;
 
 /**
  * <p>
- *   Implementation of {@link org.thymeleaf.templateresolver.ITemplateResolver} that extends {@link AbstractConfigurableTemplateResolver}
- *   and uses a {@link org.thymeleaf.spring4.resourceresolver.SpringResourceResourceResolver} for resource resolution.
+ *   Implementation of {@link org.thymeleaf.templateresolver.ITemplateResolver} that extends
+ *   {@link AbstractConfigurableTemplateResolver}
+ *   and resolves templates using Spring's Resource Resolution mechanism
+ *   (see {@link ApplicationContext#getResource(String)}).
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
@@ -43,18 +42,15 @@ import org.thymeleaf.util.Validate;
  */
 public class SpringResourceTemplateResolver
         extends AbstractConfigurableTemplateResolver
-        implements ApplicationContextAware, InitializingBean {
+        implements ApplicationContextAware {
 
 
-    private final SpringResourceResourceResolver resourceResolver;
     private ApplicationContext applicationContext = null;
 
 
 
     public SpringResourceTemplateResolver() {
         super();
-        this.resourceResolver = new SpringResourceResourceResolver();
-        super.setResourceResolver(this.resourceResolver);
     }
 
 
@@ -64,38 +60,12 @@ public class SpringResourceTemplateResolver
     }
 
 
-    public void afterPropertiesSet() throws Exception {
 
-        Validate.notNull(this.applicationContext,
-                "ApplicationContext has not been initialized in resource resolver. TemplateResolver or " +
-                        "ResourceResolver might not have been correctly configured by the Spring Application Context.");
-
-        final AutowireCapableBeanFactory beanFactory = this.applicationContext.getAutowireCapableBeanFactory();
-        beanFactory.initializeBean(this.resourceResolver, "springResourceResolver");
-
-    }
-
-
-
-    /**
-     * <p>
-     *   This method <b>should not be called</b>, because the resource resolver is
-     *   fixed to be {@link org.thymeleaf.spring4.resourceresolver.SpringResourceResourceResolver}. Every execution of this method
-     *   will result in an exception.
-     * </p>
-     * <p>
-     *   If you need to select a different resource resolver, use the {@link AbstractConfigurableTemplateResolver}
-     *   class instead.
-     * </p>
-     * 
-     * @param resourceResolver the new resource resolver
-     */
     @Override
-    public void setResourceResolver(final IResourceResolver resourceResolver) {
-        throw new ConfigurationException(
-                "Cannot set a resource resolver on " + this.getClass().getName() + ". If " +
-                "you want to set your own resource resolver, use " + AbstractConfigurableTemplateResolver.class.getName() +
-                "instead");
+    protected ITemplateResource computeTemplateResource(
+            final IEngineConfiguration configuration, final String template, final String resourceName, final String characterEncoding) {
+        return new SpringResourceTemplateResource(this.applicationContext, resourceName, characterEncoding);
     }
+
 
 }
