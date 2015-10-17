@@ -85,7 +85,7 @@ public final class UrlTemplateResource implements ITemplateResource, Serializabl
 
 
     public String getBaseName() {
-        return TemplateResourceUtils.computeBaseName(this.url.getPath());
+        return TemplateResourceUtils.computeBaseName(TemplateResourceUtils.cleanPath(this.url.getPath()));
     }
 
 
