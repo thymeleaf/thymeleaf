@@ -119,7 +119,7 @@ final class TemplateResourceUtils {
 
     static String computeBaseName(final String path) {
 
-        if (path == null) {
+        if (path == null || path.length() == 0) {
             return null;
         }
 
@@ -135,7 +135,7 @@ final class TemplateResourceUtils {
             return basePath.substring(slashPos + 1);
         }
 
-        return basePath;
+        return (basePath.length() > 0? basePath : null);
 
     }
 
