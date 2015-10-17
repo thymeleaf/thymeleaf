@@ -920,6 +920,7 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
                     final int[] newLevelSizes = new int[this.levelSizes.length + DEFAULT_LEVELS_SIZE];
                     final SelectionTarget[] newSelectionTargets = new SelectionTarget[this.selectionTargets.length + DEFAULT_LEVELS_SIZE];
                     final IInliner[] newInliners = new IInliner[this.inliners.length + DEFAULT_LEVELS_SIZE];
+                    final TemplateResolution[] newTemplateResolutions = new TemplateResolution[this.templateResolutions.length + DEFAULT_LEVELS_SIZE];
                     Arrays.fill(newLevels, Integer.MAX_VALUE);
                     Arrays.fill(newNames, null);
                     Arrays.fill(newNewValues, null);
@@ -927,6 +928,7 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
                     Arrays.fill(newLevelSizes, 0);
                     Arrays.fill(newSelectionTargets, null);
                     Arrays.fill(newInliners, null);
+                    Arrays.fill(newTemplateResolutions, null);
                     System.arraycopy(this.levels, 0, newLevels, 0, this.levels.length);
                     System.arraycopy(this.names, 0, newNames, 0, this.names.length);
                     System.arraycopy(this.newValues, 0, newNewValues, 0, this.newValues.length);
@@ -934,6 +936,7 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
                     System.arraycopy(this.levelSizes, 0, newLevelSizes, 0, this.levelSizes.length);
                     System.arraycopy(this.selectionTargets, 0, newSelectionTargets, 0, this.selectionTargets.length);
                     System.arraycopy(this.inliners, 0, newInliners, 0, this.inliners.length);
+                    System.arraycopy(this.templateResolutions, 0, newTemplateResolutions, 0, this.templateResolutions.length);
                     this.levels = newLevels;
                     this.names = newNames;
                     this.newValues = newNewValues;
@@ -941,6 +944,7 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
                     this.levelSizes = newLevelSizes;
                     this.selectionTargets = newSelectionTargets;
                     this.inliners = newInliners;
+                    this.templateResolutions = newTemplateResolutions;
                 }
 
                 this.levels[this.index] = this.level;
