@@ -270,7 +270,7 @@ public final class LinkExpression extends SimpleExpression {
         final boolean linkBaseRelative = !linkBaseAbsolute && !linkBaseContextRelative && !linkBaseServerRelative;
 
         final IWebContext webContext = (context instanceof IWebContext? (IWebContext)context : null);
-        if (webContext != null && linkBaseContextRelative) {
+        if (webContext == null && linkBaseContextRelative) {
             throw new TemplateProcessingException(
                     "Link base \"" + base + "\" cannot be context relative (/...) unless the context " +
                     "used for executing the engine implements the " + IWebContext.class.getName() + " interface");
