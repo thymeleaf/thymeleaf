@@ -41,13 +41,13 @@ import org.thymeleaf.context.ITemplateContext;
  */
 public final class ExecutionInfo {
 
-    private final String templateName;
+    private final ITemplateContext context;
     private final Calendar now;
 
 
     public ExecutionInfo(final ITemplateContext context) {
         super();
-        this.templateName = context.getTemplateResolution().getTemplate();
+        this.context = context;
         this.now = Calendar.getInstance(context.getLocale());
     }
 
@@ -65,7 +65,7 @@ public final class ExecutionInfo {
      * @return the template name
      */
     public String getTemplateName() {
-        return this.templateName;
+        return this.context.getTemplateResolution().getTemplate();
     }
     
 
