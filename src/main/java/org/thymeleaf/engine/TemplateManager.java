@@ -36,7 +36,6 @@ import org.thymeleaf.cache.NonCacheableCacheEntryValidity;
 import org.thymeleaf.cache.TemplateCacheKey;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IEngineContext;
-import org.thymeleaf.context.StandardEngineContextFactory;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.postprocessor.IPostProcessor;
@@ -318,7 +317,7 @@ public final class TemplateManager {
          * Create the context instance that corresponds to this execution of the template engine
          */
         final IEngineContext engineContext =
-                StandardEngineContextFactory.buildEngineContext(this.configuration, template.getTemplateResolution(), context);
+                EngineContextManager.prepareEngineContext(this.configuration, template.getTemplateResolution(), context);
 
         /*
          * Create the handler chain to process the data
@@ -329,6 +328,12 @@ public final class TemplateManager {
          *  Process the template
          */
         processTemplateModel(template, processingHandlerChain);
+
+
+        /*
+         * Dispose the engine context now that processing has been done
+         */
+        EngineContextManager.disposeEngineContext(engineContext);
 
     }
 
@@ -419,15 +424,18 @@ public final class TemplateManager {
 
             if (cached != null) {
 
-                // Create the Context instance that corresponds to this execution of the template engine
+                // Prepare the context instance that corresponds to this execution of the template engine
                 final IEngineContext engineContext =
-                        StandardEngineContextFactory.buildEngineContext(this.configuration, cached.getTemplateResolution(), context);
+                        EngineContextManager.prepareEngineContext(this.configuration, cached.getTemplateResolution(), context);
 
                 // Create the handler chain to process the data
                 final ITemplateHandler processingHandlerChain = createTemplateProcessingHandlerChain(engineContext, writer);
 
                 // Process the cached template itself
                 processTemplateModel(cached, processingHandlerChain);
+
+                // Dispose the engine context now that processing has been done
+                EngineContextManager.disposeEngineContext(engineContext);
 
                 return;
 
@@ -451,10 +459,10 @@ public final class TemplateManager {
 
 
         /*
-         * Create the context instance that corresponds to this execution of the template engine
+         * Prepare the context instance that corresponds to this execution of the template engine
          */
         final IEngineContext engineContext =
-                StandardEngineContextFactory.buildEngineContext(this.configuration, resolution.templateResolution, context);
+                EngineContextManager.prepareEngineContext(this.configuration, resolution.templateResolution, context);
 
 
         /*
@@ -467,6 +475,7 @@ public final class TemplateManager {
          * If the resolved template is cacheable, so we will first read it as an object, cache it, and then process it
          */
         if (useCache && resolution.templateResolution.getValidity().isCacheable() && this.templateCache != null) {
+
             // Create the handler chain to create the Template object
             final TemplateModel parsedTemplate = new TemplateModel(this.configuration, resolution.templateResolution);
             final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(parsedTemplate.getInternalModel());
@@ -480,18 +489,24 @@ public final class TemplateManager {
             this.templateCache.put(cacheKey, parsedTemplate);
             // Process the read (+cached) template itself
             processTemplateModel(parsedTemplate, processingHandlerChain);
-            return;
+
+        } else {
+
+            //  Process the template, which is not cacheable (so no worry about caching)
+            processResolvedResource(
+                    ownerTemplate, template, resolution.templateResource, selectors,
+                    lineOffset, colOffset,
+                    engineContext.getTemplateMode(),
+                    processingHandlerChain);
+
         }
 
 
         /*
-         *  Process the template, which is not cacheable (so no worry about caching)
+         * Dispose the engine context now that processing has been done
          */
-        processResolvedResource(
-                ownerTemplate, template, resolution.templateResource, selectors,
-                lineOffset, colOffset,
-                engineContext.getTemplateMode(),
-                processingHandlerChain);
+        EngineContextManager.disposeEngineContext(engineContext);
+
 
     }
 

@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.context;
+package org.thymeleaf.engine;
 
 import java.lang.reflect.Array;
 import java.util.AbstractList;
@@ -40,6 +40,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IEngineContext;
+import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
 import org.thymeleaf.templateresolver.TemplateResolution;
@@ -874,6 +876,9 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
 
         public void setTemplateResolution(final TemplateResolution templateResolution) {
             Validate.notNull(templateResolution, "Template Resolution cannot be null");
+            if (this.lastTemplateResolution == templateResolution) {
+                return;
+            }
             ensureLevelInitialized();
             this.lastTemplateResolution = templateResolution;
             this.templateResolutions[this.index] = this.lastTemplateResolution;

@@ -17,12 +17,15 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.context;
+package org.thymeleaf.engine;
 
 import java.util.Locale;
 import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IEngineContext;
+import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.context.IdentifierSequences;
 import org.thymeleaf.expression.ExpressionObjects;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.messageresolver.IMessageResolver;

@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.context;
+package org.thymeleaf.engine;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -25,22 +25,53 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.context.IEngineContext;
+import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.templateresolver.TemplateResolution;
 
 /**
  * <p>
- *   Static factory class for creating suitable {@link IEngineContext} objects from existing {@link IContext}
- *   context objects.
+ *   Static manager class for creating suitable {@link IEngineContext} objects from existing {@link IContext}
+ *   context objects if needed, as well as making sure the adequate template resolution objects are set into
+ *   these context objects.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-public final class StandardEngineContextFactory {
+final class EngineContextManager {
 
 
-    public static IEngineContext buildEngineContext(
+    static IEngineContext prepareEngineContext(
+            final IEngineConfiguration configuration, final TemplateResolution templateResolution, final IContext context) {
+
+        final IEngineContext engineContext =
+                createEngineContextIfNeeded(configuration, templateResolution, context);
+
+        // We will always do this, even if the context is a new object (in which case it would be completely needed)
+        // because we want to make sure the 'disposeEngineContext' call that will come afterwards can safely
+        // decrease the level
+        engineContext.increaseLevel();
+
+        // Set the template resolution into the context. Again, this might not be needed, but we'll do it anyway
+        // in order to make sure the right resolution is set if we are reusing the contet
+        engineContext.setTemplateResolution(templateResolution);
+
+        return engineContext;
+
+    }
+
+
+    static void disposeEngineContext(final IEngineContext engineContext) {
+        engineContext.decreaseLevel();
+    }
+
+
+
+
+    private static IEngineContext createEngineContextIfNeeded(
             final IEngineConfiguration configuration, final TemplateResolution templateResolution, final IContext context) {
 
         if (context instanceof IEngineContext) {
@@ -86,7 +117,7 @@ public final class StandardEngineContextFactory {
 
 
 
-    private StandardEngineContextFactory() {
+    private EngineContextManager() {
         super();
     }
 

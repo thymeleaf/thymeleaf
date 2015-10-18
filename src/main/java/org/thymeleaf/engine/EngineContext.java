@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.context;
+package org.thymeleaf.engine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
 import org.thymeleaf.templateresolver.TemplateResolution;
@@ -313,6 +314,9 @@ final class EngineContext extends AbstractEngineContext implements IEngineContex
 
     public void setTemplateResolution(final TemplateResolution templateResolution) {
         Validate.notNull(templateResolution, "Template Resolution cannot be null");
+        if (this.lastTemplateResolution == templateResolution) {
+            return;
+        }
         ensureLevelInitialized(DEFAULT_MAP_SIZE);
         this.lastTemplateResolution = templateResolution;
         this.templateResolutions[this.index] = this.lastTemplateResolution;
