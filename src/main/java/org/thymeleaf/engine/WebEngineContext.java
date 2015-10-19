@@ -126,7 +126,7 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
                 new RequestAttributesVariablesMap(configuration, templateResolution, this.request, locale, variables);
         this.requestParametersVariablesMap = new RequestParametersMap(this.request);
         this.applicationAttributesVariablesMap = new ServletContextAttributesMap(this.servletContext);
-        this.sessionAttributesVariablesMap = (this.session == null ? null : new SessionAttributesMap(this.session));
+        this.sessionAttributesVariablesMap = new SessionAttributesMap(this.session);
 
     }
 
@@ -315,6 +315,9 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
 
         @Override
         public int size() {
+            if (this.session == null) {
+                return 0;
+            }
             int size = 0;
             final Enumeration<String> attributeNames = this.session.getAttributeNames();
             while (attributeNames.hasMoreElements()) {
@@ -325,6 +328,9 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
 
         @Override
         public boolean isEmpty() {
+            if (this.session == null) {
+                return true;
+            }
             final Enumeration<String> attributeNames = this.session.getAttributeNames();
             return attributeNames.hasMoreElements();
         }
@@ -347,11 +353,17 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
 
         @Override
         public Object get(final Object key) {
+            if (this.session == null) {
+                return null;
+            }
             return this.session.getAttribute(key != null? key.toString() : null);
         }
 
         @Override
         public Set<String> keySet() {
+            if (this.session == null) {
+                return Collections.emptySet();
+            }
             final Set<String> keySet = new LinkedHashSet<String>(5);
             final Enumeration<String> attributeNames = this.session.getAttributeNames();
             while (attributeNames.hasMoreElements()) {
@@ -362,6 +374,9 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
 
         @Override
         public Collection<Object> values() {
+            if (this.session == null) {
+                return Collections.emptySet();
+            }
             final List<Object> values = new ArrayList<Object>(5);
             final Enumeration<String> attributeNames = this.session.getAttributeNames();
             while (attributeNames.hasMoreElements()) {
@@ -372,6 +387,9 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
 
         @Override
         public Set<Entry<String,Object>> entrySet() {
+            if (this.session == null) {
+                return Collections.emptySet();
+            }
             final Set<Entry<String,Object>> entrySet = new LinkedHashSet<Entry<String, Object>>(5);
             final Enumeration<String> attributeNames = this.session.getAttributeNames();
             while (attributeNames.hasMoreElements()) {
