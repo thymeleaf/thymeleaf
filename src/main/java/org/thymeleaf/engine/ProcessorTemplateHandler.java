@@ -1095,6 +1095,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     }
                 }
 
+                if (this.elementTagStructureHandler.setTemplateResolution) {
+                    if (this.engineContext != null) {
+                        this.engineContext.setTemplateResolution(this.elementTagStructureHandler.setTemplateResolutionValue);
+                    }
+                }
+
                 if (this.elementTagStructureHandler.iterateElement) {
 
                     // Set the iteration info in order to start gathering all iterated events
@@ -1411,6 +1417,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     }
                 }
 
+                if (this.elementModelStructureHandler.setTemplateResolution) {
+                    if (this.engineContext != null) {
+                        this.engineContext.setTemplateResolution(this.elementModelStructureHandler.setTemplateResolutionValue);
+                    }
+                }
+
                 /*
                  * Now we will do the exact equivalent to what is performed for an Element Tag processor, when this
                  * returns a result of type "replaceWithModel".
@@ -1627,6 +1639,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 if (this.elementTagStructureHandler.setInliner) {
                     if (this.engineContext != null) {
                         this.engineContext.setInliner(this.elementTagStructureHandler.setInlinerValue);
+                    }
+                }
+
+                if (this.elementTagStructureHandler.setTemplateResolution) {
+                    if (this.engineContext != null) {
+                        this.engineContext.setTemplateResolution(this.elementTagStructureHandler.setTemplateResolutionValue);
                     }
                 }
 
@@ -1889,6 +1907,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 if (this.elementModelStructureHandler.setInliner) {
                     if (this.engineContext != null) {
                         this.engineContext.setInliner(this.elementModelStructureHandler.setInlinerValue);
+                    }
+                }
+
+                if (this.elementModelStructureHandler.setTemplateResolution) {
+                    if (this.engineContext != null) {
+                        this.engineContext.setTemplateResolution(this.elementModelStructureHandler.setTemplateResolutionValue);
                     }
                 }
 

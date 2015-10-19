@@ -20,6 +20,7 @@
 package org.thymeleaf.processor.element;
 
 import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.templateresolver.TemplateResolution;
 
 /**
  *
@@ -38,6 +39,9 @@ public interface IElementModelStructureHandler {
     public void setSelectionTarget(final Object selectionTarget);
 
     public void setInliner(final IInliner inliner);
+
+    public void setTemplateResolution(final TemplateResolution templateResolution);
+
 
 }
 

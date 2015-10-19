@@ -241,6 +241,12 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
         }
 
+        /*
+         * APPLY THE FRAGMENT'S TEMPLATE RESOLUTION so that all code inside the fragment is executed with its own
+         * template resolution info (working as if it were a local variable)
+         */
+        structureHandler.setTemplateResolution(fragmentModel.getTemplateResolution());
+
 
         /*
          * APPLY THE FRAGMENT PARAMETERS AS LOCAL VARIABLES, perhaps after reshaping it according to the fragment signature
