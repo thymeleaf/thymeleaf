@@ -51,7 +51,6 @@ public interface IStandardVariableExpressionEvaluator {
      *   Evaluate the variable expression.
      * </p>
      *
-     * @param configuration the engine configuration object
      * @param context the context object.
      * @param expression the expression to be evaluated (as a String).
      * @param expContext the expression execution context to be applied (preprocessing, etc.)
