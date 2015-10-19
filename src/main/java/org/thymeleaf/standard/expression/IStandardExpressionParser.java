@@ -48,7 +48,6 @@ public interface IStandardExpressionParser {
      *   Parse the specified expression.
      * </p>
      *
-     * @param configuration the engine configuration
      * @param context the context object.
      * @param input the expression to be parsed, as an input String.
      * @return the expression object resulting from parsing the expression.
