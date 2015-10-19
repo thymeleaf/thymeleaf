@@ -579,13 +579,6 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
 
         private final List<TemplateResolution> templateResolutionStack;
 
-        private static final Object NON_EXISTING = new Object() {
-            @Override
-            public String toString() {
-                return "(*removed*)";
-            }
-        };
-
 
 
         RequestAttributesVariablesMap(
@@ -627,30 +620,9 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
 
         }
 
+
         public boolean containsVariable(final String name) {
-
-            // --------------------------
-            // Note this method relies on HttpServletRequest#getAttributeNames(), which is an extremely slow and
-            // inefficient method in implementations like Apache Tomcat's. So the uses of this method should be
-            // very controlled and reduced to the minimum. Specifically, any call that executes e.g. for every
-            // expression evaluation should be disallowed. Only sporadic uses like e.g. from the put() method should
-            // be done.
-            // Note also it would not be a good idea to cache the attribute names coming from the request if we
-            // want to keep complete independence of the HttpServletRequest object, so that it can be modified
-            // from the outside (e.g. from other libraries like Tiles) with Thymeleaf perfectly integrating with
-            // those modifications.
-            // --------------------------
-
-
-            // For most implementations of HttpServletRequest, trying to get a value instead of iterating the
-            // names Enumeration seems faster as a way to know if something exists (in the cases when we are checking
-            // for existing keys a good % of the total times).
-            if (this.request.getAttribute(name) != null) {
-                return true;
-            }
-
-            return existsInEnumeration(this.request.getAttributeNames(), name);
-
+            return this.request.getAttribute(name) != null;
         }
 
 
@@ -660,7 +632,16 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
 
 
         public Set<String> getVariableNames() {
-
+            // --------------------------
+            // Note this method relies on HttpServletRequest#getAttributeNames(), which is an extremely slow and
+            // inefficient method in implementations like Apache Tomcat's. So the uses of this method should be
+            // very controlled and reduced to the minimum. Specifically, any call that executes e.g. for every
+            // expression evaluation should be disallowed. Only sporadic uses should be done.
+            // Note also it would not be a good idea to cache the attribute names coming from the request if we
+            // want to keep complete independence of the HttpServletRequest object, so that it can be modified
+            // from the outside (e.g. from other libraries like Tiles) with Thymeleaf perfectly integrating with
+            // those modifications.
+            // --------------------------
             final Set<String> variableNames = new HashSet<String>(10);
             final Enumeration<String> attributeNamesEnum = this.request.getAttributeNames();
             while (attributeNamesEnum.hasMoreElements()) {
@@ -690,17 +671,9 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
         }
 
 
-        // TODO According to the JavaDoc of HttpServletRequest#setAttribute(...), setting an attribute to null has
-        // the exact same effect as HttpServletRequest#removeAttribute(...), so there is no such thing as an
-        // existing request attribute set to null. This should allow us simplify the #setVariable(...) method
-        // esp. by avoiding calls to containsVariable(), and therefore to HttpServletRequest#getAttributeNames()
 
 
         public void setVariable(final String name, final Object value) {
-            setVariable(name, value, null);
-        }
-
-        private void setVariable(final String name, final Object value, final Set<String> alreadyContainedNames) {
 
             ensureLevelInitialized();
 
@@ -737,14 +710,13 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
 
                     this.names[this.index][levelIndex] = name;
 
-                    // By checking the 'alreadyContainedNames' argument, we try to save calls to the very slow
-                    // HttpServletRequest#getAttributeNames() in the case we are calling this from setVariables(...)
-                    if ((alreadyContainedNames == null && containsVariable(name)) ||
-                            (alreadyContainedNames != null && alreadyContainedNames.contains(name))) {
-                        this.oldValues[this.index][levelIndex] = this.request.getAttribute(name);
-                    } else {
-                        this.oldValues[this.index][levelIndex] = NON_EXISTING;
-                    }
+                    /*
+                     * Per construction, according to the Servlet API, an attribute set to null and a non-existing
+                     * attribute are exactly the same. So we don't really have a reason to worry about the attribute
+                     * already existing or not when it was set to null.
+                     */
+                    this.oldValues[this.index][levelIndex] = this.request.getAttribute(name);
+
                     this.newValues[this.index][levelIndex] = value;
 
                     this.levelSizes[this.index]++;
@@ -753,11 +725,8 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
 
             }
 
-            if (value == NON_EXISTING) {
-                this.request.removeAttribute(name);
-            } else {
-                this.request.setAttribute(name, value);
-            }
+            // No matter if value is null or not. Value null will be equivalent to .removeAttribute()
+            this.request.setAttribute(name, value);
 
         }
 
@@ -766,21 +735,14 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
             if (variables == null || variables.isEmpty()) {
                 return;
             }
-            // By precomputing here a 'alreadyContainedNames' set, we try to save calls to the very slow
-            // HttpServletRequest#getAttributeNames() in our calls to put(), which has to determine whether a
-            // variable already exists or not (and would otherwise call "containsVariable()")
-            // Also note this is only required when level > 0
-            final Set<String> alreadyContainedNames = (this.level > 0? getVariableNames() : null);
             for (final Map.Entry<String,Object> entry : variables.entrySet()) {
-                setVariable(entry.getKey(), entry.getValue(), alreadyContainedNames);
+                setVariable(entry.getKey(), entry.getValue());
             }
         }
 
 
         public void removeVariable(final String name) {
-            if (containsVariable(name)) {
-                setVariable(name, NON_EXISTING);
-            }
+            setVariable(name, null);
         }
 
 
@@ -797,7 +759,7 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
             while (n-- > 1) { // variables at n == 0 are not local!
                 final int idx = searchNameInIndex(name, n);
                 if (idx >= 0) {
-                    return this.newValues[n][idx] != NON_EXISTING;
+                    return this.newValues[n][idx] != null;
                 }
             }
 
@@ -1019,22 +981,11 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
                         final String name = this.names[this.index][n];
                         final Object newValue = this.newValues[this.index][n];
                         final Object oldValue = this.oldValues[this.index][n];
-                        if (newValue == NON_EXISTING) {
-                            if (!containsVariable(name)) {
-                                // Only if not contained, in order to avoid modifying values that have been set directly
-                                // into the request.
-                                if (oldValue != NON_EXISTING) {
-                                    this.request.setAttribute(name,oldValue);
-                                }
-                            }
-                        } else if (newValue == this.request.getAttribute(name)) {
+                        final Object currentValue = this.request.getAttribute(name);
+                        if (newValue == currentValue) {
                             // Only if the value matches, in order to avoid modifying values that have been set directly
                             // into the request.
-                            if (oldValue == NON_EXISTING) {
-                                this.request.removeAttribute(name);
-                            } else {
-                                this.request.setAttribute(name,oldValue);
-                            }
+                            this.request.setAttribute(name,oldValue);
                         }
                     }
                     this.levelSizes[this.index] = 0;
@@ -1079,14 +1030,8 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
                         if (!oldValuesSum.containsKey(name)) {
                             // This means that, either the value in the request is the same as the newValue, or it was modified
                             // directly at the request and we need to discard this entry.
-                            if (newValue == NON_EXISTING) {
-                                if (containsVariable(name)) {
-                                    continue;
-                                }
-                            } else {
-                                if (newValue != this.request.getAttribute(name)) {
-                                    continue;
-                                }
+                            if (newValue != this.request.getAttribute(name)) {
+                                continue;
                             }
                         } else {
                             // This means that, either the old value in the map is the same as the newValue, or it was modified
@@ -1124,7 +1069,7 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
                 final String name = attrNames.nextElement();
                 if (oldValuesSum.containsKey(name)) {
                     final Object oldValue = oldValuesSum.get(name);
-                    if (oldValue != NON_EXISTING) {
+                    if (oldValue != null) {
                         requestAttributes.put(name, oldValuesSum.get(name));
                     }
                     oldValuesSum.remove(name);
@@ -1136,7 +1081,7 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
                 final String name = oldValuesSumEntry.getKey();
                 if (!requestAttributes.containsKey(name)) {
                     final Object oldValue = oldValuesSumEntry.getValue();
-                    if (oldValue != NON_EXISTING) {
+                    if (oldValue != null) {
                         requestAttributes.put(name, oldValue);
                     }
                 }
@@ -1199,26 +1144,6 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
         }
 
 
-    }
-
-
-
-
-    private static boolean existsInEnumeration(final Enumeration<String> enumeration, final String value) {
-        if (value == null) {
-            while (enumeration.hasMoreElements()) {
-                if (enumeration.nextElement() == null) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        while (enumeration.hasMoreElements()) {
-            if (value.equals(enumeration.nextElement())) {
-                return true;
-            }
-        }
-        return false;
     }
 
 
