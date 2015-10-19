@@ -181,7 +181,7 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
     
     
     
-    public static final HttpServletRequest createMockHttpServletRequest(
+    static final HttpServletRequest createMockHttpServletRequest(
             final ITest test,
             final HttpSession session, final Map<String, Object> attributes,
             final Map<String, Object[]> parameters, final Locale locale) {
@@ -240,7 +240,7 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
 
 
 
-    public static final HttpSession createMockHttpSession(final ServletContext context, final Map<String, Object> attributes) {
+    static final HttpSession createMockHttpSession(final ServletContext context, final Map<String, Object> attributes) {
         
         final HttpSession session = Mockito.mock(HttpSession.class);
         
@@ -257,7 +257,7 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
 
 
 
-    public static final HttpServletResponse createMockHttpServletResponse() {
+    static final HttpServletResponse createMockHttpServletResponse() {
         final HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         Mockito.when(response.encodeURL(Matchers.anyString())).thenAnswer(new EncodeUrlAnswer());
         return response;
@@ -265,7 +265,7 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
 
 
 
-    public static final ServletContext createMockServletContext(final Map<String, Object> attributes) {
+    static final ServletContext createMockServletContext(final Map<String, Object> attributes) {
 
         final String contextName = "/testing";
 
@@ -363,7 +363,12 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         public Object answer(final InvocationOnMock invocation) throws Throwable {
             final String attributeName = (String) invocation.getArguments()[0];
             final Object attributeValue = invocation.getArguments()[1];
-            this.values.put(attributeName, attributeValue);
+            if (attributeValue == null) {
+                // According to the Servlet API, setting an attribute to null is the same as removing it
+                this.values.remove(attributeName);
+            } else {
+                this.values.put(attributeName, attributeValue);
+            }
             return null;
         }
         
