@@ -19,9 +19,13 @@
  */
 package org.thymeleaf.expression;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.TemplateResolution;
 
 
 /**
@@ -61,13 +65,67 @@ public final class ExecutionInfo {
      *   aliases, links, etc. This template name refers to the one used to call
      *   the TemplateEngine itself.
      * </p>
-     * 
+     *
      * @return the template name
      */
     public String getTemplateName() {
         return this.context.getTemplateResolution().getTemplate();
     }
-    
+
+
+    /**
+     * <p>
+     *   Returns the template mode ({@link TemplateMode}).
+     * </p>
+     *
+     * @return the template mode
+     */
+    public TemplateMode getTemplateMode() {
+        return this.context.getTemplateResolution().getTemplateMode();
+    }
+
+
+    /**
+     * <p>
+     *   Returns the names of all the stack of templates appliable to the current point
+     *   of execution. This will depend on which templates are inserted inside wich.
+     * </p>
+     * <p>
+     *   The first-level template will appear first, and the most specific template will appear last.
+     * </p>
+     *
+     * @return the stack of template names
+     */
+    public List<String> getTemplateNameStack() {
+        final List<TemplateResolution> templateResolutionStack = this.context.getTemplateResolutionStack();
+        final List<String> templateNameStack = new ArrayList<String>(templateResolutionStack.size());
+        for (final TemplateResolution templateResolution : templateResolutionStack) {
+            templateNameStack.add(templateResolution.getTemplate());
+        }
+        return templateNameStack;
+    }
+
+
+    /**
+     * <p>
+     *   Returns the {@link TemplateMode}s of all the stack of templates appliable to the current point
+     *   of execution. This will depend on which templates are inserted inside wich.
+     * </p>
+     * <p>
+     *   The first-level template will appear first, and the most specific template will appear last.
+     * </p>
+     *
+     * @return the stack of template modes
+     */
+    public List<TemplateMode> getTemplateModeStack() {
+        final List<TemplateResolution> templateResolutionStack = this.context.getTemplateResolutionStack();
+        final List<TemplateMode> templateModeStack = new ArrayList<TemplateMode>(templateResolutionStack.size());
+        for (final TemplateResolution templateResolution : templateResolutionStack) {
+            templateModeStack.add(templateResolution.getTemplateMode());
+        }
+        return templateModeStack;
+    }
+
 
     /**
      * <p>
