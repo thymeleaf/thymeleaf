@@ -875,9 +875,11 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
             }
             int n = this.index + 1;
             int i = 0;
+            TemplateResolution lastTemplateResolution = null;
             while (n-- != 0) {
-                if (this.templateResolutions[i] != null) {
-                    this.templateResolutionStack.add(this.templateResolutions[i]);
+                if (this.templateResolutions[i] != null && this.templateResolutions[i] != lastTemplateResolution) {
+                    lastTemplateResolution = this.templateResolutions[i];
+                    this.templateResolutionStack.add(lastTemplateResolution);
                 }
                 i++;
             }
