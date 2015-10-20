@@ -349,6 +349,23 @@ public class TemplateEngine implements ITemplateEngine {
 
 
 
+    /**
+     * <p>
+     *   Checks whether the <tt>TemplateEngine</tt> has already been initialized
+     *   or not. A <tt>TemplateEngine</tt> is initialized when the {@link #initialize()}
+     *   method is called the first time a template is processed.
+     * </p>
+     * <p>
+     *   Normally, there is no good reason why users would need to call this method.
+     * </p>
+     *
+     * @return <tt>true</tt> if the template engine has already been initialized,
+     *         <tt>false</tt> if not.
+     */
+    public final boolean isInitialized() {
+        return this.initialized;
+    }
+
 
 
 
