@@ -579,6 +579,13 @@ public final class TemplateManager {
                     "any of the configured Template Resolvers");
         }
 
+        if (!template.equals(templateResolution.getTemplate())) {
+            throw new TemplateInputException(
+                    "One of the Template Resolvers has tried to change the template name, which is forbidden as it " +
+                    "could provoke issues such as cache inconsistencies (template was asked as \"" + template + "\" " +
+                    "but resolved as \"" + templateResolution.getTemplate() + "\")");
+        }
+
         return new Resolution(templateResolution, templateResource);
 
     }
