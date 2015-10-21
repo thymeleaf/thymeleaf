@@ -1046,40 +1046,61 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
         this.nonCacheablePatternSpec.setPatterns(nonCacheablePatterns);
     }
 
-    
-    
-    
-    
 
-    /*
-     * We will use this method to compute the real name (i.e. including prefix, suffix, alias...) for the resource
+
+
+
+
+    /**
+     * <p>
+     *   Computes the resource name that will be used for resolving, from the template name and other
+     *   parameters configured at this <em>configurable</em> resolver.
+     * </p>
+     * <p>
+     *   This method can be overridden by subclasses that need to modify the standard way in which the
+     *   name of the template resource is computed by default before passing it to the real resource
+     *   resolution mechanism (in method {@link #computeTemplateResource(IEngineConfiguration, String, String, String)}
+     * </p>
+     * <p>
+     *   By default, the resource name will be created by first applying the <em>template aliases</em>, and then
+     *   adding <em>prefix</em> and <em>suffix</em> to the specified <em>template</em> (template name).
+     * </p>
+     *
+     * @param configuration the engine configuration in use
+     * @param template the template (normally the template name, except for String templates)
+     * @param prefix the prefix to be applied
+     * @param suffix the suffix to be applied
+     * @param templateAliases the template aliases map
+     * @return the resource name that should be used for resolving
      */
-    private String computeResourceName(final IEngineConfiguration configuration, final String template) {
+    protected String computeResourceName(
+            final IEngineConfiguration configuration, final String template,
+            final String prefix, final String suffix, final Map<String,String> templateAliases) {
 
         Validate.notNull(template, "Template name cannot be null");
         
-        String unaliasedName = this.templateAliases.get(template);
+        String unaliasedName = templateAliases.get(template);
         if (unaliasedName == null) {
             unaliasedName = template;
         }
 
-        final boolean hasPrefix = !StringUtils.isEmptyOrWhitespace(this.prefix);
-        final boolean hasSuffix = !StringUtils.isEmptyOrWhitespace(this.suffix);
+        final boolean hasPrefix = !StringUtils.isEmptyOrWhitespace(prefix);
+        final boolean hasSuffix = !StringUtils.isEmptyOrWhitespace(suffix);
 
         if (!hasPrefix && !hasSuffix){
             return unaliasedName;
         }
 
         if (!hasPrefix) { // hasSuffix
-            return unaliasedName + this.suffix;
+            return unaliasedName + suffix;
         }
 
         if (!hasSuffix) { // hasPrefix
-            return this.prefix + unaliasedName;
+            return prefix + unaliasedName;
         }
 
         // hasPrefix && hasSuffix
-        return this.prefix + unaliasedName + this.suffix;
+        return prefix + unaliasedName + suffix;
 
     }
     
@@ -1134,7 +1155,8 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
     
     @Override
     protected final ITemplateResource computeTemplateResource(final IEngineConfiguration configuration, final String template) {
-        final String resourceName = computeResourceName(configuration, template);
+        final String resourceName =
+                computeResourceName(configuration, template, this.prefix, this.suffix, this.templateAliases);
         return computeTemplateResource(configuration, template, resourceName, this.characterEncoding);
     }
 
