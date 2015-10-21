@@ -113,6 +113,13 @@ public interface ITemplateResolver {
      *   resource existance by default in order to avoid the possible performance impact of a double access
      *   to the resource.
      * </p>
+     * <p>
+     *   Note that the <em>markup selectors</em> that might be used for a executing or inserting a template
+     *   are not specified to the template resolver. The reason is markup selectors are applied by the parser,
+     *   not the template resolvers, and allowing the resolver to take any decisions based on markup selectors
+     *   (like e.g. omitting some output from the resource) could harm the correctness of the selection operation
+     *   performed by the parser.
+     * </p>
      * 
      * @param configuration the engine configuration.
      * @param template the template to be resolved (usually its name)
