@@ -259,6 +259,7 @@ public final class TemplateManager {
          */
         final Resolution resolution = resolve(this.configuration, templateResolvers, template, templateMode, useCache);
 
+        // TODO when called from utext or others, it might be better to check if there are any structures and return a mere Text if not...
 
         /*
          *  Create the Template Handler that will be in charge of building a ParsedTemplateModel object as the result of reading the template
@@ -527,6 +528,12 @@ public final class TemplateManager {
             final String template,
             final TemplateMode templateMode,
             final boolean useCache) {
+
+        // Note that the MARKUP SELECTORS that might be used for a executing or inserting a template
+        // are not specified to the template resolver. The reason is markup selectors are applied by the parser,
+        // not the template resolvers, and allowing the resolver to take any decisions based on markup selectors
+        // (like e.g. omitting some output from the resource) could harm the correctness of the selection operation
+        // performed by the parser.
 
         TemplateResolution templateResolution = null;
         ITemplateResource templateResource = null;
