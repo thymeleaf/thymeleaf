@@ -100,18 +100,18 @@ final class TemplateResourceUtils {
 
 
 
-    static String computeRelativePath(final String path, final String relativePath) {
-        final int separatorPos = path.lastIndexOf('/');
+    static String computeRelativeLocation(final String location, final String relativeLocation) {
+        final int separatorPos = location.lastIndexOf('/');
         if (separatorPos != -1) {
-            final StringBuilder pathBuilder = new StringBuilder(path.length() + relativePath.length());
-            pathBuilder.append(path, 0, separatorPos);
-            if (relativePath.charAt(0) != '/') {
-                pathBuilder.append('/');
+            final StringBuilder relativeBuilder = new StringBuilder(location.length() + relativeLocation.length());
+            relativeBuilder.append(location, 0, separatorPos);
+            if (relativeLocation.charAt(0) != '/') {
+                relativeBuilder.append('/');
             }
-            pathBuilder.append(relativePath);
-            return pathBuilder.toString();
+            relativeBuilder.append(relativeLocation);
+            return relativeBuilder.toString();
         }
-        return relativePath;
+        return relativeLocation;
     }
 
 

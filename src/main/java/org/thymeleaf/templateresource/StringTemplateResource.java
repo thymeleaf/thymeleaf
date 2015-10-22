@@ -27,6 +27,13 @@ import java.io.StringReader;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Implementation of {@link ITemplateResource} that represents a template completely contained in memory inside
+ *   a <tt>String</tt> object.
+ * </p>
+ * <p>
+ *   Objects of this class are usually created by {@link org.thymeleaf.templateresolver.StringTemplateResolver}.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
@@ -84,7 +91,7 @@ public final class StringTemplateResource implements ITemplateResource {
 
 
 
-    public ITemplateResource relative(final String relativePath) throws IOException {
+    public ITemplateResource relative(final String relativeLocation) throws IOException {
         throw new FileNotFoundException(
                 String.format("Cannot create a relative resource for String resource  \"%s\"", this.name));
     }

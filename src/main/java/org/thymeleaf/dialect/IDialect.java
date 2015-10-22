@@ -42,6 +42,12 @@ package org.thymeleaf.dialect;
  *
  * @author Daniel Fern&aacute;ndez
  *
+ * @see IProcessorDialect
+ * @see IPreProcessorDialect
+ * @see IPostProcessorDialect
+ * @see IExpressionObjectDialect
+ * @see IExecutionAttributeDialect
+ *
  * @since 3.0.0
  *
  */

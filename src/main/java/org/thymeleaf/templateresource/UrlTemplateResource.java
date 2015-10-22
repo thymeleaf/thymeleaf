@@ -36,6 +36,12 @@ import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Implementation of {@link ITemplateResource} that represents a template accessed through an URL (local or remote).
+ * </p>
+ * <p>
+ *   Objects of this class are usually created by {@link org.thymeleaf.templateresolver.UrlTemplateResolver}.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
@@ -131,13 +137,13 @@ public final class UrlTemplateResource implements ITemplateResource, Serializabl
 
 
 
-    public ITemplateResource relative(final String relativePath) throws IOException {
+    public ITemplateResource relative(final String relativeLocation) throws IOException {
 
-        Validate.notEmpty(relativePath, "Relative Path cannot be null or empty");
+        Validate.notEmpty(relativeLocation, "Relative Path cannot be null or empty");
 
         // We will create a new URL using the current one as context, and the relative path as spec
         final URL relativeURL =
-                new URL(this.url, (relativePath.charAt(0) == '/' ? relativePath.substring(1) : relativePath));
+                new URL(this.url, (relativeLocation.charAt(0) == '/' ? relativeLocation.substring(1) : relativeLocation));
 
         return new UrlTemplateResource(relativeURL, this.characterEncoding);
 

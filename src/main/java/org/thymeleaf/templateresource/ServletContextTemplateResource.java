@@ -32,6 +32,14 @@ import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Implementation of {@link ITemplateResource} accessible from the {@link ServletContext} in a web application.
+ *   The paths of these resources start at the web application root, and are normally stored inside
+ *   <tt>/WEB-INF</tt>.
+ * </p>
+ * <p>
+ *   Objects of this class are usually created by {@link org.thymeleaf.templateresolver.ServletContextTemplateResolver}.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
@@ -96,12 +104,12 @@ public final class ServletContextTemplateResource implements ITemplateResource {
 
 
 
-    public ITemplateResource relative(final String relativePath) throws IOException {
+    public ITemplateResource relative(final String relativeLocation) throws IOException {
 
-        Validate.notEmpty(relativePath, "Relative Path cannot be null or empty");
+        Validate.notEmpty(relativeLocation, "Relative Path cannot be null or empty");
 
-        final String fullRelativePath = TemplateResourceUtils.computeRelativePath(this.path, relativePath);
-        return new ServletContextTemplateResource(this.servletContext, fullRelativePath, this.characterEncoding);
+        final String fullRelativeLocation = TemplateResourceUtils.computeRelativeLocation(this.path, relativeLocation);
+        return new ServletContextTemplateResource(this.servletContext, fullRelativeLocation, this.characterEncoding);
 
     }
 

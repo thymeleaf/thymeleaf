@@ -34,7 +34,7 @@ import org.thymeleaf.templateresource.ITemplateResource;
  * </p>
  * <ul>
  *   <li>Its corresponding <i>template resource</i> (see
- *       {@link org.thymeleaf.templateresource.ITemplateResource}.</li>
+ *       {@link org.thymeleaf.templateresource.ITemplateResource}).</li>
  *   <li>The Template Mode to be applied to this template: {@link TemplateMode}</li>
  *   <li>Whether the template can be cached or not.</li>
  *   <li>If the template can be cached, (optionally) the time it will live in cache.</li>
@@ -66,7 +66,14 @@ import org.thymeleaf.templateresource.ITemplateResource;
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez
- * 
+ *
+ * @see ITemplateResource
+ * @see ClassLoaderTemplateResolver
+ * @see FileTemplateResolver
+ * @see ServletContextTemplateResolver
+ * @see StringTemplateResolver
+ * @see UrlTemplateResolver
+ *
  * @since 3.0.0
  *
  */
@@ -123,7 +130,8 @@ public interface ITemplateResolver {
      * 
      * @param configuration the engine configuration.
      * @param template the template to be resolved (usually its name)
-     * @return a TemplateResolution object (which might represent an existing resource or not), or null.
+     * @return a TemplateResolution object (which might represent an existing resource or not), or null if the
+     *           template could not be resolved.
      */
     public TemplateResolution resolveTemplate(final IEngineConfiguration configuration, final String template);
 

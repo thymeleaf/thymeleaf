@@ -22,8 +22,29 @@ package org.thymeleaf.processor.element;
 import org.thymeleaf.processor.IProcessor;
 
 /**
+ * <p>
+ *   Base interface for all processors that execute on elements (<em>tags</em>).
+ * </p>
+ * <p>
+ *   The elements these processors execute on are defined by the <em>matching element</em> and
+ *   <em>matching attribute</em>, defined by {@link #getMatchingElementName()} and {@link #getMatchingAttributeName()}.
+ * </p>
+ * <p>
+ *   Element processors can match an element based on an element name, an attribute name, or both. But it is
+ *   required that at least one option (element or attribute) be specified.
+ * </p>
+ * <p>
+ *   Element processors should not directly implement this interface, but instead implement one of
+ *   {@link IElementTagProcessor} or {@link IElementModelProcessor}.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
+ *
+ * @see IElementTagProcessor
+ * @see IElementModelProcessor
+ * @see MatchingElementName
+ * @see MatchingAttributeName
+ *
  * @since 3.0.0
  * 
  */

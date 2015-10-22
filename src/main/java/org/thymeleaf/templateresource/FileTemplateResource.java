@@ -31,6 +31,12 @@ import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Implementation of {@link ITemplateResource} representing a file in the file system.
+ * </p>
+ * <p>
+ *   Objects of this class are usually created by {@link org.thymeleaf.templateresolver.FileTemplateResolver}.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
@@ -104,12 +110,12 @@ public final class FileTemplateResource implements ITemplateResource, Serializab
 
 
 
-    public ITemplateResource relative(final String relativePath) throws IOException {
+    public ITemplateResource relative(final String relativeLocation) throws IOException {
 
-        Validate.notEmpty(relativePath, "Relative Path cannot be null or empty");
+        Validate.notEmpty(relativeLocation, "Relative Path cannot be null or empty");
 
-        final String fullRelativePath = TemplateResourceUtils.computeRelativePath(this.path, relativePath);
-        return new FileTemplateResource(fullRelativePath, this.characterEncoding);
+        final String fullRelativeLocation = TemplateResourceUtils.computeRelativeLocation(this.path, relativeLocation);
+        return new FileTemplateResource(fullRelativeLocation, this.characterEncoding);
 
     }
 
