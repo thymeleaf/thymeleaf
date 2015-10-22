@@ -38,7 +38,7 @@ public interface ITemplateParser {
                       final IEngineConfiguration configuration,
                       final String template,
                       final ITemplateResource resource,
-                      final String[] selectors,
+                      final String[] templateSelectors,
                       final TemplateMode templateMode,
                       final ITemplateHandler handler);
 

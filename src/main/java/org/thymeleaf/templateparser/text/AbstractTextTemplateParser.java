@@ -69,21 +69,21 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
             final IEngineConfiguration configuration,
             final String template,
             final ITemplateResource resource,
-            final String[] selectors,
+            final String[] templateSelectors,
             final TemplateMode templateMode,
             final ITemplateHandler handler) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(template, "Template cannot be null");
         Validate.notNull(resource, "Template Resource cannot be null");
-        Validate.isTrue(selectors == null || selectors.length == 0,
-                        "Selectors cannot be specified for a template using a TEXT template mode: template inclusion " +
-                        "operations must be always performed on whole template files, not fragments");
+        Validate.isTrue(templateSelectors == null || templateSelectors.length == 0,
+                        "Template selectors cannot be specified for a template using a TEXT template mode: template " +
+                        "insertion operations must be always performed on whole template files, not fragments");
         Validate.notNull(templateMode, "Template Mode cannot be null");
         Validate.isTrue(templateMode.isText(), "Template Mode has to be a text template mode");
         Validate.notNull(handler, "Template Handler cannot be null");
 
-        parse(configuration, null, template, resource, selectors, 0, 0, templateMode, handler);
+        parse(configuration, null, template, resource, templateSelectors, 0, 0, templateMode, handler);
 
     }
 
@@ -114,7 +114,7 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
 
     private void parse(
             final IEngineConfiguration configuration,
-            final String ownerTemplate, final String template, final ITemplateResource resource, final String[] selectors,
+            final String ownerTemplate, final String template, final ITemplateResource resource, final String[] templateSelectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
             final ITemplateHandler templateHandler) {

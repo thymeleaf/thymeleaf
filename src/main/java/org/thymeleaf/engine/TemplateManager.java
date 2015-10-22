@@ -188,16 +188,16 @@ public final class TemplateManager {
 
 
     public TemplateModel parseStandalone(
-            final String template, final String[] selectors,
+            final String template, final String[] templateSelectors,
             final TemplateMode templateMode,
             final boolean useCache) {
 
         Validate.notNull(template, "Template cannot be null");
-        // selectors CAN be null if we are going to render the entire template
+        // templateSelectors CAN be null if we are going to render the entire template
         // templateMode CAN be null if we are going to use the mode specified by the template resolver
 
         return parse(
-                null, template, selectors,
+                null, template, templateSelectors,
                 0, 0,
                 templateMode,
                 useCache);
@@ -226,14 +226,14 @@ public final class TemplateManager {
 
 
     private TemplateModel parse(
-            final String ownerTemplate, final String template, final String[] selectors,
+            final String ownerTemplate, final String template, final String[] templateSelectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
             final boolean useCache) {
 
 
         final TemplateCacheKey cacheKey =
-                useCache? new TemplateCacheKey(ownerTemplate, template, selectors, lineOffset, colOffset, templateMode) : null;
+                useCache? new TemplateCacheKey(ownerTemplate, template, templateSelectors, lineOffset, colOffset, templateMode) : null;
 
         /*
          * First look at the cache - it might be already cached
@@ -272,7 +272,7 @@ public final class TemplateManager {
          * PROCESS THE TEMPLATE
          */
         processResolvedResource(
-                ownerTemplate, template, resolution.templateResource, selectors,
+                ownerTemplate, template, resolution.templateResource, templateSelectors,
                 lineOffset, colOffset,
                 resolution.templateResolution.getTemplateMode(),
                 builderHandler);
@@ -354,20 +354,20 @@ public final class TemplateManager {
 
 
     public void parseAndProcessStandalone(
-            final String template, final String[] selectors,
+            final String template, final String[] templateSelectors,
             final TemplateMode templateMode,
             final IContext context,
             final Writer writer,
             final boolean useCache) {
 
         Validate.notNull(template, "Template cannot be null");
-        // selectors CAN actually be null if we are going to process the entire template
+        // templateSelectors CAN actually be null if we are going to process the entire template
         // templateMode CAN be null if we are going to use the mode specified by the template resolver
         Validate.notNull(context, "Context cannot be null");
         Validate.notNull(writer, "Writer cannot be null");
 
         parseAndProcess(
-                null, template, selectors,
+                null, template, templateSelectors,
                 0, 0,
                 templateMode,
                 context,
@@ -404,7 +404,7 @@ public final class TemplateManager {
 
 
     private void parseAndProcess(
-            final String ownerTemplate, final String template, final String[] selectors,
+            final String ownerTemplate, final String template, final String[] templateSelectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
             final IContext context,
@@ -413,7 +413,7 @@ public final class TemplateManager {
 
 
         final TemplateCacheKey cacheKey =
-                useCache? new TemplateCacheKey(ownerTemplate, template, selectors, lineOffset, colOffset, templateMode) : null;
+                useCache? new TemplateCacheKey(ownerTemplate, template, templateSelectors, lineOffset, colOffset, templateMode) : null;
 
 
         /*
@@ -482,7 +482,7 @@ public final class TemplateManager {
             final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(parsedTemplate.getInternalModel());
             // Process the cached template itself
             processResolvedResource(
-                    ownerTemplate, template, resolution.templateResource, selectors,
+                    ownerTemplate, template, resolution.templateResource, templateSelectors,
                     lineOffset, colOffset,
                     engineContext.getTemplateMode(),
                     builderHandler);
@@ -495,7 +495,7 @@ public final class TemplateManager {
 
             //  Process the template, which is not cacheable (so no worry about caching)
             processResolvedResource(
-                    ownerTemplate, template, resolution.templateResource, selectors,
+                    ownerTemplate, template, resolution.templateResource, templateSelectors,
                     lineOffset, colOffset,
                     engineContext.getTemplateMode(),
                     processingHandlerChain);
@@ -594,16 +594,16 @@ public final class TemplateManager {
 
 
     private void processResolvedResource(
-            final String ownerTemplate, final String template, final ITemplateResource resource, final String[] selectors,
+            final String ownerTemplate, final String template, final ITemplateResource resource, final String[] templateSelectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
             final ITemplateHandler templateHandler) {
 
         if (logger.isTraceEnabled()) {
             if (templateHandler instanceof ModelBuilderTemplateHandler) {
-                if (selectors != null) {
+                if (templateSelectors != null) {
                     logger.trace("[THYMELEAF][{}] Starting parsing of \"{}\" with selector/s \"{}\"",
-                            new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getDescription()), Arrays.toString(selectors)});
+                            new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getDescription()), Arrays.toString(templateSelectors)});
                 } else {
                     logger.trace("[THYMELEAF][{}] Starting parsing of \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getDescription()));
                 }
@@ -617,31 +617,31 @@ public final class TemplateManager {
          */
         if (templateMode == TemplateMode.HTML) {
             if (ownerTemplate == null) {
-                this.htmlParser.parseStandalone(this.configuration, template, resource, selectors, templateMode, templateHandler);
+                this.htmlParser.parseStandalone(this.configuration, template, resource, templateSelectors, templateMode, templateHandler);
             } else {
                 this.htmlParser.parseNested(this.configuration, ownerTemplate, template, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else if (templateMode == TemplateMode.XML) {
             if (ownerTemplate == null) {
-                this.xmlParser.parseStandalone(this.configuration, template, resource, selectors, templateMode, templateHandler);
+                this.xmlParser.parseStandalone(this.configuration, template, resource, templateSelectors, templateMode, templateHandler);
             } else {
                 this.xmlParser.parseNested(this.configuration, ownerTemplate, template, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else if (templateMode == TemplateMode.TEXT) {
             if (ownerTemplate == null) {
-                this.textParser.parseStandalone(this.configuration, template, resource, selectors, templateMode, templateHandler);
+                this.textParser.parseStandalone(this.configuration, template, resource, templateSelectors, templateMode, templateHandler);
             } else {
                 this.textParser.parseNested(this.configuration, ownerTemplate, template, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else if (templateMode == TemplateMode.JAVASCRIPT) {
             if (ownerTemplate == null) {
-                this.javascriptParser.parseStandalone(this.configuration, template, resource, selectors, templateMode, templateHandler);
+                this.javascriptParser.parseStandalone(this.configuration, template, resource, templateSelectors, templateMode, templateHandler);
             } else {
                 this.javascriptParser.parseNested(this.configuration, ownerTemplate, template, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
         } else if (templateMode == TemplateMode.CSS) {
             if (ownerTemplate == null) {
-                this.cssParser.parseStandalone(this.configuration, template, resource, selectors, templateMode, templateHandler);
+                this.cssParser.parseStandalone(this.configuration, template, resource, templateSelectors, templateMode, templateHandler);
             } else {
                 this.cssParser.parseNested(this.configuration, ownerTemplate, template, resource, lineOffset, colOffset, templateMode, templateHandler);
             }
@@ -653,9 +653,9 @@ public final class TemplateManager {
 
         if (logger.isTraceEnabled()) {
             if (templateHandler instanceof ModelBuilderTemplateHandler) {
-                if (selectors != null) {
+                if (templateSelectors != null) {
                     logger.trace("[THYMELEAF][{}] Finished parsing of \"{}\" with selector/s \"{}\"",
-                            new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getDescription()), Arrays.toString(selectors)});
+                            new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getDescription()), Arrays.toString(templateSelectors)});
                 } else {
                     logger.trace("[THYMELEAF][{}] Finished parsing of \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(resource.getDescription()));
                 }

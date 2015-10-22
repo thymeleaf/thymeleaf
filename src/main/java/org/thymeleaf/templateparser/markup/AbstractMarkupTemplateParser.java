@@ -76,19 +76,19 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             final IEngineConfiguration configuration,
             final String template,
             final ITemplateResource resource,
-            final String[] selectors,
+            final String[] templateSelectors,
             final TemplateMode templateMode,
             final ITemplateHandler handler) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(template, "Template cannot be null");
         Validate.notNull(resource, "Template Resource cannot be null");
-        // selectors CAN be null if we are going to render the entire template
+        // templateSelectors CAN be null if we are going to render the entire template
         Validate.notNull(templateMode, "Template Mode cannot be null");
         Validate.isTrue(templateMode.isMarkup(), "Template Mode has to be a markup template mode");
         Validate.notNull(handler, "Template Handler cannot be null");
 
-        parse(configuration, null, template, resource, selectors, 0, 0, templateMode, handler);
+        parse(configuration, null, template, resource, templateSelectors, 0, 0, templateMode, handler);
 
     }
 
@@ -119,7 +119,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
     private void parse(
             final IEngineConfiguration configuration,
-            final String ownerTemplate, final String template, final ITemplateResource resource, final String[] selectors,
+            final String ownerTemplate, final String template, final ITemplateResource resource, final String[] templateSelectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
             final ITemplateHandler templateHandler) {
@@ -161,14 +161,14 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             // If we need to select blocks, we will need a block selector here. Note this will get executed in the
             // handler chain AFTER thymeleaf's own TemplateHandlerAdapterMarkupHandler, so that we will be able to
             // include in selectors code inside prototype-only comments.
-            if (selectors != null) {
+            if (templateSelectors != null) {
 
                 final String standardDialectPrefix = configuration.getStandardDialectPrefix();
 
                 final TemplateFragmentMarkupReferenceResolver referenceResolver =
                         (standardDialectPrefix != null ?
                             TemplateFragmentMarkupReferenceResolver.forPrefix(this.html, standardDialectPrefix) : null);
-                handler = new BlockSelectorMarkupHandler(handler, selectors, referenceResolver);
+                handler = new BlockSelectorMarkupHandler(handler, templateSelectors, referenceResolver);
             }
 
 
