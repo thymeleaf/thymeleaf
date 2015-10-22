@@ -54,7 +54,7 @@ public final class TestCache<K,V> implements ICache<K,V> {
         if (key instanceof TemplateCacheKey) {
             final TemplateCacheKey cacheKey = (TemplateCacheKey)key;
             return new TemplateCacheKey(
-                    cacheKey.getOwnerTemplate(), testName + "_" + cacheKey.getTemplate(), cacheKey.getSelectors(),
+                    cacheKey.getOwnerTemplate(), testName + "_" + cacheKey.getTemplate(), cacheKey.getTemplateSelectors(),
                     cacheKey.getLineOffset(), cacheKey.getColOffset(),
                     cacheKey.getTemplateMode());
         }
