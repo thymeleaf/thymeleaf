@@ -110,11 +110,8 @@ public class TestEngineTemplateResolver implements ITemplateResolver {
     }
 
 
-
-
-
-
-    public TemplateResolution resolveTemplate(final IEngineConfiguration configuration, final String template) {
+    public TemplateResolution resolveTemplate(
+            final IEngineConfiguration configuration, final String ownerTemplate, final String template, final Map<String, Object> templateResolutionAttributes) {
 
         Validate.notNull(configuration, "Configuration cannot be null");
 
@@ -172,7 +169,6 @@ public class TestEngineTemplateResolver implements ITemplateResolver {
         
         // Create the template resolution object with all the gathered info
         return new TemplateResolution(
-                template,
                 templateResource,
                 templateMode,
                 validity);
