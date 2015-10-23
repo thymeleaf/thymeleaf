@@ -108,8 +108,8 @@ public final class SpringResourceTemplateResource implements ITemplateResource {
 
     }
 
-    public ITemplateResource relative(final String relativePath) throws IOException {
-        return new SpringResourceTemplateResource(this.resource.createRelative(relativePath), this.characterEncoding);
+    public ITemplateResource relative(final String relativeLocation) throws IOException {
+        return new SpringResourceTemplateResource(this.resource.createRelative(relativeLocation), this.characterEncoding);
     }
 
 
