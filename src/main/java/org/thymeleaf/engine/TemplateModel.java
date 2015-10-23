@@ -44,7 +44,6 @@ import org.thymeleaf.model.IText;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.processor.element.IElementProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.util.Validate;
 
 
@@ -57,7 +56,7 @@ import org.thymeleaf.util.Validate;
 public final class TemplateModel implements IModel {
 
     private final Model model;
-    private final TemplateResolution templateResolution;
+    private final TemplateData templateData;
 
 
 
@@ -65,21 +64,21 @@ public final class TemplateModel implements IModel {
     // Specifically, they will only be created from the TemplateManager.
     // If a processor (be it standard or custom-made) wants to create a piece of model, that should be a Model
     // object, not this.
-    TemplateModel(final IEngineConfiguration configuration, final TemplateResolution templateResolution) {
+    TemplateModel(final IEngineConfiguration configuration, final TemplateData templateData) {
         
         super();
         
         Validate.notNull(configuration, "Engine Configuration cannot be null");
-        Validate.notNull(templateResolution, "Template Resolution cannot be null");
+        Validate.notNull(templateData, "Template Resolution cannot be null");
         
-        this.model = new Model(configuration, templateResolution.getTemplateMode());
-        this.templateResolution = templateResolution;
+        this.model = new Model(configuration, templateData.getTemplateMode());
+        this.templateData = templateData;
         
     }
 
 
-    public final TemplateResolution getTemplateResolution() {
-        return this.templateResolution;
+    public final TemplateData getTemplateData() {
+        return this.templateData;
     }
 
 

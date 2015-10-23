@@ -29,6 +29,7 @@ import org.thymeleaf.engine.AttributeNames;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.LoggingUtils;
 
 /**
  *
@@ -66,7 +67,7 @@ public final class StandardSubstituteByTagProcessor extends AbstractStandardFrag
                     "[THYMELEAF][{}][{}] Deprecated attribute {} found in template {}, line {}, col {}. " +
                     "Please use {} instead, this deprecated attribute will be removed in future versions of Thymeleaf.",
                     new Object[]{
-                            TemplateEngine.threadIndex(), context.getTemplateResolution().getTemplate(),
+                            TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(context.getTemplateData().getTemplate()),
                             attributeName, attributeTemplateName, Integer.valueOf(attributeLine), Integer.valueOf(attributeCol),
                             AttributeNames.forHTMLName(attributeName.getPrefix(), StandardReplaceTagProcessor.ATTR_NAME)});
         }

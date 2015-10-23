@@ -1095,9 +1095,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     }
                 }
 
-                if (this.elementTagStructureHandler.setTemplateResolution) {
+                if (this.elementTagStructureHandler.setTemplateData) {
                     if (this.engineContext != null) {
-                        this.engineContext.setTemplateResolution(this.elementTagStructureHandler.setTemplateResolutionValue);
+                        this.engineContext.setTemplateData(this.elementTagStructureHandler.setTemplateDataValue);
                     }
                 }
 
@@ -1417,9 +1417,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     }
                 }
 
-                if (this.elementModelStructureHandler.setTemplateResolution) {
+                if (this.elementModelStructureHandler.setTemplateData) {
                     if (this.engineContext != null) {
-                        this.engineContext.setTemplateResolution(this.elementModelStructureHandler.setTemplateResolutionValue);
+                        this.engineContext.setTemplateData(this.elementModelStructureHandler.setTemplateDataValue);
                     }
                 }
 
@@ -1642,9 +1642,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     }
                 }
 
-                if (this.elementTagStructureHandler.setTemplateResolution) {
+                if (this.elementTagStructureHandler.setTemplateData) {
                     if (this.engineContext != null) {
-                        this.engineContext.setTemplateResolution(this.elementTagStructureHandler.setTemplateResolutionValue);
+                        this.engineContext.setTemplateData(this.elementTagStructureHandler.setTemplateDataValue);
                     }
                 }
 
@@ -1910,9 +1910,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     }
                 }
 
-                if (this.elementModelStructureHandler.setTemplateResolution) {
+                if (this.elementModelStructureHandler.setTemplateData) {
                     if (this.engineContext != null) {
-                        this.engineContext.setTemplateResolution(this.elementModelStructureHandler.setTemplateResolutionValue);
+                        this.engineContext.setTemplateData(this.elementModelStructureHandler.setTemplateDataValue);
                     }
                 }
 

@@ -26,7 +26,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.templateresolver.TemplateResolution;
+import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.templateresource.ITemplateResource;
 import org.thymeleaf.util.Validate;
 
@@ -241,11 +241,11 @@ public class StandardMessageResolver extends AbstractMessageResolver {
          */
         if (context != null) {
 
-            for (final TemplateResolution resolution : context.getTemplateResolutionStack()) {
+            for (final TemplateData templateData : context.getTemplateStack()) {
 
-                final String template = resolution.getTemplate();
-                final ITemplateResource templateResource = resolution.getTemplateResource();
-                final boolean templateCacheable = resolution.getValidity().isCacheable();
+                final String template = templateData.getTemplate();
+                final ITemplateResource templateResource = templateData.getTemplateResource();
+                final boolean templateCacheable = templateData.getValidity().isCacheable();
 
                 Map<String, String> messagesForLocaleForTemplate;
 

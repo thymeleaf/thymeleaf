@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.cache;
 
-import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
 
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.LoggingUtils;
@@ -30,6 +31,9 @@ import org.thymeleaf.util.Validate;
  * <p>
  *   This class models objects used as keys in the Template Cache.
  * </p>
+ * <p>
+ *   Objects of this class <strong>should only be created from inside the engine</strong>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
@@ -39,17 +43,22 @@ public final class TemplateCacheKey {
 
     private final String ownerTemplate;
     private final String template;
-    private final String[] templateSelectors;
+    private final Set<String> templateSelectors;
     private final int lineOffset;
     private final int colOffset;
     private final TemplateMode templateMode;
-
-
+    private final Map<String,Object> templateResolutionAttributes;
+    private final int h;
 
 
     public TemplateCacheKey(
-            final String ownerTemplate, final String template, final String[] templateSelectors,
-            final int lineOffset, final int colOffset, final TemplateMode templateMode) {
+            final String ownerTemplate, final String template, final Set<String> templateSelectors,
+            final int lineOffset, final int colOffset, final TemplateMode templateMode,
+            final Map<String,Object> templateResolutionAttributes) {
+
+        // NOTE we are assuming that templateSelectors is either null or a non-empty, naturally-ordered set. Also,
+        //      we are also assuming that templateResolutionAttributes is either null or non-empty. Also, BOTH
+        //      should be unmodifiable. This should have been sorted out at the TemplateSpec constructor.
 
         super();
 
@@ -57,32 +66,32 @@ public final class TemplateCacheKey {
         Validate.notNull(template, "Template cannot be null");
         // templateSelectors can be null if we are selecting the entire template
         // templateMode can be null if this template is standalone (no owner template) AND we are forcing a specific template mode for its processing
+        // templateResolutionAttributes
 
         this.ownerTemplate = ownerTemplate;
         this.template = template;
-        if (templateSelectors != null && templateSelectors.length > 0) {
-            this.templateSelectors = templateSelectors.clone();
-            Arrays.sort(this.templateSelectors); // we need to sort this so that Arrays.sort() works in equals()
-        } else {
-            this.templateSelectors = null;
-        }
+        this.templateSelectors = templateSelectors;
         this.lineOffset = lineOffset;
         this.colOffset = colOffset;
         this.templateMode = templateMode;
+        this.templateResolutionAttributes = templateResolutionAttributes;
+
+        // This being a cache key, its equals and hashCode methods will potentially execute many
+        // times, and this should help performance
+        this.h = computeHashCode();
 
     }
-
 
     public String getOwnerTemplate() {
         return this.ownerTemplate;
     }
 
-    public String[] getTemplateSelectors() {
-        return this.templateSelectors;
-    }
-
     public String getTemplate() {
         return this.template;
+    }
+
+    public Set<String> getTemplateSelectors() {
+        return this.templateSelectors;
     }
 
     public int getLineOffset() {
@@ -97,7 +106,9 @@ public final class TemplateCacheKey {
         return this.templateMode;
     }
 
-
+    public Map<String, Object> getTemplateResolutionAttributes() {
+        return this.templateResolutionAttributes;
+    }
 
 
     @Override
@@ -113,6 +124,10 @@ public final class TemplateCacheKey {
 
         final TemplateCacheKey that = (TemplateCacheKey) o;
 
+        if (this.h != that.h) { // fail fast for most cases
+            return false;
+        }
+
         if (this.lineOffset != that.lineOffset) {
             return false;
         }
@@ -125,22 +140,32 @@ public final class TemplateCacheKey {
         if (!this.template.equals(that.template)) {
             return false;
         }
-        if (!Arrays.equals(this.templateSelectors, that.templateSelectors)) { // Works because we ordered the arrays
+        if (this.templateSelectors != null ? !this.templateSelectors.equals(that.templateSelectors) : that.templateSelectors != null) {
             return false;
         }
-        return this.templateMode == that.templateMode;
+        if (this.templateMode != that.templateMode) {
+            return false;
+        }
+        // Note how it is important that template resolution attribute values correctly implement equals() and hashCode()
+        return !(this.templateResolutionAttributes != null ? !this.templateResolutionAttributes.equals(that.templateResolutionAttributes) : that.templateResolutionAttributes != null);
 
     }
 
 
     @Override
     public int hashCode() {
+        return this.h;
+    }
+
+
+    private int computeHashCode() {
         int result = this.ownerTemplate != null ? this.ownerTemplate.hashCode() : 0;
         result = 31 * result + this.template.hashCode();
-        result = 31 * result + (this.templateSelectors != null ? Arrays.hashCode(this.templateSelectors) : 0);
+        result = 31 * result + (this.templateSelectors != null ? this.templateSelectors.hashCode() : 0);
         result = 31 * result + this.lineOffset;
         result = 31 * result + this.colOffset;
         result = 31 * result + (this.templateMode != null ? this.templateMode.hashCode() : 0);
+        result = 31 * result + (this.templateResolutionAttributes != null ? this.templateResolutionAttributes.hashCode() : 0);
         return result;
     }
 
@@ -161,13 +186,18 @@ public final class TemplateCacheKey {
             strBuilder.append(this.colOffset);
             strBuilder.append(')');
         }
-        if (this.templateSelectors != null && this.templateSelectors.length > 0) {
+        if (this.templateSelectors != null) {
             strBuilder.append("::");
-            strBuilder.append(Arrays.toString(this.templateSelectors));
+            strBuilder.append(this.templateSelectors);
         }
         if (this.templateMode != null) {
             strBuilder.append(" @");
             strBuilder.append(this.templateMode);
+        }
+        if (this.templateResolutionAttributes != null) {
+            strBuilder.append(" (");
+            strBuilder.append(this.templateResolutionAttributes);
+            strBuilder.append(")");
         }
         return strBuilder.toString();
     }

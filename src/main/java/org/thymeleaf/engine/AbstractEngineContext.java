@@ -96,7 +96,7 @@ abstract class AbstractEngineContext implements ITemplateContext {
 
 
     public final TemplateMode getTemplateMode() {
-        return getTemplateResolution().getTemplateMode();
+        return getTemplateData().getTemplateMode();
     }
 
 

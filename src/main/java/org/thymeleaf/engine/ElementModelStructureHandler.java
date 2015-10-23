@@ -26,7 +26,6 @@ import java.util.Set;
 
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.processor.element.IElementModelStructureHandler;
-import org.thymeleaf.templateresolver.TemplateResolution;
 
 /**
  *
@@ -49,8 +48,8 @@ final class ElementModelStructureHandler implements IElementModelStructureHandle
     boolean setInliner;
     IInliner setInlinerValue;
 
-    boolean setTemplateResolution;
-    TemplateResolution setTemplateResolutionValue;
+    boolean setTemplateData;
+    TemplateData setTemplateDataValue;
 
 
 
@@ -95,9 +94,9 @@ final class ElementModelStructureHandler implements IElementModelStructureHandle
     }
 
 
-    public void setTemplateResolution(final TemplateResolution templateResolution) {
-        this.setTemplateResolution = true;
-        this.setTemplateResolutionValue = templateResolution;
+    public void setTemplateData(final TemplateData templateData) {
+        this.setTemplateData = true;
+        this.setTemplateDataValue = templateData;
     }
 
 
@@ -121,8 +120,8 @@ final class ElementModelStructureHandler implements IElementModelStructureHandle
         this.setInliner = false;
         this.setInlinerValue = null;
 
-        this.setTemplateResolution = false;
-        this.setTemplateResolutionValue = null;
+        this.setTemplateData = false;
+        this.setTemplateDataValue = null;
 
     }
 

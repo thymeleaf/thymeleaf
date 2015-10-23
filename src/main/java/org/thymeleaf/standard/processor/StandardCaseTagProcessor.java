@@ -33,6 +33,7 @@ import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EvaluationUtils;
+import org.thymeleaf.util.LoggingUtils;
 
 /**
  *
@@ -88,7 +89,7 @@ public final class StandardCaseTagProcessor extends AbstractStandardConditionalV
 
             if (this.logger.isTraceEnabled()) {
                 this.logger.trace("[THYMELEAF][{}][{}] Case expression \"{}\" in attribute \"{}\" has been evaluated as: \"{}\"",
-                        new Object[] {TemplateEngine.threadIndex(), context.getTemplateResolution().getTemplate(), attributeValue, attributeName, attributeValue, Boolean.TRUE});
+                        new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(context.getTemplateData().getTemplate()), attributeValue, attributeName, attributeValue, Boolean.TRUE});
             }
 
             switchStructure.setExecuted(true);
@@ -109,7 +110,7 @@ public final class StandardCaseTagProcessor extends AbstractStandardConditionalV
 
         if (this.logger.isTraceEnabled()) {
             this.logger.trace("[THYMELEAF][{}][{}] Case expression \"{}\" in attribute \"{}\" has been evaluated as: \"{}\"",
-                    new Object[] {TemplateEngine.threadIndex(), context.getTemplateResolution().getTemplate(), attributeValue, attributeName, attributeValue, Boolean.valueOf(visible)});
+                    new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(context.getTemplateData().getTemplate()), attributeValue, attributeName, attributeValue, Boolean.valueOf(visible)});
         }
 
         if (visible) {

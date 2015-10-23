@@ -188,25 +188,27 @@ public final class TemplateManager {
 
 
     public TemplateModel parseStandalone(
-            final String template, final String[] templateSelectors,
+            final TemplateData ownerTemplate, final String template, final Set<String> templateSelectors,
             final TemplateMode templateMode,
             final boolean useCache) {
 
+        Validate.notNull(ownerTemplate, "Owner Template cannot be null");
         Validate.notNull(template, "Template cannot be null");
         // templateSelectors CAN be null if we are going to render the entire template
         // templateMode CAN be null if we are going to use the mode specified by the template resolver
 
         return parse(
-                null, template, templateSelectors,
+                ownerTemplate, template, templateSelectors,
                 0, 0,
                 templateMode,
-                useCache);
+                useCache,
+                false);
 
     }
 
 
-    public TemplateModel parseNested(
-            final String ownerTemplate, final String template,
+    public TemplateModel parseString(
+            final TemplateData ownerTemplate, final String template,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
             final boolean useCache) {
@@ -220,20 +222,32 @@ public final class TemplateManager {
                 ownerTemplate, template, null,
                 lineOffset, colOffset,
                 templateMode,
-                useCache);
+                useCache,
+                true);
 
     }
 
 
     private TemplateModel parse(
-            final String ownerTemplate, final String template, final String[] templateSelectors,
+            final TemplateData ownerTemplate, final String template, final Set<String> templateSelectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
-            final boolean useCache) {
+            final boolean useCache,
+            final boolean stringTemplate) {
+
+
+        // TODO templateSelectors MUST be procesed (ordered, unmodified, etc.) because they could come from a fragment selection, not a TemplateSpec!!
 
 
         final TemplateCacheKey cacheKey =
-                useCache? new TemplateCacheKey(ownerTemplate, template, templateSelectors, lineOffset, colOffset, templateMode) : null;
+                useCache?
+                        new TemplateCacheKey(
+                                (ownerTemplate != null? ownerTemplate.getTemplate() : null),
+                                template, templateSelectors,
+                                lineOffset, colOffset,
+                                templateMode,
+                                (ownerTemplate != null? ownerTemplate.getTemplateResolutionAttributes() : null))
+                        : null;
 
         /*
          * First look at the cache - it might be already cached
@@ -251,7 +265,7 @@ public final class TemplateManager {
          * as a String object), we need to force the use of a StringTemplateResolver for resolution
          */
         final Set<ITemplateResolver> templateResolvers =
-                (ownerTemplate != null? STRING_TEMPLATE_RESOLVER_SET : this.configuration.getTemplateResolvers());
+                (stringTemplate? STRING_TEMPLATE_RESOLVER_SET : this.configuration.getTemplateResolvers());
 
 
         /*
@@ -264,7 +278,7 @@ public final class TemplateManager {
         /*
          *  Create the Template Handler that will be in charge of building a ParsedTemplateModel object as the result of reading the template
          */
-        final TemplateModel parsedTemplate = new TemplateModel(this.configuration, resolution.templateResolution);
+        final TemplateModel parsedTemplate = new TemplateModel(this.configuration, resolution.templateData);
         final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(parsedTemplate.getInternalModel());
 
 
@@ -274,7 +288,7 @@ public final class TemplateManager {
         processResolvedResource(
                 ownerTemplate, template, resolution.templateResource, templateSelectors,
                 lineOffset, colOffset,
-                resolution.templateResolution.getTemplateMode(),
+                resolution.templateData.getTemplateMode(),
                 builderHandler);
 
 
@@ -282,7 +296,7 @@ public final class TemplateManager {
          * Cache the template if it is cacheable
          */
         if (useCache && this.templateCache != null) {
-            if (resolution.templateResolution.getValidity().isCacheable()) {
+            if (resolution.templateData.getValidity().isCacheable()) {
                 this.templateCache.put(cacheKey, parsedTemplate);
             }
         }
@@ -318,7 +332,7 @@ public final class TemplateManager {
          * Create the context instance that corresponds to this execution of the template engine
          */
         final IEngineContext engineContext =
-                EngineContextManager.prepareEngineContext(this.configuration, template.getTemplateResolution(), context);
+                EngineContextManager.prepareEngineContext(this.configuration, template.getTemplateData(), context);
 
         /*
          * Create the handler chain to process the data
@@ -354,12 +368,13 @@ public final class TemplateManager {
 
 
     public void parseAndProcessStandalone(
-            final String template, final String[] templateSelectors,
+            final TemplateData ownerTemplate, final String template, final Set<String> templateSelectors,
             final TemplateMode templateMode,
             final IContext context,
             final Writer writer,
             final boolean useCache) {
 
+        Validate.notNull(ownerTemplate, "Owner Template cannot be null");
         Validate.notNull(template, "Template cannot be null");
         // templateSelectors CAN actually be null if we are going to process the entire template
         // templateMode CAN be null if we are going to use the mode specified by the template resolver
@@ -367,18 +382,19 @@ public final class TemplateManager {
         Validate.notNull(writer, "Writer cannot be null");
 
         parseAndProcess(
-                null, template, templateSelectors,
+                ownerTemplate, template, templateSelectors,
                 0, 0,
                 templateMode,
                 context,
                 writer,
-                useCache);
+                useCache,
+                false);
 
     }
 
 
-    public void parseAndProcessNested(
-            final String ownerTemplate, final String template,
+    public void parseAndProcessString(
+            final TemplateData ownerTemplate, final String template,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
             final IContext context,
@@ -398,22 +414,34 @@ public final class TemplateManager {
                 templateMode,
                 context,
                 writer,
-                useCache);
+                useCache,
+                true);
 
     }
 
 
     private void parseAndProcess(
-            final String ownerTemplate, final String template, final String[] templateSelectors,
+            final TemplateData ownerTemplate, final String template, final Set<String> templateSelectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
             final IContext context,
             final Writer writer,
-            final boolean useCache) {
+            final boolean useCache,
+            final boolean stringTemplate) {
+
+
+        // TODO templateSelectors MUST be procesed (ordered, unmodified, etc.) because they could come from a fragment selection, not a TemplateSpec!!
 
 
         final TemplateCacheKey cacheKey =
-                useCache? new TemplateCacheKey(ownerTemplate, template, templateSelectors, lineOffset, colOffset, templateMode) : null;
+                useCache?
+                        new TemplateCacheKey(
+                                (ownerTemplate != null? ownerTemplate.getTemplate() : null),
+                                template, templateSelectors,
+                                lineOffset, colOffset,
+                                templateMode,
+                                (ownerTemplate != null? ownerTemplate.getTemplateResolutionAttributes() : null))
+                        : null;
 
 
         /*
@@ -427,7 +455,7 @@ public final class TemplateManager {
 
                 // Prepare the context instance that corresponds to this execution of the template engine
                 final IEngineContext engineContext =
-                        EngineContextManager.prepareEngineContext(this.configuration, cached.getTemplateResolution(), context);
+                        EngineContextManager.prepareEngineContext(this.configuration, cached.getTemplateData(), context);
 
                 // Create the handler chain to process the data
                 final ITemplateHandler processingHandlerChain = createTemplateProcessingHandlerChain(engineContext, writer);
@@ -450,7 +478,7 @@ public final class TemplateManager {
          * as a String object), we need to force the use of a StringTemplateResolver for resolution
          */
         final Set<ITemplateResolver> templateResolvers =
-                (ownerTemplate != null? STRING_TEMPLATE_RESOLVER_SET : this.configuration.getTemplateResolvers());
+                (stringTemplate? STRING_TEMPLATE_RESOLVER_SET : this.configuration.getTemplateResolvers());
 
 
         /*
@@ -463,7 +491,7 @@ public final class TemplateManager {
          * Prepare the context instance that corresponds to this execution of the template engine
          */
         final IEngineContext engineContext =
-                EngineContextManager.prepareEngineContext(this.configuration, resolution.templateResolution, context);
+                EngineContextManager.prepareEngineContext(this.configuration, resolution.templateData, context);
 
 
         /*
@@ -475,10 +503,10 @@ public final class TemplateManager {
         /*
          * If the resolved template is cacheable, so we will first read it as an object, cache it, and then process it
          */
-        if (useCache && resolution.templateResolution.getValidity().isCacheable() && this.templateCache != null) {
+        if (useCache && resolution.templateData.getValidity().isCacheable() && this.templateCache != null) {
 
             // Create the handler chain to create the Template object
-            final TemplateModel parsedTemplate = new TemplateModel(this.configuration, resolution.templateResolution);
+            final TemplateModel parsedTemplate = new TemplateModel(this.configuration, resolution.templateData);
             final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(parsedTemplate.getInternalModel());
             // Process the cached template itself
             processResolvedResource(
@@ -594,7 +622,7 @@ public final class TemplateManager {
 
 
     private void processResolvedResource(
-            final String ownerTemplate, final String template, final ITemplateResource resource, final String[] templateSelectors,
+            final TemplateData ownerTemplate, final String template, final ITemplateResource resource, final Set<String> templateSelectors,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
             final ITemplateHandler templateHandler) {
@@ -672,13 +700,13 @@ public final class TemplateManager {
     private static void processTemplateModel(final TemplateModel template, final ITemplateHandler templateHandler) {
 
         if (logger.isTraceEnabled()) {
-            logger.trace("[THYMELEAF][{}] Starting processing of template \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template.getTemplateResolution().getTemplate()));
+            logger.trace("[THYMELEAF][{}] Starting processing of template \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template.getTemplateData().getTemplate()));
         }
 
         template.getInternalModel().process(templateHandler);
 
         if (logger.isTraceEnabled()) {
-            logger.trace("[THYMELEAF][{}] Finished processing of template \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template.getTemplateResolution().getTemplate()));
+            logger.trace("[THYMELEAF][{}] Finished processing of template \"{}\"", TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template.getTemplateData().getTemplate()));
         }
 
     }
@@ -790,12 +818,12 @@ public final class TemplateManager {
 
     private static final class Resolution {
 
-        final TemplateResolution templateResolution;
+        final TemplateData templateData;
         final ITemplateResource templateResource;
 
-        public Resolution(final TemplateResolution templateResolution, final ITemplateResource templateResource) {
+        public Resolution(final TemplateData templateData, final ITemplateResource templateResource) {
             super();
-            this.templateResolution = templateResolution;
+            this.templateData = templateData;
             this.templateResource = templateResource;
         }
 

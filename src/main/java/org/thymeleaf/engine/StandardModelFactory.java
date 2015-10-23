@@ -93,7 +93,7 @@ public class StandardModelFactory implements IModelFactory {
         // We will be setting useCache to false because we don't want to pollute the cache with mere String
         // parsing done from here. Also, we are 'artificially' specifying it as nested even if we don't really
         // know if this fragment is exactly a nested text inside the template, but that's not really important...
-        return this.configuration.getTemplateManager().parseNested(ownerTemplate, template, 0, 0, this.templateMode, false);
+        return this.configuration.getTemplateManager().parseString(ownerTemplate, template, 0, 0, this.templateMode, false);
     }
 
 

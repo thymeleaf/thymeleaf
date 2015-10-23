@@ -19,8 +19,8 @@
  */
 package org.thymeleaf.processor.element;
 
+import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.inline.IInliner;
-import org.thymeleaf.templateresolver.TemplateResolution;
 
 /**
  *
@@ -40,7 +40,7 @@ public interface IElementModelStructureHandler {
 
     public void setInliner(final IInliner inliner);
 
-    public void setTemplateResolution(final TemplateResolution templateResolution);
+    public void setTemplateData(final TemplateData templateData);
 
 
 }

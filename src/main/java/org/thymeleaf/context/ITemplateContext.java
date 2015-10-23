@@ -21,6 +21,7 @@ package org.thymeleaf.context;
 
 import java.util.List;
 
+import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.TemplateResolution;
@@ -50,20 +51,13 @@ import org.thymeleaf.templateresolver.TemplateResolution;
  */
 public interface ITemplateContext extends IExpressionContext {
 
+    // Template Data works as a local variable so that it can be nested when a fragment is inserted
+    public TemplateData getTemplateData();
+
     // This will always correspond to the template mode of the current template resolution
     public TemplateMode getTemplateMode();
 
-
-    public String getMessage(
-            final Class<?> origin, final String key, final Object[] messageParameters, final boolean useAbsentMessageRepresentation);
-
-
-    public IdentifierSequences getIdentifierSequences();
-
-    // Template Resolution works as a local variable so that it can be nested when a fragment is inserted
-    public TemplateResolution getTemplateResolution();
-
-    public List<TemplateResolution> getTemplateResolutionStack();
+    public List<TemplateData> getTemplateStack();
 
     // Selection target works as a local variable, but is used so often that it has its own methods in order to allow
     // specific performance improvements to be designed for them
@@ -73,5 +67,11 @@ public interface ITemplateContext extends IExpressionContext {
     // Text inlining works as a local variable, but is used so often that it has its own methods in order to allow
     // specific performance improvements to be designed for them
     public IInliner getInliner();
+
+
+    public String getMessage(
+            final Class<?> origin, final String key, final Object[] messageParameters, final boolean useAbsentMessageRepresentation);
+
+    public IdentifierSequences getIdentifierSequences();
 
 }

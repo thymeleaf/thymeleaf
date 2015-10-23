@@ -21,8 +21,8 @@ package org.thymeleaf.context;
 
 import java.util.Map;
 
+import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.inline.IInliner;
-import org.thymeleaf.templateresolver.TemplateResolution;
 
 /**
  * <p>
@@ -65,7 +65,7 @@ public interface IEngineContext extends ITemplateContext {
 
     public void setInliner(final IInliner inliner);
 
-    public void setTemplateResolution(final TemplateResolution templateResolution);
+    public void setTemplateData(final TemplateData template);
 
     // These is meant to determine whether a specific variable was there from level 0 or was defined afterwards
     // (e.g. in an iteration) - this info is needed when checking possible overrides of originally-bound variables.

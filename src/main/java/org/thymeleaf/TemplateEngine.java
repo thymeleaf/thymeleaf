@@ -23,7 +23,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -44,11 +43,11 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.standard.StandardDialect;
-import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.text.TextRepositories;
+import org.thymeleaf.util.LoggingUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -57,10 +56,9 @@ import org.thymeleaf.util.Validate;
  *   Main class for the execution of templates.
  * </p>
  * <p>
- *   In order to execute Thymeleaf templates, an instance of this class (or one of
- *   its subclasses) must be created.
+ *   This is the only implementation of {@link ITemplateEngine} provided out of the box by Thymeleaf.
  * </p>
- * 
+ *
  * <h3>Creating an instance of <tt>TemplateEngine</tt></h3>
  * <p>
  *   An instance of this class can be created at any time by calling its constructor:
@@ -76,51 +74,52 @@ import org.thymeleaf.util.Validate;
  * 
  * <h3>Configuring the <tt>TemplateEngine</tt></h3>
  * <p>
- *   Once created, an instance of <tt>TemplateEngine</tt> has to be configured by
- *   setting the following <b>required</b> parameters:
+ *   Once created, an instance of <tt>TemplateEngine</tt> has to be typically configured a
+ *   mechanism for <em>resolving templates</em> (i.e. obtaining and reading them):
  * </p>
  * <ul>
- *   <li>One or more <b>Template Resolvers</b> (instances of {@link ITemplateResolver}), in
+ *   <li>One or more <b>Template Resolvers</b> (implementations of {@link ITemplateResolver}), in
  *       charge of reading or obtaining the templates so that the engine is able to process them. If
  *       only one template resolver is set (the most common case), the {@link #setTemplateResolver(ITemplateResolver)}
  *       method can be used for this. If more resolvers are to be set, both the
  *       {@link #setTemplateResolvers(Set)} and {@link #addTemplateResolver(ITemplateResolver)} methods
  *       can be used.</li>
+ *   <li>If no <em>Template Resolvers</em> are configured, {@link TemplateEngine} instances will use
+ *       a {@link StringTemplateResolver} instance which will consider templates being specified
+ *       for processing as the template contents (instead of just their names). This configuration
+ *       will be overridden when {@link #setTemplateResolver(ITemplateResolver)}, {@link #setTemplateResolvers(Set)} or
+ *       {@link #addTemplateResolver(ITemplateResolver)} are called for the first time.</li>
  * </ul>
  * <p>
- *   Also, the following parameters can be optionally set:
+ *   Templates will be processed according to a set of configured <strong>Dialects</strong> (implementations
+ *   of {@link IDialect}), defining the way in which templates will be processed: processors, expression objects, etc.
+ *   If no dialect is explicitly set, a unique instance of {@link org.thymeleaf.standard.StandardDialect}
+ *   (the <i>Standard Dialect</i>) will be used.
  * </p>
  * <ul>
- *   <li>One or more <b>Dialects</b> (instances of {@link IDialect}), defining the way in which templates
- *       will be processed: DOM processors, expression parsers, etc. If no
- *       dialect is explicitly set, a unique instance of {@link org.thymeleaf.standard.StandardDialect}
- *       (the <i>Standard Dialect</i>) will be used.
- *       <ul>
- *         <li>Dialects define a <i>default prefix</i>, which will be used for them if not otherwise specified.</li>
- *         <li>When setting/adding dialects, a non-default prefix can be specified for each of them.</li>
- *         <li>Several dialects can use the same prefix, effectively acting as an aggregate dialect.</li>
- *         <li>All specified dialects will be validated to ensure no conflicts with DOCTYPE translations or resolution entries
- *             exist. Dialects defining a DOCTYPE translation or resolution entry <i>equal</i> to another one in a
- *             different dialect are not considered to be in conflict.</li>
- *         <li>Dialect leniency will be computed per-prefix, so that a prefix will be considered to be <i>lenient</i>
- *             if at least one of the dialects configured for it is lenient.</li>
- *         <li>Note that defining a non-default prefix for a dialect might affect its validation features
- *             if this dialect includes DTD files for such purpose (e.g. the Standard Dialect).</li> 
- *       </ul>
- *   </li>
- *   <li>One or more <b>Message Resolvers</b> (instances of {@link IMessageResolver}), in
- *       charge of resolving externalized messages. If no message resolver is explicitly set, it will default
- *       to a single instance of {@link StandardMessageResolver}).
- *       If only one message resolver is set, the {@link #setMessageResolver(IMessageResolver)} method
- *       can be used for this. If more resolvers are to be set, both the
- *       {@link #setMessageResolvers(Set)} and {@link #addMessageResolver(IMessageResolver)} methods
- *       can be used.</li>
- *   <li>A <b>Cache Manager</b> (instance of {@link ICacheManager}. The Cache Manager is in charge of
- *       providing the cache objects (instances of {@link org.thymeleaf.cache.ICache}) to be used for
- *       caching (at least) templates, fragments, messages and expressions. By default, a 
- *       {@link StandardCacheManager} instance is used. If a null cache manager is specified by calling
- *       {@link #setCacheManager(ICacheManager)}, no caches will be used throughout the system at all.</li>
+ *   <li>Dialects define a <i>default prefix</i>, which will be used for them if not otherwise specified.</li>
+ *   <li>When setting/adding dialects, a non-default prefix can be specified for each of them.</li>
+ *   <li>Several dialects can use the same prefix, effectively acting as an aggregate dialect.</li>
  * </ul>
+ * <p>
+ *   Those templates that include any <em>externalized messages</em> (also <em>internationalized messages</em>,
+ *   i18n) will need the {@link TemplateEngine} to be configured one or more <b>Message Resolvers</b> (implementations
+ *   of {@link IMessageResolver}). If no message resolver is explicitly set, {@link TemplateEngine} will default
+ *   to a single instance of {@link StandardMessageResolver}).
+ * </p>
+ * <p>
+ *   If only one message resolver is set, the {@link #setMessageResolver(IMessageResolver)} method
+ *   can be used for this. If more resolvers are to be set, both the
+ *   {@link #setMessageResolvers(Set)} and {@link #addMessageResolver(IMessageResolver)} methods
+ *   can be used.
+ * </p>
+ * <p>
+ *  Besides these, a <b>Cache Manager</b> (implementation of {@link ICacheManager}) can also be configured. The
+ *  Cache Manager is in charge of providing the cache objects (instances of {@link org.thymeleaf.cache.ICache}) to
+ *  be used for caching (at least) parsed templates and parsed expressions. By default, a {@link StandardCacheManager}
+ *  instance is used. If a null cache manager is specified by calling {@link #setCacheManager(ICacheManager)}, no
+ *  caches will be used.
+ * </p>
  * 
  * <h3>Template Execution</h3>
  * <h4>1. Creating a context</h4>
@@ -142,10 +141,10 @@ import org.thymeleaf.util.Validate;
  *       the required data.</li>
  *   <li>{@link org.thymeleaf.context.WebContext}, a web-specific implementation 
  *       extending the {@link org.thymeleaf.context.IWebContext} subinterface, offering
- *       request, session and servletcontext (application) attributes in special variables
- *       inside the <i>context variables</i> map. Using an implementation of 
+ *       access to request, session and servletcontext (application) attributes in special
+ *       expression objects. Using an implementation of
  *       {@link org.thymeleaf.context.IWebContext} is required when using Thymeleaf for 
- *       generating HTML/XHTML interfaces in web applications.</li> 
+ *       generating HTML interfaces in web applications based on the Servlet API.</li>
  * </ul>
  * <p>
  *   Creating a {@link org.thymeleaf.context.Context} instance is very simple:
@@ -155,12 +154,19 @@ import org.thymeleaf.util.Validate;
  *   ctx.setVariable("allItems", items);
  * </code>
  * <p>
+ *   If you want, you can also specify the locale to be used for processing the template:
+ * </p>
+ * <code>
+ *   final IContext ctx = new Context(new Locale("gl","ES"));<br>
+ *   ctx.setVariable("allItems", items);
+ * </code>
+ * <p>
  *   A {@link org.thymeleaf.context.WebContext} would also need 
- *   {@link javax.servlet.http.HttpServletRequest} and 
+ *   {@link javax.servlet.http.HttpServletRequest}, {@link javax.servlet.http.HttpServletResponse} and
  *   {@link javax.servlet.ServletContext} objects as constructor arguments: 
  * </p>
  * <code>
- *   final IContext ctx = new WebContext(request, servletContext);<br>
+ *   final IContext ctx = new WebContext(request, response, servletContext);<br>
  *   ctx.setVariable("allItems", items);
  * </code>
  * <p>
@@ -169,8 +175,10 @@ import org.thymeleaf.util.Validate;
  * 
  * <h4>2. Template Processing</h4>
  * <p>
- *   In order to execute templates, the {@link #process(String, IContext)} and
- *   {@link #process(String, IContext, Writer)} methods can be used:
+ *   In order to execute templates, the different <tt>process(...)</tt> methods should
+ *   be used. Those are mostly divided into two blocks: those that return the template processing
+ *   result as a <tt>String</tt>, and those that receive a {@link Writer} as an argument
+ *   and use it for writing the result instead.
  * </p>
  * <p>
  *   Without a writer, the processing result will be returned as a String:
@@ -181,8 +189,8 @@ import org.thymeleaf.util.Validate;
  * <p>
  *   By specifying a writer, we can avoid the creation of a String containing the
  *   whole processing result by writing this result into the output stream as soon 
- *   as it is produced from the processed DOM. This is specially useful in web 
- *   scenarios:
+ *   as it is produced from the processed template. This is especially useful (and highly
+ *   recommended) in web scenarios:
  * </p>
  * <code>
  *   templateEngine.process("mytemplate", ctx, httpServletResponse.getWriter());
@@ -192,6 +200,7 @@ import org.thymeleaf.util.Validate;
  *   will relate to the physical/logical location of the template itself in a way
  *   configured at the template resolver/s. 
  * </p>
+ * <hr>
  * <p>
  *   Note a class with this name existed since 1.0, but it was completely reimplemented
  *   in Thymeleaf 3.0
@@ -369,17 +378,6 @@ public class TemplateEngine implements ITemplateEngine {
 
 
 
-    /**
-     * <p>
-     *   Returns the configuration object.
-     * </p>
-     * <p>
-     *   Note that calling this method will effectively <em>initialize</em> the engine object, and therefore
-     *   any modifications to the configuration will be forbidden from that moment.
-     * </p>
-     * 
-     * @return the current configuration
-     */
     public IEngineConfiguration getConfiguration() {
         if (!this.initialized) {
             initialize();
@@ -850,243 +848,34 @@ public class TemplateEngine implements ITemplateEngine {
 
 
 
-    /**
-     * <p>
-     *   Process a template. This method receives both a <i>template name</i> and a <i>context</i>.
-     * </p>
-     * <p>
-     *   The template name will be used as input for the template resolvers, queried in chain
-     *   until one of them resolves the template, which will then be executed.
-     * </p>
-     * <p>
-     *   The context will contain the variables that will be available for the execution of
-     *   expressions inside the template.
-     * </p>
-     *
-     * @param template the template; depending on the template resolver this might be a template name or even
-     *                 the template contents (e.g. StringTemplateResolver).
-     * @param context the context.
-     * @return a String containing the result of evaluating the specified template
-     *         with the provided context.
-     */
     public final String process(final String template, final IContext context) {
-        return process(template, null, null, context);
+        return process(new TemplateSpec(template, null, null, null), context);
     }
 
 
-
-
-    /**
-     * <p>
-     *   Process a template. This method receives both a <i>template name</i> and a <i>context</i>.
-     * </p>
-     * <p>
-     *   The template name will be used as input for the template resolvers, queried in chain
-     *   until one of them resolves the template, which will then be executed.
-     * </p>
-     * <p>
-     *   The context will contain the variables that will be available for the execution of
-     *   expressions inside the template.
-     * </p>
-     *
-     * @param template the template; depending on the template resolver this might be a template name or even
-     *                 the template contents (e.g. StringTemplateResolver).
-     * @param templateMode the template mode to be used for processing the template, overriding the one assigned by
-     *                     the corresponding template resolver.
-     * @param context the context.
-     * @return a String containing the result of evaluating the specified template
-     *         with the provided context.
-     * @since 3.0.0
-     */
-    public final String process(final String template, final TemplateMode templateMode, final IContext context) {
-        return process(template, null, templateMode, context);
+    public final String process(final String template, final Set<String> templateSelectors, final IContext context) {
+        return process(new TemplateSpec(template, templateSelectors, null, null), context);
     }
 
 
-
-
-    /**
-     * <p>
-     *   Process a template. This method receives both a <i>template name</i> and a <i>context</i>.
-     * </p>
-     * <p>
-     *   The template name will be used as input for the template resolvers, queried in chain
-     *   until one of them resolves the template, which will then be executed.
-     * </p>
-     * <p>
-     *   The context will contain the variables that will be available for the execution of
-     *   expressions inside the template.
-     * </p>
-     *
-     * @param template the template; depending on the template resolver this might be a template name or even
-     *                 the template contents (e.g. StringTemplateResolver).
-     * @param selectors the selectors to be used, defining the fragments that should be processed
-     * @param context the context.
-     * @return a String containing the result of evaluating the specified template
-     *         with the provided context.
-     * @since 3.0.0
-     */
-    public final String process(final String template, final String[] selectors, final IContext context) {
+    public final String process(final TemplateSpec templateSpec, final IContext context) {
         final StringWriter stringWriter = new StringWriter();
-        process(template, selectors, null, context, stringWriter);
+        process(templateSpec, context, stringWriter);
         return stringWriter.toString();
     }
 
 
-
-
-    /**
-     * <p>
-     *   Process a template. This method receives both a <i>template name</i> and a <i>context</i>.
-     * </p>
-     * <p>
-     *   The template name will be used as input for the template resolvers, queried in chain
-     *   until one of them resolves the template, which will then be executed.
-     * </p>
-     * <p>
-     *   The context will contain the variables that will be available for the execution of
-     *   expressions inside the template.
-     * </p>
-     *
-     * @param template the template; depending on the template resolver this might be a template name or even
-     *                 the template contents (e.g. StringTemplateResolver).
-     * @param selectors the selectors to be used, defining the fragments that should be processed
-     * @param templateMode the template mode to be used for processing the template, overriding the one assigned by
-     *                     the corresponding template resolver.
-     * @param context the context.
-     * @return a String containing the result of evaluating the specified template
-     *         with the provided context.
-     * @since 3.0.0
-     */
-    public final String process(final String template, final String[] selectors, final TemplateMode templateMode, final IContext context) {
-        final StringWriter stringWriter = new StringWriter();
-        process(template, selectors, templateMode, context, stringWriter);
-        return stringWriter.toString();
-    }
-
-
-
-
-    /**
-     * <p>
-     *   Process a template. This method receives a <i>template name</i>, a <i>context</i> and
-     *   also a {@link Writer}, so that there is no need to create a String object containing the
-     *   whole processing results because these will be written to the specified writer as
-     *   soon as they are generated from the processed DOM tree. This is specially useful for
-     *   web environments (using {@link javax.servlet.http.HttpServletResponse#getWriter()}).
-     * </p>
-     * <p>
-     *   The template name will be used as input for the template resolvers, queried in chain
-     *   until one of them resolves the template, which will then be executed.
-     * </p>
-     * <p>
-     *   The context will contain the variables that will be available for the execution of
-     *   expressions inside the template.
-     * </p>
-     *
-     * @param template the template; depending on the template resolver this might be a template name or even
-     *                 the template contents (e.g. StringTemplateResolver).
-     * @param context the context.
-     * @param writer the writer the results will be output to.
-     * @since 2.0.0
-     */
     public final void process(final String template, final IContext context, final Writer writer) {
-        process(template, null, null, context, writer);
+        process(new TemplateSpec(template, null, null, null), context, writer);
     }
 
 
-
-
-    /**
-     * <p>
-     *   Process a template. This method receives a <i>template name</i>, a <i>context</i> and
-     *   also a {@link Writer}, so that there is no need to create a String object containing the
-     *   whole processing results because these will be written to the specified writer as
-     *   soon as they are generated from the processed DOM tree. This is specially useful for
-     *   web environments (using {@link javax.servlet.http.HttpServletResponse#getWriter()}).
-     * </p>
-     * <p>
-     *   The template name will be used as input for the template resolvers, queried in chain
-     *   until one of them resolves the template, which will then be executed.
-     * </p>
-     * <p>
-     *   The context will contain the variables that will be available for the execution of
-     *   expressions inside the template.
-     * </p>
-     *
-     * @param template the template; depending on the template resolver this might be a template name or even
-     *                 the template contents (e.g. StringTemplateResolver).
-     * @param templateMode the template mode to be used for processing the template, overriding the one assigned by
-     *                     the corresponding template resolver.
-     * @param context the context.
-     * @param writer the writer the results will be output to.
-     * @since 3.0.0
-     */
-    public final void process(final String template, final TemplateMode templateMode, final IContext context, final Writer writer) {
-        process(template, null, templateMode, context, writer);
+    public final void process(final String template, final Set<String> templateSelectors, final IContext context, final Writer writer) {
+        process(new TemplateSpec(template, templateSelectors, null, null), context, writer);
     }
 
 
-
-
-    /**
-     * <p>
-     *   Process a template. This method receives a <i>template name</i>, a <i>context</i> and
-     *   also a {@link Writer}, so that there is no need to create a String object containing the
-     *   whole processing results because these will be written to the specified writer as
-     *   soon as they are generated from the processed DOM tree. This is specially useful for
-     *   web environments (using {@link javax.servlet.http.HttpServletResponse#getWriter()}).
-     * </p>
-     * <p>
-     *   The template name will be used as input for the template resolvers, queried in chain
-     *   until one of them resolves the template, which will then be executed.
-     * </p>
-     * <p>
-     *   The context will contain the variables that will be available for the execution of
-     *   expressions inside the template.
-     * </p>
-     *
-     * @param template the template; depending on the template resolver this might be a template name or even
-     *                 the template contents (e.g. StringTemplateResolver).
-     * @param selectors the selectors to be used, defining the fragments that should be processed
-     * @param context the context.
-     * @param writer the writer the results will be output to.
-     * @since 3.0.0
-     */
-    public final void process(final String template, final String[] selectors, final IContext context, final Writer writer) {
-        process(template, selectors, null, context, writer);
-    }
-
-
-
-
-    /**
-     * <p>
-     *   Process a template. This method receives a <i>template name</i>, a <i>context</i> and
-     *   also a {@link Writer}, so that there is no need to create a String object containing the
-     *   whole processing results because these will be written to the specified writer as
-     *   soon as they are generated from the processed DOM tree. This is specially useful for
-     *   web environments (using {@link javax.servlet.http.HttpServletResponse#getWriter()}).
-     * </p>
-     * <p>
-     *   The template name will be used as input for the template resolvers, queried in chain
-     *   until one of them resolves the template, which will then be executed.
-     * </p>
-     * <p>
-     *   The context will contain the variables that will be available for the execution of
-     *   expressions inside the template.
-     * </p>
-     * 
-     * @param template the template; depending on the template resolver this might be a template name or even
-     *                 the template contents (e.g. StringTemplateResolver).
-     * @param selectors the selectors to be used, defining the fragments that should be processed
-     * @param templateMode the template mode to be used for processing the template, overriding the one assigned by
-     *                     the corresponding template resolver.
-     * @param context the context.
-     * @param writer the writer the results will be output to.    @since 3.0.0
-     */
-    public final void process(
-            final String template, final String[] selectors, final TemplateMode templateMode, final IContext context, final Writer writer) {
+    public final void process(final TemplateSpec templateSpec, final IContext context, final Writer writer) {
 
         if (!this.initialized) {
             initialize();
@@ -1094,74 +883,57 @@ public class TemplateEngine implements ITemplateEngine {
         
         try {
             
-            Validate.notNull(template, "Template cannot be null");
+            Validate.notNull(templateSpec, "Template Specification cannot be null");
             Validate.notNull(context, "Context cannot be null");
             Validate.notNull(writer, "Writer cannot be null");
             // selectors CAN actually be null if we are going to render the entire template
             // templateMode CAN also be null if we are going to use the mode specified by the template resolver
 
             if (logger.isTraceEnabled()) {
-                if (selectors == null || selectors.length == 0) {
-                    logger.trace("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH LOCALE {}",
-                            new Object[]{TemplateEngine.threadIndex(), template, context.getLocale()});
-                } else {
-                    logger.trace("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH SELECTORS {} AND LOCALE {}",
-                            new Object[]{TemplateEngine.threadIndex(), template, Arrays.asList(selectors), context.getLocale()});
-                }
+                logger.trace("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH LOCALE {}",
+                        new Object[]{TemplateEngine.threadIndex(), templateSpec, context.getLocale()});
             }
 
             final long startNanos = System.nanoTime();
 
             final TemplateManager templateManager = this.configuration.getTemplateManager();
-            templateManager.parseAndProcessStandalone(template, selectors, templateMode, context, writer, true);
+            templateManager.parseAndProcessStandalone(template, templateSelectors, templateMode, context, writer, true);
 
             final long endNanos = System.nanoTime();
             
             if (logger.isTraceEnabled()) {
-                if (selectors == null || selectors.length == 0) {
-                    logger.trace("[THYMELEAF][{}] FINISHED PROCESS AND OUTPUT OF TEMPLATE \"{}\" WITH LOCALE {}",
-                            new Object[]{TemplateEngine.threadIndex(), template, context.getLocale()});
-                } else {
-                    logger.trace("[THYMELEAF][{}] FINISHED PROCESS AND OUTPUT OF TEMPLATE \"{}\" WITH SELECTORS {} AND LOCALE {}",
-                            new Object[]{TemplateEngine.threadIndex(), template, Arrays.asList(selectors), context.getLocale()});
-                }
+                logger.trace("[THYMELEAF][{}] FINISHED PROCESS AND OUTPUT OF TEMPLATE \"{}\" WITH LOCALE {}",
+                        new Object[]{TemplateEngine.threadIndex(), templateSpec, context.getLocale()});
             }
 
             if (timerLogger.isTraceEnabled()) {
                 final BigDecimal elapsed = BigDecimal.valueOf(endNanos - startNanos);
                 final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(NANOS_IN_SECOND), RoundingMode.HALF_UP);
-                if (selectors == null || selectors.length == 0) {
-                    timerLogger.trace(
-                            "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH LOCALE {} PROCESSED IN {} nanoseconds (approx. {}ms)",
-                            new Object[]{TemplateEngine.threadIndex(),
-                                    template, context.getLocale(), elapsed, elapsedMs,
-                                    template, context.getLocale(), elapsed, elapsedMs});
-                } else {
-                    timerLogger.trace(
-                            "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH SELECTORS {} AND LOCALE {} PROCESSED IN {} nanoseconds (approx. {}ms)",
-                            new Object[]{TemplateEngine.threadIndex(),
-                                    template, context.getLocale(), elapsed, elapsedMs,
-                                    template, Arrays.asList(selectors), context.getLocale(), elapsed, elapsedMs});
-                }
+                timerLogger.trace(
+                        "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH LOCALE {} PROCESSED IN {} nanoseconds (approx. {}ms)",
+                        new Object[]{
+                                TemplateEngine.threadIndex(),
+                                LoggingUtils.loggifyTemplateName(templateSpec.getTemplate()), context.getLocale(), elapsed, elapsedMs,
+                                templateSpec, context.getLocale(), elapsed, elapsedMs});
             }
             
         } catch (final TemplateOutputException e) {
 
             // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
-            logger.error(String.format("[THYMELEAF][%s] Exception processing template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), template, e.getMessage()}), e);
+            logger.error(String.format("[THYMELEAF][%s] Exception processing template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), templateSpec, e.getMessage()}), e);
             throw e;
             
         } catch (final TemplateEngineException e) {
 
             // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
-            logger.error(String.format("[THYMELEAF][%s] Exception processing template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), template, e.getMessage()}), e);
+            logger.error(String.format("[THYMELEAF][%s] Exception processing template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), templateSpec, e.getMessage()}), e);
             throw e;
             
         } catch (final RuntimeException e) {
 
             // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
-            logger.error(String.format("[THYMELEAF][%s] Exception processing template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), template, e.getMessage()}), e);
-            throw new TemplateProcessingException("Exception processing template", template, e);
+            logger.error(String.format("[THYMELEAF][%s] Exception processing template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), templateSpec, e.getMessage()}), e);
+            throw new TemplateProcessingException("Exception processing template", templateSpec.toString(), e);
             
         }
         

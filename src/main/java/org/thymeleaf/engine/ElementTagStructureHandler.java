@@ -27,7 +27,6 @@ import java.util.Set;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.IModel;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
-import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -83,8 +82,8 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
     boolean setInliner;
     IInliner setInlinerValue;
 
-    boolean setTemplateResolution;
-    TemplateResolution setTemplateResolutionValue;
+    boolean setTemplateData;
+    TemplateData setTemplateDataValue;
 
     boolean iterateElement;
     String iterVariableName;
@@ -212,9 +211,9 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
     }
 
 
-    public void setTemplateResolution(final TemplateResolution templateResolution) {
-        this.setTemplateResolution = true;
-        this.setTemplateResolutionValue = templateResolution;
+    public void setTemplateData(final TemplateData templateData) {
+        this.setTemplateData = true;
+        this.setTemplateDataValue = templateData;
     }
 
 
@@ -252,8 +251,8 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
         this.setInliner = false;
         this.setInlinerValue = null;
 
-        this.setTemplateResolution = false;
-        this.setTemplateResolutionValue = null;
+        this.setTemplateData = false;
+        this.setTemplateDataValue = null;
 
     }
 

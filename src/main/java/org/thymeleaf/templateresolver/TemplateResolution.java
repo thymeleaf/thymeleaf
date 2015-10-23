@@ -43,6 +43,9 @@ import org.thymeleaf.util.Validate;
  *   to the resource.
  * </p>
  * <p>
+ *   Objects of this class should <strong>not</strong> be considered thread-safe.
+ * </p>
+ * <p>
  *   Note a class with this name existed since 1.0, but it was completely reimplemented in 3.0.0.
  * </p>
  * 
@@ -53,7 +56,6 @@ import org.thymeleaf.util.Validate;
  */
 public final class TemplateResolution {
 
-    private final String template;
     private final ITemplateResource templateResource;
     private final TemplateMode templateMode;
     private final ICacheEntryValidity validity;
@@ -61,36 +63,16 @@ public final class TemplateResolution {
 
     
     public TemplateResolution(
-            final String template,
             final ITemplateResource templateResource,
             final TemplateMode templateMode,
             final ICacheEntryValidity validity) {
         super();
-        Validate.notNull(template, "Template cannot be null");
         Validate.notNull(templateResource, "Template Resource cannot be null");
         Validate.notNull(templateMode, "Template mode cannot be null");
         Validate.notNull(validity, "Validity cannot be null");
-        this.template = template;
         this.templateResource = templateResource;
         this.templateMode = templateMode;
         this.validity = validity;
-    }
-    
-
-    /**
-     * <p>
-     *   Returns the template (usually a template name).
-     * </p>
-     * <p>
-     *   This should be the same template used for calling the
-     *   {@link org.thymeleaf.TemplateEngine#process(String, org.thymeleaf.context.IContext)}
-     *   method.
-     * </p>
-     * 
-     * @return the template.
-     */
-    public String getTemplate() {
-        return this.template;
     }
 
 
@@ -98,13 +80,18 @@ public final class TemplateResolution {
      * <p>
      *   Returns the template resource.
      * </p>
-     * <p>,
-     *   This should be the same name used for calling the
-     *   {@link org.thymeleaf.TemplateEngine#process(String, org.thymeleaf.context.IContext)}
-     *   method.
+     * <p>
+     *   Template resource instances are usually created by implementations of
+     *   {@link org.thymeleaf.templateresolver.ITemplateResolver}.
+     * </p>
+     * <p>
+     *   Note that, even if this resource object will never be <tt>null</tt>, the existence of the
+     *   resource object does not necessarily imply the existence of the resource itself unless
+     *   the template resolver was configured for calling {@link ITemplateResource#exists()} upon
+     *   template resolution.
      * </p>
      *
-     * @return the template name.
+     * @return the template resource
      */
     public ITemplateResource getTemplateResource() {
         return this.templateResource;
@@ -113,10 +100,15 @@ public final class TemplateResolution {
 
     /**
      * <p>
-     *   Returns the template mode to be applied.
+     *   Returns the template mode to be applied to the template, as suggested by the
+     *   {@link ITemplateResolver}.
+     * </p>
+     * <p>
+     *   Note that this template mode can be ignored if the template being resolved is configured to be
+     *   executed with a specific template mode regardless of what the template resolver suggests.
      * </p>
      * 
-     * @return the template mode.
+     * @return the template mode for the resolved template
      */
     public TemplateMode getTemplateMode() {
         return this.templateMode;

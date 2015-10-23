@@ -34,7 +34,6 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
-import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -73,13 +72,13 @@ final class EngineContext extends AbstractEngineContext implements IEngineContex
     private HashMap<String,Object>[] maps;
     private SelectionTarget[] selectionTargets;
     private IInliner[] inliners;
-    private TemplateResolution[] templateResolutions;
+    private TemplateData[] templateDatas;
 
     private SelectionTarget lastSelectionTarget = null;
     private IInliner lastInliner = null;
-    private TemplateResolution lastTemplateResolution = null;
+    private TemplateData lastTemplateData = null;
 
-    private final List<TemplateResolution> templateResolutionStack;
+    private final List<TemplateData> templateStack;
 
     private static final Object NON_EXISTING = new Object() {
         @Override
@@ -96,7 +95,7 @@ final class EngineContext extends AbstractEngineContext implements IEngineContex
      */
     EngineContext(
             final IEngineConfiguration configuration,
-            final TemplateResolution templateResolution,
+            final TemplateData templateData,
             final Locale locale,
             final Map<String, Object> variables) {
 
@@ -106,17 +105,18 @@ final class EngineContext extends AbstractEngineContext implements IEngineContex
         this.maps = (HashMap<String, Object>[]) new HashMap<?,?>[DEFAULT_LEVELS_SIZE];
         this.selectionTargets = new SelectionTarget[DEFAULT_LEVELS_SIZE];
         this.inliners = new IInliner[DEFAULT_LEVELS_SIZE];
-        this.templateResolutions = new TemplateResolution[DEFAULT_LEVELS_SIZE];
+        this.templateDatas = new TemplateData[DEFAULT_LEVELS_SIZE];
         Arrays.fill(this.levels, Integer.MAX_VALUE);
         Arrays.fill(this.maps, null);
         Arrays.fill(this.selectionTargets, null);
         Arrays.fill(this.inliners, null);
-        Arrays.fill(this.templateResolutions, null);
+        Arrays.fill(this.templateDatas, null);
         this.levels[0] = 0;
-        this.templateResolutions[0] = templateResolution;
+        this.templateDatas[0] = templateData;
+        this.lastTemplateData = templateData;
 
-        this.templateResolutionStack = new ArrayList<TemplateResolution>(DEFAULT_LEVELS_SIZE);
-        this.templateResolutionStack.add(templateResolution);
+        this.templateStack = new ArrayList<TemplateData>(DEFAULT_LEVELS_SIZE);
+        this.templateStack.add(templateData);
 
         if (variables != null) {
             setVariables(variables);
@@ -297,52 +297,47 @@ final class EngineContext extends AbstractEngineContext implements IEngineContex
 
 
 
-    public TemplateResolution getTemplateResolution() {
-        if (this.lastTemplateResolution != null) {
-            return this.lastTemplateResolution;
+    public TemplateData getTemplateData() {
+        if (this.lastTemplateData != null) {
+            return this.lastTemplateData;
         }
         int n = this.index + 1;
         while (n-- != 0) {
-            if (this.templateResolutions[n] != null) {
-                this.lastTemplateResolution = this.templateResolutions[n];
-                return this.lastTemplateResolution;
+            if (this.templateDatas[n] != null) {
+                this.lastTemplateData = this.templateDatas[n];
+                return this.lastTemplateData;
             }
         }
         return null;
     }
 
 
-    public void setTemplateResolution(final TemplateResolution templateResolution) {
-        Validate.notNull(templateResolution, "Template Resolution cannot be null");
-        if (this.lastTemplateResolution == templateResolution) {
-            return;
-        }
+    public void setTemplateData(final TemplateData templateData) {
+        Validate.notNull(templateData, "Template Data cannot be null");
         ensureLevelInitialized(DEFAULT_MAP_SIZE);
-        this.lastTemplateResolution = templateResolution;
-        this.templateResolutions[this.index] = this.lastTemplateResolution;
-        this.templateResolutionStack.clear();
+        this.lastTemplateData = templateData;
+        this.templateDatas[this.index] = this.lastTemplateData;
+        this.templateStack.clear();
     }
 
 
 
 
-    public List<TemplateResolution> getTemplateResolutionStack() {
-        if (!this.templateResolutionStack.isEmpty()) {
-            // If would have been empty if we had just decreased a level or added a new resolution
-            return Collections.unmodifiableList(this.templateResolutionStack);
+    public List<TemplateData> getTemplateStack() {
+        if (!this.templateStack.isEmpty()) {
+            // If would have been empty if we had just decreased a level or added a new template
+            return Collections.unmodifiableList(this.templateStack);
         }
         int n = this.index + 1;
         int i = 0;
-        TemplateResolution lastTemplateResolution = null;
         while (n-- != 0) {
-            if (this.templateResolutions[i] != null && this.templateResolutions[i] != lastTemplateResolution) {
-                lastTemplateResolution = this.templateResolutions[i];
-                this.templateResolutionStack.add(lastTemplateResolution);
+            if (this.templateDatas[i] != null) {
+                this.templateStack.add(this.templateDatas[i]);
             }
             i++;
         }
 
-        return Collections.unmodifiableList(this.templateResolutionStack);
+        return Collections.unmodifiableList(this.templateStack);
     }
 
 
@@ -362,22 +357,22 @@ final class EngineContext extends AbstractEngineContext implements IEngineContex
                 final HashMap<String,Object>[] newMaps = (HashMap<String, Object>[]) new HashMap<?,?>[this.maps.length + DEFAULT_LEVELS_SIZE];
                 final SelectionTarget[] newSelectionTargets = new SelectionTarget[this.selectionTargets.length + DEFAULT_LEVELS_SIZE];
                 final IInliner[] newInliners = new IInliner[this.inliners.length + DEFAULT_LEVELS_SIZE];
-                final TemplateResolution[] newTemplateResolutions = new TemplateResolution[this.templateResolutions.length + DEFAULT_LEVELS_SIZE];
+                final TemplateData[] newTemplateDatas = new TemplateData[this.templateDatas.length + DEFAULT_LEVELS_SIZE];
                 Arrays.fill(newLevels, Integer.MAX_VALUE);
                 Arrays.fill(newMaps, null);
                 Arrays.fill(newSelectionTargets, null);
                 Arrays.fill(newInliners, null);
-                Arrays.fill(newTemplateResolutions, null);
+                Arrays.fill(newTemplateDatas, null);
                 System.arraycopy(this.levels, 0, newLevels, 0, this.levels.length);
                 System.arraycopy(this.maps, 0, newMaps, 0, this.maps.length);
                 System.arraycopy(this.selectionTargets, 0, newSelectionTargets, 0, this.selectionTargets.length);
                 System.arraycopy(this.inliners, 0, newInliners, 0, this.inliners.length);
-                System.arraycopy(this.templateResolutions, 0, newTemplateResolutions, 0, this.templateResolutions.length);
+                System.arraycopy(this.templateDatas, 0, newTemplateDatas, 0, this.templateDatas.length);
                 this.levels = newLevels;
                 this.maps = newMaps;
                 this.selectionTargets = newSelectionTargets;
                 this.inliners = newInliners;
-                this.templateResolutions = newTemplateResolutions;
+                this.templateDatas = newTemplateDatas;
             }
 
             this.levels[this.index] = this.level;
@@ -411,14 +406,14 @@ final class EngineContext extends AbstractEngineContext implements IEngineContex
             }
             this.selectionTargets[this.index] = null;
             this.inliners[this.index] = null;
-            this.templateResolutions[this.index] = null;
+            this.templateDatas[this.index] = null;
             this.index--;
 
             // These might not belong to this level, but just in case...
             this.lastSelectionTarget = null;
             this.lastInliner = null;
-            this.lastTemplateResolution = null;
-            this.templateResolutionStack.clear();
+            this.lastTemplateData = null;
+            this.templateStack.clear();
 
         }
 
@@ -455,7 +450,7 @@ final class EngineContext extends AbstractEngineContext implements IEngineContex
                     levelVars.put(name, value);
                 }
             }
-            if (n == 0 || !levelVars.isEmpty() || this.selectionTargets[n] != null || this.inliners[n] != null || this.templateResolutions[n] != null) {
+            if (n == 0 || !levelVars.isEmpty() || this.selectionTargets[n] != null || this.inliners[n] != null || this.templateDatas[n] != null) {
                 if (strBuilder.length() > 1) {
                     strBuilder.append(',');
                 }
@@ -469,8 +464,8 @@ final class EngineContext extends AbstractEngineContext implements IEngineContex
                 if (this.inliners[n] != null) {
                     strBuilder.append("[" + this.inliners[n].getName() + "]");
                 }
-                if (this.templateResolutions[n] != null) {
-                    strBuilder.append("(" + this.templateResolutions[n].getTemplate() + ")");
+                if (this.templateDatas[n] != null) {
+                    strBuilder.append("(" + this.templateDatas[n].getTemplate() + ")");
                 }
             }
         }
@@ -506,8 +501,8 @@ final class EngineContext extends AbstractEngineContext implements IEngineContex
             i++;
         }
         final String textInliningStr = (getInliner() != null? "[" + getInliner().getName() + "]" : "" );
-        final String templateResolutionStr = "(" + getTemplateResolution().getTemplate() + ")";
-        return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "") + textInliningStr + templateResolutionStr;
+        final String templateDataStr = "(" + getTemplateData().getTemplate() + ")";
+        return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "") + textInliningStr + templateDataStr;
 
     }
 

@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.templateresolver;
 
+import java.util.Map;
+
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresource.ITemplateResource;
@@ -100,7 +102,8 @@ public interface ITemplateResolver {
      * @return the order of this resolver in the chain.
      */
     public Integer getOrder();
-    
+
+
     /**
      * <p>
      *   Tries to resolve a template.
@@ -112,6 +115,13 @@ public interface ITemplateResolver {
      *   return a {@link TemplateResolution} object.
      * </p>
      * <p>
+     *   The <tt>ownerTemplate</tt>, which might be null, will be specified when the template
+     *   is resolved in order to be used as a fragent to be inserted into a higher level
+     *   template (the <em>owner</em>). Most template resolver implementations will simply ignore
+     *   this argument, but others might change their resolution results depending on the
+     *   owner template that is inserting the resolved fragment.
+     * </p>
+     * <p>
      *   The fact that a Template Resolver returns a {@link TemplateResolution} does not necessarily
      *   mean that the resolved template resource exists. It might only be so if the template resolver
      *   is configured to perform an <em>existence check</em> on the resource before returning a resolution
@@ -121,18 +131,24 @@ public interface ITemplateResolver {
      *   to the resource.
      * </p>
      * <p>
-     *   Note that the <em>markup selectors</em> that might be used for a executing or inserting a template
-     *   are not specified to the template resolver. The reason is markup selectors are applied by the parser,
-     *   not the template resolvers, and allowing the resolver to take any decisions based on markup selectors
+     *   Note that the <em>template selectors</em> that might be used for a executing or inserting a template
+     *   are not specified to the template resolver. The reason is template selectors are applied by the parser,
+     *   not the template resolvers, and allowing the resolver to take any decisions based on template selectors
      *   (like e.g. omitting some output from the resource) could harm the correctness of the selection operation
      *   performed by the parser.
      * </p>
      * 
      * @param configuration the engine configuration.
-     * @param template the template to be resolved (usually its name)
+     * @param ownerTemplate the containing template from which we want to resolve a new one as a fragment. Can be null.
+     * @param template the template to be resolved (usually its name).
+     * @param templateResolutionAttributes the template resolution attributes to be used (usually coming from a
+     *                                     {@link org.thymeleaf.TemplateSpec} instance. Can be null.
      * @return a TemplateResolution object (which might represent an existing resource or not), or null if the
-     *           template could not be resolved.
+     *         template could not be resolved.
      */
-    public TemplateResolution resolveTemplate(final IEngineConfiguration configuration, final String template);
+    public TemplateResolution resolveTemplate(
+            final IEngineConfiguration configuration,
+            final String ownerTemplate, final String template,
+            final Map<String, Object> templateResolutionAttributes);
 
 }

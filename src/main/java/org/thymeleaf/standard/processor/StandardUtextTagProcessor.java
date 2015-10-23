@@ -102,7 +102,7 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
         }
 
         final TemplateModel parsedFragment =
-                configuration.getTemplateManager().parseNested(
+                configuration.getTemplateManager().parseString(
                         attributeTemplateName, unescapedText,
                         0, 0, // we won't apply offset here because the inserted text does not really come from the template itself
                         context.getTemplateMode(),
