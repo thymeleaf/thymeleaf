@@ -97,7 +97,7 @@ public class TestEngineTemplateResource implements ITemplateResource {
     }
 
 
-    public ITemplateResource relative(final String relativePath) throws IOException {
+    public ITemplateResource relative(final String relativeLocation) throws IOException {
         throw new IOException(String.format("Cannot create relative resource for test resource \"%s\"", this.resource.getName()));
     }
 
