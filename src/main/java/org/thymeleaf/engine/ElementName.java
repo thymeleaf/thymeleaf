@@ -29,10 +29,10 @@ import java.util.Arrays;
  */
 public abstract class ElementName {
 
-    final protected String prefix;
-    final protected String elementName;
-    final protected String[] completeElementNames;
-    final private int h;
+    protected final String prefix;
+    protected final String elementName;
+    protected final String[] completeElementNames;
+    private final int h;
 
 
 

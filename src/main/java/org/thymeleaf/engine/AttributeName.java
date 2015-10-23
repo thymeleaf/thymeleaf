@@ -29,10 +29,10 @@ import java.util.Arrays;
  */
 public abstract class AttributeName {
 
-    final protected String prefix;
-    final protected String attributeName;
-    final protected String[] completeAttributeNames;
-    final private int h;
+    protected final String prefix;
+    protected final String attributeName;
+    protected final String[] completeAttributeNames;
+    private final int h;
 
 
 
