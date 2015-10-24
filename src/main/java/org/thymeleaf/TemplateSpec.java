@@ -184,9 +184,13 @@ public final class TemplateSpec implements Serializable {
         if (templateSelectors != null && !templateSelectors.isEmpty()) {
             Validate.containsNoEmpties(
                     templateSelectors, "If specified, the Template Selector set cannot contain any nulls or empties");
-            // We will be using a TreeSet because we want the selectors to be ORDERED, so that comparison at the
-            // equals(...) method works alright
-            this.templateSelectors = Collections.unmodifiableSet(new TreeSet<String>(templateSelectors));
+            if (templateSelectors.size() == 1) {
+                this.templateSelectors = Collections.singleton(templateSelectors.iterator().next());
+            } else {
+                // We will be using a TreeSet because we want the selectors to be ORDERED, so that comparison at the
+                // equals(...) method works alright
+                this.templateSelectors = Collections.unmodifiableSet(new TreeSet<String>(templateSelectors));
+            }
         } else {
             this.templateSelectors = null;
         }
