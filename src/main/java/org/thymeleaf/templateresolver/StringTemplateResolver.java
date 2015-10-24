@@ -213,7 +213,7 @@ public class StringTemplateResolver extends AbstractTemplateResolver {
 
     @Override
     protected ITemplateResource computeTemplateResource(final IEngineConfiguration configuration, final String template) {
-        return new StringTemplateResource(template, template);
+        return new StringTemplateResource(template);
     }
 
 

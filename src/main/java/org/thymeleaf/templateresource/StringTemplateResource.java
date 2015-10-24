@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
+import org.thymeleaf.util.LoggingUtils;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -42,35 +43,22 @@ import org.thymeleaf.util.Validate;
 public final class StringTemplateResource implements ITemplateResource {
 
 
-    private final String name;
     private final String resource;
 
 
 
 
     public StringTemplateResource(final String resource) {
-        this(null, resource);
-    }
-
-
-    public StringTemplateResource(final String name, final String resource) {
-
         super();
-
-        // name can be null (resource will be used as name)
         Validate.notNull(resource, "Resource cannot be null or empty");
-        // Character encoding CAN be null (system default will be used)
-
-        this.name = (name == null? resource : name);
         this.resource = resource;
-
     }
 
 
 
 
     public String getDescription() {
-        return this.name;
+        return this.resource;
     }
 
 
@@ -93,7 +81,7 @@ public final class StringTemplateResource implements ITemplateResource {
 
     public ITemplateResource relative(final String relativeLocation) throws IOException {
         throw new FileNotFoundException(
-                String.format("Cannot create a relative resource for String resource  \"%s\"", this.name));
+                String.format("Cannot create a relative resource for String resource  \"%s\"", LoggingUtils.loggifyTemplateName(this.resource)));
     }
 
 
