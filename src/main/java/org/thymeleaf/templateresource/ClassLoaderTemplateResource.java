@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.templateresource;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -90,10 +92,10 @@ public final class ClassLoaderTemplateResource implements ITemplateResource {
         }
 
         if (!StringUtils.isEmptyOrWhitespace(this.characterEncoding)) {
-            return new InputStreamReader(inputStream, this.characterEncoding);
+            return new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream), this.characterEncoding));
         }
 
-        return new InputStreamReader(inputStream);
+        return new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream)));
 
     }
 
