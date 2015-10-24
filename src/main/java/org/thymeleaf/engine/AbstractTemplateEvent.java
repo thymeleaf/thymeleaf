@@ -19,10 +19,6 @@
  */
 package org.thymeleaf.engine;
 
-import java.io.IOException;
-import java.io.StringWriter;
-
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ITemplateEvent;
 
 /**
@@ -82,19 +78,6 @@ abstract class AbstractTemplateEvent implements ITemplateEvent {
         this.templateName = templateName;
         this.line = line;
         this.col = col;
-    }
-
-
-
-
-    public final String toString() {
-        final StringWriter stringWriter = new StringWriter();
-        try {
-            write(stringWriter);
-        } catch (final IOException e) {
-            throw new TemplateProcessingException("Exception while creating String representation of model entity", e);
-        }
-        return stringWriter.toString();
     }
 
 

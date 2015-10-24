@@ -108,4 +108,13 @@ final class TemplateStart extends AbstractTemplateEvent implements ITemplateStar
     }
 
 
+
+
+
+    @Override
+    public final String toString() {
+        return "";
+    }
+
+
 }

@@ -266,4 +266,13 @@ final class XMLDeclaration extends AbstractTemplateEvent implements IXMLDeclarat
 
     }
 
+
+
+
+
+    @Override
+    public final String toString() {
+        return getXmlDeclaration();
+    }
+
 }

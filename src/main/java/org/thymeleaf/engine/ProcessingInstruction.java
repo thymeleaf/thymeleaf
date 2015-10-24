@@ -212,4 +212,13 @@ public final class ProcessingInstruction extends AbstractTemplateEvent implement
     }
 
 
+
+
+
+    @Override
+    public final String toString() {
+        return getProcessingInstruction();
+    }
+
+
 }

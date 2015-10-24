@@ -282,4 +282,13 @@ final class Comment extends AbstractTemplateEvent implements IComment, IEngineTe
     }
 
 
+
+
+
+    @Override
+    public final String toString() {
+        return getComment();
+    }
+
+
 }

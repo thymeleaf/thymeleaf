@@ -344,4 +344,13 @@ final class DocType extends AbstractTemplateEvent implements IDocType, IEngineTe
     }
 
 
+
+
+
+    @Override
+    public final String toString() {
+        return getDocType();
+    }
+
+
 }

@@ -118,4 +118,13 @@ final class TemplateEnd extends AbstractTemplateEvent implements ITemplateEnd, I
     }
 
 
+
+
+
+    @Override
+    public final String toString() {
+        return "";
+    }
+
+
 }

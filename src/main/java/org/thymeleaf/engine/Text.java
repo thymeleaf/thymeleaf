@@ -92,6 +92,7 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
             this.text = this.text.toString();
         }
 
+        // this.text is a String
         return this.text.toString();
 
     }
@@ -306,6 +307,13 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
     }
 
 
+
+
+
+    @Override
+    public final String toString() {
+        return getText();
+    }
 
 
 }

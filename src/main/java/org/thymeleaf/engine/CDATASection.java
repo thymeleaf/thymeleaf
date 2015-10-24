@@ -280,4 +280,13 @@ final class CDATASection extends AbstractTemplateEvent implements ICDATASection,
     }
 
 
+
+
+
+    @Override
+    public final String toString() {
+        return getCDATASection();
+    }
+
+
 }
