@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.SynchronousQueue;
@@ -360,7 +361,7 @@ public final class TestExecutor {
         this.reporter.testStart(executionId, context.getNestingLevel(), test, testName);
         
         final String fragmentSpec = test.getFragmentSpec();
-        final String[] markupSelectors = fragmentSpec == null? null : new String[] { fragmentSpec };
+        final Set<String> markupSelectors = fragmentSpec == null? null : Collections.singleton(fragmentSpec);
         
         final IContext processingContext = this.processingContextBuilder.build(test);
         
