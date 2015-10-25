@@ -19,7 +19,11 @@
  */
 package org.thymeleaf.spring3.view;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -95,8 +99,8 @@ public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView 
         
         if (templateAjaxHandler.isAjaxRequest(request, response)) {
             
-            final String[] fragmentsToRender = getRenderFragments(model, request, response);
-            if (fragmentsToRender == null || fragmentsToRender.length == 0) {
+            final Set<String> fragmentsToRender = getRenderFragments(model, request, response);
+            if (fragmentsToRender == null || fragmentsToRender.size() == 0) {
                 vlogger.warn("[THYMELEAF] An Ajax request was detected, but no fragments were specified to be re-rendered.  "
                         + "Falling back to full page render.  This can cause unpredictable results when processing "
                         + "the ajax response on the client.");
@@ -118,11 +122,17 @@ public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView 
     
 
     @SuppressWarnings({ "rawtypes", "unused" })
-    protected String[] getRenderFragments(
+    protected Set<String> getRenderFragments(
             final Map model, final HttpServletRequest request, final HttpServletResponse response) {
         final String fragmentsParam = request.getParameter(FRAGMENTS_PARAM);
         final String[] renderFragments = StringUtils.commaDelimitedListToStringArray(fragmentsParam);
-        return StringUtils.trimArrayElements(renderFragments);
+        if (renderFragments.length == 0) {
+            return null;
+        }
+        if (renderFragments.length == 1) {
+            return Collections.singleton(renderFragments[0]);
+        }
+        return new HashSet<String>(Arrays.asList(renderFragments));
     }
     
 

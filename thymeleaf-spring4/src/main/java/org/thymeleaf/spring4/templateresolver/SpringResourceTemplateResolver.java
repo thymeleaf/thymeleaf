@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.spring4.templateresolver;
 
+import java.util.Map;
+
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -63,7 +65,7 @@ public class SpringResourceTemplateResolver
 
     @Override
     protected ITemplateResource computeTemplateResource(
-            final IEngineConfiguration configuration, final String template, final String resourceName, final String characterEncoding) {
+            final IEngineConfiguration configuration, final String ownerTemplate, final String template, final String resourceName, final String characterEncoding, final Map<String, Object> templateResolutionAttributes) {
         return new SpringResourceTemplateResource(this.applicationContext, resourceName, characterEncoding);
     }
 

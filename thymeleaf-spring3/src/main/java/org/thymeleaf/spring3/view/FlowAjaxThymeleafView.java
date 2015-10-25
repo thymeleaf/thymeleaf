@@ -19,7 +19,11 @@
  */
 package org.thymeleaf.spring3.view;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,7 +65,7 @@ public class FlowAjaxThymeleafView extends AjaxThymeleafView {
     
     @Override
     @SuppressWarnings("rawtypes")
-    protected String[] getRenderFragments(
+    protected Set<String> getRenderFragments(
             final Map model, final HttpServletRequest request, final HttpServletResponse response) {
         
         final RequestContext context = RequestContextHolder.getRequestContext();
@@ -70,10 +74,13 @@ public class FlowAjaxThymeleafView extends AjaxThymeleafView {
         }
         
         final String[] fragments = (String[]) context.getFlashScope().get(View.RENDER_FRAGMENTS_ATTRIBUTE);
-        if (fragments == null) {
+        if (fragments == null || fragments.length == 0) {
             return super.getRenderFragments(model, request, response);
         }
-        return fragments;
+        if (fragments.length == 1) {
+            return Collections.singleton(fragments[0]);
+        }
+        return new HashSet<String>(Arrays.asList(fragments));
         
     }
     

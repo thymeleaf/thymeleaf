@@ -136,7 +136,7 @@ public class SpringMessageResolver
                 logger.trace(
                         "[THYMELEAF][{}] Resolving message with key \"{}\" for template \"{}\" and locale \"{}\". " +
                         "Messages will be retrieved from Spring's MessageSource infrastructure.",
-                        new Object[]{TemplateEngine.threadIndex(), key, context.getTemplateResolution().getTemplate(), context.getLocale()});
+                        new Object[]{TemplateEngine.threadIndex(), key, context.getTemplateData().getTemplate(), context.getLocale()});
             }
 
             try {

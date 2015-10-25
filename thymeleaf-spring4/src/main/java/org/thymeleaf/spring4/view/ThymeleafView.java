@@ -21,9 +21,11 @@ package org.thymeleaf.spring4.view;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -71,7 +73,7 @@ public class ThymeleafView
      */
     private static final String pathVariablesSelector;
 
-    private String[] markupSelectors = null;
+    private Set<String> markupSelectors = null;
 
 
 
@@ -144,7 +146,7 @@ public class ThymeleafView
      * @since 3.0.0
      */
     public String getMarkupSelector() {
-        return (this.markupSelectors == null || this.markupSelectors.length == 0? null : this.markupSelectors[0]);
+        return (this.markupSelectors == null || this.markupSelectors.size() == 0? null : this.markupSelectors.iterator().next());
     }
 
 
@@ -170,7 +172,7 @@ public class ThymeleafView
      */
     public void setMarkupSelector(final String markupSelector) {
         this.markupSelectors =
-                (markupSelector == null || markupSelector.trim().length() == 0? null : new String[] { markupSelector.trim() });
+                (markupSelector == null || markupSelector.trim().length() == 0? null : Collections.singleton(markupSelector.trim()));
     }
 
 
@@ -186,7 +188,7 @@ public class ThymeleafView
 
 
 
-    protected void renderFragment(final String[] markupSelectorsToRender, final Map<String, ?> model, final HttpServletRequest request,
+    protected void renderFragment(final Set<String> markupSelectorsToRender, final Map<String, ?> model, final HttpServletRequest request,
                                   final HttpServletResponse response)
             throws Exception {
 
@@ -249,7 +251,7 @@ public class ThymeleafView
 
 
         final String templateName;
-        final String[] markupSelectors;
+        final Set<String> markupSelectors;
         if (!viewTemplateName.contains("::")) {
             // No fragment specified at the template name
 
@@ -269,7 +271,7 @@ public class ThymeleafView
                     FragmentSelectionUtils.processFragmentSelection(context, parsedFragmentSelection);
 
             templateName = processedFragmentSelection.getTemplateName();
-            markupSelectors = new String[] {processedFragmentSelection.getFragmentSelector()};
+            markupSelectors = Collections.singleton(processedFragmentSelection.getFragmentSelector());
             final Map<String,Object> nameFragmentParameters = processedFragmentSelection.getFragmentParameters();
 
             if (nameFragmentParameters != null) {
@@ -294,9 +296,9 @@ public class ThymeleafView
         final String templateCharacterEncoding = getCharacterEncoding();
 
 
-        final String[] processMarkupSelectors;
-        if (markupSelectors != null && markupSelectors.length > 0) {
-            if (markupSelectorsToRender != null && markupSelectorsToRender.length > 0) {
+        final Set<String> processMarkupSelectors;
+        if (markupSelectors != null && markupSelectors.size() > 0) {
+            if (markupSelectorsToRender != null && markupSelectorsToRender.size() > 0) {
                 throw new IllegalArgumentException(
                         "A markup selector has been specified (" + Arrays.asList(markupSelectors) + ") for a view " +
                         "that was already being executed as a fragment (" + Arrays.asList(markupSelectorsToRender) + "). " +
@@ -304,7 +306,7 @@ public class ThymeleafView
             }
             processMarkupSelectors = markupSelectors;
         } else {
-            if (markupSelectorsToRender != null && markupSelectorsToRender.length > 0) {
+            if (markupSelectorsToRender != null && markupSelectorsToRender.size() > 0) {
                 processMarkupSelectors = markupSelectorsToRender;
             } else {
                 processMarkupSelectors = null;

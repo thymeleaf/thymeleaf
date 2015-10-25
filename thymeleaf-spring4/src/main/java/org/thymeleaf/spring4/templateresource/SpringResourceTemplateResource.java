@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.spring4.templateresource;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -101,10 +103,10 @@ public final class SpringResourceTemplateResource implements ITemplateResource {
         final InputStream inputStream = this.resource.getInputStream();
 
         if (!StringUtils.isEmptyOrWhitespace(this.characterEncoding)) {
-            return new InputStreamReader(inputStream, this.characterEncoding);
+            return new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream), this.characterEncoding));
         }
 
-        return new InputStreamReader(inputStream);
+        return new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream)));
 
     }
 
