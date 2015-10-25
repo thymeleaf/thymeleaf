@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.engine;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.cache.ICacheEntryValidity;
@@ -36,9 +35,9 @@ import org.thymeleaf.templateresource.ITemplateResource;
  *   offered by the engine to processing artifacts such as processors, pre-/post-processors, etc.
  * </p>
  * <p>
- *   Also, these objects contain basically the same info as {@link org.thymeleaf.TemplateSpec},
- *   but adding all the information coming from {@link org.thymeleaf.templateresolver.TemplateResolution}
- *   results produced by <em>template resolvers</em> ({@link org.thymeleaf.templateresolver.ITemplateResolver}).
+ *   These objects contain some metadata about the template being processed, and also the template resource
+ *   itself, coming from the {@link org.thymeleaf.templateresolver.TemplateResolution}
+ *   produced by <em>template resolvers</em> ({@link org.thymeleaf.templateresolver.ITemplateResolver}).
  * </p>
  * <p>
  *   The <em>template</em> contained usually represents the <em>template name</em>, but can be the entire
@@ -65,8 +64,7 @@ public final class TemplateData {
     private final Set<String> templateSelectors;
     private final ITemplateResource templateResource;
     private final TemplateMode templateMode;
-    private final ICacheEntryValidity validity;
-    private final Map<String,Object> templateResolutionAttributes;
+    private final ICacheEntryValidity cacheValidity;
 
 
     /**
@@ -82,16 +80,13 @@ public final class TemplateData {
      * @param templateSelectors the template selectors
      * @param templateResource the template resource
      * @param templateMode the template mode
-     * @param validity the template cache validity
-     * @param templateResolutionAttributes the template resolution attributes
      */
     TemplateData(
             final String template,
             final Set<String> templateSelectors,
             final ITemplateResource templateResource,
             final TemplateMode templateMode,
-            final ICacheEntryValidity validity,
-            final Map<String,Object> templateResolutionAttributes) {
+            final ICacheEntryValidity cacheValidity) {
 
         super();
 
@@ -104,8 +99,7 @@ public final class TemplateData {
         this.templateSelectors = templateSelectors;
         this.templateResource = templateResource;
         this.templateMode = templateMode;
-        this.validity = validity;
-        this.templateResolutionAttributes = templateResolutionAttributes;
+        this.cacheValidity = cacheValidity;
 
     }
 
@@ -212,48 +206,11 @@ public final class TemplateData {
      *   When a cached template is not considered valid, its cache entry is discarded
      *   and it is resolved again.
      * </p>
-     * 
+     *
      * @return the validity object
      */
     public ICacheEntryValidity getValidity() {
-        return this.validity;
-    }
-
-
-    /**
-     * <p>
-     *   Returns whether this spec includes template resolution attributes or not.
-     * </p>
-     *
-     * @return <tt>true</tt> of there are template resolution attributes, <tt>false</tt> if not.
-     */
-    public boolean hasTemplateResolutionAttributes() {
-        // Checking for null is enough, as we have already processed this in the constructor
-        return this.templateResolutionAttributes != null;
-    }
-
-
-    /**
-     * <p>
-     *   Returns the template resolution attributes, if any have been specified.
-     * </p>
-     * <p>
-     *   The template resolution attributes are meant to be passed to the template resolvers (see
-     *   {@link org.thymeleaf.templateresolver.ITemplateResolver} during template resolution, as a way
-     *   of configuring their execution for the template being processed.
-     * </p>
-     * <p>
-     *   Note that template resolution attributes are considered a part of the <em>identifier</em> of a template,
-     *   so they will be used as a part of the keys for cached templates. <strong>It is therefore
-     *   required that template attribute maps contain values with valid {@link #equals(Object)}
-     *   and {@link #hashCode()} implementations</strong>. Therefore, using simple (and fast)
-     *   <tt>Map&lt;String,String&gt;</tt> maps is the recommended option.
-     * </p>
-     *
-     * @return the template resolution attributes.
-     */
-    public Map<String, Object> getTemplateResolutionAttributes() {
-        return this.templateResolutionAttributes;
+        return this.cacheValidity;
     }
 
 

@@ -25,6 +25,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.TemplateManager;
+import org.thymeleaf.engine.TemplateModel;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.processor.comment.AbstractCommentProcessor;
 import org.thymeleaf.processor.comment.ICommentStructureHandler;
@@ -67,15 +68,6 @@ public final class StandardConditionalCommentProcessor extends AbstractCommentPr
 
         final String commentStr = comment.getComment();
 
-        final StringWriter writer = new StringWriter();
-
-        /*
-         * Rebuild the conditional comment start expression
-         */
-        writer.write("[");
-        writer.write(commentStr, parsingResult.getStartExpressionOffset(), parsingResult.getStartExpressionLen());
-        writer.write("]>");
-
         /*
          * Next, we need to get the content of the Conditional Comment and process it as a piece of markup. In fact,
          * we must process it as a template itself (a template fragment) so that all thymeleaf attributes and
@@ -89,12 +81,27 @@ public final class StandardConditionalCommentProcessor extends AbstractCommentPr
                 configuration.getTextRepository().getText(
                         commentStr, parsingResult.getContentOffset(), parsingResult.getContentOffset() + parsingResult.getContentLen());
 
-        templateManager.parseAndProcessString(
-                comment.getTemplateName(), parsableContent,
-                comment.getLine(), comment.getCol(),
-                context.getTemplateMode(),
-                context,
-                writer, true);
+        final TemplateModel templateModel =
+                templateManager.parseString(
+                        context.getTemplateData(), parsableContent,
+                        comment.getLine(), comment.getCol(),
+                        null, // No need to force template mode
+                        true);
+
+
+        final StringWriter writer = new StringWriter();
+
+        /*
+         * Rebuild the conditional comment start expression
+         */
+        writer.write("[");
+        writer.write(commentStr, parsingResult.getStartExpressionOffset(), parsingResult.getStartExpressionLen());
+        writer.write("]>");
+
+        /*
+         * Process the parsable content
+         */
+        templateManager.process(templateModel, context, writer);
 
         /*
          * Rebuild the conditional comment end expression

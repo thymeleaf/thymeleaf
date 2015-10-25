@@ -44,19 +44,22 @@ final class EngineContextManager {
 
 
     static IEngineContext prepareEngineContext(
-            final IEngineConfiguration configuration, final TemplateData templateData, final IContext context) {
+            final IEngineConfiguration configuration,
+            final TemplateData templateData, final Map<String, Object> templateResolutionAttributes,
+            final IContext context) {
 
         final IEngineContext engineContext =
-                createEngineContextIfNeeded(configuration, templateData, context);
+                createEngineContextIfNeeded(configuration, templateData, templateResolutionAttributes, context);
 
         // We will always do this, even if the context is a new object (in which case it would be completely needed)
         // because we want to make sure the 'disposeEngineContext' call that will come afterwards can safely
         // decrease the level
         engineContext.increaseLevel();
 
-        // Set the template resolution into the context. Again, this might not be needed, but we'll do it anyway
-        // in order to make sure the right resolution is set if we are reusing the contet
-        engineContext.setTemplateData(templateData);
+        if (context instanceof IEngineContext) {
+            // Set the template resolution into the context, but only if we haven't just created it
+            engineContext.setTemplateData(templateData);
+        }
 
         return engineContext;
 
@@ -71,7 +74,9 @@ final class EngineContextManager {
 
 
     private static IEngineContext createEngineContextIfNeeded(
-            final IEngineConfiguration configuration, final TemplateData templateData, final IContext context) {
+            final IEngineConfiguration configuration,
+            final TemplateData templateData, final Map<String, Object> templateResolutionAttributes,
+            final IContext context) {
 
         if (context instanceof IEngineContext) {
             // If this context is already an IEngineContext, we will not clone it
@@ -87,12 +92,12 @@ final class EngineContextManager {
             if (context instanceof IWebContext) {
                 final IWebContext webContext = (IWebContext)context;
                 return new WebEngineContext(
-                        configuration, templateData,
+                        configuration, templateData, templateResolutionAttributes,
                         webContext.getRequest(), webContext.getResponse(), webContext.getServletContext(),
                         webContext.getLocale(), Collections.EMPTY_MAP);
             }
             return new EngineContext(
-                    configuration, templateData,
+                    configuration, templateData, templateResolutionAttributes,
                     context.getLocale(), Collections.EMPTY_MAP);
         }
 
@@ -103,13 +108,13 @@ final class EngineContextManager {
         if (context instanceof IWebContext) {
             final IWebContext webContext = (IWebContext)context;
             return new WebEngineContext(
-                    configuration, templateData,
+                    configuration, templateData, templateResolutionAttributes,
                     webContext.getRequest(), webContext.getResponse(), webContext.getServletContext(),
                     webContext.getLocale(), variables);
         }
 
         return new EngineContext(
-                configuration, templateData,
+                configuration, templateData, templateResolutionAttributes,
                 context.getLocale(), variables);
 
     }

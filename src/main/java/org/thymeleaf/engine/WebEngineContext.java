@@ -105,12 +105,13 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
     WebEngineContext(
             final IEngineConfiguration configuration,
             final TemplateData templateData,
+            final Map<String,Object> templateResolutionAttributes,
             final HttpServletRequest request, final HttpServletResponse response,
             final ServletContext servletContext,
             final Locale locale,
             final Map<String, Object> variables) {
 
-        super(configuration, locale);
+        super(configuration, templateResolutionAttributes, locale);
 
         Validate.notNull(request, "Request cannot be null in web variables map");
         Validate.notNull(response, "Response cannot be null in web variables map");
@@ -122,7 +123,7 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
         this.servletContext = servletContext;
 
         this.requestAttributesVariablesMap =
-                new RequestAttributesVariablesMap(configuration, templateData, this.request, locale, variables);
+                new RequestAttributesVariablesMap(configuration, templateData, templateResolutionAttributes, this.request, locale, variables);
         this.requestParametersVariablesMap = new RequestParametersMap(this.request);
         this.applicationAttributesVariablesMap = new ServletContextAttributesMap(this.servletContext);
         this.sessionAttributesVariablesMap = new SessionAttributesMap(this.session);
@@ -583,11 +584,12 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
         RequestAttributesVariablesMap(
                 final IEngineConfiguration configuration,
                 final TemplateData templateData,
+                final Map<String,Object> templateResolutionAttributes,
                 final HttpServletRequest request,
                 final Locale locale,
                 final Map<String, Object> variables) {
 
-            super(configuration, locale);
+            super(configuration, templateResolutionAttributes, locale);
 
             this.request = request;
 

@@ -20,11 +20,11 @@
 package org.thymeleaf.context;
 
 import java.util.List;
+import java.util.Map;
 
 import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.TemplateResolution;
 
 /**
  * <p>
@@ -58,6 +58,8 @@ public interface ITemplateContext extends IExpressionContext {
     public TemplateMode getTemplateMode();
 
     public List<TemplateData> getTemplateStack();
+
+    public Map<String, Object> getTemplateResolutionAttributes();
 
     // Selection target works as a local variable, but is used so often that it has its own methods in order to allow
     // specific performance improvements to be designed for them

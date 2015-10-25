@@ -103,9 +103,10 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
 
         final TemplateModel parsedFragment =
                 configuration.getTemplateManager().parseString(
-                        attributeTemplateName, unescapedText,
+                        context.getTemplateData(),
+                        unescapedText,
                         0, 0, // we won't apply offset here because the inserted text does not really come from the template itself
-                        context.getTemplateMode(),
+                        null, // No template mode forcing required
                         false); // useCache == false because we could potentially pollute the cache with too many entries (th:utext is too variable!)
 
         // Setting 'processable' to false avoiding text inliners processing already generated text,

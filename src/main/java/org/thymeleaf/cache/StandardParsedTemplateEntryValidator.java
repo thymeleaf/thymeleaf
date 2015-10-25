@@ -41,7 +41,7 @@ public final class StandardParsedTemplateEntryValidator
 
     public boolean checkIsValueStillValid(
             final TemplateCacheKey key, final TemplateModel value, final long entryCreationTimestamp) {
-        return value.getTemplateResolution().getValidity().isCacheStillValid();
+        return value.getTemplateData().getValidity().isCacheStillValid();
     }
     
 }

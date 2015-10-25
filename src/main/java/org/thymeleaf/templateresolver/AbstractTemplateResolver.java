@@ -267,11 +267,11 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
         Validate.notNull(template, "Template Name cannot be null");
         // templateResolutionAttributes CAN be null
 
-        if (!computeResolvable(configuration, template)) {
+        if (!computeResolvable(configuration, ownerTemplate, template, templateResolutionAttributes)) {
             return null;
         }
 
-        final ITemplateResource templateResource = computeTemplateResource(configuration, template);
+        final ITemplateResource templateResource = computeTemplateResource(configuration, ownerTemplate, template, templateResolutionAttributes);
         if (templateResource == null) {
             return null;
         }
@@ -282,8 +282,8 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
 
         return new TemplateResolution(
                 templateResource,
-                computeTemplateMode(configuration, template),
-                computeValidity(configuration, template));
+                computeTemplateMode(configuration, ownerTemplate, template, templateResolutionAttributes),
+                computeValidity(configuration, ownerTemplate, template, templateResolutionAttributes));
         
     }
     
@@ -293,14 +293,17 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
     /**
      * <p>
      *   Computes whether a template can be resolved by this resolver or not, 
-     *   applying the corresponding patterns. <b>Meant only for use by subclasses</b>. 
+     *   applying the corresponding patterns. Meant only for use or override by subclasses.
      * </p>
      *
      * @param configuration the engine configuration.
+     * @param ownerTemplate the owner template, if the resource being computed is a fragment. Might be null.
      * @param template the template to be resolved (usually its name).
-     * @return whether the template is resolvable or not
+     * @param templateResolutionAttributes the template resolution attributes, if any. Might be null.
+     *
+     * @return whether the template is resolvable or not.
      */
-    protected boolean computeResolvable(final IEngineConfiguration configuration, final String template) {
+    protected boolean computeResolvable(final IEngineConfiguration configuration, final String ownerTemplate, final String template, final Map<String, Object> templateResolutionAttributes) {
         if (this.resolvablePatternSpec.isEmpty()) {
             return true;
         }
@@ -318,10 +321,13 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      * </p>
      *
      * @param configuration the engine configuration.
+     * @param ownerTemplate the owner template, if the resource being computed is a fragment. Might be null.
      * @param template the template to be resolved (usually its name).
-     * @return the template resource, or null if this template cannot be resolved (or the resource does not exist)
+     * @param templateResolutionAttributes the template resolution attributes, if any. Might be null.
+     *
+     * @return the template resource, or null if this template cannot be resolved (or the resource does not exist).
      */
-    protected abstract ITemplateResource computeTemplateResource(final IEngineConfiguration configuration, final String template);
+    protected abstract ITemplateResource computeTemplateResource(final IEngineConfiguration configuration, final String ownerTemplate, final String template, final Map<String, Object> templateResolutionAttributes);
 
     
     
@@ -332,10 +338,13 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      * </p>
      *
      * @param configuration the engine configuration.
+     * @param ownerTemplate the owner template, if the resource being computed is a fragment. Might be null.
      * @param template the template to be resolved (usually its name).
-     * @return the template mode to be applied
+     * @param templateResolutionAttributes the template resolution attributes, if any. Might be null.
+     *
+     * @return the template mode proposed by the template resolver for the resolved template.
      */
-    protected abstract TemplateMode computeTemplateMode(final IEngineConfiguration configuration, final String template);
+    protected abstract TemplateMode computeTemplateMode(final IEngineConfiguration configuration, final String ownerTemplate, final String template, final Map<String, Object> templateResolutionAttributes);
     
     
     
@@ -348,10 +357,12 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      * </p>
      *
      * @param configuration the engine configuration.
+     * @param ownerTemplate the owner template, if the resource being computed is a fragment. Might be null.
      * @param template the template to be resolved (usually its name).
+     * @param templateResolutionAttributes the template resolution attributes, if any. Might be null.
      * @return the validity
      */
-    protected abstract ICacheEntryValidity computeValidity(final IEngineConfiguration configuration, final String template);
+    protected abstract ICacheEntryValidity computeValidity(final IEngineConfiguration configuration, final String ownerTemplate, final String template, final Map<String, Object> templateResolutionAttributes);
     
     
     

@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.templateresolver;
 
+import java.util.Map;
+
 import javax.servlet.ServletContext;
 
 import org.thymeleaf.IEngineConfiguration;
@@ -56,7 +58,7 @@ public class ServletContextTemplateResolver extends AbstractConfigurableTemplate
 
     @Override
     protected ITemplateResource computeTemplateResource(
-            final IEngineConfiguration configuration, final String template, final String resourceName, final String characterEncoding) {
+            final IEngineConfiguration configuration, final String ownerTemplate, final String template, final String resourceName, final String characterEncoding, final Map<String, Object> templateResolutionAttributes) {
         return new ServletContextTemplateResource(this.servletContext, resourceName, characterEncoding);
     }
 

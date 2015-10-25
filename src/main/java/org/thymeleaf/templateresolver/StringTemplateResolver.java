@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.templateresolver;
 
+import java.util.Map;
+
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.cache.AlwaysValidCacheEntryValidity;
 import org.thymeleaf.cache.ICacheEntryValidity;
@@ -212,19 +214,19 @@ public class StringTemplateResolver extends AbstractTemplateResolver {
 
 
     @Override
-    protected ITemplateResource computeTemplateResource(final IEngineConfiguration configuration, final String template) {
+    protected ITemplateResource computeTemplateResource(final IEngineConfiguration configuration, final String ownerTemplate, final String template, final Map<String, Object> templateResolutionAttributes) {
         return new StringTemplateResource(template);
     }
 
 
     @Override
-    protected TemplateMode computeTemplateMode(final IEngineConfiguration configuration, final String template) {
+    protected TemplateMode computeTemplateMode(final IEngineConfiguration configuration, final String ownerTemplate, final String template, final Map<String, Object> templateResolutionAttributes) {
         return this.templateMode;
     }
 
 
     @Override
-    protected ICacheEntryValidity computeValidity(final IEngineConfiguration configuration, final String template) {
+    protected ICacheEntryValidity computeValidity(final IEngineConfiguration configuration, final String ownerTemplate, final String template, final Map<String, Object> templateResolutionAttributes) {
 
         if (isCacheable()) {
             if (this.cacheTTLMs != null) {

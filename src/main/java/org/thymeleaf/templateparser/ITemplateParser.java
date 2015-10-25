@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.templateparser;
 
+import java.util.Set;
+
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -35,21 +37,21 @@ public interface ITemplateParser {
 
 
     public void parseStandalone(
-                      final IEngineConfiguration configuration,
-                      final String template,
-                      final ITemplateResource resource,
-                      final String[] templateSelectors,
-                      final TemplateMode templateMode,
-                      final ITemplateHandler handler);
+                    final IEngineConfiguration configuration,
+                    final String ownerTemplate,
+                    final String template,
+                    final Set<String> templateSelectors,
+                    final ITemplateResource resource,
+                    final TemplateMode templateMode,
+                    final ITemplateHandler handler);
 
 
-    public void parseNested(
-                      final IEngineConfiguration configuration,
-                      final String ownerTemplate,
-                      final String template,
-                      final ITemplateResource resource,
-                      final int lineOffset, final int colOffset,
-                      final TemplateMode templateMode,
-                      final ITemplateHandler handler);
+    public void parseString(
+                    final IEngineConfiguration configuration,
+                    final String ownerTemplate,
+                    final String template,
+                    final int lineOffset, final int colOffset,
+                    final TemplateMode templateMode,
+                    final ITemplateHandler handler);
 
 }

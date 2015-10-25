@@ -19,9 +19,10 @@
  */
 package org.thymeleaf.templateparser.text;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
+import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.engine.ITemplateHandler;
@@ -67,32 +68,33 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
 
     public void parseStandalone(
             final IEngineConfiguration configuration,
+            final String ownerTemplate,
             final String template,
+            final Set<String> templateSelectors,
             final ITemplateResource resource,
-            final String[] templateSelectors,
             final TemplateMode templateMode,
             final ITemplateHandler handler) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
+        // ownerTemplate CAN be null if this is a first-level template
         Validate.notNull(template, "Template cannot be null");
         Validate.notNull(resource, "Template Resource cannot be null");
-        Validate.isTrue(templateSelectors == null || templateSelectors.length == 0,
+        Validate.isTrue(templateSelectors == null || templateSelectors.isEmpty(),
                         "Template selectors cannot be specified for a template using a TEXT template mode: template " +
                         "insertion operations must be always performed on whole template files, not fragments");
         Validate.notNull(templateMode, "Template Mode cannot be null");
         Validate.isTrue(templateMode.isText(), "Template Mode has to be a text template mode");
         Validate.notNull(handler, "Template Handler cannot be null");
 
-        parse(configuration, null, template, resource, templateSelectors, 0, 0, templateMode, handler);
+        parse(configuration, ownerTemplate, template, templateSelectors, resource, 0, 0, templateMode, handler);
 
     }
 
 
-    public void parseNested(
+    public void parseString(
             final IEngineConfiguration configuration,
             final String ownerTemplate,
             final String template,
-            final ITemplateResource resource,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
             final ITemplateHandler handler) {
@@ -100,13 +102,12 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(ownerTemplate, "Owner template cannot be null");
         Validate.notNull(template, "Template cannot be null");
-        Validate.notNull(resource, "Template Resource cannot be null");
         // NOTE selectors cannot be specified when parsing a nested template
         Validate.notNull(templateMode, "Template mode cannot be null");
         Validate.isTrue(templateMode.isText(), "Template Mode has to be a text template mode");
         Validate.notNull(handler, "Template Handler cannot be null");
 
-        parse(configuration, ownerTemplate, template, resource, null, lineOffset, colOffset, templateMode, handler);
+        parse(configuration, ownerTemplate, template, null, null, lineOffset, colOffset, templateMode, handler);
 
     }
 
@@ -114,13 +115,15 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
 
     private void parse(
             final IEngineConfiguration configuration,
-            final String ownerTemplate, final String template, final ITemplateResource resource, final String[] templateSelectors,
+            final String ownerTemplate, final String template, final Set<String> templateSelectors,
+            final ITemplateResource resource,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
             final ITemplateHandler templateHandler) {
 
 
-        final String templateName = (ownerTemplate != null? ownerTemplate : template);
+        // For a String template, we will use the ownerTemplate as templateName for its parsed events
+        final String templateName = (resource != null? template : ownerTemplate);
 
         try {
 
@@ -145,7 +148,7 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
                                 handler);
 
             // Obtain the resource reader
-            Reader templateReader = new BufferedReader(resource.reader());
+            Reader templateReader = (resource != null? resource.reader() : new StringReader(template));
 
 
             // Add the required reader wrappers in order to process parser-level and prototype-only comment blocks
@@ -163,13 +166,13 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
 
         } catch (final IOException e) {
             final String message = "An error happened during template parsing";
-            throw new TemplateInputException(message, resource.getDescription(), e);
+            throw new TemplateInputException(message, (resource != null? resource.getDescription() : template), e);
         } catch (final TextParseException e) {
             final String message = "An error happened during template parsing";
             if (e.getLine() != null && e.getCol() != null) {
-                throw new TemplateInputException(message, resource.getDescription(), e.getLine().intValue(), e.getCol().intValue(), e);
+                throw new TemplateInputException(message, (resource != null? resource.getDescription() : template), e.getLine().intValue(), e.getCol().intValue(), e);
             }
-            throw new TemplateInputException(message, resource.getDescription(), e);
+            throw new TemplateInputException(message, (resource != null? resource.getDescription() : template), e);
         }
 
     }

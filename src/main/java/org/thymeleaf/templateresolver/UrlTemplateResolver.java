@@ -20,6 +20,7 @@
 package org.thymeleaf.templateresolver;
 
 import java.net.MalformedURLException;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.thymeleaf.IEngineConfiguration;
@@ -54,7 +55,7 @@ public class UrlTemplateResolver extends AbstractConfigurableTemplateResolver {
 
     @Override
     protected ITemplateResource computeTemplateResource(
-            final IEngineConfiguration configuration, final String template, final String resourceName, final String characterEncoding) {
+            final IEngineConfiguration configuration, final String ownerTemplate, final String template, final String resourceName, final String characterEncoding, final Map<String, Object> templateResolutionAttributes) {
         try {
             return new UrlTemplateResource(resourceName, characterEncoding);
         } catch (final MalformedURLException ignored) {
@@ -68,7 +69,7 @@ public class UrlTemplateResolver extends AbstractConfigurableTemplateResolver {
 
 
     @Override
-    protected ICacheEntryValidity computeValidity(final IEngineConfiguration configuration, final String template) {
+    protected ICacheEntryValidity computeValidity(final IEngineConfiguration configuration, final String ownerTemplate, final String template, final Map<String, Object> templateResolutionAttributes) {
         /*
          * This check is made so that we don't fill the cache with entries for the same
          * template with different jsessionid values.
@@ -76,7 +77,7 @@ public class UrlTemplateResolver extends AbstractConfigurableTemplateResolver {
         if (JSESSIONID_PATTERN.matcher(template.toLowerCase()).matches()) {
             return NonCacheableCacheEntryValidity.INSTANCE;
         }
-        return super.computeValidity(configuration, template);
+        return super.computeValidity(configuration, ownerTemplate, template, templateResolutionAttributes);
     }
     
     

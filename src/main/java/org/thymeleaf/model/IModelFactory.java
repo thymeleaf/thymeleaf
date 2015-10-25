@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.model;
 
+import org.thymeleaf.engine.TemplateData;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -30,7 +32,7 @@ public interface IModelFactory {
 
     public IModel createModel();
 
-    public IModel parse(final String ownerTemplate, final String template);
+    public IModel parse(final TemplateData ownerTemplate, final String template);
 
     public ICDATASection createCDATASection(final String content);
 

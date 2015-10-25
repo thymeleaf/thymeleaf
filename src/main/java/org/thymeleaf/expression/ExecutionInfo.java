@@ -24,8 +24,8 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.TemplateResolution;
 
 
 /**
@@ -69,7 +69,7 @@ public final class ExecutionInfo {
      * @return the template name
      */
     public String getTemplateName() {
-        return this.context.getTemplateResolution().getTemplate();
+        return this.context.getTemplateData().getTemplate();
     }
 
 
@@ -81,7 +81,7 @@ public final class ExecutionInfo {
      * @return the template mode
      */
     public TemplateMode getTemplateMode() {
-        return this.context.getTemplateResolution().getTemplateMode();
+        return this.context.getTemplateData().getTemplateMode();
     }
 
 
@@ -96,11 +96,11 @@ public final class ExecutionInfo {
      *
      * @return the stack of template names
      */
-    public List<String> getTemplateNameStack() {
-        final List<TemplateResolution> templateResolutionStack = this.context.getTemplateResolutionStack();
-        final List<String> templateNameStack = new ArrayList<String>(templateResolutionStack.size());
-        for (final TemplateResolution templateResolution : templateResolutionStack) {
-            templateNameStack.add(templateResolution.getTemplate());
+    public List<String> getTemplateNames() {
+        final List<TemplateData> templateStack = this.context.getTemplateStack();
+        final List<String> templateNameStack = new ArrayList<String>(templateStack.size());
+        for (final TemplateData templateData : templateStack) {
+            templateNameStack.add(templateData.getTemplate());
         }
         return templateNameStack;
     }
@@ -117,11 +117,11 @@ public final class ExecutionInfo {
      *
      * @return the stack of template modes
      */
-    public List<TemplateMode> getTemplateModeStack() {
-        final List<TemplateResolution> templateResolutionStack = this.context.getTemplateResolutionStack();
-        final List<TemplateMode> templateModeStack = new ArrayList<TemplateMode>(templateResolutionStack.size());
-        for (final TemplateResolution templateResolution : templateResolutionStack) {
-            templateModeStack.add(templateResolution.getTemplateMode());
+    public List<TemplateMode> getTemplateModes() {
+        final List<TemplateData> templateStack = this.context.getTemplateStack();
+        final List<TemplateMode> templateModeStack = new ArrayList<TemplateMode>(templateStack.size());
+        for (final TemplateData templateData : templateStack) {
+            templateModeStack.add(templateData.getTemplateMode());
         }
         return templateModeStack;
     }

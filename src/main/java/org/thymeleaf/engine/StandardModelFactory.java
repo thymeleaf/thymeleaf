@@ -89,7 +89,7 @@ public class StandardModelFactory implements IModelFactory {
 
 
 
-    public IModel parse(final String ownerTemplate, final String template) {
+    public IModel parse(final TemplateData ownerTemplate, final String template) {
         // We will be setting useCache to false because we don't want to pollute the cache with mere String
         // parsing done from here. Also, we are 'artificially' specifying it as nested even if we don't really
         // know if this fragment is exactly a nested text inside the template, but that's not really important...

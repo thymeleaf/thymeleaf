@@ -70,10 +70,10 @@ public final class TemplateModel implements IModel {
         
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(templateData, "Template Resolution cannot be null");
-        
+
         this.model = new Model(configuration, templateData.getTemplateMode());
         this.templateData = templateData;
-        
+
     }
 
 

@@ -20,7 +20,9 @@
 package org.thymeleaf.standard.processor;
 
 import java.io.StringWriter;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
@@ -116,8 +118,8 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
         String templateName = processedFragmentSelection.getTemplateName();
         Map<String,Object> fragmentParameters = processedFragmentSelection.getFragmentParameters();
-        final String[] fragments =
-                (processedFragmentSelection.hasFragmentSelector()? new String[] { processedFragmentSelection.getFragmentSelector() } : null);
+        final Set<String> fragments =
+                (processedFragmentSelection.hasFragmentSelector()? Collections.singleton(processedFragmentSelection.getFragmentSelector()) : null);
 
 
         /*
@@ -135,7 +137,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          */
         final TemplateModel fragmentModel =
                     configuration.getTemplateManager().parseStandalone(
-                            templateName, fragments,
+                            context, templateName, fragments,
                             null, // we will not force the template mode
                             true);  // use the cache if possible, fragments are from template files
 
@@ -245,7 +247,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          * APPLY THE FRAGMENT'S TEMPLATE RESOLUTION so that all code inside the fragment is executed with its own
          * template resolution info (working as if it were a local variable)
          */
-        structureHandler.setTemplateResolution(fragmentModel.getTemplateResolution());
+        structureHandler.setTemplateData(fragmentModel.getTemplateData());
 
 
         /*

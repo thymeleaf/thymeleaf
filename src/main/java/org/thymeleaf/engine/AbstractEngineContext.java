@@ -20,6 +20,7 @@
 package org.thymeleaf.engine;
 
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
@@ -52,6 +53,7 @@ abstract class AbstractEngineContext implements ITemplateContext {
     // methods are going to be handled by the subclasses, not any superclasses.
 
     private final IEngineConfiguration configuration;
+    private final Map<String,Object> templateResolutionAttributes;
     private final Locale locale;
 
     private IExpressionObjects expressionObjects = null;
@@ -61,15 +63,18 @@ abstract class AbstractEngineContext implements ITemplateContext {
 
     protected AbstractEngineContext(
             final IEngineConfiguration configuration,
+            final Map<String,Object> templateResolutionAttributes,
             final Locale locale) {
 
         super();
 
         Validate.notNull(configuration, "Configuration cannot be null");
+        // templateResolutionAttributes CAN be null
         Validate.notNull(locale, "Locale cannot be null");
 
         this.configuration = configuration;
         this.locale = locale;
+        this.templateResolutionAttributes = templateResolutionAttributes;
         // Most templates will not need this, so we will initialize it lazily
         this.identifierSequences = null;
 
@@ -78,6 +83,11 @@ abstract class AbstractEngineContext implements ITemplateContext {
 
     public final IEngineConfiguration getConfiguration() {
         return this.configuration;
+    }
+
+
+    public final Map<String,Object> getTemplateResolutionAttributes() {
+        return this.templateResolutionAttributes;
     }
 
 

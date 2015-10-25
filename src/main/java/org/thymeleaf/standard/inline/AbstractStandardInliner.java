@@ -23,6 +23,7 @@ import java.io.StringWriter;
 
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.TemplateManager;
+import org.thymeleaf.engine.TemplateModel;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -62,14 +63,16 @@ public abstract class AbstractStandardInliner implements IInliner {
 
         if (context.getTemplateMode() != this.templateMode) {
 
-            final StringWriter stringWriter = new StringWriter();
-
             final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
-            templateManager.parseAndProcessString(
-                    computeTemplateName(text), text.toString(),
-                    computeLine(text), computeCol(text),
-                    this.templateMode, context, stringWriter, true);
 
+            final TemplateModel templateModel =
+                    templateManager.parseString(
+                            context.getTemplateData(), text.toString(),
+                            computeLine(text), computeCol(text),
+                            this.templateMode, true);
+
+            final StringWriter stringWriter = new StringWriter();
+            templateManager.process(templateModel, context, stringWriter);
             return stringWriter.toString();
 
         }
@@ -85,14 +88,6 @@ public abstract class AbstractStandardInliner implements IInliner {
     }
 
 
-
-
-    static String computeTemplateName(final CharSequence text) {
-        if (text instanceof ITemplateEvent) {
-            return ((ITemplateEvent)text).getTemplateName();
-        }
-        return text.toString();
-    }
 
 
     static int computeLine(final CharSequence text) {

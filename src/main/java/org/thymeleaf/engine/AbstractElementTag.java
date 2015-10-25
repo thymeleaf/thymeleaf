@@ -19,6 +19,10 @@
  */
 package org.thymeleaf.engine;
 
+import java.io.IOException;
+import java.io.StringWriter;
+
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IElementTag;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
@@ -138,6 +142,18 @@ abstract class AbstractElementTag extends AbstractTemplateEvent implements IElem
         this.elementDefinition = original.elementDefinition;
         this.elementName = original.elementName;
         this.synthetic = original.synthetic;
+    }
+
+
+
+    public String toString() {
+        final StringWriter stringWriter = new StringWriter();
+        try {
+            write(stringWriter);
+        } catch (final IOException e) {
+            throw new TemplateProcessingException("Exception while creating String representation of model entity", e);
+        }
+        return stringWriter.toString();
     }
 
 }

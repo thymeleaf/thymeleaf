@@ -96,10 +96,11 @@ final class EngineContext extends AbstractEngineContext implements IEngineContex
     EngineContext(
             final IEngineConfiguration configuration,
             final TemplateData templateData,
+            final Map<String,Object> templateResolutionAttributes,
             final Locale locale,
             final Map<String, Object> variables) {
 
-        super(configuration, locale);
+        super(configuration, templateResolutionAttributes, locale);
 
         this.levels = new int[DEFAULT_LEVELS_SIZE];
         this.maps = (HashMap<String, Object>[]) new HashMap<?,?>[DEFAULT_LEVELS_SIZE];

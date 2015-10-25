@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.templateresolver;
 
+import java.util.Map;
+
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.templateresource.FileTemplateResource;
 import org.thymeleaf.templateresource.ITemplateResource;
@@ -48,7 +50,7 @@ public class FileTemplateResolver extends AbstractConfigurableTemplateResolver {
 
     @Override
     protected ITemplateResource computeTemplateResource(
-            final IEngineConfiguration configuration, final String template, final String resourceName, final String characterEncoding) {
+            final IEngineConfiguration configuration, final String ownerTemplate, final String template, final String resourceName, final String characterEncoding, final Map<String, Object> templateResolutionAttributes) {
         return new FileTemplateResource(resourceName, characterEncoding);
     }
 
