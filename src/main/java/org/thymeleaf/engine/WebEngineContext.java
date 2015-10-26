@@ -870,7 +870,7 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
         public List<TemplateData> getTemplateStack() {
             if (!this.templateStack.isEmpty()) {
                 // If would have been empty if we had just decreased a level or added a new template
-                return Collections.unmodifiableList(this.templateStack);
+                return Collections.unmodifiableList(new ArrayList<TemplateData>(this.templateStack));
             }
             int n = this.index + 1;
             int i = 0;
@@ -881,7 +881,7 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
                 i++;
             }
 
-            return Collections.unmodifiableList(this.templateStack);
+            return Collections.unmodifiableList(new ArrayList<TemplateData>(this.templateStack));
         }
 
 

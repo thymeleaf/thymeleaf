@@ -327,7 +327,7 @@ final class EngineContext extends AbstractEngineContext implements IEngineContex
     public List<TemplateData> getTemplateStack() {
         if (!this.templateStack.isEmpty()) {
             // If would have been empty if we had just decreased a level or added a new template
-            return Collections.unmodifiableList(this.templateStack);
+            return Collections.unmodifiableList(new ArrayList<TemplateData>(this.templateStack));
         }
         int n = this.index + 1;
         int i = 0;
@@ -338,7 +338,7 @@ final class EngineContext extends AbstractEngineContext implements IEngineContex
             i++;
         }
 
-        return Collections.unmodifiableList(this.templateStack);
+        return Collections.unmodifiableList(new ArrayList<TemplateData>(this.templateStack));
     }
 
 
