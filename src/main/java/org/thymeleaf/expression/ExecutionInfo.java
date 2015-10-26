@@ -129,6 +129,22 @@ public final class ExecutionInfo {
 
     /**
      * <p>
+     *   Returns the <em>template stack</em>, containing the metadata for the first-level template being
+     *   processed and also any fragments that might have been nested up to the current execution point.
+     * </p>
+     * <p>
+     *   The result of this method actually corresponds to the result of {@link ITemplateContext#getTemplateStack()}.
+     * </p>
+     *
+     * @return the stack of {@link TemplateData} objects
+     */
+    public List<TemplateData> getTemplateStack() {
+        return this.context.getTemplateStack();
+    }
+
+
+    /**
+     * <p>
      *   Returns the current date and time (from the moment of template execution).
      * </p>
      *
