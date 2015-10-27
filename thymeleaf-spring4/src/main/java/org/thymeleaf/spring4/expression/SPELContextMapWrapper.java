@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.context.IContext;
-import org.thymeleaf.context.ILazyContextVariable;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
 /**
@@ -126,17 +125,7 @@ public final class SPELContextMapWrapper implements Map {
             }
         }
 
-        final Object result = this.context.getVariable(key == null? null : key.toString());
-
-        /*
-         * Check the possibility that this variable is a lazy one, in which case we should not return it directly
-         * but instead make sure it is initialized and return its value.
-         */
-        if (result != null && result instanceof ILazyContextVariable) {
-            return ((ILazyContextVariable)result).getValue();
-        }
-
-        return result;
+        return this.context.getVariable(key == null? null : key.toString());
 
     }
 
