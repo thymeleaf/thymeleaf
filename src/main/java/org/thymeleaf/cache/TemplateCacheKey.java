@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.cache;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,7 +40,9 @@ import org.thymeleaf.util.Validate;
  *
  * @since 3.0.0
  */
-public final class TemplateCacheKey {
+public final class TemplateCacheKey implements Serializable {
+
+    private static final long serialVersionUID = 45842555123291L;
 
     private final String ownerTemplate;
     private final String template;
@@ -77,7 +80,7 @@ public final class TemplateCacheKey {
         this.templateResolutionAttributes = templateResolutionAttributes;
 
         // This being a cache key, its equals and hashCode methods will potentially execute many
-        // times, and this should help performance
+        // times, so this could help performance
         this.h = computeHashCode();
 
     }
@@ -124,7 +127,7 @@ public final class TemplateCacheKey {
 
         final TemplateCacheKey that = (TemplateCacheKey) o;
 
-        if (this.h != that.h) { // fail fast for most cases
+        if (this.h != that.h) { // fail fast
             return false;
         }
 
