@@ -21,6 +21,7 @@ package org.thymeleaf.testing.templateengine.engine.cache;
 
 import java.util.Set;
 
+import org.thymeleaf.cache.ExpressionCacheKey;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheEntryValidityChecker;
 import org.thymeleaf.cache.TemplateCacheKey;
@@ -57,6 +58,10 @@ public final class TestCache<K,V> implements ICache<K,V> {
                     cacheKey.getOwnerTemplate(), testName + "_" + cacheKey.getTemplate(), cacheKey.getTemplateSelectors(),
                     cacheKey.getLineOffset(), cacheKey.getColOffset(),
                     cacheKey.getTemplateMode(), cacheKey.getTemplateResolutionAttributes());
+        }
+        if (key instanceof ExpressionCacheKey) {
+            final ExpressionCacheKey cacheKey = (ExpressionCacheKey)key;
+            return new ExpressionCacheKey(testName + "_" + cacheKey.getType(), cacheKey.getExpression());
         }
         return key;
     }

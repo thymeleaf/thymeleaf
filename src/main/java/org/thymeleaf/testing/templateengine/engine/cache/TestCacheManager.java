@@ -21,6 +21,7 @@ package org.thymeleaf.testing.templateengine.engine.cache;
 
 import java.util.List;
 
+import org.thymeleaf.cache.ExpressionCacheKey;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.cache.StandardCacheManager;
@@ -51,8 +52,8 @@ public final class TestCacheManager implements ICacheManager {
     }
 
 
-    public ICache<String, Object> getExpressionCache() {
-        return new TestCache<String, Object>(this.cacheManager.getExpressionCache());
+    public ICache<ExpressionCacheKey, Object> getExpressionCache() {
+        return new TestCache<ExpressionCacheKey, Object>(this.cacheManager.getExpressionCache());
     }
 
 
