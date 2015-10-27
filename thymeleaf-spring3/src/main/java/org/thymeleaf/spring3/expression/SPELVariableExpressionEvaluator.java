@@ -29,6 +29,7 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.cache.ExpressionCacheKey;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.context.IEngineContext;
@@ -65,10 +66,7 @@ public class SPELVariableExpressionEvaluator
 
     public static final SPELVariableExpressionEvaluator INSTANCE = new SPELVariableExpressionEvaluator();
 
-    // The reason we will be using a prefix with the expression cache is in order to separate entries coming
-    // from this VariableExpressionEvaluator and those coming from the parsing of assignation sequences,
-    // each expressions, fragment selections, etc. See org.thymeleaf.standard.expression.ExpressionCache
-    private static final String SPEL_CACHE_PREFIX = "ognl|";
+    private static final String EXPRESSION_CACHE_TYPE_SPEL = "spel";
     
     
     private static final Logger logger = LoggerFactory.getLogger(SPELVariableExpressionEvaluator.class);
@@ -242,13 +240,13 @@ public class SPELVariableExpressionEvaluator
     private static ComputedSpelExpression getExpression(final IEngineConfiguration configuration, final String spelExpression) {
 
         ComputedSpelExpression exp = null;
-        ICache<String, Object> cache = null;
+        ICache<ExpressionCacheKey, Object> cache = null;
 
         final ICacheManager cacheManager = configuration.getCacheManager();
         if (cacheManager != null) {
             cache = cacheManager.getExpressionCache();
             if (cache != null) {
-                exp = (ComputedSpelExpression) cache.get(SPEL_CACHE_PREFIX + spelExpression);
+                exp = (ComputedSpelExpression) cache.get(new ExpressionCacheKey(EXPRESSION_CACHE_TYPE_SPEL,spelExpression));
             }
         }
 
@@ -260,7 +258,7 @@ public class SPELVariableExpressionEvaluator
             exp = new ComputedSpelExpression(spelExpressionObject, mightNeedExpressionObjects);
 
             if (cache != null && null != exp) {
-                cache.put(SPEL_CACHE_PREFIX + spelExpression, exp);
+                cache.put(new ExpressionCacheKey(EXPRESSION_CACHE_TYPE_SPEL,spelExpression), exp);
             }
 
         }
