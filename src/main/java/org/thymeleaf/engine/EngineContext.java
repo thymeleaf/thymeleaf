@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
+import org.thymeleaf.context.ILazyContextVariable;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
 import org.thymeleaf.util.Validate;
@@ -146,7 +147,7 @@ final class EngineContext extends AbstractEngineContext implements IEngineContex
                 if (result == NON_EXISTING) {
                     return null;
                 }
-                return result;
+                return resolveLazy(result);
             }
         }
         return null;
@@ -507,6 +508,19 @@ final class EngineContext extends AbstractEngineContext implements IEngineContex
 
     }
 
+
+
+
+    private static Object resolveLazy(final Object variable) {
+        /*
+         * Check the possibility that this variable is a lazy one, in which case we should not return it directly
+         * but instead make sure it is initialized and return its value.
+         */
+        if (variable != null && variable instanceof ILazyContextVariable) {
+            return ((ILazyContextVariable)variable).getValue();
+        }
+        return variable;
+    }
 
 
 

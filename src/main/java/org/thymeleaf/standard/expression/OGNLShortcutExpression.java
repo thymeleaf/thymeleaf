@@ -50,7 +50,6 @@ import org.thymeleaf.cache.ExpressionCacheKey;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.context.IContext;
-import org.thymeleaf.context.ILazyContextVariable;
 
 /**
  *
@@ -174,17 +173,7 @@ final class OGNLShortcutExpression {
             }
         }
 
-        final Object result = ((IContext) target).getVariable(propertyName);
-
-        /*
-         * Check the possibility that this variable is a lazy one, in which case we should not return it directly
-         * but instead make sure it is initialized and return its value.
-         */
-        if (result != null && result instanceof ILazyContextVariable) {
-            return ((ILazyContextVariable)result).getValue();
-        }
-
-        return result;
+        return ((IContext) target).getVariable(propertyName);
 
     }
 

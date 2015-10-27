@@ -41,6 +41,7 @@ import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
+import org.thymeleaf.context.ILazyContextVariable;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
@@ -301,6 +302,18 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
 
 
 
+    static Object resolveLazy(final Object variable) {
+        /*
+         * Check the possibility that this variable is a lazy one, in which case we should not return it directly
+         * but instead make sure it is initialized and return its value.
+         */
+        if (variable != null && variable instanceof ILazyContextVariable) {
+            return ((ILazyContextVariable)variable).getValue();
+        }
+        return variable;
+    }
+
+
 
 
     private static final class SessionAttributesMap extends NoOpMapImpl {
@@ -356,7 +369,7 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
             if (this.session == null) {
                 return null;
             }
-            return this.session.getAttribute(key != null? key.toString() : null);
+            return resolveLazy(this.session.getAttribute(key != null? key.toString() : null));
         }
 
         @Override
@@ -449,7 +462,7 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
 
         @Override
         public Object get(final Object key) {
-            return this.servletContext.getAttribute(key != null? key.toString() : null);
+            return resolveLazy(this.servletContext.getAttribute(key != null? key.toString() : null));
         }
 
         @Override
@@ -629,7 +642,7 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
 
 
         public Object getVariable(final String key) {
-            return this.request.getAttribute(key);
+            return resolveLazy(this.request.getAttribute(key));
         }
 
 

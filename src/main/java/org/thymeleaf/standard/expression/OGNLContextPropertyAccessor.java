@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IContext;
-import org.thymeleaf.context.ILazyContextVariable;
 
 /**
  * <p>
@@ -96,17 +95,7 @@ public final class OGNLContextPropertyAccessor implements PropertyAccessor {
          * The variables maps should just be used as a map, without exposure of its more-internal methods...
          */
         final IContext context = (IContext) target;
-        final Object result = context.getVariable(propertyName);
-
-        /*
-         * Check the possibility that this variable is a lazy one, in which case we should not return it directly
-         * but instead make sure it is initialized and return its value.
-         */
-        if (result != null && result instanceof ILazyContextVariable) {
-            return ((ILazyContextVariable)result).getValue();
-        }
-
-        return result;
+        return context.getVariable(propertyName);
 
     }
 
