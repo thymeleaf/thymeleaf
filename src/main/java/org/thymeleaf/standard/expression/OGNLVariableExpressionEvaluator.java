@@ -57,10 +57,7 @@ public final class OGNLVariableExpressionEvaluator
     
     private static final Logger logger = LoggerFactory.getLogger(OGNLVariableExpressionEvaluator.class);
 
-    // The reason we will be using a prefix with the expression cache is in order to separate entries coming
-    // from this VariableExpressionEvaluator and those coming from the parsing of assignation sequences,
-    // each expressions, fragment selections, etc. See org.thymeleaf.standard.expression.ExpressionCache
-    private static final String OGNL_CACHE_PREFIX = "ognl|";
+    private static final String EXPRESSION_CACHE_TYPE_OGNL = "ognl";
 
 
     private static Map<String,Object> CONTEXT_VARIABLES_MAP_NOEXPOBJECTS_RESTRICTIONS =
@@ -116,11 +113,11 @@ public final class OGNLVariableExpressionEvaluator
             final IEngineConfiguration configuration = context.getConfiguration();
 
             ComputedOGNLExpression parsedExpression =
-                    (ComputedOGNLExpression) ExpressionCache.getFromCache(configuration, expression, OGNL_CACHE_PREFIX);
+                    (ComputedOGNLExpression) ExpressionCache.getFromCache(configuration, expression, EXPRESSION_CACHE_TYPE_OGNL);
             if (parsedExpression == null) {
                 // The result of parsing might be an OGNL expression AST or a ShortcutOGNLExpression (for simple cases)
                 parsedExpression = parseExpression(expression, applyOGNLShortcuts);
-                ExpressionCache.putIntoCache(configuration, expression, parsedExpression, OGNL_CACHE_PREFIX);
+                ExpressionCache.putIntoCache(configuration, expression, parsedExpression, EXPRESSION_CACHE_TYPE_OGNL);
             }
 
             final Map<String,Object> contextVariablesMap;
@@ -174,7 +171,7 @@ public final class OGNLVariableExpressionEvaluator
                 // so we need to empty the cache and try again disabling shortcuts. Once processed for the first time,
                 // an OGNL (non-shortcut) parsed expression will already be cached and this exception will not be
                 // thrown again
-                ExpressionCache.removeFromCache(configuration, expression, OGNL_CACHE_PREFIX);
+                ExpressionCache.removeFromCache(configuration, expression, EXPRESSION_CACHE_TYPE_OGNL);
                 return evaluate(context, expression, expContext, useSelectionAsRoot, false);
             }
 

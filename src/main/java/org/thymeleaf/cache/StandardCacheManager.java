@@ -130,7 +130,7 @@ public class StandardCacheManager extends AbstractCacheManager {
     /**
      * Default expression cache validity checker: null
      */
-    public static final ICacheEntryValidityChecker<String,Object> DEFAULT_EXPRESSION_CACHE_VALIDITY_CHECKER = null;
+    public static final ICacheEntryValidityChecker<ExpressionCacheKey,Object> DEFAULT_EXPRESSION_CACHE_VALIDITY_CHECKER = null;
 
     
     
@@ -147,7 +147,7 @@ public class StandardCacheManager extends AbstractCacheManager {
     private int expressionCacheMaxSize = DEFAULT_EXPRESSION_CACHE_MAX_SIZE;
     private boolean expressionCacheUseSoftReferences = DEFAULT_EXPRESSION_CACHE_USE_SOFT_REFERENCES;
     private String expressionCacheLoggerName = DEFAULT_EXPRESSION_CACHE_LOGGER_NAME;
-    private ICacheEntryValidityChecker<String,Object> expressionCacheValidityChecker = DEFAULT_EXPRESSION_CACHE_VALIDITY_CHECKER;
+    private ICacheEntryValidityChecker<ExpressionCacheKey,Object> expressionCacheValidityChecker = DEFAULT_EXPRESSION_CACHE_VALIDITY_CHECKER;
     
     
     
@@ -171,12 +171,12 @@ public class StandardCacheManager extends AbstractCacheManager {
 
     
     @Override
-    protected final ICache<String, Object> initializeExpressionCache() {
+    protected final ICache<ExpressionCacheKey, Object> initializeExpressionCache() {
         final int maxSize = getExpressionCacheMaxSize();
         if (maxSize == 0) {
             return null;
         }
-        return new StandardCache<String, Object>(
+        return new StandardCache<ExpressionCacheKey, Object>(
                 getExpressionCacheName(), getExpressionCacheUseSoftReferences(), 
                 getExpressionCacheInitialSize(), maxSize, 
                 getExpressionCacheValidityChecker(), getExpressionCacheLogger());
@@ -240,7 +240,7 @@ public class StandardCacheManager extends AbstractCacheManager {
         return this.expressionCacheLoggerName;
     }
     
-    public ICacheEntryValidityChecker<String,Object> getExpressionCacheValidityChecker() {
+    public ICacheEntryValidityChecker<ExpressionCacheKey,Object> getExpressionCacheValidityChecker() {
         return this.expressionCacheValidityChecker;
     }
 
@@ -302,7 +302,7 @@ public class StandardCacheManager extends AbstractCacheManager {
         this.expressionCacheLoggerName = expressionCacheLoggerName;
     }
 
-    public void setExpressionCacheValidityChecker(final ICacheEntryValidityChecker<String, Object> expressionCacheValidityChecker) {
+    public void setExpressionCacheValidityChecker(final ICacheEntryValidityChecker<ExpressionCacheKey, Object> expressionCacheValidityChecker) {
         this.expressionCacheValidityChecker = expressionCacheValidityChecker;
     }
 

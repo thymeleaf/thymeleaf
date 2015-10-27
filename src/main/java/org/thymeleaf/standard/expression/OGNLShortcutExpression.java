@@ -46,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.cache.ExpressionCacheKey;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.context.IContext;
@@ -62,7 +63,7 @@ final class OGNLShortcutExpression {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OGNLShortcutExpression.class);
 
-    private static final String OGNL_SHORTCUT_EXPRESSION_PREFIX = "ognlsc|";
+    private static final String EXPRESSION_CACHE_TYPE_OGNL_SHORTCUT = "ognlsc";
     private static final Object[] NO_PARAMS = new Object[0];
 
     private final String[] expressionLevels;
@@ -79,7 +80,7 @@ final class OGNLShortcutExpression {
             throws Exception {
 
         final ICacheManager cacheManager = configuration.getCacheManager();
-        final ICache<String, Object> expressionCache = (cacheManager == null? null : cacheManager.getExpressionCache());
+        final ICache<ExpressionCacheKey, Object> expressionCache = (cacheManager == null? null : cacheManager.getExpressionCache());
 
         Object target = root;
         for (final String propertyName : this.expressionLevels) {
@@ -219,10 +220,10 @@ final class OGNLShortcutExpression {
 
 
     private static Object getObjectProperty(
-            final ICache<String,Object> expressionCache, final String propertyName, final Object target) {
+            final ICache<ExpressionCacheKey,Object> expressionCache, final String propertyName, final Object target) {
 
         final Class<?> currClass = OgnlRuntime.getTargetClass(target);
-        final String cacheKey = computeMethodCacheKey(currClass, propertyName);
+        final ExpressionCacheKey cacheKey = computeMethodCacheKey(currClass, propertyName);
 
         Method readMethod = null;
 
@@ -308,7 +309,7 @@ final class OGNLShortcutExpression {
 
 
     public static Object getListProperty(
-            final ICache<String,Object> expressionCache, final String propertyName, final List<?> list) {
+            final ICache<ExpressionCacheKey,Object> expressionCache, final String propertyName, final List<?> list) {
 
         /*
          * This method will try to mimic the behaviour of the ognl.ListPropertyAccessor class, with the exception
@@ -338,7 +339,7 @@ final class OGNLShortcutExpression {
 
 
     public static Object getArrayProperty(
-            final ICache<String,Object> expressionCache, final String propertyName, final Object[] array) {
+            final ICache<ExpressionCacheKey,Object> expressionCache, final String propertyName, final Object[] array) {
 
         /*
          * This method will try to mimic the behaviour of the ognl.ArrayPropertyAccessor class, with the exception
@@ -362,7 +363,7 @@ final class OGNLShortcutExpression {
 
 
     public static Object getEnumerationProperty(
-            final ICache<String,Object> expressionCache, final String propertyName, final Enumeration enumeration) {
+            final ICache<ExpressionCacheKey,Object> expressionCache, final String propertyName, final Enumeration enumeration) {
 
         /*
          * This method will try to mimic the behaviour of the ognl.EnumerationPropertyAccessor class, with the exception
@@ -385,7 +386,7 @@ final class OGNLShortcutExpression {
 
 
     public static Object getIteratorProperty(
-            final ICache<String,Object> expressionCache, final String propertyName, final Iterator<?> iterator) {
+            final ICache<ExpressionCacheKey,Object> expressionCache, final String propertyName, final Iterator<?> iterator) {
 
         /*
          * This method will try to mimic the behaviour of the ognl.IteratorPropertyAccessor class, with the exception
@@ -408,7 +409,7 @@ final class OGNLShortcutExpression {
 
 
     public static Object getSetProperty(
-            final ICache<String,Object> expressionCache, final String propertyName, final Set<?> set) {
+            final ICache<ExpressionCacheKey,Object> expressionCache, final String propertyName, final Set<?> set) {
 
         /*
          * This method will try to mimic the behaviour of the ognl.IteratorPropertyAccessor class, with the exception
@@ -492,8 +493,8 @@ final class OGNLShortcutExpression {
 
 
 
-    private static String computeMethodCacheKey(final Class<?> targetClass, final String propertyName) {
-        return OGNL_SHORTCUT_EXPRESSION_PREFIX + targetClass.getName() + propertyName;
+    private static ExpressionCacheKey computeMethodCacheKey(final Class<?> targetClass, final String propertyName) {
+        return new ExpressionCacheKey(EXPRESSION_CACHE_TYPE_OGNL_SHORTCUT, targetClass.getName() + propertyName);
     }
 
 

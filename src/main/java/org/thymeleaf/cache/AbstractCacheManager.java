@@ -48,7 +48,7 @@ public abstract class AbstractCacheManager implements ICacheManager {
     private volatile ICache<TemplateCacheKey,TemplateModel> templateCache;
     private volatile boolean templateCacheInitialized = false;
 
-    private volatile ICache<String,Object> expressionCache;
+    private volatile ICache<ExpressionCacheKey,Object> expressionCache;
     private volatile boolean expressionCacheInitialized = false;
 
     
@@ -69,7 +69,7 @@ public abstract class AbstractCacheManager implements ICacheManager {
         return this.templateCache;
     }
 
-    public final ICache<String, Object> getExpressionCache() {
+    public final ICache<ExpressionCacheKey, Object> getExpressionCache() {
         if (!this.expressionCacheInitialized) {
             synchronized(this) {
                 if (!this.expressionCacheInitialized) {
@@ -101,7 +101,7 @@ public abstract class AbstractCacheManager implements ICacheManager {
             templateCacheObj.clear();
         }
 
-        final ICache<String, Object> expressionCacheObj = getExpressionCache();
+        final ICache<ExpressionCacheKey, Object> expressionCacheObj = getExpressionCache();
         if (expressionCacheObj != null) {
             expressionCacheObj.clear();
         }
@@ -121,6 +121,6 @@ public abstract class AbstractCacheManager implements ICacheManager {
 
     protected abstract ICache<TemplateCacheKey,TemplateModel> initializeTemplateCache();
 
-    protected abstract ICache<String,Object> initializeExpressionCache();
+    protected abstract ICache<ExpressionCacheKey,Object> initializeExpressionCache();
     
 }

@@ -97,13 +97,13 @@ public interface ICacheManager {
      * </p>
      * <p>
      *   Keys are the expressions themselves (their String representation), along with
-     *   a prefix that is normally used for identifying the nature of the object being
-     *   cached (for example <tt>"{OGNL}person.name"</tt>).
+     *   a type that is normally used for identifying the nature of the object being
+     *   cached (for example <tt>{"ognl","person.name"}</tt>).
      * </p>
      * 
      * @return the cache of expression artifacts
      */
-    public ICache<String,Object> getExpressionCache();
+    public ICache<ExpressionCacheKey,Object> getExpressionCache();
 
     
     /**
@@ -112,9 +112,8 @@ public interface ICacheManager {
      * </p>
      * <p>
      *   User-defined dialects might make use of additional caches (besides <i>template</i>,
-     *   <i>fragment</i>, <i>message</i> and <i>expression</i>) defined at custom-made
-     *   implementations of this interface, and they should use this method
-     *   to retrieve them by their name.
+     *   and <i>expression</i>) defined at custom-made implementations of this interface, and
+     *   they should use this method to retrieve them by their name.
      * </p>
      * <p>
      *   Note the default {@link StandardCacheManager} will return <tt>null</tt> for every
