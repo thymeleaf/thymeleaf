@@ -21,7 +21,6 @@ package org.thymeleaf.standard.expression;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,40 +45,6 @@ public final class FragmentSelectionUtils {
     private static final String TEMPLATE_NAME_CURRENT_TEMPLATE = "this";
     private static final String OPERATOR = "::";
     private static final String UNNAMED_PARAMETERS_PREFIX = "_arg";
-
-
-
-
-    public static boolean hasSyntheticParameters(
-            final IEngineConfiguration configuration,
-            final IExpressionContext context,
-            final ParsedFragmentSelection fragmentSelection,
-            final StandardExpressionExecutionContext expContext) {
-
-        // The parameter sequence will be considered "synthetically named" if its variable names are all synthetic
-        // (see the "parameterNamesAreSynthetic" method for more info).
-
-        if (!fragmentSelection.hasParameters()) {
-            return false;
-        }
-
-        final AssignationSequence fragmentSelectionParameters = fragmentSelection.getParameters();
-        final Set<String> variableNames = new HashSet<String>(fragmentSelectionParameters.size() + 2);
-        for (final Assignation assignation : fragmentSelectionParameters.getAssignations()) {
-
-            final IStandardExpression variableNameExpr = assignation.getLeft();
-            final Object variableNameValue = variableNameExpr.execute(context, expContext);
-
-            final String variableName = (variableNameValue == null? null : variableNameValue.toString());
-
-            variableNames.add(variableName);
-
-        }
-
-        return parameterNamesAreSynthetic(variableNames);
-
-    }
-
 
 
 
