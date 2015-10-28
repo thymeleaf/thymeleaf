@@ -26,6 +26,10 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Objects of this class are kept at {@link ITemplateContext} in order to provide templates
+ *   with a way to create unique <tt>id</tt> attribute values during template processing.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *

@@ -20,8 +20,17 @@
 package org.thymeleaf.model;
 
 /**
+ * <p>
+ *   Interface to be implemented by all classes modeling actions to be performed on
+ *   an event or sequence of events according to the <em>Visitor</em> pattern.
+ * </p>
+ * <p>
+ *   These objects are usually applied by means of the {@link IModel#accept(IModelVisitor)}
+ *   method.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
+ * @see IModel
  * @since 3.0.0
  *
  */

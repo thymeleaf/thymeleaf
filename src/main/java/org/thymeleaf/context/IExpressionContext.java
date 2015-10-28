@@ -43,8 +43,23 @@ import org.thymeleaf.expression.IExpressionObjects;
  */
 public interface IExpressionContext extends IContext {
 
+    /**
+     * <p>
+     *   Returns the {@link IEngineConfiguration} (engine configuration) corresponding to the
+     *   {@link org.thymeleaf.ITemplateEngine} instance this expression context is meant to be used with.
+     * </p>
+     *
+     * @return the engine configuration.
+     */
     public IEngineConfiguration getConfiguration();
 
+    /**
+     * <p>
+     *   Returns the {@link IExpressionObjects} instance to be used for retrieving (and maybe building
+     *   lazily) expression objects (<tt>${#expobj}</tt>) to be used at Standard Thymeleaf Expressions.
+     * </p>
+     * @return the expression objects instance.
+     */
     public IExpressionObjects getExpressionObjects();
 
 }

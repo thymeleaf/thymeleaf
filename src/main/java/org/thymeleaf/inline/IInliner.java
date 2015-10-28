@@ -22,6 +22,14 @@ package org.thymeleaf.inline;
 import org.thymeleaf.context.ITemplateContext;
 
 /**
+ * <p>
+ *   Interface to be implemented by all <em>inliner</em> implementations.
+ * </p>
+ * <p>
+ *   <em>Inliners</em> are objects in charge of processing logic appearing on <em>Text</em> nodes
+ *   (as opposed to on <em>elements</em>). For example, inlined output expressions (<tt>[[${...}]]</tt>),
+ *   javascript inlining artifacts, etc.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0

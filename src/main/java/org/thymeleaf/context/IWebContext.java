@@ -45,9 +45,41 @@ import javax.servlet.http.HttpSession;
  */
 public interface IWebContext extends IContext {
 
+    /**
+     * <p>
+     *   Returns the {@link HttpServletRequest} object associated with the template execution.
+     * </p>
+     *
+     * @return the request object.
+     */
     public HttpServletRequest getRequest();
+
+    /**
+     * <p>
+     *   Returns the {@link HttpServletResponse} object associated with the template execution.
+     * </p>
+     *
+     * @return the response object.
+     */
     public HttpServletResponse getResponse();
+
+    /**
+     * <p>
+     *   Returns the {@link HttpSession} object associated with the template execution, or null if
+     *   there is no session.
+     * </p>
+     *
+     * @return the session object. Might be null if no session has been created.
+     */
     public HttpSession getSession();
+
+    /**
+     * <p>
+     *   Returns the {@link ServletContext} object associated with the template execution.
+     * </p>
+     *
+     * @return the servlet context object.
+     */
     public ServletContext getServletContext();
 
 }

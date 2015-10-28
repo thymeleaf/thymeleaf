@@ -52,10 +52,42 @@ public interface IContext {
      * so we are better off by using PropertyAccessors in OGNL and a Map wrapper in SpringEL.
      */
 
+    /**
+     * <p>
+     *   Returns the locale that should be used for processing the template.
+     * </p>
+     *
+     * @return the locale to be used.
+     */
     public Locale getLocale();
 
+    /**
+     * <p>
+     *   Checks whether a specific variable is already contained in this context or not.
+     * </p>
+     *
+     * @param name the name of the variable to be checked.
+     * @return <tt>true</tt> if the variable is already contained, <tt>false</tt> if not.
+     */
     public boolean containsVariable(final String name);
+
+    /**
+     * <p>
+     *   Get a list with all the names of variables contained at this context.
+     * </p>
+     *
+     * @return the variable names.
+     */
     public Set<String> getVariableNames();
+
+    /**
+     * <p>
+     *   Retrieve a specific variable, by name.
+     * </p>
+     *
+     * @param name the name of the variable to be retrieved.
+     * @return the variable's value.
+     */
     public Object getVariable(final String name);
 
 }

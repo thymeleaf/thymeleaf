@@ -57,21 +57,130 @@ import org.thymeleaf.inline.IInliner;
 public interface IEngineContext extends ITemplateContext {
 
 
+    /**
+     * <p>
+     *   Sets a new variable into the context.
+     * </p>
+     * <p>
+     *   Depending on the <em>context level</em>, determined by {@link #increaseLevel()} and
+     *   {@link #decreaseLevel()}, the variable being set might be considered a <em>local variable</em>
+     *   and thus disappear from context once the <em>context level</em> is decreased below the
+     *   level the variable was created at.
+     * </p>
+     *
+     * @param name the name of the variable.
+     * @param value the value of the variable.
+     */
     public void setVariable(final String name, final Object value);
+
+    /**
+     * <p>
+     *   Sets several variables at a time into the context.
+     * </p>
+     * <p>
+     *   Depending on the <em>context level</em>, determined by {@link #increaseLevel()} and
+     *   {@link #decreaseLevel()}, the variables being set might be considered a <em>local variables</em>
+     *   and thus disappear from context once the <em>context level</em> is decreased below the
+     *   level the variable was created at.
+     * </p>
+     *
+     * @param variables the variables to be set.
+     */
     public void setVariables(final Map<String, Object> variables);
+
+    /**
+     * <p>
+     *   Removes a variable from the context.
+     * </p>
+     * <p>
+     *   Depending on the <em>context level</em>, determined by {@link #increaseLevel()} and
+     *   {@link #decreaseLevel()}, this removal might be considered <em>local variable-related</em>
+     *   and thus cease to happen (i.e. the variable would be recovered) once the <em>context level</em>
+     *   is decreased below the level the variable was created at.
+     * </p>
+     *
+     * @param name the name of the variable to be removed.
+     */
     public void removeVariable(final String name);
 
+    /**
+     * <p>
+     *   Set a selection target. Usually the consequence of executing a <tt>th:object</tt> processor.
+     * </p>
+     * <p>
+     *   Once set, all <em>selection expressions</em> (<tt>*{...}</tt>) will be executed on this target.
+     * </p>
+     * <p>
+     *   This selection target will have the consideration of a <em>local variable</em> and thus depend on
+     *   the <em>context level</em> (see {@link #setVariable(String, Object)}).
+     * </p>
+     *
+     * @param selectionTarget the selection target to be set.
+     */
     public void setSelectionTarget(final Object selectionTarget);
 
+    /**
+     * <p>
+     *   Set an inliner. Usually the consequence of executing a <tt>th:inline</tt> processor.
+     * </p>
+     * <p>
+     *   This inliner will have the consideration of a <em>local variable</em> and thus depend on
+     *   the <em>context level</em> (see {@link #setVariable(String, Object)}).
+     * </p>
+     *
+     * @param inliner
+     */
     public void setInliner(final IInliner inliner);
 
+    /**
+     * <p>
+     *   Sets a new template metadata object ({@link TemplateData}) for the current execution point, specifying
+     *   that the elements and nodes that are to be processed from now on (until the <em>context level</em> is
+     *   decreased below the current level) originally belonged to a different template.
+     * </p>
+     * <p>
+     *   A call on this method is usually the consequence of <tt>th:insert</tt> or <tt>th:replace</tt>.
+     * </p>
+     *
+     * @param template the template data.
+     */
     public void setTemplateData(final TemplateData template);
 
-    // These is meant to determine whether a specific variable was there from level 0 or was defined afterwards
-    // (e.g. in an iteration) - this info is needed when checking possible overrides of originally-bound variables.
+    /**
+     * <p>
+     *   Checks whether a specific variable is <em>local</em> or not.
+     * </p>
+     * <p>
+     *   This means checking if the <em>context level</em> at which the variable was defined was 0 or not.
+     * </p>
+     *
+     * @param name the name of the variable to be checked.
+     * @return <tt>true</tt> if the variable is local (level > 0), <tt>false</tt> if not (level == 0).
+     */
     public boolean isVariableLocal(final String name);
 
+    /**
+     * <p>
+     *   Increase the <em>context level</em>. This is usually a consequence of the
+     *   {@link org.thymeleaf.engine.ProcessorTemplateHandler} detecting the start of a new element
+     *   (i.e. handling an {@link org.thymeleaf.model.IOpenElementTag} event).
+     * </p>
+     * <p>
+     *   <strong>This method should only be called internally</strong>.
+     * </p>
+     */
     public void increaseLevel();
+
+    /**
+     * <p>
+     *   Decrease the <em>context level</em>. This is usually a consequence of the
+     *   {@link org.thymeleaf.engine.ProcessorTemplateHandler} detecting the closing of an element
+     *   (i.e. handling an {@link org.thymeleaf.model.ICloseElementTag} event).
+     * </p>
+     * <p>
+     *   <strong>This method should only be called internally</strong>.
+     * </p>
+     */
     public void decreaseLevel();
 
 
