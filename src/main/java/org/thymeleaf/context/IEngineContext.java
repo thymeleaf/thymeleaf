@@ -128,7 +128,7 @@ public interface IEngineContext extends ITemplateContext {
      *   the <em>context level</em> (see {@link #setVariable(String, Object)}).
      * </p>
      *
-     * @param inliner
+     * @param inliner the inliner to be set.
      */
     public void setInliner(final IInliner inliner);
 
@@ -155,7 +155,7 @@ public interface IEngineContext extends ITemplateContext {
      * </p>
      *
      * @param name the name of the variable to be checked.
-     * @return <tt>true</tt> if the variable is local (level > 0), <tt>false</tt> if not (level == 0).
+     * @return <tt>true</tt> if the variable is local (level &gt; 0), <tt>false</tt> if not (level == 0).
      */
     public boolean isVariableLocal(final String name);
 
