@@ -24,8 +24,13 @@ import org.thymeleaf.model.IText;
 import org.thymeleaf.processor.IProcessor;
 
 /**
+ * <p>
+ *   Base interface for all processors that execute on Text events ({@link IText}).
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
+ * @see AbstractTextProcessor
+ * @see ITextStructureHandler
  * @since 3.0.0
  * 
  */

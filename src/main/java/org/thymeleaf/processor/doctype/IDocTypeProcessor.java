@@ -24,8 +24,13 @@ import org.thymeleaf.model.IDocType;
 import org.thymeleaf.processor.IProcessor;
 
 /**
+ * <p>
+ *   Base interface for all processors that execute on DOCTYPE events ({@link IDocType}).
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
+ * @see AbstractDocTypeProcessor
+ * @see IDocTypeStructureHandler
  * @since 3.0.0
  * 
  */

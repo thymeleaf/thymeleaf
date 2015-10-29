@@ -29,6 +29,10 @@ import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
+ * <p>
+ *   Basic abstract implementation of {@link IElementTagProcessor} for processors that match element
+ *   events by their element name (i.e. without looking at any attributes).
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *

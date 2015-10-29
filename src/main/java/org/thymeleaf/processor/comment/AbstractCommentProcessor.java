@@ -27,6 +27,9 @@ import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
+ * <p>
+ *   Basic abstract implementation of {@link ICommentProcessor}.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *

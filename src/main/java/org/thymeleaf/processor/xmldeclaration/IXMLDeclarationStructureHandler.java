@@ -22,18 +22,45 @@ package org.thymeleaf.processor.xmldeclaration;
 import org.thymeleaf.model.IModel;
 
 /**
+ * <p>
+ *   Structure handler class meant to be used by {@link IXMLDeclarationProcessor} implementations.
+ * </p>
+ * <p>
+ *   Structure handlers allow processors to instruct the engine to perform a series of actions that cannot
+ *   be done directly from the processors themselves, usually because these actions are applied or have effects
+ *   on scopes broader than the processed events themselves.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
+ * @see IXMLDeclarationProcessor
  * @since 3.0.0
  * 
  */
 public interface IXMLDeclarationStructureHandler {
 
 
+    /**
+     * <p>
+     *   Resets all actions specified so far for the current processor execution.
+     * </p>
+     */
     public void reset();
 
+    /**
+     * <p>
+     *   Instructs the engine to replace the current event with the specified model (a {@link IModel}).
+     * </p>
+     *
+     * @param model the model to be used as a replacement.
+     * @param processable whether the model should be considered <em>processable</em> or not.
+     */
     public void replaceWith(final IModel model, final boolean processable);
 
+    /**
+     * <p>
+     *   Instructs the engine to remove the entire event that is being processed.
+     * </p>
+     */
     public void removeXMLDeclaration();
 
 }

@@ -28,6 +28,9 @@ import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
+ * <p>
+ *   Basic abstract implementation of {@link ITemplateBoundariesProcessor}.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *

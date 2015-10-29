@@ -28,6 +28,19 @@ import org.thymeleaf.util.TextUtils;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   This class models the way in which an {@link IElementProcessor} can match an element by one of
+ *   its attributes.
+ * </p>
+ * <p>
+ *   It allows the definition of a matching for a specific attribute with a specific prefix (usually that
+ *   of the dialect including the processor), for every attribute with a specific prefix, and also for
+ *   simply every attribute.
+ * </p>
+ * <p>
+ *   Objects of this class are normally built by the constructors of the processors or their extended abstract
+ *   processor classes.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0

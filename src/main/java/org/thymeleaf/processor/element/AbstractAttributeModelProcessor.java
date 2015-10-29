@@ -29,6 +29,10 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EscapedAttributeUtils;
 
 /**
+ * <p>
+ *   Basic abstract implementation of {@link IElementModelProcessor} for processors that match element
+ *   events by one of their attributes (and optionally also the element name).
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *

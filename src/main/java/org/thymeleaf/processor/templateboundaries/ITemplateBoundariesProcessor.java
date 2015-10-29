@@ -25,8 +25,21 @@ import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.processor.IProcessor;
 
 /**
+ * <p>
+ *   Base interface for all processors that execute on template boundaries (i.e. <em>template start</em> and
+ *   <em>template end</em> events).
+ * </p>
+ * <p>
+ *   Template Boundaries Processors are a kind of processors that execute on the <em>template start</em> and
+ *   <em>template end</em> events fired during template processing. They allow to perform any kind of
+ *   initialization or disposal of resources at beginning or end of the template processing operation. Note
+ *   that these events are only fired for the first-level template, and not for each of the fragments
+ *   that might be parsed and/or included into the template being processed.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
+ * @see AbstractTemplateBoundariesProcessor
+ * @see ITemplateBoundariesStructureHandler
  * @since 3.0.0
  * 
  */

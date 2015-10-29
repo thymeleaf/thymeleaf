@@ -24,8 +24,13 @@ import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.processor.IProcessor;
 
 /**
+ * <p>
+ *   Base interface for all processors that execute on Processing Instruction events ({@link IProcessingInstruction}).
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
+ * @see AbstractProcessingInstructionProcessor
+ * @see IProcessingInstructionStructureHandler
  * @since 3.0.0
  * 
  */

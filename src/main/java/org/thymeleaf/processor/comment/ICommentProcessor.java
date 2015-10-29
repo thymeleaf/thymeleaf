@@ -24,8 +24,13 @@ import org.thymeleaf.model.IComment;
 import org.thymeleaf.processor.IProcessor;
 
 /**
+ * <p>
+ *   Base interface for all processors that execute on Comment events ({@link IComment}).
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
+ * @see AbstractCommentProcessor
+ * @see ICommentStructureHandler
  * @since 3.0.0
  * 
  */

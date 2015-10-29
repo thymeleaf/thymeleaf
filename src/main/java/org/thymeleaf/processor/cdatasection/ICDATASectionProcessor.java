@@ -24,8 +24,13 @@ import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.processor.IProcessor;
 
 /**
+ * <p>
+ *   Base interface for all processors that execute on CDATA Section events ({@link ICDATASection}).
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
+ * @see AbstractCDATASectionProcessor
+ * @see ICDATASectionStructureHandler
  * @since 3.0.0
  * 
  */

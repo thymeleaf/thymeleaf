@@ -24,8 +24,13 @@ import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.processor.IProcessor;
 
 /**
+ * <p>
+ *   Base interface for all processors that execute on XML Declaration events ({@link IXMLDeclaration}).
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
+ * @see AbstractXMLDeclarationProcessor
+ * @see IXMLDeclarationStructureHandler
  * @since 3.0.0
  * 
  */
