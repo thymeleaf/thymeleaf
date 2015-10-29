@@ -66,6 +66,8 @@ public final class StandardEscapedOutputUtils {
                 return StandardJavaScriptUtils.print(input);
             case CSS:
                 return StandardCSSUtils.print(input);
+            case RAW:
+                return (input == null? "" : input.toString());
             default:
                 throw new TemplateProcessingException(
                         "Unrecognized template mode " + templateMode + ". Cannot produce escaped output for " +

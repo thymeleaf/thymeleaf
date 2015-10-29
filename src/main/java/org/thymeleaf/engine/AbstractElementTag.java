@@ -126,8 +126,10 @@ abstract class AbstractElementTag extends AbstractTemplateEvent implements IElem
                 return this.elementDefinitions.forJavaScriptName(this.elementName);
             case CSS:
                 return this.elementDefinitions.forCSSName(this.elementName);
+            case RAW:
+                // fall-through
             default:
-                throw new IllegalArgumentException("Unknown template mode: " + this.templateMode);
+                throw new IllegalArgumentException("Element definitions cannot be created for template mode: " + this.templateMode);
         }
     }
 

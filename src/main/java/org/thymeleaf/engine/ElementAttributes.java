@@ -666,8 +666,10 @@ public final class ElementAttributes implements IElementAttributes {
                 return this.attributeDefinitions.forJavaScriptName(completeAttributeName);
             case CSS:
                 return this.attributeDefinitions.forCSSName(completeAttributeName);
+            case RAW:
+                // fall-through
             default:
-                throw new IllegalArgumentException("Unknown template mode: " + this.templateMode);
+                throw new IllegalArgumentException("Attribute definitions cannot be created for template mode: " + this.templateMode);
         }
     }
 
@@ -683,8 +685,10 @@ public final class ElementAttributes implements IElementAttributes {
                 return this.attributeDefinitions.forJavaScriptName(prefix, attributeName);
             case CSS:
                 return this.attributeDefinitions.forCSSName(prefix, attributeName);
+            case RAW:
+                // fall-through
             default:
-                throw new IllegalArgumentException("Unknown template mode: " + this.templateMode);
+                throw new IllegalArgumentException("Attribute definitions cannot be created for template mode: " + this.templateMode);
         }
     }
 

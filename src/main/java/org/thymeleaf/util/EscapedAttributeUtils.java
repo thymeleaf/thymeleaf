@@ -66,6 +66,8 @@ public final class EscapedAttributeUtils {
                 return JavaScriptEscape.unescapeJavaScript(input);
             case CSS:
                 return CssEscape.unescapeCss(input);
+            case RAW:
+                return input;
             default:
                 throw new TemplateProcessingException(
                         "Unrecognized template mode " + templateMode + ". Cannot unescape attribute value for " +

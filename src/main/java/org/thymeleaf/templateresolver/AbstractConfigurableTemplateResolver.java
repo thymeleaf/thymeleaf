@@ -97,7 +97,8 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
     private final PatternSpec textTemplateModePatternSpec = new PatternSpec();
     private final PatternSpec javaScriptTemplateModePatternSpec = new PatternSpec();
     private final PatternSpec cssTemplateModePatternSpec = new PatternSpec();
-    
+    private final PatternSpec rawTemplateModePatternSpec = new PatternSpec();
+
     private final PatternSpec cacheablePatternSpec = new PatternSpec();
     private final PatternSpec nonCacheablePatternSpec = new PatternSpec();
     
@@ -499,7 +500,7 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      *   template mode to resolved templates.
      * </p>
      * <p>
-     *   This is a convenience method equivalent to {@link #getTextTemplateModePatternSpec()}.getPatterns()
+     *   This is a convenience method equivalent to {@link #getJavaScriptTemplateModePatternSpec()}.getPatterns()
      * </p>
      *
      * @return the pattern spec
@@ -547,7 +548,7 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      *   template mode to resolved templates.
      * </p>
      * <p>
-     *   This is a convenience method equivalent to {@link #getTextTemplateModePatternSpec()}.getPatterns()
+     *   This is a convenience method equivalent to {@link #getCSSTemplateModePatternSpec()}.getPatterns()
      * </p>
      *
      * @return the pattern spec
@@ -571,6 +572,54 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      */
     public final void setCSSTemplateModePatterns(final Set<String> newCSSTemplateModePatterns) {
         this.cssTemplateModePatternSpec.setPatterns(newCSSTemplateModePatterns);
+    }
+
+
+
+
+    /**
+     * <p>
+     *   Returns the <i>pattern spec</i> specified for establishing the {@link TemplateMode#RAW}
+     *   template mode to resolved templates.
+     * </p>
+     *
+     * @return the pattern spec
+     * @since 3.0.0
+     */
+    public final PatternSpec getRawTemplateModePatternSpec() {
+        return this.rawTemplateModePatternSpec;
+    }
+
+    /**
+     * <p>
+     *   Returns the <i>patterns</i> specified for establishing the {@link TemplateMode#RAW}
+     *   template mode to resolved templates.
+     * </p>
+     * <p>
+     *   This is a convenience method equivalent to {@link #getRawTemplateModePatternSpec()}.getPatterns()
+     * </p>
+     *
+     * @return the pattern spec
+     * @since 3.0.0
+     */
+    public final Set<String> getRawTemplateModePatterns() {
+        return this.rawTemplateModePatternSpec.getPatterns();
+    }
+
+    /**
+     * <p>
+     *   Sets the new <i>patterns</i> to be applied for establishing the {@link TemplateMode#RAW}
+     *   template mode as Strings.
+     * </p>
+     * <p>
+     *   This is a convenience method equivalent to {@link #getRawTemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
+     * </p>
+     *
+     * @param newRawTemplateModePatterns the new patterns
+     * @since 3.0.0
+     */
+    public final void setRawTemplateModePatterns(final Set<String> newRawTemplateModePatterns) {
+        this.rawTemplateModePatternSpec.setPatterns(newRawTemplateModePatterns);
     }
 
 
@@ -1123,6 +1172,15 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
         }
         if (this.textTemplateModePatternSpec.matches(template)) {
             return TemplateMode.TEXT;
+        }
+        if (this.javaScriptTemplateModePatternSpec.matches(template)) {
+            return TemplateMode.JAVASCRIPT;
+        }
+        if (this.cssTemplateModePatternSpec.matches(template)) {
+            return TemplateMode.CSS;
+        }
+        if (this.rawTemplateModePatternSpec.matches(template)) {
+            return TemplateMode.RAW;
         }
         return getTemplateMode();
     }

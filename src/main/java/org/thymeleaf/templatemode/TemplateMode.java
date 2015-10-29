@@ -34,7 +34,9 @@ import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
 public enum TemplateMode {
 
 
-    HTML(true, false, false), XML(false, true, false), TEXT(false, false, true), JAVASCRIPT(false, false, true), CSS(false, false, true),
+    HTML(true, false, false), XML(false, true, false),
+    TEXT(false, false, true), JAVASCRIPT(false, false, true), CSS(false, false, true),
+    RAW(false, false, false),
 
 
     /**
@@ -138,6 +140,9 @@ public enum TemplateMode {
         if ("CSS".equalsIgnoreCase(mode)) {
             return CSS;
         }
+        if ("RAW".equalsIgnoreCase(mode)) {
+            return RAW;
+        }
         // Legacy template modes are automatically converted here
         // This code should probably be removed at some point in the distant future after Thymeleaf v3
         if ("HTML5".equalsIgnoreCase(mode) || "XHTML".equalsIgnoreCase(mode) ||
@@ -154,7 +159,7 @@ public enum TemplateMode {
             return XML;
         }
         logger.warn(
-                "[THYMELEAF][{}] Unknown Template Mode '{}'. Must be one of: 'HTML', 'XML', 'TEXT', 'JAVASCRIPT', 'CSS'. " +
+                "[THYMELEAF][{}] Unknown Template Mode '{}'. Must be one of: 'HTML', 'XML', 'TEXT', 'JAVASCRIPT', 'CSS', 'RAW'. " +
                 "Using default Template Mode '{}'.",
                 new Object[]{TemplateEngine.threadIndex(), mode, HTML});
         return HTML;

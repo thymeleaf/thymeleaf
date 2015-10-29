@@ -48,6 +48,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.templateparser.markup.HTMLTemplateParser;
 import org.thymeleaf.templateparser.markup.XMLTemplateParser;
+import org.thymeleaf.templateparser.raw.RawTemplateParser;
 import org.thymeleaf.templateparser.text.CSSTemplateParser;
 import org.thymeleaf.templateparser.text.JavaScriptTemplateParser;
 import org.thymeleaf.templateparser.text.TextTemplateParser;
@@ -78,6 +79,7 @@ public final class TemplateManager {
     private final ITemplateParser textParser;
     private final ITemplateParser javascriptParser;
     private final ITemplateParser cssParser;
+    private final ITemplateParser rawParser;
 
 
     private final ICache<TemplateCacheKey,TemplateModel> templateCache; // might be null! (= no cache)
@@ -117,6 +119,7 @@ public final class TemplateManager {
         this.textParser = new TextTemplateParser(DEFAULT_PARSER_POOL_SIZE, DEFAULT_PARSER_BLOCK_SIZE, standardDialectPresent, standardDialectPrefix);
         this.javascriptParser = new JavaScriptTemplateParser(DEFAULT_PARSER_POOL_SIZE, DEFAULT_PARSER_BLOCK_SIZE, standardDialectPresent, standardDialectPrefix);
         this.cssParser = new CSSTemplateParser(DEFAULT_PARSER_POOL_SIZE, DEFAULT_PARSER_BLOCK_SIZE, standardDialectPresent, standardDialectPrefix);
+        this.rawParser = new RawTemplateParser(DEFAULT_PARSER_POOL_SIZE, DEFAULT_PARSER_BLOCK_SIZE);
 
     }
     
@@ -659,8 +662,10 @@ public final class TemplateManager {
             case TEXT:       return this.textParser;
             case JAVASCRIPT: return this.javascriptParser;
             case CSS:        return this.cssParser;
+            case RAW:        return this.rawParser;
+            default:
+                throw new IllegalArgumentException("No parser exists for template mode: " + templateMode);
         }
-        throw new IllegalArgumentException("Unsupported template mode: " + templateMode);
     }
 
 

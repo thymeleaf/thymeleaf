@@ -71,6 +71,11 @@ public final class StandardInlineEnablementTemplateBoundariesProcessor extends A
             case CSS:
                 structureHandler.setInliner(StandardCSSInliner.INSTANCE);
                 break;
+            case RAW:
+                // No inliner for RAW template mode. We could use the Raw, but anyway it would be of no use
+                // because in RAW mode the text processor that looks for the inliner to apply does not exist...
+                structureHandler.setInliner(null);
+                break;
             default:
                 throw new TemplateProcessingException(
                         "Unrecognized template mode: " + getTemplateMode() + ", cannot initialize inlining!");

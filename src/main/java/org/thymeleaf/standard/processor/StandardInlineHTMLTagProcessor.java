@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.inline.IInliner;
@@ -40,8 +38,6 @@ import org.thymeleaf.templatemode.TemplateMode;
  *
  */
 public final class StandardInlineHTMLTagProcessor extends AbstractStandardTextInlineSettingTagProcessor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(StandardInlineHTMLTagProcessor.class);
 
     public static final int PRECEDENCE = 1000;
     public static final String ATTR_NAME = "inline";

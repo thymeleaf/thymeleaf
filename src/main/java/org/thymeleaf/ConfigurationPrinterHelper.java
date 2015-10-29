@@ -165,6 +165,7 @@ final class ConfigurationPrinterHelper {
             printProcessorsForTemplateMode(logBuilder, processors, TemplateMode.TEXT);
             printProcessorsForTemplateMode(logBuilder, processors, TemplateMode.JAVASCRIPT);
             printProcessorsForTemplateMode(logBuilder, processors, TemplateMode.CSS);
+            printProcessorsForTemplateMode(logBuilder, processors, TemplateMode.RAW);
 
         }
 
@@ -178,6 +179,7 @@ final class ConfigurationPrinterHelper {
             printPreProcessorsForTemplateMode(logBuilder, preProcessors, TemplateMode.TEXT);
             printPreProcessorsForTemplateMode(logBuilder, preProcessors, TemplateMode.JAVASCRIPT);
             printPreProcessorsForTemplateMode(logBuilder, preProcessors, TemplateMode.CSS);
+            printPreProcessorsForTemplateMode(logBuilder, preProcessors, TemplateMode.RAW);
 
         }
 
@@ -191,6 +193,7 @@ final class ConfigurationPrinterHelper {
             printPostProcessorsForTemplateMode(logBuilder, postProcessors, TemplateMode.TEXT);
             printPostProcessorsForTemplateMode(logBuilder, postProcessors, TemplateMode.JAVASCRIPT);
             printPostProcessorsForTemplateMode(logBuilder, postProcessors, TemplateMode.CSS);
+            printPostProcessorsForTemplateMode(logBuilder, postProcessors, TemplateMode.RAW);
 
         }
 

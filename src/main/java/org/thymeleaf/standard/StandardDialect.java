@@ -626,6 +626,16 @@ public class StandardDialect
         processors.add(new StandardInlineEnablementTemplateBoundariesProcessor(dialect, TemplateMode.CSS));
 
 
+        /*
+         * ------------------------
+         * ------------------------
+         * RAW TEMPLATE MODE
+         * ------------------------
+         * ------------------------
+         */
+
+        // No processors defined for template mode. Note only TextProcessors would be possible in this template mode,
+        // given the entire templates are considered Text.
 
 
         return processors;

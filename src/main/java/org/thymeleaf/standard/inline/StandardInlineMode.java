@@ -32,6 +32,11 @@ import org.thymeleaf.TemplateEngine;
  */
 public enum StandardInlineMode {
 
+    // Note there is no "RAW" inlining. There is no need, because inlining applies on text nodes
+    // appearing as body of elements with a different template mode, and therefore we wouldn't be able to avoid
+    // the execution of attributes in tags of an HTML template, nested inside a tag with th:inline="raw". So
+    // in the end, RAW inlining would be exactly the same as NONE inlining (but more confusing).
+
     NONE, HTML, XML, TEXT, JAVASCRIPT, CSS;
 
 
