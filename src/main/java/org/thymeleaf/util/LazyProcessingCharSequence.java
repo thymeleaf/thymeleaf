@@ -36,7 +36,7 @@ import org.thymeleaf.engine.TemplateModel;
  *   some scenarios (e.g. inliners).
  * </p>
  * <p>
- *   This is mostly an <stron>internal class</stron>, and its use is not recommended from user's code.
+ *   This is mostly an <strong>internal class</strong>, and its use is not recommended from user's code.
  * </p>
  * <p>
  *   This class is <strong>not</strong> thread-safe.
