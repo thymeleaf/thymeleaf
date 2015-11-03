@@ -66,14 +66,14 @@ public abstract class AbstractStandardTextInlineSettingTagProcessor extends Abst
             final IElementTagStructureHandler structureHandler) {
 
         // Note we are NOT executing the attributeValue as a Standard Expression: we are expecting a literal (see comment above)
-        final IInliner inliner = getInliner(StandardInlineMode.parse(attributeValue));
+        final IInliner inliner = getInliner(context, StandardInlineMode.parse(attributeValue));
         structureHandler.setInliner(inliner);
 
     }
 
 
 
-    protected abstract IInliner getInliner(final StandardInlineMode inlineMode);
+    protected abstract IInliner getInliner(final ITemplateContext context, final StandardInlineMode inlineMode);
 
 
 }

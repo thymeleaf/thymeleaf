@@ -20,13 +20,19 @@
 package org.thymeleaf.standard.inline;
 
 import java.io.StringWriter;
+import java.util.Set;
 
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.engine.TemplateModel;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.ITemplateEvent;
+import org.thymeleaf.model.IText;
+import org.thymeleaf.postprocessor.IPostProcessor;
+import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.LazyProcessingCharSequence;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -38,11 +44,43 @@ import org.thymeleaf.util.Validate;
 public abstract class AbstractStandardInliner implements IInliner {
 
     private final TemplateMode templateMode;
+    private final boolean writeToOutput;
 
-    protected AbstractStandardInliner(final TemplateMode templateMode) {
+
+
+    protected AbstractStandardInliner(final IEngineConfiguration configuration, final TemplateMode templateMode) {
+
         super();
+
+        Validate.notNull(configuration, "Engine configuration cannot be null");
+        Validate.notNull(templateMode, "Template Mode cannot be null");
+
         this.templateMode = templateMode;
+
+        /*
+         * The 'writeToOutput' flag will mean that the inliner can directly use the output Writer when processing
+         * inlined text, instead of creating a separate StringWriter object (and therefore a String containing the
+         * whole result of processing the inlined text). This should result in a performance optimization when
+         * inlining is very used, but can only be done if the following happens:
+         *
+         *   - There are no post-processors that might want to do things on the processed text result.
+         *   - There are no other ITextProcessor instances declared other than the InlinerTextProcessor.
+         *
+         * In that case, the inliner will return a LazyProcessingCharSequence object, which will perform the
+         * direct writer output. But the conditions above are needed to ensure that the context is not going to
+         * be modified from the moment this inliner executes to the moment the output is written.
+         *
+         * Note: we are checking for the size of textprocessors but not checking if that one (at most) processor is
+         *       actually the InlineTextProcessor. And that fine because, if it isn't, then nobody will be applying
+         *       inlining to text nodes in the first place, and this inliner will never be executed.
+         */
+
+        final Set<IPostProcessor> postProcessors = configuration.getPostProcessors(this.templateMode);
+        final Set<ITextProcessor> textProcessors = configuration.getTextProcessors(this.templateMode);
+        this.writeToOutput = postProcessors.isEmpty() && textProcessors.size() <= 1;
+
     }
+
 
 
     public final String getName() {
@@ -71,9 +109,16 @@ public abstract class AbstractStandardInliner implements IInliner {
                             computeLine(text), computeCol(text),
                             this.templateMode, true);
 
-            final StringWriter stringWriter = new StringWriter();
-            templateManager.process(templateModel, context, stringWriter);
-            return stringWriter.toString();
+            if (!this.writeToOutput || !(text instanceof IText)) {
+
+                final StringWriter stringWriter = new StringWriter();
+                templateManager.process(templateModel, context, stringWriter);
+                return stringWriter.toString();
+
+            }
+
+            // If we can directly write to output (and text is an IText), we will use a LazyProcessingCharSequence
+            return new LazyProcessingCharSequence(context, templateModel);
 
         }
 

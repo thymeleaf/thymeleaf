@@ -37,8 +37,24 @@ import org.thymeleaf.context.ITemplateContext;
  */
 public interface IInliner {
 
+    /**
+     * <p>
+     *   Returns an identifiable name for the inliner
+     * </p>
+     *
+     * @return the name of the inliner.
+     */
     public String getName();
 
+    /**
+     * <p>
+     *   Perform the inlining operation.
+     * </p>
+     *
+     * @param context the template context.
+     * @param text the text to be inlined.
+     * @return the inlined result.
+     */
     public CharSequence inline(final ITemplateContext context, final CharSequence text);
 
 }

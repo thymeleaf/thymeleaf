@@ -413,6 +413,11 @@ public class StandardDialect
 
         /*
          * HTML: TEXT PROCESSORS
+         *
+         * NOTE the ability of the Standard Inlining mechanism to directly write to output instead of generating
+         * internal Strings relies on the fact that there is only ONE ITextProcessor instance for each template mode
+         * in the StandardDialect (see AbstractStandardInliner for details). So if new processors are added here,
+         * it should be for a really compelling reason.
          */
         processors.add(new StandardInliningTextProcessor(dialect, TemplateMode.HTML));
 
@@ -476,6 +481,11 @@ public class StandardDialect
 
         /*
          * XML: TEXT PROCESSORS
+         *
+         * NOTE the ability of the Standard Inlining mechanism to directly write to output instead of generating
+         * internal Strings relies on the fact that there is only ONE ITextProcessor instance for each template mode
+         * in the StandardDialect (see AbstractStandardInliner for details). So if new processors are added here,
+         * it should be for a really compelling reason.
          */
         processors.add(new StandardInliningTextProcessor(dialect, TemplateMode.XML));
 
@@ -523,6 +533,11 @@ public class StandardDialect
 
         /*
          * TEXT: TEXT PROCESSORS
+         *
+         * NOTE the ability of the Standard Inlining mechanism to directly write to output instead of generating
+         * internal Strings relies on the fact that there is only ONE ITextProcessor instance for each template mode
+         * in the StandardDialect (see AbstractStandardInliner for details). So if new processors are added here,
+         * it should be for a really compelling reason.
          */
         processors.add(new StandardInliningTextProcessor(dialect, TemplateMode.TEXT));
 
@@ -570,6 +585,11 @@ public class StandardDialect
 
         /*
          * JAVASCRIPT: TEXT PROCESSORS
+         *
+         * NOTE the ability of the Standard Inlining mechanism to directly write to output instead of generating
+         * internal Strings relies on the fact that there is only ONE ITextProcessor instance for each template mode
+         * in the StandardDialect (see AbstractStandardInliner for details). So if new processors are added here,
+         * it should be for a really compelling reason.
          */
         processors.add(new StandardInliningTextProcessor(dialect, TemplateMode.JAVASCRIPT));
 
@@ -617,6 +637,11 @@ public class StandardDialect
 
         /*
          * CSS: TEXT PROCESSORS
+         *
+         * NOTE the ability of the Standard Inlining mechanism to directly write to output instead of generating
+         * internal Strings relies on the fact that there is only ONE ITextProcessor instance for each template mode
+         * in the StandardDialect (see AbstractStandardInliner for details). So if new processors are added here,
+         * it should be for a really compelling reason.
          */
         processors.add(new StandardInliningTextProcessor(dialect, TemplateMode.CSS));
 

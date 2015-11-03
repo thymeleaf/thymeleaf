@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.standard.inline;
 
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -29,11 +30,9 @@ import org.thymeleaf.templatemode.TemplateMode;
  */
 public final class StandardCSSInliner extends AbstractStandardInliner {
 
-    public static final StandardCSSInliner INSTANCE = new StandardCSSInliner();
 
-
-    private StandardCSSInliner() {
-        super(TemplateMode.CSS);
+    public StandardCSSInliner(final IEngineConfiguration configuration) {
+        super(configuration, TemplateMode.CSS);
     }
 
 

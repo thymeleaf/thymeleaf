@@ -57,19 +57,19 @@ public final class StandardInlineEnablementTemplateBoundariesProcessor extends A
         switch (getTemplateMode()) {
 
             case HTML:
-                structureHandler.setInliner(StandardHTMLInliner.INSTANCE);
+                structureHandler.setInliner(new StandardHTMLInliner(context.getConfiguration()));
                 break;
             case XML:
-                structureHandler.setInliner(StandardXMLInliner.INSTANCE);
+                structureHandler.setInliner(new StandardXMLInliner(context.getConfiguration()));
                 break;
             case TEXT:
-                structureHandler.setInliner(StandardTextInliner.INSTANCE);
+                structureHandler.setInliner(new StandardTextInliner(context.getConfiguration()));
                 break;
             case JAVASCRIPT:
-                structureHandler.setInliner(StandardJavaScriptInliner.INSTANCE);
+                structureHandler.setInliner(new StandardJavaScriptInliner(context.getConfiguration()));
                 break;
             case CSS:
-                structureHandler.setInliner(StandardCSSInliner.INSTANCE);
+                structureHandler.setInliner(new StandardCSSInliner(context.getConfiguration()));
                 break;
             case RAW:
                 // No inliner for RAW template mode. We could use the Raw, but anyway it would be of no use
