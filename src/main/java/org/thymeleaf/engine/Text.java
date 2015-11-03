@@ -27,6 +27,7 @@ import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.AggregateCharSequence;
+import org.thymeleaf.util.LazyProcessingCharSequence;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -44,7 +45,7 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
 
     private CharSequence text;
 
-    private int length;
+    private int length = -1;
 
     private Boolean whitespace;
 
@@ -101,6 +102,9 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
 
 
     public int length() {
+        if (this.length == -1 && this.text != null) {
+            this.length = this.text.length();
+        }
         return this.length;
     }
 
@@ -169,7 +173,8 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
 
         this.text = text;
 
-        this.length = text.length();
+        // we will leave this to be computed lazily so that we favor the use of lazy CharSequence implementations
+        this.length = -1;
 
         this.buffer = null;
         this.offset = -1;
@@ -196,7 +201,11 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
             if (this.text instanceof AggregateCharSequence) {
                 // In the special case we are using an AggregateCharSequence, we will avoid creating a String
                 // for the whole content
-                ((AggregateCharSequence)this.text).write(writer);
+                ((AggregateCharSequence) this.text).write(writer);
+            } else if (this.text instanceof LazyProcessingCharSequence) {
+                // In the special case we are using an LazyProcessingCharSequence, we will avoid creating a String
+                // for the whole content
+                ((LazyProcessingCharSequence) this.text).write(writer);
             } else {
                 writer.write(this.text.toString());
             }
