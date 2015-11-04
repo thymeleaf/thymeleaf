@@ -144,7 +144,11 @@ public final class LazyProcessingCharSequence implements CharSequence {
         if (writer == null) {
             throw new IllegalArgumentException("Writer cannot be null");
         }
-        this.context.getConfiguration().getTemplateManager().process(this.templateModel, this.context, writer);
+        if (this.resolvedText != null) {
+            writer.write(this.resolvedText);
+        } else {
+            this.context.getConfiguration().getTemplateManager().process(this.templateModel, this.context, writer);
+        }
     }
 
 
