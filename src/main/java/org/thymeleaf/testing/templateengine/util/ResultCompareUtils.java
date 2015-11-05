@@ -97,6 +97,10 @@ public class ResultCompareUtils {
      *
      * @deprecated as of 3.0. Should use {@link #compareMarkupResults(String, String, boolean)} or
      *             {@link #compareTextResults(String, String)} instead. Will be removed in 3.1.
+     * @param expected the expected result
+     * @param actual the actual result
+     * @param lenient whether comparison has to be made in lenient mode or not
+     * @return the result comparison
      */
     @Deprecated
     public static ResultComparison compareResults(final String expected, final String actual, final boolean lenient) {
