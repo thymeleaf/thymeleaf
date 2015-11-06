@@ -47,6 +47,7 @@ package org.thymeleaf.dialect;
  * @see IPostProcessorDialect
  * @see IExpressionObjectDialect
  * @see IExecutionAttributeDialect
+ * @see org.thymeleaf.standard.StandardDialect
  *
  * @since 3.0.0
  *
