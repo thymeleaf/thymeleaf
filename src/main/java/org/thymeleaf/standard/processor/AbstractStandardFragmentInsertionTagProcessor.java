@@ -121,26 +121,34 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         final Set<String> fragments =
                 (processedFragmentSelection.hasFragmentSelector()? Collections.singleton(processedFragmentSelection.getFragmentSelector()) : null);
 
-
-        /*
-         * MIGHT NEED TO ADJUST THE TEMPLATE NAME if 'this' or an empty name is being used
-         */
-        if (StringUtils.isEmptyOrWhitespace(templateName) || TEMPLATE_NAME_CURRENT_TEMPLATE.equals(templateName)) {
-            // We will use the same templateName that the host tag comes from
-            templateName = attributeTemplateName;
-        }
-
-
         /*
          * OBTAIN THE FRAGMENT MODEL from the TemplateManager. This means the fragment will be parsed and maybe
          * cached, and we will be returned an immutable model object (specifically a ParsedFragmentModel)
          */
-        final TemplateModel fragmentModel =
-                    configuration.getTemplateManager().parseStandalone(
-                            context, templateName, fragments,
-                            null, // we will not force the template mode
-                            true);  // use the cache if possible, fragments are from template files
+        List<String> templateNameStack = new ArrayList<String>();
+        templateNameStack.add(templateName);  //Default template to consider.
 
+        // scan the template stack if template name is 'this' or an empty name is being used
+        if (StringUtils.isEmptyOrWhitespace(templateName) || TEMPLATE_NAME_CURRENT_TEMPLATE.equals(templateName)) {
+            templateNameStack.clear();
+            for (int i = context.getTemplateStack().size() - 1; i >= 0; i--)
+            {
+                templateNameStack.add(context.getTemplateStack().get(i).getTemplate());
+            }
+        }
+
+        TemplateModel tempModel;
+        int i = 0;
+        do {
+            tempModel = configuration.getTemplateManager().parseStandalone(
+                    context, templateNameStack.get(i), fragments,
+                    null, // we will not force the template mode
+                    true);  // use the cache if possible, fragments are from template files
+            i++;
+        } while (i <= templateNameStack.size() - 1 && tempModel.size() <= 2);  //post test -- need to parse at least 1x
+
+        final TemplateModel fragmentModel = tempModel;
+        tempModel = null;
 
         /*
          * ONCE WE HAVE THE FRAGMENT MODEL (its events, in fact), CHECK THE FRAGMENT SIGNATURE which might
