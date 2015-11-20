@@ -20,7 +20,9 @@
 package org.thymeleaf.standard.processor;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -125,30 +127,31 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          * OBTAIN THE FRAGMENT MODEL from the TemplateManager. This means the fragment will be parsed and maybe
          * cached, and we will be returned an immutable model object (specifically a ParsedFragmentModel)
          */
-        List<String> templateNameStack = new ArrayList<String>();
-        templateNameStack.add(templateName);  //Default template to consider.
 
+        List<String> templateNameStack = null;
         // scan the template stack if template name is 'this' or an empty name is being used
         if (StringUtils.isEmptyOrWhitespace(templateName) || TEMPLATE_NAME_CURRENT_TEMPLATE.equals(templateName)) {
-            templateNameStack.clear();
-            for (int i = context.getTemplateStack().size() - 1; i >= 0; i--)
-            {
+            templateNameStack = new ArrayList<String>(3);
+            for (int i = context.getTemplateStack().size() - 1; i >= 0; i--) {
                 templateNameStack.add(context.getTemplateStack().get(i).getTemplate());
             }
+            templateName = templateNameStack.get(0);
         }
 
-        TemplateModel tempModel;
+        TemplateModel fragmentModel;
+        String parsedTemplate = templateName;
         int i = 0;
         do {
-            tempModel = configuration.getTemplateManager().parseStandalone(
-                    context, templateNameStack.get(i), fragments,
-                    null, // we will not force the template mode
-                    true);  // use the cache if possible, fragments are from template files
+            fragmentModel =
+                    configuration.getTemplateManager().parseStandalone(
+                            context, parsedTemplate, fragments,
+                            null,   // we will not force the template mode
+                            true);  // use the cache if possible, fragments are from template files
             i++;
-        } while (i <= templateNameStack.size() - 1 && tempModel.size() <= 2);  //post test -- need to parse at least 1x
-
-        final TemplateModel fragmentModel = tempModel;
-        tempModel = null;
+        } while (fragmentModel.size() <= 2 &&
+                 templateNameStack != null &&
+                 i < templateNameStack.size() &&
+                 (parsedTemplate = templateNameStack.get(i)) != null);  //post test -- need to parse at least 1x
 
         /*
          * ONCE WE HAVE THE FRAGMENT MODEL (its events, in fact), CHECK THE FRAGMENT SIGNATURE which might
