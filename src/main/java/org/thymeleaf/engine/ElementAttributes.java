@@ -159,6 +159,38 @@ public final class ElementAttributes implements IElementAttributes {
 
 
 
+    public final String getCompleteName(final String completeName) {
+        Validate.notNull(completeName, "Attribute name cannot be null");
+        final int pos = searchAttribute(completeName);
+        if (pos < 0) {
+            return null;
+        }
+        return this.attributes[pos].name;
+    }
+
+
+    public final String getCompleteName(final String prefix, final String name) {
+        Validate.notNull(name, "Attribute name cannot be null");
+        final int pos = searchAttribute(prefix, name);
+        if (pos < 0) {
+            return null;
+        }
+        return this.attributes[pos].name;
+    }
+
+
+    public final String getCompleteName(final AttributeName attributeName) {
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        final int pos = searchAttribute(attributeName);
+        if (pos < 0) {
+            return null;
+        }
+        return this.attributes[pos].name;
+    }
+
+
+
+
     public final String getValue(final String completeName) {
         Validate.notNull(completeName, "Attribute name cannot be null");
         final int pos = searchAttribute(completeName);

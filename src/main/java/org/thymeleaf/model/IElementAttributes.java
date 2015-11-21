@@ -46,6 +46,10 @@ public interface IElementAttributes {
     public boolean hasAttribute(final String prefix, final String name);
     public boolean hasAttribute(final AttributeName attributeName);
 
+    public String getCompleteName(final String completeName); // makes sense - depends on case sensitivity!
+    public String getCompleteName(final String prefix, final String name);
+    public String getCompleteName(final AttributeName attributeName);
+
     public String getValue(final String completeName);
     public String getValue(final String prefix, final String name);
     public String getValue(final AttributeName attributeName);

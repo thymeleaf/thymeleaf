@@ -655,6 +655,18 @@ public final class TemplateModel implements IModel {
             return this.wrapped.hasAttribute(attributeName);
         }
 
+        public String getCompleteName(final String completeName) {
+            return this.wrapped.getCompleteName(completeName);
+        }
+
+        public String getCompleteName(final String prefix, final String name) {
+            return this.wrapped.getCompleteName(prefix, name);
+        }
+
+        public String getCompleteName(final AttributeName attributeName) {
+            return this.wrapped.getCompleteName(attributeName);
+        }
+
         public String getValue(final String completeName) {
             return this.wrapped.getValue(completeName);
         }
