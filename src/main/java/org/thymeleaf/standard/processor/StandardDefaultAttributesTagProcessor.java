@@ -119,9 +119,18 @@ public final class StandardDefaultAttributesTagProcessor
 
 
             /*
-             * Compute the new attribute name
+             * Compute the new attribute name (i.e. the same, without the prefix)
              */
-            final String newAttributeName = attributeName.getAttributeName(); // i.e. the same, without the prefix
+            final String originalCompleteAttributeName = tag.getAttributes().getCompleteName(attributeName);
+            final String canonicalAttributeName = attributeName.getAttributeName();
+
+            final String newAttributeName;
+            if (TextUtil.endsWith(true, originalCompleteAttributeName, canonicalAttributeName)) {
+                newAttributeName = canonicalAttributeName; // We avoid creating a new String instance
+            } else {
+                newAttributeName =
+                        originalCompleteAttributeName.substring(originalCompleteAttributeName.length() - canonicalAttributeName.length());
+            }
 
 
             /*
