@@ -121,8 +121,10 @@ public class OgnlVariableExpressionEvaluator
                     StandardExpressions.getConversionService(configuration);
 
             return conversionService.convert(configuration, processingContext, result, String.class);
-            
-        } catch (final OgnlException e) {
+
+        } catch (final TemplateProcessingException e) {
+            throw e;
+        } catch(final Exception e) {
             throw new TemplateProcessingException(
                     "Exception evaluating OGNL expression: \"" + expression + "\"", e);
         }
