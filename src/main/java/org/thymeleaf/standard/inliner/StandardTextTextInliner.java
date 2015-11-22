@@ -28,7 +28,6 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dom.AbstractTextNode;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
@@ -99,21 +98,12 @@ public class StandardTextTextInliner implements IStandardTextInliner {
                     logger.trace("[THYMELEAF][{}] Applying text inline evaluation on \"{}\"", TemplateEngine.threadIndex(), match);
                 }
                 
-                try {
+                final IStandardExpression expression =
+                        expressionParser.parseExpression(configuration, arguments, match);
+                final Object result = expression.execute(configuration, arguments);
 
-                    final IStandardExpression expression =
-                            expressionParser.parseExpression(configuration, arguments, match);
-                    final Object result = expression.execute(configuration, arguments);
+                strBuilder.append(HtmlEscape.escapeHtml4Xml(String.valueOf(result)));
 
-                    strBuilder.append(HtmlEscape.escapeHtml4Xml(String.valueOf(result)));
-                    
-                } catch (final TemplateProcessingException ignored) {
-                    
-                    // If it is not a standard expression, just output it as original
-                    strBuilder.append(SCRIPT_INLINE_PREFIX).append(match).append(SCRIPT_INLINE_SUFFIX);
-                    
-                }
-                
                 curr = matcher.end(0);
                 
             } while (matcher.find());
