@@ -65,8 +65,6 @@ public final class OGNLVariableExpressionEvaluator
                     OGNLContextPropertyAccessor.RESTRICT_REQUEST_PARAMETERS,
                     OGNLContextPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
 
-    private static boolean booleanFixApplied = false;
-
 
     private final boolean applyOGNLShortcuts;
 
