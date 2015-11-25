@@ -61,7 +61,7 @@ public abstract class AbstractTestResourceStandardTestFieldEvaluator
         
         final File tempFile =
                 ResourceUtils.createTempFile(executionId, getFileSuffix(), value, "UTF-8");
-        final ITestResource tempResource = new LocalFileTestResource(tempFile, "UTF-8");
+        final ITestResource tempResource = new LocalFileTestResource(tempFile, "UTF-8", true);
         
         return StandardTestEvaluatedField.forSpecifiedValue(tempResource);      
         

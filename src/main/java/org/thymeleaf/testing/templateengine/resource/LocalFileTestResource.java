@@ -37,15 +37,22 @@ public class LocalFileTestResource
 
     private final File resourceFile;
     private final String characterEncoding;
+    private final boolean avoidUnicodeUnescapeOnRead;
 
     
     public LocalFileTestResource(final File file, final String characterEncoding) {
+        this(file, characterEncoding, false);
+    }
+
+
+    public LocalFileTestResource(final File file, final String characterEncoding, final boolean avoidUnicodeUnescapeOnRead) {
         super(validateFile(file));
         Validate.notNull(characterEncoding, "Character encoding cannot be null");
         this.resourceFile = file.getAbsoluteFile();
         this.characterEncoding = characterEncoding;
+        this.avoidUnicodeUnescapeOnRead = avoidUnicodeUnescapeOnRead;
     }
-    
+
     
     private static String validateFile(final File file) {
         Validate.notNull(file, "Resource file cannot be null");
@@ -71,7 +78,7 @@ public class LocalFileTestResource
         try {
             final InputStream is = new FileInputStream(this.resourceFile);
             final String text = ResourceUtils.read(is, this.characterEncoding);
-            return EscapeUtils.unescapeUnicode(text);
+            return this.avoidUnicodeUnescapeOnRead? text : EscapeUtils.unescapeUnicode(text);
         } catch (final TestEngineExecutionException e) {
             throw e;
         } catch (final Exception e) {

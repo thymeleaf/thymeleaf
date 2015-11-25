@@ -145,6 +145,25 @@ public final class EscapeUtils {
 
                     // Don't continue here, just let the unescape code below do its job
 
+                } else if (c1 == ESCAPE_PREFIX && i + 2 < max && text.charAt(i + 2) == ESCAPE_UHEXA_PREFIX2){
+                    // This unicode escape is actually escaped itself, so we don't need to perform the real unescaping,
+                    // but we need to merge the "\\" into "\"
+
+                    if (strBuilder == null) {
+                        strBuilder = new StringBuilder(max + 5);
+                    }
+
+                    if (i - readOffset > 0) {
+                        strBuilder.append(text, readOffset, i);
+                    }
+
+                    strBuilder.append('\\');
+
+                    readOffset = i + 2;
+
+                    i++;
+                    continue;
+
                 } else {
 
                     // Other escape sequences will not be processed in this unescape step.
@@ -215,5 +234,5 @@ public final class EscapeUtils {
 	    super();
     }
 
-	
+
 }
