@@ -38,6 +38,8 @@ import org.thymeleaf.standard.expression.StandardConversionService;
 import org.thymeleaf.standard.expression.StandardExpressionObjectFactory;
 import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.standard.inline.IStandardJavaScriptSerializer;
+import org.thymeleaf.standard.inline.StandardJavaScriptSerializer;
 import org.thymeleaf.standard.processor.StandardActionTagProcessor;
 import org.thymeleaf.standard.processor.StandardAltTitleTagProcessor;
 import org.thymeleaf.standard.processor.StandardAssertTagProcessor;
@@ -124,12 +126,8 @@ public class StandardDialect
     private IStandardVariableExpressionEvaluator variableExpressionEvaluator = null;
     private IStandardExpressionParser expressionParser = new StandardExpressionParser();
     private IStandardConversionService conversionService = new StandardConversionService();
+    private IStandardJavaScriptSerializer javaScriptSerializer = new StandardJavaScriptSerializer(true);
 
-
-
-    // TODO All setters here should probably be removed (modifications --> extension)
-
-    // TODO Wouldn't it be cleaner if getProcessors() didn't receive the String with the dialectPrefix?
 
 
 
@@ -164,7 +162,6 @@ public class StandardDialect
      * </p>
      *
      * @return the Standard Variable Expression Evaluator object.
-     * @since 2.1.0
      */
     public IStandardVariableExpressionEvaluator getVariableExpressionEvaluator() {
         if (this.variableExpressionEvaluator == null) {
@@ -194,7 +191,6 @@ public class StandardDialect
      * </p>
      *
      * @param variableExpressionEvaluator the new Standard Variable Expression Evaluator object. Cannot be null.
-     * @since 2.1.0
      */
     public void setVariableExpressionEvaluator(final IStandardVariableExpressionEvaluator variableExpressionEvaluator) {
         Validate.notNull(variableExpressionEvaluator, "Standard Variable Expression Evaluator cannot be null");
@@ -212,7 +208,6 @@ public class StandardDialect
      * </p>
      *
      * @return the Standard Expression Parser object.
-     * @since 2.1.0
      */
     public IStandardExpressionParser getExpressionParser() {
         return this.expressionParser;
@@ -235,7 +230,6 @@ public class StandardDialect
      * </p>
      *
      * @param expressionParser the Standard Expression Parser object to be used. Cannot be null.
-     * @since 2.1.0
      */
     public void setExpressionParser(final IStandardExpressionParser expressionParser) {
         Validate.notNull(expressionParser, "Standard Expression Parser cannot be null");
@@ -254,7 +248,6 @@ public class StandardDialect
      * </p>
      *
      * @return the Standard Conversion Service object.
-     * @since 2.1.0
      */
     public IStandardConversionService getConversionService() {
         return this.conversionService;
@@ -278,11 +271,49 @@ public class StandardDialect
      * </p>
      *
      * @param conversionService the Standard ConversionService object to be used. Cannot be null.
-     * @since 2.1.0
      */
     public void setConversionService(final IStandardConversionService conversionService) {
         Validate.notNull(conversionService, "Standard Conversion Service cannot be null");
         this.conversionService = conversionService;
+    }
+
+
+    /**
+     * <p>
+     *   Returns the Standard JavaScript Serializer (implementation of {@link IStandardJavaScriptSerializer})
+     *   that is configured to be used at this instance of the Standard Dialect.
+     * </p>
+     * <p>
+     *   This will be {@link StandardJavaScriptSerializer} by default.
+     * </p>
+     *
+     * @return the Standard JavaScript Serializer object.
+     */
+    public IStandardJavaScriptSerializer getJavaScriptSerializer() {
+        return this.javaScriptSerializer;
+    }
+
+
+    /**
+     * <p>
+     *   Sets the Standard JavaScript Serializer (implementation of {@link IStandardJavaScriptSerializer})
+     *   that should to be used at this instance of the Standard Dialect.
+     * </p>
+     * <p>
+     *   This will be {@link StandardJavaScriptSerializer} by default.
+     * </p>
+     * <p>
+     *   This method has no effect once the Template Engine has been initialized.
+     * </p>
+     * <p>
+     *   Objects set here should be <b>thread-safe</b>.
+     * </p>
+     *
+     * @param javaScriptSerializer the Standard JavaScript Serializer object to be used. Cannot be null.
+     */
+    public void setJavaScriptSerializer(final IStandardJavaScriptSerializer javaScriptSerializer) {
+        Validate.notNull(javaScriptSerializer, "Standard JavaScript Serializer cannot be null");
+        this.javaScriptSerializer = javaScriptSerializer;
     }
 
 

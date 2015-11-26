@@ -52,7 +52,7 @@ public final class EscapedAttributeUtils {
          * There is no standard way to escape/unescape in TEXT modes, but given TEXT mode is many times used for
          * markup (HTML or XML templates or inlined fragments), we will use HTML escaping/unescaping for TEXT mode.
          * Besides, this is consistent with the fact that TEXT-mode escaped output will also be HTML-escaped by
-         * processors and inlining utilities in the Standard Dialects (see the StandardEscapedOutputUtils class).
+         * processors and inlining utilities in the Standard Dialects.
          */
         switch (templateMode) {
 
