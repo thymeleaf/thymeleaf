@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.standard.inline;
+package org.thymeleaf.standard.serializer;
 
 
 import java.io.Writer;
@@ -28,11 +28,13 @@ import java.io.Writer;
  *   with the Standard Dialect.
  * </p>
  * <p>
- *
+ *   JavaScript serializer objects are in charge of outputting values both in templates using
+ *   {@link org.thymeleaf.templatemode.TemplateMode#JAVASCRIPT} and in inlined code by means of e.g.
+ *   <tt>th:inline="javascript"</tt> blocks.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
- *
+ * @see StandardJavaScriptSerializer
  * @since 3.0.0
  *
  */

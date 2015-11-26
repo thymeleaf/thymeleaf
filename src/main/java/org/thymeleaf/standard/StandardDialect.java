@@ -38,8 +38,6 @@ import org.thymeleaf.standard.expression.StandardConversionService;
 import org.thymeleaf.standard.expression.StandardExpressionObjectFactory;
 import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
-import org.thymeleaf.standard.inline.IStandardJavaScriptSerializer;
-import org.thymeleaf.standard.inline.StandardJavaScriptSerializer;
 import org.thymeleaf.standard.processor.StandardActionTagProcessor;
 import org.thymeleaf.standard.processor.StandardAltTitleTagProcessor;
 import org.thymeleaf.standard.processor.StandardAssertTagProcessor;
@@ -85,6 +83,10 @@ import org.thymeleaf.standard.processor.StandardXmlBaseTagProcessor;
 import org.thymeleaf.standard.processor.StandardXmlLangTagProcessor;
 import org.thymeleaf.standard.processor.StandardXmlNsTagProcessor;
 import org.thymeleaf.standard.processor.StandardXmlSpaceTagProcessor;
+import org.thymeleaf.standard.serializer.IStandardCSSSerializer;
+import org.thymeleaf.standard.serializer.IStandardJavaScriptSerializer;
+import org.thymeleaf.standard.serializer.StandardCSSSerializer;
+import org.thymeleaf.standard.serializer.StandardJavaScriptSerializer;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
@@ -127,6 +129,7 @@ public class StandardDialect
     private IStandardExpressionParser expressionParser = new StandardExpressionParser();
     private IStandardConversionService conversionService = new StandardConversionService();
     private IStandardJavaScriptSerializer javaScriptSerializer = new StandardJavaScriptSerializer(true);
+    private IStandardCSSSerializer cssSerializer = new StandardCSSSerializer();
 
 
 
@@ -314,6 +317,45 @@ public class StandardDialect
     public void setJavaScriptSerializer(final IStandardJavaScriptSerializer javaScriptSerializer) {
         Validate.notNull(javaScriptSerializer, "Standard JavaScript Serializer cannot be null");
         this.javaScriptSerializer = javaScriptSerializer;
+    }
+
+
+    /**
+     * <p>
+     *   Returns the Standard CSS Serializer (implementation of {@link IStandardCSSSerializer})
+     *   that is configured to be used at this instance of the Standard Dialect.
+     * </p>
+     * <p>
+     *   This will be {@link StandardCSSSerializer} by default.
+     * </p>
+     *
+     * @return the Standard CSS Serializer object.
+     */
+    public IStandardCSSSerializer getCSSSerializer() {
+        return this.cssSerializer;
+    }
+
+
+    /**
+     * <p>
+     *   Sets the Standard CSS Serializer (implementation of {@link IStandardCSSSerializer})
+     *   that should to be used at this instance of the Standard Dialect.
+     * </p>
+     * <p>
+     *   This will be {@link StandardCSSSerializer} by default.
+     * </p>
+     * <p>
+     *   This method has no effect once the Template Engine has been initialized.
+     * </p>
+     * <p>
+     *   Objects set here should be <b>thread-safe</b>.
+     * </p>
+     *
+     * @param cssSerializer the Standard CSS Serializer object to be used. Cannot be null.
+     */
+    public void setCSSSerializer(final IStandardCSSSerializer cssSerializer) {
+        Validate.notNull(cssSerializer, "Standard CSS Serializer cannot be null");
+        this.cssSerializer = cssSerializer;
     }
 
 

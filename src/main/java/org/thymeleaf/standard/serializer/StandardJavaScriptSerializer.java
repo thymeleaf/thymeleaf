@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.standard.inline;
+package org.thymeleaf.standard.serializer;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -48,10 +48,27 @@ import org.unbescape.json.JsonEscapeType;
 
 
 /**
+ * <p>
+ *   Default implementation of the {@link IStandardJavaScriptSerializer}.
+ * </p>
+ * <p>
+ *   This implementation will delegate serialization to the
+ *   <a href="http://wiki.fasterxml.com/JacksonHome">Jackson JSON processor library</a> if it is found in the
+ *   classpath. If not, it will default to a custom implementation that produces similar results (but is less
+ *   flexible).
+ * </p>
+ * <p>
+ *   If a Thymeleaf application uses JavaScript template processing in a significant amount of templates or
+ *   situations, the use of Jackson (2.6+) is recommended.
+ * </p>
+ * <p>
+ *   Note that, even if Jackson is present in the classpath, its usage can be prevented by means of the
+ *   <tt>useJacksonIfAvailable</tt> constructor flag.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 3.0.0
  *
  */
 public final class StandardJavaScriptSerializer implements IStandardJavaScriptSerializer {
@@ -114,7 +131,7 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
                 this.mapper.writeValue(writer, object);
             } catch (final IOException e) {
                 throw new TemplateProcessingException(
-                        "An exception was raised while trying to serialize object using Jackson", e);
+                        "An exception was raised while trying to serialize object to JavaScript using Jackson", e);
             }
         }
 
@@ -186,7 +203,7 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
                 writeValue(writer, object);
             } catch (final IOException e) {
                 throw new TemplateProcessingException(
-                        "An exception was raised while trying to serialize object using Jackson", e);
+                        "An exception was raised while trying to serialize object to JavaScript using the default serializer", e);
             }
         }
 

@@ -28,7 +28,6 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.standard.StandardDialect;
-import org.thymeleaf.standard.util.StandardCSSUtils;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 import org.unbescape.html.HtmlEscape;
@@ -95,11 +94,13 @@ public final class StandardTextTagProcessor extends AbstractStandardExpressionAt
             case XML:
                 return (input == null? "" : XmlEscape.escapeXml10(input.toString()));
             case JAVASCRIPT:
-                final StringWriter stringWriter = new StringWriter();
-                ((StandardDialect)getDialect()).getJavaScriptSerializer().serializeValue(input, stringWriter);
-                return stringWriter.toString();
+                final StringWriter jsStringWriter = new StringWriter();
+                ((StandardDialect)getDialect()).getJavaScriptSerializer().serializeValue(input, jsStringWriter);
+                return jsStringWriter.toString();
             case CSS:
-                return StandardCSSUtils.print(input);
+                final StringWriter cssStringWriter = new StringWriter();
+                ((StandardDialect)getDialect()).getCSSSerializer().serializeValue(input, cssStringWriter);
+                return cssStringWriter.toString();
             case RAW:
                 return (input == null? "" : input.toString());
             default:
