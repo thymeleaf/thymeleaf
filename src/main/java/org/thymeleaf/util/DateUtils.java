@@ -531,17 +531,9 @@ public final class DateUtils {
             formatted = ISO8601_DATE_FORMAT.format(targetDate);
         }
 
-        final StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append(formatted, 0, 23);
-
-        final String formattedTimeZone = formatted.substring(23);
-        if (formattedTimeZone.equals("+0000")) {
-            strBuilder.append("Z");
-        } else {
-            strBuilder.append(formattedTimeZone,0,3);
-            strBuilder.append(':');
-            strBuilder.append(formattedTimeZone,3,5);
-        }
+        final StringBuilder strBuilder = new StringBuilder(formatted.length() + 1);
+        strBuilder.append(formatted);
+        strBuilder.insert(26, ':');
 
         return strBuilder.toString();
 
