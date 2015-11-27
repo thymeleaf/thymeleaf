@@ -121,7 +121,7 @@ public interface IElementTagStructureHandler {
 
     /**
      * <p>
-     *   Instructs the engine to set a new body for the current element, in the form of a <tt>String</tt>.
+     *   Instructs the engine to set a new body for the current element, in the form of a <tt>CharSequence</tt>.
      * </p>
      * <p>
      *   This is the way a processor can change what is shown inside an element during processing. For example,
@@ -133,7 +133,7 @@ public interface IElementTagStructureHandler {
      *                    any {@link org.thymeleaf.processor.text.ITextProcessor} processors might be applied on it,
      *                    or not.
      */
-    public void setBody(final String text, final boolean processable);
+    public void setBody(final CharSequence text, final boolean processable);
 
     /**
      * <p>
@@ -183,7 +183,7 @@ public interface IElementTagStructureHandler {
 
     /**
      * <p>
-     *   Instructs the engine to replace the current element with the specified text (a <tt>String</tt>).
+     *   Instructs the engine to replace the current element with the specified text (a <tt>CharSequence</tt>).
      * </p>
      * <p>
      *   Note it is the <em>complete element</em> that will be replaced with the specified text, i.e. the
@@ -193,7 +193,7 @@ public interface IElementTagStructureHandler {
      * @param text the text to be used as a replacement.
      * @param processable whether the text should be considered <em>processable</em> or not.
      */
-    public void replaceWith(final String text, final boolean processable);
+    public void replaceWith(final CharSequence text, final boolean processable);
 
     /**
      * <p>

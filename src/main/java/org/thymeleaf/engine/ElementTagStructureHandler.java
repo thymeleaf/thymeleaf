@@ -39,7 +39,7 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
 
 
     boolean setBodyText;
-    String setBodyTextValue;
+    CharSequence setBodyTextValue;
     boolean setBodyTextProcessable;
 
     boolean setBodyModel;
@@ -55,7 +55,7 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
     boolean insertImmediatelyAfterModelProcessable;
 
     boolean replaceWithText;
-    String replaceWithTextValue;
+    CharSequence replaceWithTextValue;
     boolean replaceWithTextProcessable;
 
     boolean replaceWithModel;
@@ -100,7 +100,7 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
 
 
 
-    public void setBody(final String text, final boolean processable) {
+    public void setBody(final CharSequence text, final boolean processable) {
         resetAllButLocalVariables();
         Validate.notNull(text, "Text cannot be null");
         this.setBodyText = true;
@@ -136,7 +136,7 @@ final class ElementTagStructureHandler implements IElementTagStructureHandler {
     }
 
 
-    public void replaceWith(final String text, final boolean processable) {
+    public void replaceWith(final CharSequence text, final boolean processable) {
         resetAllButLocalVariables();
         Validate.notNull(text, "Text cannot be null");
         this.replaceWithText = true;
