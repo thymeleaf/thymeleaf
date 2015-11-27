@@ -26,8 +26,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.text.ITextRepository;
-import org.thymeleaf.util.AggregateCharSequence;
-import org.thymeleaf.util.LazyProcessingCharSequence;
+import org.thymeleaf.text.IWritableCharSequence;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -198,14 +197,10 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
             // resources than writing String objects
             writer.write(this.buffer, this.offset, this.length);
         } else {
-            if (this.text instanceof AggregateCharSequence) {
-                // In the special case we are using an AggregateCharSequence, we will avoid creating a String
+            if (this.text instanceof IWritableCharSequence) {
+                // In the special case we are using a writable CharSequence, we will avoid creating a String
                 // for the whole content
-                ((AggregateCharSequence) this.text).write(writer);
-            } else if (this.text instanceof LazyProcessingCharSequence) {
-                // In the special case we are using an LazyProcessingCharSequence, we will avoid creating a String
-                // for the whole content
-                ((LazyProcessingCharSequence) this.text).write(writer);
+                ((IWritableCharSequence) this.text).write(writer);
             } else {
                 writer.write(this.text.toString());
             }

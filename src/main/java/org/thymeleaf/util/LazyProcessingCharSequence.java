@@ -48,15 +48,10 @@ import org.thymeleaf.engine.TemplateModel;
  * @since 3.0.0
  *
  */
-public final class LazyProcessingCharSequence implements CharSequence {
-
+public final class LazyProcessingCharSequence extends AbstractLazyCharSequence {
 
     private final ITemplateContext context;
     private final TemplateModel templateModel;
-
-    private String resolvedText = null;
-
-
 
 
     public LazyProcessingCharSequence(final ITemplateContext context, final TemplateModel templateModel) {
@@ -78,115 +73,17 @@ public final class LazyProcessingCharSequence implements CharSequence {
 
 
 
-    private void resolveText() {
-
-        if (this.resolvedText != null) {
-            return;
-        }
-
+    @Override
+    protected String resolveText() {
         final StringWriter stringWriter = new StringWriter();
         this.context.getConfiguration().getTemplateManager().process(this.templateModel, this.context, stringWriter);
-        this.resolvedText = stringWriter.toString();
-
+        return stringWriter.toString();
     }
-
-
-
-
-    public String getText() {
-        if (this.resolvedText == null) {
-            resolveText();
-        }
-        return this.resolvedText;
-    }
-
-
-
-
-    public int length() {
-        if (this.resolvedText == null) {
-            resolveText();
-        }
-        return this.resolvedText.length();
-    }
-
-
-
-
-    public char charAt(final int index) {
-        if (this.resolvedText == null) {
-            resolveText();
-        }
-        return this.resolvedText.charAt(index);
-    }
-
-
-
-
-    public CharSequence subSequence(final int beginIndex, final int endIndex) {
-        if (this.resolvedText == null) {
-            resolveText();
-        }
-        return this.resolvedText.subSequence(beginIndex, endIndex);
-    }
-
-
-    /**
-     * <p>
-     *     This method can avoid the need to create a {@link String} object containing all the contents in
-     *     this character sequence just when we want to write it to a {@link Writer}.
-     * </p>
-     *
-     * @param writer the writer to write the character sequence to.
-     * @throws IOException if an input/output exception happens during writing
-     */
-    public void write(final Writer writer) throws IOException {
-        if (writer == null) {
-            throw new IllegalArgumentException("Writer cannot be null");
-        }
-        if (this.resolvedText != null) {
-            writer.write(this.resolvedText);
-        } else {
-            this.context.getConfiguration().getTemplateManager().process(this.templateModel, this.context, writer);
-        }
-    }
-
-
 
 
     @Override
-    public boolean equals(final Object o) {
-
-        if (this == o) {
-            return true;
-        }
-
-        if (!(o instanceof LazyProcessingCharSequence)) {
-            return false;
-        }
-
-        final LazyProcessingCharSequence that = (LazyProcessingCharSequence) o;
-
-        return this.getText().equals(that.getText());
-
-    }
-
-
-
-
-    public int hashCode() {
-        if (this.resolvedText == null) {
-            resolveText();
-        }
-        return this.resolvedText.hashCode();
-    }
-
-
-
-
-    @Override
-    public String toString() {
-        return getText();
+    protected void writeUnresolved(final Writer writer) throws IOException {
+        this.context.getConfiguration().getTemplateManager().process(this.templateModel, this.context, writer);
     }
 
 

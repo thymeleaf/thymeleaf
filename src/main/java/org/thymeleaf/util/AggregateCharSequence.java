@@ -24,6 +24,8 @@ import java.io.Serializable;
 import java.io.Writer;
 import java.util.List;
 
+import org.thymeleaf.text.IWritableCharSequence;
+
 
 /**
  * <p>
@@ -52,7 +54,7 @@ import java.util.List;
  * @since 3.0.0
  *
  */
-public final class AggregateCharSequence implements Serializable, CharSequence {
+public final class AggregateCharSequence implements Serializable, IWritableCharSequence {
 
 
     protected static final long serialVersionUID = 823987612L;
@@ -306,19 +308,7 @@ public final class AggregateCharSequence implements Serializable, CharSequence {
     }
 
 
-    /**
-     * <p>
-     *     This method can avoid the need to create a {@link String} object containing all the contents in
-     *     this character sequence just when we want to write it to a {@link Writer}.
-     * </p>
-     * <p>
-     *     The implementation simply iterates each of the contained {@link CharSequence} objects and passes
-     *     each one to the writer passed as argument.
-     * </p>
-     *
-     * @param writer the writer to write the character sequence to.
-     * @throws IOException if an input/output exception happens during writing
-     */
+
     public void write(final Writer writer) throws IOException {
         if (writer == null) {
             throw new IllegalArgumentException("Writer cannot be null");
