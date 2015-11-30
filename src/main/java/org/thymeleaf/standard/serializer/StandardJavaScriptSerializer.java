@@ -249,7 +249,7 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
                 writeMap(writer, (Map<?, ?>) object);
                 return;
             }
-            if (object.getClass().isEnum()) {
+            if (object instanceof Enum<?>) {
                 writeEnum(writer, object);
                 return;
             }
@@ -456,13 +456,7 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
         private static void writeEnum(final Writer writer, final Object object) throws IOException {
 
             final Enum<?> enumObject = (Enum<?>) object;
-            final Class<?> enumClass = object.getClass();
-
-            final Map<String,Object> properties = new LinkedHashMap<String, Object>(3, 1.0f);
-            properties.put("$type", enumClass.getSimpleName());
-            properties.put("$name", enumObject.name());
-
-            writeMap(writer, properties);
+            writeString(writer, enumObject.toString());
 
         }
 
