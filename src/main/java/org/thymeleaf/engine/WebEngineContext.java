@@ -334,6 +334,7 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
             int size = 0;
             final Enumeration<String> attributeNames = this.session.getAttributeNames();
             while (attributeNames.hasMoreElements()) {
+                attributeNames.nextElement();
                 size++;
             }
             return size;
@@ -433,6 +434,7 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
             int size = 0;
             final Enumeration<String> attributeNames = this.servletContext.getAttributeNames();
             while (attributeNames.hasMoreElements()) {
+                attributeNames.nextElement();
                 size++;
             }
             return size;
