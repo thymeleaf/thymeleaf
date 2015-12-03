@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.standard.processor;
 
-import java.io.StringWriter;
-
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
@@ -29,7 +27,7 @@ import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.util.Validate;
+import org.thymeleaf.util.LazyEscapingCharSequence;
 import org.unbescape.html.HtmlEscape;
 import org.unbescape.xml.XmlEscape;
 
@@ -61,52 +59,72 @@ public final class StandardTextTagProcessor extends AbstractStandardExpressionAt
             final Object expressionResult,
             final IElementTagStructureHandler structureHandler) {
 
-        final String text = produceEscapedOutput(getTemplateMode(), expressionResult);
+        final TemplateMode templateMode = getTemplateMode();
 
+        /*
+         * Depending on the template mode and the length of the text to be output escaped, we will try to opt for
+         * the most resource-efficient alternative.
+         *
+         *    * If we are outputting RAW, there is no escape to do, just pass through.
+         *    * If we are outputting HTML, XML or TEXT we know output will be textual (result of calling .toString() on
+         *      the expression result), and therefore we can decide between an immediate vs lazy escaping alternative
+         *      depending on size. We will perform lazy escaping, writing directly to output Writer, if length > 100.
+         *    * If we are outputting JAVASCRIPT or CSS, we will always pass the expression result unchanged to a lazy
+         *      escape processor, so that whatever the JS/CSS serializer wants to do, it does it directly on the
+         *      output Writer and the entire results are never really needed in memory.
+         */
+
+        final CharSequence text;
+
+        if (templateMode != TemplateMode.JAVASCRIPT && templateMode != TemplateMode.CSS) {
+
+            final String input = (expressionResult == null? "" : expressionResult.toString());
+
+            if (templateMode == TemplateMode.RAW) {
+                // RAW -> just output
+
+                text = input;
+
+            } else {
+
+                if (input.length() > 100) {
+                    // Might be a large text -> Lazy escaping on the output Writer
+                    text = new LazyEscapingCharSequence((StandardDialect) getDialect(), templateMode, input);
+                } else {
+                    // Not large -> better use a bit more of memory, but be faster
+                    text = produceEscapedOutput(templateMode, input);
+                }
+
+            }
+
+        } else {
+            // JavaScript and CSS serializers always work directly on the output Writer, no need to store the entire
+            // serialized contents in memory (unless the Writer itself wants to do so).
+
+            text = new LazyEscapingCharSequence((StandardDialect) getDialect(), templateMode, expressionResult);
+
+        }
+
+        // Report the result to the engine, whichever the type of process we have applied
         structureHandler.setBody(text, false);
 
     }
 
 
+    private static String produceEscapedOutput(final TemplateMode templateMode, final String input) {
 
-    private String produceEscapedOutput(final TemplateMode templateMode, final Object input) {
-
-        Validate.notNull(templateMode, "Template mode cannot be null");
-
-        /*
-         * Producing ESCAPED output is somewhat simple in HTML or XML modes, as it simply consists of converting
-         * input into a String and HTML-or-XML-escaping it.
-         *
-         * But for JavaScript or CSS, it becomes a bit more complicated than that. JavaScript will output a complete
-         * literal (incl. single quotes) if input is a String or a non-recognized value type, but will print input
-         * as an object, number, boolean, etc. if it is recognized to be of one of these types. CSS will output
-         * quoted literals.
-         *
-         * Note that, when in TEXT mode, HTML escaping will be used (as TEXT is many times used for
-         * processing HTML templates)
-         */
         switch (templateMode) {
 
             case TEXT:
                 // fall-through
             case HTML:
-                return (input == null? "" : HtmlEscape.escapeHtml4Xml(input.toString()));
+                return HtmlEscape.escapeHtml4Xml(input);
             case XML:
-                return (input == null? "" : XmlEscape.escapeXml10(input.toString()));
-            case JAVASCRIPT:
-                final StringWriter jsStringWriter = new StringWriter();
-                ((StandardDialect)getDialect()).getJavaScriptSerializer().serializeValue(input, jsStringWriter);
-                return jsStringWriter.toString();
-            case CSS:
-                final StringWriter cssStringWriter = new StringWriter();
-                ((StandardDialect)getDialect()).getCSSSerializer().serializeValue(input, cssStringWriter);
-                return cssStringWriter.toString();
-            case RAW:
-                return (input == null? "" : input.toString());
+                return XmlEscape.escapeXml10(input);
             default:
                 throw new TemplateProcessingException(
                         "Unrecognized template mode " + templateMode + ". Cannot produce escaped output for " +
-                                "this template mode.");
+                        "this template mode.");
         }
 
     }

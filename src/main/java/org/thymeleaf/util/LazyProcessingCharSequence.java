@@ -20,7 +20,6 @@
 package org.thymeleaf.util;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 
 import org.thymeleaf.context.ITemplateContext;
@@ -75,7 +74,7 @@ public final class LazyProcessingCharSequence extends AbstractLazyCharSequence {
 
     @Override
     protected String resolveText() {
-        final StringWriter stringWriter = new StringWriter();
+        final Writer stringWriter = new FastStringWriter();
         this.context.getConfiguration().getTemplateManager().process(this.templateModel, this.context, stringWriter);
         return stringWriter.toString();
     }

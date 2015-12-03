@@ -224,8 +224,8 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
         super.resetAsCloneOfTemplateEvent(original);
         this.buffer = null;
         this.offset = -1;
-        this.text = original.getText(); // Need to call the method in order to force computing -- no buffer cloning!
-        this.length = this.text.length();
+        this.text = (original.text == null? original.getText() : original.text); // No buffer cloning!
+        this.length = original.length;
         this.whitespace = original.whitespace;
 
     }
