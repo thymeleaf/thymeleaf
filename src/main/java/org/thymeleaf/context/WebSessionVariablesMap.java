@@ -273,7 +273,7 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
         final HttpSession session = this.request.getSession(false);
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + session.hashCode();
+        result = prime * result + (session == null? 0 : session.hashCode());
         return result;
     }
 
