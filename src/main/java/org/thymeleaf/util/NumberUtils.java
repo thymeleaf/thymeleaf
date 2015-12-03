@@ -137,11 +137,16 @@ public final class NumberUtils {
         final int iFrom = from.intValue();
         final int iTo = to.intValue();
         final int iStep = step.intValue();
-        
+
         if (iFrom == iTo) {
             return new Integer[] {Integer.valueOf(iFrom)};
         }
-        
+
+        if (iStep == 0 || (iStep > 0 && iFrom > iTo) || (iStep < 0 && iFrom < iTo)) {
+            // with iStep == 0, this would only be valid if iFrom == iTo, which it isn't - the rest are impossible
+            throw new IllegalArgumentException("Cannot create sequence from " + iFrom + " to " + iTo + " with step " + iStep);
+        }
+
         final List<Integer> values = new ArrayList<Integer>(10);
         if (iFrom < iTo) {
             int i = iFrom;
@@ -154,10 +159,10 @@ public final class NumberUtils {
             int i = iFrom;
             while (i >= iTo) {
                 values.add(Integer.valueOf(i));
-                i -= iStep;
+                i += iStep;
             }
         }
-        
+
         return values.toArray(new Integer[values.size()]);
         
     }
