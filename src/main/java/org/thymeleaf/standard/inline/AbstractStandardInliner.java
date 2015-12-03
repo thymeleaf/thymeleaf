@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.standard.inline;
 
-import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
@@ -32,6 +32,7 @@ import org.thymeleaf.model.IText;
 import org.thymeleaf.postprocessor.IPostProcessor;
 import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.FastStringWriter;
 import org.thymeleaf.util.LazyProcessingCharSequence;
 import org.thymeleaf.util.Validate;
 
@@ -111,7 +112,7 @@ public abstract class AbstractStandardInliner implements IInliner {
 
             if (!this.writeToOutput || !(text instanceof IText)) {
 
-                final StringWriter stringWriter = new StringWriter();
+                final Writer stringWriter = new FastStringWriter(50);
                 templateManager.process(templateModel, context, stringWriter);
                 return stringWriter.toString();
 

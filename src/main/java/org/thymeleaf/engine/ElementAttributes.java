@@ -20,7 +20,6 @@
 package org.thymeleaf.engine;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +29,7 @@ import java.util.List;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.FastStringWriter;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -930,7 +930,7 @@ public final class ElementAttributes implements IElementAttributes {
 
 
     public final String toString() {
-        final StringWriter stringWriter = new StringWriter();
+        final Writer stringWriter = new FastStringWriter();
         try {
             write(stringWriter);
         } catch (final IOException e) {

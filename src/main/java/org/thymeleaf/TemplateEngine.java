@@ -19,7 +19,6 @@
  */
 package org.thymeleaf;
 
-import java.io.StringWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -47,6 +46,7 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.text.TextRepositories;
+import org.thymeleaf.util.FastStringWriter;
 import org.thymeleaf.util.LoggingUtils;
 import org.thymeleaf.util.Validate;
 
@@ -859,7 +859,7 @@ public class TemplateEngine implements ITemplateEngine {
 
 
     public final String process(final TemplateSpec templateSpec, final IContext context) {
-        final StringWriter stringWriter = new StringWriter();
+        final Writer stringWriter = new FastStringWriter(100);
         process(templateSpec, context, stringWriter);
         return stringWriter.toString();
     }

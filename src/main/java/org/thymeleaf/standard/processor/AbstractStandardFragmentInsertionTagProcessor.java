@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.standard.processor;
 
-import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +49,7 @@ import org.thymeleaf.standard.expression.ParsedFragmentSelection;
 import org.thymeleaf.standard.expression.ProcessedFragmentSelection;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EscapedAttributeUtils;
+import org.thymeleaf.util.FastStringWriter;
 import org.thymeleaf.util.StringUtils;
 
 /**
@@ -240,7 +241,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
             }
 
             // Once parameters are in order, just process the template in a nested template engine execution
-            final StringWriter stringWriter = new StringWriter();
+            final Writer stringWriter = new FastStringWriter(200);
             configuration.getTemplateManager().process(fragmentModel, context, stringWriter);
 
             // We will insert the result as NON-PROCESSABLE text (it's already been processed!)

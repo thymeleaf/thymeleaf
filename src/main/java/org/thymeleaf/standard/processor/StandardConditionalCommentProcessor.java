@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.standard.processor;
 
-import java.io.StringWriter;
-
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
@@ -31,6 +29,7 @@ import org.thymeleaf.processor.comment.AbstractCommentProcessor;
 import org.thymeleaf.processor.comment.ICommentStructureHandler;
 import org.thymeleaf.standard.util.StandardConditionalCommentUtils;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.FastStringWriter;
 
 /**
  *
@@ -89,7 +88,7 @@ public final class StandardConditionalCommentProcessor extends AbstractCommentPr
                         true);
 
 
-        final StringWriter writer = new StringWriter();
+        final FastStringWriter writer = new FastStringWriter(200);
 
         /*
          * Rebuild the conditional comment start expression

@@ -20,7 +20,6 @@
 package org.thymeleaf.engine;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 
 import org.thymeleaf.IEngineConfiguration;
@@ -40,6 +39,7 @@ import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.FastStringWriter;
 import org.thymeleaf.util.Validate;
 
 
@@ -213,7 +213,7 @@ final class Model implements IModel {
     @Override
     public String toString() {
         try {
-            final StringWriter writer = new StringWriter();
+            final Writer writer = new FastStringWriter();
             write(writer);
             return writer.toString();
         } catch (final IOException e) {

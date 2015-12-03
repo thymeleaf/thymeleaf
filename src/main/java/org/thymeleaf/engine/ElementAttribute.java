@@ -20,11 +20,11 @@
 package org.thymeleaf.engine;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IElementAttributes;
+import org.thymeleaf.util.FastStringWriter;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -163,7 +163,7 @@ final class ElementAttribute {
 
 
     public String toString() {
-        final StringWriter stringWriter = new StringWriter();
+        final Writer stringWriter = new FastStringWriter();
         try {
             write(stringWriter);
         } catch (final IOException e) {

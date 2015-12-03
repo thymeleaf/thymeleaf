@@ -20,11 +20,12 @@
 package org.thymeleaf.engine;
 
 import java.io.IOException;
-import java.io.StringWriter;
+import java.io.Writer;
 
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IElementTag;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.FastStringWriter;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -149,7 +150,7 @@ abstract class AbstractElementTag extends AbstractTemplateEvent implements IElem
 
 
     public String toString() {
-        final StringWriter stringWriter = new StringWriter();
+        final Writer stringWriter = new FastStringWriter();
         try {
             write(stringWriter);
         } catch (final IOException e) {
