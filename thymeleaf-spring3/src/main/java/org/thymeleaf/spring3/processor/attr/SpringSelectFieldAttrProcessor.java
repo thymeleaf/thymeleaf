@@ -140,7 +140,7 @@ public final class SpringSelectFieldAttrProcessor
                         childTag.setRecomputeProcessorsImmediately(true);
                     }
                     
-                } else if ("optgroup".equals(childTagName)) {
+                } else if ("optgroup".equals(childTagName) || (childTagName.endsWith(":block"))) {
 
                     processOptionChildren(childTag, selectAttrName, selectAttrValue);
                     
