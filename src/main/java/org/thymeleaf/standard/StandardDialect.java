@@ -58,6 +58,7 @@ import org.thymeleaf.standard.processor.StandardIfTagProcessor;
 import org.thymeleaf.standard.processor.StandardIncludeTagProcessor;
 import org.thymeleaf.standard.processor.StandardInlineEnablementTemplateBoundariesProcessor;
 import org.thymeleaf.standard.processor.StandardInlineHTMLTagProcessor;
+import org.thymeleaf.standard.processor.StandardInlineTextualTagProcessor;
 import org.thymeleaf.standard.processor.StandardInlineXMLTagProcessor;
 import org.thymeleaf.standard.processor.StandardInliningTextProcessor;
 import org.thymeleaf.standard.processor.StandardInsertTagProcessor;
@@ -587,6 +588,7 @@ public class StandardDialect
         // No th:fragment attribute in text modes: no fragment selection available!
         processors.add(new StandardIfTagProcessor(dialect, TemplateMode.TEXT, dialectPrefix));
         // No th:include to be added here, as it is already deprecated since 3.0
+        processors.add(new StandardInlineTextualTagProcessor(dialect, TemplateMode.TEXT, dialectPrefix));
         processors.add(new StandardInsertTagProcessor(dialect, TemplateMode.TEXT, dialectPrefix));
         processors.add(new StandardObjectTagProcessor(dialect, TemplateMode.TEXT, dialectPrefix));
         processors.add(new StandardRemoveTagProcessor(dialect, TemplateMode.TEXT, dialectPrefix));
@@ -639,6 +641,7 @@ public class StandardDialect
         // No th:fragment attribute in text modes: no fragment selection available!
         processors.add(new StandardIfTagProcessor(dialect, TemplateMode.JAVASCRIPT, dialectPrefix));
         // No th:include to be added here, as it is already deprecated since 3.0
+        processors.add(new StandardInlineTextualTagProcessor(dialect, TemplateMode.JAVASCRIPT, dialectPrefix));
         processors.add(new StandardInsertTagProcessor(dialect, TemplateMode.JAVASCRIPT, dialectPrefix));
         processors.add(new StandardObjectTagProcessor(dialect, TemplateMode.JAVASCRIPT, dialectPrefix));
         processors.add(new StandardRemoveTagProcessor(dialect, TemplateMode.JAVASCRIPT, dialectPrefix));
@@ -691,6 +694,7 @@ public class StandardDialect
         // No th:fragment attribute in text modes: no fragment selection available!
         processors.add(new StandardIfTagProcessor(dialect, TemplateMode.CSS, dialectPrefix));
         // No th:include to be added here, as it is already deprecated since 3.0
+        processors.add(new StandardInlineTextualTagProcessor(dialect, TemplateMode.CSS, dialectPrefix));
         processors.add(new StandardInsertTagProcessor(dialect, TemplateMode.CSS, dialectPrefix));
         processors.add(new StandardObjectTagProcessor(dialect, TemplateMode.CSS, dialectPrefix));
         processors.add(new StandardRemoveTagProcessor(dialect, TemplateMode.CSS, dialectPrefix));
