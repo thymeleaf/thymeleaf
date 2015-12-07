@@ -263,7 +263,6 @@ public class TemplateEngine implements ITemplateEngine {
         setCacheManager(new StandardCacheManager());
         setMessageResolver(new StandardMessageResolver());
         setDialect(new StandardDialect());
-        setTemplateResolver(new StringTemplateResolver());
     }
 
 
@@ -301,7 +300,7 @@ public class TemplateEngine implements ITemplateEngine {
      *   be overridden.
      * </p>
      */
-    private void initialize() {
+    void initialize() {
 
         if (!this.initialized) {
 
@@ -311,12 +310,9 @@ public class TemplateEngine implements ITemplateEngine {
 
                     logger.debug("[THYMELEAF] INITIALIZING TEMPLATE ENGINE");
 
-                    // We need at least one template resolver at this point - we set the StringTemplateResolver
-                    // as default, but someone might have overridden it, so we need to check just in case
-                    if (this.templateResolvers == null || this.templateResolvers.isEmpty()) {
-                        throw new ConfigurationException(
-                                "No Template Resolvers have been configured for this TemplateEngine instance. " +
-                                "At least one Template Resolver is required.");
+                    // We need at least one template resolver at this point - we set the StringTemplateResolver as default
+                    if (this.templateResolvers.isEmpty()) {
+                        this.templateResolvers.add(new StringTemplateResolver());
                     }
 
                     this.configuration =
