@@ -305,19 +305,19 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
         char c0, c1;
         c0 = 0x0;
         boolean inInline = false;
-        while (n-- != 0 && (this.whitespace == null || this.inlineable == null)) {
+        while (n-- != 0 && this.inlineable == null) {
             c1 = text.charAt(n);
-            if (this.whitespace == null && !Character.isWhitespace(c1)) {
-                this.whitespace = Boolean.FALSE;
-            }
-            if (this.inlineable == null) {
+            if (c1 != ' ' && c1 != '\n') { // shortcut - most characters in many templates are just whitespace.
+                if (this.whitespace == null && !Character.isWhitespace(c1)) {
+                    this.whitespace = Boolean.FALSE;
+                }
                 if (c1 == ']' && c0 == ']') {
                     inInline = true;
                 } else if (inInline && c1 == '[' && c0 == '[') {
                     this.inlineable = Boolean.TRUE;
                 }
-                c0 = c1;
             }
+            c0 = c1;
         }
 
         // Not having the contrary been proved, apply the defaults
@@ -343,19 +343,19 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
         char c0, c1;
         c0 = 0x0;
         boolean inInline = false;
-        while (n-- != off && (this.whitespace == null || this.inlineable == null)) {
+        while (n-- != off && this.inlineable == null) {
             c1 = buffer[n];
-            if (this.whitespace == null && !Character.isWhitespace(c1)) {
-                this.whitespace = Boolean.FALSE;
-            }
-            if (this.inlineable == null) {
+            if (c1 != ' ' && c1 != '\n') { // shortcut - most characters in many templates are just whitespace.
+                if (this.whitespace == null && !Character.isWhitespace(c1)) {
+                    this.whitespace = Boolean.FALSE;
+                }
                 if (c1 == ']' && c0 == ']') {
                     inInline = true;
                 } else if (inInline && c1 == '[' && c0 == '[') {
                     this.inlineable = Boolean.TRUE;
                 }
-                c0 = c1;
             }
+            c0 = c1;
         }
 
         // Not having the contrary been proved, apply the defaults
