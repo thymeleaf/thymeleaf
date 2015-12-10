@@ -26,6 +26,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.text.ITextRepository;
+import org.thymeleaf.text.IWritableCharSequence;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -46,7 +47,7 @@ final class Comment extends AbstractTemplateEvent implements IComment, IEngineTe
     private int offset;
 
     private String comment;
-    private String content;
+    private CharSequence content;
 
     private int commentLength;
     private int contentLength;
@@ -75,7 +76,7 @@ final class Comment extends AbstractTemplateEvent implements IComment, IEngineTe
 
 
     // Meant to be called only from the model factory
-    Comment(final ITextRepository textRepository, final String content) {
+    Comment(final ITextRepository textRepository, final CharSequence content) {
         super();
         this.textRepository = textRepository;
         setContent(content);
@@ -118,7 +119,7 @@ final class Comment extends AbstractTemplateEvent implements IComment, IEngineTe
 
         }
 
-        return this.content;
+        return this.content.toString();
 
     }
 
@@ -126,6 +127,10 @@ final class Comment extends AbstractTemplateEvent implements IComment, IEngineTe
 
 
     public int length() {
+        if (this.commentLength == -1 && this.content != null) {
+            this.contentLength = this.content.length();
+            this.commentLength = COMMENT_PREFIX.length() + this.contentLength + COMMENT_SUFFIX.length();
+        }
         return this.commentLength;
     }
 
@@ -157,7 +162,7 @@ final class Comment extends AbstractTemplateEvent implements IComment, IEngineTe
         int subLen = end - start;
 
         if (this.comment != null || this.content != null) {
-            if (start == 0 && subLen == this.commentLength) {
+            if (start == 0 && subLen == length()) {
                 return getComment();
             }
             return getComment().subSequence(start, end);
@@ -196,7 +201,7 @@ final class Comment extends AbstractTemplateEvent implements IComment, IEngineTe
 
 
 
-    public void setContent(final String content) {
+    public void setContent(final CharSequence content) {
 
         if (content == null) {
             throw new IllegalArgumentException("Comment content cannot be null");
@@ -207,8 +212,8 @@ final class Comment extends AbstractTemplateEvent implements IComment, IEngineTe
         this.content = content;
         this.comment = null;
 
-        this.contentLength = content.length();
-        this.commentLength = COMMENT_PREFIX.length() + this.contentLength + COMMENT_SUFFIX.length();
+        this.contentLength = -1;
+        this.commentLength = -1;
 
         this.buffer = null;
         this.offset = -1;
@@ -236,7 +241,13 @@ final class Comment extends AbstractTemplateEvent implements IComment, IEngineTe
             writer.write(this.comment);
         } else { // this.content != null
             writer.write(COMMENT_PREFIX);
-            writer.write(this.content);
+            if (this.content instanceof IWritableCharSequence) {
+                // In the special case we are using a writable CharSequence, we will avoid creating a String
+                // for the whole content
+                ((IWritableCharSequence) this.content).write(writer);
+            } else {
+                writer.write(this.content.toString());
+            }
             writer.write(COMMENT_SUFFIX);
         }
     }
@@ -260,8 +271,8 @@ final class Comment extends AbstractTemplateEvent implements IComment, IEngineTe
         super.resetAsCloneOfTemplateEvent(original);
         this.buffer = null;
         this.offset = -1;
-        this.comment = original.getComment(); // Need to call the method in order to force computing -- no buffer cloning!
-        this.content = original.getContent(); // Need to call the method in order to force computing -- no buffer cloning!
+        this.comment = original.comment;
+        this.content = (original.content == null? original.getContent() : original.content); // No buffer cloning
         this.commentLength = original.commentLength;
         this.contentLength = original.contentLength;
         this.whitespace = original.whitespace;
@@ -331,7 +342,7 @@ final class Comment extends AbstractTemplateEvent implements IComment, IEngineTe
         this.whitespace = null;
         this.inlineable = null;
 
-        int n = this.contentLength;
+        int n = this.length() - (COMMENT_PREFIX.length() + COMMENT_SUFFIX.length());
 
         if (n == 0) {
             this.whitespace = Boolean.FALSE; // empty texts are NOT whitespace

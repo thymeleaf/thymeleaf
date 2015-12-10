@@ -390,7 +390,7 @@ public final class TemplateModel implements IModel {
             return this.wrapped.getContent();
         }
 
-        public void setContent(final String content) {
+        public void setContent(final CharSequence content) {
             immutableEventException();
         }
 
@@ -436,7 +436,7 @@ public final class TemplateModel implements IModel {
             return this.wrapped.getContent();
         }
 
-        public void setContent(final String content) {
+        public void setContent(final CharSequence content) {
             immutableEventException();
         }
 

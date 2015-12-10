@@ -26,6 +26,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.text.ITextRepository;
+import org.thymeleaf.text.IWritableCharSequence;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -46,7 +47,7 @@ final class CDATASection extends AbstractTemplateEvent implements ICDATASection,
     private int offset;
 
     private String cdataSection;
-    private String content;
+    private CharSequence content;
 
     private int cdataSectionLength;
     private int contentLength;
@@ -74,7 +75,7 @@ final class CDATASection extends AbstractTemplateEvent implements ICDATASection,
 
 
 
-    CDATASection(final ITextRepository textRepository, final String content) {
+    CDATASection(final ITextRepository textRepository, final CharSequence content) {
         super();
         this.textRepository = textRepository;
         setContent(content);
@@ -117,7 +118,7 @@ final class CDATASection extends AbstractTemplateEvent implements ICDATASection,
 
         }
 
-        return this.content;
+        return this.content.toString();
 
     }
 
@@ -125,6 +126,10 @@ final class CDATASection extends AbstractTemplateEvent implements ICDATASection,
 
 
     public int length() {
+        if (this.cdataSectionLength == -1 && this.content != null) {
+            this.contentLength = this.content.length();
+            this.cdataSectionLength = CDATA_PREFIX.length() + this.contentLength + CDATA_SUFFIX.length();
+        }
         return this.cdataSectionLength;
     }
 
@@ -156,7 +161,7 @@ final class CDATASection extends AbstractTemplateEvent implements ICDATASection,
         int subLen = end - start;
 
         if (this.cdataSection != null || this.content != null) {
-            if (start == 0 && subLen == this.cdataSectionLength) {
+            if (start == 0 && subLen == length()) {
                 return getCDATASection();
             }
             return getCDATASection().subSequence(start, end);
@@ -194,7 +199,7 @@ final class CDATASection extends AbstractTemplateEvent implements ICDATASection,
 
 
 
-    public void setContent(final String content) {
+    public void setContent(final CharSequence content) {
 
         if (content == null) {
             throw new IllegalArgumentException("CDATA Section content cannot be null");
@@ -205,8 +210,8 @@ final class CDATASection extends AbstractTemplateEvent implements ICDATASection,
         this.content = content;
         this.cdataSection = null;
 
-        this.contentLength = content.length();
-        this.cdataSectionLength = CDATA_PREFIX.length() + this.contentLength + CDATA_SUFFIX.length();
+        this.contentLength = -1;
+        this.cdataSectionLength = -1;
 
         this.buffer = null;
         this.offset = -1;
@@ -234,7 +239,13 @@ final class CDATASection extends AbstractTemplateEvent implements ICDATASection,
             writer.write(this.cdataSection);
         } else { // this.content != null
             writer.write(CDATA_PREFIX);
-            writer.write(this.content);
+            if (this.content instanceof IWritableCharSequence) {
+                // In the special case we are using a writable CharSequence, we will avoid creating a String
+                // for the whole content
+                ((IWritableCharSequence) this.content).write(writer);
+            } else {
+                writer.write(this.content.toString());
+            }
             writer.write(CDATA_SUFFIX);
         }
     }
@@ -258,8 +269,8 @@ final class CDATASection extends AbstractTemplateEvent implements ICDATASection,
         super.resetAsCloneOfTemplateEvent(original);
         this.buffer = null;
         this.offset = -1;
-        this.cdataSection = original.getCDATASection(); // Need to call the method in order to force computing -- no buffer cloning!
-        this.content = original.getContent(); // Need to call the method in order to force computing -- no buffer cloning!
+        this.cdataSection = original.cdataSection;
+        this.content = (original.content == null? original.getContent() : original.content); // No buffer cloning
         this.cdataSectionLength = original.cdataSectionLength;
         this.contentLength = original.contentLength;
         this.whitespace = original.whitespace;
@@ -329,7 +340,7 @@ final class CDATASection extends AbstractTemplateEvent implements ICDATASection,
         this.whitespace = null;
         this.inlineable = null;
 
-        int n = this.contentLength;
+        int n = this.length() - (CDATA_PREFIX.length() + CDATA_SUFFIX.length());
 
         if (n == 0) {
             this.whitespace = Boolean.FALSE; // empty texts are NOT whitespace

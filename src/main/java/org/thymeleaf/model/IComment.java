@@ -30,7 +30,7 @@ public interface IComment extends ITemplateEvent, CharSequence {
     public String getComment();
     public String getContent();
 
-    public void setContent(final String content);
+    public void setContent(final CharSequence content);
 
     public IComment cloneEvent();
 
