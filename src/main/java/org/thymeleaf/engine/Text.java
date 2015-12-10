@@ -71,7 +71,7 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
 
 
     // Meant to be called only from the model factory
-    Text(final ITextRepository textRepository, final String text) {
+    Text(final ITextRepository textRepository, final CharSequence text) {
         super();
         this.textRepository = textRepository;
         setText(text);
