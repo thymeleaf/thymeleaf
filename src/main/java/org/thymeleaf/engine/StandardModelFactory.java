@@ -98,7 +98,7 @@ public class StandardModelFactory implements IModelFactory {
 
 
 
-    public ICDATASection createCDATASection(final String content) {
+    public ICDATASection createCDATASection(final CharSequence content) {
         checkRestrictedEventForTextTemplateMode("CDATASection");
         return new CDATASection(this.textRepository, content);
     }
@@ -106,7 +106,7 @@ public class StandardModelFactory implements IModelFactory {
 
 
 
-    public IComment createComment(final String content) {
+    public IComment createComment(final CharSequence content) {
         checkRestrictedEventForTextTemplateMode("Comment");
         return new Comment(this.textRepository, content);
     }
@@ -147,7 +147,7 @@ public class StandardModelFactory implements IModelFactory {
 
 
 
-    public IText createText(final String text) {
+    public IText createText(final CharSequence text) {
         return new Text(this.textRepository, text);
     }
 

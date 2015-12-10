@@ -34,9 +34,9 @@ public interface IModelFactory {
 
     public IModel parse(final TemplateData ownerTemplate, final String template);
 
-    public ICDATASection createCDATASection(final String content);
+    public ICDATASection createCDATASection(final CharSequence content);
 
-    public IComment createComment(final String content);
+    public IComment createComment(final CharSequence content);
 
     public IDocType createHTML5DocType();
     public IDocType createDocType(final String publicId, final String systemId);
@@ -50,7 +50,7 @@ public interface IModelFactory {
 
     public IProcessingInstruction createProcessingInstruction(final String target, final String content);
 
-    public IText createText(final String text);
+    public IText createText(final CharSequence text);
 
     public IXMLDeclaration createXMLDeclaration(final String version, final String encoding, final String standalone);
 
