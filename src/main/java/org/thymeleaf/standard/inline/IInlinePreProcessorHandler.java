@@ -27,13 +27,28 @@ package org.thymeleaf.standard.inline;
  * @since 3.0.0
  *
  */
-public interface IInlineHandler {
+public interface IInlinePreProcessorHandler {
 
 
     public void handleText(
             final char[] buffer,
             final int offset, final int len,
             final int line, final int col);
+
+
+    /*
+     * IT WOULD MAKE NO SENSE TO ADD HERE EVENTS FOR CDATA AND/OR COMMENTS. The reason is that these inline
+     * handlers are meant to pre-process inlined text during the template parsing phase, and as a result of their
+     * processing text events might be broken into several. E.g. a "one  [['two']] three" will actually be broken
+     * into two "one " and " three" text events, with a "[# th:text="'two'"/]" element in the middle.
+     *
+     * This is relatively harmless to pre- and post-processors expecting to act on entire text blocks, because they
+     * are single classes and have always the possibility to merge consecutive blocks of text. But CDATA and comment
+     * blocks have prefixes and suffixes ("<![CDATA[...]]>", "<!--...-->"), so splitting these events into several
+     * would provoke the insertion of prefixes that will actually break the syntax. That is why CDATAs and Comments
+     * (inside which inlined output expressions ARE ALLOWED) will always be processed during the processor execution
+     * phase.
+     */
 
 
 

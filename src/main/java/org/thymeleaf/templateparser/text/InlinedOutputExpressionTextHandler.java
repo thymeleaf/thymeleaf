@@ -21,8 +21,8 @@ package org.thymeleaf.templateparser.text;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.standard.inline.IInlineHandler;
-import org.thymeleaf.standard.inline.OutputExpressionInlineHandler;
+import org.thymeleaf.standard.inline.IInlinePreProcessorHandler;
+import org.thymeleaf.standard.inline.OutputExpressionInlinePreProcessorHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /*
@@ -47,7 +47,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 final class InlinedOutputExpressionTextHandler extends AbstractChainedTextHandler {
 
 
-    private final OutputExpressionInlineHandler inlineHandler;
+    private final OutputExpressionInlinePreProcessorHandler inlineHandler;
 
 
     InlinedOutputExpressionTextHandler(
@@ -58,11 +58,11 @@ final class InlinedOutputExpressionTextHandler extends AbstractChainedTextHandle
         super(handler);
 
         this.inlineHandler =
-                new OutputExpressionInlineHandler(
+                new OutputExpressionInlinePreProcessorHandler(
                         configuration,
                         templateMode,
                         standardDialectPresent, standardDialectPrefix,
-                        new InlineTextAdapterHandler(handler));
+                        new InlineTextAdapterPreProcessorHandler(handler));
 
     }
 
@@ -170,12 +170,12 @@ final class InlinedOutputExpressionTextHandler extends AbstractChainedTextHandle
 
 
 
-    private static final class InlineTextAdapterHandler implements IInlineHandler {
+    private static final class InlineTextAdapterPreProcessorHandler implements IInlinePreProcessorHandler {
 
         private ITextHandler handler;
 
 
-        InlineTextAdapterHandler(final ITextHandler handler) {
+        InlineTextAdapterPreProcessorHandler(final ITextHandler handler) {
             super();
             this.handler = handler;
         }

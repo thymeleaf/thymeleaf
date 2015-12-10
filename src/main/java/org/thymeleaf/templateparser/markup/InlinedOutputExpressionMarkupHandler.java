@@ -24,8 +24,8 @@ import org.attoparser.IMarkupHandler;
 import org.attoparser.ParseException;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.standard.inline.IInlineHandler;
-import org.thymeleaf.standard.inline.OutputExpressionInlineHandler;
+import org.thymeleaf.standard.inline.IInlinePreProcessorHandler;
+import org.thymeleaf.standard.inline.OutputExpressionInlinePreProcessorHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /*
@@ -50,7 +50,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 final class InlinedOutputExpressionMarkupHandler extends AbstractChainedMarkupHandler {
 
 
-    private final OutputExpressionInlineHandler inlineHandler;
+    private final OutputExpressionInlinePreProcessorHandler inlineHandler;
 
 
     InlinedOutputExpressionMarkupHandler(
@@ -61,11 +61,11 @@ final class InlinedOutputExpressionMarkupHandler extends AbstractChainedMarkupHa
         super(handler);
 
         this.inlineHandler =
-                new OutputExpressionInlineHandler(
+                new OutputExpressionInlinePreProcessorHandler(
                         configuration,
                         templateMode,
                         standardDialectPresent, standardDialectPrefix,
-                        new InlineMarkupAdapterHandler(handler));
+                        new InlineMarkupAdapterPreProcessorHandler(handler));
 
     }
 
@@ -216,12 +216,12 @@ final class InlinedOutputExpressionMarkupHandler extends AbstractChainedMarkupHa
 
 
 
-    private static final class InlineMarkupAdapterHandler implements IInlineHandler {
+    private static final class InlineMarkupAdapterPreProcessorHandler implements IInlinePreProcessorHandler {
 
         private IMarkupHandler handler;
 
 
-        InlineMarkupAdapterHandler(final IMarkupHandler handler) {
+        InlineMarkupAdapterPreProcessorHandler(final IMarkupHandler handler) {
             super();
             this.handler = handler;
         }

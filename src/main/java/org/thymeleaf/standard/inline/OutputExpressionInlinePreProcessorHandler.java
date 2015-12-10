@@ -45,7 +45,7 @@ import org.thymeleaf.util.TextUtils;
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  */
-public final class OutputExpressionInlineHandler implements IInlineHandler {
+public final class OutputExpressionInlinePreProcessorHandler implements IInlinePreProcessorHandler {
 
 
     /*
@@ -65,7 +65,7 @@ public final class OutputExpressionInlineHandler implements IInlineHandler {
     private static final int DEFAULT_LEVELS_SIZE = 2;
 
     private final ITextRepository textRepository;
-    private final IInlineHandler next;
+    private final IInlinePreProcessorHandler next;
 
     private final boolean standardDialectPresent;
     private final String standardDialectPrefix;
@@ -86,10 +86,10 @@ public final class OutputExpressionInlineHandler implements IInlineHandler {
 
 
 
-    public OutputExpressionInlineHandler(
+    public OutputExpressionInlinePreProcessorHandler(
             final IEngineConfiguration configuration, final TemplateMode templateMode,
             final boolean standardDialectPresent, final String standardDialectPrefix,
-            final IInlineHandler handler) {
+            final IInlinePreProcessorHandler handler) {
 
         super();
 
