@@ -47,6 +47,7 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
     private int length = -1;
 
     private Boolean whitespace;
+    private Boolean inlineable;
 
 
 
@@ -156,6 +157,7 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
         this.text = null;
 
         this.whitespace = null;
+        this.inlineable = null;
 
     }
 
@@ -179,6 +181,7 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
         this.offset = -1;
 
         this.whitespace = null;
+        this.inlineable = null;
 
     }
 
@@ -227,6 +230,7 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
         this.text = (original.text == null? original.getText() : original.text); // No buffer cloning!
         this.length = original.length;
         this.whitespace = original.whitespace;
+        this.inlineable = original.inlineable;
 
     }
 
@@ -248,6 +252,7 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
         newInstance.text = text.getText();
         newInstance.length = newInstance.text.length();
         newInstance.whitespace = null;
+        newInstance.inlineable = null;
         newInstance.resetTemplateEvent(text.getTemplateName(), text.getLine(), text.getCol());
         return newInstance;
 
@@ -258,56 +263,105 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
 
 
     boolean isWhitespace() {
-
         if (this.whitespace == null) {
-            if (this.buffer != null) {
-                this.whitespace = Boolean.valueOf(computeIsWhitespace(this.buffer, this.offset, this.length));
-            } else {
-                this.whitespace = Boolean.valueOf(computeIsWhitespace(this.text));
-            }
+            computeContentFlags();
         }
-
         return this.whitespace.booleanValue();
     }
 
 
-
-    private static boolean computeIsWhitespace(final CharSequence text) {
-        int n = text.length();
-        if (n == 0) {
-            return true;
+    boolean isInlineable() {
+        if (this.inlineable == null) {
+            computeContentFlags();
         }
-        final char c0 = text.charAt(0);
-        if ((c0 >= 'a' && c0 <= 'z') || (c0 >= 'A' && c0 <= 'Z')) {
-            // Fail fast, by quickly checking first char without executing Character.isWhitespace(...)
-            return false;
-        }
-        while (n-- != 0) {
-            if (!Character.isWhitespace(text.charAt(n))) {
-                return false;
-            }
-        }
-        return true;
+        return this.inlineable.booleanValue();
     }
 
 
-    private static boolean computeIsWhitespace(final char[] buffer, final int off, final int len) {
-        int n = len;
+
+    void computeContentFlags() {
+        if (this.buffer != null) {
+            computeContentFlags(this.buffer, this.offset, this.length);
+        } else {
+            computeContentFlags(this.text);
+        }
+    }
+
+
+
+    private void computeContentFlags(final CharSequence text) {
+
+        this.whitespace = null;
+        this.inlineable = null;
+
+        int n = length(); // This will leave length computed in case it's needed afterwards
+
         if (n == 0) {
-            // empty texts are NOT whitespace
-            return false;
+            this.whitespace = Boolean.FALSE; // empty texts are NOT whitespace
+            this.inlineable = Boolean.FALSE;
+            return;
         }
-        final char c0 = buffer[off];
-        if ((c0 >= 'a' && c0 <= 'z') || (c0 >= 'A' && c0 <= 'Z')) {
-            // Fail fast, by quickly checking first char without executing Character.isWhitespace(...)
-            return false;
-        }
-        while (n-- != 0) {
-            if (!Character.isWhitespace(buffer[off + n])) {
-                return false;
+
+        char c0, c1;
+        c0 = 0x0;
+        boolean inInline = false;
+        while (n-- != 0 && (this.whitespace == null || this.inlineable == null)) {
+            c1 = text.charAt(n);
+            if (this.whitespace == null && !Character.isWhitespace(c1)) {
+                this.whitespace = Boolean.FALSE;
+            }
+            if (this.inlineable == null) {
+                if (c1 == ']' && c0 == ']') {
+                    inInline = true;
+                } else if (inInline && c1 == '[' && c0 == '[') {
+                    this.inlineable = Boolean.TRUE;
+                }
+                c0 = c1;
             }
         }
-        return true;
+
+        // Not having the contrary been proved, apply the defaults
+        this.whitespace = (this.whitespace == null? Boolean.TRUE : this.whitespace);
+        this.inlineable = (this.inlineable == null? Boolean.FALSE : this.inlineable);
+
+    }
+
+
+    private void computeContentFlags(final char[] buffer, final int off, final int len) {
+
+        this.whitespace = null;
+        this.inlineable = null;
+
+        int n = off + len;
+
+        if (len == 0) {
+            this.whitespace = Boolean.FALSE; // empty texts are NOT whitespace
+            this.inlineable = Boolean.FALSE;
+            return;
+        }
+
+        char c0, c1;
+        c0 = 0x0;
+        boolean inInline = false;
+        while (n-- != off && (this.whitespace == null || this.inlineable == null)) {
+            c1 = buffer[n];
+            if (this.whitespace == null && !Character.isWhitespace(c1)) {
+                this.whitespace = Boolean.FALSE;
+            }
+            if (this.inlineable == null) {
+                if (c1 == ']' && c0 == ']') {
+                    inInline = true;
+                } else if (inInline && c1 == '[' && c0 == '[') {
+                    this.inlineable = Boolean.TRUE;
+                }
+                c0 = c1;
+            }
+        }
+
+        // Not having the contrary been proved, apply the defaults
+        this.whitespace = (this.whitespace == null? Boolean.TRUE : this.whitespace);
+        this.inlineable = (this.inlineable == null? Boolean.FALSE : this.inlineable);
+
     }
 
 

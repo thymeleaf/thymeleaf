@@ -134,6 +134,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             final int line, final int col)
             throws TextParseException {
         this.text.reset(buffer, offset, len, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
+        this.text.computeContentFlags();
         this.templateHandler.handleText(this.text);
     }
 

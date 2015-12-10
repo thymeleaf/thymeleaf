@@ -216,6 +216,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
         this.cdataSection.reset(buffer, outerOffset, outerLen, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
+        this.cdataSection.computeContentFlags();
         this.templateHandler.handleCDATASection(this.cdataSection);
     }
 
@@ -229,6 +230,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
         this.comment.reset(buffer, outerOffset, outerLen, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
+        this.comment.computeContentFlags();
         this.templateHandler.handleComment(this.comment);
     }
 
@@ -241,6 +243,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
         this.text.reset(buffer, offset, len, this.templateName, this.lineOffset + line, (line == 1 ? this.colOffset : 0) + col);
+        this.text.computeContentFlags();
         this.templateHandler.handleText(this.text);
     }
 
