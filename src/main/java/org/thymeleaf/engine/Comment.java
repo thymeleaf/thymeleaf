@@ -151,14 +151,15 @@ final class Comment extends AbstractTemplateEvent implements IComment, IEngineTe
         // it would be exactly the same exception we'd obtain by basically trying to access that index, so let's do
         // it directly instead
 
-        if (this.comment != null) {
-            return this.comment.subSequence(start, end);
+        int subLen = end - start;
+
+        if (this.comment != null || this.content != null) {
+            if (start == 0 && subLen == this.commentLength) {
+                return getComment();
+            }
+            return getComment().subSequence(start, end);
         }
 
-        int subLen = end - start;
-        if (start == 0 && subLen == this.commentLength) {
-            return getComment();
-        }
         return this.textRepository.getText(this.buffer, this.offset + start, subLen);
 
     }

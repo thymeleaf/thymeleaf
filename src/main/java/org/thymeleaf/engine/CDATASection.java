@@ -150,14 +150,15 @@ final class CDATASection extends AbstractTemplateEvent implements ICDATASection,
         // it would be exactly the same exception we'd obtain by basically trying to access that index, so let's do
         // it directly instead
 
-        if (this.cdataSection != null) {
-            return this.cdataSection.subSequence(start, end);
+        int subLen = end - start;
+
+        if (this.cdataSection != null || this.content != null) {
+            if (start == 0 && subLen == this.cdataSectionLength) {
+                return getCDATASection();
+            }
+            return getCDATASection().subSequence(start, end);
         }
 
-        int subLen = end - start;
-        if (start == 0 && subLen == this.cdataSectionLength) {
-            return getCDATASection();
-        }
         return this.textRepository.getText(this.buffer, this.offset + start, subLen);
 
     }
