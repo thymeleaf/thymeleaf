@@ -55,16 +55,13 @@ final class InlinedOutputExpressionMarkupHandler extends AbstractChainedMarkupHa
 
     InlinedOutputExpressionMarkupHandler(
             final IEngineConfiguration configuration, final TemplateMode templateMode,
-            final boolean standardDialectPresent, final String standardDialectPrefix,
-            final IMarkupHandler handler) {
+            final String standardDialectPrefix, final IMarkupHandler handler) {
 
         super(handler);
 
         this.inlineHandler =
                 new OutputExpressionInlinePreProcessorHandler(
-                        configuration,
-                        templateMode,
-                        standardDialectPresent, standardDialectPrefix,
+                        configuration, templateMode, standardDialectPrefix,
                         new InlineMarkupAdapterPreProcessorHandler(handler));
 
     }

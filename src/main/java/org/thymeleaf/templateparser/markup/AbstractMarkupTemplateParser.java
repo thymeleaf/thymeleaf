@@ -162,7 +162,6 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                 handler = new InlinedOutputExpressionMarkupHandler(
                                 configuration,
                                 templateMode,
-                                configuration.isStandardDialectPresent(),
                                 configuration.getStandardDialectPrefix(),
                                 handler);
             }

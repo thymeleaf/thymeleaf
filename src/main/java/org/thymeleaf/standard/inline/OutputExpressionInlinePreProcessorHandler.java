@@ -67,7 +67,6 @@ public final class OutputExpressionInlinePreProcessorHandler implements IInlineP
     private final ITextRepository textRepository;
     private final IInlinePreProcessorHandler next;
 
-    private final boolean standardDialectPresent;
     private final String standardDialectPrefix;
     private final String[] inlineAttributeNames;
 
@@ -88,15 +87,13 @@ public final class OutputExpressionInlinePreProcessorHandler implements IInlineP
 
     public OutputExpressionInlinePreProcessorHandler(
             final IEngineConfiguration configuration, final TemplateMode templateMode,
-            final boolean standardDialectPresent, final String standardDialectPrefix,
-            final IInlinePreProcessorHandler handler) {
+            final String standardDialectPrefix, final IInlinePreProcessorHandler handler) {
 
         super();
 
         this.next = handler;
         this.textRepository = configuration.getTextRepository();
 
-        this.standardDialectPresent = standardDialectPresent;
         this.standardDialectPrefix = standardDialectPrefix;
 
         this.inlineAttributeNames =
@@ -134,11 +131,6 @@ public final class OutputExpressionInlinePreProcessorHandler implements IInlineP
             final char[] buffer,
             final int offset, final int len,
             final int line, final int col) {
-
-        if (!this.standardDialectPresent) {
-            this.next.handleText(buffer, offset, len, line, col);
-            return;
-        }
 
         if (this.inlineTemplateModes[this.inlineIndex] != this.inlineTemplateModes[0]) {
             // Even if this text might contain some inlining, it's not something that we can do now - it's inlining
@@ -260,7 +252,7 @@ public final class OutputExpressionInlinePreProcessorHandler implements IInlineP
             final int valueLine, final int valueCol) {
 
 
-        if (this.standardDialectPresent && isInlineAttribute(buffer, nameOffset, nameLen)) {
+        if (isInlineAttribute(buffer, nameOffset, nameLen)) {
             final String inlineModeAttributeValue =
                     EscapedAttributeUtils.unescapeAttribute(
                             this.inlineTemplateModes[0], this.textRepository.getText(buffer, valueContentOffset, valueContentLen));

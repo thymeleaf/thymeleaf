@@ -149,7 +149,6 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
                 handler = new InlinedOutputExpressionTextHandler(
                                 configuration,
                                 templateMode,
-                                configuration.isStandardDialectPresent(),
                                 configuration.getStandardDialectPrefix(),
                                 handler);
             }

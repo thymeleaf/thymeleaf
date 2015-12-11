@@ -52,16 +52,14 @@ final class InlinedOutputExpressionTextHandler extends AbstractChainedTextHandle
 
     InlinedOutputExpressionTextHandler(
             final IEngineConfiguration configuration, final TemplateMode templateMode,
-            final boolean standardDialectPresent, final String standardDialectPrefix,
-            final ITextHandler handler) {
+            final String standardDialectPrefix, final ITextHandler handler) {
 
         super(handler);
 
         this.inlineHandler =
                 new OutputExpressionInlinePreProcessorHandler(
                         configuration,
-                        templateMode,
-                        standardDialectPresent, standardDialectPrefix,
+                        templateMode, standardDialectPrefix,
                         new InlineTextAdapterPreProcessorHandler(handler));
 
     }
