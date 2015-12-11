@@ -159,12 +159,16 @@ public final class EngineEventUtils {
         }
         char c0, c1;
         c0 = 0x0;
-        boolean inInline = false;
+        int inline = 0;
         while (n-- != 0) {
             c1 = text.charAt(n);
             if (c1 == ']' && c0 == ']') {
-                inInline = true;
-            } else if (inInline && c1 == '[' && c0 == '[') {
+                inline = 1;
+            } else if (c1 == ')' && c0 == ']') {
+                inline = 2;
+            } else if (inline == 1 && c1 == '[' && c0 == '[') {
+                return true;
+            } else if (inline == 2 && c1 == '[' && c0 == '(') {
                 return true;
             }
             c0 = c1;

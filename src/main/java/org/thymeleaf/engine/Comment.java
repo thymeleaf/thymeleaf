@@ -352,7 +352,7 @@ final class Comment extends AbstractTemplateEvent implements IComment, IEngineTe
 
         char c0, c1;
         c0 = 0x0;
-        boolean inInline = false;
+        int inline = 0;
         while (n-- != 0 && this.inlineable == null) {
             c1 = text.charAt(n);
             if (c1 != ' ' && c1 != '\n') { // shortcut - most characters in many templates are just whitespace.
@@ -360,8 +360,12 @@ final class Comment extends AbstractTemplateEvent implements IComment, IEngineTe
                     this.whitespace = Boolean.FALSE;
                 }
                 if (c1 == ']' && c0 == ']') {
-                    inInline = true;
-                } else if (inInline && c1 == '[' && c0 == '[') {
+                    inline = 1;
+                } else if (c1 == ')' && c0 == ']') {
+                    inline = 2;
+                } else if (inline == 1 && c1 == '[' && c0 == '[') {
+                    this.inlineable = Boolean.TRUE;
+                } else if (inline == 2 && c1 == '[' && c0 == '(') {
                     this.inlineable = Boolean.TRUE;
                 }
             }
@@ -390,7 +394,7 @@ final class Comment extends AbstractTemplateEvent implements IComment, IEngineTe
 
         char c0, c1;
         c0 = 0x0;
-        boolean inInline = false;
+        int inline = 0;
         while (n-- != off && this.inlineable == null) {
             c1 = buffer[n];
             if (c1 != ' ' && c1 != '\n') { // shortcut - most characters in many templates are just whitespace.
@@ -398,8 +402,12 @@ final class Comment extends AbstractTemplateEvent implements IComment, IEngineTe
                     this.whitespace = Boolean.FALSE;
                 }
                 if (c1 == ']' && c0 == ']') {
-                    inInline = true;
-                } else if (inInline && c1 == '[' && c0 == '[') {
+                    inline = 1;
+                } else if (c1 == ')' && c0 == ']') {
+                    inline = 2;
+                } else if (inline == 1 && c1 == '[' && c0 == '[') {
+                    this.inlineable = Boolean.TRUE;
+                } else if (inline == 2 && c1 == '[' && c0 == '(') {
                     this.inlineable = Boolean.TRUE;
                 }
             }
