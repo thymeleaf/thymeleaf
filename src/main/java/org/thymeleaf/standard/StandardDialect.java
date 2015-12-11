@@ -60,6 +60,8 @@ import org.thymeleaf.standard.processor.StandardInlineEnablementTemplateBoundari
 import org.thymeleaf.standard.processor.StandardInlineHTMLTagProcessor;
 import org.thymeleaf.standard.processor.StandardInlineTextualTagProcessor;
 import org.thymeleaf.standard.processor.StandardInlineXMLTagProcessor;
+import org.thymeleaf.standard.processor.StandardInliningCDATASectionProcessor;
+import org.thymeleaf.standard.processor.StandardInliningCommentProcessor;
 import org.thymeleaf.standard.processor.StandardInliningTextProcessor;
 import org.thymeleaf.standard.processor.StandardInsertTagProcessor;
 import org.thymeleaf.standard.processor.StandardLangXmlLangTagProcessor;
@@ -489,11 +491,16 @@ public class StandardDialect
          * HTML: TEXT PROCESSORS
          *
          * NOTE the ability of the Standard Inlining mechanism to directly write to output instead of generating
-         * internal Strings relies on the fact that there is only ONE ITextProcessor instance for each template mode
-         * in the StandardDialect (see AbstractStandardInliner for details). So if new processors are added here,
-         * it should be for a really compelling reason.
+         * internal Strings relies on the fact that there is only ONE ITextProcessor instance for each
+         * template mode in the StandardDialect (see AbstractStandardInliner for details). So if new processors
+         * are added here, it should be for a really compelling reason.
          */
         processors.add(new StandardInliningTextProcessor(dialect, TemplateMode.HTML));
+
+        /*
+         * HTML: CDATASection PROCESSORS
+         */
+        processors.add(new StandardInliningCDATASectionProcessor(dialect, TemplateMode.HTML));
 
         /*
          * HTML: DOCTYPE PROCESSORS
@@ -503,6 +510,7 @@ public class StandardDialect
         /*
          * HTML: COMMENT PROCESSORS
          */
+        processors.add(new StandardInliningCommentProcessor(dialect, TemplateMode.HTML));
         processors.add(new StandardConditionalCommentProcessor(dialect));
 
         /*
@@ -564,6 +572,16 @@ public class StandardDialect
         processors.add(new StandardInliningTextProcessor(dialect, TemplateMode.XML));
 
         /*
+         * XML: CDATASection PROCESSORS
+         */
+        processors.add(new StandardInliningCDATASectionProcessor(dialect, TemplateMode.XML));
+
+        /*
+         * XML: COMMENT PROCESSORS
+         */
+        processors.add(new StandardInliningCommentProcessor(dialect, TemplateMode.XML));
+
+        /*
          * XML: TEMPLATE BOUNDARIES PROCESSORS
          */
         processors.add(new StandardInlineEnablementTemplateBoundariesProcessor(dialect, TemplateMode.XML));
@@ -615,6 +633,16 @@ public class StandardDialect
          * it should be for a really compelling reason.
          */
         processors.add(new StandardInliningTextProcessor(dialect, TemplateMode.TEXT));
+
+        /*
+         * TEXT: CDATASection PROCESSORS
+         */
+        processors.add(new StandardInliningCDATASectionProcessor(dialect, TemplateMode.TEXT));
+
+        /*
+         * TEXT: COMMENT PROCESSORS
+         */
+        processors.add(new StandardInliningCommentProcessor(dialect, TemplateMode.TEXT));
 
         /*
          * TEXT: TEMPLATE BOUNDARIES PROCESSORS
@@ -670,6 +698,16 @@ public class StandardDialect
         processors.add(new StandardInliningTextProcessor(dialect, TemplateMode.JAVASCRIPT));
 
         /*
+         * JAVASCRIPT: CDATASection PROCESSORS
+         */
+        processors.add(new StandardInliningCDATASectionProcessor(dialect, TemplateMode.JAVASCRIPT));
+
+        /*
+         * JAVASCRIPT: COMMENT PROCESSORS
+         */
+        processors.add(new StandardInliningCommentProcessor(dialect, TemplateMode.JAVASCRIPT));
+
+        /*
          * JAVASCRIPT: TEMPLATE BOUNDARIES PROCESSORS
          */
         processors.add(new StandardInlineEnablementTemplateBoundariesProcessor(dialect, TemplateMode.JAVASCRIPT));
@@ -721,6 +759,16 @@ public class StandardDialect
          * it should be for a really compelling reason.
          */
         processors.add(new StandardInliningTextProcessor(dialect, TemplateMode.CSS));
+
+        /*
+         * CSS: CDATASection PROCESSORS
+         */
+        processors.add(new StandardInliningCDATASectionProcessor(dialect, TemplateMode.CSS));
+
+        /*
+         * CSS: COMMENT PROCESSORS
+         */
+        processors.add(new StandardInliningCommentProcessor(dialect, TemplateMode.CSS));
 
         /*
          * CSS: TEMPLATE BOUNDARIES PROCESSORS

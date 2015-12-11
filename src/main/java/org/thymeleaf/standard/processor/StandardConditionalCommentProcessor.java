@@ -41,7 +41,7 @@ import org.thymeleaf.util.FastStringWriter;
 public final class StandardConditionalCommentProcessor extends AbstractCommentProcessor {
 
 
-    public static final int PRECEDENCE = 1000;
+    public static final int PRECEDENCE = 1100;
 
 
 

@@ -20,6 +20,9 @@
 package org.thymeleaf.inline;
 
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.model.ICDATASection;
+import org.thymeleaf.model.IComment;
+import org.thymeleaf.model.IText;
 
 /**
  *
@@ -40,10 +43,17 @@ public final class NoOpInliner implements IInliner {
         return "NOOP";
     }
 
-
-    public CharSequence inline(final ITemplateContext context, final CharSequence text) {
+    public void inline(final ITemplateContext context, final IText text) {
         // Nothing to do. Anyway, this should never end up being executed...
-        return text;
     }
+
+    public void inline(final ITemplateContext context, final ICDATASection cdataSection) {
+        // Nothing to do. Anyway, this should never end up being executed...
+    }
+
+    public void inline(final ITemplateContext context, final IComment comment) {
+        // Nothing to do. Anyway, this should never end up being executed...
+    }
+
 
 }

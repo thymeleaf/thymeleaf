@@ -20,15 +20,18 @@
 package org.thymeleaf.inline;
 
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.model.ICDATASection;
+import org.thymeleaf.model.IComment;
+import org.thymeleaf.model.IText;
 
 /**
  * <p>
  *   Interface to be implemented by all <em>inliner</em> implementations.
  * </p>
  * <p>
- *   <em>Inliners</em> are objects in charge of processing logic appearing on <em>Text</em> nodes
- *   (as opposed to on <em>elements</em>). For example, inlined output expressions (<tt>[[${...}]]</tt>),
- *   javascript inlining artifacts, etc.
+ *   <em>Inliners</em> are objects in charge of processing logic appearing on textual-oriented nodes
+ *   ({@link IText}, {@link ICDATASection} and {@link IComment}), as opposed to on <em>elements</em>.
+ *   For example, inlined output expressions (<tt>[[${...}]]</tt>), javascript inlining artifacts, etc.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
@@ -48,13 +51,32 @@ public interface IInliner {
 
     /**
      * <p>
-     *   Perform the inlining operation.
+     *   Perform the inlining operation on an {@link IText} node.
      * </p>
      *
      * @param context the template context.
-     * @param text the text to be inlined.
-     * @return the inlined result.
+     * @param text the event to be inlined.
      */
-    public CharSequence inline(final ITemplateContext context, final CharSequence text);
+    public void inline(final ITemplateContext context, final IText text);
+
+    /**
+     * <p>
+     *   Perform the inlining operation on an {@link ICDATASection} node.
+     * </p>
+     *
+     * @param context the template context.
+     * @param cdataSection the event to be inlined.
+     */
+    public void inline(final ITemplateContext context, final ICDATASection cdataSection);
+
+    /**
+     * <p>
+     *   Perform the inlining operation on an {@link IComment} node.
+     * </p>
+     *
+     * @param context the template context.
+     * @param comment the event to be inlined.
+     */
+    public void inline(final ITemplateContext context, final IComment comment);
 
 }

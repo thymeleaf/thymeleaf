@@ -23,20 +23,20 @@ import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
-import org.thymeleaf.model.IText;
-import org.thymeleaf.processor.text.AbstractTextProcessor;
-import org.thymeleaf.processor.text.ITextStructureHandler;
+import org.thymeleaf.model.IComment;
+import org.thymeleaf.processor.comment.AbstractCommentProcessor;
+import org.thymeleaf.processor.comment.ICommentStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  */
-public final class StandardInliningTextProcessor extends AbstractTextProcessor {
+public final class StandardInliningCommentProcessor extends AbstractCommentProcessor {
 
     public static final int PRECEDENCE = 1000;
 
-    public StandardInliningTextProcessor(final IProcessorDialect dialect, final TemplateMode templateMode) {
+    public StandardInliningCommentProcessor(final IProcessorDialect dialect, final TemplateMode templateMode) {
         super(dialect, templateMode, PRECEDENCE);
     }
 
@@ -44,7 +44,7 @@ public final class StandardInliningTextProcessor extends AbstractTextProcessor {
     @Override
     protected void doProcess(
             final ITemplateContext context,
-            final IText text, final ITextStructureHandler structureHandler) {
+            final IComment comment, final ICommentStructureHandler structureHandler) {
 
 
         final IInliner inliner = context.getInliner();
@@ -54,7 +54,7 @@ public final class StandardInliningTextProcessor extends AbstractTextProcessor {
         }
 
         // Execute the inliner - inliners should actually change the event's content (if needed)
-        inliner.inline(context, text);
+        inliner.inline(context, comment);
 
     }
 

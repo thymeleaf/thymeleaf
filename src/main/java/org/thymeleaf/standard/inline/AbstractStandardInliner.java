@@ -24,9 +24,12 @@ import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.EngineEventUtils;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.engine.TemplateModel;
 import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.model.ICDATASection;
+import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.postprocessor.IPostProcessor;
@@ -45,7 +48,7 @@ import org.thymeleaf.util.Validate;
 public abstract class AbstractStandardInliner implements IInliner {
 
     private final TemplateMode templateMode;
-    private final boolean writeToOutput;
+    private final boolean writeTextsToOutput;
 
 
 
@@ -59,26 +62,28 @@ public abstract class AbstractStandardInliner implements IInliner {
         this.templateMode = templateMode;
 
         /*
-         * The 'writeToOutput' flag will mean that the inliner can directly use the output Writer when processing
-         * inlined text, instead of creating a separate StringWriter object (and therefore a String containing the
-         * whole result of processing the inlined text). This should result in a performance optimization when
-         * inlining is very used, but can only be done if the following happens:
+         * The 'writeTextsToOutput' flag will mean that the inliner can directly use the output Writer when
+         * processing inlined IText's, instead of creating a separate StringWriter object (and therefore a
+         * String containing the whole result of processing the inlined text). This should result in a
+         * performance optimization when inlining is very used, but can only be done if the following
+         * happens:
          *
          *   - There are no post-processors that might want to do things on the processed text result.
-         *   - There are no other ITextProcessor instances declared other than the InlinerTextProcessor.
+         *   - There are no other ITextProcessor instances declared other than the
+         *     corresponding StandardInlinerTextProcessor.
          *
          * In that case, the inliner will return a LazyProcessingCharSequence object, which will perform the
          * direct writer output. But the conditions above are needed to ensure that the context is not going to
          * be modified from the moment this inliner executes to the moment the output is written.
          *
          * Note: we are checking for the size of textprocessors but not checking if that one (at most) processor is
-         *       actually the InlineTextProcessor. And that fine because, if it isn't, then nobody will be applying
+         *       actually the inline processor. And that fine because, if it isn't, then nobody will be applying
          *       inlining to text nodes in the first place, and this inliner will never be executed.
          */
 
         final Set<IPostProcessor> postProcessors = configuration.getPostProcessors(this.templateMode);
         final Set<ITextProcessor> textProcessors = configuration.getTextProcessors(this.templateMode);
-        this.writeToOutput = postProcessors.isEmpty() && textProcessors.size() <= 1;
+        this.writeTextsToOutput = postProcessors.isEmpty() && textProcessors.size() <= 1;
 
     }
 
@@ -89,11 +94,12 @@ public abstract class AbstractStandardInliner implements IInliner {
     }
 
 
-    public final CharSequence inline(final ITemplateContext context, final CharSequence text) {
+
+
+    public final void inline(final ITemplateContext context, final IText text) {
 
         Validate.notNull(context, "Context cannot be null");
         Validate.notNull(text, "Text cannot be null");
-
 
         /*
          * First, check whether the current template is being processed using the template mode we are applying
@@ -106,49 +112,128 @@ public abstract class AbstractStandardInliner implements IInliner {
 
             final TemplateModel templateModel =
                     templateManager.parseString(
-                            context.getTemplateData(), text.toString(),
-                            computeLine(text), computeCol(text),
+                            context.getTemplateData(), text.getText(),
+                            text.getLine(), text.getCol(),
                             this.templateMode, true);
 
-            if (!this.writeToOutput || !(text instanceof IText)) {
-
+            if (!this.writeTextsToOutput) {
                 final Writer stringWriter = new FastStringWriter(50);
                 templateManager.process(templateModel, context, stringWriter);
-                return stringWriter.toString();
-
+                text.setText(stringWriter.toString());
+                return;
             }
 
             // If we can directly write to output (and text is an IText), we will use a LazyProcessingCharSequence
-            return new LazyProcessingCharSequence(context, templateModel);
+            text.setText(new LazyProcessingCharSequence(context, templateModel));
+            return;
 
         }
-
 
         /*
-         * Template modes match, so there is nothing we need to do (all output expressions will have been replaced
-         * by th:block's with th:text/th:utext at parsing time!)
+         * Template modes match, first we check if we actually need to apply inline at all, and if we do, we just
+         * execute the inlining mechanisms.
          */
 
-        return text;
+        if (!EngineEventUtils.isInlineable(text)) {
+            return;
+        }
+
+        text.setText("{{INLINED}}");
 
     }
 
 
 
 
-    static int computeLine(final CharSequence text) {
-        if (text instanceof ITemplateEvent) {
-            return ((ITemplateEvent)text).getLine();
+    public final void inline(final ITemplateContext context, final ICDATASection cdataSection) {
+
+        Validate.notNull(context, "Context cannot be null");
+        Validate.notNull(cdataSection, "CDATA Section cannot be null");
+
+        /*
+         * First, check whether the current template is being processed using the template mode we are applying
+         * inlining for. If not, we must just process the entire text as a template in the desired template mode.
+         */
+
+        if (context.getTemplateMode() != this.templateMode) {
+
+            final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
+
+            final TemplateModel templateModel =
+                    templateManager.parseString(
+                            context.getTemplateData(), cdataSection.getCDATASection(),
+                            cdataSection.getLine(), cdataSection.getCol(),
+                            this.templateMode, true);
+
+            final Writer stringWriter = new FastStringWriter(50);
+            templateManager.process(templateModel, context, stringWriter);
+
+            final String resultCDATASection = stringWriter.toString();
+            final String resultCDATASectionContent = resultCDATASection.substring(9, resultCDATASection.length() - 3);
+
+            cdataSection.setContent(resultCDATASectionContent);
+            return;
+
         }
-        return Integer.MIN_VALUE; // Negative (line,col) will mean 'no locator'
+
+        /*
+         * Template modes match, first we check if we actually need to apply inline at all, and if we do, we just
+         * execute the inlining mechanisms.
+         */
+
+        if (!EngineEventUtils.isInlineable(cdataSection)) {
+            return;
+        }
+
+        cdataSection.setContent("{{INLINED}}");
+
     }
 
 
-    static int computeCol(final CharSequence text) {
-        if (text instanceof ITemplateEvent) {
-            return ((ITemplateEvent)text).getCol();
+
+
+    public final void inline(final ITemplateContext context, final IComment comment) {
+
+        Validate.notNull(context, "Context cannot be null");
+        Validate.notNull(comment, "Comment cannot be null");
+
+        /*
+         * First, check whether the current template is being processed using the template mode we are applying
+         * inlining for. If not, we must just process the entire text as a template in the desired template mode.
+         */
+
+        if (context.getTemplateMode() != this.templateMode) {
+
+            final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
+
+            final TemplateModel templateModel =
+                    templateManager.parseString(
+                            context.getTemplateData(), comment.getComment(),
+                            comment.getLine(), comment.getCol(),
+                            this.templateMode, true);
+
+            final Writer stringWriter = new FastStringWriter(50);
+            templateManager.process(templateModel, context, stringWriter);
+
+            final String resultComment = stringWriter.toString();
+            final String resultCommentContent = resultComment.substring(4, resultComment.length() - 3);
+
+            comment.setContent(resultCommentContent);
+            return;
+
         }
-        return Integer.MIN_VALUE; // Negative (line,col) will mean 'no locator'
+
+        /*
+         * Template modes match, first we check if we actually need to apply inline at all, and if we do, we just
+         * execute the inlining mechanisms.
+         */
+
+        if (!EngineEventUtils.isInlineable(comment)) {
+            return;
+        }
+
+        comment.setContent("{{INLINED}}");
+
     }
 
 
