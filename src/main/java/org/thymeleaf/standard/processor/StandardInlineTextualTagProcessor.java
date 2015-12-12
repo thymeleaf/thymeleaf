@@ -24,6 +24,7 @@ import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
+import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.standard.inline.StandardCSSInliner;
 import org.thymeleaf.standard.inline.StandardInlineMode;
 import org.thymeleaf.standard.inline.StandardJavaScriptInliner;
@@ -63,17 +64,17 @@ public final class StandardInlineTextualTagProcessor extends AbstractStandardTex
                 return NoOpInliner.INSTANCE;
             case TEXT:
                 if (templateMode == TemplateMode.TEXT) {
-                    return new StandardTextInliner(context.getConfiguration());
+                    return new StandardTextInliner(context.getConfiguration(), (StandardDialect) getDialect());
                 }
                 break; // will output exception
             case JAVASCRIPT:
                 if (templateMode == TemplateMode.JAVASCRIPT) {
-                    return new StandardJavaScriptInliner(context.getConfiguration());
+                    return new StandardJavaScriptInliner(context.getConfiguration(), (StandardDialect) getDialect());
                 }
                 break; // will output exception
             case CSS:
                 if (templateMode == TemplateMode.CSS) {
-                    return new StandardCSSInliner(context.getConfiguration());
+                    return new StandardCSSInliner(context.getConfiguration(), (StandardDialect) getDialect());
                 }
                 break; // will output exception
         }

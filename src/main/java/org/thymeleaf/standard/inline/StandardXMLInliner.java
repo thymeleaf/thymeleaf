@@ -20,6 +20,7 @@
 package org.thymeleaf.standard.inline;
 
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -31,8 +32,8 @@ import org.thymeleaf.templatemode.TemplateMode;
 public final class StandardXMLInliner extends AbstractStandardInliner {
 
 
-    public StandardXMLInliner(final IEngineConfiguration configuration) {
-        super(configuration, TemplateMode.XML);
+    public StandardXMLInliner(final IEngineConfiguration configuration, final StandardDialect dialect) {
+        super(configuration, dialect, TemplateMode.XML);
     }
 
 }
