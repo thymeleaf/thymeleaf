@@ -61,7 +61,6 @@ public final class SpringErrorsTagProcessor extends AbstractAttributeTagProcesso
     protected void doProcess(
             final ITemplateContext context, final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
-            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
         final BindStatus bindStatus = FieldUtils.getBindStatus(context, attributeValue);

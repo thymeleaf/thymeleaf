@@ -56,7 +56,6 @@ public final class SpringOptionInSelectFieldTagProcessor extends AbstractElement
     protected void doProcess(
             final ITemplateContext context,
             final IProcessableElementTag tag,
-            final String tagTemplateName, final int tagLine, final int tagCol,
             final IElementTagStructureHandler structureHandler) {
 
         final AttributeName selectAttrNameToAdd =

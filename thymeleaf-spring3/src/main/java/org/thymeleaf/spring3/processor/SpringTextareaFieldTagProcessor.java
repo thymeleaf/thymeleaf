@@ -50,7 +50,6 @@ public final class SpringTextareaFieldTagProcessor extends AbstractSpringFieldTa
     protected void doProcess(final ITemplateContext context,
                              final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
-                             final String attributeTemplateName, final int attributeLine, final int attributeCol,
                              final BindStatus bindStatus, final IElementTagStructureHandler structureHandler) {
 
         String name = bindStatus.getExpression();

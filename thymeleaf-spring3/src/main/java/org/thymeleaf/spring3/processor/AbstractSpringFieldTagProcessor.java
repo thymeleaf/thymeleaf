@@ -104,7 +104,6 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
             final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
-            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
         /*
@@ -130,10 +129,7 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
         // be applied for the same tag, like for example a th:errorclass
         structureHandler.setLocalVariable(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS, bindStatus);
 
-        doProcess(
-                context, tag,
-                attributeName, attributeValue, attributeTemplateName, attributeLine, attributeCol,
-                bindStatus, structureHandler);
+        doProcess(context, tag, attributeName, attributeValue, bindStatus, structureHandler);
 
     }
 
@@ -145,7 +141,6 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
             final IProcessableElementTag tag,
             final AttributeName attributeName,
             final String attributeValue,
-            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final BindStatus bindStatus,
             final IElementTagStructureHandler structureHandler);
 
