@@ -62,7 +62,6 @@ public abstract class AbstractStandardAttributeModifierTagProcessor extends Abst
             final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
-            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final Object expressionResult,
             final IElementTagStructureHandler structureHandler) {
 

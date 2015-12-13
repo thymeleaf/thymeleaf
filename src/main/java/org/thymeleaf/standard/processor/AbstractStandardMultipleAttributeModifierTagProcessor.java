@@ -70,7 +70,6 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
             final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
-            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
 

@@ -93,33 +93,52 @@ public abstract class AbstractElementModelProcessor
             final ITemplateContext context,
             final IModel model, final IElementModelStructureHandler structureHandler) {
 
-        String modelTemplateName = null;
-        int modelLine = -1;
-        int modelCol = -1;
+        ITemplateEvent firstEvent = null;
         try {
 
-            final ITemplateEvent firstEvent = model.get(0);
-            modelTemplateName = firstEvent.getTemplateName();
-            modelLine = firstEvent.getLine();
-            modelCol = firstEvent.getLine();
+            firstEvent = model.get(0);
 
-            doProcess(context, model, modelTemplateName, modelLine, modelCol, structureHandler);
+            doProcess(context, model, structureHandler);
 
         } catch (final TemplateProcessingException e) {
 
-            if (modelTemplateName != null) {
-                if (!e.hasTemplateName()) {
-                    e.setTemplateName(modelTemplateName);
+            // We will try to add all information possible to the exception report (template name, line, col)
+
+            if (firstEvent != null) {
+
+                String modelTemplateName = firstEvent.getTemplateName();
+                int modelLine = firstEvent.getLine();
+                int modelCol = firstEvent.getCol();
+
+                if (modelTemplateName != null) {
+                    if (!e.hasTemplateName()) {
+                        e.setTemplateName(modelTemplateName);
+                    }
                 }
-            }
-            if (modelLine != -1 && modelCol != -1) {
-                if (!e.hasLineAndCol()) {
-                    e.setLineAndCol(modelLine, modelCol);
+                if (modelLine != -1 && modelCol != -1) {
+                    if (!e.hasLineAndCol()) {
+                        e.setLineAndCol(modelLine, modelCol);
+                    }
                 }
+
             }
+
             throw e;
 
         } catch (final Exception e) {
+
+            // We will try to add all information possible to the exception report (template name, line, col)
+
+            String modelTemplateName = null;
+            int modelLine = -1;
+            int modelCol = -1;
+
+            if (firstEvent != null) {
+
+                modelTemplateName = firstEvent.getTemplateName();
+                modelLine = firstEvent.getLine();
+                modelCol = firstEvent.getCol();
+            }
 
             throw new TemplateProcessingException(
                     "Error during execution of processor '" + this.getClass().getName() + "'", modelTemplateName, modelLine, modelCol, e);
@@ -132,7 +151,6 @@ public abstract class AbstractElementModelProcessor
     protected abstract void doProcess(
             final ITemplateContext context,
             final IModel model,
-            final String modelTemplateName, final int modelLine, final int modelCol,
             final IElementModelStructureHandler structureHandler);
 
 }

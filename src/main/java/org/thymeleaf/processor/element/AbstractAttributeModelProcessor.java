@@ -60,48 +60,63 @@ public abstract class AbstractAttributeModelProcessor extends AbstractElementMod
     protected final void doProcess(
             final ITemplateContext context,
             final IModel model,
-            final String modelTemplateName, final int modelLine, final int modelCol,
             final IElementModelStructureHandler structureHandler) {
 
-        String attributeTemplateName = null;
-        int attributeLine = -1;
-        int attributeCol = -1;
+        AttributeName attributeName = null;
+        IProcessableElementTag firstEvent = null;
         try {
 
-            final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
-
-            final IProcessableElementTag firstEvent = (IProcessableElementTag) model.get(0);
-            attributeTemplateName = firstEvent.getTemplateName();
-            attributeLine = firstEvent.getAttributes().getLine(attributeName);
-            attributeCol = firstEvent.getAttributes().getCol(attributeName);
+            attributeName = getMatchingAttributeName().getMatchingAttributeName();
+            firstEvent = (IProcessableElementTag) model.get(0);
 
             final String attributeValue =
                     EscapedAttributeUtils.unescapeAttribute(context.getTemplateMode(), firstEvent.getAttributes().getValue(attributeName));
+
+            doProcess(context, model, attributeName, attributeValue, structureHandler);
 
             if (this.removeAttribute) {
                 firstEvent.getAttributes().removeAttribute(attributeName);
             }
 
-            doProcess(
-                    context,
-                    model, attributeName, attributeValue,
-                    attributeTemplateName, attributeLine, attributeCol, structureHandler);
-
         } catch (final TemplateProcessingException e) {
 
-            if (attributeTemplateName != null) {
-                if (!e.hasTemplateName()) {
-                    e.setTemplateName(attributeTemplateName);
+            // We will try to add all information possible to the exception report (template name, line, col)
+
+            if (firstEvent != null) {
+
+                String attributeTemplateName = firstEvent.getTemplateName();
+                int attributeLine = firstEvent.getAttributes().getLine(attributeName);
+                int attributeCol = firstEvent.getAttributes().getCol(attributeName);
+
+                if (attributeTemplateName != null) {
+                    if (!e.hasTemplateName()) {
+                        e.setTemplateName(attributeTemplateName);
+                    }
                 }
-            }
-            if (attributeLine != -1 && attributeCol != -1) {
-                if (!e.hasLineAndCol()) {
-                    e.setLineAndCol(attributeLine, attributeCol);
+                if (attributeLine != -1 && attributeCol != -1) {
+                    if (!e.hasLineAndCol()) {
+                        e.setLineAndCol(attributeLine, attributeCol);
+                    }
                 }
+
             }
+
             throw e;
 
         } catch (final Exception e) {
+
+            // We will try to add all information possible to the exception report (template name, line, col)
+
+            String attributeTemplateName = null;
+            int attributeLine = -1;
+            int attributeCol = -1;
+
+            if (firstEvent != null) {
+
+                attributeTemplateName = firstEvent.getTemplateName();
+                attributeLine = firstEvent.getAttributes().getLine(attributeName);
+                attributeCol = firstEvent.getAttributes().getLine(attributeName);
+            }
 
             throw new TemplateProcessingException(
                     "Error during execution of processor '" + this.getClass().getName() + "'", attributeTemplateName, attributeLine, attributeCol, e);
@@ -116,7 +131,6 @@ public abstract class AbstractAttributeModelProcessor extends AbstractElementMod
             final IModel model,
             final AttributeName attributeName,
             final String attributeValue,
-            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementModelStructureHandler structureHandler);
 
 

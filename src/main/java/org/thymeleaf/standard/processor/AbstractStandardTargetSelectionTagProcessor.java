@@ -54,7 +54,6 @@ public abstract class AbstractStandardTargetSelectionTagProcessor extends Abstra
             final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
-            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());

@@ -62,7 +62,6 @@ public abstract class AbstractStandardTextInlineSettingTagProcessor extends Abst
             final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
-            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
         // Note we are NOT executing the attributeValue as a Standard Expression: we are expecting a literal (see comment above)

@@ -48,7 +48,6 @@ public final class StandardBlockTagProcessor extends AbstractElementTagProcessor
     @Override
     protected void doProcess(final ITemplateContext context,
                              final IProcessableElementTag tag,
-                             final String tagTemplateName, final int tagLine, final int tagCol,
                              final IElementTagStructureHandler structureHandler) {
 
         // We are just removing the "<th:block>", leaving whichever contents (body) it might have generated.

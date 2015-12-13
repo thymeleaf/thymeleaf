@@ -59,7 +59,6 @@ public final class StandardSubstituteByTagProcessor extends AbstractStandardFrag
             final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
-            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
         if (LOGGER.isWarnEnabled()) {
@@ -68,11 +67,12 @@ public final class StandardSubstituteByTagProcessor extends AbstractStandardFrag
                     "Please use {} instead, this deprecated attribute will be removed in future versions of Thymeleaf.",
                     new Object[]{
                             TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(context.getTemplateData().getTemplate()),
-                            attributeName, attributeTemplateName, Integer.valueOf(attributeLine), Integer.valueOf(attributeCol),
+                            attributeName, tag.getTemplateName(),
+                            Integer.valueOf(tag.getAttributes().getLine(attributeName)), Integer.valueOf(tag.getAttributes().getCol(attributeName)),
                             AttributeNames.forHTMLName(attributeName.getPrefix(), StandardReplaceTagProcessor.ATTR_NAME)});
         }
 
-        super.doProcess(context, tag, attributeName, attributeValue, attributeTemplateName, attributeLine, attributeCol, structureHandler);
+        super.doProcess(context, tag, attributeName, attributeValue, structureHandler);
 
     }
 

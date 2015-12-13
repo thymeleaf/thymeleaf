@@ -58,7 +58,6 @@ public abstract class AbstractStandardAssertionTagProcessor extends AbstractAttr
             final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
-            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
         if (StringUtils.isEmptyOrWhitespace(attributeValue)) {
@@ -75,7 +74,8 @@ public abstract class AbstractStandardAssertionTagProcessor extends AbstractAttr
             final boolean expressionBooleanResult = EvaluationUtils.evaluateAsBoolean(expressionResult);
             if (!expressionBooleanResult) {
                 throw new TemplateAssertionException(
-                        expression.getStringRepresentation(), attributeTemplateName, attributeLine, attributeCol);
+                        expression.getStringRepresentation(), tag.getTemplateName(),
+                        tag.getAttributes().getLine(attributeName), tag.getAttributes().getCol(attributeName));
             }
         }
 

@@ -59,29 +59,24 @@ public abstract class AbstractAttributeTagProcessor extends AbstractElementTagPr
     protected final void doProcess(
             final ITemplateContext context,
             final IProcessableElementTag tag,
-            final String tagTemplateName, final int tagLine, final int tagCol,
             final IElementTagStructureHandler structureHandler) {
 
         AttributeName attributeName = null;
-        int attributeLine = -1;
-        int attributeCol = -1;
         try {
 
             attributeName = getMatchingAttributeName().getMatchingAttributeName();
-            attributeLine = tag.getAttributes().getLine(attributeName);
-            attributeCol = tag.getAttributes().getCol(attributeName);
 
             final String attributeValue =
                     EscapedAttributeUtils.unescapeAttribute(context.getTemplateMode(), tag.getAttributes().getValue(attributeName));
 
-            if (this.removeAttribute) {
-                tag.getAttributes().removeAttribute(attributeName);
-            }
-
             doProcess(
                     context, tag,
                     attributeName, attributeValue,
-                    tagTemplateName, attributeLine, attributeCol, structureHandler);
+                    structureHandler);
+
+            if (this.removeAttribute) {
+                tag.getAttributes().removeAttribute(attributeName);
+            }
 
         } catch (final TemplateProcessingException e) {
             // This is a nice moment to check whether the execution raised an error and, if so, add location information
@@ -89,27 +84,29 @@ public abstract class AbstractAttributeTagProcessor extends AbstractElementTagPr
             // specific because we know exactly what attribute was being executed and caused the error
             if (tag.hasLocation()) {
                 if (!e.hasTemplateName()) {
-                    e.setTemplateName(tagTemplateName);
+                    e.setTemplateName(tag.getTemplateName());
                 }
                 if (!e.hasLineAndCol()) {
                     if (attributeName == null) {
                         // We don't have info about the specific attribute provoking the error
-                        attributeLine = tag.getLine();
-                        attributeCol = tag.getCol();
+                        e.setLineAndCol(tag.getLine(), tag.getCol());
+                    } else {
+                        e.setLineAndCol(tag.getAttributes().getLine(attributeName), tag.getAttributes().getCol(attributeName));
                     }
-                    e.setLineAndCol(attributeLine, attributeCol);
                 }
             }
             throw e;
         } catch (final Exception e) {
-            if (attributeName == null) {
+            int line = tag.getLine();
+            int col = tag.getCol();
+            if (attributeName != null) {
                 // We don't have info about the specific attribute provoking the error
-                attributeLine = tag.getLine();
-                attributeCol = tag.getCol();
+                line = tag.getAttributes().getLine(attributeName);
+                col = tag.getAttributes().getCol(attributeName);
             }
             throw new TemplateProcessingException(
                     "Error during execution of processor '" + this.getClass().getName() + "'",
-                    tagTemplateName, attributeLine, attributeCol, e);
+                    tag.getTemplateName(), line, col, e);
         }
 
     }
@@ -120,7 +117,6 @@ public abstract class AbstractAttributeTagProcessor extends AbstractElementTagPr
             final IProcessableElementTag tag,
             final AttributeName attributeName,
             final String attributeValue,
-            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler);
 
 

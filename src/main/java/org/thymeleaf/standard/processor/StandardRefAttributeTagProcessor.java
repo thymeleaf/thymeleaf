@@ -56,7 +56,6 @@ public final class StandardRefAttributeTagProcessor extends AbstractAttributeTag
             final ITemplateContext context,
             final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue,
-            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
         // This processor is a no-op. It can simply be used for referencing specific elements in markup, but

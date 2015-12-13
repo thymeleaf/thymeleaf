@@ -93,32 +93,25 @@ public abstract class AbstractElementTagProcessor
             final IProcessableElementTag tag,
             final IElementTagStructureHandler structureHandler) {
 
-        String tagTemplateName = null;
-        int tagLine = -1;
-        int tagCol = -1;
         try {
 
-            tagTemplateName = tag.getTemplateName();
-            tagLine = tag.getLine();
-            tagCol = tag.getCol();
-
-            doProcess(context, tag, tagTemplateName, tagLine, tagCol, structureHandler);
+            doProcess(context, tag, structureHandler);
 
         } catch (final TemplateProcessingException e) {
             // This is a nice moment to check whether the execution raised an error and, if so, add location information
             if (tag.hasLocation()) {
                 if (!e.hasTemplateName()) {
-                    e.setTemplateName(tagTemplateName);
+                    e.setTemplateName(tag.getTemplateName());
                 }
                 if (!e.hasLineAndCol()) {
-                    e.setLineAndCol(tagLine, tagCol);
+                    e.setLineAndCol(tag.getLine(), tag.getCol());
                 }
             }
             throw e;
         } catch (final Exception e) {
             throw new TemplateProcessingException(
                     "Error during execution of processor '" + this.getClass().getName() + "'",
-                    tag.getTemplateName(), tagLine, tagCol, e);
+                    tag.getTemplateName(), tag.getLine(), tag.getCol(), e);
         }
 
     }
@@ -128,7 +121,6 @@ public abstract class AbstractElementTagProcessor
     protected abstract void doProcess(
             final ITemplateContext context,
             final IProcessableElementTag tag,
-            final String tagTemplateName, final int tagLine, final int tagCol,
             final IElementTagStructureHandler structureHandler);
 
 

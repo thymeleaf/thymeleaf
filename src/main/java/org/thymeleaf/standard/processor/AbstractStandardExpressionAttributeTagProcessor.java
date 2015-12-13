@@ -55,7 +55,6 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
             final IProcessableElementTag tag,
             final AttributeName attributeName,
             final String attributeValue,
-            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final IElementTagStructureHandler structureHandler) {
 
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
@@ -70,7 +69,7 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
 
         doProcess(
                 context, tag,
-                attributeName, attributeValue, attributeTemplateName, attributeLine, attributeCol,
+                attributeName, attributeValue,
                 expressionResult, structureHandler);
 
     }
@@ -81,7 +80,6 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
             final IProcessableElementTag tag,
             final AttributeName attributeName,
             final String attributeValue,
-            final String attributeTemplateName, final int attributeLine, final int attributeCol,
             final Object expressionResult,
             final IElementTagStructureHandler structureHandler);
 
