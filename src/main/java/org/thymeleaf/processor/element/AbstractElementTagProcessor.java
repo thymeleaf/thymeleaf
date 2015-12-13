@@ -100,7 +100,7 @@ public abstract class AbstractElementTagProcessor
 
             tagTemplateName = tag.getTemplateName();
             tagLine = tag.getLine();
-            tagCol = tag.getLine();
+            tagCol = tag.getCol();
 
             doProcess(context, tag, tagTemplateName, tagLine, tagCol, structureHandler);
 
