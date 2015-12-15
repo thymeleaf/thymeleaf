@@ -20,8 +20,8 @@
 package org.thymeleaf.standard.inline;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.unbescape.xml.XmlEscape;
 
 /**
  *
@@ -32,8 +32,17 @@ import org.thymeleaf.templatemode.TemplateMode;
 public final class StandardXMLInliner extends AbstractStandardInliner {
 
 
-    public StandardXMLInliner(final IEngineConfiguration configuration, final StandardDialect dialect) {
-        super(configuration, dialect, TemplateMode.XML);
+    public StandardXMLInliner(final IEngineConfiguration configuration) {
+        super(configuration, TemplateMode.XML);
+    }
+
+
+    @Override
+    protected String produceEscapedOutput(final String input) {
+        if (input == null) {
+            return "";
+        }
+        return XmlEscape.escapeXml10(input);
     }
 
 }

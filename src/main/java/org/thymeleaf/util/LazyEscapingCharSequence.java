@@ -22,8 +22,11 @@ package org.thymeleaf.util;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.standard.StandardDialect;
+import org.thymeleaf.standard.serializer.IStandardCSSSerializer;
+import org.thymeleaf.standard.serializer.IStandardJavaScriptSerializer;
+import org.thymeleaf.standard.serializer.StandardSerializers;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.unbescape.html.HtmlEscape;
 import org.unbescape.xml.XmlEscape;
@@ -53,23 +56,23 @@ import org.unbescape.xml.XmlEscape;
  */
 public final class LazyEscapingCharSequence extends AbstractLazyCharSequence {
 
-    private final StandardDialect dialect;
+    private final IEngineConfiguration configuration;
     private final TemplateMode templateMode;
     private final Object input;
 
 
-    public LazyEscapingCharSequence(final StandardDialect dialect, final TemplateMode templateMode, final Object input) {
+    public LazyEscapingCharSequence(final IEngineConfiguration configuration, final TemplateMode templateMode, final Object input) {
 
         super();
 
-        if (dialect == null) {
-            throw new IllegalArgumentException("Dialect is null, which is forbidden");
+        if (configuration == null) {
+            throw new IllegalArgumentException("Engine Configuraion is null, which is forbidden");
         }
         if (templateMode == null) {
             throw new IllegalArgumentException("Template Mode is null, which is forbidden");
         }
 
-        this.dialect = dialect;
+        this.configuration = configuration;
         this.templateMode = templateMode;
         this.input = input;
 
@@ -126,10 +129,12 @@ public final class LazyEscapingCharSequence extends AbstractLazyCharSequence {
                     }
                     return;
                 case JAVASCRIPT:
-                    this.dialect.getJavaScriptSerializer().serializeValue(this.input, writer);
+                    final IStandardJavaScriptSerializer javaScriptSerializer = StandardSerializers.getJavaScriptSerializer(this.configuration);
+                    javaScriptSerializer.serializeValue(this.input, writer);
                     return;
                 case CSS:
-                    this.dialect.getCSSSerializer().serializeValue(this.input, writer);
+                    final IStandardCSSSerializer cssSerializer = StandardSerializers.getCSSSerializer(this.configuration);
+                    cssSerializer.serializeValue(this.input, writer);
                     return;
                 case RAW:
                     if (this.input != null) {

@@ -20,8 +20,8 @@
 package org.thymeleaf.standard.inline;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.unbescape.html.HtmlEscape;
 
 /**
  *
@@ -32,9 +32,17 @@ import org.thymeleaf.templatemode.TemplateMode;
 public final class StandardHTMLInliner extends AbstractStandardInliner {
 
 
-    public StandardHTMLInliner(final IEngineConfiguration configuration, final StandardDialect dialect) {
-        super(configuration, dialect, TemplateMode.HTML);
+    public StandardHTMLInliner(final IEngineConfiguration configuration) {
+        super(configuration, TemplateMode.HTML);
     }
 
+
+    @Override
+    protected String produceEscapedOutput(final String input) {
+        if (input == null) {
+            return "";
+        }
+        return HtmlEscape.escapeHtml4Xml(input);
+    }
 
 }

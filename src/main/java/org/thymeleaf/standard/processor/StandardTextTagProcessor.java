@@ -25,7 +25,6 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
-import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.LazyEscapingCharSequence;
 import org.unbescape.html.HtmlEscape;
@@ -88,7 +87,7 @@ public final class StandardTextTagProcessor extends AbstractStandardExpressionAt
 
                 if (input.length() > 100) {
                     // Might be a large text -> Lazy escaping on the output Writer
-                    text = new LazyEscapingCharSequence((StandardDialect) getDialect(), templateMode, input);
+                    text = new LazyEscapingCharSequence(context.getConfiguration(), templateMode, input);
                 } else {
                     // Not large -> better use a bit more of memory, but be faster
                     text = produceEscapedOutput(templateMode, input);
@@ -100,7 +99,7 @@ public final class StandardTextTagProcessor extends AbstractStandardExpressionAt
             // JavaScript and CSS serializers always work directly on the output Writer, no need to store the entire
             // serialized contents in memory (unless the Writer itself wants to do so).
 
-            text = new LazyEscapingCharSequence((StandardDialect) getDialect(), templateMode, expressionResult);
+            text = new LazyEscapingCharSequence(context.getConfiguration(), templateMode, expressionResult);
 
         }
 

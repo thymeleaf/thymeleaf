@@ -90,6 +90,7 @@ import org.thymeleaf.standard.serializer.IStandardCSSSerializer;
 import org.thymeleaf.standard.serializer.IStandardJavaScriptSerializer;
 import org.thymeleaf.standard.serializer.StandardCSSSerializer;
 import org.thymeleaf.standard.serializer.StandardJavaScriptSerializer;
+import org.thymeleaf.standard.serializer.StandardSerializers;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
@@ -378,6 +379,10 @@ public class StandardDialect
                 StandardExpressions.STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME, getExpressionParser());
         executionAttributes.put(
                 StandardExpressions.STANDARD_CONVERSION_SERVICE_ATTRIBUTE_NAME, getConversionService());
+        executionAttributes.put(
+                StandardSerializers.STANDARD_JAVASCRIPT_SERIALIZER_ATTRIBUTE_NAME, getJavaScriptSerializer());
+        executionAttributes.put(
+                StandardSerializers.STANDARD_CSS_SERIALIZER_ATTRIBUTE_NAME, getCSSSerializer());
 
         return executionAttributes;
 

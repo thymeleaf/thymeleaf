@@ -19,9 +19,13 @@
  */
 package org.thymeleaf.standard.inline;
 
+import java.io.Writer;
+
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.standard.StandardDialect;
+import org.thymeleaf.standard.serializer.IStandardCSSSerializer;
+import org.thymeleaf.standard.serializer.StandardSerializers;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.FastStringWriter;
 
 /**
  *
@@ -31,10 +35,20 @@ import org.thymeleaf.templatemode.TemplateMode;
  */
 public final class StandardCSSInliner extends AbstractStandardInliner {
 
+    private final IStandardCSSSerializer serializer;
 
-    public StandardCSSInliner(final IEngineConfiguration configuration, final StandardDialect dialect) {
-        super(configuration, dialect, TemplateMode.CSS);
+
+    public StandardCSSInliner(final IEngineConfiguration configuration) {
+        super(configuration, TemplateMode.CSS);
+        this.serializer = StandardSerializers.getCSSSerializer(configuration);
     }
 
+
+    @Override
+    protected String produceEscapedOutput(final String input) {
+        final Writer cssWriter = new FastStringWriter(input.length() * 2);
+        this.serializer.serializeValue(input, cssWriter);
+        return cssWriter.toString();
+    }
 
 }

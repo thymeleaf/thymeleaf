@@ -24,7 +24,6 @@ import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
-import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.standard.inline.StandardCSSInliner;
 import org.thymeleaf.standard.inline.StandardHTMLInliner;
 import org.thymeleaf.standard.inline.StandardInlineMode;
@@ -60,13 +59,13 @@ public final class StandardInlineHTMLTagProcessor extends AbstractStandardTextIn
             case NONE:
                 return NoOpInliner.INSTANCE;
             case HTML:
-                return new StandardHTMLInliner(context.getConfiguration(), (StandardDialect) getDialect());
+                return new StandardHTMLInliner(context.getConfiguration());
             case TEXT:
-                return new StandardTextInliner(context.getConfiguration(), (StandardDialect) getDialect());
+                return new StandardTextInliner(context.getConfiguration());
             case JAVASCRIPT:
-                return new StandardJavaScriptInliner(context.getConfiguration(), (StandardDialect) getDialect());
+                return new StandardJavaScriptInliner(context.getConfiguration());
             case CSS:
-                return new StandardCSSInliner(context.getConfiguration(), (StandardDialect) getDialect());
+                return new StandardCSSInliner(context.getConfiguration());
             default:
                 throw new TemplateProcessingException(
                         "Invalid inline mode selected: " + inlineMode + ". Allowed inline modes in template mode " +

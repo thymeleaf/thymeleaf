@@ -34,7 +34,6 @@ import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.postprocessor.IPostProcessor;
 import org.thymeleaf.processor.text.ITextProcessor;
-import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
@@ -43,8 +42,6 @@ import org.thymeleaf.util.EscapedAttributeUtils;
 import org.thymeleaf.util.FastStringWriter;
 import org.thymeleaf.util.LazyProcessingCharSequence;
 import org.thymeleaf.util.Validate;
-import org.unbescape.html.HtmlEscape;
-import org.unbescape.xml.XmlEscape;
 
 /**
  *
@@ -54,22 +51,19 @@ import org.unbescape.xml.XmlEscape;
  */
 public abstract class AbstractStandardInliner implements IInliner {
 
-    private final StandardDialect dialect;
     private final TemplateMode templateMode;
     private final boolean writeTextsToOutput;
 
 
 
     protected AbstractStandardInliner(
-            final IEngineConfiguration configuration, final StandardDialect dialect, final TemplateMode templateMode) {
+            final IEngineConfiguration configuration, final TemplateMode templateMode) {
 
         super();
 
         Validate.notNull(configuration, "Engine configuration cannot be null");
-        Validate.notNull(dialect, "Standard Dialect cannot be null");
         Validate.notNull(templateMode, "Template Mode cannot be null");
 
-        this.dialect = dialect;
         this.templateMode = templateMode;
 
         /*
@@ -557,40 +551,6 @@ public abstract class AbstractStandardInliner implements IInliner {
     }
 
 
-
-    private String produceEscapedOutput(final String input) {
-
-        switch (this.templateMode) {
-
-            case TEXT:
-                // fall-through
-            case HTML:
-                if (input != null) {
-                    return HtmlEscape.escapeHtml4Xml(input);
-                }
-                return "";
-            case XML:
-                if (input != null) {
-                    return XmlEscape.escapeXml10(input);
-                }
-                return "";
-            case JAVASCRIPT:
-                final Writer javascriptWriter = new FastStringWriter(input.length() * 2);
-                this.dialect.getJavaScriptSerializer().serializeValue(input, javascriptWriter);
-                return javascriptWriter.toString();
-            case CSS:
-                final Writer cssWriter = new FastStringWriter(input.length() * 2);
-                this.dialect.getCSSSerializer().serializeValue(input, cssWriter);
-                return cssWriter.toString();
-            case RAW:
-                return "";
-            default:
-                throw new TemplateProcessingException(
-                        "Unrecognized template mode " + templateMode + ". Cannot produce escaped output for " +
-                        "this template mode.");
-        }
-
-    }
-
+    protected abstract String produceEscapedOutput(final String input);
 
 }

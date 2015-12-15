@@ -26,7 +26,6 @@ import org.thymeleaf.model.ITemplateEnd;
 import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.processor.templateboundaries.AbstractTemplateBoundariesProcessor;
 import org.thymeleaf.processor.templateboundaries.ITemplateBoundariesStructureHandler;
-import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.standard.inline.StandardCSSInliner;
 import org.thymeleaf.standard.inline.StandardHTMLInliner;
 import org.thymeleaf.standard.inline.StandardJavaScriptInliner;
@@ -58,19 +57,19 @@ public final class StandardInlineEnablementTemplateBoundariesProcessor extends A
         switch (getTemplateMode()) {
 
             case HTML:
-                structureHandler.setInliner(new StandardHTMLInliner(context.getConfiguration(), (StandardDialect) getDialect()));
+                structureHandler.setInliner(new StandardHTMLInliner(context.getConfiguration()));
                 break;
             case XML:
-                structureHandler.setInliner(new StandardXMLInliner(context.getConfiguration(), (StandardDialect) getDialect()));
+                structureHandler.setInliner(new StandardXMLInliner(context.getConfiguration()));
                 break;
             case TEXT:
-                structureHandler.setInliner(new StandardTextInliner(context.getConfiguration(), (StandardDialect) getDialect()));
+                structureHandler.setInliner(new StandardTextInliner(context.getConfiguration()));
                 break;
             case JAVASCRIPT:
-                structureHandler.setInliner(new StandardJavaScriptInliner(context.getConfiguration(), (StandardDialect) getDialect()));
+                structureHandler.setInliner(new StandardJavaScriptInliner(context.getConfiguration()));
                 break;
             case CSS:
-                structureHandler.setInliner(new StandardCSSInliner(context.getConfiguration(), (StandardDialect) getDialect()));
+                structureHandler.setInliner(new StandardCSSInliner(context.getConfiguration()));
                 break;
             case RAW:
                 // No inliner for RAW template mode. We could use the Raw, but anyway it would be of no use
