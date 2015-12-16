@@ -22,7 +22,6 @@ package org.thymeleaf.spring3.processor;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -40,8 +39,8 @@ public final class SpringTextareaFieldTagProcessor extends AbstractSpringFieldTa
 
 
 
-    public SpringTextareaFieldTagProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
-        super(dialect, dialectPrefix, TEXTAREA_TAG_NAME, null, null, true);
+    public SpringTextareaFieldTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, TEXTAREA_TAG_NAME, null, null, true);
     }
 
 

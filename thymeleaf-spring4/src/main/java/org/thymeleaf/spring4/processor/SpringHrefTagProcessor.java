@@ -20,7 +20,6 @@
 package org.thymeleaf.spring4.processor;
 
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -45,8 +44,8 @@ public final class SpringHrefTagProcessor extends AbstractStandardExpressionAttr
 
 
 
-    public SpringHrefTagProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
-        super(dialect, TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, false);
+    public SpringHrefTagProcessor(final String dialectPrefix) {
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, false);
     }
 
 

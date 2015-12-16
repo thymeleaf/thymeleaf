@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -48,8 +47,8 @@ public final class SpringObjectTagProcessor extends AbstractStandardTargetSelect
     
     
     
-    public SpringObjectTagProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
-        super(dialect, TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
+    public SpringObjectTagProcessor(final String dialectPrefix) {
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 

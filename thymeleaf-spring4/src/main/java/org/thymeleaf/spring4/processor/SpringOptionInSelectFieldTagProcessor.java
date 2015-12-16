@@ -20,7 +20,6 @@
 package org.thymeleaf.spring4.processor;
 
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -45,8 +44,8 @@ public final class SpringOptionInSelectFieldTagProcessor extends AbstractElement
 
 
 
-    public SpringOptionInSelectFieldTagProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
-        super(dialect, TemplateMode.HTML, dialectPrefix, OPTION_TAG_NAME, false, null, false, ATTR_PRECEDENCE);
+    public SpringOptionInSelectFieldTagProcessor(final String dialectPrefix) {
+        super(TemplateMode.HTML, dialectPrefix, OPTION_TAG_NAME, false, null, false, ATTR_PRECEDENCE);
     }
 
 

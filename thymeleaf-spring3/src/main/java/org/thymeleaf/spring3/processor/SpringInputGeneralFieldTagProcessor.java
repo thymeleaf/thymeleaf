@@ -22,7 +22,6 @@ package org.thymeleaf.spring3.processor;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -82,8 +81,8 @@ public final class SpringInputGeneralFieldTagProcessor
     
 
 
-    public SpringInputGeneralFieldTagProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
-        super(dialect, dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, ALL_TYPE_ATTR_VALUES, true);
+    public SpringInputGeneralFieldTagProcessor(final String dialectPrefix) {
+        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, ALL_TYPE_ATTR_VALUES, true);
     }
 
 
