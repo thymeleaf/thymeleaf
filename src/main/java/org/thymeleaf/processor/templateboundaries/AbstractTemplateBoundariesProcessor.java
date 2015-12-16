@@ -20,7 +20,6 @@
 package org.thymeleaf.processor.templateboundaries;
 
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ITemplateEnd;
 import org.thymeleaf.model.ITemplateStart;
@@ -42,9 +41,8 @@ public abstract class AbstractTemplateBoundariesProcessor
 
 
 
-    public AbstractTemplateBoundariesProcessor(
-            final IProcessorDialect dialect, final TemplateMode templateMode, final int precedence) {
-        super(dialect, templateMode, precedence);
+    public AbstractTemplateBoundariesProcessor(final TemplateMode templateMode, final int precedence) {
+        super(templateMode, precedence);
     }
 
 

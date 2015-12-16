@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -35,8 +34,8 @@ public final class StandardValueTagProcessor extends AbstractStandardAttributeMo
     public static final String ATTR_NAME = "value";
 
 
-    public StandardValueTagProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
-        super(dialect, TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE, false);
+    public StandardValueTagProcessor(final String dialectPrefix) {
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE, false);
     }
 
 

@@ -21,7 +21,6 @@ package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.engine.TemplateModel;
 import org.thymeleaf.model.IComment;
@@ -45,8 +44,8 @@ public final class StandardConditionalCommentProcessor extends AbstractCommentPr
 
 
 
-    public StandardConditionalCommentProcessor(final IProcessorDialect dialect) {
-        super(dialect, TemplateMode.HTML, PRECEDENCE);
+    public StandardConditionalCommentProcessor() {
+        super(TemplateMode.HTML, PRECEDENCE);
     }
 
 

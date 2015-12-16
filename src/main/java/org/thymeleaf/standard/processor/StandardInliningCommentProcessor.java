@@ -20,7 +20,6 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
 import org.thymeleaf.model.IComment;
@@ -36,8 +35,8 @@ public final class StandardInliningCommentProcessor extends AbstractCommentProce
 
     public static final int PRECEDENCE = 1000;
 
-    public StandardInliningCommentProcessor(final IProcessorDialect dialect, final TemplateMode templateMode) {
-        super(dialect, templateMode, PRECEDENCE);
+    public StandardInliningCommentProcessor(final TemplateMode templateMode) {
+        super(templateMode, PRECEDENCE);
     }
 
 

@@ -20,7 +20,6 @@
 package org.thymeleaf.processor.text;
 
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.processor.AbstractProcessor;
@@ -41,8 +40,8 @@ public abstract class AbstractTextProcessor
 
 
 
-    public AbstractTextProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final int precedence) {
-        super(dialect, templateMode, precedence);
+    public AbstractTextProcessor(final TemplateMode templateMode, final int precedence) {
+        super(templateMode, precedence);
     }
 
 

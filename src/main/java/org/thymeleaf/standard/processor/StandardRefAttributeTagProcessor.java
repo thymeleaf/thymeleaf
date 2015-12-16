@@ -20,7 +20,6 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
@@ -42,11 +41,8 @@ public final class StandardRefAttributeTagProcessor extends AbstractAttributeTag
 
 
 
-    public StandardRefAttributeTagProcessor(
-            final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix) {
-
-        super(dialect, templateMode, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE, true);
-
+    public StandardRefAttributeTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE, true);
     }
 
 

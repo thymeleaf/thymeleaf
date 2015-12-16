@@ -20,7 +20,6 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -43,8 +42,8 @@ public final class StandardTextTagProcessor extends AbstractStandardExpressionAt
     public static final String ATTR_NAME = "text";
 
 
-    public StandardTextTagProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix) {
-        super(dialect, templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, true);
+    public StandardTextTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, true);
     }
 
 

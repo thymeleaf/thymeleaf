@@ -22,7 +22,6 @@ package org.thymeleaf.standard.processor;
 import java.util.List;
 
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateAssertionException;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -47,8 +46,8 @@ public abstract class AbstractStandardAssertionTagProcessor extends AbstractAttr
 
 
     protected AbstractStandardAssertionTagProcessor(
-            final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence) {
-        super(dialect, templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
+            final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence) {
+        super(templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
     }
 
 

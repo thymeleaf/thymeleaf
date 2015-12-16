@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.attoparser.util.TextUtil;
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IElementAttributes;
@@ -60,8 +59,8 @@ public final class StandardDefaultAttributesTagProcessor
 
 
 
-    public StandardDefaultAttributesTagProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix) {
-        super(dialect, templateMode, PRECEDENCE);
+    public StandardDefaultAttributesTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, PRECEDENCE);
         this.dialectPrefix = dialectPrefix;
         this.matchingAttributeName = MatchingAttributeName.forAllAttributesWithPrefix(getTemplateMode(), dialectPrefix);
     }

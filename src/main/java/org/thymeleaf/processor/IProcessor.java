@@ -75,7 +75,6 @@ import org.thymeleaf.templatemode.TemplateMode;
  */
 public interface IProcessor {
 
-    public IProcessorDialect getDialect();
     public TemplateMode getTemplateMode();
     public int getPrecedence();
 

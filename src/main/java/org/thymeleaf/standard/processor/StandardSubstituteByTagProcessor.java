@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.AttributeNames;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -49,8 +48,8 @@ public final class StandardSubstituteByTagProcessor extends AbstractStandardFrag
 
 
 
-    public StandardSubstituteByTagProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix) {
-        super(dialect, templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, true);
+    public StandardSubstituteByTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, true);
     }
 
 

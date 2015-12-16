@@ -20,7 +20,6 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -42,15 +41,15 @@ public abstract class AbstractStandardAttributeModifierTagProcessor extends Abst
 
 
     protected AbstractStandardAttributeModifierTagProcessor(
-            final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix,
+            final TemplateMode templateMode, final String dialectPrefix,
             final String attrName, final int precedence, final boolean removeIfEmpty) {
-        this(dialect, templateMode, dialectPrefix, attrName, null, precedence, removeIfEmpty);
+        this(templateMode, dialectPrefix, attrName, null, precedence, removeIfEmpty);
     }
 
     protected AbstractStandardAttributeModifierTagProcessor(
-            final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix,
+            final TemplateMode templateMode, final String dialectPrefix,
             final String attrName, final String targetAttrName, final int precedence, final boolean removeIfEmpty) {
-        super(dialect, templateMode, dialectPrefix, attrName, precedence, false);
+        super(templateMode, dialectPrefix, attrName, precedence, false);
         this.targetAttrName = targetAttrName;
         this.removeIfEmpty = removeIfEmpty;
     }

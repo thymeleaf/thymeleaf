@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -38,8 +37,8 @@ public final class StandardReplaceTagProcessor extends AbstractStandardFragmentI
 
 
 
-    public StandardReplaceTagProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix) {
-        super(dialect, templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, true);
+    public StandardReplaceTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, true);
     }
 
 

@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.model.IDocType;
 import org.thymeleaf.processor.doctype.AbstractDocTypeProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeStructureHandler;
@@ -120,8 +119,8 @@ public final class StandardTranslationDocTypeProcessor extends AbstractDocTypePr
 
 
 
-    public StandardTranslationDocTypeProcessor(final IProcessorDialect dialect) {
-        super(dialect, TemplateMode.HTML, PRECEDENCE);
+    public StandardTranslationDocTypeProcessor() {
+        super(TemplateMode.HTML, PRECEDENCE);
     }
 
 

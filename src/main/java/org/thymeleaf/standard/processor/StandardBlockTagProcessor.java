@@ -20,7 +20,6 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractElementTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -40,8 +39,8 @@ public final class StandardBlockTagProcessor extends AbstractElementTagProcessor
 
 
 
-    public StandardBlockTagProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix, final String elementName) {
-        super(dialect, templateMode, dialectPrefix, elementName, (dialectPrefix != null), null, false, PRECEDENCE);
+    public StandardBlockTagProcessor(final TemplateMode templateMode, final String dialectPrefix, final String elementName) {
+        super(templateMode, dialectPrefix, elementName, (dialectPrefix != null), null, false, PRECEDENCE);
     }
 
 

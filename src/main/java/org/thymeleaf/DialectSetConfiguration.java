@@ -54,6 +54,7 @@ import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.ProcessorComparators;
+import org.thymeleaf.util.ProcessorConfigurationUtils;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -134,16 +135,18 @@ final class DialectSetConfiguration {
              */
             if (dialect instanceof IProcessorDialect) {
 
+                final IProcessorDialect processorDialect = (IProcessorDialect)dialect;
+
                 // Might be null if the dialect has been specified to use no prefix (or that is the default of such dialect)
                 final String dialectPrefix =
-                        (dialectConfiguration.isPrefixSpecified()? dialectConfiguration.getPrefix() : ((IProcessorDialect) dialect).getPrefix());
+                        (dialectConfiguration.isPrefixSpecified()? dialectConfiguration.getPrefix() : processorDialect.getPrefix());
 
                 if (dialect instanceof StandardDialect) {
                     standardDialectPresent = true;
                     standardDialectPrefix = dialectPrefix;
                 }
 
-                final Set<IProcessor> dialectProcessors = ((IProcessorDialect) dialect).getProcessors(dialectPrefix);
+                final Set<IProcessor> dialectProcessors = processorDialect.getProcessors(dialectPrefix);
                 if (dialectProcessors == null) {
                     throw new ConfigurationException("Dialect should not return null processor set: " + dialect.getClass().getName());
                 }
@@ -167,7 +170,7 @@ final class DialectSetConfiguration {
                             processorsForTemplateMode = new ArrayList<IElementProcessor>(5);
                             elementProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
-                        processorsForTemplateMode.add((IElementProcessor)dialectProcessor);
+                        processorsForTemplateMode.add(ProcessorConfigurationUtils.wrap((IElementProcessor)dialectProcessor, processorDialect));
                         Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
 
@@ -178,7 +181,7 @@ final class DialectSetConfiguration {
                             processorsForTemplateMode = new ArrayList<ITemplateBoundariesProcessor>(5);
                             templateBoundariesProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
-                        processorsForTemplateMode.add((ITemplateBoundariesProcessor)dialectProcessor);
+                        processorsForTemplateMode.add(ProcessorConfigurationUtils.wrap((ITemplateBoundariesProcessor)dialectProcessor, processorDialect));
                         Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
                     } else if (dialectProcessor instanceof ICDATASectionProcessor) {
@@ -188,7 +191,7 @@ final class DialectSetConfiguration {
                             processorsForTemplateMode = new ArrayList<ICDATASectionProcessor>(5);
                             cdataSectionProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
-                        processorsForTemplateMode.add((ICDATASectionProcessor)dialectProcessor);
+                        processorsForTemplateMode.add(ProcessorConfigurationUtils.wrap((ICDATASectionProcessor)dialectProcessor, processorDialect));
                         Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
                     } else if (dialectProcessor instanceof ICommentProcessor) {
@@ -198,7 +201,7 @@ final class DialectSetConfiguration {
                             processorsForTemplateMode = new ArrayList<ICommentProcessor>(5);
                             commentProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
-                        processorsForTemplateMode.add((ICommentProcessor)dialectProcessor);
+                        processorsForTemplateMode.add(ProcessorConfigurationUtils.wrap((ICommentProcessor)dialectProcessor, processorDialect));
                         Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
                     } else if (dialectProcessor instanceof IDocTypeProcessor) {
@@ -208,7 +211,7 @@ final class DialectSetConfiguration {
                             processorsForTemplateMode = new ArrayList<IDocTypeProcessor>(5);
                             docTypeProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
-                        processorsForTemplateMode.add((IDocTypeProcessor)dialectProcessor);
+                        processorsForTemplateMode.add(ProcessorConfigurationUtils.wrap((IDocTypeProcessor)dialectProcessor, processorDialect));
                         Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
                     } else if (dialectProcessor instanceof IProcessingInstructionProcessor) {
@@ -218,7 +221,7 @@ final class DialectSetConfiguration {
                             processorsForTemplateMode = new ArrayList<IProcessingInstructionProcessor>(5);
                             processingInstructionProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
-                        processorsForTemplateMode.add((IProcessingInstructionProcessor)dialectProcessor);
+                        processorsForTemplateMode.add(ProcessorConfigurationUtils.wrap((IProcessingInstructionProcessor)dialectProcessor, processorDialect));
                         Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
                     } else if (dialectProcessor instanceof ITextProcessor) {
@@ -228,7 +231,7 @@ final class DialectSetConfiguration {
                             processorsForTemplateMode = new ArrayList<ITextProcessor>(5);
                             textProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
-                        processorsForTemplateMode.add((ITextProcessor)dialectProcessor);
+                        processorsForTemplateMode.add(ProcessorConfigurationUtils.wrap((ITextProcessor)dialectProcessor, processorDialect));
                         Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
                     } else if (dialectProcessor instanceof IXMLDeclarationProcessor) {
@@ -238,7 +241,7 @@ final class DialectSetConfiguration {
                             processorsForTemplateMode = new ArrayList<IXMLDeclarationProcessor>(5);
                             xmlDeclarationProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
-                        processorsForTemplateMode.add((IXMLDeclarationProcessor)dialectProcessor);
+                        processorsForTemplateMode.add(ProcessorConfigurationUtils.wrap((IXMLDeclarationProcessor)dialectProcessor, processorDialect));
                         Collections.sort(processorsForTemplateMode, ProcessorComparators.PROCESSOR_COMPARATOR);
 
                     }

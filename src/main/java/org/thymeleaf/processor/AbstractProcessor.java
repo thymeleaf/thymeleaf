@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.processor;
 
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
@@ -39,28 +38,20 @@ import org.thymeleaf.util.Validate;
  */
 public abstract class AbstractProcessor implements IProcessor {
 
-    private final IProcessorDialect dialect;
     private final int precedence;
     private final TemplateMode templateMode;
 
 
 
-    public AbstractProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final int precedence) {
+    public AbstractProcessor(final TemplateMode templateMode, final int precedence) {
 
         super();
 
-        Validate.notNull(dialect, "Dialect cannot be null");
         Validate.notNull(templateMode, "Template mode cannot be null");
 
-        this.dialect = dialect;
         this.templateMode = templateMode;
         this.precedence = precedence;
 
-    }
-
-
-    public final IProcessorDialect getDialect() {
-        return this.dialect;
     }
 
 

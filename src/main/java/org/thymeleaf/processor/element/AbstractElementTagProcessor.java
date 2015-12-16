@@ -20,7 +20,6 @@
 package org.thymeleaf.processor.element;
 
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeNames;
 import org.thymeleaf.engine.ElementNames;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -51,12 +50,12 @@ public abstract class AbstractElementTagProcessor
 
 
     public AbstractElementTagProcessor(
-            final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix,
+            final TemplateMode templateMode, final String dialectPrefix,
             final String elementName, final boolean prefixElementName,
             final String attributeName, final boolean prefixAttributeName,
             final int precedence) {
 
-        super(dialect, templateMode, precedence);
+        super(templateMode, precedence);
 
         this.dialectPrefix = dialectPrefix;
 

@@ -60,9 +60,8 @@ public final class ProcessorComparators {
                 // This is the only case in which the comparison of two processors will return 0
                 return 0;
             }
-            final int dialectPrecedenceComp = compareInts(o1.getDialect().getDialectProcessorPrecedence(), o2.getDialect().getDialectProcessorPrecedence());
-            if (dialectPrecedenceComp != 0) {
-                return dialectPrecedenceComp;
+            if (o1 instanceof ProcessorConfigurationUtils.AbstractProcessorWrapper && o2 instanceof ProcessorConfigurationUtils.AbstractProcessorWrapper) {
+                return compareWrapped((ProcessorConfigurationUtils.AbstractProcessorWrapper)o1, (ProcessorConfigurationUtils.AbstractProcessorWrapper)o2);
             }
             final int processorPrecedenceComp = compareInts(o1.getPrecedence(), o2.getPrecedence());
             if (processorPrecedenceComp != 0) {
@@ -73,6 +72,32 @@ public final class ProcessorComparators {
                 return classNameComp;
             }
             return compareInts(System.identityHashCode(o1), System.identityHashCode(o2)); // Cannot be 0
+        }
+
+
+        /*
+         * Processors are wrapped and therefore we can apply dialect precedence
+         */
+        private int compareWrapped(final ProcessorConfigurationUtils.AbstractProcessorWrapper o1w, final ProcessorConfigurationUtils.AbstractProcessorWrapper o2w) {
+
+            final int dialectPrecedenceComp = compareInts(o1w.getDialect().getDialectProcessorPrecedence(), o2w.getDialect().getDialectProcessorPrecedence());
+            if (dialectPrecedenceComp != 0) {
+                return dialectPrecedenceComp;
+            }
+
+            final IProcessor o1 = o1w.unwrap();
+            final IProcessor o2 = o2w.unwrap();
+
+            final int processorPrecedenceComp = compareInts(o1.getPrecedence(), o2.getPrecedence());
+            if (processorPrecedenceComp != 0) {
+                return processorPrecedenceComp;
+            }
+            final int classNameComp = o1.getClass().getName().compareTo(o2.getClass().getName());
+            if (classNameComp != 0) {
+                return classNameComp;
+            }
+            return compareInts(System.identityHashCode(o1), System.identityHashCode(o2)); // Cannot be 0
+
         }
 
 

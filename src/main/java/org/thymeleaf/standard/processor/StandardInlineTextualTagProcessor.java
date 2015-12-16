@@ -20,7 +20,6 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
@@ -46,8 +45,8 @@ public final class StandardInlineTextualTagProcessor extends AbstractStandardTex
 
 
 
-    public StandardInlineTextualTagProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix) {
-        super(dialect, templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
+    public StandardInlineTextualTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE);
         Validate.isTrue(templateMode.isText(), "Template mode must be a textual one");
     }
 

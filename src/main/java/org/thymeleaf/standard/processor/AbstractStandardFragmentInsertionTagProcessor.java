@@ -29,7 +29,6 @@ import java.util.Set;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.TemplateModel;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -73,9 +72,9 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
     protected AbstractStandardFragmentInsertionTagProcessor(
-            final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
+            final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
             final boolean replaceHost) {
-        this(dialect, templateMode, dialectPrefix, attrName, precedence, replaceHost, false);
+        this(templateMode, dialectPrefix, attrName, precedence, replaceHost, false);
     }
 
     /*
@@ -83,9 +82,9 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
      * only be used by the th:include processor, which was deprecated as of 3.0, and will be removed in 3.2.
      */
     AbstractStandardFragmentInsertionTagProcessor(
-            final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
+            final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
             final boolean replaceHost, final boolean insertOnlyContents) {
-        super(dialect, templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
+        super(templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
         this.replaceHost = replaceHost;
         this.insertOnlyContents = insertOnlyContents;
     }

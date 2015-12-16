@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -34,8 +33,8 @@ public final class StandardActionTagProcessor extends AbstractStandardAttributeM
     public static final int PRECEDENCE = 1000;
     public static final String ATTR_NAME = "action";
 
-    public StandardActionTagProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
-        super(dialect, TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE, false);
+    public StandardActionTagProcessor(final String dialectPrefix) {
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE, false);
     }
 
 

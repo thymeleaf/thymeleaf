@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -35,8 +34,8 @@ public final class StandardAttrTagProcessor extends AbstractStandardMultipleAttr
     public static final String ATTR_NAME = "attr";
 
 
-    public StandardAttrTagProcessor(final IProcessorDialect dialect, final TemplateMode templateMode, final String dialectPrefix) {
-        super(dialect, templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, ModificationType.SUBSTITUTION);
+    public StandardAttrTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, ModificationType.SUBSTITUTION);
     }
 
 
