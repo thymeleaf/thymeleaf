@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.context.IWebContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
@@ -51,8 +50,8 @@ public final class AuthorizeAttrProcessor extends AbstractStandardConditionalVis
     
     
     
-    public AuthorizeAttrProcessor(final IProcessorDialect dialect, final String dialectPrefix, final String attrName) {
-        super(dialect, TemplateMode.HTML, dialectPrefix, attrName, ATTR_PRECEDENCE);
+    public AuthorizeAttrProcessor(final String dialectPrefix, final String attrName) {
+        super(TemplateMode.HTML, dialectPrefix, attrName, ATTR_PRECEDENCE);
     }
 
 

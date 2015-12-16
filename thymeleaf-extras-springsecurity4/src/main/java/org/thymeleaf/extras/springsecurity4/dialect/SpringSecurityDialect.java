@@ -74,14 +74,14 @@ public class SpringSecurityDialect
 
     public Set<IProcessor> getProcessors(final String dialectPrefix) {
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
-        processors.add(new AuthenticationAttrProcessor(this, dialectPrefix));
+        processors.add(new AuthenticationAttrProcessor(dialectPrefix));
         // synonym (sec:authorize = sec:authorize-expr) for similarity with
         // "authorize-url" and "autorize-acl"
-        processors.add(new AuthorizeAttrProcessor(this, dialectPrefix, AuthorizeAttrProcessor.ATTR_NAME));
-        processors.add(new AuthorizeAttrProcessor(this, dialectPrefix, AuthorizeAttrProcessor.ATTR_NAME_EXPR));
-        processors.add(new AuthorizeUrlAttrProcessor(this, dialectPrefix));
-        processors.add(new AuthorizeAclAttrProcessor(this, dialectPrefix));
-        processors.add(new StandardXmlNsTagProcessor(this, TemplateMode.HTML, dialectPrefix));
+        processors.add(new AuthorizeAttrProcessor(dialectPrefix, AuthorizeAttrProcessor.ATTR_NAME));
+        processors.add(new AuthorizeAttrProcessor(dialectPrefix, AuthorizeAttrProcessor.ATTR_NAME_EXPR));
+        processors.add(new AuthorizeUrlAttrProcessor(dialectPrefix));
+        processors.add(new AuthorizeAclAttrProcessor(dialectPrefix));
+        processors.add(new StandardXmlNsTagProcessor(TemplateMode.HTML, dialectPrefix));
         return processors;
     }
 

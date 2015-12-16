@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.context.IWebContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
@@ -48,8 +47,8 @@ public final class AuthorizeUrlAttrProcessor extends AbstractStandardConditional
     
     
     
-    public AuthorizeUrlAttrProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
-        super(dialect, TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
+    public AuthorizeUrlAttrProcessor(final String dialectPrefix) {
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 

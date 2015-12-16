@@ -27,7 +27,6 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.context.IWebContext;
-import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -60,8 +59,8 @@ public final class AuthorizeAclAttrProcessor extends AbstractStandardConditional
 
 
 
-    public AuthorizeAclAttrProcessor(final IProcessorDialect dialect, final String dialectPrefix) {
-        super(dialect, TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
+    public AuthorizeAclAttrProcessor(final String dialectPrefix) {
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE);
     }
 
 
