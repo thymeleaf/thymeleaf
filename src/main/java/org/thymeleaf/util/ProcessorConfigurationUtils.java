@@ -56,6 +56,13 @@ import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
+ * <p>
+ *   Utility class containing methods relating to the configuration of processors (e.g. wrapping).
+ * </p>
+ * <p>
+ *   This class is mainly for <strong>internal use</strong>.
+ * </p>
+ *
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
