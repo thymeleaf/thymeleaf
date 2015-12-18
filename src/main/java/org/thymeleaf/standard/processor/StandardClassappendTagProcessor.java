@@ -85,9 +85,10 @@ public final class StandardClassappendTagProcessor
         if (newAttributeValue != null && newAttributeValue.length() > 0) {
 
             final IElementAttributes attributes = tag.getAttributes();
+            final AttributeName targetAttributeName = this.targetAttributeDefinition.getAttributeName();
 
-            if (attributes.hasAttribute(TARGET_ATTR_NAME)) {
-                final String currentValue = attributes.getValue(TARGET_ATTR_NAME);
+            if (attributes.hasAttribute(targetAttributeName)) {
+                final String currentValue = attributes.getValue(targetAttributeName);
                 if (currentValue.length() > 0) {
                     newAttributeValue = currentValue + ' ' + newAttributeValue;
                 }
