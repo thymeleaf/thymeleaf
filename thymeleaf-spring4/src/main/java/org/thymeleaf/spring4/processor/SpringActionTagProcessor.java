@@ -25,7 +25,6 @@ import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeDefinition;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.ElementAttributes;
 import org.thymeleaf.engine.IAttributeDefinitionsAware;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IModel;
@@ -35,6 +34,7 @@ import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
 import org.thymeleaf.standard.processor.AbstractStandardExpressionAttributeTagProcessor;
+import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 import org.unbescape.html.HtmlEscape;
@@ -113,12 +113,8 @@ public final class  SpringActionTagProcessor
         newAttributeValue = RequestDataValueProcessorUtils.processAction(context, newAttributeValue, httpMethod);
 
         // Set the 'action' attribute
-        if (attributes instanceof ElementAttributes) {
-            ((ElementAttributes) attributes).replaceAttribute(
-                    attributeName, this.targetAttributeDefinition, TARGET_ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue), null);
-        } else {
-            attributes.replaceAttribute(attributeName, TARGET_ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
-        }
+        StandardProcessorUtils.replaceAttribute(
+                attributes, attributeName, this.targetAttributeDefinition, TARGET_ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
 
         // If this th:action is in a <form> tag, we might need to add a hidden field (depending on Spring configuration)
         if ("form".equalsIgnoreCase(tag.getElementName())) {
@@ -139,15 +135,9 @@ public final class  SpringActionTagProcessor
 
                     final IElementAttributes extraHiddenElementTagAttributes = extraHiddenElementTag.getAttributes();
 
-                    if (extraHiddenElementTagAttributes instanceof ElementAttributes) {
-                        ((ElementAttributes)extraHiddenElementTagAttributes).setAttribute(this.typeAttributeDefinition, TYPE_ATTR_NAME, "hidden", null);
-                        ((ElementAttributes)extraHiddenElementTagAttributes).setAttribute(this.nameAttributeDefinition, NAME_ATTR_NAME, extraHiddenField.getKey(), null);
-                        ((ElementAttributes)extraHiddenElementTagAttributes).setAttribute(this.valueAttributeDefinition, VALUE_ATTR_NAME, extraHiddenField.getValue(), null); // no need to re-apply the processor here
-                    } else {
-                        extraHiddenElementTagAttributes.setAttribute(TYPE_ATTR_NAME, "hidden");
-                        extraHiddenElementTagAttributes.setAttribute(NAME_ATTR_NAME, extraHiddenField.getKey());
-                        extraHiddenElementTagAttributes.setAttribute(VALUE_ATTR_NAME, extraHiddenField.getValue()); // no need to re-apply the processor here
-                    }
+                    StandardProcessorUtils.setAttribute(extraHiddenElementTagAttributes, this.typeAttributeDefinition, TYPE_ATTR_NAME, "hidden");
+                    StandardProcessorUtils.setAttribute(extraHiddenElementTagAttributes, this.nameAttributeDefinition, NAME_ATTR_NAME, extraHiddenField.getKey());
+                    StandardProcessorUtils.setAttribute(extraHiddenElementTagAttributes, this.valueAttributeDefinition, VALUE_ATTR_NAME, extraHiddenField.getValue()); // no need to re-apply the processor here
 
                     extraHiddenElementTags.add(extraHiddenElementTag);
 

@@ -23,13 +23,13 @@ import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeDefinition;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.ElementAttributes;
 import org.thymeleaf.engine.IAttributeDefinitionsAware;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
 import org.thymeleaf.standard.processor.AbstractStandardExpressionAttributeTagProcessor;
+import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 import org.unbescape.html.HtmlEscape;
@@ -43,8 +43,8 @@ import org.unbescape.html.HtmlEscape;
  *
  */
 public final class SpringHrefTagProcessor
-            extends AbstractStandardExpressionAttributeTagProcessor
-            implements IAttributeDefinitionsAware {
+        extends AbstractStandardExpressionAttributeTagProcessor
+        implements IAttributeDefinitionsAware {
 
 
     public static final int ATTR_PRECEDENCE = 1000;
@@ -89,11 +89,7 @@ public final class SpringHrefTagProcessor
 
         // Set the real, non prefixed attribute
         final IElementAttributes attributes = tag.getAttributes();
-        if (attributes instanceof ElementAttributes) {
-            ((ElementAttributes) attributes).replaceAttribute(attributeName, this.targetAttributeDefinition, ATTR_NAME, (newAttributeValue == null ? "" : newAttributeValue), null);
-        } else {
-            attributes.replaceAttribute(attributeName, ATTR_NAME, (newAttributeValue == null ? "" : newAttributeValue));
-        }
+        StandardProcessorUtils.replaceAttribute(attributes, attributeName, this.targetAttributeDefinition, ATTR_NAME, (newAttributeValue == null ? "" : newAttributeValue));
 
     }
 

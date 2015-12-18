@@ -25,9 +25,13 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.AttributeDefinition;
+import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.AttributeNames;
+import org.thymeleaf.engine.IAttributeDefinitionsAware;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -37,8 +41,10 @@ import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.expression.VariableExpression;
+import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.StringUtils;
+import org.thymeleaf.util.Validate;
 import org.unbescape.html.HtmlEscape;
 
 /**
@@ -49,16 +55,33 @@ import org.unbescape.html.HtmlEscape;
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  */
-public final class SpringErrorClassTagProcessor extends AbstractAttributeTagProcessor {
+public final class SpringErrorClassTagProcessor
+        extends AbstractAttributeTagProcessor
+        implements IAttributeDefinitionsAware {
 
     public static final int ATTR_PRECEDENCE = 1500;
     public static final String ATTR_NAME = "errorclass";
     public static final String TARGET_ATTR_NAME = "class";
 
+    private static final TemplateMode TEMPLATE_MODE = TemplateMode.HTML;
+
+    private AttributeDefinition targetAttributeDefinition;
+
+
 
 
     public SpringErrorClassTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, null, false, ATTR_NAME, true,ATTR_PRECEDENCE, true);
+        super(TEMPLATE_MODE, dialectPrefix, null, false, ATTR_NAME, true,ATTR_PRECEDENCE, true);
+    }
+
+
+
+
+    public void setAttributeDefinitions(final AttributeDefinitions attributeDefinitions) {
+        Validate.notNull(attributeDefinitions, "Attribute Definitions cannot be null");
+        // We precompute the AttributeDefinition of the target attribute in order to being able to use much
+        // faster methods for setting/replacing attributes on the ElementAttributes implementation
+        this.targetAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, TARGET_ATTR_NAME);
     }
 
 
@@ -89,19 +112,22 @@ public final class SpringErrorClassTagProcessor extends AbstractAttributeTagProc
             final IStandardExpression expression = expressionParser.parseExpression(context, attributeValue);
             final Object expressionResult = expression.execute(context);
 
-            final String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? null : expressionResult.toString());
+            String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? null : expressionResult.toString());
 
             // If we are not adding anything, we'll just leave it untouched
             if (newAttributeValue != null && newAttributeValue.length() > 0) {
 
-                if (!tag.getAttributes().hasAttribute(TARGET_ATTR_NAME) ||
-                        tag.getAttributes().getValue(TARGET_ATTR_NAME).length() == 0) {
-                    // No previous value, so it's just a replacement
-                    tag.getAttributes().setAttribute(TARGET_ATTR_NAME, newAttributeValue);
-                } else {
-                    final String currentValue = tag.getAttributes().getValue(TARGET_ATTR_NAME);
-                    tag.getAttributes().setAttribute(TARGET_ATTR_NAME, currentValue + ' ' + newAttributeValue);
+                final IElementAttributes attributes = tag.getAttributes();
+                final AttributeName targetAttributeName = this.targetAttributeDefinition.getAttributeName();
+
+                if (attributes.hasAttribute(targetAttributeName)) {
+                    final String currentValue = attributes.getValue(targetAttributeName);
+                    if (currentValue.length() > 0) {
+                        newAttributeValue = currentValue + ' ' + newAttributeValue;
+                    }
                 }
+
+                StandardProcessorUtils.setAttribute(attributes, this.targetAttributeDefinition, TARGET_ATTR_NAME, newAttributeValue);
 
             }
 
