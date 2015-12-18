@@ -20,10 +20,16 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.AttributeDefinition;
+import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.ElementAttributes;
+import org.thymeleaf.engine.IAttributeDefinitionsAware;
+import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.Validate;
 import org.unbescape.html.HtmlEscape;
 
 /**
@@ -33,26 +39,51 @@ import org.unbescape.html.HtmlEscape;
  * @since 3.0.0
  *
  */
-public abstract class AbstractStandardAttributeModifierTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
+public abstract class AbstractStandardAttributeModifierTagProcessor
+            extends AbstractStandardExpressionAttributeTagProcessor
+            implements IAttributeDefinitionsAware {
 
 
     private final boolean removeIfEmpty;
-    private final String targetAttrName;
+    private final String targetAttrCompleteName;
+
+    private AttributeDefinition targetAttributeDefinition;
+
+
 
 
     protected AbstractStandardAttributeModifierTagProcessor(
-            final TemplateMode templateMode, final String dialectPrefix,
-            final String attrName, final int precedence, final boolean removeIfEmpty) {
-        this(templateMode, dialectPrefix, attrName, null, precedence, removeIfEmpty);
+            final TemplateMode templateMode,
+            final String dialectPrefix, final String attrName,
+            final int precedence, final boolean removeIfEmpty) {
+        this(templateMode, dialectPrefix, attrName, attrName, precedence, removeIfEmpty);
     }
 
+
     protected AbstractStandardAttributeModifierTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix,
-            final String attrName, final String targetAttrName, final int precedence, final boolean removeIfEmpty) {
+            final String attrName, final String targetAttrCompleteName,
+            final int precedence, final boolean removeIfEmpty) {
+
         super(templateMode, dialectPrefix, attrName, precedence, false);
-        this.targetAttrName = targetAttrName;
+
+        Validate.notNull(targetAttrCompleteName, "Complete name of target attribute cannot be null");
+
+        this.targetAttrCompleteName = targetAttrCompleteName;
         this.removeIfEmpty = removeIfEmpty;
+
     }
+
+
+
+
+    public void setAttributeDefinitions(final AttributeDefinitions attributeDefinitions) {
+        Validate.notNull(attributeDefinitions, "Attribute Definitions cannot be null");
+        // We precompute the AttributeDefinition of the target attribute in order to being able to use much
+        // faster methods for setting/replacing attributes on the ElementAttributes implementation
+        this.targetAttributeDefinition = attributeDefinitions.forName(getTemplateMode(), this.targetAttrCompleteName);
+    }
+
 
 
 
@@ -64,18 +95,25 @@ public abstract class AbstractStandardAttributeModifierTagProcessor extends Abst
             final Object expressionResult,
             final IElementTagStructureHandler structureHandler) {
 
-        final String newAttributeName =
-                (this.targetAttrName == null? attributeName.getAttributeName() : this.targetAttrName);
         final String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? null : expressionResult.toString());
 
         // These attributes might be "removable if empty", in which case we would simply remove the target attribute...
         if (this.removeIfEmpty && (newAttributeValue == null || newAttributeValue.length() == 0)) {
+
             // We are removing the equivalent attribute name, without the prefix...
-            tag.getAttributes().removeAttribute(newAttributeName);
+            tag.getAttributes().removeAttribute(this.targetAttributeDefinition.getAttributeName());
             tag.getAttributes().removeAttribute(attributeName);
+
         } else {
+
             // We are setting the equivalent attribute name, without the prefix...
-            tag.getAttributes().replaceAttribute(attributeName, newAttributeName, (newAttributeValue == null? "" : newAttributeValue));
+            final IElementAttributes attributes = tag.getAttributes();
+            if (attributes instanceof ElementAttributes) {
+                ((ElementAttributes)attributes).replaceAttribute(attributeName, this.targetAttributeDefinition, this.targetAttrCompleteName, (newAttributeValue == null ? "" : newAttributeValue), null);
+            } else {
+                attributes.replaceAttribute(attributeName, this.targetAttrCompleteName, (newAttributeValue == null ? "" : newAttributeValue));
+            }
+
         }
 
     }

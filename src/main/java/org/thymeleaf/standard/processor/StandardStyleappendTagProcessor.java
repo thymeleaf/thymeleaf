@@ -20,10 +20,16 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.AttributeDefinition;
+import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.ElementAttributes;
+import org.thymeleaf.engine.IAttributeDefinitionsAware;
+import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.Validate;
 import org.unbescape.html.HtmlEscape;
 
 /**
@@ -33,17 +39,36 @@ import org.unbescape.html.HtmlEscape;
  * @since 3.0.0
  *
  */
-public final class StandardStyleappendTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
+public final class StandardStyleappendTagProcessor
+            extends AbstractStandardExpressionAttributeTagProcessor
+            implements IAttributeDefinitionsAware {
+
 
     public static final int PRECEDENCE = 1100;
     public static final String ATTR_NAME = "styleappend";
     public static final String TARGET_ATTR_NAME = "style";
+
+    private static final TemplateMode TEMPLATE_MODE = TemplateMode.HTML;
+
+
+    private AttributeDefinition targetAttributeDefinition;
 
 
 
     public StandardStyleappendTagProcessor(final String dialectPrefix) {
         super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE, true);
     }
+
+
+
+
+    public void setAttributeDefinitions(final AttributeDefinitions attributeDefinitions) {
+        Validate.notNull(attributeDefinitions, "Attribute Definitions cannot be null");
+        // We precompute the AttributeDefinition of the target attribute in order to being able to use much
+        // faster methods for setting/replacing attributes on the ElementAttributes implementation
+        this.targetAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, TARGET_ATTR_NAME);
+    }
+
 
 
 
@@ -55,18 +80,24 @@ public final class StandardStyleappendTagProcessor extends AbstractStandardExpre
             final Object expressionResult,
             final IElementTagStructureHandler structureHandler) {
 
-        final String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? null : expressionResult.toString());
+        String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? null : expressionResult.toString());
 
         // If we are not adding anything, we'll just leave it untouched
         if (newAttributeValue != null && newAttributeValue.length() > 0) {
 
-            if (!tag.getAttributes().hasAttribute(TARGET_ATTR_NAME) ||
-                    tag.getAttributes().getValue(TARGET_ATTR_NAME).length() == 0) {
-                // No previous value, so it's just a replacement
-                tag.getAttributes().setAttribute(TARGET_ATTR_NAME, newAttributeValue);
+            final IElementAttributes attributes = tag.getAttributes();
+
+            if (attributes.hasAttribute(TARGET_ATTR_NAME)) {
+                final String currentValue = attributes.getValue(TARGET_ATTR_NAME);
+                if (currentValue.length() > 0) {
+                    newAttributeValue = currentValue + ' ' + newAttributeValue;
+                }
+            }
+
+            if (attributes instanceof ElementAttributes) {
+                ((ElementAttributes)attributes).setAttribute(this.targetAttributeDefinition, TARGET_ATTR_NAME, newAttributeValue, null);
             } else {
-                final String currentValue = tag.getAttributes().getValue(TARGET_ATTR_NAME);
-                tag.getAttributes().setAttribute(TARGET_ATTR_NAME, currentValue + ' ' + newAttributeValue);
+                attributes.setAttribute(TARGET_ATTR_NAME, newAttributeValue);
             }
 
         }

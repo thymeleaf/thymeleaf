@@ -20,11 +20,17 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.AttributeDefinition;
+import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.ElementAttributes;
+import org.thymeleaf.engine.IAttributeDefinitionsAware;
+import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EvaluationUtils;
+import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -33,7 +39,9 @@ import org.thymeleaf.util.EvaluationUtils;
  * @since 3.0.0
  *
  */
-public final class StandardConditionalFixedValueTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
+public final class StandardConditionalFixedValueTagProcessor
+            extends AbstractStandardExpressionAttributeTagProcessor
+            implements IAttributeDefinitionsAware {
 
 
     public static final int PRECEDENCE = 1000;
@@ -47,12 +55,34 @@ public final class StandardConditionalFixedValueTagProcessor extends AbstractSta
                     "reversed", "selected", "scoped", "seamless"
             };
 
+    private static final TemplateMode TEMPLATE_MODE = TemplateMode.HTML;
+
+    private final String targetAttributeCompleteName;
+
+    private AttributeDefinition targetAttributeDefinition;
+
 
 
 
     public StandardConditionalFixedValueTagProcessor(final String dialectPrefix, final String attrName) {
-        super(TemplateMode.HTML, dialectPrefix, attrName, PRECEDENCE, true);
+
+        super(TEMPLATE_MODE, dialectPrefix, attrName, PRECEDENCE, true);
+
+        // We are discarding the prefix because that is exactly what we want: th:async -> async
+        this.targetAttributeCompleteName = attrName;
+
     }
+
+
+
+
+    public void setAttributeDefinitions(final AttributeDefinitions attributeDefinitions) {
+        Validate.notNull(attributeDefinitions, "Attribute Definitions cannot be null");
+        // We precompute the AttributeDefinition of the target attribute in order to being able to use much
+        // faster methods for setting/replacing attributes on the ElementAttributes implementation
+        this.targetAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, this.targetAttributeCompleteName);
+    }
+
 
 
 
@@ -64,11 +94,15 @@ public final class StandardConditionalFixedValueTagProcessor extends AbstractSta
             final Object expressionResult,
             final IElementTagStructureHandler structureHandler) {
 
-        final String targetAttributeName = attributeName.getAttributeName(); // th:async -> async
         if (EvaluationUtils.evaluateAsBoolean(expressionResult)) {
-            tag.getAttributes().setAttribute(targetAttributeName, targetAttributeName);
+            final IElementAttributes attributes = tag.getAttributes();
+            if (attributes instanceof ElementAttributes) {
+                ((ElementAttributes)attributes).setAttribute(this.targetAttributeDefinition, this.targetAttributeCompleteName, this.targetAttributeCompleteName, null);
+            } else {
+                attributes.setAttribute(this.targetAttributeCompleteName, this.targetAttributeCompleteName);
+            }
         } else {
-            tag.getAttributes().removeAttribute(targetAttributeName);
+            tag.getAttributes().removeAttribute(this.targetAttributeDefinition.getAttributeName());
         }
 
     }
