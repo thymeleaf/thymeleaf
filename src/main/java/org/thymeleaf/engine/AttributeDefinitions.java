@@ -327,6 +327,77 @@ public final class AttributeDefinitions {
 
 
 
+    public AttributeDefinition forName(final TemplateMode templateMode, final String attributeName) {
+        if (templateMode == null) {
+            throw new IllegalArgumentException("Template Mode cannot be null");
+        }
+        switch (templateMode) {
+            case HTML:
+                return forHTMLName(attributeName);
+            case XML:
+                return forXMLName(attributeName);
+            case TEXT:
+                return forTextName(attributeName);
+            case JAVASCRIPT:
+                return forJavaScriptName(attributeName);
+            case CSS:
+                return forCSSName(attributeName);
+            case RAW:
+                throw new IllegalArgumentException("Attribute Definitions cannot be obtained for " + templateMode + " template mode ");
+            default:
+                throw new IllegalArgumentException("Unknown template mode " + templateMode);
+        }
+    }
+
+
+    public AttributeDefinition forName(final TemplateMode templateMode, final String prefix, final String attributeName) {
+        if (templateMode == null) {
+            throw new IllegalArgumentException("Template Mode cannot be null");
+        }
+        switch (templateMode) {
+            case HTML:
+                return forHTMLName(prefix, attributeName);
+            case XML:
+                return forXMLName(prefix, attributeName);
+            case TEXT:
+                return forTextName(prefix, attributeName);
+            case JAVASCRIPT:
+                return forJavaScriptName(prefix, attributeName);
+            case CSS:
+                return forCSSName(prefix, attributeName);
+            case RAW:
+                throw new IllegalArgumentException("Attribute Definitions cannot be obtained for " + templateMode + " template mode ");
+            default:
+                throw new IllegalArgumentException("Unknown template mode " + templateMode);
+        }
+    }
+
+
+    public AttributeDefinition forName(final TemplateMode templateMode, final char[] attributeName, final int attributeNameOffset, final int attributeNameLen) {
+        if (templateMode == null) {
+            throw new IllegalArgumentException("Template Mode cannot be null");
+        }
+        switch (templateMode) {
+            case HTML:
+                return forHTMLName(attributeName, attributeNameOffset, attributeNameLen);
+            case XML:
+                return forXMLName(attributeName, attributeNameOffset, attributeNameLen);
+            case TEXT:
+                return forTextName(attributeName, attributeNameOffset, attributeNameLen);
+            case JAVASCRIPT:
+                return forJavaScriptName(attributeName, attributeNameOffset, attributeNameLen);
+            case CSS:
+                return forCSSName(attributeName, attributeNameOffset, attributeNameLen);
+            case RAW:
+                throw new IllegalArgumentException("Attribute Definitions cannot be obtained for " + templateMode + " template mode ");
+            default:
+                throw new IllegalArgumentException("Unknown template mode " + templateMode);
+        }
+    }
+
+
+
+
     public HTMLAttributeDefinition forHTMLName(final String attributeName) {
         if (attributeName == null || attributeName.length() == 0) {
             throw new IllegalArgumentException("Name cannot be null or empty");

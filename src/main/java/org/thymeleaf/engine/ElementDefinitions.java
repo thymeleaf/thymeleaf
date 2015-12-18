@@ -420,6 +420,77 @@ public final class ElementDefinitions {
 
 
 
+    public ElementDefinition forName(final TemplateMode templateMode, final String elementName) {
+        if (templateMode == null) {
+            throw new IllegalArgumentException("Template Mode cannot be null");
+        }
+        switch (templateMode) {
+            case HTML:
+                return forHTMLName(elementName);
+            case XML:
+                return forXMLName(elementName);
+            case TEXT:
+                return forTextName(elementName);
+            case JAVASCRIPT:
+                return forJavaScriptName(elementName);
+            case CSS:
+                return forCSSName(elementName);
+            case RAW:
+                throw new IllegalArgumentException("Element Definitions cannot be obtained for " + templateMode + " template mode ");
+            default:
+                throw new IllegalArgumentException("Unknown template mode " + templateMode);
+        }
+    }
+
+
+    public ElementDefinition forName(final TemplateMode templateMode, final String prefix, final String elementName) {
+        if (templateMode == null) {
+            throw new IllegalArgumentException("Template Mode cannot be null");
+        }
+        switch (templateMode) {
+            case HTML:
+                return forHTMLName(prefix, elementName);
+            case XML:
+                return forXMLName(prefix, elementName);
+            case TEXT:
+                return forTextName(prefix, elementName);
+            case JAVASCRIPT:
+                return forJavaScriptName(prefix, elementName);
+            case CSS:
+                return forCSSName(prefix, elementName);
+            case RAW:
+                throw new IllegalArgumentException("Element Definitions cannot be obtained for " + templateMode + " template mode ");
+            default:
+                throw new IllegalArgumentException("Unknown template mode " + templateMode);
+        }
+    }
+
+
+    public ElementDefinition forName(final TemplateMode templateMode, final char[] elementName, final int elementNameOffset, final int elementNameLen) {
+        if (templateMode == null) {
+            throw new IllegalArgumentException("Template Mode cannot be null");
+        }
+        switch (templateMode) {
+            case HTML:
+                return forHTMLName(elementName, elementNameOffset, elementNameLen);
+            case XML:
+                return forXMLName(elementName, elementNameOffset, elementNameLen);
+            case TEXT:
+                return forTextName(elementName, elementNameOffset, elementNameLen);
+            case JAVASCRIPT:
+                return forJavaScriptName(elementName, elementNameOffset, elementNameLen);
+            case CSS:
+                return forCSSName(elementName, elementNameOffset, elementNameLen);
+            case RAW:
+                throw new IllegalArgumentException("Element Definitions cannot be obtained for " + templateMode + " template mode ");
+            default:
+                throw new IllegalArgumentException("Unknown template mode " + templateMode);
+        }
+    }
+
+
+
+
     public HTMLElementDefinition forHTMLName(final String elementName) {
         if (elementName == null || elementName.length() == 0) {
             throw new IllegalArgumentException("Name cannot be null or empty");
