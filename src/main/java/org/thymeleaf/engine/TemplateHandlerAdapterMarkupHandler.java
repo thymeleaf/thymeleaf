@@ -469,7 +469,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         // Set the attribute, not allowing auto-whitespace given the parser should be creating the corresponding events
         // for adequately specifying whitespace
         this.currentElementAttributes.setAttribute(
-                attributeName, attributeOperator, value, valueQuotes, this.lineOffset + nameLine, (nameLine == 1? this.colOffset : 0) + nameCol, false);
+                null, attributeName, attributeOperator, value, valueQuotes, this.lineOffset + nameLine, (nameLine == 1? this.colOffset : 0) + nameCol, false);
 
     }
 

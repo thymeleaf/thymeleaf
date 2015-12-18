@@ -387,7 +387,7 @@ public final class ElementAttributes implements IElementAttributes {
 
 
     public final void setAttribute(final String completeName, final String value) {
-        setAttribute(completeName, null, value, null, -1, -1, true);
+        setAttribute(null, completeName, null, value, null, -1, -1, true);
     }
 
 
@@ -398,16 +398,31 @@ public final class ElementAttributes implements IElementAttributes {
         Validate.isTrue(
                 !(ValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
                 "Cannot set an empty-string value to an attribute with no quotes");
-        setAttribute(completeName, null, value, valueQuotes, -1, -1, true);
+        setAttribute(null, completeName, null, value, valueQuotes, -1, -1, true);
+    }
+
+
+    public final void setAttribute(
+            final AttributeDefinition attributeDefinition, final String completeName, final String value, final ValueQuotes valueQuotes) {
+        Validate.notNull(attributeDefinition, "Attribute Definition cannot be null");
+        Validate.isTrue(
+                !(ValueQuotes.NONE.equals(valueQuotes) && this.templateMode == TemplateMode.XML),
+                "Cannot set no-quote attributes when in XML template mode");
+        Validate.isTrue(
+                !(ValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
+                "Cannot set an empty-string value to an attribute with no quotes");
+        setAttribute(attributeDefinition, completeName, null, value, valueQuotes, -1, -1, true);
     }
 
 
     // Meant to be used from within the engine
     final void setAttribute(
-            final String name, final String operator, final String value, final ValueQuotes valueQuotes,
+            final AttributeDefinition attributeDefinition, final String completeName, final String operator, final String value, final ValueQuotes valueQuotes,
             final int line, final int col, final boolean autoWhiteSpace) {
 
-        Validate.notNull(name, "Attribute name cannot be null");
+        // attributeDefinition might be null if it wasn't available at the moment of calling this method (note the
+        // method that includes the attributeDefinition argument is not a part of the IElementAttributes interface)
+        Validate.notNull(completeName, "Complete Attribute name cannot be null");
 
         Validate.isTrue(value != null || this.templateMode != TemplateMode.XML, "Cannot set null-value attributes in XML template mode");
 
@@ -420,13 +435,15 @@ public final class ElementAttributes implements IElementAttributes {
             this.attributesSize = 0;
         }
 
+        // Note that this attributeName variable might be null if we have no attributeDefinition!
+        final AttributeName attributeName = (attributeDefinition != null? attributeDefinition.attributeName : null);
 
-        final int existingIdx = searchAttribute(name);
+        final int existingIdx = (attributeName != null? searchAttribute(attributeName) : searchAttribute(completeName));
         if (existingIdx >= 0) {
             // Attribute already exists! Must simply change its properties (might include a name case change!)
 
             final ElementAttribute existingAttribute = this.attributes[existingIdx];
-            existingAttribute.reset(existingAttribute.definition, name, operator, value, valueQuotes, line, col);
+            existingAttribute.reset(existingAttribute.definition, completeName, operator, value, valueQuotes, line, col);
 
             this.version++;
 
@@ -463,8 +480,8 @@ public final class ElementAttributes implements IElementAttributes {
         }
 
         newAttribute.reset(
-                computeAttributeDefinition(name),
-                name,
+                (attributeDefinition != null? attributeDefinition : computeAttributeDefinition(completeName)),
+                completeName,
                 (operator == null? ElementAttribute.DEFAULT_OPERATOR : operator),
                 value,
                 (valueQuotes == null? IElementAttributes.ValueQuotes.DOUBLE : valueQuotes),
@@ -493,7 +510,7 @@ public final class ElementAttributes implements IElementAttributes {
 
 
     public final void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value) {
-        replaceAttribute(oldName, completeNewName, null, value, null, -1, -1, true);
+        replaceAttribute(oldName, null, completeNewName, null, value, null, -1, -1, true);
     }
 
 
@@ -504,15 +521,29 @@ public final class ElementAttributes implements IElementAttributes {
         Validate.isTrue(
                 !(ValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
                 "Cannot set an empty-string value to an attribute with no quotes");
-        replaceAttribute(oldName, completeNewName, null, value, valueQuotes, -1, -1, true);
+        replaceAttribute(oldName, null, completeNewName, null, value, valueQuotes, -1, -1, true);
+    }
+
+
+    public final void replaceAttribute(final AttributeName oldName, final AttributeDefinition newAttributeDefinition, final String completeNewName, final String value, final ValueQuotes valueQuotes) {
+        Validate.notNull(newAttributeDefinition, "New Attribute Definition cannot be null");
+        Validate.isTrue(
+                !(ValueQuotes.NONE.equals(valueQuotes) && this.templateMode == TemplateMode.XML),
+                "Cannot set no-quote attributes when in XML template mode");
+        Validate.isTrue(
+                !(ValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
+                "Cannot set an empty-string value to an attribute with no quotes");
+        replaceAttribute(oldName, newAttributeDefinition, completeNewName, null, value, valueQuotes, -1, -1, true);
     }
 
 
     // Meant to be used from within the engine
     final void replaceAttribute(
-            final AttributeName oldName, final String completeNewName, final String operator, final String value, final ValueQuotes valueQuotes,
+            final AttributeName oldName, final AttributeDefinition newAttributeDefinition, final String completeNewName, final String operator, final String value, final ValueQuotes valueQuotes,
             final int line, final int col, final boolean autoWhiteSpace) {
 
+        // attributeDefinition might be null if it wasn't available at the moment of calling this method (note the
+        // method that includes the attributeDefinition argument is not a part of the IElementAttributes interface)
         Validate.notNull(oldName, "Attribute old name cannot be null");
         Validate.notNull(completeNewName, "Attribute new name cannot be null");
 
@@ -520,14 +551,17 @@ public final class ElementAttributes implements IElementAttributes {
 
         if (this.attributes == null) {
 
-            setAttribute(completeNewName, operator, value, valueQuotes, line, col, autoWhiteSpace);
+            setAttribute(newAttributeDefinition, completeNewName, operator, value, valueQuotes, line, col, autoWhiteSpace);
             // no need to remove the old one -- we didn't have any attributes!
             return;
 
         }
 
 
-        int existingIdx = searchAttribute(completeNewName);
+        // Note that this attributeName variable might be null if we have no attributeDefinition!
+        final AttributeName newAttributeName = (newAttributeDefinition != null? newAttributeDefinition.attributeName : null);
+
+        int existingIdx = (newAttributeName != null? searchAttribute(newAttributeName) : searchAttribute(completeNewName));
         if (existingIdx >= 0) {
             // New Attribute already exists! Must simply change its properties
 
@@ -548,9 +582,16 @@ public final class ElementAttributes implements IElementAttributes {
             // Old attribute already exists! Must simply change its properties
 
             final ElementAttribute existingAttribute = this.attributes[existingIdx];
-            existingAttribute.reset(computeAttributeDefinition(completeNewName), completeNewName, operator, value, valueQuotes, line, col);
+            existingAttribute.reset(
+                    (newAttributeDefinition != null? newAttributeDefinition : computeAttributeDefinition(completeNewName)),
+                    completeNewName,
+                    operator,
+                    value,
+                    valueQuotes,
+                    line,
+                    col);
 
-            this.attributeNames[existingIdx] = existingAttribute.definition.getAttributeName();
+            this.attributeNames[existingIdx] = existingAttribute.definition.attributeName;
 
             this.version++;
 
@@ -561,7 +602,7 @@ public final class ElementAttributes implements IElementAttributes {
         }
 
         // Neither the old nor the new attribute seem to exist, so this should work exactly as a 'set' operation
-        setAttribute(completeNewName, operator, value, valueQuotes, line, col, autoWhiteSpace);
+        setAttribute(newAttributeDefinition, completeNewName, operator, value, valueQuotes, line, col, autoWhiteSpace);
 
     }
 

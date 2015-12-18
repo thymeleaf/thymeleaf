@@ -274,7 +274,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
 
         // Note we are using 'autowhitespace', given text-mode parsing does not include whitespace parsing
         this.currentElementAttributes.setAttribute(
-                attributeName, attributeOperator, value, valueQuotes, this.lineOffset + nameLine, (nameLine == 1? this.colOffset : 0) + nameCol, true);
+                null, attributeName, attributeOperator, value, valueQuotes, this.lineOffset + nameLine, (nameLine == 1? this.colOffset : 0) + nameCol, true);
 
     }
 
