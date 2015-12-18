@@ -23,11 +23,11 @@ import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeDefinition;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.ElementAttributes;
 import org.thymeleaf.engine.IAttributeDefinitionsAware;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
+import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 import org.unbescape.html.HtmlEscape;
@@ -94,11 +94,7 @@ public final class StandardClassappendTagProcessor
                 }
             }
 
-            if (attributes instanceof ElementAttributes) {
-                ((ElementAttributes)attributes).setAttribute(this.targetAttributeDefinition, TARGET_ATTR_NAME, newAttributeValue, null);
-            } else {
-                attributes.setAttribute(TARGET_ATTR_NAME, newAttributeValue);
-            }
+            StandardProcessorUtils.setAttribute(attributes, this.targetAttributeDefinition, TARGET_ATTR_NAME, newAttributeValue);
 
         }
 
