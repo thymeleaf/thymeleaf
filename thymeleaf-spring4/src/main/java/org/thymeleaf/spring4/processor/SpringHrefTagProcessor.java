@@ -20,12 +20,18 @@
 package org.thymeleaf.spring4.processor;
 
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.AttributeDefinition;
+import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.ElementAttributes;
+import org.thymeleaf.engine.IAttributeDefinitionsAware;
+import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
 import org.thymeleaf.standard.processor.AbstractStandardExpressionAttributeTagProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.Validate;
 import org.unbescape.html.HtmlEscape;
 
 
@@ -36,17 +42,35 @@ import org.unbescape.html.HtmlEscape;
  * @since 3.0.0
  *
  */
-public final class SpringHrefTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
+public final class SpringHrefTagProcessor
+            extends AbstractStandardExpressionAttributeTagProcessor
+            implements IAttributeDefinitionsAware {
 
 
     public static final int ATTR_PRECEDENCE = 1000;
     public static final String ATTR_NAME = "href";
 
+    private static final TemplateMode TEMPLATE_MODE = TemplateMode.HTML;
+
+    private AttributeDefinition targetAttributeDefinition;
+
+
 
 
     public SpringHrefTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, false);
+        super(TEMPLATE_MODE, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, false);
     }
+
+
+
+
+    public void setAttributeDefinitions(final AttributeDefinitions attributeDefinitions) {
+        Validate.notNull(attributeDefinitions, "Attribute Definitions cannot be null");
+        // We precompute the AttributeDefinition of the target attribute in order to being able to use much
+        // faster methods for setting/replacing attributes on the ElementAttributes implementation
+        this.targetAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, ATTR_NAME);
+    }
+
 
 
 
@@ -64,7 +88,12 @@ public final class SpringHrefTagProcessor extends AbstractStandardExpressionAttr
         newAttributeValue = RequestDataValueProcessorUtils.processUrl(context, newAttributeValue);
 
         // Set the real, non prefixed attribute
-        tag.getAttributes().replaceAttribute(attributeName, ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
+        final IElementAttributes attributes = tag.getAttributes();
+        if (attributes instanceof ElementAttributes) {
+            ((ElementAttributes) attributes).replaceAttribute(attributeName, this.targetAttributeDefinition, ATTR_NAME, (newAttributeValue == null ? "" : newAttributeValue), null);
+        } else {
+            attributes.replaceAttribute(attributeName, ATTR_NAME, (newAttributeValue == null ? "" : newAttributeValue));
+        }
 
     }
 
