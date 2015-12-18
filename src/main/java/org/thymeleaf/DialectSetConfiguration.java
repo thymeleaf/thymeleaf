@@ -37,6 +37,8 @@ import org.thymeleaf.dialect.IPreProcessorDialect;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.ElementDefinitions;
+import org.thymeleaf.engine.IAttributeDefinitionsAware;
+import org.thymeleaf.engine.IElementDefinitionsAware;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.expression.IExpressionObjectFactory;
@@ -129,6 +131,7 @@ final class DialectSetConfiguration {
         for (final DialectConfiguration dialectConfiguration : dialectConfigurations) {
 
             final IDialect dialect = dialectConfiguration.getDialect(); // cannot be null -- ConfigurationDialect checks this
+
 
             /*
              * STEP ONE for each dialect: process, initialize and merge processors
@@ -445,6 +448,19 @@ final class DialectSetConfiguration {
         final AttributeDefinitions attributeDefinitions = new AttributeDefinitions(elementProcessorsByTemplateMode);
 
 
+        // Traverse the sets of processors in order to set the AttributeDefinitions and/or ElementDefinitions objects
+        // to those that need them in order to initialize and cache attribute/element definition-related structures
+        initializeDefinitionsForProcessors(templateBoundariesProcessorsByTemplateMode, elementDefinitions, attributeDefinitions);
+        initializeDefinitionsForProcessors(cdataSectionProcessorsByTemplateMode, elementDefinitions, attributeDefinitions);
+        initializeDefinitionsForProcessors(commentProcessorsByTemplateMode, elementDefinitions, attributeDefinitions);
+        initializeDefinitionsForProcessors(docTypeProcessorsByTemplateMode, elementDefinitions, attributeDefinitions);
+        initializeDefinitionsForProcessors(elementProcessorsByTemplateMode, elementDefinitions, attributeDefinitions);
+        initializeDefinitionsForProcessors(processingInstructionProcessorsByTemplateMode, elementDefinitions, attributeDefinitions);
+        initializeDefinitionsForProcessors(textProcessorsByTemplateMode, elementDefinitions, attributeDefinitions);
+        initializeDefinitionsForProcessors(xmlDeclarationProcessorsByTemplateMode, elementDefinitions, attributeDefinitions);
+        initializeDefinitionsForPreProcessors(preProcessorsByTemplateMode, elementDefinitions, attributeDefinitions);
+        initializeDefinitionsForPostProcessors(postProcessorsByTemplateMode, elementDefinitions, attributeDefinitions);
+
 
         return new DialectSetConfiguration(
                 new LinkedHashSet<DialectConfiguration>(dialectConfigurations), dialects,
@@ -470,6 +486,63 @@ final class DialectSetConfiguration {
     }
 
 
+
+
+    private static void initializeDefinitionsForProcessors(
+            final EnumMap<TemplateMode, ? extends Set<? extends IProcessor>> processorsByTemplateMode,
+            final ElementDefinitions elementDefinitions, final AttributeDefinitions attributeDefinitions) {
+
+        for (final Map.Entry<TemplateMode, ? extends Set<? extends IProcessor>> entry : processorsByTemplateMode.entrySet()) {
+            final Set<? extends IProcessor> processors = entry.getValue();
+            for (final IProcessor processor : processors) {
+                if (processor instanceof IElementDefinitionsAware) {
+                    ((IElementDefinitionsAware) processor).setElementDefinitions(elementDefinitions);
+                }
+                if (processor instanceof IAttributeDefinitionsAware) {
+                    ((IAttributeDefinitionsAware) processor).setAttributeDefinitions(attributeDefinitions);
+                }
+            }
+        }
+
+    }
+
+
+    private static void initializeDefinitionsForPreProcessors(
+            final EnumMap<TemplateMode, ? extends Set<IPreProcessor>> preProcessorsByTemplateMode,
+            final ElementDefinitions elementDefinitions, final AttributeDefinitions attributeDefinitions) {
+
+        for (final Map.Entry<TemplateMode, ? extends Set<IPreProcessor>> entry : preProcessorsByTemplateMode.entrySet()) {
+            final Set<IPreProcessor> preProcessors = entry.getValue();
+            for (final IPreProcessor preProcessor : preProcessors) {
+                if (preProcessor instanceof IElementDefinitionsAware) {
+                    ((IElementDefinitionsAware) preProcessor).setElementDefinitions(elementDefinitions);
+                }
+                if (preProcessor instanceof IAttributeDefinitionsAware) {
+                    ((IAttributeDefinitionsAware) preProcessor).setAttributeDefinitions(attributeDefinitions);
+                }
+            }
+        }
+
+    }
+
+
+    private static void initializeDefinitionsForPostProcessors(
+            final EnumMap<TemplateMode, ? extends Set<IPostProcessor>> postProcessorsByTemplateMode,
+            final ElementDefinitions elementDefinitions, final AttributeDefinitions attributeDefinitions) {
+
+        for (final Map.Entry<TemplateMode, ? extends Set<IPostProcessor>> entry : postProcessorsByTemplateMode.entrySet()) {
+            final Set<IPostProcessor> postProcessors = entry.getValue();
+            for (final IPostProcessor postProcessor : postProcessors) {
+                if (postProcessor instanceof IElementDefinitionsAware) {
+                    ((IElementDefinitionsAware) postProcessor).setElementDefinitions(elementDefinitions);
+                }
+                if (postProcessor instanceof IAttributeDefinitionsAware) {
+                    ((IAttributeDefinitionsAware) postProcessor).setAttributeDefinitions(attributeDefinitions);
+                }
+            }
+        }
+
+    }
 
 
 
