@@ -21,6 +21,10 @@ package org.thymeleaf.util;
 
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.dialect.IProcessorDialect;
+import org.thymeleaf.engine.AttributeDefinitions;
+import org.thymeleaf.engine.ElementDefinitions;
+import org.thymeleaf.engine.IAttributeDefinitionsAware;
+import org.thymeleaf.engine.IElementDefinitionsAware;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
@@ -446,7 +450,7 @@ public final class ProcessorConfigurationUtils {
      * This is the base class for a hierarchy of wrappers that will be applied to all processors configured
      * at the engine in order to add additional information to them (e.g. the dialect they are configured for).
      */
-    static abstract class AbstractProcessorWrapper implements IProcessor {
+    static abstract class AbstractProcessorWrapper implements IProcessor, IAttributeDefinitionsAware, IElementDefinitionsAware {
 
         private final IProcessorDialect dialect;
         protected final IProcessor processor;
@@ -457,20 +461,32 @@ public final class ProcessorConfigurationUtils {
             this.processor = processor;
         }
 
-        public TemplateMode getTemplateMode() {
+        public final TemplateMode getTemplateMode() {
             return this.processor.getTemplateMode();
         }
 
-        public int getPrecedence() {
+        public final int getPrecedence() {
             return this.processor.getPrecedence();
         }
 
-        public IProcessorDialect getDialect() {
+        public final IProcessorDialect getDialect() {
             return this.dialect;
         }
 
-        public IProcessor unwrap() {
+        public final IProcessor unwrap() {
             return this.processor;
+        }
+
+        public final void setAttributeDefinitions(final AttributeDefinitions attributeDefinitions) {
+            if (this.processor instanceof IAttributeDefinitionsAware) {
+                ((IAttributeDefinitionsAware) this.processor).setAttributeDefinitions(attributeDefinitions);
+            }
+        }
+
+        public final void setElementDefinitions(final ElementDefinitions elementDefinitions) {
+            if (this.processor instanceof IElementDefinitionsAware) {
+                ((IElementDefinitionsAware) this.processor).setElementDefinitions(elementDefinitions);
+            }
         }
 
         @Override
@@ -487,11 +503,11 @@ public final class ProcessorConfigurationUtils {
             super(processor, dialect);
         }
 
-        public MatchingElementName getMatchingElementName() {
+        public final MatchingElementName getMatchingElementName() {
             return ((IElementProcessor)this.processor).getMatchingElementName();
         }
 
-        public MatchingAttributeName getMatchingAttributeName() {
+        public final MatchingAttributeName getMatchingAttributeName() {
             return ((IElementProcessor)this.processor).getMatchingAttributeName();
         }
 
