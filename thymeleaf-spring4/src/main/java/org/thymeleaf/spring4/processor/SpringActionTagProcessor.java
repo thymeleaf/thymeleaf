@@ -22,7 +22,12 @@ package org.thymeleaf.spring4.processor;
 import java.util.Map;
 
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.AttributeDefinition;
+import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.ElementAttributes;
+import org.thymeleaf.engine.IAttributeDefinitionsAware;
+import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -31,6 +36,7 @@ import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
 import org.thymeleaf.standard.processor.AbstractStandardExpressionAttributeTagProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.Validate;
 import org.unbescape.html.HtmlEscape;
 
 
@@ -41,17 +47,49 @@ import org.unbescape.html.HtmlEscape;
  * @since 3.0.0
  *
  */
-public final class SpringActionTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
+public final class  SpringActionTagProcessor
+        extends AbstractStandardExpressionAttributeTagProcessor
+        implements IAttributeDefinitionsAware {
 
 
     public static final int ATTR_PRECEDENCE = 1000;
-    public static final String ATTR_NAME = "action";
+    public static final String TARGET_ATTR_NAME = "action";
+
+    private static final TemplateMode TEMPLATE_MODE = TemplateMode.HTML;
+
+    private static final String METHOD_ATTR_NAME = "method";
+    private static final String TYPE_ATTR_NAME = "type";
+    private static final String NAME_ATTR_NAME = "name";
+    private static final String VALUE_ATTR_NAME = "value";
+
+    private AttributeDefinition targetAttributeDefinition;
+    private AttributeDefinition methodAttributeDefinition;
+    private AttributeDefinition typeAttributeDefinition;
+    private AttributeDefinition nameAttributeDefinition;
+    private AttributeDefinition valueAttributeDefinition;
+
+
 
 
 
     public SpringActionTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, false);
+        super(TEMPLATE_MODE, dialectPrefix, TARGET_ATTR_NAME, ATTR_PRECEDENCE, false);
     }
+
+
+
+
+    public void setAttributeDefinitions(final AttributeDefinitions attributeDefinitions) {
+        Validate.notNull(attributeDefinitions, "Attribute Definitions cannot be null");
+        // We precompute the AttributeDefinitions in order to being able to use much
+        // faster methods for setting/replacing attributes on the ElementAttributes implementation
+        this.targetAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, TARGET_ATTR_NAME);
+        this.methodAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, METHOD_ATTR_NAME);
+        this.typeAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, TYPE_ATTR_NAME);
+        this.nameAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, NAME_ATTR_NAME);
+        this.valueAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, VALUE_ATTR_NAME);
+    }
+
 
 
 
@@ -65,15 +103,22 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
 
         String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? "" : expressionResult.toString());
 
+        final IElementAttributes attributes = tag.getAttributes();
+
         // But before setting the 'action' attribute, we need to verify the 'method' attribute and let the
         // RequestDataValueProcessor act on it.
-        final String httpMethod = tag.getAttributes().getValue("method");
+        final String httpMethod = attributes.getValue(this.methodAttributeDefinition.getAttributeName());
 
         // Let RequestDataValueProcessor modify the attribute value if needed
         newAttributeValue = RequestDataValueProcessorUtils.processAction(context, newAttributeValue, httpMethod);
 
         // Set the 'action' attribute
-        tag.getAttributes().replaceAttribute(attributeName, ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
+        if (attributes instanceof ElementAttributes) {
+            ((ElementAttributes) attributes).replaceAttribute(
+                    attributeName, this.targetAttributeDefinition, TARGET_ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue), null);
+        } else {
+            attributes.replaceAttribute(attributeName, TARGET_ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
+        }
 
         // If this th:action is in a <form> tag, we might need to add a hidden field (depending on Spring configuration)
         if ("form".equalsIgnoreCase(tag.getElementName())) {
@@ -92,9 +137,17 @@ public final class SpringActionTagProcessor extends AbstractStandardExpressionAt
                     final IStandaloneElementTag extraHiddenElementTag =
                             modelFactory.createStandaloneElementTag("input", true);
 
-                    extraHiddenElementTag.getAttributes().setAttribute("type", "hidden");
-                    extraHiddenElementTag.getAttributes().setAttribute("name", extraHiddenField.getKey());
-                    extraHiddenElementTag.getAttributes().setAttribute("value", extraHiddenField.getValue()); // no need to re-apply the processor here
+                    final IElementAttributes extraHiddenElementTagAttributes = extraHiddenElementTag.getAttributes();
+
+                    if (extraHiddenElementTagAttributes instanceof ElementAttributes) {
+                        ((ElementAttributes)extraHiddenElementTagAttributes).setAttribute(this.typeAttributeDefinition, TYPE_ATTR_NAME, "hidden", null);
+                        ((ElementAttributes)extraHiddenElementTagAttributes).setAttribute(this.nameAttributeDefinition, NAME_ATTR_NAME, extraHiddenField.getKey(), null);
+                        ((ElementAttributes)extraHiddenElementTagAttributes).setAttribute(this.valueAttributeDefinition, VALUE_ATTR_NAME, extraHiddenField.getValue(), null); // no need to re-apply the processor here
+                    } else {
+                        extraHiddenElementTagAttributes.setAttribute(TYPE_ATTR_NAME, "hidden");
+                        extraHiddenElementTagAttributes.setAttribute(NAME_ATTR_NAME, extraHiddenField.getKey());
+                        extraHiddenElementTagAttributes.setAttribute(VALUE_ATTR_NAME, extraHiddenField.getValue()); // no need to re-apply the processor here
+                    }
 
                     extraHiddenElementTags.add(extraHiddenElementTag);
 
