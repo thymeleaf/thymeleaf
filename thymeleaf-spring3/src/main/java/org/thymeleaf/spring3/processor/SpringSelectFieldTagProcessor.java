@@ -23,12 +23,14 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
+import org.thymeleaf.standard.util.StandardProcessorUtils;
 
 
 /**
@@ -63,10 +65,12 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
 
         final String id = computeId(context, tag, name, false);
 
-        final boolean multiple = tag.getAttributes().hasAttribute("multiple");
+        final IElementAttributes attributes = tag.getAttributes();
 
-        tag.getAttributes().setAttribute("id", id); // No need to escape: this comes from an existing 'id' or from a token
-        tag.getAttributes().setAttribute("name", name); // No need to escape: this is a java-valid token
+        final boolean multiple = attributes.hasAttribute(this.multipleAttributeDefinition.getAttributeName());
+
+        StandardProcessorUtils.setAttribute(attributes, this.idAttributeDefinition, ID_ATTR_NAME, id); // No need to escape: this comes from an existing 'id' or from a token
+        StandardProcessorUtils.setAttribute(attributes, this.nameAttributeDefinition, NAME_ATTR_NAME, name); // No need to escape: this is a java-valid token
 
         structureHandler.setLocalVariable(OPTION_IN_SELECT_ATTR_NAME, attributeName);
         structureHandler.setLocalVariable(OPTION_IN_SELECT_ATTR_VALUE, attributeValue);
@@ -84,9 +88,11 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
 
             final IStandaloneElementTag hiddenMethodElementTag =
                     modelFactory.createStandaloneElementTag("input", true);
-            hiddenMethodElementTag.getAttributes().setAttribute("type", type);
-            hiddenMethodElementTag.getAttributes().setAttribute("name", hiddenName);
-            hiddenMethodElementTag.getAttributes().setAttribute("value", value);
+            final IElementAttributes hiddenMethodElementTagAttributes = hiddenMethodElementTag.getAttributes();
+
+            StandardProcessorUtils.setAttribute(hiddenMethodElementTagAttributes, this.typeAttributeDefinition, TYPE_ATTR_NAME, type);
+            StandardProcessorUtils.setAttribute(hiddenMethodElementTagAttributes, this.nameAttributeDefinition, NAME_ATTR_NAME, hiddenName);
+            StandardProcessorUtils.setAttribute(hiddenMethodElementTagAttributes, this.valueAttributeDefinition, VALUE_ATTR_NAME, value);
 
             hiddenMethodElementModel.add(hiddenMethodElementTag);
 
@@ -101,9 +107,9 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
 
 
 
-    private static final boolean isDisabled(final IProcessableElementTag tag) {
+    private final boolean isDisabled(final IProcessableElementTag tag) {
         // Disabled = attribute "disabled" exists
-        return tag.getAttributes().hasAttribute("disabled");
+        return tag.getAttributes().hasAttribute(this.disabledAttributeDefinition.getAttributeName());
     }
 
 

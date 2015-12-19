@@ -22,9 +22,11 @@ package org.thymeleaf.spring4.processor;
 import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
+import org.thymeleaf.standard.util.StandardProcessorUtils;
 
 
 /**
@@ -36,16 +38,16 @@ import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
  */
 public final class SpringInputPasswordFieldTagProcessor extends AbstractSpringFieldTagProcessor {
 
-    
-    
+
+
     public static final String PASSWORD_INPUT_TYPE_ATTR_VALUE = "password";
-    
 
-    
 
-    
+
+
+
     public SpringInputPasswordFieldTagProcessor(final String dialectPrefix) {
-        super(dialectPrefix, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, new String[] { PASSWORD_INPUT_TYPE_ATTR_VALUE }, true);
+        super(dialectPrefix, INPUT_TAG_NAME, TYPE_ATTR_NAME, new String[] { PASSWORD_INPUT_TYPE_ATTR_VALUE }, true);
     }
 
 
@@ -62,14 +64,16 @@ public final class SpringInputPasswordFieldTagProcessor extends AbstractSpringFi
 
         final String id = computeId(context, tag, name, false);
 
-        tag.getAttributes().setAttribute("id", id); // No need to escape: this comes from an existing 'id' or from a token
-        tag.getAttributes().setAttribute("name", name); // No need to escape: this is a java-valid token
+        final IElementAttributes attributes = tag.getAttributes();
 
-        tag.getAttributes().setAttribute(
-                "value", RequestDataValueProcessorUtils.processFormFieldValue(context, name, "", "password"));
+        StandardProcessorUtils.setAttribute(attributes, this.idAttributeDefinition, ID_ATTR_NAME, id); // No need to escape: this comes from an existing 'id' or from a token
+        StandardProcessorUtils.setAttribute(attributes, this.nameAttributeDefinition, NAME_ATTR_NAME, name); // No need to escape: this is a java-valid token
+
+        StandardProcessorUtils.setAttribute(
+                attributes, this.valueAttributeDefinition, VALUE_ATTR_NAME, RequestDataValueProcessorUtils.processFormFieldValue(context, name, "", "password"));
 
     }
 
-    
+
 
 }

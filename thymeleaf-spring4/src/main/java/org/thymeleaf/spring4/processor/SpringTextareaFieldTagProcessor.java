@@ -23,9 +23,11 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
+import org.thymeleaf.standard.util.StandardProcessorUtils;
 
 
 /**
@@ -61,8 +63,10 @@ public final class SpringTextareaFieldTagProcessor extends AbstractSpringFieldTa
         final String processedValue =
                 RequestDataValueProcessorUtils.processFormFieldValue(context, name, value, "textarea");
 
-        tag.getAttributes().setAttribute("id", id); // No need to escape: this comes from an existing 'id' or from a token
-        tag.getAttributes().setAttribute("name", name); // No need to escape: this is a java-valid token
+        final IElementAttributes attributes = tag.getAttributes();
+
+        StandardProcessorUtils.setAttribute(attributes, this.idAttributeDefinition, ID_ATTR_NAME, id); // No need to escape: this comes from an existing 'id' or from a token
+        StandardProcessorUtils.setAttribute(attributes, this.nameAttributeDefinition, NAME_ATTR_NAME, name); // No need to escape: this is a java-valid token
 
         structureHandler.setBody((processedValue == null? "" : processedValue), false);
 

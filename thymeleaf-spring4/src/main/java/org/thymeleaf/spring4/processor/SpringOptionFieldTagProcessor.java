@@ -24,9 +24,11 @@ import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
+import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.unbescape.html.HtmlEscape;
 
 
@@ -57,7 +59,9 @@ public final class SpringOptionFieldTagProcessor extends AbstractSpringFieldTagP
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
 
-        final String value = tag.getAttributes().getValue("value");
+        final IElementAttributes attributes = tag.getAttributes();
+
+        final String value = attributes.getValue(this.valueAttributeDefinition.getAttributeName());
         if (value == null) {
             throw new TemplateProcessingException(
                     "Attribute \"value\" is required in \"option\" tags");
@@ -66,14 +70,15 @@ public final class SpringOptionFieldTagProcessor extends AbstractSpringFieldTagP
         final boolean selected =
                 SelectedValueComparatorWrapper.isSelected(bindStatus, HtmlEscape.unescapeHtml(value));
 
-        tag.getAttributes().setAttribute(
-                "value",
+        StandardProcessorUtils.setAttribute(
+                attributes,
+                this.valueAttributeDefinition, VALUE_ATTR_NAME,
                 RequestDataValueProcessorUtils.processFormFieldValue(context, name, value, "option"));
 
         if (selected) {
-            tag.getAttributes().setAttribute("selected", "selected");
+            StandardProcessorUtils.setAttribute(attributes, this.selectedAttributeDefinition, SELECTED_ATTR_NAME, SELECTED_ATTR_NAME);
         } else {
-            tag.getAttributes().removeAttribute("selected");
+            attributes.removeAttribute(this.selectedAttributeDefinition.getAttributeName());
         }
 
     }

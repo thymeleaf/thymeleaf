@@ -22,13 +22,18 @@ package org.thymeleaf.spring4.processor;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.AttributeDefinition;
+import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.IAttributeDefinitionsAware;
+import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring4.naming.SpringContextVariableNames;
 import org.thymeleaf.spring4.util.FieldUtils;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.Validate;
 
 /**
  * Binds an input property with the value in the form's backing bean.
@@ -40,19 +45,42 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  */
-public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeTagProcessor {
+public abstract class AbstractSpringFieldTagProcessor
+        extends AbstractAttributeTagProcessor
+        implements IAttributeDefinitionsAware {
 
-    
+
     public static final int ATTR_PRECEDENCE = 1200;
     public static final String ATTR_NAME = "field";
-    
-    
+
+    private static final TemplateMode TEMPLATE_MODE = TemplateMode.HTML;
+
     protected static final String INPUT_TAG_NAME = "input";
     protected static final String SELECT_TAG_NAME = "select";
     protected static final String OPTION_TAG_NAME = "option";
     protected static final String TEXTAREA_TAG_NAME = "textarea";
-    
-    protected static final String INPUT_TYPE_ATTR_NAME = "type";
+
+    protected static final String ID_ATTR_NAME = "id";
+    protected static final String TYPE_ATTR_NAME = "type";
+    protected static final String NAME_ATTR_NAME = "name";
+    protected static final String VALUE_ATTR_NAME = "value";
+    protected static final String CHECKED_ATTR_NAME = "checked";
+    protected static final String SELECTED_ATTR_NAME = "selected";
+    protected static final String DISABLED_ATTR_NAME = "disabled";
+    protected static final String MULTIPLE_ATTR_NAME = "multiple";
+
+    private AttributeDefinition discriminatorAttributeDefinition;
+    protected AttributeDefinition idAttributeDefinition;
+    protected AttributeDefinition typeAttributeDefinition;
+    protected AttributeDefinition nameAttributeDefinition;
+    protected AttributeDefinition valueAttributeDefinition;
+    protected AttributeDefinition checkedAttributeDefinition;
+    protected AttributeDefinition selectedAttributeDefinition;
+    protected AttributeDefinition disabledAttributeDefinition;
+    protected AttributeDefinition multipleAttributeDefinition;
+
+
+
 
 
     private final String discriminatorAttrName;
@@ -64,11 +92,31 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
             final String dialectPrefix, final String elementName,
             final String discriminatorAttrName, final String[] discriminatorAttrValues,
             final boolean removeAttribute) {
-        super(TemplateMode.HTML, dialectPrefix, elementName, false, ATTR_NAME, true, ATTR_PRECEDENCE, false);
+        super(TEMPLATE_MODE, dialectPrefix, elementName, false, ATTR_NAME, true, ATTR_PRECEDENCE, false);
         this.discriminatorAttrName = discriminatorAttrName;
         this.discriminatorAttrValues = discriminatorAttrValues;
         this.removeAttribute = removeAttribute;
     }
+
+
+
+
+    public void setAttributeDefinitions(final AttributeDefinitions attributeDefinitions) {
+        Validate.notNull(attributeDefinitions, "Attribute Definitions cannot be null");
+        // We precompute the AttributeDefinitions in order to being able to use much
+        // faster methods for setting/replacing attributes on the ElementAttributes implementation
+        this.discriminatorAttributeDefinition =
+                (this.discriminatorAttrName != null? attributeDefinitions.forName(TEMPLATE_MODE, this.discriminatorAttrName) : null);
+        this.idAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, ID_ATTR_NAME);
+        this.typeAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, TYPE_ATTR_NAME);
+        this.nameAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, NAME_ATTR_NAME);
+        this.valueAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, VALUE_ATTR_NAME);
+        this.checkedAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, CHECKED_ATTR_NAME);
+        this.selectedAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, SELECTED_ATTR_NAME);
+        this.disabledAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, DISABLED_ATTR_NAME);
+        this.multipleAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, MULTIPLE_ATTR_NAME);
+    }
+
 
 
 
@@ -77,11 +125,12 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
         if (this.discriminatorAttrName == null) {
             return true;
         }
-        final boolean hasDiscriminatorAttr = tag.getAttributes().hasAttribute(this.discriminatorAttrName);
+        final IElementAttributes attributes = tag.getAttributes();
+        final boolean hasDiscriminatorAttr = attributes.hasAttribute(this.discriminatorAttributeDefinition.getAttributeName());
         if (this.discriminatorAttrValues == null || this.discriminatorAttrValues.length == 0) {
             return hasDiscriminatorAttr;
         }
-        final String discriminatorTagValue = (hasDiscriminatorAttr? tag.getAttributes().getValue(this.discriminatorAttrName) : null);
+        final String discriminatorTagValue = (hasDiscriminatorAttr? attributes.getValue(this.discriminatorAttributeDefinition.getAttributeName()) : null);
         for (int i = 0; i < this.discriminatorAttrValues.length; i++) {
             final String discriminatorAttrValue = this.discriminatorAttrValues[i];
             if (discriminatorAttrValue == null) {
@@ -123,6 +172,9 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
         }
 
         final BindStatus bindStatus = FieldUtils.getBindStatus(context, attributeValue);
+
+        // We set the BindStatus into a local variable just in case we have more BindStatus-related processors to
+        // be applied for the same tag, like for example a th:errorclass
         structureHandler.setLocalVariable(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS, bindStatus);
 
         doProcess(context, tag, attributeName, attributeValue, bindStatus, structureHandler);
@@ -141,15 +193,15 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
             final IElementTagStructureHandler structureHandler);
 
 
-    
-    
-    
+
+
+
     // This method is designed to be called from the diverse subclasses
     protected final String computeId(
             final ITemplateContext context,
             final IProcessableElementTag tag,
             final String name, final boolean sequence) {
-        
+
         String id = tag.getAttributes().getValue("id");
         if (!org.thymeleaf.util.StringUtils.isEmptyOrWhitespace(id)) {
             return (StringUtils.hasText(id) ? id : null);
@@ -161,10 +213,10 @@ public abstract class AbstractSpringFieldTagProcessor extends AbstractAttributeT
             return id + count.toString();
         }
         return id;
-        
-    }
-    
 
-    
+    }
+
+
+
 
 }
