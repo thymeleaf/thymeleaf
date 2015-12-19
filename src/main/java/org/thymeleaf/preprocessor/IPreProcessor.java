@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.preprocessor;
 
-import org.thymeleaf.dialect.IPreProcessorDialect;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 
@@ -31,7 +30,6 @@ import org.thymeleaf.templatemode.TemplateMode;
  */
 public interface IPreProcessor {
 
-    public IPreProcessorDialect getDialect();
     public TemplateMode getTemplateMode();
     public int getPrecedence();
 

@@ -25,6 +25,7 @@ import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.ElementDefinitions;
 import org.thymeleaf.engine.IAttributeDefinitionsAware;
 import org.thymeleaf.engine.IElementDefinitionsAware;
+import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
@@ -35,6 +36,8 @@ import org.thymeleaf.model.ITemplateEnd;
 import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.model.IXMLDeclaration;
+import org.thymeleaf.postprocessor.IPostProcessor;
+import org.thymeleaf.preprocessor.IPreProcessor;
 import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.processor.cdatasection.ICDATASectionStructureHandler;
@@ -258,6 +261,50 @@ public final class ProcessorConfigurationUtils {
     }
 
 
+    /**
+     * <p>
+     *   Wraps an implementation of {@link IPreProcessor} into an object that adds some information
+     *   required internally (like e.g. the dialect this processor was registered for).
+     * </p>
+     * <p>
+     *   This method is meant for <strong>internal</strong> use only.
+     * </p>
+     *
+     * @param preProcessor the pre-processor to be wrapped.
+     * @param dialect the dialect this pre-processor was configured for.
+     * @return the wrapped pre-processor.
+     */
+    public static IPreProcessor wrap(final IPreProcessor preProcessor, final IProcessorDialect dialect) {
+        Validate.notNull(dialect, "Dialect cannot be null");
+        if (preProcessor == null) {
+            return null;
+        }
+        return new PreProcessorWrapper(preProcessor, dialect);
+    }
+
+
+    /**
+     * <p>
+     *   Wraps an implementation of {@link IPostProcessor} into an object that adds some information
+     *   required internally (like e.g. the dialect this processor was registered for).
+     * </p>
+     * <p>
+     *   This method is meant for <strong>internal</strong> use only.
+     * </p>
+     *
+     * @param postProcessor the post-processor to be wrapped.
+     * @param dialect the dialect this post-processor was configured for.
+     * @return the wrapped post-processor.
+     */
+    public static IPostProcessor wrap(final IPostProcessor postProcessor, final IProcessorDialect dialect) {
+        Validate.notNull(dialect, "Dialect cannot be null");
+        if (postProcessor == null) {
+            return null;
+        }
+        return new PostProcessorWrapper(postProcessor, dialect);
+    }
+
+
 
 
     /**
@@ -433,6 +480,54 @@ public final class ProcessorConfigurationUtils {
             return (IXMLDeclarationProcessor)((AbstractProcessorWrapper) processor).unwrap();
         }
         return processor;
+    }
+
+
+
+
+    /**
+     * <p>
+     *   Unwraps a wrapped implementation of {@link IPreProcessor}.
+     * </p>
+     * <p>
+     *   This method is meant for <strong>internal</strong> use only.
+     * </p>
+     *
+     * @param preProcessor the pre-processor to be unwrapped.
+     * @return the unwrapped pre-processor.
+     */
+    public static IPreProcessor unwrap(final IPreProcessor preProcessor) {
+        if (preProcessor == null) {
+            return null;
+        }
+        if (preProcessor instanceof PreProcessorWrapper) {
+            return ((PreProcessorWrapper) preProcessor).unwrap();
+        }
+        return preProcessor;
+    }
+
+
+
+
+    /**
+     * <p>
+     *   Unwraps a wrapped implementation of {@link IPostProcessor}.
+     * </p>
+     * <p>
+     *   This method is meant for <strong>internal</strong> use only.
+     * </p>
+     *
+     * @param postProcessor the post-processor to be unwrapped.
+     * @return the unwrapped post-processor.
+     */
+    public static IPostProcessor unwrap(final IPostProcessor postProcessor) {
+        if (postProcessor == null) {
+            return null;
+        }
+        if (postProcessor instanceof PostProcessorWrapper) {
+            return ((PostProcessorWrapper) postProcessor).unwrap();
+        }
+        return postProcessor;
     }
 
 
@@ -630,6 +725,114 @@ public final class ProcessorConfigurationUtils {
 
         public void process(final ITemplateContext context, final IXMLDeclaration xmlDeclaration, final IXMLDeclarationStructureHandler structureHandler) {
             ((IXMLDeclarationProcessor)this.processor).process(context, xmlDeclaration, structureHandler);
+        }
+
+    }
+
+
+
+
+    static final class PreProcessorWrapper implements IPreProcessor, IElementDefinitionsAware, IAttributeDefinitionsAware {
+
+        private final IProcessorDialect dialect;
+        private final IPreProcessor preProcessor;
+
+        PreProcessorWrapper(final IPreProcessor preProcessor, final IProcessorDialect dialect) {
+            super();
+            this.preProcessor = preProcessor;
+            this.dialect = dialect;
+
+        }
+
+        public TemplateMode getTemplateMode() {
+            return this.preProcessor.getTemplateMode();
+        }
+
+        public int getPrecedence() {
+            return this.preProcessor.getPrecedence();
+        }
+
+        public final IProcessorDialect getDialect() {
+            return this.dialect;
+        }
+
+        public Class<? extends ITemplateHandler> getHandlerClass() {
+            return this.preProcessor.getHandlerClass();
+        }
+
+        public final IPreProcessor unwrap() {
+            return this.preProcessor;
+        }
+
+        public final void setAttributeDefinitions(final AttributeDefinitions attributeDefinitions) {
+            if (this.preProcessor instanceof IAttributeDefinitionsAware) {
+                ((IAttributeDefinitionsAware) this.preProcessor).setAttributeDefinitions(attributeDefinitions);
+            }
+        }
+
+        public final void setElementDefinitions(final ElementDefinitions elementDefinitions) {
+            if (this.preProcessor instanceof IElementDefinitionsAware) {
+                ((IElementDefinitionsAware) this.preProcessor).setElementDefinitions(elementDefinitions);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return this.preProcessor.toString();
+        }
+
+    }
+
+
+
+
+    static final class PostProcessorWrapper implements IPostProcessor, IElementDefinitionsAware, IAttributeDefinitionsAware {
+
+        private final IProcessorDialect dialect;
+        private final IPostProcessor postProcessor;
+
+        PostProcessorWrapper(final IPostProcessor postProcessor, final IProcessorDialect dialect) {
+            super();
+            this.postProcessor = postProcessor;
+            this.dialect = dialect;
+
+        }
+
+        public TemplateMode getTemplateMode() {
+            return this.postProcessor.getTemplateMode();
+        }
+
+        public int getPrecedence() {
+            return this.postProcessor.getPrecedence();
+        }
+
+        public final IProcessorDialect getDialect() {
+            return this.dialect;
+        }
+
+        public Class<? extends ITemplateHandler> getHandlerClass() {
+            return this.postProcessor.getHandlerClass();
+        }
+
+        public final IPostProcessor unwrap() {
+            return this.postProcessor;
+        }
+
+        public final void setAttributeDefinitions(final AttributeDefinitions attributeDefinitions) {
+            if (this.postProcessor instanceof IAttributeDefinitionsAware) {
+                ((IAttributeDefinitionsAware) this.postProcessor).setAttributeDefinitions(attributeDefinitions);
+            }
+        }
+
+        public final void setElementDefinitions(final ElementDefinitions elementDefinitions) {
+            if (this.postProcessor instanceof IElementDefinitionsAware) {
+                ((IElementDefinitionsAware) this.postProcessor).setElementDefinitions(elementDefinitions);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return this.postProcessor.toString();
         }
 
     }

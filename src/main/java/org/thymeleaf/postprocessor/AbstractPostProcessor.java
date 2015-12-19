@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.postprocessor;
 
-import org.thymeleaf.dialect.IPostProcessorDialect;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
@@ -32,7 +31,6 @@ import org.thymeleaf.util.Validate;
  */
 public abstract class AbstractPostProcessor implements IPostProcessor {
 
-    private final IPostProcessorDialect dialect;
     private final TemplateMode templateMode;
     private final Class<? extends ITemplateHandler> handlerClass;
     private final int precedence;
@@ -40,25 +38,17 @@ public abstract class AbstractPostProcessor implements IPostProcessor {
 
 
     public AbstractPostProcessor(
-            final IPostProcessorDialect dialect, final TemplateMode templateMode,
-            final Class<? extends ITemplateHandler> handlerClass, final int precedence) {
+            final TemplateMode templateMode, final Class<? extends ITemplateHandler> handlerClass, final int precedence) {
 
         super();
 
-        Validate.notNull(dialect, "Dialect cannot be null");
         Validate.notNull(templateMode, "Template mode cannot be null");
         Validate.notNull(handlerClass, "Handler class cannot be null");
 
-        this.dialect = dialect;
         this.templateMode = templateMode;
         this.handlerClass = handlerClass;
         this.precedence = precedence;
 
-    }
-
-
-    public final IPostProcessorDialect getDialect() {
-        return this.dialect;
     }
 
 

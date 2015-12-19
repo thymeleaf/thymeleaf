@@ -123,9 +123,8 @@ public final class ProcessorComparators {
                 // This is the only case in which the comparison of two processors will return 0
                 return 0;
             }
-            final int dialectPrecedenceComp = compareInts(o1.getDialect().getDialectPreProcessorPrecedence(), o2.getDialect().getDialectPreProcessorPrecedence());
-            if (dialectPrecedenceComp != 0) {
-                return dialectPrecedenceComp;
+            if (o1 instanceof ProcessorConfigurationUtils.PreProcessorWrapper && o2 instanceof ProcessorConfigurationUtils.PreProcessorWrapper) {
+                return compareWrapped((ProcessorConfigurationUtils.PreProcessorWrapper)o1, (ProcessorConfigurationUtils.PreProcessorWrapper)o2);
             }
             final int preProcessorPrecedenceComp = compareInts(o1.getPrecedence(), o2.getPrecedence());
             if (preProcessorPrecedenceComp != 0) {
@@ -136,6 +135,32 @@ public final class ProcessorComparators {
                 return classNameComp;
             }
             return compareInts(System.identityHashCode(o1), System.identityHashCode(o2)); // Cannot be 0
+        }
+
+
+        /*
+         * Processors are wrapped and therefore we can apply dialect precedence
+         */
+        private int compareWrapped(final ProcessorConfigurationUtils.PreProcessorWrapper o1w, final ProcessorConfigurationUtils.PreProcessorWrapper o2w) {
+
+            final int dialectPrecedenceComp = compareInts(o1w.getDialect().getDialectProcessorPrecedence(), o2w.getDialect().getDialectProcessorPrecedence());
+            if (dialectPrecedenceComp != 0) {
+                return dialectPrecedenceComp;
+            }
+
+            final IPreProcessor o1 = o1w.unwrap();
+            final IPreProcessor o2 = o2w.unwrap();
+
+            final int processorPrecedenceComp = compareInts(o1.getPrecedence(), o2.getPrecedence());
+            if (processorPrecedenceComp != 0) {
+                return processorPrecedenceComp;
+            }
+            final int classNameComp = o1.getClass().getName().compareTo(o2.getClass().getName());
+            if (classNameComp != 0) {
+                return classNameComp;
+            }
+            return compareInts(System.identityHashCode(o1), System.identityHashCode(o2)); // Cannot be 0
+
         }
 
 
@@ -161,9 +186,8 @@ public final class ProcessorComparators {
                 // This is the only case in which the comparison of two processors will return 0
                 return 0;
             }
-            final int dialectPrecedenceComp = compareInts(o1.getDialect().getDialectPostProcessorPrecedence(), o2.getDialect().getDialectPostProcessorPrecedence());
-            if (dialectPrecedenceComp != 0) {
-                return dialectPrecedenceComp;
+            if (o1 instanceof ProcessorConfigurationUtils.PostProcessorWrapper && o2 instanceof ProcessorConfigurationUtils.PostProcessorWrapper) {
+                return compareWrapped((ProcessorConfigurationUtils.PostProcessorWrapper)o1, (ProcessorConfigurationUtils.PostProcessorWrapper)o2);
             }
             final int postProcessorPrecedenceComp = compareInts(o1.getPrecedence(), o2.getPrecedence());
             if (postProcessorPrecedenceComp != 0) {
@@ -174,6 +198,32 @@ public final class ProcessorComparators {
                 return classNameComp;
             }
             return compareInts(System.identityHashCode(o1), System.identityHashCode(o2)); // Cannot be 0
+        }
+
+
+        /*
+         * Processors are wrapped and therefore we can apply dialect precedence
+         */
+        private int compareWrapped(final ProcessorConfigurationUtils.PostProcessorWrapper o1w, final ProcessorConfigurationUtils.PostProcessorWrapper o2w) {
+
+            final int dialectPrecedenceComp = compareInts(o1w.getDialect().getDialectProcessorPrecedence(), o2w.getDialect().getDialectProcessorPrecedence());
+            if (dialectPrecedenceComp != 0) {
+                return dialectPrecedenceComp;
+            }
+
+            final IPostProcessor o1 = o1w.unwrap();
+            final IPostProcessor o2 = o2w.unwrap();
+
+            final int processorPrecedenceComp = compareInts(o1.getPrecedence(), o2.getPrecedence());
+            if (processorPrecedenceComp != 0) {
+                return processorPrecedenceComp;
+            }
+            final int classNameComp = o1.getClass().getName().compareTo(o2.getClass().getName());
+            if (classNameComp != 0) {
+                return classNameComp;
+            }
+            return compareInts(System.identityHashCode(o1), System.identityHashCode(o2)); // Cannot be 0
+
         }
 
 

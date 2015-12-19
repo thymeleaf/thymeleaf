@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.preprocessor;
 
-import org.thymeleaf.dialect.IPreProcessorDialect;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 
@@ -33,10 +32,9 @@ public final class PreProcessor extends AbstractPreProcessor {
 
 
     public PreProcessor(
-            final IPreProcessorDialect dialect, final TemplateMode templateMode,
-            final Class<? extends ITemplateHandler> handlerClass, final int precedence) {
+            final TemplateMode templateMode, final Class<? extends ITemplateHandler> handlerClass, final int precedence) {
 
-        super(dialect, templateMode, handlerClass, precedence);
+        super(templateMode, handlerClass, precedence);
 
     }
 

@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.postprocessor;
 
-import org.thymeleaf.dialect.IPostProcessorDialect;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 
@@ -33,10 +32,9 @@ public final class PostProcessor extends AbstractPostProcessor {
 
 
     public PostProcessor(
-            final IPostProcessorDialect dialect, final TemplateMode templateMode,
-            final Class<? extends ITemplateHandler> handlerClass, final int precedence) {
+            final TemplateMode templateMode, final Class<? extends ITemplateHandler> handlerClass, final int precedence) {
 
-        super(dialect, templateMode, handlerClass, precedence);
+        super(templateMode, handlerClass, precedence);
 
     }
 
