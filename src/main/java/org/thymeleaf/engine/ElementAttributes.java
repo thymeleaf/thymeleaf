@@ -113,7 +113,7 @@ public final class ElementAttributes implements IElementAttributes {
             }
         }
         // Not found that way - before discarding, let's search using AttributeDefinitions
-        return searchAttribute(computeAttributeDefinition(completeName).attributeName);
+        return searchAttribute(AttributeNames.forName(this.templateMode, completeName));
     }
 
 
@@ -122,14 +122,15 @@ public final class ElementAttributes implements IElementAttributes {
             // Optimization: searchAttribute(name) might be faster if we are able to avoid using AttributeDefinition
             return searchAttribute(name);
         }
-        return searchAttribute(computeAttributeDefinition(prefix, name).attributeName);
+        return searchAttribute(AttributeNames.forName(this.templateMode, prefix, name));
     }
 
 
     private int searchAttribute(final AttributeName attributeName) {
         int n = this.attributesSize;
         while (n-- != 0) {
-            if (this.attributeNames[n].equals(attributeName)) {
+            // AttributeName objects are registered in a repository and are singletons, so == is fine
+            if (this.attributeNames[n] == attributeName) {
                 return n;
             }
         }
@@ -739,25 +740,6 @@ public final class ElementAttributes implements IElementAttributes {
                 return this.attributeDefinitions.forJavaScriptName(completeAttributeName);
             case CSS:
                 return this.attributeDefinitions.forCSSName(completeAttributeName);
-            case RAW:
-                // fall-through
-            default:
-                throw new IllegalArgumentException("Attribute definitions cannot be created for template mode: " + this.templateMode);
-        }
-    }
-
-    private AttributeDefinition computeAttributeDefinition(final String prefix, final String attributeName) {
-        switch (this.templateMode) {
-            case HTML:
-                return this.attributeDefinitions.forHTMLName(prefix, attributeName);
-            case XML:
-                return this.attributeDefinitions.forXMLName(prefix, attributeName);
-            case TEXT:
-                return this.attributeDefinitions.forTextName(prefix, attributeName);
-            case JAVASCRIPT:
-                return this.attributeDefinitions.forJavaScriptName(prefix, attributeName);
-            case CSS:
-                return this.attributeDefinitions.forCSSName(prefix, attributeName);
             case RAW:
                 // fall-through
             default:
