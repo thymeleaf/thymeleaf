@@ -29,6 +29,11 @@ import java.util.Arrays;
  */
 public abstract class AttributeName {
 
+    /*
+     * NOTE it is VERY important that an AttributeName does NOT contain a TemplateMode, because there is a type
+     * of AttributeName (TextAttributeName) that is used for 3 different template modes: TEXT, JAVASCRIPT and CSS
+     */
+
     protected final String prefix;
     protected final String attributeName;
     protected final String[] completeAttributeNames;

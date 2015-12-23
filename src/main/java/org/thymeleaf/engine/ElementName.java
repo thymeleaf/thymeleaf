@@ -29,6 +29,11 @@ import java.util.Arrays;
  */
 public abstract class ElementName {
 
+    /*
+     * NOTE it is VERY important that an ElementName does NOT contain a TemplateMode, because there is a type
+     * of ElementName (TextElementName) that is used for 3 different template modes: TEXT, JAVASCRIPT and CSS
+     */
+
     protected final String prefix;
     protected final String elementName;
     protected final String[] completeElementNames;
