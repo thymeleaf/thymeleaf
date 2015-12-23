@@ -947,7 +947,7 @@ public final class AttributeDefinitions {
 
             // This method will be specialized in finding prefixed attribute names (in the prefix:name form)
 
-            if (prefix == null) {
+            if (prefix == null || prefix.trim().length() == 0) {
                 return binarySearch(caseSensitive, values, attributeName);
             }
 

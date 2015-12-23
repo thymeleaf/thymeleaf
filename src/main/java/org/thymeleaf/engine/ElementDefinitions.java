@@ -1044,7 +1044,7 @@ public final class ElementDefinitions {
 
             // This method will be specialized in finding prefixed element names (in the prefix:name form)
 
-            if (prefix == null) {
+            if (prefix == null || prefix.trim().length() == 0) {
                 return binarySearch(caseSensitive, values, elementName);
             }
 
