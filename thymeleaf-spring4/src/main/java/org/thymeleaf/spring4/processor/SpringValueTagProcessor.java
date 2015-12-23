@@ -20,12 +20,18 @@
 package org.thymeleaf.spring4.processor;
 
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.AttributeDefinition;
+import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.IAttributeDefinitionsAware;
+import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
 import org.thymeleaf.standard.processor.AbstractStandardExpressionAttributeTagProcessor;
+import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.Validate;
 import org.unbescape.html.HtmlEscape;
 
 
@@ -36,18 +42,46 @@ import org.unbescape.html.HtmlEscape;
  * @since 3.0.0
  *
  */
-public final class SpringValueTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
+public final class SpringValueTagProcessor
+        extends AbstractStandardExpressionAttributeTagProcessor
+        implements IAttributeDefinitionsAware {
 
 
     // This is 1010 in order to make sure it is executed after "name" and "type"
     public static final int ATTR_PRECEDENCE = 1010;
-    public static final String ATTR_NAME = "value";
+    public static final String TARGET_ATTR_NAME = "value";
+
+    private static final TemplateMode TEMPLATE_MODE = TemplateMode.HTML;
+
+    private static final String TYPE_ATTR_NAME = "type";
+    private static final String NAME_ATTR_NAME = "name";
+
+    private AttributeDefinition targetAttributeDefinition;
+    private AttributeDefinition fieldAttributeDefinition;
+    private AttributeDefinition typeAttributeDefinition;
+    private AttributeDefinition nameAttributeDefinition;
+
 
 
 
     public SpringValueTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, false);
+        super(TEMPLATE_MODE, dialectPrefix, TARGET_ATTR_NAME, ATTR_PRECEDENCE, false);
     }
+
+
+
+
+    public void setAttributeDefinitions(final AttributeDefinitions attributeDefinitions) {
+        Validate.notNull(attributeDefinitions, "Attribute Definitions cannot be null");
+        // We precompute the AttributeDefinitions in order to being able to use much
+        // faster methods for setting/replacing attributes on the ElementAttributes implementation
+        final String dialectPrefix = getMatchingAttributeName().getMatchingAttributeName().getPrefix();
+        this.targetAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, TARGET_ATTR_NAME);
+        this.fieldAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, dialectPrefix, AbstractSpringFieldTagProcessor.ATTR_NAME);
+        this.typeAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, TYPE_ATTR_NAME);
+        this.nameAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, NAME_ATTR_NAME);
+    }
+
 
 
 
@@ -61,13 +95,15 @@ public final class SpringValueTagProcessor extends AbstractStandardExpressionAtt
 
         String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? "" : expressionResult.toString());
 
+        final IElementAttributes attributes = tag.getAttributes();
+
         // Let RequestDataValueProcessor modify the attribute value if needed, but only in the case we don't also have
         // a 'th:field' - in such case, we will let th:field do its job
-        if (!tag.getAttributes().hasAttribute(attributeName.getPrefix(), AbstractSpringFieldTagProcessor.ATTR_NAME)) {
+        if (!attributes.hasAttribute(this.fieldAttributeDefinition.getAttributeName())) {
 
             // We will need to know the 'name' and 'type' attribute values in order to (potentially) modify the 'value'
-            final String nameValue = tag.getAttributes().getValue("name");
-            final String typeValue = tag.getAttributes().getValue("type");
+            final String nameValue = attributes.getValue(this.nameAttributeDefinition.getAttributeName());
+            final String typeValue = attributes.getValue(this.typeAttributeDefinition.getAttributeName());
 
             newAttributeValue =
                     RequestDataValueProcessorUtils.processFormFieldValue(context, nameValue, newAttributeValue, typeValue);
@@ -75,7 +111,7 @@ public final class SpringValueTagProcessor extends AbstractStandardExpressionAtt
         }
 
         // Set the 'value' attribute
-        tag.getAttributes().replaceAttribute(attributeName, ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
+        StandardProcessorUtils.replaceAttribute(attributes, attributeName, this.targetAttributeDefinition, TARGET_ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
 
     }
 

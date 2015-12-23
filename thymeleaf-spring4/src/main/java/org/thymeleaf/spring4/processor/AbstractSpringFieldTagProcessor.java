@@ -202,7 +202,7 @@ public abstract class AbstractSpringFieldTagProcessor
             final IProcessableElementTag tag,
             final String name, final boolean sequence) {
 
-        String id = tag.getAttributes().getValue("id");
+        String id = tag.getAttributes().getValue(this.idAttributeDefinition.getAttributeName());
         if (!org.thymeleaf.util.StringUtils.isEmptyOrWhitespace(id)) {
             return (StringUtils.hasText(id) ? id : null);
         }

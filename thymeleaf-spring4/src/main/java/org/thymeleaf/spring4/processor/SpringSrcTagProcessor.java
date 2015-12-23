@@ -83,7 +83,7 @@ public final class SpringSrcTagProcessor
 
         // Set the real, non prefixed attribute
         final IElementAttributes attributes = tag.getAttributes();
-        StandardProcessorUtils.replaceAttribute(attributes, attributeName, this.targetAttributeDefinition, ATTR_NAME, (newAttributeValue == null ? "" : newAttributeValue));
+        StandardProcessorUtils.replaceAttribute(attributes, attributeName, this.targetAttributeDefinition, ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
 
     }
 

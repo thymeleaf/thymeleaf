@@ -55,13 +55,9 @@ public final class SpringSrcTagProcessor
     private AttributeDefinition targetAttributeDefinition;
 
 
-
-
     public SpringSrcTagProcessor(final String dialectPrefix) {
         super(TEMPLATE_MODE, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, false);
     }
-
-
 
 
     public void setAttributeDefinitions(final AttributeDefinitions attributeDefinitions) {
@@ -70,8 +66,6 @@ public final class SpringSrcTagProcessor
         // faster methods for setting/replacing attributes on the ElementAttributes implementation
         this.targetAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, ATTR_NAME);
     }
-
-
 
 
     @Override
@@ -93,5 +87,4 @@ public final class SpringSrcTagProcessor
 
     }
 
-    
 }
