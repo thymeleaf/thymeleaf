@@ -43,8 +43,6 @@ public abstract class AbstractElementModelProcessor
         extends AbstractProcessor implements IElementModelProcessor {
 
     private final String dialectPrefix;
-    private final String elementName;
-    private final String attributeName;
     private final MatchingElementName matchingElementName;
     private final MatchingAttributeName matchingAttributeName;
 
@@ -60,19 +58,16 @@ public abstract class AbstractElementModelProcessor
 
         this.dialectPrefix = dialectPrefix;
 
-        this.elementName = elementName;
-        this.attributeName = attributeName;
-
         this.matchingElementName =
-                (this.elementName == null?
+                (elementName == null?
                     null :
                     MatchingElementName.forElementName(
-                            templateMode, ElementNames.forName(templateMode, (prefixElementName? this.dialectPrefix : null), this.elementName)));
+                            templateMode, ElementNames.forName(templateMode, (prefixElementName? this.dialectPrefix : null), elementName)));
         this.matchingAttributeName =
-                (this.attributeName == null?
+                (attributeName == null?
                     null :
                     MatchingAttributeName.forAttributeName(
-                            templateMode, AttributeNames.forName(templateMode, (prefixAttributeName? this.dialectPrefix : null), this.attributeName)));
+                            templateMode, AttributeNames.forName(templateMode, (prefixAttributeName? this.dialectPrefix : null), attributeName)));
 
     }
 
