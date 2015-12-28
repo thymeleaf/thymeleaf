@@ -19,14 +19,15 @@
  */
 package thymeleafexamples.springmail.tools;
 
+import java.util.Map;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.cache.ICacheEntryValidity;
 import org.thymeleaf.cache.NonCacheableCacheEntryValidity;
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolution;
+import org.thymeleaf.templateresource.ITemplateResource;
+import org.thymeleaf.templateresource.StringTemplateResource;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -58,14 +59,11 @@ class MemoryTemplateResolver implements ITemplateResolver {
     }
     
     @Override
-    public TemplateResolution resolveTemplate(final IEngineConfiguration configuration,
-            final IContext context, final String template) {
-        String templateName = "CustomTemplate";
-        String resourceName = "CustomResource";
-        IResourceResolver resourceResolver = new FixedMemoryResourceResolver(templateContent);
-        String characterEncoding = "utf-8";
+    public TemplateResolution resolveTemplate(
+            IEngineConfiguration configuration, String ownerTemplate, String template, 
+            Map<String,Object> templateResolutionAttributes) {
+        ITemplateResource templateResource = new StringTemplateResource(templateContent);
         ICacheEntryValidity validity = new NonCacheableCacheEntryValidity();
-        return new TemplateResolution(templateName, resourceName, resourceResolver, characterEncoding,
-            templateMode, validity);
+        return new TemplateResolution(templateResource, templateMode, validity);
     }
 }

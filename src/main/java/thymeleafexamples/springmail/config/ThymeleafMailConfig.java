@@ -7,7 +7,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
-import org.thymeleaf.templateresolver.TemplateResolver;
+import org.thymeleaf.templateresolver.ITemplateResolver;
 import static thymeleafexamples.springmail.config.SpringWebInitializer.ENCODING;
 
 /**
@@ -39,8 +39,8 @@ public class ThymeleafMailConfig extends WebMvcConfigurerAdapter {
     /**
      * THYMELEAF: Template Resolver for HTML email templates.
      */
-    private TemplateResolver htmlTemplateResolver() {
-        TemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+    private ITemplateResolver htmlTemplateResolver() {
+        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setPrefix("/mail/");
         templateResolver.setSuffix(".html");
         templateResolver.setTemplateMode(TemplateMode.HTML);
@@ -54,8 +54,8 @@ public class ThymeleafMailConfig extends WebMvcConfigurerAdapter {
     /**
      * THYMELEAF: Template Resolver for HTML email templates.
      */
-    private TemplateResolver textTemplateResolver() {
-        TemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+    private ITemplateResolver textTemplateResolver() {
+        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setPrefix("/mail/");
         templateResolver.setSuffix(".txt");
         templateResolver.setTemplateMode(TemplateMode.TEXT);

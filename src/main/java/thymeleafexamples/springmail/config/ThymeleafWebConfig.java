@@ -1,5 +1,7 @@
 package thymeleafexamples.springmail.config;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -11,10 +13,10 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-import org.thymeleaf.templateresolver.TemplateResolver;
+import org.thymeleaf.templateresolver.ITemplateResolver;
 import static thymeleafexamples.springmail.config.SpringWebInitializer.ENCODING;
 
 /**
@@ -23,7 +25,14 @@ import static thymeleafexamples.springmail.config.SpringWebInitializer.ENCODING;
 @Configuration
 @ComponentScan("thymeleafexamples.springmail")
 @EnableWebMvc
-public class ThymeleafWebConfig extends WebMvcConfigurerAdapter {
+public class ThymeleafWebConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
+
+    private ApplicationContext applicationContext;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
     /**
      * THYMELEAF: implementation of Spring's ViewResolver interface for the HTML pages of this web application.
@@ -41,16 +50,17 @@ public class ThymeleafWebConfig extends WebMvcConfigurerAdapter {
      * THYMELEAF: Template Engine (Spring4-specific version) for HTML pages.
      */
     private TemplateEngine webTemplateEngine() {
-        TemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.addTemplateResolver(webTemplateResolver());
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setTemplateResolver(webTemplateResolver());
         return templateEngine;
     }
     
     /**
      * THYMELEAF: Template Resolver for HTML pages.
      */
-    private TemplateResolver webTemplateResolver() {
-        TemplateResolver templateResolver = new ServletContextTemplateResolver();
+    private ITemplateResolver webTemplateResolver() {
+        SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
+        templateResolver.setApplicationContext(applicationContext);
         templateResolver.setPrefix("/WEB-INF/templates/");
         templateResolver.setSuffix(".html");
         templateResolver.setTemplateMode(TemplateMode.HTML);
