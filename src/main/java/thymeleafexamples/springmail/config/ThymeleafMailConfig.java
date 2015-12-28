@@ -21,8 +21,8 @@ public class ThymeleafMailConfig extends WebMvcConfigurerAdapter {
      */
 	@Bean
     public TemplateEngine htmlTemplateEngine() {
-        TemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.addTemplateResolver(htmlTemplateResolver());
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setTemplateResolver(htmlTemplateResolver());
         return templateEngine;
     }
     
@@ -31,8 +31,8 @@ public class ThymeleafMailConfig extends WebMvcConfigurerAdapter {
      */
 	@Bean
     public TemplateEngine textTemplateEngine() {
-        TemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.addTemplateResolver(textTemplateResolver());
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setTemplateResolver(textTemplateResolver());
         return templateEngine;
     }
 
