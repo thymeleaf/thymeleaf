@@ -290,6 +290,10 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                 final ITemplateEvent event = model.get(n);
 
                 if (event instanceof ICloseElementTag) {
+                    if (((ICloseElementTag) event).isUnmatched()) {
+                        // This is an unmatched close tag (no corresponding open), therefore should not affect our count
+                        continue;
+                    }
                     if (modelLevel <= 0) {
                         model.remove(n);
                     }
