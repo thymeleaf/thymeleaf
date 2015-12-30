@@ -165,7 +165,7 @@ final class ExpressionParsingUtil {
                 if (config.getDecomposeTextLiterals()) {
 
                     final TextLiteralExpression expr =
-                            TextLiteralExpression.parseTextLiteral(currentFragment.toString());
+                            TextLiteralExpression.parseTextLiteralExpression(currentFragment.toString());
                     if (addExpressionAtIndex(expr, currentIndex++, state, decomposedInput, currentFragment) == null) {
                         return null;
                     }
@@ -227,13 +227,13 @@ final class ExpressionParsingUtil {
                     final Expression expr;
                     switch (expSelectorChar) {
                         case VariableExpression.SELECTOR:
-                            expr = VariableExpression.parseVariable(currentFragment.toString()); break;
+                            expr = VariableExpression.parseVariableExpression(currentFragment.toString()); break;
                         case SelectionVariableExpression.SELECTOR:
-                            expr = SelectionVariableExpression.parseSelectionVariable(currentFragment.toString()); break;
+                            expr = SelectionVariableExpression.parseSelectionVariableExpression(currentFragment.toString()); break;
                         case MessageExpression.SELECTOR:
-                            expr = MessageExpression.parseMessage(currentFragment.toString()); break;
+                            expr = MessageExpression.parseMessageExpression(currentFragment.toString()); break;
                         case LinkExpression.SELECTOR:
-                            expr = LinkExpression.parseLink(currentFragment.toString()); break;
+                            expr = LinkExpression.parseLinkExpression(currentFragment.toString()); break;
                         default:
                             return null;
                     }
@@ -372,28 +372,28 @@ final class ExpressionParsingUtil {
         }
 
         if (config.getDecomposeNumberTokens()) {
-            final NumberTokenExpression numberTokenExpr = NumberTokenExpression.parseNumberToken(token);
+            final NumberTokenExpression numberTokenExpr = NumberTokenExpression.parseNumberTokenExpression(token);
             if (numberTokenExpr != null) {
                 return numberTokenExpr;
             }
         }
 
         if (config.getDecomposeBooleanTokens()) {
-            final BooleanTokenExpression booleanTokenExpr = BooleanTokenExpression.parseBooleanToken(token);
+            final BooleanTokenExpression booleanTokenExpr = BooleanTokenExpression.parseBooleanTokenExpression(token);
             if (booleanTokenExpr != null) {
                 return booleanTokenExpr;
             }
         }
 
         if (config.getDecomposeNullTokens()) {
-            final NullTokenExpression nullTokenExpr = NullTokenExpression.parseNullToken(token);
+            final NullTokenExpression nullTokenExpr = NullTokenExpression.parseNullTokenExpression(token);
             if (nullTokenExpr != null) {
                 return nullTokenExpr;
             }
         }
 
         if (config.getDecomposeGenericTokens()) {
-            final GenericTokenExpression genericTokenExpr = GenericTokenExpression.parseGenericToken(token);
+            final GenericTokenExpression genericTokenExpr = GenericTokenExpression.parseGenericTokenExpression(token);
             if (genericTokenExpr != null) {
                 return genericTokenExpr;
             }

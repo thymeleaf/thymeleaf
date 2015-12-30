@@ -109,7 +109,7 @@ public final class MessageExpression extends SimpleExpression {
     
 
     
-    static MessageExpression parseMessage(final String input) {
+    static MessageExpression parseMessageExpression(final String input) {
 
         final Matcher matcher = MSG_PATTERN.matcher(input);
         
@@ -213,7 +213,7 @@ public final class MessageExpression extends SimpleExpression {
     
     
 
-    static Object executeMessage(
+    static Object executeMessageExpression(
             final IExpressionContext context,
             final MessageExpression expression, final StandardExpressionExecutionContext expContext) {
 

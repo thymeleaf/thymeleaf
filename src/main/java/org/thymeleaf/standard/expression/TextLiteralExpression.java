@@ -87,14 +87,14 @@ public final class TextLiteralExpression extends SimpleExpression {
 
 
     
-    static TextLiteralExpression parseTextLiteral(final String input) {
+    static TextLiteralExpression parseTextLiteralExpression(final String input) {
         return new TextLiteralExpression(input);
         
     }
     
 
     
-    static Object executeTextLiteral(
+    static Object executeTextLiteralExpression(
             final IExpressionContext context,
             final TextLiteralExpression expression,
             final StandardExpressionExecutionContext expContext) {

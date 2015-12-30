@@ -104,7 +104,7 @@ public final class SelectionVariableExpression extends SimpleExpression {
     
     
     
-    static SelectionVariableExpression parseSelectionVariable(final String input) {
+    static SelectionVariableExpression parseSelectionVariableExpression(final String input) {
         final Matcher matcher = SELECTION_VAR_PATTERN.matcher(input);
         if (!matcher.matches()) {
             return null;
@@ -124,7 +124,7 @@ public final class SelectionVariableExpression extends SimpleExpression {
     
     
     
-    static Object executeSelectionVariable(
+    static Object executeSelectionVariableExpression(
             final IExpressionContext context,
             final SelectionVariableExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
             final StandardExpressionExecutionContext expContext) {

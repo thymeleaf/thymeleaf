@@ -61,7 +61,7 @@ public final class NullTokenExpression extends Token {
 
 
     
-    static NullTokenExpression parseNullToken(final String input) {
+    static NullTokenExpression parseNullTokenExpression(final String input) {
         if ("null".equalsIgnoreCase(input)) {
             return SINGLETON;
         }
@@ -70,7 +70,7 @@ public final class NullTokenExpression extends Token {
     
 
     
-    static Object executeNullToken(
+    static Object executeNullTokenExpression(
             final IExpressionContext context,
             final NullTokenExpression expression,
             final StandardExpressionExecutionContext expContext) {

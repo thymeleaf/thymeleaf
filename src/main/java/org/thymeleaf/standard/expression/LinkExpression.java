@@ -120,7 +120,7 @@ public final class LinkExpression extends SimpleExpression {
     
     
     
-    static LinkExpression parseLink(final String input) {
+    static LinkExpression parseLinkExpression(final String input) {
         
         final Matcher matcher = LINK_PATTERN.matcher(input);
         if (!matcher.matches()) {
@@ -231,7 +231,7 @@ public final class LinkExpression extends SimpleExpression {
     
 
 
-    static Object executeLink(
+    static Object executeLinkExpression(
             final IExpressionContext context,
             final LinkExpression expression, final StandardExpressionExecutionContext expContext) {
 

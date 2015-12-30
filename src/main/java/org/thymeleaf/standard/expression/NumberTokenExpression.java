@@ -67,7 +67,7 @@ public final class NumberTokenExpression extends Token {
 
 
     
-    static NumberTokenExpression parseNumberToken(final String input) {
+    static NumberTokenExpression parseNumberTokenExpression(final String input) {
         if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
@@ -97,7 +97,7 @@ public final class NumberTokenExpression extends Token {
     
 
     
-    static Object executeNumberToken(
+    static Object executeNumberTokenExpression(
             final IExpressionContext context,
             final NumberTokenExpression expression,
             final StandardExpressionExecutionContext expContext) {

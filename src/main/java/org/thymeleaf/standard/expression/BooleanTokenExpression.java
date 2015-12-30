@@ -56,7 +56,7 @@ public final class BooleanTokenExpression extends Token {
 
 
     
-    static BooleanTokenExpression parseBooleanToken(final String input) {
+    static BooleanTokenExpression parseBooleanTokenExpression(final String input) {
         if ("true".equalsIgnoreCase(input) || "false".equalsIgnoreCase(input)) {
             return new BooleanTokenExpression(input);
         }
@@ -65,7 +65,7 @@ public final class BooleanTokenExpression extends Token {
     
 
     
-    static Object executeBooleanToken(
+    static Object executeBooleanTokenExpression(
             final IExpressionContext context,
             final BooleanTokenExpression expression,
             final StandardExpressionExecutionContext expContext) {

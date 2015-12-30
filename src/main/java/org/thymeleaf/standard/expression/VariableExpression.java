@@ -52,7 +52,7 @@ public final class VariableExpression extends SimpleExpression {
     private static final Pattern VAR_PATTERN = 
         Pattern.compile("^\\s*\\$\\{(.+?)\\}\\s*$", Pattern.DOTALL);
     
-    static final Expression NULL_VALUE = VariableExpression.parseVariable("${null}");
+    static final Expression NULL_VALUE = VariableExpression.parseVariableExpression("${null}");
 
 
     
@@ -110,7 +110,7 @@ public final class VariableExpression extends SimpleExpression {
     
     
     
-    static VariableExpression parseVariable(final String input) {
+    static VariableExpression parseVariableExpression(final String input) {
         final Matcher matcher = VAR_PATTERN.matcher(input);
         if (!matcher.matches()) {
             return null;
@@ -132,7 +132,7 @@ public final class VariableExpression extends SimpleExpression {
     
     
     
-    static Object executeVariable(
+    static Object executeVariableExpression(
             final IExpressionContext context,
             final VariableExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
             final StandardExpressionExecutionContext expContext) {

@@ -61,7 +61,7 @@ public final class GenericTokenExpression extends Token {
     
     
     
-    public static GenericTokenExpression parseGenericToken(final String input) {
+    public static GenericTokenExpression parseGenericTokenExpression(final String input) {
         if (input == null) {
             return null;
         }
@@ -76,7 +76,7 @@ public final class GenericTokenExpression extends Token {
 
 
 
-    static Object executeGenericToken(
+    static Object executeGenericTokenExpression(
             final IExpressionContext context,
             final GenericTokenExpression expression,
             final StandardExpressionExecutionContext expContext) {
