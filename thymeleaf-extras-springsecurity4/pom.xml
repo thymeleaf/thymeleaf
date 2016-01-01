@@ -112,8 +112,8 @@
 
 
   <properties>
-    <maven.compile.source>1.5</maven.compile.source>
-    <maven.compile.target>1.5</maven.compile.target>
+    <maven.compile.source>1.6</maven.compile.source>
+    <maven.compile.target>1.6</maven.compile.target>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <servlet-api.version>2.5</servlet-api.version>
     <thymeleaf.version>3.0.0-SNAPSHOT</thymeleaf.version>
