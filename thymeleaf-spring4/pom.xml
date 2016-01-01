@@ -104,8 +104,8 @@
 
 
   <properties>
-    <maven.compile.source>1.5</maven.compile.source>
-    <maven.compile.target>1.5</maven.compile.target>
+    <maven.compile.source>1.6</maven.compile.source>
+    <maven.compile.target>1.6</maven.compile.target>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <!-- Spring version 4.0 is supported, but 4.1 is used as a dependency -->
     <!-- in order to integrate with some 4.1-only features.               -->
