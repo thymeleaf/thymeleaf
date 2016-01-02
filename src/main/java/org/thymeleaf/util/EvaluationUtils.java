@@ -100,10 +100,15 @@ public final class EvaluationUtils {
                 return new BigDecimal(((Double)object).doubleValue());
             }
         } else if (object instanceof String) {
-            try {
-                return new BigDecimal(((String)object).trim());
-            } catch (final NumberFormatException ignored) {
-                return null;
+            final char c0 = ((String)object).charAt(0);
+            // This test will avoid trying to create the BigDecimal most of the times, which
+            // will improve performance by avoiding lots of NumberFormatExceptions
+            if ((c0 >= '0' && c0 <= '9') || c0 == '+' || c0 == '-') {
+                try {
+                    return new BigDecimal(((String)object).trim());
+                } catch (final NumberFormatException ignored) {
+                    return null;
+                }
             }
         }
 
