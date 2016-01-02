@@ -99,7 +99,7 @@ public final class EvaluationUtils {
                 //noinspection UnpredictableBigDecimalConstructorCall
                 return new BigDecimal(((Double)object).doubleValue());
             }
-        } else if (object instanceof String) {
+        } else if (object instanceof String && ((String)object).length() > 0) {
             final char c0 = ((String)object).charAt(0);
             // This test will avoid trying to create the BigDecimal most of the times, which
             // will improve performance by avoiding lots of NumberFormatExceptions
