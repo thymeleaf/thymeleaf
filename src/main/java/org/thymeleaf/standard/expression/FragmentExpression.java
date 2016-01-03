@@ -20,15 +20,21 @@
 package org.thymeleaf.standard.expression;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IExpressionContext;
+import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.TemplateModel;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
@@ -41,9 +47,9 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public final class ModelExpression extends SimpleExpression {
+public final class FragmentExpression extends SimpleExpression {
 
-    private static final Logger logger = LoggerFactory.getLogger(ModelExpression.class);
+    private static final Logger logger = LoggerFactory.getLogger(FragmentExpression.class);
 
     private static final long serialVersionUID = -130371297698708001L;
 
@@ -55,7 +61,7 @@ public final class ModelExpression extends SimpleExpression {
     static final char SELECTOR = '~';
 
 
-    private static final Pattern MODEL_PATTERN =
+    private static final Pattern FRAGMENT_PATTERN =
         Pattern.compile("^\\s*~\\{(.+?)\\}\\s*$", Pattern.DOTALL);
 
 
@@ -67,7 +73,7 @@ public final class ModelExpression extends SimpleExpression {
 
 
 
-    public ModelExpression(
+    public FragmentExpression(
             final IStandardExpression templateName, final IStandardExpression fragmentSelector,
             final AssignationSequence parameters) {
         super();
@@ -136,8 +142,8 @@ public final class ModelExpression extends SimpleExpression {
 
 
 
-    static ModelExpression parseModelExpression(final String input) {
-        final Matcher matcher = MODEL_PATTERN.matcher(input);
+    public static FragmentExpression parseFragmentExpression(final String input) {
+        final Matcher matcher = FRAGMENT_PATTERN.matcher(input);
         if (!matcher.matches()) {
             return null;
         }
@@ -145,24 +151,30 @@ public final class ModelExpression extends SimpleExpression {
         if (StringUtils.isEmptyOrWhitespace(expression)) {
             return null;
         }
-        return parseModelExpressionContent(expression.trim());
+        return parseFragmentExpressionContent(expression.trim());
     }
 
 
 
 
-    static ModelExpression parseModelExpressionContent(final String input) {
+    public static FragmentExpression parseFragmentExpressionContent(final String input) {
 
-        final int lastParenthesesGroupPos = indexOfLastParenthesesGroup(input);
+        if (StringUtils.isEmptyOrWhitespace(input)) {
+            return null;
+        }
+
+        final String trimmedInput = input.trim();
+
+        final int lastParenthesesGroupPos = indexOfLastParenthesesGroup(trimmedInput);
 
         final String inputWithoutParameters;
         String parametersStr;
         if (lastParenthesesGroupPos != -1) {
-            parametersStr = input.substring(lastParenthesesGroupPos).trim();
-            inputWithoutParameters = input.substring(0, lastParenthesesGroupPos).trim();
+            parametersStr = trimmedInput.substring(lastParenthesesGroupPos).trim();
+            inputWithoutParameters = trimmedInput.substring(0, lastParenthesesGroupPos).trim();
         } else {
             parametersStr = null;
-            inputWithoutParameters = input;
+            inputWithoutParameters = trimmedInput;
         }
 
 
@@ -233,7 +245,7 @@ public final class ModelExpression extends SimpleExpression {
                     AssignationUtils.internalParseAssignationSequence(parametersStr, false);
 
             if (parametersAsSeq != null) {
-                return new ModelExpression(templateNameExpression, fragmentSpecExpression, parametersAsSeq);
+                return new FragmentExpression(templateNameExpression, fragmentSpecExpression, parametersAsSeq);
             }
 
             // Parameters wheren't parseable as an assignation sequence. So we should try parsing as Expression
@@ -246,7 +258,7 @@ public final class ModelExpression extends SimpleExpression {
             if (parametersExpSeq != null) {
                 final AssignationSequence parametersAsSeqFromExp =
                         createSyntheticallyNamedParameterSequence(parametersExpSeq);
-                return new ModelExpression(templateNameExpression, fragmentSpecExpression, parametersAsSeqFromExp);
+                return new FragmentExpression(templateNameExpression, fragmentSpecExpression, parametersAsSeqFromExp);
             }
 
             // The parameters str is not parsable neither as an assignation sequence nor as an expression sequence,
@@ -256,7 +268,7 @@ public final class ModelExpression extends SimpleExpression {
 
         }
 
-        return new ModelExpression(templateNameExpression, fragmentSpecExpression, null);
+        return new FragmentExpression(templateNameExpression, fragmentSpecExpression, null);
 
     }
 
@@ -338,13 +350,24 @@ public final class ModelExpression extends SimpleExpression {
 
 
 
-    // TODO This should be returning an IModel!!!!
-    static Object executeModelExpression(
+    static Fragment executeFragmentExpression(
             final IExpressionContext context,
-            final ModelExpression expression, final StandardExpressionExecutionContext expContext) {
+            final FragmentExpression expression, final StandardExpressionExecutionContext expContext) {
 
         Validate.notNull(context, "Context cannot be null");
-        Validate.notNull(expression, "Model Expression cannot be null");
+        Validate.notNull(expression, "Fragment Expression cannot be null");
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("[THYMELEAF][{}] Evaluating model: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
+        }
+
+        if (!(context instanceof ITemplateContext)) {
+            throw new TemplateProcessingException(
+                    "Cannot evaluate expression \"" + expression + "\". Model expressions " +
+                    "can only be evaluated in a template-processing environment (as a part of an in-template expression) " +
+                    "where processing context is an implementation of " + ITemplateContext.class.getClass() + ", which it isn't (" +
+                    context.getClass().getName() + ")");
+        }
 
         /*
          * COMPUTE THE TEMPLATE NAME
@@ -403,7 +426,8 @@ public final class ModelExpression extends SimpleExpression {
 
         }
 
-        return new ProcessedFragmentSelection(templateName, fragmentSelector, fragmentParameters);
+        // The cast to ITemplateContext is safe because we have checked above
+        return processFragment((ITemplateContext) context, templateName, fragmentSelector, fragmentParameters);
 
     }
 
@@ -438,6 +462,53 @@ public final class ModelExpression extends SimpleExpression {
         }
 
         return parameterValues;
+
+    }
+
+
+
+
+
+    private static Fragment processFragment(
+            final ITemplateContext context,
+            final String templateName, final String fragmentSelector, final Map<String,Object> fragmentParameters) {
+
+        final IEngineConfiguration configuration = context.getConfiguration();
+
+        String parsedTemplate = templateName;
+        final Set<String> fragments =
+                (fragmentSelector != null && fragmentSelector.length() > 0) ? Collections.singleton(fragmentSelector) : null;
+
+        /*
+         * OBTAIN THE FRAGMENT MODEL from the TemplateManager. This means the fragment will be parsed and maybe
+         * cached, and we will be returned an immutable model object (specifically a ParsedFragmentModel)
+         */
+
+        List<String> templateNameStack = null;
+        // scan the template stack if template name is 'this' or an empty name is being used
+        if (StringUtils.isEmptyOrWhitespace(parsedTemplate) || TEMPLATE_NAME_CURRENT_TEMPLATE.equals(parsedTemplate)) {
+            templateNameStack = new ArrayList<String>(3);
+            for (int i = context.getTemplateStack().size() - 1; i >= 0; i--) {
+                templateNameStack.add(context.getTemplateStack().get(i).getTemplate());
+            }
+            parsedTemplate = templateNameStack.get(0);
+        }
+
+        TemplateModel fragmentModel;
+        int i = 0;
+        do {
+            fragmentModel =
+                    configuration.getTemplateManager().parseStandalone(
+                            context, parsedTemplate, fragments,
+                            null,   // we will not force the template mode
+                            true);  // use the cache if possible, fragments are from template files
+            i++;
+        } while (fragmentModel.size() <= 2 &&
+                templateNameStack != null &&
+                i < templateNameStack.size() &&
+                (parsedTemplate = templateNameStack.get(i)) != null);  //post test -- need to parse at least 1x
+
+        return new Fragment(fragmentModel, fragmentParameters);
 
     }
 
