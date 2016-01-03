@@ -358,12 +358,12 @@ public final class FragmentExpression extends SimpleExpression {
         Validate.notNull(expression, "Fragment Expression cannot be null");
 
         if (logger.isTraceEnabled()) {
-            logger.trace("[THYMELEAF][{}] Evaluating model: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
+            logger.trace("[THYMELEAF][{}] Evaluating fragment: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
 
         if (!(context instanceof ITemplateContext)) {
             throw new TemplateProcessingException(
-                    "Cannot evaluate expression \"" + expression + "\". Model expressions " +
+                    "Cannot evaluate expression \"" + expression + "\". Fragment expressions " +
                     "can only be evaluated in a template-processing environment (as a part of an in-template expression) " +
                     "where processing context is an implementation of " + ITemplateContext.class.getClass() + ", which it isn't (" +
                     context.getClass().getName() + ")");

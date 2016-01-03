@@ -39,6 +39,7 @@ public final class Fragment {
 
 
     public Fragment(final IModel model, final Map<String, Object> parameters) {
+        super();
         this.model = model;
         this.parameters = Collections.unmodifiableMap(parameters);
     }
