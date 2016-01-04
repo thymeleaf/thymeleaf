@@ -70,17 +70,19 @@ public final class FragmentExpression extends SimpleExpression {
     private final IStandardExpression templateName;
     private final IStandardExpression fragmentSelector;
     private final AssignationSequence parameters;
+    private final boolean syntheticParameters;
 
 
 
     public FragmentExpression(
             final IStandardExpression templateName, final IStandardExpression fragmentSelector,
-            final AssignationSequence parameters) {
+            final AssignationSequence parameters, final boolean syntheticParameters) {
         super();
         // templateName can be null if fragment is to be executed on the current template
         this.templateName = templateName;
         this.fragmentSelector = fragmentSelector;
         this.parameters = parameters;
+        this.syntheticParameters = (this.parameters != null && this.parameters.size() > 0 && syntheticParameters);
     }
 
 
@@ -105,6 +107,9 @@ public final class FragmentExpression extends SimpleExpression {
         return this.parameters != null && this.parameters.size() > 0;
     }
 
+    public boolean hasSyntheticParameters() {
+        return this.syntheticParameters;
+    }
 
 
 
@@ -245,7 +250,7 @@ public final class FragmentExpression extends SimpleExpression {
                     AssignationUtils.internalParseAssignationSequence(parametersStr, false);
 
             if (parametersAsSeq != null) {
-                return new FragmentExpression(templateNameExpression, fragmentSpecExpression, parametersAsSeq);
+                return new FragmentExpression(templateNameExpression, fragmentSpecExpression, parametersAsSeq, false);
             }
 
             // Parameters wheren't parseable as an assignation sequence. So we should try parsing as Expression
@@ -258,7 +263,7 @@ public final class FragmentExpression extends SimpleExpression {
             if (parametersExpSeq != null) {
                 final AssignationSequence parametersAsSeqFromExp =
                         createSyntheticallyNamedParameterSequence(parametersExpSeq);
-                return new FragmentExpression(templateNameExpression, fragmentSpecExpression, parametersAsSeqFromExp);
+                return new FragmentExpression(templateNameExpression, fragmentSpecExpression, parametersAsSeqFromExp, true);
             }
 
             // The parameters str is not parsable neither as an assignation sequence nor as an expression sequence,
@@ -268,7 +273,7 @@ public final class FragmentExpression extends SimpleExpression {
 
         }
 
-        return new FragmentExpression(templateNameExpression, fragmentSpecExpression, null);
+        return new FragmentExpression(templateNameExpression, fragmentSpecExpression, null, false);
 
     }
 
@@ -399,7 +404,7 @@ public final class FragmentExpression extends SimpleExpression {
          * RESOLVE FRAGMENT PARAMETERS if specified (null if not)
          */
         final Map<String, Object> fragmentParameters =
-                resolveProcessedFragmentParameters(context, expression.getParameters(), expContext);
+                resolveProcessedFragmentParameters(context, expression.getParameters(), expression.hasSyntheticParameters(), expContext);
 
         /*
          * COMPUTE THE FRAGMENT SELECTOR
@@ -427,7 +432,7 @@ public final class FragmentExpression extends SimpleExpression {
         }
 
         // The cast to ITemplateContext is safe because we have checked above
-        return processFragment((ITemplateContext) context, templateName, fragmentSelector, fragmentParameters);
+        return processFragment((ITemplateContext) context, templateName, fragmentSelector, fragmentParameters, expression.hasSyntheticParameters());
 
     }
 
@@ -435,7 +440,8 @@ public final class FragmentExpression extends SimpleExpression {
 
     private static Map<String,Object> resolveProcessedFragmentParameters(
             final IExpressionContext context,
-            final AssignationSequence parameters, final StandardExpressionExecutionContext expContext) {
+            final AssignationSequence parameters, final boolean syntheticParameters,
+            final StandardExpressionExecutionContext expContext) {
 
         if (parameters == null || parameters.size() == 0) {
             return null;
@@ -450,9 +456,15 @@ public final class FragmentExpression extends SimpleExpression {
             final Assignation assignation = assignationValues.get(i);
 
             final IStandardExpression parameterNameExpr = assignation.getLeft();
-            final Object parameterNameValue = parameterNameExpr.execute(context, expContext);
 
-            final String parameterName = (parameterNameValue == null? null : parameterNameValue.toString());
+            final String parameterName;
+            if (!syntheticParameters) {
+                final Object parameterNameValue = parameterNameExpr.execute(context, expContext);
+                parameterName = (parameterNameValue == null ? null : parameterNameValue.toString());
+            } else {
+                // Parameters are synthetic so we know this is a mere literal like "_argX", no need to perform an exec
+                parameterName = ((TextLiteralExpression)parameterNameExpr).getValue().getValue();
+            }
 
             final IStandardExpression parameterValueExpr = assignation.getRight();
             final Object parameterValueValue = parameterValueExpr.execute(context, expContext);
@@ -471,7 +483,8 @@ public final class FragmentExpression extends SimpleExpression {
 
     private static Fragment processFragment(
             final ITemplateContext context,
-            final String templateName, final String fragmentSelector, final Map<String,Object> fragmentParameters) {
+            final String templateName, final String fragmentSelector,
+            final Map<String,Object> fragmentParameters, final boolean syntheticParameters) {
 
         final IEngineConfiguration configuration = context.getConfiguration();
 
@@ -508,7 +521,7 @@ public final class FragmentExpression extends SimpleExpression {
                 i < templateNameStack.size() &&
                 (parsedTemplate = templateNameStack.get(i)) != null);  //post test -- need to parse at least 1x
 
-        return new Fragment(fragmentModel, fragmentParameters);
+        return new Fragment(fragmentModel, fragmentParameters, syntheticParameters);
 
     }
 

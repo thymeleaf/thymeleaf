@@ -36,12 +36,14 @@ public final class Fragment {
 
     private final IModel model;
     private final Map<String,Object> parameters;
+    private final boolean syntheticParameters;
 
 
-    public Fragment(final IModel model, final Map<String, Object> parameters) {
+    public Fragment(final IModel model, final Map<String, Object> parameters, final boolean syntheticParameters) {
         super();
         this.model = model;
         this.parameters = Collections.unmodifiableMap(parameters);
+        this.syntheticParameters = (this.parameters != null && this.parameters.size() > 0 && syntheticParameters);
     }
 
 
@@ -53,5 +55,8 @@ public final class Fragment {
         return this.parameters;
     }
 
+    public boolean hasSyntheticParameters() {
+        return this.syntheticParameters;
+    }
 
 }
