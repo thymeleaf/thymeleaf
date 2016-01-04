@@ -75,8 +75,7 @@ public abstract class Expression implements IStandardExpression, Serializable {
         /*
          * PHASE 01: Decomposition (including unnesting parenthesis)
          */
-        final ExpressionParsingState decomposition =
-                ExpressionParsingUtil.decompose(input, ExpressionParsingDecompositionConfig.DECOMPOSE_ALL_AND_UNNEST);
+        final ExpressionParsingState decomposition = ExpressionParsingUtil.decompose(input);
         if (decomposition == null) {
             return null;
         }

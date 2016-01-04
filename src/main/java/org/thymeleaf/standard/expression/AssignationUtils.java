@@ -83,8 +83,7 @@ public final class AssignationUtils {
             return null;
         }
 
-        final ExpressionParsingState decomposition =
-                ExpressionParsingUtil.decompose(input,ExpressionParsingDecompositionConfig.DECOMPOSE_ALL_AND_UNNEST);
+        final ExpressionParsingState decomposition = ExpressionParsingUtil.decompose(input);
 
         if (decomposition == null) {
             return null;

@@ -87,19 +87,17 @@ final class ExpressionParsingUtil {
 
 
 
-    public static ExpressionParsingState decompose(
-            final String input, final ExpressionParsingDecompositionConfig config) {
+    public static ExpressionParsingState decompose(final String input) {
         // Just before starting decomposing simple expressions, we perform the processing of literal substitutions...
         final ExpressionParsingState state =
-                decomposeSimpleExpressions(LiteralSubstitutionUtil.performLiteralSubstitution(input), config);
-        return (config.getUnnest()? decomposeNestingParenthesis(state, 0) : state);
+                decomposeSimpleExpressions(LiteralSubstitutionUtil.performLiteralSubstitution(input));
+        return decomposeNestingParenthesis(state, 0);
     }
 
 
 
 
-    private static ExpressionParsingState decomposeSimpleExpressions(
-            final String input, final ExpressionParsingDecompositionConfig config) {
+    private static ExpressionParsingState decomposeSimpleExpressions(final String input) {
 
         if (input == null) {
             return null;
@@ -129,7 +127,7 @@ final class ExpressionParsingUtil {
              */
             if (inToken && !Token.isTokenChar(input, i)) {
 
-                if (finishCurrentToken(currentIndex, state, decomposedInput, currentFragment, config) != null) {
+                if (finishCurrentToken(currentIndex, state, decomposedInput, currentFragment) != null) {
                     // If it's not null, it means the token was really accepted as such, and an expression object
                     // was created for it. So we should increment the index.
                     currentIndex++;
@@ -162,18 +160,10 @@ final class ExpressionParsingUtil {
 
                 currentFragment.append(c);
 
-                if (config.getDecomposeTextLiterals()) {
-
-                    final TextLiteralExpression expr =
-                            TextLiteralExpression.parseTextLiteralExpression(currentFragment.toString());
-                    if (addExpressionAtIndex(expr, currentIndex++, state, decomposedInput, currentFragment) == null) {
-                        return null;
-                    }
-
-                } else {
-
-                    finishCurrentFragment(decomposedInput, currentFragment);
-
+                final TextLiteralExpression expr =
+                        TextLiteralExpression.parseTextLiteralExpression(currentFragment.toString());
+                if (addExpressionAtIndex(expr, currentIndex++, state, decomposedInput, currentFragment) == null) {
+                    return null;
                 }
 
                 inLiteral = false;
@@ -209,48 +199,24 @@ final class ExpressionParsingUtil {
 
                 final char expSelectorChar = currentFragment.charAt(0);
 
-                final boolean shouldParseExpression;
+                final Expression expr;
                 switch (expSelectorChar) {
                     case VariableExpression.SELECTOR:
-                        shouldParseExpression = config.getDecomposeVariableExpressions(); break;
+                        expr = VariableExpression.parseVariableExpression(currentFragment.toString()); break;
                     case SelectionVariableExpression.SELECTOR:
-                        shouldParseExpression = config.getDecomposeSelectionVariableExpressions(); break;
+                        expr = SelectionVariableExpression.parseSelectionVariableExpression(currentFragment.toString()); break;
                     case MessageExpression.SELECTOR:
-                        shouldParseExpression = config.getDecomposeMessageExpressions(); break;
+                        expr = MessageExpression.parseMessageExpression(currentFragment.toString()); break;
                     case LinkExpression.SELECTOR:
-                        shouldParseExpression = config.getDecomposeLinkExpressions(); break;
+                        expr = LinkExpression.parseLinkExpression(currentFragment.toString()); break;
                     case FragmentExpression.SELECTOR:
-                        shouldParseExpression = config.getDecomposeFragmentExpressions(); break;
+                        expr = FragmentExpression.parseFragmentExpression(currentFragment.toString()); break;
                     default:
                         return null;
                 }
 
-                if (shouldParseExpression) {
-
-                    final Expression expr;
-                    switch (expSelectorChar) {
-                        case VariableExpression.SELECTOR:
-                            expr = VariableExpression.parseVariableExpression(currentFragment.toString()); break;
-                        case SelectionVariableExpression.SELECTOR:
-                            expr = SelectionVariableExpression.parseSelectionVariableExpression(currentFragment.toString()); break;
-                        case MessageExpression.SELECTOR:
-                            expr = MessageExpression.parseMessageExpression(currentFragment.toString()); break;
-                        case LinkExpression.SELECTOR:
-                            expr = LinkExpression.parseLinkExpression(currentFragment.toString()); break;
-                        case FragmentExpression.SELECTOR:
-                            expr = FragmentExpression.parseFragmentExpression(currentFragment.toString()); break;
-                        default:
-                            return null;
-                    }
-
-                    if (addExpressionAtIndex(expr, currentIndex++, state, decomposedInput, currentFragment) == null) {
-                        return null;
-                    }
-
-                } else {
-
-                    finishCurrentFragment(decomposedInput, currentFragment);
-
+                if (addExpressionAtIndex(expr, currentIndex++, state, decomposedInput, currentFragment) == null) {
+                    return null;
                 }
 
                 expLevel = 0;
@@ -301,7 +267,7 @@ final class ExpressionParsingUtil {
         if (inToken) {
             // las part was a token, add it
 
-            if (finishCurrentToken(currentIndex++, state, decomposedInput, currentFragment, config) != null) {
+            if (finishCurrentToken(currentIndex++, state, decomposedInput, currentFragment) != null) {
                 // If it's not null, it means the token was really accepted as such, and an expression object
                 // was created for it. So we should increment the index.
                 currentIndex++;
@@ -349,11 +315,11 @@ final class ExpressionParsingUtil {
 
     private static Expression finishCurrentToken(
             final int currentIndex, final ExpressionParsingState state, final StringBuilder decomposedInput,
-            final StringBuilder currentFragment, final ExpressionParsingDecompositionConfig config) {
+            final StringBuilder currentFragment) {
 
         final String token = currentFragment.toString();
 
-        final Expression expr = parseAsToken(token, config);
+        final Expression expr = parseAsToken(token);
         if (addExpressionAtIndex(expr, currentIndex, state, decomposedInput, currentFragment) == null) {
             // Token was not considered as such, so we just push the fragment into the input string
             decomposedInput.append(currentFragment);
@@ -368,7 +334,7 @@ final class ExpressionParsingUtil {
 
 
 
-    private static Expression parseAsToken(final String token, final ExpressionParsingDecompositionConfig config) {
+    private static Expression parseAsToken(final String token) {
 
         if (ArrayUtils.contains(PROTECTED_TOKENS, token.toLowerCase())) {
             // If token is protected, we should just do nothing. Returning null should force the caller
@@ -376,32 +342,24 @@ final class ExpressionParsingUtil {
             return null;
         }
 
-        if (config.getDecomposeNumberTokens()) {
-            final NumberTokenExpression numberTokenExpr = NumberTokenExpression.parseNumberTokenExpression(token);
-            if (numberTokenExpr != null) {
-                return numberTokenExpr;
-            }
+        final NumberTokenExpression numberTokenExpr = NumberTokenExpression.parseNumberTokenExpression(token);
+        if (numberTokenExpr != null) {
+            return numberTokenExpr;
         }
 
-        if (config.getDecomposeBooleanTokens()) {
-            final BooleanTokenExpression booleanTokenExpr = BooleanTokenExpression.parseBooleanTokenExpression(token);
-            if (booleanTokenExpr != null) {
-                return booleanTokenExpr;
-            }
+        final BooleanTokenExpression booleanTokenExpr = BooleanTokenExpression.parseBooleanTokenExpression(token);
+        if (booleanTokenExpr != null) {
+            return booleanTokenExpr;
         }
 
-        if (config.getDecomposeNullTokens()) {
-            final NullTokenExpression nullTokenExpr = NullTokenExpression.parseNullTokenExpression(token);
-            if (nullTokenExpr != null) {
-                return nullTokenExpr;
-            }
+        final NullTokenExpression nullTokenExpr = NullTokenExpression.parseNullTokenExpression(token);
+        if (nullTokenExpr != null) {
+            return nullTokenExpr;
         }
 
-        if (config.getDecomposeGenericTokens()) {
-            final GenericTokenExpression genericTokenExpr = GenericTokenExpression.parseGenericTokenExpression(token);
-            if (genericTokenExpr != null) {
-                return genericTokenExpr;
-            }
+        final GenericTokenExpression genericTokenExpr = GenericTokenExpression.parseGenericTokenExpression(token);
+        if (genericTokenExpr != null) {
+            return genericTokenExpr;
         }
 
         return null;
