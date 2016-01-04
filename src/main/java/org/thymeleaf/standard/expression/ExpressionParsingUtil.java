@@ -41,7 +41,7 @@ final class ExpressionParsingUtil {
     /*
      *  PARSING STANDARD EXPRESSIONS IS DONE IN TWO PHASES:
      *     1.   Decomposing the expression into its components, by replacing all simple expressions
-     *          (${...}, *{...}, @{...}, #{...}, literals and tokens) by placeholders and moving these
+     *          (${...}, *{...}, @{...}, #{...}, ~{...}, literals and tokens) by placeholders and moving these
      *          expressions apart to their own "parsing nodes" (elements in the ExpressionParsingNode list
      *          contained at the ExpressionParsingState).
      *     1.b. (normally executed at the same time as (1)): Decomposing parenthesis, so that the order of
@@ -188,7 +188,8 @@ final class ExpressionParsingUtil {
                         (c == VariableExpression.SELECTOR ||
                          c == SelectionVariableExpression.SELECTOR ||
                          c == MessageExpression.SELECTOR ||
-                         c == LinkExpression.SELECTOR) &&
+                         c == LinkExpression.SELECTOR ||
+                         c == FragmentExpression.SELECTOR) &&
                         (i + 1 < inputLen && input.charAt(i+1) == SimpleExpression.EXPRESSION_START_CHAR)) {
                 // We are opening an expression
 
@@ -218,6 +219,8 @@ final class ExpressionParsingUtil {
                         shouldParseExpression = config.getDecomposeMessageExpressions(); break;
                     case LinkExpression.SELECTOR:
                         shouldParseExpression = config.getDecomposeLinkExpressions(); break;
+                    case FragmentExpression.SELECTOR:
+                        shouldParseExpression = config.getDecomposeFragmentExpressions(); break;
                     default:
                         return null;
                 }
@@ -234,6 +237,8 @@ final class ExpressionParsingUtil {
                             expr = MessageExpression.parseMessageExpression(currentFragment.toString()); break;
                         case LinkExpression.SELECTOR:
                             expr = LinkExpression.parseLinkExpression(currentFragment.toString()); break;
+                        case FragmentExpression.SELECTOR:
+                            expr = FragmentExpression.parseFragmentExpression(currentFragment.toString()); break;
                         default:
                             return null;
                     }

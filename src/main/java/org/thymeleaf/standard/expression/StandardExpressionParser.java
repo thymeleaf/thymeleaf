@@ -98,17 +98,6 @@ public final class StandardExpressionParser implements IStandardExpressionParser
 
 
 
-    public ParsedFragmentSelection parseFragmentSelection(
-            final IExpressionContext context,
-            final String input) {
-        Validate.notNull(context, "Context cannot be null");
-        Validate.notNull(input, "Input cannot be null");
-        return FragmentSelectionUtils.parseFragmentSelection(context, input);
-    }
-
-
-
-
     public FragmentSignature parseFragmentSignature(final IEngineConfiguration configuration, final String input) {
         Validate.notNull(configuration, "Configuration cannot be null");
         Validate.notNull(input, "Input cannot be null");

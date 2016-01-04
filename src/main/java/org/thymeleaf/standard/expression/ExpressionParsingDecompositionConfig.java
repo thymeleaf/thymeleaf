@@ -31,13 +31,13 @@ public final class ExpressionParsingDecompositionConfig {
 
 
     public static final ExpressionParsingDecompositionConfig DECOMPOSE_ALL_AND_UNNEST =
-            new ExpressionParsingDecompositionConfig(true,true,true,true,true,true,true,true,true, true);
+            new ExpressionParsingDecompositionConfig(true,true,true,true,true,true,true,true,true,true, true);
     public static final ExpressionParsingDecompositionConfig DECOMPOSE_ALL_AND_NOT_UNNEST =
-            new ExpressionParsingDecompositionConfig(true,true,true,true,true,true,true,true,true, false);
+            new ExpressionParsingDecompositionConfig(true,true,true,true,true,true,true,true,true,true, false);
     public static final ExpressionParsingDecompositionConfig DECOMPOSE_NO_LITERALS_NO_TOKENS_AND_UNNEST =
-            new ExpressionParsingDecompositionConfig(false,false,false,false,false,true,true,true,true, true);
+            new ExpressionParsingDecompositionConfig(false,false,false,false,false,true,true,true,true,true, true);
     public static final ExpressionParsingDecompositionConfig DECOMPOSE_NO_LITERALS_NO_TOKENS_AND_NOT_UNNEST =
-            new ExpressionParsingDecompositionConfig(false,false,false,false,false,true,true,true,true, false);
+            new ExpressionParsingDecompositionConfig(false,false,false,false,false,true,true,true,true,true, false);
 
 
     private final boolean decomposeTextLiterals;
@@ -51,6 +51,7 @@ public final class ExpressionParsingDecompositionConfig {
     private final boolean decomposeSelectionVariableExpressions;
     private final boolean decomposeLinkExpressions;
     private final boolean decomposeMessageExpressions;
+    private final boolean decomposeFragmentExpressions;
 
     private final boolean unnest;
 
@@ -65,6 +66,7 @@ public final class ExpressionParsingDecompositionConfig {
             final boolean decomposeSelectionVariableExpressions,
             final boolean decomposeLinkExpressions,
             final boolean decomposeMessageExpressions,
+            final boolean decomposeFragmentExpressions,
             final boolean unnest) {
         super();
         this.decomposeTextLiterals = decomposeTextLiterals;
@@ -76,6 +78,7 @@ public final class ExpressionParsingDecompositionConfig {
         this.decomposeSelectionVariableExpressions = decomposeSelectionVariableExpressions;
         this.decomposeLinkExpressions = decomposeLinkExpressions;
         this.decomposeMessageExpressions = decomposeMessageExpressions;
+        this.decomposeFragmentExpressions = decomposeFragmentExpressions;
         this.unnest = unnest;
     }
 
@@ -114,6 +117,10 @@ public final class ExpressionParsingDecompositionConfig {
 
     public boolean getDecomposeMessageExpressions() {
         return this.decomposeMessageExpressions;
+    }
+
+    public boolean getDecomposeFragmentExpressions() {
+        return this.decomposeFragmentExpressions;
     }
 
     public boolean getUnnest() {

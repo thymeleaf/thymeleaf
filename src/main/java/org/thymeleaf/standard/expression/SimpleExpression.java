@@ -83,6 +83,9 @@ public abstract class SimpleExpression extends Expression {
         if (expression instanceof LinkExpression) {
             return LinkExpression.executeLinkExpression(context, (LinkExpression)expression, expContext);
         }
+        if (expression instanceof FragmentExpression) {
+            return FragmentExpression.executeFragmentExpression(context, (FragmentExpression)expression, expContext);
+        }
         if (expression instanceof SelectionVariableExpression) {
             return SelectionVariableExpression.executeSelectionVariableExpression(context, (SelectionVariableExpression)expression, expressionEvaluator, expContext);
         }
