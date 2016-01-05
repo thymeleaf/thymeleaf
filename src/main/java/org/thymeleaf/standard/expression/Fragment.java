@@ -22,7 +22,7 @@ package org.thymeleaf.standard.expression;
 import java.util.Collections;
 import java.util.Map;
 
-import org.thymeleaf.model.IModel;
+import org.thymeleaf.engine.TemplateModel;
 
 
 /**
@@ -34,21 +34,21 @@ import org.thymeleaf.model.IModel;
  */
 public final class Fragment {
 
-    private final IModel model;
+    private final TemplateModel templateModel;
     private final Map<String,Object> parameters;
     private final boolean syntheticParameters;
 
 
-    public Fragment(final IModel model, final Map<String, Object> parameters, final boolean syntheticParameters) {
+    public Fragment(final TemplateModel templateModel, final Map<String, Object> parameters, final boolean syntheticParameters) {
         super();
-        this.model = model;
+        this.templateModel = templateModel;
         this.parameters = Collections.unmodifiableMap(parameters);
         this.syntheticParameters = (this.parameters != null && this.parameters.size() > 0 && syntheticParameters);
     }
 
 
-    public IModel getModel() {
-        return this.model;
+    public TemplateModel getTemplateModel() {
+        return this.templateModel;
     }
 
     public Map<String, Object> getParameters() {
