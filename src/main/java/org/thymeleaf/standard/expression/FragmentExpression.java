@@ -58,7 +58,7 @@ public final class FragmentExpression extends SimpleExpression {
     private static final String UNNAMED_PARAMETERS_PREFIX = "_arg";
 
 
-    static final char SELECTOR = '~';
+    public static final char SELECTOR = '~';
 
 
     private static final Pattern FRAGMENT_PATTERN =
@@ -162,7 +162,7 @@ public final class FragmentExpression extends SimpleExpression {
 
 
 
-    public static FragmentExpression parseFragmentExpressionContent(final String input) {
+    static FragmentExpression parseFragmentExpressionContent(final String input) {
 
         if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
@@ -481,7 +481,7 @@ public final class FragmentExpression extends SimpleExpression {
 
 
 
-    private static Fragment processFragment(
+    public static Fragment processFragment(
             final ITemplateContext context,
             final String templateName, final String fragmentSelector,
             final Map<String,Object> fragmentParameters, final boolean syntheticParameters) {
