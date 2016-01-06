@@ -326,9 +326,6 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
     }
 
-// TODO Incomplete? not great mechanism looking for ~'s... preprocessing, literals...
-// th:insert="~{::main (~{::/div[as]})}" OK
-// th:insert="main/home (title=~{::/div[as]})" KO
 
 
     static boolean shouldParseAsCompleteStandardExpression(final String input) {
@@ -341,6 +338,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         }
         char c;
         int bracketLevel = 0;
+        int paramLevel = 0;
         boolean inLiteral = false;
         int n = inputLen;
         int i = 0;
@@ -355,14 +353,24 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                     bracketLevel++;
                 } else if (c == '}') {
                     bracketLevel--;
-                } else if (bracketLevel == 0 && c == FragmentExpression.SELECTOR && n != 0 && input.charAt(i + 1) == '{') {
-                    // Returning type 1 will mean that we consider this a Fragment Expression, or an expression
-                    // containing such Fragment Expression
-                    return true;
-                } else if (bracketLevel == 0 && c == ':' && i > 0 && input.charAt(i - 1) == ':') {
-                    // This is most probably expressed as the content of a Fragment Expression (without ~{...}). Note how
-                    // if this were a Fragment Expression with the corresponding prefix and suffix, we'd have known before
-                    return false;
+                } else if (bracketLevel == 0) {
+                    if (c == '(') {
+                        paramLevel++;
+                    } else if (c == ')') {
+                        paramLevel--;
+                    } else if (c == '=' && paramLevel == 1) {
+                        // In exactly this disposition (paramLevel == 1, bracketLevel == 0), we know we are looking at
+                        // a named parameter in a FragmentExpression content, so this is not a complete expression
+                        return false;
+                    } else if (c == FragmentExpression.SELECTOR && n != 0 && input.charAt(i + 1) == '{') {
+                        // Returning type 1 will mean that we consider this a Fragment Expression, or an expression
+                        // containing such Fragment Expression
+                        return true;
+                    } else if (c == ':' && n != 0 && input.charAt(i + 1) == ':') {
+                        // This is most probably expressed as the content of a Fragment Expression (without ~{...}). Note how
+                        // if this were a Fragment Expression with the corresponding prefix and suffix, we'd have known before
+                        return false;
+                    }
                 }
             }
 
