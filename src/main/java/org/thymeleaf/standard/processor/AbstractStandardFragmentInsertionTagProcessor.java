@@ -326,34 +326,50 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
     }
 
+// TODO Incomplete? not great mechanism looking for ~'s... preprocessing, literals...
 // th:insert="~{::main (~{::/div[as]})}" OK
 // th:insert="main/home (title=~{::/div[as]})" KO
 
 
-    private static boolean shouldParseAsCompleteStandardExpression(final String input) {
+    static boolean shouldParseAsCompleteStandardExpression(final String input) {
 
-        if (input.charAt(0) == FragmentExpression.SELECTOR) {
+        final int inputLen = input.length();
+        if (inputLen > 2 && input.charAt(0) == FragmentExpression.SELECTOR && input.charAt(1) == '{') {
             // Returning type 1 will mean that we consider this a Fragment Expression, or an expression
             // containing such Fragment Expression
             return true;
         }
         char c;
-        int n = input.length();
+        int bracketLevel = 0;
+        boolean inLiteral = false;
+        int n = inputLen;
         int i = 0;
         while (n-- != 0) {
+
             c = input.charAt(i);
-            if (c == FragmentExpression.SELECTOR) {
-                // Returning type 1 will mean that we consider this a Fragment Expression, or an expression
-                // containing such Fragment Expression
-                return true;
+
+            if (c == '\'') {
+                inLiteral = !inLiteral;
+            } else if (!inLiteral) {
+                if (c == '{') {
+                    bracketLevel++;
+                } else if (c == '}') {
+                    bracketLevel--;
+                } else if (bracketLevel == 0 && c == FragmentExpression.SELECTOR && n != 0 && input.charAt(i + 1) == '{') {
+                    // Returning type 1 will mean that we consider this a Fragment Expression, or an expression
+                    // containing such Fragment Expression
+                    return true;
+                } else if (bracketLevel == 0 && c == ':' && i > 0 && input.charAt(i - 1) == ':') {
+                    // This is most probably expressed as the content of a Fragment Expression (without ~{...}). Note how
+                    // if this were a Fragment Expression with the corresponding prefix and suffix, we'd have known before
+                    return false;
+                }
             }
-            if (c == ':' && i > 0 && input.charAt(i - 1) == ':') {
-                // This is most probably expressed as the content of a Fragment Expression (without ~{...}). Note how
-                // if this were a Fragment Expression with the corresponding prefix and suffix, we'd have known before
-                return false;
-            }
+
             i++;
+
         }
+
         // We haven't been able to determine any useful information about the type of expression this might be, so
         // we will not consider it a complete standard expression
         return false;
