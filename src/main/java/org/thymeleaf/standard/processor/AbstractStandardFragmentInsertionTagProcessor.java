@@ -346,6 +346,12 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
             c = input.charAt(i);
 
+            if ((c >= 'a' && c <= 'z') || c == ' ') {
+                // Fail fast - most characters will fall here
+                i++;
+                continue;
+            }
+
             if (c == '\'') {
                 inLiteral = !inLiteral;
             } else if (!inLiteral) {
