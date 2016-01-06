@@ -481,7 +481,7 @@ public final class FragmentExpression extends SimpleExpression {
 
 
 
-    public static Fragment processFragment(
+    static Fragment processFragment(
             final ITemplateContext context,
             final String templateName, final String fragmentSelector,
             final Map<String,Object> fragmentParameters, final boolean syntheticParameters) {

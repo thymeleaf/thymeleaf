@@ -20,16 +20,13 @@
 package org.thymeleaf.standard.processor;
 
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.engine.TemplateModel;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICloseElementTag;
@@ -41,11 +38,13 @@ import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
-import org.thymeleaf.standard.expression.FragmentSelectionUtils;
+import org.thymeleaf.standard.expression.Fragment;
+import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.FragmentSignature;
 import org.thymeleaf.standard.expression.FragmentSignatureUtils;
-import org.thymeleaf.standard.expression.ParsedFragmentSelection;
-import org.thymeleaf.standard.expression.ProcessedFragmentSelection;
+import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EscapedAttributeUtils;
 import org.thymeleaf.util.FastStringWriter;
@@ -102,55 +101,16 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         final IEngineConfiguration configuration = context.getConfiguration();
 
         /*
-         * PARSE THE FRAGMENT SELECTION SPEC and resolve each of its components
+         * PARSE AND PROCESS THE FRAGMENT
          */
-        final ParsedFragmentSelection parsedFragmentSelection =
-                FragmentSelectionUtils.parseFragmentSelection(context, attributeValue);
-        if (parsedFragmentSelection == null) {
+        final Fragment fragment = computeFragment(context, attributeValue);
+        if (fragment == null) {
             throw new TemplateProcessingException("Could not parse as fragment selection: \"" + attributeValue + "\"");
         }
 
 
-        /*
-         * PROCESS THE PARSED FRAGMENT SELECTION
-         */
-        final ProcessedFragmentSelection processedFragmentSelection =
-                FragmentSelectionUtils.processFragmentSelection(context, parsedFragmentSelection);
-
-        String templateName = processedFragmentSelection.getTemplateName();
-        Map<String,Object> fragmentParameters = processedFragmentSelection.getFragmentParameters();
-        final Set<String> fragments =
-                (processedFragmentSelection.hasFragmentSelector()? Collections.singleton(processedFragmentSelection.getFragmentSelector()) : null);
-
-        /*
-         * OBTAIN THE FRAGMENT MODEL from the TemplateManager. This means the fragment will be parsed and maybe
-         * cached, and we will be returned an immutable model object (specifically a ParsedFragmentModel)
-         */
-
-        List<String> templateNameStack = null;
-        // scan the template stack if template name is 'this' or an empty name is being used
-        if (StringUtils.isEmptyOrWhitespace(templateName) || TEMPLATE_NAME_CURRENT_TEMPLATE.equals(templateName)) {
-            templateNameStack = new ArrayList<String>(3);
-            for (int i = context.getTemplateStack().size() - 1; i >= 0; i--) {
-                templateNameStack.add(context.getTemplateStack().get(i).getTemplate());
-            }
-            templateName = templateNameStack.get(0);
-        }
-
-        TemplateModel fragmentModel;
-        String parsedTemplate = templateName;
-        int i = 0;
-        do {
-            fragmentModel =
-                    configuration.getTemplateManager().parseStandalone(
-                            context, parsedTemplate, fragments,
-                            null,   // we will not force the template mode
-                            true);  // use the cache if possible, fragments are from template files
-            i++;
-        } while (fragmentModel.size() <= 2 &&
-                 templateNameStack != null &&
-                 i < templateNameStack.size() &&
-                 (parsedTemplate = templateNameStack.get(i)) != null);  //post test -- need to parse at least 1x
+        final TemplateModel fragmentModel = fragment.getTemplateModel();
+        Map<String, Object> fragmentParameters = fragment.getParameters();
 
         /*
          * ONCE WE HAVE THE FRAGMENT MODEL (its events, in fact), CHECK THE FRAGMENT SIGNATURE which might
@@ -257,7 +217,8 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          * APPLY THE FRAGMENT'S TEMPLATE RESOLUTION so that all code inside the fragment is executed with its own
          * template resolution info (working as if it were a local variable)
          */
-        structureHandler.setTemplateData(fragmentModel.getTemplateData());
+        final TemplateData fragmentTemplateData = fragmentModel.getTemplateData();
+        structureHandler.setTemplateData(fragmentTemplateData);
 
 
         /*
@@ -273,7 +234,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         /*
          * IF WE ARE ASKING ONLY FOR CONTENTS (th:include), THEN REMOVE THE CONTAINER BLOCK
          */
-        if (this.insertOnlyContents && parsedFragmentSelection.hasFragmentSelector()) {
+        if (this.insertOnlyContents && fragmentTemplateData.hasTemplateSelectors()) {
 
             /*
              * In the case of th:include, things get a bit complicated because we need to remove the "element envelopes"
@@ -332,6 +293,72 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
     }
 
+
+
+
+    private static Fragment computeFragment(final ITemplateContext context, final String input) {
+
+        if (StringUtils.isEmptyOrWhitespace(input)) {
+            return null;
+        }
+
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
+
+        final String trimmedInput = input.trim();
+
+        IStandardExpression expression = null;
+
+        if (shouldParseAsCompleteStandardExpression(trimmedInput)) {
+            expression = expressionParser.parseExpression(context, trimmedInput);
+        } else {
+            // We do not know for sure that this be a complete standard expression, so we will consider it the
+            // content of a FragmentExpression for legacy compatibility reasons.
+            // Note that we will only reach this point if the expression does not contain any Fragment Expressions
+            // expressed as ~{...} (outside parameters), so this is a quite safe assumption.
+            expression = expressionParser.parseExpression(context, "~{" + trimmedInput + "}");
+        }
+
+        if (expression == null) {
+            return null;
+        }
+
+        return (Fragment) expression.execute(context);
+
+    }
+
+// th:insert="~{::main (~{::/div[as]})}" OK
+// th:insert="main/home (title=~{::/div[as]})" KO
+
+
+    private static boolean shouldParseAsCompleteStandardExpression(final String input) {
+
+        if (input.charAt(0) == FragmentExpression.SELECTOR) {
+            // Returning type 1 will mean that we consider this a Fragment Expression, or an expression
+            // containing such Fragment Expression
+            return true;
+        }
+        char c;
+        int n = input.length();
+        int i = 0;
+        while (n-- != 0) {
+            c = input.charAt(i);
+            if (c == FragmentExpression.SELECTOR) {
+                // Returning type 1 will mean that we consider this a Fragment Expression, or an expression
+                // containing such Fragment Expression
+                return true;
+            }
+            if (c == ':' && i > 0 && input.charAt(i - 1) == ':') {
+                // This is most probably expressed as the content of a Fragment Expression (without ~{...}). Note how
+                // if this were a Fragment Expression with the corresponding prefix and suffix, we'd have known before
+                return false;
+            }
+            i++;
+        }
+        // We haven't been able to determine any useful information about the type of expression this might be, so
+        // we will not consider it a complete standard expression
+        return false;
+
+    }
 
 
 
