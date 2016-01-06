@@ -42,7 +42,7 @@ public final class Fragment {
     public Fragment(final TemplateModel templateModel, final Map<String, Object> parameters, final boolean syntheticParameters) {
         super();
         this.templateModel = templateModel;
-        this.parameters = Collections.unmodifiableMap(parameters);
+        this.parameters = parameters != null ? Collections.unmodifiableMap(parameters) : null;
         this.syntheticParameters = (this.parameters != null && this.parameters.size() > 0 && syntheticParameters);
     }
 
