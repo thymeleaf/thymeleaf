@@ -36,13 +36,16 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.WebExpressionContext;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
-import org.thymeleaf.standard.expression.FragmentSelectionUtils;
-import org.thymeleaf.standard.expression.ParsedFragmentSelection;
-import org.thymeleaf.standard.expression.ProcessedFragmentSelection;
+import org.thymeleaf.standard.expression.FragmentExpression;
+import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
+import org.thymeleaf.standard.expression.StandardExpressions;
 
 
 /**
@@ -245,9 +248,10 @@ public class ThymeleafView
                 new ThymeleafEvaluationContext(applicationContext, conversionService);
         mergedModel.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
 
-        
+
+        final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
         final WebExpressionContext context =
-                new WebExpressionContext(viewTemplateEngine.getConfiguration(), request, response, servletContext, getLocale(), mergedModel);
+                new WebExpressionContext(configuration, request, response, servletContext, getLocale(), mergedModel);
 
 
         final String templateName;
@@ -261,22 +265,26 @@ public class ThymeleafView
         } else {
             // Template name contains a fragment name, so we should parse it as such
 
-            final ParsedFragmentSelection parsedFragmentSelection =
-                    FragmentSelectionUtils.parseFragmentSelection(context, viewTemplateName);
-            if (parsedFragmentSelection == null) {
+            final IStandardExpressionParser parser = StandardExpressions.getExpressionParser(configuration);
+
+            final FragmentExpression fragmentExpression;
+            try {
+                // By parsing it as a standard expression, we might profit from the expression cache
+                fragmentExpression = (FragmentExpression) parser.parseExpression(context, "~{" + viewTemplateName + "}");
+            } catch (final TemplateProcessingException e) {
                 throw new IllegalArgumentException("Invalid template name specification: '" + viewTemplateName + "'");
             }
 
-            final ProcessedFragmentSelection processedFragmentSelection =
-                    FragmentSelectionUtils.processFragmentSelection(context, parsedFragmentSelection);
+            final FragmentExpression.UnresolvedFragment fragment =
+                    FragmentExpression.executeFragmentExpressionUnresolved(context, fragmentExpression, StandardExpressionExecutionContext.NORMAL);
 
-            templateName = processedFragmentSelection.getTemplateName();
-            markupSelectors = Collections.singleton(processedFragmentSelection.getFragmentSelector());
-            final Map<String,Object> nameFragmentParameters = processedFragmentSelection.getFragmentParameters();
+            templateName = fragment.getTemplateName();
+            markupSelectors = Collections.singleton(fragment.getFragmentSelector());
+            final Map<String,Object> nameFragmentParameters = fragment.getFragmentParameters();
 
             if (nameFragmentParameters != null) {
 
-                if (FragmentSelectionUtils.parameterNamesAreSynthetic(nameFragmentParameters.keySet())) {
+                if (fragment.hasSyntheticParameters()) {
                     // We cannot allow synthetic parameters because there is no way to specify them at the template
                     // engine execution!
                     throw new IllegalArgumentException(
