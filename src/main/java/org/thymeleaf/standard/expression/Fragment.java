@@ -19,10 +19,15 @@
  */
 package org.thymeleaf.standard.expression;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Collections;
 import java.util.Map;
 
 import org.thymeleaf.engine.TemplateModel;
+import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.util.FastStringWriter;
+import org.thymeleaf.util.Validate;
 
 
 /**
@@ -41,6 +46,7 @@ public final class Fragment {
 
     public Fragment(final TemplateModel templateModel, final Map<String, Object> parameters, final boolean syntheticParameters) {
         super();
+        Validate.notNull(templateModel, "Template model cannot be null");
         this.templateModel = templateModel;
         this.parameters = parameters != null ? Collections.unmodifiableMap(parameters) : null;
         this.syntheticParameters = (this.parameters != null && this.parameters.size() > 0 && syntheticParameters);
@@ -58,5 +64,23 @@ public final class Fragment {
     public boolean hasSyntheticParameters() {
         return this.syntheticParameters;
     }
+
+
+    public void write(final Writer writer) throws IOException {
+        this.templateModel.write(writer);
+    }
+
+
+    @Override
+    public String toString() {
+        final Writer stringWriter = new FastStringWriter();
+        try {
+            write(stringWriter);
+        } catch (final IOException e) {
+            throw new TemplateProcessingException("Exception while creating String representation of model entity", e);
+        }
+        return stringWriter.toString();
+    }
+
 
 }

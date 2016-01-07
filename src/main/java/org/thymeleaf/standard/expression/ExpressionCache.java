@@ -37,7 +37,6 @@ final class ExpressionCache {
     private static final String EXPRESSION_CACHE_TYPE_ASSIGNATION_SEQUENCE = "aseq";
     private static final String EXPRESSION_CACHE_TYPE_EXPRESSION_SEQUENCE = "eseq";
     private static final String EXPRESSION_CACHE_TYPE_EACH = "each";
-    private static final String EXPRESSION_CACHE_TYPE_FRAGMENT_SELECTION = "fsel";
     private static final String EXPRESSION_CACHE_TYPE_FRAGMENT_SIGNATURE = "fsig";
 
     
@@ -121,16 +120,6 @@ final class ExpressionCache {
 
     static void putEachIntoCache(final IEngineConfiguration configuration, final String input, final Each value) {
         putIntoCache(configuration, input, value, EXPRESSION_CACHE_TYPE_EACH);
-    }
-
-
-
-    static ParsedFragmentSelection getFragmentSelectionFromCache(final IEngineConfiguration configuration, final String input) {
-        return (ParsedFragmentSelection) getFromCache(configuration, input, EXPRESSION_CACHE_TYPE_FRAGMENT_SELECTION);
-    }
-
-    static void putFragmentSelectionIntoCache(final IEngineConfiguration configuration, final String input, final ParsedFragmentSelection value) {
-        putIntoCache(configuration, input, value, EXPRESSION_CACHE_TYPE_FRAGMENT_SELECTION);
     }
 
 

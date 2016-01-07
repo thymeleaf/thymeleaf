@@ -353,9 +353,15 @@ public final class FragmentExpression extends SimpleExpression {
 
 
 
-
-
     static Fragment executeFragmentExpression(
+            final IExpressionContext context,
+            final FragmentExpression expression, final StandardExpressionExecutionContext expContext) {
+        return processFragment(context, executeFragmentExpressionUnresolved(context, expression, expContext));
+    }
+
+
+
+    public static UnresolvedFragment executeFragmentExpressionUnresolved(
             final IExpressionContext context,
             final FragmentExpression expression, final StandardExpressionExecutionContext expContext) {
 
@@ -364,14 +370,6 @@ public final class FragmentExpression extends SimpleExpression {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating fragment: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
-        }
-
-        if (!(context instanceof ITemplateContext)) {
-            throw new TemplateProcessingException(
-                    "Cannot evaluate expression \"" + expression + "\". Fragment expressions " +
-                    "can only be evaluated in a template-processing environment (as a part of an in-template expression) " +
-                    "where processing context is an implementation of " + ITemplateContext.class.getClass() + ", which it isn't (" +
-                    context.getClass().getName() + ")");
         }
 
         /*
@@ -432,7 +430,7 @@ public final class FragmentExpression extends SimpleExpression {
         }
 
         // The cast to ITemplateContext is safe because we have checked above
-        return processFragment((ITemplateContext) context, templateName, fragmentSelector, fragmentParameters, expression.hasSyntheticParameters());
+        return new UnresolvedFragment(expression, templateName, fragmentSelector, fragmentParameters, expression.hasSyntheticParameters());
 
     }
 
@@ -482,15 +480,24 @@ public final class FragmentExpression extends SimpleExpression {
 
 
     static Fragment processFragment(
-            final ITemplateContext context,
-            final String templateName, final String fragmentSelector,
-            final Map<String,Object> fragmentParameters, final boolean syntheticParameters) {
+            final IExpressionContext context, final UnresolvedFragment unresolvedFragment) {
 
-        final IEngineConfiguration configuration = context.getConfiguration();
+        if (!(context instanceof ITemplateContext)) {
+            throw new TemplateProcessingException(
+                    "Cannot evaluate expression \"" + unresolvedFragment.expression + "\". Fragment expressions " +
+                    "can only be evaluated in a template-processing environment (as a part of an in-template expression) " +
+                    "where processing context is an implementation of " + ITemplateContext.class.getClass() + ", which it isn't (" +
+                    context.getClass().getName() + ")");
+        }
 
-        String parsedTemplate = templateName;
+        final ITemplateContext templateContext = (ITemplateContext)context;
+
+        final IEngineConfiguration configuration = templateContext.getConfiguration();
+
+        String parsedTemplate = unresolvedFragment.templateName;
         final Set<String> fragments =
-                (fragmentSelector != null && fragmentSelector.length() > 0) ? Collections.singleton(fragmentSelector) : null;
+                (unresolvedFragment.fragmentSelector != null && unresolvedFragment.fragmentSelector.length() > 0) ?
+                        Collections.singleton(unresolvedFragment.fragmentSelector) : null;
 
         /*
          * OBTAIN THE FRAGMENT MODEL from the TemplateManager. This means the fragment will be parsed and maybe
@@ -501,8 +508,8 @@ public final class FragmentExpression extends SimpleExpression {
         // scan the template stack if template name is 'this' or an empty name is being used
         if (StringUtils.isEmptyOrWhitespace(parsedTemplate) || TEMPLATE_NAME_CURRENT_TEMPLATE.equals(parsedTemplate)) {
             templateNameStack = new ArrayList<String>(3);
-            for (int i = context.getTemplateStack().size() - 1; i >= 0; i--) {
-                templateNameStack.add(context.getTemplateStack().get(i).getTemplate());
+            for (int i = templateContext.getTemplateStack().size() - 1; i >= 0; i--) {
+                templateNameStack.add(templateContext.getTemplateStack().get(i).getTemplate());
             }
             parsedTemplate = templateNameStack.get(0);
         }
@@ -512,7 +519,7 @@ public final class FragmentExpression extends SimpleExpression {
         do {
             fragmentModel =
                     configuration.getTemplateManager().parseStandalone(
-                            context, parsedTemplate, fragments,
+                            templateContext, parsedTemplate, fragments,
                             null,   // we will not force the template mode
                             true);  // use the cache if possible, fragments are from template files
             i++;
@@ -521,10 +528,54 @@ public final class FragmentExpression extends SimpleExpression {
                 i < templateNameStack.size() &&
                 (parsedTemplate = templateNameStack.get(i)) != null);  //post test -- need to parse at least 1x
 
-        return new Fragment(fragmentModel, fragmentParameters, syntheticParameters);
+        return new Fragment(fragmentModel, unresolvedFragment.fragmentParameters, unresolvedFragment.syntheticParameters);
 
     }
 
-    
+
+
+
+
+    public static final class UnresolvedFragment {
+
+        private final FragmentExpression expression;
+        private final String templateName;
+        private final String fragmentSelector;
+        private final Map<String,Object> fragmentParameters;
+        private final boolean syntheticParameters;
+
+        private UnresolvedFragment(
+                final FragmentExpression expression, final String templateName, final String fragmentSelector,
+                final Map<String,Object> fragmentParameters, final boolean syntheticParameters) {
+            super();
+            this.expression = expression;
+            this.templateName = templateName;
+            this.fragmentSelector = fragmentSelector;
+            this.fragmentParameters = fragmentParameters;
+            this.syntheticParameters = syntheticParameters;
+        }
+
+        public FragmentExpression getExpression() {
+            return this.expression;
+        }
+
+        public String getTemplateName() {
+            return templateName;
+        }
+
+        public String getFragmentSelector() {
+            return fragmentSelector;
+        }
+
+        public Map<String, Object> getFragmentParameters() {
+            return fragmentParameters;
+        }
+
+        public boolean hasSyntheticParameters() {
+            return syntheticParameters;
+        }
+
+    }
+
     
 }
