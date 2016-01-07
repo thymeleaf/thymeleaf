@@ -148,10 +148,12 @@ public final class FragmentSignatureUtils {
      *
      * @param fragmentSignature the signature parameters should be processed against
      * @param specifiedParameters the set of specified parameters
+     * @param parametersAreSynthetic whether the parameter names in the specifiedParameters map are synthetic or not
      * @return the processed set of parameters, ready to be applied as local variables to the fragment's nodes.
      */
     public static Map<String,Object> processParameters(
-            final FragmentSignature fragmentSignature, final Map<String, Object> specifiedParameters) {
+            final FragmentSignature fragmentSignature,
+            final Map<String, Object> specifiedParameters, final boolean parametersAreSynthetic) {
 
         Validate.notNull(fragmentSignature, "Fragment signature cannot be null");
 
@@ -167,9 +169,6 @@ public final class FragmentSignatureUtils {
             return null;
 
         }
-
-        final boolean parametersAreSynthetic =
-                FragmentSelectionUtils.parameterNamesAreSynthetic(specifiedParameters.keySet());
 
         if (parametersAreSynthetic && !fragmentSignature.hasParameters()) {
             throw new TemplateProcessingException(
@@ -194,8 +193,7 @@ public final class FragmentSignatureUtils {
             final Map<String,Object> processedParameters = new HashMap<String, Object>(signatureParameterNames.size() + 1, 1.0f);
             int index = 0;
             for (final String parameterName : signatureParameterNames) {
-                final String syntheticParameterName =
-                        FragmentSelectionUtils.getSyntheticParameterNameForIndex(index++);
+                final String syntheticParameterName = getSyntheticParameterNameForIndex(index++);
                 final Object parameterValue = specifiedParameters.get(syntheticParameterName);
                 processedParameters.put(parameterName, parameterValue);
             }
@@ -226,6 +224,12 @@ public final class FragmentSignatureUtils {
 
         return specifiedParameters;
 
+    }
+
+
+
+    static String getSyntheticParameterNameForIndex(final int i) {
+        return FragmentExpression.UNNAMED_PARAMETERS_PREFIX + i;
     }
 
 

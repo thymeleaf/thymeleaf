@@ -55,7 +55,7 @@ public final class FragmentExpression extends SimpleExpression {
 
     private static final String TEMPLATE_NAME_CURRENT_TEMPLATE = "this";
     private static final String SEPARATOR = "::";
-    private static final String UNNAMED_PARAMETERS_PREFIX = "_arg";
+    static final String UNNAMED_PARAMETERS_PREFIX = "_arg";
 
 
     public static final char SELECTOR = '~';

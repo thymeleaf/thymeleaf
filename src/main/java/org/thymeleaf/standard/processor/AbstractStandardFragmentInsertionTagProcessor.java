@@ -143,7 +143,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                     if (fragmentSignature != null) {
 
                         // Reshape the fragment parameters into the ones that we will actually use, according to the signature
-                        fragmentParameters = FragmentSignatureUtils.processParameters(fragmentSignature, fragmentParameters);
+                        fragmentParameters = FragmentSignatureUtils.processParameters(fragmentSignature, fragmentParameters, fragment.hasSyntheticParameters());
 
                     }
 
