@@ -276,7 +276,7 @@ public class ThymeleafView
             }
 
             final FragmentExpression.UnresolvedFragment fragment =
-                    FragmentExpression.executeFragmentExpressionUnresolved(context, fragmentExpression, StandardExpressionExecutionContext.NORMAL);
+                    FragmentExpression.executeFragmentExpressionAsUnresolved(context, fragmentExpression, StandardExpressionExecutionContext.NORMAL);
 
             templateName = fragment.getTemplateName();
             markupSelectors = Collections.singleton(fragment.getFragmentSelector());
