@@ -535,37 +535,37 @@ public final class FragmentExpression extends SimpleExpression {
 
 
 
-    public static final class UnresolvedFragment {
+    public static final class ExecutedFragmentExpression {
 
-        private final String templateName;
-        private final String fragmentSelector;
+        private final Object templateNameExpressionResult;
+        private final Object fragmentSelectorExpressionResult;
         private final Map<String,Object> fragmentParameters;
         private final boolean syntheticParameters;
 
-        public UnresolvedFragment(
-                final String templateName, final String fragmentSelector,
+        public ExecutedFragmentExpression(
+                final Object templateNameExpressionResult, final Object fragmentSelectorExpressionResult,
                 final Map<String,Object> fragmentParameters, final boolean syntheticParameters) {
             super();
-            this.templateName = templateName;
-            this.fragmentSelector = fragmentSelector;
+            this.templateNameExpressionResult = templateNameExpressionResult;
+            this.fragmentSelectorExpressionResult = fragmentSelectorExpressionResult;
             this.fragmentParameters = fragmentParameters;
             this.syntheticParameters = syntheticParameters;
         }
 
-        public String getTemplateName() {
-            return templateName;
+        public Object getTemplateNameExpressionResult() {
+            return this.templateNameExpressionResult;
         }
 
-        public String getFragmentSelector() {
-            return fragmentSelector;
+        public Object getFragmentSelectorExpressionResult() {
+            return this.fragmentSelectorExpressionResult;
         }
 
         public Map<String, Object> getFragmentParameters() {
-            return fragmentParameters;
+            return this.fragmentParameters;
         }
 
         public boolean hasSyntheticParameters() {
-            return syntheticParameters;
+            return this.syntheticParameters;
         }
 
     }
