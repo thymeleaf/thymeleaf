@@ -42,8 +42,8 @@ import org.thymeleaf.standard.expression.Fragment;
 import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.FragmentSignature;
 import org.thymeleaf.standard.expression.FragmentSignatureUtils;
-import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EscapedAttributeUtils;
@@ -306,32 +306,44 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
         final String trimmedInput = input.trim();
 
-        IStandardExpression expression = null;
-
-        if (shouldParseAsCompleteStandardExpression(trimmedInput)) {
-            expression = expressionParser.parseExpression(context, trimmedInput);
-        } else {
-            // We do not know for sure that this be a complete standard expression, so we will consider it the
+        if (!isCompleteStandardExpressionForSure(trimmedInput)) {
+            // We do not know for sure that this is a complete standard expression, so we will consider it the
             // content of a FragmentExpression for legacy compatibility reasons.
-            // Note that we will only reach this point if the expression does not contain any Fragment Expressions
-            // expressed as ~{...} (outside parameters), so this is a quite safe assumption.
-            expression = expressionParser.parseExpression(context, "~{" + trimmedInput + "}");
+            // We will only reach this point if the expression does not contain any Fragment Expressions expressed
+            // as ~{...} (outside parameters), nor the "::" fragment selector separator.
+            final FragmentExpression fragmentExpression =
+                    (FragmentExpression) expressionParser.parseExpression(context, "~{" + trimmedInput + "}");
+
+            final FragmentExpression.ExecutedFragmentExpression executedFragmentExpression =
+                    FragmentExpression.createExecutedFragmentExpression(context, fragmentExpression, StandardExpressionExecutionContext.NORMAL);
+
+            if (executedFragmentExpression.getFragmentSelectorExpressionResult() == null && executedFragmentExpression.getFragmentParameters() == null) {
+                // We might be in the scenario that what we thought was a template name in fact was instead an expression
+                // returning a Fragment itself, so we should simply return it
+                final Object templateNameExpressionResult = executedFragmentExpression.getTemplateNameExpressionResult();
+                if (templateNameExpressionResult != null && templateNameExpressionResult instanceof Fragment) {
+                    // Confirmed: it is not the template name, but the fragment itself
+                    return (Fragment) templateNameExpressionResult;
+                }
+            }
+
+            return FragmentExpression.resolveExecutedFragmentExpression(context, executedFragmentExpression);
+
         }
 
-        if (expression == null) {
-            return null;
-        }
+        // If we reached this point, we know for sure this is a complete fragment expression, so we just parse it
+        // as such and execute it
 
-        return (Fragment) expression.execute(context);
+        final FragmentExpression fragmentExpression =
+                (FragmentExpression) expressionParser.parseExpression(context, trimmedInput);
+
+        return (Fragment) fragmentExpression.execute(context);
 
     }
 
 
 
-    static boolean shouldParseAsCompleteStandardExpression(final String input) {
-    // TODO: We should do this so that, unless it is very clear that this is a ~{...} expression, we should parse it as content
-    //       and then if there are no params and the templateName expression returns a Fragment, then we use that fragment instead
-    //       of trying to use it as the template name
+    static boolean isCompleteStandardExpressionForSure(final String input) {
 
         final int inputLen = input.length();
         if (inputLen > 2 && input.charAt(0) == FragmentExpression.SELECTOR && input.charAt(1) == '{') {
