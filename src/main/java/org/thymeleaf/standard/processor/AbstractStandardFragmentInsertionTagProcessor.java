@@ -329,6 +329,9 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
     static boolean shouldParseAsCompleteStandardExpression(final String input) {
+    // TODO: We should do this so that, unless it is very clear that this is a ~{...} expression, we should parse it as content
+    //       and then if there are no params and the templateName expression returns a Fragment, then we use that fragment instead
+    //       of trying to use it as the template name
 
         final int inputLen = input.length();
         if (inputLen > 2 && input.charAt(0) == FragmentExpression.SELECTOR && input.charAt(1) == '{') {
