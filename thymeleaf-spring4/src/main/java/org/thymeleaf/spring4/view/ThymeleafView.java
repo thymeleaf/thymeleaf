@@ -275,11 +275,11 @@ public class ThymeleafView
                 throw new IllegalArgumentException("Invalid template name specification: '" + viewTemplateName + "'");
             }
 
-            final FragmentExpression.UnresolvedFragment fragment =
-                    FragmentExpression.executeFragmentExpressionAsUnresolved(context, fragmentExpression, StandardExpressionExecutionContext.NORMAL);
+            final FragmentExpression.ExecutedFragmentExpression fragment =
+                    FragmentExpression.createExecutedFragmentExpression(context, fragmentExpression, StandardExpressionExecutionContext.NORMAL);
 
-            templateName = fragment.getTemplateName();
-            markupSelectors = Collections.singleton(fragment.getFragmentSelector());
+            templateName = FragmentExpression.resolveTemplateName(fragment);
+            markupSelectors = FragmentExpression.resolveFragments(fragment);
             final Map<String,Object> nameFragmentParameters = fragment.getFragmentParameters();
 
             if (nameFragmentParameters != null) {
