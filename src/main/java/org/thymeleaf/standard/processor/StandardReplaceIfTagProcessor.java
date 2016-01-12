@@ -28,17 +28,17 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-public final class StandardReplaceTagProcessor extends AbstractStandardFragmentInsertionTagProcessor {
+public final class StandardReplaceIfTagProcessor extends AbstractStandardFragmentInsertionTagProcessor {
 
-    public static final int PRECEDENCE = 100;
-    public static final String ATTR_NAME = "replace";
-
-
+    public static final int PRECEDENCE = 90;
+    public static final String ATTR_NAME = "replace-if";
 
 
 
-    public StandardReplaceTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, true, false);
+
+
+    public StandardReplaceIfTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, true, true);
     }
 
 

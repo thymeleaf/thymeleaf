@@ -499,6 +499,11 @@ public final class FragmentExpression extends SimpleExpression {
         List<String> templateNameStack = null;
         // scan the template stack if template name is 'this' or an empty name is being used
         if (StringUtils.isEmptyOrWhitespace(templateName)) {
+
+            if (fragments == null || fragments.isEmpty()) {
+                return null;
+            }
+
             templateNameStack = new ArrayList<String>(3);
             for (int i = context.getTemplateStack().size() - 1; i >= 0; i--) {
                 templateNameStack.add(context.getTemplateStack().get(i).getTemplate());
@@ -513,13 +518,20 @@ public final class FragmentExpression extends SimpleExpression {
                     configuration.getTemplateManager().parseStandalone(
                             context, templateName, fragments,
                             null,   // we will not force the template mode
-                            true);  // use the cache if possible, fragments are from template files
+                            true,   // use the cache if possible, fragments are from template files
+                            false); // we will not fail if the template does not exist (and template resolvers check existence!)
             i++;
-        } while (fragmentModel.size() <= 2 &&
-                templateNameStack != null &&
-                i < templateNameStack.size() &&
+        } while (fragmentModel != null &&               // template not found (only if resolver configuration allows)
+                fragmentModel.size() <= 2 &&            // template found, but selector not found
+                templateNameStack != null &&            // we have more templates to look into
+                i < templateNameStack.size() &&         // we have more templates to look into
                 (templateName = templateNameStack.get(i)) != null);  //post test -- need to parse at least 1x
 
+        if (fragmentModel == null) {
+            // FragmentExpressions can actually return null, so that this null value can be used in standard expressions
+            // such as "~{template} ? ~{default}"
+            return null;
+        }
 
         /*
          * RETURN the expected Fragment object

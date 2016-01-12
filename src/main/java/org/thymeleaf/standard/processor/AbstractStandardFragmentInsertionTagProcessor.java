@@ -28,6 +28,7 @@ import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.engine.TemplateModel;
+import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IElementAttributes;
@@ -42,6 +43,7 @@ import org.thymeleaf.standard.expression.Fragment;
 import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.FragmentSignature;
 import org.thymeleaf.standard.expression.FragmentSignatureUtils;
+import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
@@ -65,6 +67,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
     private final boolean replaceHost;
+    private final boolean conditionalInsertion;
     // This flag should probably be removed once th:include is removed in 3.2 (deprecated in 3.0)
     private final boolean insertOnlyContents;
 
@@ -72,8 +75,8 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
     protected AbstractStandardFragmentInsertionTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
-            final boolean replaceHost) {
-        this(templateMode, dialectPrefix, attrName, precedence, replaceHost, false);
+            final boolean replaceHost, final boolean conditionalInsertion) {
+        this(templateMode, dialectPrefix, attrName, precedence, replaceHost, conditionalInsertion, false);
     }
 
     /*
@@ -82,9 +85,10 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
      */
     AbstractStandardFragmentInsertionTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
-            final boolean replaceHost, final boolean insertOnlyContents) {
+            final boolean replaceHost, final boolean conditionalInsertion, final boolean insertOnlyContents) {
         super(templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
         this.replaceHost = replaceHost;
+        this.conditionalInsertion = conditionalInsertion;
         this.insertOnlyContents = insertOnlyContents;
     }
 
@@ -98,6 +102,10 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
             final IElementTagStructureHandler structureHandler) {
 
 
+        if (StringUtils.isEmptyOrWhitespace(attributeValue)) {
+            throw new TemplateProcessingException("Fragment specifications cannot be empty");
+        }
+
         final IEngineConfiguration configuration = context.getConfiguration();
 
         /*
@@ -105,7 +113,20 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
          */
         final Fragment fragment = computeFragment(context, attributeValue);
         if (fragment == null) {
-            throw new TemplateProcessingException("Could not parse as fragment selection: \"" + attributeValue + "\"");
+
+            // If the Fragment result is null, our behaviour will depend on whether we are using
+            // th:insert/th:replace or th:insert-if/th:replace-if. In the latter case, this is allowed and
+            // we will simply do nothing.
+
+            if (this.conditionalInsertion) {
+                // Result is null, but this insertion operation is conditional so we will just do NOTHING
+                return;
+            }
+
+            throw new TemplateInputException(
+                    "Invalid fragment specification: \"" + attributeValue + "\": " +
+                    "template or fragment could not be resolved");
+
         }
 
 
@@ -298,10 +319,6 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
     private static Fragment computeFragment(final ITemplateContext context, final String input) {
 
-        if (StringUtils.isEmptyOrWhitespace(input)) {
-            return null;
-        }
-
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
 
         final String trimmedInput = input.trim();
@@ -334,10 +351,16 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         // If we reached this point, we know for sure this is a complete fragment expression, so we just parse it
         // as such and execute it
 
-        final FragmentExpression fragmentExpression =
-                (FragmentExpression) expressionParser.parseExpression(context, trimmedInput);
+        final IStandardExpression fragmentExpression = expressionParser.parseExpression(context, trimmedInput);
 
-        return (Fragment) fragmentExpression.execute(context);
+        final Object fragmentExpressionResult = fragmentExpression.execute(context);
+        if (fragmentExpressionResult != null && !(fragmentExpressionResult instanceof Fragment)) {
+            throw new TemplateProcessingException(
+                    "Invalid fragment specification: \"" + input + "\": " +
+                    "expression does not return a Fragment object");
+        }
+
+        return (Fragment) fragmentExpressionResult;
 
     }
 
