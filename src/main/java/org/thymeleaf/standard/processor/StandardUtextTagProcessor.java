@@ -29,11 +29,13 @@ import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.postprocessor.IPostProcessor;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
+import org.thymeleaf.standard.expression.Fragment;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.LazyFragmentCharSequence;
 
 /**
  *
@@ -68,8 +70,6 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
         final IStandardExpression expression = expressionParser.parseExpression(context, attributeValue);
         final Object expressionResult = expression.execute(context, StandardExpressionExecutionContext.RESTRICTED);
 
-        final String unescapedText = (expressionResult == null ? "" : expressionResult.toString());
-
         /*
          * We will check if there are configured post processors or not. The reason we do this is because output
          * inserted as a result of a th:utext attribute, even if it might be markup, will never be considered as
@@ -83,8 +83,23 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
          */
         final Set<IPostProcessor> postProcessors = configuration.getPostProcessors(getTemplateMode());
         if (postProcessors.isEmpty()) {
-            structureHandler.setBody(unescapedText, false);
+
+            /*
+             * Once we know we do not have to worry about post-processors, we should check whether the expression
+             * result is a Fragment so that, in such case, we can apply lazyness in order to avoid that Fragment
+             * to have to become a (potentially large) String in memory.
+             */
+
+            if (expressionResult != null && expressionResult instanceof Fragment) {
+                final CharSequence fragmentLazyCharSeq = new LazyFragmentCharSequence((Fragment)expressionResult);
+                structureHandler.setBody(fragmentLazyCharSeq, false);
+                return;
+            }
+
+            final String unescapedTextStr = (expressionResult == null ? "" : expressionResult.toString());
+            structureHandler.setBody(unescapedTextStr, false);
             return;
+
         }
 
 
@@ -93,16 +108,18 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
          * text or not...
          */
 
-        if (!mightContainStructures(unescapedText)) {
+        final String unescapedTextStr = (expressionResult == null ? "" : expressionResult.toString());
+
+        if (!mightContainStructures(unescapedTextStr)) {
             // If this text contains no markup structures, there would be no need to parse it or treat it as markup!
-            structureHandler.setBody(unescapedText, false);
+            structureHandler.setBody(unescapedTextStr, false);
             return;
         }
 
         final TemplateModel parsedFragment =
                 configuration.getTemplateManager().parseString(
                         context.getTemplateData(),
-                        unescapedText,
+                        unescapedTextStr,
                         0, 0, // we won't apply offset here because the inserted text does not really come from the template itself
                         null, // No template mode forcing required
                         false); // useCache == false because we could potentially pollute the cache with too many entries (th:utext is too variable!)
@@ -120,7 +137,7 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
      * are going to use a a result of this th:utext execution. If there is no '>' character in it, then it is
      * nothing but a piece of text, and applying the parser would be overkill
      */
-    private static boolean mightContainStructures(final String unescapedText) {
+    private static boolean mightContainStructures(final CharSequence unescapedText) {
         int n = unescapedText.length();
         char c;
         while (n-- != 0) {
