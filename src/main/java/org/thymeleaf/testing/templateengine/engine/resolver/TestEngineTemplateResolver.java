@@ -170,6 +170,7 @@ public class TestEngineTemplateResolver implements ITemplateResolver {
         // Create the template resolution object with all the gathered info
         return new TemplateResolution(
                 templateResource,
+                true,         // Test template resolver always verifies the existence of resources (might be improvable)
                 templateMode,
                 validity);
         
