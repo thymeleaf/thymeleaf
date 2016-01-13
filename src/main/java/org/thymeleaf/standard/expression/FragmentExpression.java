@@ -365,7 +365,14 @@ public final class FragmentExpression extends SimpleExpression {
                     context.getClass().getName() + ")");
         }
 
-        return resolveExecutedFragmentExpression((ITemplateContext) context, createExecutedFragmentExpression(context, expression, expContext));
+        return resolveExecutedFragmentExpression(
+                (ITemplateContext) context,
+                createExecutedFragmentExpression(context, expression, expContext),
+                // By default we will NOT consider a non existing template a failure, so that we give the system the chance
+                // to return null here (in exchange for a call to resource.exists()). So this false will always be
+                // applied in scenarios such as when the fragment expression is used as a parameter in a larger
+                // fragment expression: "template : fragment (part=~{expr})"
+                false);
     }
 
 
@@ -476,7 +483,8 @@ public final class FragmentExpression extends SimpleExpression {
 
 
     public static Fragment resolveExecutedFragmentExpression(
-            final ITemplateContext context, final ExecutedFragmentExpression executedFragmentExpression) {
+            final ITemplateContext context, final ExecutedFragmentExpression executedFragmentExpression,
+            final boolean failIfNotExists) {
 
         final IEngineConfiguration configuration = context.getConfiguration();
 
@@ -517,9 +525,9 @@ public final class FragmentExpression extends SimpleExpression {
             fragmentModel =
                     configuration.getTemplateManager().parseStandalone(
                             context, templateName, fragments,
-                            null,   // we will not force the template mode
-                            true,   // use the cache if possible, fragments are from template files
-                            false); // we will not fail if the template does not exist (and template resolvers check existence!)
+                            null,             // we will not force the template mode
+                            true,             // use the cache if possible, fragments are from template files
+                            failIfNotExists); // depending on the scenario we will consider a non exiting template a fail or not
             i++;
         } while (fragmentModel != null &&               // template not found (only if resolver configuration allows)
                 fragmentModel.size() <= 2 &&            // template found, but selector not found

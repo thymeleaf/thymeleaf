@@ -111,7 +111,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         /*
          * PARSE AND PROCESS THE FRAGMENT
          */
-        final Fragment fragment = computeFragment(context, attributeValue);
+        final Fragment fragment = computeFragment(context, attributeValue, this.conditionalInsertion);
         if (fragment == null) {
 
             // If the Fragment result is null, our behaviour will depend on whether we are using
@@ -317,17 +317,17 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
 
-    private static Fragment computeFragment(final ITemplateContext context, final String input) {
+    private static Fragment computeFragment(final ITemplateContext context, final String input, final boolean conditionalInsertion) {
 
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
 
         final String trimmedInput = input.trim();
 
-        if (!isCompleteStandardExpressionForSure(trimmedInput)) {
+        if (shouldBeWrappedAsFragmentExpression(trimmedInput)) {
             // We do not know for sure that this is a complete standard expression, so we will consider it the
             // content of a FragmentExpression for legacy compatibility reasons.
             // We will only reach this point if the expression does not contain any Fragment Expressions expressed
-            // as ~{...} (outside parameters), nor the "::" fragment selector separator.
+            // as ~{...} (excluding parameters), nor the "::" fragment selector separator.
             final FragmentExpression fragmentExpression =
                     (FragmentExpression) expressionParser.parseExpression(context, "~{" + trimmedInput + "}");
 
@@ -344,7 +344,10 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                 }
             }
 
-            return FragmentExpression.resolveExecutedFragmentExpression(context, executedFragmentExpression);
+            // If conditional insertion is allowed for this processor, we will not consider a non-resolution of
+            // the specified template a failure. But in case we reach this point in a th:insert or th:replace
+            // (without the "-if"), we will send a true avoiding an unnecessary call to resource.exists()
+            return FragmentExpression.resolveExecutedFragmentExpression(context, executedFragmentExpression, !conditionalInsertion);
 
         }
 
@@ -353,7 +356,25 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
         final IStandardExpression fragmentExpression = expressionParser.parseExpression(context, trimmedInput);
 
-        final Object fragmentExpressionResult = fragmentExpression.execute(context);
+        final Object fragmentExpressionResult;
+
+        if (!conditionalInsertion && fragmentExpression != null && fragmentExpression instanceof FragmentExpression) {
+            // This is not a complex expression but merely a FragmentExpression, so we can apply a shortcut
+            // so that we don't require a "null" result for this expression if the template does not exist. That will
+            // save a call to resource.exists() which might be costly.
+
+            final FragmentExpression.ExecutedFragmentExpression executedFragmentExpression =
+                    FragmentExpression.createExecutedFragmentExpression(context, (FragmentExpression) fragmentExpression, StandardExpressionExecutionContext.NORMAL);
+
+            fragmentExpressionResult =
+                    FragmentExpression.resolveExecutedFragmentExpression(context, executedFragmentExpression, !conditionalInsertion);
+
+        } else {
+
+            fragmentExpressionResult = fragmentExpression.execute(context);
+
+        }
+
         if (fragmentExpressionResult != null && !(fragmentExpressionResult instanceof Fragment)) {
             throw new TemplateProcessingException(
                     "Invalid fragment specification: \"" + input + "\": " +
@@ -366,13 +387,12 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
 
-    static boolean isCompleteStandardExpressionForSure(final String input) {
+    static boolean shouldBeWrappedAsFragmentExpression(final String input) {
 
         final int inputLen = input.length();
         if (inputLen > 2 && input.charAt(0) == FragmentExpression.SELECTOR && input.charAt(1) == '{') {
-            // Returning type 1 will mean that we consider this a Fragment Expression, or an expression
-            // containing such Fragment Expression
-            return true;
+            // This input already starts as a fragment expression, so we are sure there is no need to wrap
+            return false;
         }
         char c;
         int bracketLevel = 0;
@@ -404,16 +424,15 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                         paramLevel--;
                     } else if (c == '=' && paramLevel == 1) {
                         // In exactly this disposition (paramLevel == 1, bracketLevel == 0), we know we are looking at
-                        // a named parameter in a FragmentExpression content, so this is not a complete expression
-                        return false;
-                    } else if (c == FragmentExpression.SELECTOR && n != 0 && input.charAt(i + 1) == '{') {
-                        // Returning type 1 will mean that we consider this a Fragment Expression, or an expression
-                        // containing such Fragment Expression
+                        // a named parameter in a FragmentExpression content, so this has to be wrapped
                         return true;
-                    } else if (c == ':' && n != 0 && input.charAt(i + 1) == ':') {
-                        // This is most probably expressed as the content of a Fragment Expression (without ~{...}). Note how
-                        // if this were a Fragment Expression with the corresponding prefix and suffix, we'd have known before
+                    } else if (c == FragmentExpression.SELECTOR && n != 0 && input.charAt(i + 1) == '{') {
+                        // A fragment expression appears at level 0, so this should not be wrapped
                         return false;
+                    } else if (c == ':' && n != 0 && input.charAt(i + 1) == ':') {
+                        // A fragment selector ("::") has been found, so this is the content of a fragment expression and
+                        // it should be wrapped
+                        return true;
                     }
                 }
             }
@@ -422,9 +441,10 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
         }
 
-        // We haven't been able to determine any useful information about the type of expression this might be, so
-        // we will not consider it a complete standard expression
-        return false;
+        // We haven't been able to determine any useful information about the type of expression this might be so,
+        // in practice, this will mean we will consider it a fragment expression content for legacy compatibility
+        // reasons (afterwards we will rectify if what we consider a "template name" happens to be a Fragment).
+        return true;
 
     }
 
