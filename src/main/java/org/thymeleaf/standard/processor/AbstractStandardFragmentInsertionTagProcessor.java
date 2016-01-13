@@ -35,6 +35,7 @@ import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.model.ITemplateEnd;
 import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
@@ -124,7 +125,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
             }
 
             throw new TemplateInputException(
-                    "Invalid fragment specification: \"" + attributeValue + "\": " +
+                    "Error resolving fragment: \"" + attributeValue + "\": " +
                     "template or fragment could not be resolved");
 
         }
@@ -134,22 +135,69 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         Map<String, Object> fragmentParameters = fragment.getParameters();
 
         /*
-         * ONCE WE HAVE THE FRAGMENT MODEL (its events, in fact), CHECK THE FRAGMENT SIGNATURE which might
-         * affect the way we apply the parameters to the fragment.
+         * ONCE WE HAVE THE FRAGMENT MODEL (its events, in fact), CHECK IF ITS EMPTY AND ALSO THE FRAGMENT SIGNATURE
+         * Fragment signature in a non-empty fragment is important because it might affect the way we apply the
+         * parameters to the fragment.
          *
          * Note this works whatever the template mode of the inserted fragment, given we are looking for an
          * element containing a "th:fragment/data-th-fragment" in a generic, non-template-dependent way.
          */
         final int parsedFragmentLen = fragmentModel.size();
-        ITemplateEvent fragmentHolderEvent = (parsedFragmentLen >= 1? fragmentModel.get(0) : null);
-        if (fragmentHolderEvent != null && fragmentHolderEvent instanceof ITemplateStart) {
-            fragmentHolderEvent = (parsedFragmentLen >= 3? fragmentModel.get(1) : null);
+        boolean fragmentIsEmpty = parsedFragmentLen == 0;
+
+        // Using this getEventType() calls we save the creation of immutable wrappers if they are not needed (calls
+        // to get(pos) would create temporary immutable wrapper objects).
+        final Class<? extends ITemplateEvent> event0Type = (parsedFragmentLen >= 1? fragmentModel.getEventType(0) : null);
+        final Class<? extends ITemplateEvent> event1Type = (parsedFragmentLen >= 2? fragmentModel.getEventType(1) : null);
+
+        Class<? extends ITemplateEvent> fragmentHolderEventType = event0Type;
+        if (fragmentHolderEventType == null) {
+            fragmentIsEmpty = true;
+        } else if (ITemplateStart.class.isAssignableFrom(fragmentHolderEventType)) {
+            fragmentHolderEventType = event1Type;
+            if (fragmentHolderEventType == null) {
+                // Should never happen: only one event, and it's a TemplateStart!
+                throw new TemplateProcessingException(
+                        "The resolved fragment for expression \"" + attributeValue + "\" contains a TemplateStart " +
+                        "event and no TemplateEnd events, which means it is malformed");
+            } else if (ITemplateEnd.class.isAssignableFrom(fragmentHolderEventType)) {
+                // This is empty! all we have is a couple of TemplateStart/TemplateEnd events
+                fragmentHolderEventType = null;
+                fragmentIsEmpty = true;
+            } else if (!IProcessableElementTag.class.isAssignableFrom(fragmentHolderEventType)) {
+                fragmentHolderEventType = null;
+            }
+        } else if (!IProcessableElementTag.class.isAssignableFrom(fragmentHolderEventType)) {
+            fragmentHolderEventType = null;
         }
 
-        // We need to examine the first event just in case it contains a th:fragment matching the one we were looking
-        if (fragmentHolderEvent instanceof IProcessableElementTag) {
+        /*
+         * If fragment is empty, we might need to raise an error or just do nothing depending on whether we
+         * are using th:insert/th:replace or th:insert-if/th:replace-if.
+         */
+        if (fragmentIsEmpty) {
+
+            if (this.conditionalInsertion) {
+                // Result is null, but this insertion operation is conditional so we will just do NOTHING
+                return;
+            }
+
+            throw new TemplateInputException(
+                    "Error resolving fragment: \"" + attributeValue + "\": " +
+                    "template or fragment could not be resolved");
+
+        }
+
+        /*
+         * The fragment is not empty, but we need to examine the first event just in case it contains
+         * a th:fragment matching the one we were looking for
+         */
+        if (fragmentHolderEventType != null) {
 
             final String dialectPrefix = attributeName.getPrefix();
+
+            final ITemplateEvent fragmentHolderEvent =
+                    (fragmentHolderEventType == event0Type? fragmentModel.get(0) : fragmentModel.get(1));
 
             final IElementAttributes elementAttributes = ((IProcessableElementTag)fragmentHolderEvent).getAttributes();
             if (elementAttributes.hasAttribute(dialectPrefix, FRAGMENT_ATTR_NAME)) {

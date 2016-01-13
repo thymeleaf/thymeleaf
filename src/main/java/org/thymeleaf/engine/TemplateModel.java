@@ -103,6 +103,24 @@ public final class TemplateModel implements IModel {
     }
 
 
+    /**
+     * <p>
+     *   This method is not part of the {@link IModel} interface.
+     * </p>
+     * <p>
+     *   It is meant to return the type of an event without the need to create an
+     *   immutable wrapper object.
+     * </p>
+     *
+     * @param pos the position (zero-based) of the event to be retrieved.
+     * @return the retrieved event.
+     */
+    public final Class<? extends ITemplateEvent> getEventType(final int pos) {
+        final ITemplateEvent event = this.model.get(pos);
+        return (event != null? event.getClass() : null);
+    }
+
+
     public final void add(final ITemplateEvent event) {
         immutableModelException();
     }
