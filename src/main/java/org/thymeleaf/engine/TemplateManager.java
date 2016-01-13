@@ -246,9 +246,11 @@ public final class TemplateManager {
         final TemplateResolution templateResolution =
                 resolveTemplate(this.configuration, ownerTemplate, template, templateResolutionAttributes, failIfNotExists);
 
+
         /*
          * Once the template has been resolved (or tried to), and depending on the value of our 'failIfNotExists'
          * flag, we will check two conditions in which we will be returning null:
+         *
          *    1. No template resolver has been able to resolve the template (this can happen if resolvers are
          *       configured with the 'checkExistence' flag to true).
          *    2. If the template was resolved, its existence should be checked in order to avoid exceptions during
@@ -265,14 +267,17 @@ public final class TemplateManager {
                 return null;
             }
 
-            final ITemplateResource resource = templateResolution.getTemplateResource();
-            if (resource == null || !resource.exists()) {
-                // Calling resource.exists() each time is not great, but think this only happens if the resource
-                // has not been cached (e.g. when it does not exist)
-                return null;
+            if (!templateResolution.isTemplateResourceExistenceVerified()) {
+                final ITemplateResource resource = templateResolution.getTemplateResource();
+                if (resource == null || !resource.exists()) {
+                    // Calling resource.exists() each time is not great, but think this only happens if the resource
+                    // has not been cached (e.g. when it does not exist)
+                    return null;
+                }
             }
 
         }
+
 
         /*
          * Build the TemplateData object

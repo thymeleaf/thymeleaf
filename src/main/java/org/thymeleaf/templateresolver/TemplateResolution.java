@@ -57,6 +57,7 @@ import org.thymeleaf.util.Validate;
 public final class TemplateResolution {
 
     private final ITemplateResource templateResource;
+    private final boolean templateResourceExistenceVerified;
     private final TemplateMode templateMode;
     private final ICacheEntryValidity validity;
 
@@ -66,11 +67,21 @@ public final class TemplateResolution {
             final ITemplateResource templateResource,
             final TemplateMode templateMode,
             final ICacheEntryValidity validity) {
+        this(templateResource, false, templateMode, validity);
+    }
+
+
+    public TemplateResolution(
+            final ITemplateResource templateResource,
+            final boolean templateResourceExistenceVerified,
+            final TemplateMode templateMode,
+            final ICacheEntryValidity validity) {
         super();
         Validate.notNull(templateResource, "Template Resource cannot be null");
         Validate.notNull(templateMode, "Template mode cannot be null");
         Validate.notNull(validity, "Validity cannot be null");
         this.templateResource = templateResource;
+        this.templateResourceExistenceVerified = templateResourceExistenceVerified;
         this.templateMode = templateMode;
         this.validity = validity;
     }
@@ -112,6 +123,27 @@ public final class TemplateResolution {
      */
     public TemplateMode getTemplateMode() {
         return this.templateMode;
+    }
+
+
+    /**
+     * <p>
+     *   Returns whether the existence of the resource returned by the resolution mechanism has
+     *   been already verified to actually exist by the template resolver during resolution.
+     * </p>
+     * <p>
+     *   This allows avoiding further checks in case the <tt>resource.exists()</tt> execution is
+     *   costly.
+     * </p>
+     * <p>
+     *   Note a <tt>false</tt> here does not mean the resource does not exist, but simply that
+     *   its existence was not verified (true) during resolution.
+     * </p>
+     *
+     * @return whether the existence of the resource was verified during resolution.
+     */
+    public boolean isTemplateResourceExistenceVerified() {
+        return this.templateResourceExistenceVerified;
     }
 
 

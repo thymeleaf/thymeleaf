@@ -282,6 +282,7 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
 
         return new TemplateResolution(
                 templateResource,
+                this.checkExistence,
                 computeTemplateMode(configuration, ownerTemplate, template, templateResolutionAttributes),
                 computeValidity(configuration, ownerTemplate, template, templateResolutionAttributes));
         
