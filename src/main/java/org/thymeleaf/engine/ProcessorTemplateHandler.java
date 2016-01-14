@@ -96,6 +96,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             }));
 
 
+    private static final ITemplateBoundariesProcessor[] EMPTY_TEMPLATE_BOUNDARIES_PROCESSORS = new ITemplateBoundariesProcessor[0];
+    private static final ICDATASectionProcessor[] EMPTY_CDATA_SECTION_PROCESSORS = new ICDATASectionProcessor[0];
+    private static final ICommentProcessor[] EMPTY_COMMENT_PROCESSORS = new ICommentProcessor[0];
+    private static final IDocTypeProcessor[] EMPTY_DOCTYPE_PROCESSORS = new IDocTypeProcessor[0];
+    private static final IProcessingInstructionProcessor[] EMPTY_PROCESSING_INSTRUCTION_PROCESSORS = new IProcessingInstructionProcessor[0];
+    private static final ITextProcessor[] EMPTY_TEXT_PROCESSORS = new ITextProcessor[0];
+    private static final IXMLDeclarationProcessor[] EMPTY_XML_DECLARATION_PROCESSORS = new IXMLDeclarationProcessor[0];
+
+
     // Structure handlers are reusable objects that will be used by processors in order to instruct the engine to
     // do things with the processed structures themselves (things that cannot be directly done from the processors like
     // removing structures or iterating elements)
@@ -263,16 +272,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         this.iterationSpec = new IterationSpec(this.templateMode, this.configuration);
         this.elementModelSpec = new ElementModelSpec(this.templateMode, this.configuration);
 
-        // Flags used for quickly determining if a non-element structure might have to be processed or not
-        this.hasTemplateBoundariesProcessors = !this.configuration.getTemplateBoundariesProcessors(this.templateMode).isEmpty();
-        this.hasCDATASectionProcessors = !this.configuration.getCDATASectionProcessors(this.templateMode).isEmpty();
-        this.hasCommentProcessors = !this.configuration.getCommentProcessors(this.templateMode).isEmpty();
-        this.hasDocTypeProcessors = !this.configuration.getDocTypeProcessors(this.templateMode).isEmpty();
-        this.hasProcessingInstructionProcessors = !this.configuration.getProcessingInstructionProcessors(this.templateMode).isEmpty();
-        this.hasTextProcessors = !this.configuration.getTextProcessors(this.templateMode).isEmpty();
-        this.hasXMLDeclarationProcessors = !this.configuration.getXMLDeclarationProcessors(this.templateMode).isEmpty();
-
-        // Initialize arrays containing the processors for all the non-element structures (these do not change during execution)
+        // Obtain all processor sets and compute sizes
         final Set<ITemplateBoundariesProcessor> templateBoundariesProcessorSet = this.configuration.getTemplateBoundariesProcessors(this.templateMode);
         final Set<ICDATASectionProcessor> cdataSectionProcessorSet = this.configuration.getCDATASectionProcessors(this.templateMode);
         final Set<ICommentProcessor> commentProcessorSet = this.configuration.getCommentProcessors(this.templateMode);
@@ -280,13 +280,38 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final Set<IProcessingInstructionProcessor> processingInstructionProcessorSet = this.configuration.getProcessingInstructionProcessors(this.templateMode);
         final Set<ITextProcessor> textProcessorSet = this.configuration.getTextProcessors(this.templateMode);
         final Set<IXMLDeclarationProcessor> xmlDeclarationProcessorSet = this.configuration.getXMLDeclarationProcessors(this.templateMode);
-        this.templateBoundariesProcessors = templateBoundariesProcessorSet.toArray(new ITemplateBoundariesProcessor[templateBoundariesProcessorSet.size()]);
-        this.cdataSectionProcessors = cdataSectionProcessorSet.toArray(new ICDATASectionProcessor[cdataSectionProcessorSet.size()]);
-        this.commentProcessors = commentProcessorSet.toArray(new ICommentProcessor[commentProcessorSet.size()]);
-        this.docTypeProcessors = docTypeProcessorSet.toArray(new IDocTypeProcessor[docTypeProcessorSet.size()]);
-        this.processingInstructionProcessors = processingInstructionProcessorSet.toArray(new IProcessingInstructionProcessor[processingInstructionProcessorSet.size()]);
-        this.textProcessors = textProcessorSet.toArray(new ITextProcessor[textProcessorSet.size()]);
-        this.xmlDeclarationProcessors = xmlDeclarationProcessorSet.toArray(new IXMLDeclarationProcessor[xmlDeclarationProcessorSet.size()]);
+        final int templateBoundariesProcessorSetSize = templateBoundariesProcessorSet.size();
+        final int cdataSectionProcessorSetSize = cdataSectionProcessorSet.size();
+        final int commentProcessorSetSize = commentProcessorSet.size();
+        final int docTypeProcessorSetSize = docTypeProcessorSet.size();
+        final int processingInstructionProcessorSetSize = processingInstructionProcessorSet.size();
+        final int textProcessorSetSize = textProcessorSet.size();
+        final int xmlDeclarationProcessorSetSize = xmlDeclarationProcessorSet.size();
+
+        // Flags used for quickly determining if a non-element structure might have to be processed or not
+        this.hasTemplateBoundariesProcessors = templateBoundariesProcessorSetSize > 0;
+        this.hasCDATASectionProcessors = cdataSectionProcessorSetSize > 0;
+        this.hasCommentProcessors = commentProcessorSetSize > 0;
+        this.hasDocTypeProcessors = docTypeProcessorSetSize > 0;
+        this.hasProcessingInstructionProcessors = processingInstructionProcessorSetSize > 0;
+        this.hasTextProcessors = textProcessorSetSize > 0;
+        this.hasXMLDeclarationProcessors = xmlDeclarationProcessorSetSize > 0;
+
+        // Initialize arrays containing the processors for all the non-element structures (these do not change during execution)
+        this.templateBoundariesProcessors =
+                templateBoundariesProcessorSetSize == 0? EMPTY_TEMPLATE_BOUNDARIES_PROCESSORS : templateBoundariesProcessorSet.toArray(new ITemplateBoundariesProcessor[templateBoundariesProcessorSetSize]);
+        this.cdataSectionProcessors =
+                cdataSectionProcessorSetSize == 0? EMPTY_CDATA_SECTION_PROCESSORS : cdataSectionProcessorSet.toArray(new ICDATASectionProcessor[cdataSectionProcessorSetSize]);
+        this.commentProcessors =
+                commentProcessorSetSize == 0? EMPTY_COMMENT_PROCESSORS : commentProcessorSet.toArray(new ICommentProcessor[commentProcessorSetSize]);
+        this.docTypeProcessors =
+                docTypeProcessorSetSize == 0? EMPTY_DOCTYPE_PROCESSORS : docTypeProcessorSet.toArray(new IDocTypeProcessor[docTypeProcessorSetSize]);
+        this.processingInstructionProcessors =
+                processingInstructionProcessorSetSize == 0? EMPTY_PROCESSING_INSTRUCTION_PROCESSORS : processingInstructionProcessorSet.toArray(new IProcessingInstructionProcessor[processingInstructionProcessorSetSize]);
+        this.textProcessors =
+                textProcessorSetSize == 0? EMPTY_TEXT_PROCESSORS : textProcessorSet.toArray(new ITextProcessor[textProcessorSetSize]);
+        this.xmlDeclarationProcessors =
+                xmlDeclarationProcessorSetSize == 0? EMPTY_XML_DECLARATION_PROCESSORS : xmlDeclarationProcessorSet.toArray(new IXMLDeclarationProcessor[xmlDeclarationProcessorSetSize]);
 
     }
 
