@@ -53,19 +53,19 @@ final class EngineEventQueue {
     private final TemplateMode templateMode;
     private final IEngineConfiguration configuration;
 
-    private TemplateStart templateStartBuffer = null;
-    private TemplateEnd templateEndBuffer = null;
+    private final TemplateStart templateStartBuffer;
+    private final TemplateEnd templateEndBuffer;
 
-    private Text textBuffer = null;
-    private Comment commentBuffer = null;
-    private CDATASection cdataSectionBuffer = null;
-    private DocType docTypeBuffer = null;
-    private ProcessingInstruction processingInstructionBuffer = null;
-    private XMLDeclaration xmlDeclarationBuffer = null;
+    private final Text textBuffer;
+    private final Comment commentBuffer;
+    private final CDATASection cdataSectionBuffer;
+    private final DocType docTypeBuffer;
+    private final ProcessingInstruction processingInstructionBuffer;
+    private final XMLDeclaration xmlDeclarationBuffer;
 
-    private OpenElementTag openElementTagBuffer = null;
-    private StandaloneElementTag standaloneElementTagBuffer = null;
-    private CloseElementTag closeElementTagBuffer = null;
+    private final OpenElementTag openElementTagBuffer;
+    private final StandaloneElementTag standaloneElementTagBuffer;
+    private final CloseElementTag closeElementTagBuffer;
 
 
 
@@ -86,6 +86,22 @@ final class EngineEventQueue {
         this.templateMode = templateMode;
         this.configuration = configuration;
 
+        this.templateStartBuffer = new TemplateStart();
+        this.templateEndBuffer = new TemplateEnd();
+
+        this.textBuffer = new Text(this.configuration.getTextRepository());
+        this.cdataSectionBuffer = new CDATASection(this.configuration.getTextRepository());
+        this.commentBuffer = new Comment(this.configuration.getTextRepository());
+        this.docTypeBuffer = new DocType(this.configuration.getTextRepository());
+        this.processingInstructionBuffer = new ProcessingInstruction(this.configuration.getTextRepository());
+        this.xmlDeclarationBuffer = new XMLDeclaration(this.configuration.getTextRepository());
+
+        this.standaloneElementTagBuffer =
+                new StandaloneElementTag(this.templateMode, this.configuration.getElementDefinitions(), this.configuration.getAttributeDefinitions());
+        this.openElementTagBuffer =
+                new OpenElementTag(this.templateMode, this.configuration.getElementDefinitions(), this.configuration.getAttributeDefinitions());
+        this.closeElementTagBuffer =
+                new CloseElementTag(this.templateMode, this.configuration.getElementDefinitions());
 
     }
 
@@ -295,27 +311,38 @@ final class EngineEventQueue {
             event = this.queue[i++];
 
             if (event instanceof Text) {
-                handler.handleText(bufferize((Text) event));
+                this.textBuffer.resetAsCloneOf((Text) event);
+                handler.handleText(this.textBuffer);
             } else if (event instanceof OpenElementTag) {
-                handler.handleOpenElement(bufferize((OpenElementTag) event));
+                this.openElementTagBuffer.resetAsCloneOf((OpenElementTag) event);
+                handler.handleOpenElement(this.openElementTagBuffer);
             } else if (event instanceof CloseElementTag) {
-                handler.handleCloseElement(bufferize((CloseElementTag) event));
+                this.closeElementTagBuffer.resetAsCloneOf((CloseElementTag) event);
+                handler.handleCloseElement(this.closeElementTagBuffer);
             } else if (event instanceof StandaloneElementTag) {
-                handler.handleStandaloneElement(bufferize((StandaloneElementTag) event));
+                this.standaloneElementTagBuffer.resetAsCloneOf((StandaloneElementTag) event);
+                handler.handleStandaloneElement(this.standaloneElementTagBuffer);
             } else if (event instanceof DocType) {
-                handler.handleDocType(bufferize((DocType) event));
+                this.docTypeBuffer.resetAsCloneOf((DocType) event);
+                handler.handleDocType(this.docTypeBuffer);
             } else if (event instanceof Comment) {
-                handler.handleComment(bufferize((Comment) event));
+                this.commentBuffer.resetAsCloneOf((Comment) event);
+                handler.handleComment(this.commentBuffer);
             } else if (event instanceof CDATASection) {
-                handler.handleCDATASection(bufferize((CDATASection) event));
+                this.cdataSectionBuffer.resetAsCloneOf((CDATASection) event);
+                handler.handleCDATASection(this.cdataSectionBuffer);
             } else if (event instanceof XMLDeclaration) {
-                handler.handleXMLDeclaration(bufferize((XMLDeclaration) event));
+                this.xmlDeclarationBuffer.resetAsCloneOf((XMLDeclaration) event);
+                handler.handleXMLDeclaration(this.xmlDeclarationBuffer);
             } else if (event instanceof ProcessingInstruction) {
-                handler.handleProcessingInstruction(bufferize((ProcessingInstruction) event));
+                this.processingInstructionBuffer.resetAsCloneOf((ProcessingInstruction) event);
+                handler.handleProcessingInstruction(this.processingInstructionBuffer);
             } else if (event instanceof TemplateStart) {
-                handler.handleTemplateStart(bufferize((TemplateStart) event));
+                this.templateStartBuffer.resetAsCloneOf((TemplateStart) event);
+                handler.handleTemplateStart(this.templateStartBuffer);
             } else if (event instanceof TemplateEnd) {
-                handler.handleTemplateEnd(bufferize((TemplateEnd) event));
+                this.templateEndBuffer.resetAsCloneOf((TemplateEnd) event);
+                handler.handleTemplateEnd(this.templateEndBuffer);
             } else {
                 throw new TemplateProcessingException(
                         "Cannot handle in queue event of type: " + event.getClass().getName());
@@ -328,121 +355,6 @@ final class EngineEventQueue {
         }
 
     }
-
-
-
-    Text bufferize(final Text event) {
-        if (this.textBuffer == null) {
-            this.textBuffer = new Text(this.configuration.getTextRepository());
-        }
-        this.textBuffer.resetAsCloneOf(event);
-        return this.textBuffer;
-    }
-
-
-
-    CDATASection bufferize(final CDATASection event) {
-        if (this.cdataSectionBuffer == null) {
-            this.cdataSectionBuffer = new CDATASection(this.configuration.getTextRepository());
-        }
-        this.cdataSectionBuffer.resetAsCloneOf(event);
-        return this.cdataSectionBuffer;
-    }
-
-
-
-    Comment bufferize(final Comment event) {
-        if (this.commentBuffer == null) {
-            this.commentBuffer = new Comment(this.configuration.getTextRepository());
-        }
-        this.commentBuffer.resetAsCloneOf(event);
-        return this.commentBuffer;
-    }
-
-
-
-    DocType bufferize(final DocType event) {
-        if (this.docTypeBuffer == null) {
-            this.docTypeBuffer = new DocType(this.configuration.getTextRepository());
-        }
-        this.docTypeBuffer.resetAsCloneOf(event);
-        return this.docTypeBuffer;
-    }
-
-
-
-    ProcessingInstruction bufferize(final ProcessingInstruction event) {
-        if (this.processingInstructionBuffer == null) {
-            this.processingInstructionBuffer = new ProcessingInstruction(this.configuration.getTextRepository());
-        }
-        this.processingInstructionBuffer.resetAsCloneOf(event);
-        return this.processingInstructionBuffer;
-    }
-
-
-
-    XMLDeclaration bufferize(final XMLDeclaration event) {
-        if (this.xmlDeclarationBuffer == null) {
-            this.xmlDeclarationBuffer = new XMLDeclaration(this.configuration.getTextRepository());
-        }
-        this.xmlDeclarationBuffer.resetAsCloneOf(event);
-        return this.xmlDeclarationBuffer;
-    }
-
-
-
-    StandaloneElementTag bufferize(final StandaloneElementTag event) {
-        if (this.standaloneElementTagBuffer == null) {
-            this.standaloneElementTagBuffer =
-                    new StandaloneElementTag(this.templateMode, this.configuration.getElementDefinitions(), this.configuration.getAttributeDefinitions());
-        }
-        this.standaloneElementTagBuffer.resetAsCloneOf(event);
-        return this.standaloneElementTagBuffer;
-    }
-
-
-
-    OpenElementTag bufferize(final OpenElementTag event) {
-        if (this.openElementTagBuffer == null) {
-            this.openElementTagBuffer =
-                    new OpenElementTag(this.templateMode, this.configuration.getElementDefinitions(), this.configuration.getAttributeDefinitions());
-        }
-        this.openElementTagBuffer.resetAsCloneOf(event);
-        return this.openElementTagBuffer;
-    }
-
-
-
-    CloseElementTag bufferize(final CloseElementTag event) {
-        if (this.closeElementTagBuffer == null) {
-            this.closeElementTagBuffer =
-                    new CloseElementTag(this.templateMode, this.configuration.getElementDefinitions());
-        }
-        this.closeElementTagBuffer.resetAsCloneOf(event);
-        return this.closeElementTagBuffer;
-    }
-
-
-
-    TemplateStart bufferize(final TemplateStart event) {
-        if (this.templateStartBuffer == null) {
-            this.templateStartBuffer = new TemplateStart();
-        }
-        this.templateStartBuffer.resetAsCloneOf(event);
-        return this.templateStartBuffer;
-    }
-
-
-
-    TemplateEnd bufferize(final TemplateEnd event) {
-        if (this.templateEndBuffer == null) {
-            this.templateEndBuffer = new TemplateEnd();
-        }
-        this.templateEndBuffer.resetAsCloneOf(event);
-        return this.templateEndBuffer;
-    }
-
-
 
 
 
