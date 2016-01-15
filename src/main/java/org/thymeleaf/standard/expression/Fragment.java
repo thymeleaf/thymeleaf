@@ -31,6 +31,10 @@ import org.thymeleaf.util.Validate;
 
 
 /**
+ * <p>
+ *   Class that models the result of a {@link FragmentExpression}, i.e. the result of a fragment expression in
+ *   the form of <tt>~{template :: fragment? (parameters)?}</tt>
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
@@ -42,14 +46,18 @@ public final class Fragment {
     private final TemplateModel templateModel;
     private final Map<String,Object> parameters;
     private final boolean syntheticParameters;
+    private final boolean wrappedInStartEndEvents;
 
 
-    public Fragment(final TemplateModel templateModel, final Map<String, Object> parameters, final boolean syntheticParameters) {
+    public Fragment(
+            final TemplateModel templateModel, final Map<String, Object> parameters,
+            final boolean syntheticParameters, final boolean wrappedInStartEndEvents) {
         super();
         Validate.notNull(templateModel, "Template model cannot be null");
         this.templateModel = templateModel;
         this.parameters = parameters != null ? Collections.unmodifiableMap(parameters) : null;
         this.syntheticParameters = (this.parameters != null && this.parameters.size() > 0 && syntheticParameters);
+        this.wrappedInStartEndEvents = wrappedInStartEndEvents;
     }
 
 
@@ -63,6 +71,10 @@ public final class Fragment {
 
     public boolean hasSyntheticParameters() {
         return this.syntheticParameters;
+    }
+
+    public boolean isWrappedInStartEndEvents() {
+        return this.wrappedInStartEndEvents;
     }
 
 
