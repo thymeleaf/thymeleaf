@@ -44,6 +44,7 @@ import org.thymeleaf.standard.expression.FragmentSignature;
 import org.thymeleaf.standard.expression.FragmentSignatureUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.NoOpToken;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -110,8 +111,8 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         /*
          * PARSE AND PROCESS THE FRAGMENT
          */
-        final Fragment fragment = computeFragment(context, attributeValue, this.conditionalInsertion);
-        if (fragment == null) {
+        final Object fragmentObj = computeFragment(context, attributeValue, this.conditionalInsertion);
+        if (fragmentObj == null) {
 
             // If the Fragment result is null, our behaviour will depend on whether we are using
             // th:insert/th:replace or th:insert-if/th:replace-if. In the latter case, this is allowed and
@@ -126,7 +127,15 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                     "Error resolving fragment: \"" + attributeValue + "\": " +
                     "template or fragment could not be resolved");
 
+        } else if (fragmentObj == NoOpToken.VALUE) {
+
+            // If the Fragment result is NO-OP, we will just do nothing (apart from deleting the th:* attribute)
+            return;
+
         }
+
+
+        final Fragment fragment = (Fragment) fragmentObj;
 
 
         final TemplateModel fragmentModel = fragment.getTemplateModel();
@@ -318,7 +327,10 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
 
-    private static Fragment computeFragment(final ITemplateContext context, final String input, final boolean conditionalInsertion) {
+    /*
+     * This can return a Fragment, NoOpToken (if nothing should be done) or null
+     */
+    private static Object computeFragment(final ITemplateContext context, final String input, final boolean conditionalInsertion) {
 
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
 
@@ -339,9 +351,13 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                 // We might be in the scenario that what we thought was a template name in fact was instead an expression
                 // returning a Fragment itself, so we should simply return it
                 final Object templateNameExpressionResult = executedFragmentExpression.getTemplateNameExpressionResult();
-                if (templateNameExpressionResult != null && templateNameExpressionResult instanceof Fragment) {
-                    // Confirmed: it is not the template name, but the fragment itself
-                    return (Fragment) templateNameExpressionResult;
+                if (templateNameExpressionResult != null) {
+                    if (templateNameExpressionResult instanceof Fragment) {
+                        return templateNameExpressionResult;
+                    }
+                    if (templateNameExpressionResult == NoOpToken.VALUE) {
+                        return NoOpToken.VALUE;
+                    }
                 }
             }
 
@@ -376,13 +392,17 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
         }
 
-        if (fragmentExpressionResult != null && !(fragmentExpressionResult instanceof Fragment)) {
+        if (fragmentExpressionResult == null || fragmentExpressionResult == NoOpToken.VALUE) {
+            return fragmentExpressionResult;
+        }
+
+        if (!(fragmentExpressionResult instanceof Fragment)) {
             throw new TemplateProcessingException(
                     "Invalid fragment specification: \"" + input + "\": " +
                     "expression does not return a Fragment object");
         }
 
-        return (Fragment) fragmentExpressionResult;
+        return fragmentExpressionResult;
 
     }
 
