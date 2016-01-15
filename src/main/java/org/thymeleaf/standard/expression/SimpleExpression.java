@@ -89,6 +89,9 @@ public abstract class SimpleExpression extends Expression {
         if (expression instanceof SelectionVariableExpression) {
             return SelectionVariableExpression.executeSelectionVariableExpression(context, (SelectionVariableExpression)expression, expressionEvaluator, expContext);
         }
+        if (expression instanceof NoOpTokenExpression) {
+            return NoOpTokenExpression.executeNoOpTokenExpression(context, (NoOpTokenExpression) expression, expContext);
+        }
         if (expression instanceof GenericTokenExpression) {
             return GenericTokenExpression.executeGenericTokenExpression(context, (GenericTokenExpression) expression, expContext);
         }

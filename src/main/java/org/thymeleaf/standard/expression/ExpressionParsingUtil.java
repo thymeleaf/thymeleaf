@@ -357,6 +357,11 @@ final class ExpressionParsingUtil {
             return nullTokenExpr;
         }
 
+        final NoOpTokenExpression noOpTokenExpr = NoOpTokenExpression.parseNoOpTokenExpression(token);
+        if (noOpTokenExpr != null) {
+            return noOpTokenExpr;
+        }
+
         final GenericTokenExpression genericTokenExpr = GenericTokenExpression.parseGenericTokenExpression(token);
         if (genericTokenExpr != null) {
             return genericTokenExpr;
