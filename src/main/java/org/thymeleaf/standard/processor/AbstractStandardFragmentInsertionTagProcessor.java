@@ -63,7 +63,6 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
     private static final String FRAGMENT_ATTR_NAME = "fragment";
-    private static final String TEMPLATE_NAME_CURRENT_TEMPLATE = "this";
 
 
     private final boolean replaceHost;
