@@ -26,6 +26,7 @@ import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.NoOpToken;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
 
@@ -39,11 +40,14 @@ import org.thymeleaf.templatemode.TemplateMode;
 public abstract class AbstractStandardExpressionAttributeTagProcessor extends AbstractAttributeTagProcessor {
 
 
+    private final boolean removeIfNoop;
+
 
     protected AbstractStandardExpressionAttributeTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix,
             final String attrName, final int precedence, final boolean removeAttribute) {
         super(templateMode, dialectPrefix, null, false, attrName, true, precedence, removeAttribute);
+        this.removeIfNoop = !removeAttribute;
     }
 
 
@@ -64,6 +68,14 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
             expressionResult = expression.execute(context);
         } else {
             expressionResult = null;
+        }
+
+        // If the result of this expression is NO-OP, there is nothing to execute
+        if (expressionResult == NoOpToken.VALUE) {
+            if (this.removeIfNoop) {
+                tag.getAttributes().removeAttribute(attributeName);
+            }
+            return;
         }
 
         doProcess(

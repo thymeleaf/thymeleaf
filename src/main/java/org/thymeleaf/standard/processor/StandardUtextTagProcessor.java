@@ -32,6 +32,7 @@ import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.standard.expression.Fragment;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.NoOpToken;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -69,6 +70,13 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
 
         final IStandardExpression expression = expressionParser.parseExpression(context, attributeValue);
         final Object expressionResult = expression.execute(context, StandardExpressionExecutionContext.RESTRICTED);
+
+
+        // If result is no-op, there's nothing to execute
+        if (expressionResult == NoOpToken.VALUE) {
+            return;
+        }
+
 
         /*
          * We will check if there are configured post processors or not. The reason we do this is because output

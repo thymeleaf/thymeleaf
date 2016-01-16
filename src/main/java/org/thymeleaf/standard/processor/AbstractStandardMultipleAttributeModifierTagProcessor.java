@@ -31,6 +31,7 @@ import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.AssignationUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.standard.expression.NoOpToken;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.ArrayUtils;
 import org.thymeleaf.util.EvaluationUtils;
@@ -92,6 +93,11 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
 
             final IStandardExpression rightExpr = assignation.getRight();
             final Object rightValue = rightExpr.execute(context);
+
+            if (rightValue == NoOpToken.VALUE) {
+                // No changes to be done for this attribute
+                continue;
+            }
 
             final String newAttributeName = (leftValue == null? null : leftValue.toString());
             if (StringUtils.isEmptyOrWhitespace(newAttributeName)) {
