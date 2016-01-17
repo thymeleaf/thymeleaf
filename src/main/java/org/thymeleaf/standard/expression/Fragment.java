@@ -43,6 +43,8 @@ import org.thymeleaf.util.Validate;
  */
 public final class Fragment {
 
+    public static final Fragment EMPTY_FRAGMENT = new Fragment();
+
     private final TemplateModel templateModel;
     private final Map<String,Object> parameters;
     private final boolean syntheticParameters;
@@ -58,6 +60,16 @@ public final class Fragment {
         this.parameters = parameters != null ? Collections.unmodifiableMap(parameters) : null;
         this.syntheticParameters = (this.parameters != null && this.parameters.size() > 0 && syntheticParameters);
         this.wrappedInStartEndEvents = wrappedInStartEndEvents;
+    }
+
+
+    // Creates the empty Fragment
+    private Fragment() {
+        super();
+        this.templateModel = null;
+        this.parameters = null;
+        this.syntheticParameters = false;
+        this.wrappedInStartEndEvents  = false;
     }
 
 
@@ -79,7 +91,9 @@ public final class Fragment {
 
 
     public void write(final Writer writer) throws IOException {
-        this.templateModel.write(writer);
+        if (this.templateModel != null) {
+            this.templateModel.write(writer);
+        }
     }
 
 

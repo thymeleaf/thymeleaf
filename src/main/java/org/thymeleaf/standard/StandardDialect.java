@@ -62,7 +62,6 @@ import org.thymeleaf.standard.processor.StandardInlineXMLTagProcessor;
 import org.thymeleaf.standard.processor.StandardInliningCDATASectionProcessor;
 import org.thymeleaf.standard.processor.StandardInliningCommentProcessor;
 import org.thymeleaf.standard.processor.StandardInliningTextProcessor;
-import org.thymeleaf.standard.processor.StandardInsertIfTagProcessor;
 import org.thymeleaf.standard.processor.StandardInsertTagProcessor;
 import org.thymeleaf.standard.processor.StandardLangXmlLangTagProcessor;
 import org.thymeleaf.standard.processor.StandardMethodTagProcessor;
@@ -71,7 +70,6 @@ import org.thymeleaf.standard.processor.StandardObjectTagProcessor;
 import org.thymeleaf.standard.processor.StandardRefAttributeTagProcessor;
 import org.thymeleaf.standard.processor.StandardRemovableAttributeTagProcessor;
 import org.thymeleaf.standard.processor.StandardRemoveTagProcessor;
-import org.thymeleaf.standard.processor.StandardReplaceIfTagProcessor;
 import org.thymeleaf.standard.processor.StandardReplaceTagProcessor;
 import org.thymeleaf.standard.processor.StandardSrcTagProcessor;
 import org.thymeleaf.standard.processor.StandardStyleappendTagProcessor;
@@ -460,7 +458,6 @@ public class StandardDialect
         processors.add(new StandardIncludeTagProcessor(TemplateMode.HTML, dialectPrefix));
         processors.add(new StandardInlineHTMLTagProcessor(dialectPrefix));
         processors.add(new StandardInsertTagProcessor(TemplateMode.HTML, dialectPrefix));
-        processors.add(new StandardInsertIfTagProcessor(TemplateMode.HTML, dialectPrefix));
         processors.add(new StandardLangXmlLangTagProcessor(dialectPrefix));
         processors.add(new StandardMethodTagProcessor(dialectPrefix));
         for (final String attrName : StandardNonRemovableAttributeTagProcessor.ATTR_NAMES) {
@@ -472,7 +469,6 @@ public class StandardDialect
         }
         processors.add(new StandardRemoveTagProcessor(TemplateMode.HTML, dialectPrefix));
         processors.add(new StandardReplaceTagProcessor(TemplateMode.HTML, dialectPrefix));
-        processors.add(new StandardReplaceIfTagProcessor(TemplateMode.HTML, dialectPrefix));
         processors.add(new StandardSrcTagProcessor(dialectPrefix));
         processors.add(new StandardStyleappendTagProcessor(dialectPrefix));
         processors.add(new StandardSubstituteByTagProcessor(TemplateMode.HTML, dialectPrefix));
@@ -550,11 +546,9 @@ public class StandardDialect
         processors.add(new StandardIncludeTagProcessor(TemplateMode.XML, dialectPrefix));
         processors.add(new StandardInlineXMLTagProcessor(dialectPrefix));
         processors.add(new StandardInsertTagProcessor(TemplateMode.XML, dialectPrefix));
-        processors.add(new StandardInsertIfTagProcessor(TemplateMode.XML, dialectPrefix));
         processors.add(new StandardObjectTagProcessor(TemplateMode.XML, dialectPrefix));
         processors.add(new StandardRemoveTagProcessor(TemplateMode.XML, dialectPrefix));
         processors.add(new StandardReplaceTagProcessor(TemplateMode.XML, dialectPrefix));
-        processors.add(new StandardReplaceIfTagProcessor(TemplateMode.XML, dialectPrefix));
         processors.add(new StandardSubstituteByTagProcessor(TemplateMode.XML, dialectPrefix));
         processors.add(new StandardSwitchTagProcessor(TemplateMode.XML, dialectPrefix));
         processors.add(new StandardTextTagProcessor(TemplateMode.XML, dialectPrefix));
@@ -617,11 +611,9 @@ public class StandardDialect
         // No th:include to be added here, as it is already deprecated since 3.0
         processors.add(new StandardInlineTextualTagProcessor(TemplateMode.TEXT, dialectPrefix));
         processors.add(new StandardInsertTagProcessor(TemplateMode.TEXT, dialectPrefix));
-        processors.add(new StandardInsertIfTagProcessor(TemplateMode.TEXT, dialectPrefix));
         processors.add(new StandardObjectTagProcessor(TemplateMode.TEXT, dialectPrefix));
         processors.add(new StandardRemoveTagProcessor(TemplateMode.TEXT, dialectPrefix));
         processors.add(new StandardReplaceTagProcessor(TemplateMode.TEXT, dialectPrefix));
-        processors.add(new StandardReplaceIfTagProcessor(TemplateMode.TEXT, dialectPrefix));
         // No th:substituteby to be added here, as it is already deprecated since 2.1
         processors.add(new StandardSwitchTagProcessor(TemplateMode.TEXT, dialectPrefix));
         processors.add(new StandardTextTagProcessor(TemplateMode.TEXT, dialectPrefix));
@@ -682,11 +674,9 @@ public class StandardDialect
         // No th:include to be added here, as it is already deprecated since 3.0
         processors.add(new StandardInlineTextualTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
         processors.add(new StandardInsertTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
-        processors.add(new StandardInsertIfTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
         processors.add(new StandardObjectTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
         processors.add(new StandardRemoveTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
         processors.add(new StandardReplaceTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
-        processors.add(new StandardReplaceIfTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
         // No th:substituteby to be added here, as it is already deprecated since 2.1
         processors.add(new StandardSwitchTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
         processors.add(new StandardTextTagProcessor(TemplateMode.JAVASCRIPT, dialectPrefix));
@@ -747,11 +737,9 @@ public class StandardDialect
         // No th:include to be added here, as it is already deprecated since 3.0
         processors.add(new StandardInlineTextualTagProcessor(TemplateMode.CSS, dialectPrefix));
         processors.add(new StandardInsertTagProcessor(TemplateMode.CSS, dialectPrefix));
-        processors.add(new StandardInsertIfTagProcessor(TemplateMode.CSS, dialectPrefix));
         processors.add(new StandardObjectTagProcessor(TemplateMode.CSS, dialectPrefix));
         processors.add(new StandardRemoveTagProcessor(TemplateMode.CSS, dialectPrefix));
         processors.add(new StandardReplaceTagProcessor(TemplateMode.CSS, dialectPrefix));
-        processors.add(new StandardReplaceIfTagProcessor(TemplateMode.CSS, dialectPrefix));
         // No th:substituteby to be added here, as it is already deprecated since 2.1
         processors.add(new StandardSwitchTagProcessor(TemplateMode.CSS, dialectPrefix));
         processors.add(new StandardTextTagProcessor(TemplateMode.CSS, dialectPrefix));

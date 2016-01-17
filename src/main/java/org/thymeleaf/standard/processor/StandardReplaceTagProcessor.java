@@ -38,7 +38,7 @@ public final class StandardReplaceTagProcessor extends AbstractStandardFragmentI
 
 
     public StandardReplaceTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, true, false);
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, true);
     }
 
 

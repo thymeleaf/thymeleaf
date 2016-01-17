@@ -66,7 +66,6 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
     private final boolean replaceHost;
-    private final boolean conditionalInsertion;
     // This flag should probably be removed once th:include is removed in 3.2 (deprecated in 3.0)
     private final boolean insertOnlyContents;
 
@@ -74,8 +73,8 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
     protected AbstractStandardFragmentInsertionTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
-            final boolean replaceHost, final boolean conditionalInsertion) {
-        this(templateMode, dialectPrefix, attrName, precedence, replaceHost, conditionalInsertion, false);
+            final boolean replaceHost) {
+        this(templateMode, dialectPrefix, attrName, precedence, replaceHost, false);
     }
 
     /*
@@ -84,10 +83,9 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
      */
     AbstractStandardFragmentInsertionTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
-            final boolean replaceHost, final boolean conditionalInsertion, final boolean insertOnlyContents) {
+            final boolean replaceHost, final boolean insertOnlyContents) {
         super(templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
         this.replaceHost = replaceHost;
-        this.conditionalInsertion = conditionalInsertion;
         this.insertOnlyContents = insertOnlyContents;
     }
 
@@ -110,17 +108,11 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         /*
          * PARSE AND PROCESS THE FRAGMENT
          */
-        final Object fragmentObj = computeFragment(context, attributeValue, this.conditionalInsertion);
+        final Object fragmentObj = computeFragment(context, attributeValue);
         if (fragmentObj == null) {
 
-            // If the Fragment result is null, our behaviour will depend on whether we are using
-            // th:insert/th:replace or th:insert-if/th:replace-if. In the latter case, this is allowed and
-            // we will simply do nothing.
-
-            if (this.conditionalInsertion) {
-                // Result is null, but this insertion operation is conditional so we will just do NOTHING
-                return;
-            }
+            // If the Fragment result is null, this is an error. Note a NULL result is not the same as the
+            // result being the empty fragment (~{})
 
             throw new TemplateInputException(
                     "Error resolving fragment: \"" + attributeValue + "\": " +
@@ -129,6 +121,17 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         } else if (fragmentObj == NoOpToken.VALUE) {
 
             // If the Fragment result is NO-OP, we will just do nothing (apart from deleting the th:* attribute)
+            return;
+
+        } else if (fragmentObj == Fragment.EMPTY_FRAGMENT) {
+
+            // The result is the empty fragment, which means we simply have to either remove the body of this
+            // tag (th:insert) or remove it completely, tag included (th:replace)
+            if (this.replaceHost) {
+                structureHandler.removeElement();
+            } else {
+                structureHandler.removeBody();
+            }
             return;
 
         }
@@ -329,7 +332,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
     /*
      * This can return a Fragment, NoOpToken (if nothing should be done) or null
      */
-    private static Object computeFragment(final ITemplateContext context, final String input, final boolean conditionalInsertion) {
+    private static Object computeFragment(final ITemplateContext context, final String input) {
 
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
 
@@ -340,6 +343,8 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
             // content of a FragmentExpression for legacy compatibility reasons.
             // We will only reach this point if the expression does not contain any Fragment Expressions expressed
             // as ~{...} (excluding parameters), nor the "::" fragment selector separator.
+            // NOTE we are using the generic parseExpression() and not directly calling a parse method in the
+            // FragmentExpression class because we want to take advantage of the expression cache.
             final FragmentExpression fragmentExpression =
                     (FragmentExpression) expressionParser.parseExpression(context, "~{" + trimmedInput + "}");
 
@@ -360,10 +365,11 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                 }
             }
 
-            // If conditional insertion is allowed for this processor, we will not consider a non-resolution of
-            // the specified template a failure. But in case we reach this point in a th:insert or th:replace
-            // (without the "-if"), we will send a true avoiding an unnecessary call to resource.exists()
-            return FragmentExpression.resolveExecutedFragmentExpression(context, executedFragmentExpression, !conditionalInsertion);
+            // Given this is a simple (originally unwrapped) fragment expression, we will consider the non-existance
+            // of the fragment a failure. The reason we do this here instead of just waiting and seeing if we receive
+            // a null and then failing is that, in order to receive such "null", the underlying resolution system would
+            // have to execute a (potentially costly) resource.exists() call on the resolved resource.
+            return FragmentExpression.resolveExecutedFragmentExpression(context, executedFragmentExpression, true);
 
         }
 
@@ -374,7 +380,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
         final Object fragmentExpressionResult;
 
-        if (!conditionalInsertion && fragmentExpression != null && fragmentExpression instanceof FragmentExpression) {
+        if (fragmentExpression != null && fragmentExpression instanceof FragmentExpression) {
             // This is not a complex expression but merely a FragmentExpression, so we can apply a shortcut
             // so that we don't require a "null" result for this expression if the template does not exist. That will
             // save a call to resource.exists() which might be costly.
@@ -383,7 +389,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                     FragmentExpression.createExecutedFragmentExpression(context, (FragmentExpression) fragmentExpression, StandardExpressionExecutionContext.NORMAL);
 
             fragmentExpressionResult =
-                    FragmentExpression.resolveExecutedFragmentExpression(context, executedFragmentExpression, !conditionalInsertion);
+                    FragmentExpression.resolveExecutedFragmentExpression(context, executedFragmentExpression, true);
 
         } else {
 

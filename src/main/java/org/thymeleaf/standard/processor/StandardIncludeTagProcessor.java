@@ -38,7 +38,7 @@ public final class StandardIncludeTagProcessor extends AbstractStandardFragmentI
 
 
     public StandardIncludeTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, false, false, true);
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, false, true);
     }
 
 

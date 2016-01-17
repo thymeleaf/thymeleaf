@@ -57,6 +57,11 @@ public final class FragmentExpression extends SimpleExpression {
 
     private static final long serialVersionUID = -130371297698708001L;
 
+    /**
+     * This constant contains the {@link FragmentExpression} object representing the EMPTY FRAGMENT (<tt>~{}</tt>)
+     */
+    public static final FragmentExpression EMPTY_FRAGMENT_EXPRESSION = new FragmentExpression();
+
     private static final String TEMPLATE_NAME_CURRENT_TEMPLATE = "this";
     private static final String SEPARATOR = "::";
     static final String UNNAMED_PARAMETERS_PREFIX = "_arg";
@@ -66,7 +71,7 @@ public final class FragmentExpression extends SimpleExpression {
 
 
     private static final Pattern FRAGMENT_PATTERN =
-        Pattern.compile("^\\s*~\\{(.+?)\\}\\s*$", Pattern.DOTALL);
+        Pattern.compile("^\\s*~\\{(.*?)\\}\\s*$", Pattern.DOTALL);
 
 
 
@@ -82,13 +87,27 @@ public final class FragmentExpression extends SimpleExpression {
             final IStandardExpression templateName, final IStandardExpression fragmentSelector,
             final AssignationSequence parameters, final boolean syntheticParameters) {
         super();
-        // templateName can be null if fragment is to be executed on the current template
+        // templateName can be null if fragment is to be executed on the current template, but then there should
+        // at least be a fragment selector
+        if (templateName == null && fragmentSelector == null) {
+            throw new IllegalArgumentException(
+                    "Fragment Expression cannot have null template name and null fragment selector");
+        }
         this.templateName = templateName;
         this.fragmentSelector = fragmentSelector;
         this.parameters = parameters;
         this.syntheticParameters = (this.parameters != null && this.parameters.size() > 0 && syntheticParameters);
     }
 
+
+    // Creates the empty Fragment Expression
+    private FragmentExpression() {
+        super();
+        this.templateName = null;
+        this.fragmentSelector = null;
+        this.parameters = null;
+        this.syntheticParameters = false;
+    }
 
 
     public IStandardExpression getTemplateName() {
@@ -158,7 +177,7 @@ public final class FragmentExpression extends SimpleExpression {
         }
         final String expression = matcher.group(1);
         if (StringUtils.isEmptyOrWhitespace(expression)) {
-            return null;
+            return EMPTY_FRAGMENT_EXPRESSION;
         }
         return parseFragmentExpressionContent(expression.trim());
     }
@@ -169,7 +188,7 @@ public final class FragmentExpression extends SimpleExpression {
     static FragmentExpression parseFragmentExpressionContent(final String input) {
 
         if (StringUtils.isEmptyOrWhitespace(input)) {
-            return null;
+            return EMPTY_FRAGMENT_EXPRESSION;
         }
 
         final String trimmedInput = input.trim();
@@ -369,6 +388,10 @@ public final class FragmentExpression extends SimpleExpression {
                     context.getClass().getName() + ")");
         }
 
+        if (expression == EMPTY_FRAGMENT_EXPRESSION) {
+            return Fragment.EMPTY_FRAGMENT;
+        }
+
         return resolveExecutedFragmentExpression(
                 (ITemplateContext) context,
                 createExecutedFragmentExpression(context, expression, expContext),
@@ -390,6 +413,14 @@ public final class FragmentExpression extends SimpleExpression {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating fragment: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
+        }
+
+
+        /*
+         * CHECK THE EMPTY EXPRESSION FRAGMENT
+         */
+        if (expression == EMPTY_FRAGMENT_EXPRESSION) {
+            return ExecutedFragmentExpression.EMPTY_EXECUTED_FRAGMENT_EXPRESSION;
         }
 
 
@@ -489,6 +520,10 @@ public final class FragmentExpression extends SimpleExpression {
     public static Fragment resolveExecutedFragmentExpression(
             final ITemplateContext context, final ExecutedFragmentExpression executedFragmentExpression,
             final boolean failIfNotExists) {
+
+        if (executedFragmentExpression == ExecutedFragmentExpression.EMPTY_EXECUTED_FRAGMENT_EXPRESSION) {
+            return Fragment.EMPTY_FRAGMENT;
+        }
 
         final IEngineConfiguration configuration = context.getConfiguration();
 
@@ -649,6 +684,9 @@ public final class FragmentExpression extends SimpleExpression {
 
 
     public static final class ExecutedFragmentExpression {
+
+        public static final ExecutedFragmentExpression EMPTY_EXECUTED_FRAGMENT_EXPRESSION =
+                new ExecutedFragmentExpression(EMPTY_FRAGMENT_EXPRESSION, null, null, null, false);
 
         private final FragmentExpression fragmentExpression;
         private final Object templateNameExpressionResult;
