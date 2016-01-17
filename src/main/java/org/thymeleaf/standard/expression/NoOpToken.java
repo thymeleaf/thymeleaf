@@ -45,7 +45,7 @@ public final class NoOpToken implements Serializable {
 
 
     public String toString() {
-        return "~";
+        return "_";
     }
 
 }

@@ -61,11 +61,8 @@ public abstract class Token extends SimpleExpression {
     public static boolean isTokenChar(final String context, final int pos) {
 
         /*
-         * TOKEN chars: A-Za-z0-9[]._ (plus '~' and '-' in some contexts)
+         * TOKEN chars: A-Za-z0-9[]._ (plus '-' in some contexts)
          * (additionally, also, a series of internationalized characters: accents, other alphabets, etc.)
-         *
-         * '~' can be a part of a token as long as it is not followed by the '{' symbol, in which case it will
-         *     be considered to be the start of a fragment expression
          *
          * '-' can also be a numeric operator, so it will only be considered a token char if:
          *    * there are immediately previous chars which we can consider a token, but not a numeric token
@@ -100,16 +97,6 @@ public abstract class Token extends SimpleExpression {
          * Some more (less common) true's
          */
         if (c == '[' || c == ']' || c == '.' || c == '_') {
-            return true;
-        }
-        /*
-         * A special case: the tilde
-         */
-        if (c == '~') {
-            final int contextLen = context.length();
-            if (pos + 1 < contextLen) {
-                return (context.charAt(pos + 1) != '{');
-            }
             return true;
         }
         /*

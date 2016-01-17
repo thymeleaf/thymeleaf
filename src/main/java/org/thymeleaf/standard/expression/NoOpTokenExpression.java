@@ -49,12 +49,12 @@ public final class NoOpTokenExpression extends Token {
 
     @Override
     public String getStringRepresentation() {
-        return "~";
+        return "_";
     }
 
 
     static NoOpTokenExpression parseNoOpTokenExpression(final String input) {
-        if (input.length() == 1 && input.charAt(0) == '~') {
+        if (input.length() == 1 && input.charAt(0) == '_') {
             return SINGLETON;
         }
         return null;
