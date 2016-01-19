@@ -69,7 +69,24 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
 
         final IStandardExpression expression = expressionParser.parseExpression(context, attributeValue);
-        final Object expressionResult = expression.execute(context, StandardExpressionExecutionContext.RESTRICTED);
+
+        final Object expressionResult;
+        if (expression != null && expression instanceof FragmentExpression) {
+            // This is merely a FragmentExpression (not complex, not combined with anything), so we can apply a shortcut
+            // so that we don't require a "null" result for this expression if the template does not exist. That will
+            // save a call to resource.exists() which might be costly.
+
+            final FragmentExpression.ExecutedFragmentExpression executedFragmentExpression =
+                    FragmentExpression.createExecutedFragmentExpression(context, (FragmentExpression) expression, StandardExpressionExecutionContext.RESTRICTED);
+
+            expressionResult =
+                    FragmentExpression.resolveExecutedFragmentExpression(context, executedFragmentExpression, true);
+
+        } else {
+
+            expressionResult = expression.execute(context, StandardExpressionExecutionContext.RESTRICTED);
+
+        }
 
 
         // If result is no-op, there's nothing to execute
