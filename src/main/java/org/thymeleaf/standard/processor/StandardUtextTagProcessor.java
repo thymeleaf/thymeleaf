@@ -30,13 +30,13 @@ import org.thymeleaf.postprocessor.IPostProcessor;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.standard.expression.Fragment;
+import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.NoOpToken;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.util.LazyFragmentCharSequence;
 
 /**
  *
@@ -79,6 +79,22 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
 
 
         /*
+         * First of all we should check whether the expression result is a Fragment so that, in such case, we can
+         * avoid creating a String in memory for it and just append its model.
+         */
+        if (expressionResult != null && expressionResult instanceof Fragment) {
+            if (expressionResult == Fragment.EMPTY_FRAGMENT) {
+                structureHandler.removeBody();
+                return;
+            }
+            structureHandler.setBody(((Fragment)expressionResult).getTemplateModel(), false);
+            return;
+        }
+
+
+        final String unescapedTextStr = (expressionResult == null ? "" : expressionResult.toString());
+
+        /*
          * We will check if there are configured post processors or not. The reason we do this is because output
          * inserted as a result of a th:utext attribute, even if it might be markup, will never be considered as
          * 'processable', i.e. no other processors/inliner will ever be able to act on it. The main reason for this
@@ -91,23 +107,8 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
          */
         final Set<IPostProcessor> postProcessors = configuration.getPostProcessors(getTemplateMode());
         if (postProcessors.isEmpty()) {
-
-            /*
-             * Once we know we do not have to worry about post-processors, we should check whether the expression
-             * result is a Fragment so that, in such case, we can apply lazyness in order to avoid that Fragment
-             * to have to become a (potentially large) String in memory.
-             */
-
-            if (expressionResult != null && expressionResult instanceof Fragment) {
-                final CharSequence fragmentLazyCharSeq = new LazyFragmentCharSequence((Fragment)expressionResult);
-                structureHandler.setBody(fragmentLazyCharSeq, false);
-                return;
-            }
-
-            final String unescapedTextStr = (expressionResult == null ? "" : expressionResult.toString());
             structureHandler.setBody(unescapedTextStr, false);
             return;
-
         }
 
 
@@ -115,15 +116,16 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
          * We have post-processors, so from here one we will have to decide whether we need to parse the unescaped
          * text or not...
          */
-
-        final String unescapedTextStr = (expressionResult == null ? "" : expressionResult.toString());
-
         if (!mightContainStructures(unescapedTextStr)) {
             // If this text contains no markup structures, there would be no need to parse it or treat it as markup!
             structureHandler.setBody(unescapedTextStr, false);
             return;
         }
 
+
+        /*
+         * We have post-processors AND this text might contain structures, so there is no alternative but parsing
+         */
         final TemplateModel parsedFragment =
                 configuration.getTemplateManager().parseString(
                         context.getTemplateData(),
