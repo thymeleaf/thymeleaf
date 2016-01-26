@@ -32,8 +32,11 @@ import org.thymeleaf.processor.element.IElementTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.processor.element.MatchingAttributeName;
 import org.thymeleaf.processor.element.MatchingElementName;
+import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.NoOpToken;
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EscapedAttributeUtils;
@@ -142,13 +145,37 @@ public final class StandardDefaultAttributesTagProcessor
              */
             final Object expressionResult;
             if (attributeValue != null) {
-                final IStandardExpression expression =
-                        expressionParser.parseExpression(context, attributeValue);
-                expressionResult = expression.execute(context);
+
+                final IStandardExpression expression = expressionParser.parseExpression(context, attributeValue);
+
+                if (expression != null && expression instanceof FragmentExpression) {
+                    // This is merely a FragmentExpression (not complex, not combined with anything), so we can apply a shortcut
+                    // so that we don't require a "null" result for this expression if the template does not exist. That will
+                    // save a call to resource.exists() which might be costly.
+
+                    final FragmentExpression.ExecutedFragmentExpression executedFragmentExpression =
+                            FragmentExpression.createExecutedFragmentExpression(context, (FragmentExpression) expression, StandardExpressionExecutionContext.NORMAL);
+
+                    expressionResult =
+                            FragmentExpression.resolveExecutedFragmentExpression(context, executedFragmentExpression, true);
+
+                } else {
+
+                    expressionResult = expression.execute(context);
+
+                }
+
             } else {
                 expressionResult = null;
             }
 
+            /*
+             * If the result of this expression is NO-OP, there is nothing to execute
+             */
+            if (expressionResult == NoOpToken.VALUE) {
+                tag.getAttributes().removeAttribute(attributeName);
+                return;
+            }
 
             /*
              * Compute the new attribute value
