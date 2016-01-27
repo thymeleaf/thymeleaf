@@ -23,7 +23,15 @@ import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.util.ClassLoaderUtils;
 
 /**
- * 
+ * <p>
+ *   Expression object in charge of the creation of URLs using the controller-based mechanism in Spring MVC 4.1.
+ * </p>
+ * <p>
+ *   This mimics the <tt>s:mvcUrl</tt> behaviour explained at
+ *   http://docs.spring.io/spring/docs/4.1.0.RELEASE/spring-framework-reference/html/mvc.html#mvc-links-to-controllers-from-views
+ *   using the same method (function) names in the Spring JSP tag library.
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 2.1.4
