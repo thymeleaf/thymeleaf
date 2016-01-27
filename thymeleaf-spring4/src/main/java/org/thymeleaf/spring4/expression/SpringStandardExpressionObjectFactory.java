@@ -24,6 +24,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.thymeleaf.context.IExpressionContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.standard.expression.StandardExpressionObjectFactory;
 
 /**
@@ -44,6 +45,7 @@ public class SpringStandardExpressionObjectFactory extends StandardExpressionObj
     public static final String FIELDS_EXPRESSION_OBJECT_NAME = "fields";
     public static final String THEMES_EXPRESSION_OBJECT_NAME = "themes";
     public static final String MVC_EXPRESSION_OBJECT_NAME = "mvc";
+    public static final String REQUESTDATAVALUES_EXPRESSION_OBJECT_NAME = "requestdatavalues";
 
 
     public static final Set<String> ALL_EXPRESSION_OBJECT_NAMES;
@@ -60,6 +62,7 @@ public class SpringStandardExpressionObjectFactory extends StandardExpressionObj
         allExpressionObjectNames.add(FIELDS_EXPRESSION_OBJECT_NAME);
         allExpressionObjectNames.add(THEMES_EXPRESSION_OBJECT_NAME);
         allExpressionObjectNames.add(MVC_EXPRESSION_OBJECT_NAME);
+        allExpressionObjectNames.add(REQUESTDATAVALUES_EXPRESSION_OBJECT_NAME);
 
         ALL_EXPRESSION_OBJECT_NAMES = Collections.unmodifiableSet(allExpressionObjectNames);
 
@@ -93,6 +96,12 @@ public class SpringStandardExpressionObjectFactory extends StandardExpressionObj
         }
         if (FIELDS_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
             return new Fields(context);
+        }
+        if (REQUESTDATAVALUES_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
+            if (context instanceof ITemplateContext) {
+                return new RequestDataValues((ITemplateContext)context);
+            }
+            return null;
         }
 
         return super.buildObject(context, expressionObjectName);
