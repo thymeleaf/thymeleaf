@@ -58,12 +58,13 @@ public final class ExecutionInfo {
 
     /**
      * <p>
-     *   Returns the template name.
+     *   Returns the template name (of the leaf template).
      * </p>
      * <p>
-     *   Note that the same template can be resolved with different names due to
-     *   aliases, links, etc. This template name refers to the one used to call
-     *   the TemplateEngine itself.
+     *   Note that the template name returned here corresponds with origin of the elements or nodes being
+     *   currently processed. This is, if a processor is being executed for an element inserted from an external
+     *   template (via a <tt>th:insert</tt>, for example), then this method will return the template mode
+     *   for the template in which the inserted fragment lives, not the one it was inserted into.
      * </p>
      *
      * @return the template name
@@ -75,13 +76,53 @@ public final class ExecutionInfo {
 
     /**
      * <p>
-     *   Returns the template mode ({@link TemplateMode}).
+     *   Returns the template mode ({@link TemplateMode}) (of the leaf template).
+     * </p>
+     * <p>
+     *   Note that the {@link TemplateMode} returned here corresponds with origin of the elements or nodes being
+     *   currently processed. This is, if a processor is being executed for an element inserted from an external
+     *   template (via a <tt>th:insert</tt>, for example), then this method will return the template mode
+     *   for the template in which the inserted fragment lives, not the one it was inserted into.
      * </p>
      *
      * @return the template mode
      */
     public TemplateMode getTemplateMode() {
         return this.context.getTemplateData().getTemplateMode();
+    }
+
+
+    /**
+     * <p>
+     *   Returns the template name of the first-level template.
+     * </p>
+     * <p>
+     *   Note this template name refers to the first-level one, the one used to call the TemplateEngine itself, even
+     *   if by the moment this method is called the engine is processing a fragment inserted from the first-level
+     *   template (or at any other level in the hierarchy).
+     * </p>
+     *
+     * @return the template name
+     */
+    public String getProcessedTemplateName() {
+        return this.context.getTemplateStack().get(0).getTemplate();
+    }
+
+
+    /**
+     * <p>
+     *   Returns the template mode ({@link TemplateMode}) of the first-level template.
+     * </p>
+     * <p>
+     *   Note this template mode refers to the first-level one, the one used to call the TemplateEngine itself, even
+     *   if by the moment this method is called the engine is processing a fragment inserted from the first-level
+     *   template (or at any other level in the hierarchy).
+     * </p>
+     *
+     * @return the template mode
+     */
+    public TemplateMode getProcessedTemplateMode() {
+        return this.context.getTemplateStack().get(0).getTemplateMode();
     }
 
 
