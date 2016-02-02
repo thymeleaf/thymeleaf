@@ -235,7 +235,11 @@ public final class TemplateManager {
         if (useCache && this.templateCache != null) {
             final TemplateModel cached =  this.templateCache.get(cacheKey);
             if (cached != null) {
-                return cached;
+                /*
+                 * Just at the end, and importantly AFTER CACHING, check if we need to apply any pre-processors
+                 * to this model before returning and letting the engine insert the model in any way it needs.
+                 */
+                return applyPreProcessorsIfNeeded(context, cached);
             }
         }
 
@@ -317,9 +321,53 @@ public final class TemplateManager {
             }
         }
 
-        return templateModel;
+
+        /*
+         * Last step: just at the end, and importantly AFTER CACHING, check if we need to apply any pre-processors
+         * to this model before returning and letting the engine insert the model in any way it needs.
+         */
+        return applyPreProcessorsIfNeeded(context, templateModel);
+
+    }
 
 
+
+
+    /*
+     * This method manually applies preprocessors to template models that have just been parsed or obtained from
+     * cache. This is needed for fragments, just before these fragments (coming from templates, not simply parsed
+     * text) are returned to whoever needs them (usually the fragment insertion mechanism).
+     *
+     * NOTE that PRE-PROCESSOR INSTANCES ARE NOT SHARED among the different fragments being inserted
+     *      in a template (or between fragments and the main template). The reason for this is that pre-processors are
+     *      implementations of ITemplateHandler and therefore instances are inserted into processing chains that cannot
+     *      be broken (if a pre-processor is used for the main template its "next" step in the chain cannot be
+     *      'momentarily' changed in order to be a fragment-building handler instead of the ProcessorTemplateHandler)
+     *
+     *      The only way therefore among pre-processor instances to actually share information is by setting it into
+     *      the context.
+     */
+    private TemplateModel applyPreProcessorsIfNeeded(final ITemplateContext context, final TemplateModel templateModel) {
+
+        final TemplateData templateData = templateModel.getTemplateData();
+
+        if (this.configuration.getPreProcessors(templateData.getTemplateMode()).isEmpty()) {
+            return templateModel;
+        }
+
+        final IEngineContext engineContext =
+                EngineContextManager.prepareEngineContext(this.configuration, templateData, context.getTemplateResolutionAttributes(), context);
+
+        final TemplateModel preProcessedTemplateModel = new TemplateModel(this.configuration, templateData);
+        final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(preProcessedTemplateModel.getInternalModel());
+        final ITemplateHandler processingHandlerChain =
+                createTemplateProcessingHandlerChain(engineContext, true, false, builderHandler, null);
+
+        templateModel.getInternalModel().process(processingHandlerChain);
+
+        EngineContextManager.disposeEngineContext(engineContext);
+
+        return preProcessedTemplateModel;
 
     }
 
@@ -459,9 +507,21 @@ public final class TemplateManager {
                 EngineContextManager.prepareEngineContext(this.configuration, template.getTemplateData(), context.getTemplateResolutionAttributes(), context);
 
         /*
-         * Create the handler chain to process the data
+         * Create the handler chain to process the data.
+         *
+         * In this case we are only processing an already existing model, which was created after some computation
+         * at template-processing time. So this does not come directly from a template, and therefore pre-processors
+         * should not be applied.
+         *
+         * As for post-processors, we know the result of this will not be directly written to output in most cases but
+         * instead used to create a String that is afterwards inserted into the model as a Text node. In the only cases
+         * in which this is not true is when this is used inside any kind of Lazy-processing CharSequence writer like
+         * LazyProcessingCharSequence, and in such case we know those CharSequences are only used when there are
+         * NO post-processors, so we are safe anyway.
          */
-        final ITemplateHandler processingHandlerChain = createTemplateProcessingHandlerChain(engineContext, writer);
+        final ProcessorTemplateHandler processorTemplateHandler = new ProcessorTemplateHandler();
+        final ITemplateHandler processingHandlerChain =
+                createTemplateProcessingHandlerChain(engineContext, false, false, processorTemplateHandler, writer);
 
         /*
          *  Process the template
@@ -530,7 +590,14 @@ public final class TemplateManager {
                 final IEngineContext engineContext =
                         EngineContextManager.prepareEngineContext(this.configuration, cached.getTemplateData(), templateResolutionAttributes, context);
 
-                final ITemplateHandler processingHandlerChain = createTemplateProcessingHandlerChain(engineContext, writer);
+                /*
+                 * Create the handler chain to process the data.
+                 * This is PARSE + PROCESS, so its called from the TemplateEngine, and the only case in which we should apply
+                 * both pre-processors and post-processors (besides creating a last output-to-writer step)
+                 */
+                final ProcessorTemplateHandler processorTemplateHandler = new ProcessorTemplateHandler();
+                final ITemplateHandler processingHandlerChain =
+                        createTemplateProcessingHandlerChain(engineContext, true, true, processorTemplateHandler, writer);
 
                 cached.getInternalModel().process(processingHandlerChain);
 
@@ -565,9 +632,13 @@ public final class TemplateManager {
 
 
         /*
-         * Create the handler chain to process the data
+         * Create the handler chain to process the data.
+         * This is PARSE + PROCESS, so its called from the TemplateEngine, and the only case in which we should apply
+         * both pre-processors and post-processors (besides creating a last output-to-writer step)
          */
-        final ITemplateHandler processingHandlerChain = createTemplateProcessingHandlerChain(engineContext, writer);
+        final ProcessorTemplateHandler processorTemplateHandler = new ProcessorTemplateHandler();
+        final ITemplateHandler processingHandlerChain =
+                createTemplateProcessingHandlerChain(engineContext, true, true, processorTemplateHandler, writer);
 
 
         /*
@@ -714,7 +785,8 @@ public final class TemplateManager {
 
     private static ITemplateHandler createTemplateProcessingHandlerChain(
             final IEngineContext context,
-            final Writer writer) {
+            final boolean setPreProcessors, final boolean setPostProcessors,
+            final ITemplateHandler handler, final Writer writer) {
 
         final IEngineConfiguration configuration = context.getConfiguration();
 
@@ -727,26 +799,28 @@ public final class TemplateManager {
         /*
          * First type of handlers to be added: pre-processors (if any)
          */
-        final Set<IPreProcessor> preProcessors = configuration.getPreProcessors(context.getTemplateMode());
-        if (preProcessors != null) {
-            for (final IPreProcessor preProcessor : preProcessors) {
-                final Class<? extends ITemplateHandler> preProcessorClass = preProcessor.getHandlerClass();
-                final ITemplateHandler preProcessorHandler;
-                try {
-                    preProcessorHandler = preProcessorClass.newInstance();
-                } catch (final Exception e) {
-                    // This should never happen - class was already checked during configuration to contain a zero-arg constructor
-                    throw new TemplateProcessingException(
-                            "An exception happened during the creation of a new instance of pre-processor " + preProcessorClass.getClass().getName(), e);
-                }
-                // Initialize the pre-processor
-                preProcessorHandler.setContext(context);
-                if (firstHandler == null) {
-                    firstHandler = preProcessorHandler;
-                    lastHandler = preProcessorHandler;
-                } else {
-                    lastHandler.setNext(preProcessorHandler);
-                    lastHandler = preProcessorHandler;
+        if (setPreProcessors) {
+            final Set<IPreProcessor> preProcessors = configuration.getPreProcessors(context.getTemplateMode());
+            if (preProcessors != null) {
+                for (final IPreProcessor preProcessor : preProcessors) {
+                    final Class<? extends ITemplateHandler> preProcessorClass = preProcessor.getHandlerClass();
+                    final ITemplateHandler preProcessorHandler;
+                    try {
+                        preProcessorHandler = preProcessorClass.newInstance();
+                    } catch (final Exception e) {
+                        // This should never happen - class was already checked during configuration to contain a zero-arg constructor
+                        throw new TemplateProcessingException(
+                                "An exception happened during the creation of a new instance of pre-processor " + preProcessorClass.getClass().getName(), e);
+                    }
+                    // Initialize the pre-processor
+                    preProcessorHandler.setContext(context);
+                    if (firstHandler == null) {
+                        firstHandler = preProcessorHandler;
+                        lastHandler = preProcessorHandler;
+                    } else {
+                        lastHandler.setNext(preProcessorHandler);
+                        lastHandler = preProcessorHandler;
+                    }
                 }
             }
         }
@@ -755,40 +829,41 @@ public final class TemplateManager {
         /*
          * Initialize and add to the chain te Processor Handler itself, the central piece of the chain
          */
-        final ProcessorTemplateHandler processorHandler = new ProcessorTemplateHandler();
-        processorHandler.setContext(context);
+        handler.setContext(context);
         if (firstHandler == null) {
-            firstHandler = processorHandler;
-            lastHandler = processorHandler;
+            firstHandler = handler;
+            lastHandler = handler;
         } else {
-            lastHandler.setNext(processorHandler);
-            lastHandler = processorHandler;
+            lastHandler.setNext(handler);
+            lastHandler = handler;
         }
 
 
         /*
          * After the Processor Handler, we now must add the post-processors (if any)
          */
-        final Set<IPostProcessor> postProcessors = configuration.getPostProcessors(context.getTemplateMode());
-        if (postProcessors != null) {
-            for (final IPostProcessor postProcessor : postProcessors) {
-                final Class<? extends ITemplateHandler> postProcessorClass = postProcessor.getHandlerClass();
-                final ITemplateHandler postProcessorHandler;
-                try {
-                    postProcessorHandler = postProcessorClass.newInstance();
-                } catch (final Exception e) {
-                    // This should never happen - class was already checked during configuration to contain a zero-arg constructor
-                    throw new TemplateProcessingException(
-                            "An exception happened during the creation of a new instance of post-processor " + postProcessorClass.getClass().getName(), e);
-                }
-                // Initialize the pre-processor
-                postProcessorHandler.setContext(context);
-                if (firstHandler == null) {
-                    firstHandler = postProcessorHandler;
-                    lastHandler = postProcessorHandler;
-                } else {
-                    lastHandler.setNext(postProcessorHandler);
-                    lastHandler = postProcessorHandler;
+        if (setPostProcessors) {
+            final Set<IPostProcessor> postProcessors = configuration.getPostProcessors(context.getTemplateMode());
+            if (postProcessors != null) {
+                for (final IPostProcessor postProcessor : postProcessors) {
+                    final Class<? extends ITemplateHandler> postProcessorClass = postProcessor.getHandlerClass();
+                    final ITemplateHandler postProcessorHandler;
+                    try {
+                        postProcessorHandler = postProcessorClass.newInstance();
+                    } catch (final Exception e) {
+                        // This should never happen - class was already checked during configuration to contain a zero-arg constructor
+                        throw new TemplateProcessingException(
+                                "An exception happened during the creation of a new instance of post-processor " + postProcessorClass.getClass().getName(), e);
+                    }
+                    // Initialize the pre-processor
+                    postProcessorHandler.setContext(context);
+                    if (firstHandler == null) {
+                        firstHandler = postProcessorHandler;
+                        lastHandler = postProcessorHandler;
+                    } else {
+                        lastHandler.setNext(postProcessorHandler);
+                        lastHandler = postProcessorHandler;
+                    }
                 }
             }
         }
@@ -797,12 +872,14 @@ public final class TemplateManager {
         /*
          * Last step: the OUTPUT HANDLER
          */
-        final OutputTemplateHandler outputHandler = new OutputTemplateHandler(writer);
-        outputHandler.setContext(context);
-        if (firstHandler == null) {
-            firstHandler = outputHandler;
-        } else {
-            lastHandler.setNext(outputHandler);
+        if (writer != null) {
+            final OutputTemplateHandler outputHandler = new OutputTemplateHandler(writer);
+            outputHandler.setContext(context);
+            if (firstHandler == null) {
+                firstHandler = outputHandler;
+            } else {
+                lastHandler.setNext(outputHandler);
+            }
         }
 
         return firstHandler;
