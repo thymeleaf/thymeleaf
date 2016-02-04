@@ -40,7 +40,16 @@ import org.unbescape.uri.UriEscape;
  *   Standard implementation of {@link ILinkBuilder}.
  * </p>
  * <p>
- *   This class will build link URLs using the Java Servlet API.
+ *   This class will build link URLs using (by default) the Java Servlet API when the specified URLs are
+ *   context-relative, given the need to obtain the context path and add it to the URL. Also, when an
+ *   {@link org.thymeleaf.context.IWebContext} implementation is used as context, URLs will be passed to
+ *   the standard <tt>HttpSerlvetResponse.encodeURL(...)</tt> method before returning.
+ * </p>
+ * <p>
+ *   Note however that the Servlet-API specific part of this behaviour is configurable and confined to a set of
+ *   <tt>protected</tt> methods that can be overwritten by subclasses that want to offer a link building
+ *   behaviour very similar to the standard one, but without any dependencies on the Servlet API (e.g. extracting
+ *   URL context paths from a framework artifact other than <tt>HttpServletRequest</tt>).
  * </p>
  * <p>
  *   This implementation will only return <tt>null</tt> at {@link #buildLink(IExpressionContext, String, Map)}
@@ -53,10 +62,10 @@ import org.unbescape.uri.UriEscape;
  */
 public class StandardLinkBuilder extends AbstractLinkBuilder {
 
+    protected enum LinkType { ABSOLUTE, CONTEXT_RELATIVE, SERVER_RELATIVE, BASE_RELATIVE }
+
     private static final char URL_TEMPLATE_DELIMITER_PREFIX = '{';
     private static final char URL_TEMPLATE_DELIMITER_SUFFIX = '}';
-
-
 
 
 
@@ -67,7 +76,7 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
     
 
 
-    public String buildLink(
+    public final String buildLink(
             final IExpressionContext context, final String base, final Map<String, Object> parameters) {
 
         Validate.notNull(context, "Expression context cannot be null");
@@ -80,16 +89,15 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
         final Map<String,Object> linkParameters =
                 (parameters == null || parameters.size() == 0? null : new LinkedHashMap<String, Object>(parameters));
 
-        final boolean linkBaseAbsolute = isLinkBaseAbsolute(base);
-        final boolean linkBaseContextRelative = !linkBaseAbsolute && isLinkBaseContextRelative(base);
-        final boolean linkBaseServerRelative = !linkBaseAbsolute && !linkBaseContextRelative && isLinkBaseServerRelative(base);
-        final boolean linkBaseRelative = !linkBaseAbsolute && !linkBaseContextRelative && !linkBaseServerRelative;
-
-        final IWebContext webContext = (context instanceof IWebContext? (IWebContext)context : null);
-        if (webContext == null && linkBaseContextRelative) {
-            throw new TemplateProcessingException(
-                    "Link base \"" + base + "\" cannot be context relative (/...) unless the context " +
-                    "used for executing the engine implements the " + IWebContext.class.getName() + " interface");
+        final LinkType linkType;
+        if (isLinkBaseAbsolute(base)) {
+            linkType = LinkType.ABSOLUTE;
+        } else if (isLinkBaseContextRelative(base)) {
+            linkType = LinkType.CONTEXT_RELATIVE;
+        } else if (isLinkBaseServerRelative(base)) {
+            linkType = LinkType.SERVER_RELATIVE;
+        } else {
+            linkType = LinkType.BASE_RELATIVE;
         }
 
 
@@ -109,16 +117,12 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
 
         /*
          * Precompute the context path, so that it can be afterwards used for determining if it has to be added to the
-         * URL (in case it is context-relative) or not
+         * URL (in case it is context-relative) or not.
+         *
+         * Note we give subclasses the opportunity to customize the computation of this context path.
          */
-        final String contextPath;
-        if (linkBaseContextRelative) {
-            // If it is context-relative, it has to be a web context
-            final HttpServletRequest request = webContext.getRequest();
-            contextPath = request.getContextPath();
-        } else {
-            contextPath = null;
-        }
+        final String contextPath =
+                (linkType == LinkType.CONTEXT_RELATIVE? computeContextPath(context, base, parameters) : null);
         final boolean contextPathEmpty = contextPath == null || contextPath.length() == 0 || contextPath.equals("/");
 
 
@@ -126,18 +130,11 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
          * SHORTCUT - just before starting to work with StringBuilders, and in the case that we know: 1. That the URL is
          *            absolute, relative or context-relative with no context; 2. That there are no parameters; and
          *            3. That there are no URL fragments -> then just return the base URL String without further
-         *            processing (except HttpServletResponse-encoding, of course...)
+         *            processing (except HttpServletResponse-encoding if needed, of course...)
          */
-        if (contextPathEmpty && !linkBaseServerRelative &&
+        if (contextPathEmpty && linkType != LinkType.SERVER_RELATIVE &&
                 (linkParameters == null || linkParameters.size() == 0) && hashPosition < 0 && !mightHaveVariableTemplates) {
-
-            if (webContext != null) {
-                final HttpServletResponse response = webContext.getResponse();
-                return (response != null? response.encodeURL(base) : base);
-            }
-            // Processing context is not web, no need to HttpServletResponse-encode
-            return base;
-
+            return processLink(context, base);
         }
 
 
@@ -203,33 +200,27 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
         /*
          * If link base is server relative, we will delete now the leading '~' character so that it starts with '/'
          */
-        if (linkBaseServerRelative) {
+        if (linkType == LinkType.SERVER_RELATIVE) {
             linkBase.delete(0,1);
         }
 
 
         /*
-         * Context is not web: URLs can only be absolute or server-relative and we will not be doing any
-         * HttpServletRespons#encodeURL(...) because there is no response object, of course...
+         * It's finally a good moment to insert the context path if it is not empty
          */
-        if (webContext == null) {
-            return linkBase.toString();
-        }
-        
-
-        /*
-         * Context is web 
-         */
-        
-        final HttpServletResponse response = webContext.getResponse();
-
-        if (linkBaseContextRelative && !contextPathEmpty) {
+        if (linkType == LinkType.CONTEXT_RELATIVE && !contextPathEmpty) {
             // Add the application's context path at the beginning
             linkBase.insert(0, contextPath);
         }
 
-        return (response != null? response.encodeURL(linkBase.toString()) : linkBase.toString());
-        
+
+        /*
+         * Return the link, first performing the last processing on it. This will normally perform a standard
+         * HttpServletResponse.encodeUrl(...) operation on it, but will give any subclasses the opportunity to
+         * customize this behaviour (in case, for instance, they don't want to rely on the Java Servlet API).
+         */
+        return processLink(context, linkBase.toString());
+
     }
 
     
@@ -459,6 +450,71 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
     }
 
 
+    /**
+     * <p>
+     *   Compute the context path to be applied to URLs that have been determined to be context-relative (and therefore
+     *   need a context path to be inserted at their beginning).
+     * </p>
+     * <p>
+     *   By default, this method will obtain the context path from <tt>HttpServletRequest.getContextPath()</tt>,
+     *   throwing an exception if <tt>context</tt> is not an instance of <tt>IWebContext</tt> given context-relative
+     *   URLs are (by default) only allowed in web contexts.
+     * </p>
+     * <p>
+     *   This method can be overridden by any subclasses that want to change this behaviour (e.g. in order to
+     *   avoid using the Servlet API for resolving context path or to allow context-relative URLs in non-web
+     *   contexts).
+     * </p>
+     *
+     * @param context the execution context.
+     * @param base the URL base specified.
+     * @param parameters the URL parameters specified.
+     * @return the context path.
+     */
+    protected String computeContextPath(
+            final IExpressionContext context, final String base, final Map<String, Object> parameters) {
+
+        if (!(context instanceof IWebContext)) {
+            throw new TemplateProcessingException(
+                    "Link base \"" + base + "\" cannot be context relative (/...) unless the context " +
+                    "used for executing the engine implements the " + IWebContext.class.getName() + " interface");
+        }
+
+        // If it is context-relative, it has to be a web context
+        final HttpServletRequest request = ((IWebContext)context).getRequest();
+        return request.getContextPath();
+
+    }
+
+
+    /**
+     * <p>
+     *   Process an already-built URL just before returning it.
+     * </p>
+     * <p>
+     *   By default, this method will apply the <tt>HttpServletResponse.encodeURL(url)</tt> mechanism, as standard
+     *   when using the Java Servlet API. Note however that this will only be applied if <tt>context</tt> is
+     *   an implementation of <tt>IWebContext</tt> (i.e. the Servlet API will only be applied in web environments).
+     * </p>
+     * <p>
+     *   This method can be overridden by any subclasses that want to change this behaviour (e.g. in order to
+     *   avoid using the Servlet API).
+     * </p>
+     *
+     * @param context the execution context.
+     * @param link the already-built URL.
+     * @return the processed URL, ready to be used.
+     */
+    protected String processLink(final IExpressionContext context, final String link) {
+
+        if (!(context instanceof IWebContext)) {
+            return link;
+        }
+
+        final HttpServletResponse response = ((IWebContext)context).getResponse();
+        return (response != null? response.encodeURL(link) : link);
+
+    }
 
 
 }

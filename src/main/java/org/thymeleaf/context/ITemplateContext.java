@@ -173,6 +173,20 @@ public interface ITemplateContext extends IExpressionContext {
 
     /**
      * <p>
+     *   Computes link to be used on a template.
+     * </p>
+     * <p>
+     *   This method is meant to be called mainly by processors or expressions that need to output links.
+     * </p>
+     *
+     * @param base the base of the link URL to be built, i.e. its path. Can be null.
+     * @param parameters the (optional) URL parameters.
+     * @return the built URL, or an exception if no link builders are able to build this link.
+     */
+    public String buildLink(final String base, final Map<String, Object> parameters);
+
+    /**
+     * <p>
      *   Returns the {@link IdentifierSequences} object set to be used at the current point of execution.
      * </p>
      *

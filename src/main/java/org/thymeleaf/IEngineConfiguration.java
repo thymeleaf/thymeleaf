@@ -28,6 +28,7 @@ import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.ElementDefinitions;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.expression.IExpressionObjectFactory;
+import org.thymeleaf.linkbuilder.ILinkBuilder;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.postprocessor.IPostProcessor;
@@ -54,6 +55,7 @@ public interface IEngineConfiguration {
 
     public Set<ITemplateResolver> getTemplateResolvers();
     public Set<IMessageResolver> getMessageResolvers();
+    public Set<ILinkBuilder> getLinkBuilders();
 
     public ICacheManager getCacheManager();
 

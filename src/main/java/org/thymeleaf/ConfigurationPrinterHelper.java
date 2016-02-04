@@ -35,6 +35,7 @@ import org.thymeleaf.dialect.IPostProcessorDialect;
 import org.thymeleaf.dialect.IPreProcessorDialect;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.expression.IExpressionObjectFactory;
+import org.thymeleaf.linkbuilder.ILinkBuilder;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.postprocessor.IPostProcessor;
 import org.thymeleaf.preprocessor.IPreProcessor;
@@ -80,6 +81,7 @@ final class ConfigurationPrinterHelper {
         final ICacheManager cacheManager = configuration.getCacheManager();
         final Set<ITemplateResolver> templateResolvers = configuration.getTemplateResolvers();
         final Set<IMessageResolver> messageResolvers = configuration.getMessageResolvers();
+        final Set<ILinkBuilder> linkBuilders = configuration.getLinkBuilders();
 
         logBuilder.line("Initializing Thymeleaf Template engine configuration...");
         logBuilder.line("[THYMELEAF] TEMPLATE ENGINE CONFIGURATION:");
@@ -105,6 +107,14 @@ final class ConfigurationPrinterHelper {
                 logBuilder.line("[THYMELEAF]     * [{}] {}", messageResolver.getOrder(), messageResolver.getName());
             } else{
                 logBuilder.line("[THYMELEAF]     * {}", messageResolver.getName());
+            }
+        }
+        logBuilder.line("[THYMELEAF] * Link builders:");
+        for (final ILinkBuilder linkBuilder : linkBuilders) {
+            if (linkBuilder.getOrder() != null) {
+                logBuilder.line("[THYMELEAF]     * [{}] {}", linkBuilder.getOrder(), linkBuilder.getName());
+            } else{
+                logBuilder.line("[THYMELEAF]     * {}", linkBuilder.getName());
             }
         }
 

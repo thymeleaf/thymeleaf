@@ -35,6 +35,7 @@ import org.thymeleaf.engine.ElementDefinitions;
 import org.thymeleaf.engine.StandardModelFactory;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.expression.IExpressionObjectFactory;
+import org.thymeleaf.linkbuilder.ILinkBuilder;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.postprocessor.IPostProcessor;
@@ -64,6 +65,7 @@ public class EngineConfiguration implements IEngineConfiguration {
     private final ITextRepository textRepository;
     private final Set<ITemplateResolver> templateResolvers;
     private final Set<IMessageResolver> messageResolvers;
+    private final Set<ILinkBuilder> linkBuilders;
     private final ICacheManager cacheManager;
     private TemplateManager templateManager;
     private final ConcurrentHashMap<TemplateMode,IModelFactory> modelFactories;
@@ -75,6 +77,7 @@ public class EngineConfiguration implements IEngineConfiguration {
     EngineConfiguration(
             final Set<ITemplateResolver> templateResolvers,
             final Set<IMessageResolver> messageResolvers,
+            final Set<ILinkBuilder> linkBuilders,
             final Set<DialectConfiguration> dialectConfigurations,
             final ICacheManager cacheManager,
             final ITextRepository textRepository) {
@@ -96,6 +99,10 @@ public class EngineConfiguration implements IEngineConfiguration {
         final List<IMessageResolver> messageResolversList = new ArrayList<IMessageResolver>(messageResolvers);
         Collections.sort(messageResolversList, MessageResolverComparator.INSTANCE);
         this.messageResolvers = Collections.unmodifiableSet(new LinkedHashSet<IMessageResolver>(messageResolversList));
+
+        final List<ILinkBuilder> linkBuilderList = new ArrayList<ILinkBuilder>(linkBuilders);
+        Collections.sort(linkBuilderList, LinkBuilderComparator.INSTANCE);
+        this.linkBuilders = Collections.unmodifiableSet(new LinkedHashSet<ILinkBuilder>(linkBuilderList));
 
         this.cacheManager = cacheManager;
 
@@ -125,6 +132,10 @@ public class EngineConfiguration implements IEngineConfiguration {
 
     public Set<IMessageResolver> getMessageResolvers() {
         return this.messageResolvers;
+    }
+
+    public Set<ILinkBuilder> getLinkBuilders() {
+        return this.linkBuilders;
     }
 
 
@@ -275,6 +286,20 @@ public class EngineConfiguration implements IEngineConfiguration {
         }
 
         public int compare(final IMessageResolver mr1, final IMessageResolver mr2) {
+            return nullSafeIntegerComparison(mr1.getOrder(), mr2.getOrder());
+        }
+    }
+
+
+    private static final class LinkBuilderComparator implements Comparator<ILinkBuilder> {
+
+        private static LinkBuilderComparator INSTANCE = new LinkBuilderComparator();
+
+        LinkBuilderComparator() {
+            super();
+        }
+
+        public int compare(final ILinkBuilder mr1, final ILinkBuilder mr2) {
             return nullSafeIntegerComparison(mr1.getOrder(), mr2.getOrder());
         }
     }

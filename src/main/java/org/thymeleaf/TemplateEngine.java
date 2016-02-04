@@ -38,6 +38,8 @@ import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.exceptions.TemplateEngineException;
 import org.thymeleaf.exceptions.TemplateOutputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.linkbuilder.ILinkBuilder;
+import org.thymeleaf.linkbuilder.StandardLinkBuilder;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.standard.StandardDialect;
@@ -111,6 +113,12 @@ import org.thymeleaf.util.Validate;
  *   can be used for this. If more resolvers are to be set, both the
  *   {@link #setMessageResolvers(Set)} and {@link #addMessageResolver(IMessageResolver)} methods
  *   can be used.
+ * </p>
+ * <p>
+ *   Also, building link URLs from templates will need the configuration of at least one <em>link builder</em>
+ *   (implementation of {@link ILinkBuilder}) that will be in charge of giving shape to the URLs being output.
+ *   If no link builder is explicitly set, a {@link StandardLinkBuilder} will be set as a default implementation,
+ *   making use of the java Servlet API when it is needed for specific types of URLs.
  * </p>
  * <p>
  *  Besides these, a <b>Cache Manager</b> (implementation of {@link ICacheManager}) can also be configured. The
@@ -235,6 +243,7 @@ public class TemplateEngine implements ITemplateEngine {
     private final Set<DialectConfiguration> dialectConfigurations = new LinkedHashSet<DialectConfiguration>(3);
     private final Set<ITemplateResolver> templateResolvers = new LinkedHashSet<ITemplateResolver>(3);
     private final Set<IMessageResolver> messageResolvers = new LinkedHashSet<IMessageResolver>(3);
+    private final Set<ILinkBuilder> linkBuilders = new LinkedHashSet<ILinkBuilder>(3);
     private ICacheManager cacheManager = null;
 
     // TODO Make this configurable!
@@ -261,6 +270,7 @@ public class TemplateEngine implements ITemplateEngine {
         super();
         setCacheManager(new StandardCacheManager());
         setMessageResolver(new StandardMessageResolver());
+        setLinkBuilder(new StandardLinkBuilder());
         setDialect(new StandardDialect());
     }
 
@@ -315,7 +325,8 @@ public class TemplateEngine implements ITemplateEngine {
                     }
 
                     this.configuration =
-                            new EngineConfiguration(this.templateResolvers, this.messageResolvers, this.dialectConfigurations, this.cacheManager, this.textRepository);
+                            new EngineConfiguration(
+                                    this.templateResolvers, this.messageResolvers, this.linkBuilders, this.dialectConfigurations, this.cacheManager, this.textRepository);
                     ((EngineConfiguration)this.configuration).initialize();
 
                     initializeSpecific();
@@ -775,6 +786,87 @@ public class TemplateEngine implements ITemplateEngine {
         checkNotInitialized();
         this.messageResolvers.clear();
         this.messageResolvers.add(messageResolver);
+    }
+
+
+    /**
+     * <p>
+     *   Returns the set of Link Builders configured for this Template Engine.
+     * </p>
+     *
+     * @return the set of link builders.
+     */
+    public final Set<ILinkBuilder> getLinkBuilders() {
+        if (this.initialized) {
+            return this.configuration.getLinkBuilders();
+        }
+        return Collections.unmodifiableSet(this.linkBuilders);
+    }
+
+    /**
+     * <p>
+     *   Sets the link builders to be used by this template engine.
+     * </p>
+     * <p>
+     *   This operation can only be executed before processing templates for the first
+     *   time. Once a template is processed, the template engine is considered to be
+     *   <i>initialized</i>, and from then on any attempt to change its configuration
+     *   will result in an exception.
+     * </p>
+     *
+     * @param linkBuilders the Set of link builders.
+     */
+    public void setLinkBuilders(final Set<ILinkBuilder> linkBuilders) {
+        Validate.notNull(linkBuilders, "Link Builder set cannot be null");
+        checkNotInitialized();
+        this.linkBuilders.clear();
+        for (final ILinkBuilder linkBuilder : linkBuilders)  {
+            addLinkBuilder(linkBuilder);
+        }
+    }
+
+    /**
+     * <p>
+     *   Adds a link builder to the set of link builders to be used
+     *   by the template engine.
+     * </p>
+     * <p>
+     *   This operation can only be executed before processing templates for the first
+     *   time. Once a template is processed, the template engine is considered to be
+     *   <i>initialized</i>, and from then on any attempt to change its configuration
+     *   will result in an exception.
+     * </p>
+     *
+     * @param linkBuilder the new link builder to be added.
+     */
+    public void addLinkBuilder(final ILinkBuilder linkBuilder) {
+        Validate.notNull(linkBuilder, "Link Builder cannot be null");
+        checkNotInitialized();
+        this.linkBuilders.add(linkBuilder);
+    }
+
+    /**
+     * <p>
+     *   Sets a single link builder for this template engine.
+     * </p>
+     * <p>
+     *   Calling this method is equivalent to calling {@link #setLinkBuilders(Set)}
+     *   passing a Set with only one link builder.
+     * </p>
+     * <p>
+     *   This operation can only be executed before processing templates for the first
+     *   time. Once a template is processed, the template engine is considered to be
+     *   <i>initialized</i>, and from then on any attempt to change its configuration
+     *   will result in an exception.
+     * </p>
+     *
+     * @param linkBuilder the message resolver to be set.
+     */
+    public void setLinkBuilder(final ILinkBuilder linkBuilder) {
+        Validate.notNull(linkBuilder, "Link Builder cannot be null");
+        checkNotInitialized();
+        this.linkBuilders.clear();
+        this.linkBuilders.add(linkBuilder);
     }
 
     

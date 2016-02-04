@@ -27,8 +27,10 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.context.IdentifierSequences;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.ExpressionObjects;
 import org.thymeleaf.expression.IExpressionObjects;
+import org.thymeleaf.linkbuilder.ILinkBuilder;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
@@ -142,6 +144,30 @@ abstract class AbstractEngineContext implements ITemplateContext {
         }
 
         return null;
+
+    }
+
+
+    public String buildLink(final String base, final Map<String, Object> parameters) {
+
+        // base CAN be null
+        // parameters CAN be null
+
+        final Set<ILinkBuilder> linkBuilders = this.configuration.getLinkBuilders();
+
+        // Try to resolve the message
+        for (final ILinkBuilder linkBuilder : linkBuilders) {
+            final String link = linkBuilder.buildLink(this, base, parameters);
+            if (link != null) {
+                return link;
+            }
+        }
+
+        // Message unresolved: this should never happen, so we should fail
+
+        throw new TemplateProcessingException(
+                "No configured link builder instance was able to build link with base \"" + base + "\" and " +
+                "parameters " + parameters);
 
     }
 

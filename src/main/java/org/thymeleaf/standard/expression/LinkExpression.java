@@ -33,8 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IExpressionContext;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.linkbuilder.StandardLinkBuilder;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -72,8 +72,6 @@ public final class LinkExpression extends SimpleExpression {
     private final AssignationSequence parameters;
     
 
-
-    private static final StandardLinkBuilder linkBuilder = new StandardLinkBuilder();
 
     
     
@@ -239,7 +237,7 @@ public final class LinkExpression extends SimpleExpression {
          *      1. Reduce complexity, as Dialects would need to add one more execution attribute for a wrapper
          *         able to apply such post-processor.
          *      2. Avoid link expressions in "th:action" be applied "processUrl(...)" and then "processAction(...)",
-         *         which would break compatiliby with Spring's FormTag class.
+         *         which would break compatibility with Spring's FormTag class.
          *         - The only way to avoid this would be to mess around with StandardExpressionExecutionContexts,
          *           which would mean much more complexity.
          *      3. Avoid that URLs that are not link expressions (or not only) but are anyway expressed with th:href
@@ -250,8 +248,18 @@ public final class LinkExpression extends SimpleExpression {
             logger.trace("[THYMELEAF][{}] Evaluating link: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
 
+        if (!(context instanceof ITemplateContext)) {
+            throw new TemplateProcessingException(
+                    "Cannot evaluate expression \"" + expression + "\". Link expressions " +
+                    "can only be evaluated in a template-processing environment (as a part of an in-template expression) " +
+                    "where processing context is an implementation of " + ITemplateContext.class.getClass() + ", which it isn't (" +
+                    context.getClass().getName() + ")");
+        }
+
+        final ITemplateContext templateContext = (ITemplateContext)context;
+
         final IStandardExpression baseExpression = expression.getBase();
-        Object base = baseExpression.execute(context, expContext);
+        Object base = baseExpression.execute(templateContext, expContext);
 
         base = LiteralValue.unwrap(base);
         if (base != null && !(base instanceof String)) {
@@ -265,14 +273,14 @@ public final class LinkExpression extends SimpleExpression {
          * Resolve the parameters from the expression into a LinkParameters object.
          * Note the parameters variable might be null if there are no parameters
          */
-        final Map<String, Object> parameters = resolveParameters(context, expression, expContext);
+        final Map<String, Object> parameters = resolveParameters(templateContext, expression, expContext);
 
 
         /*
          * Call the link builder with the link base and computed parameters
          */
 
-        return linkBuilder.buildLink(context, (String)base, parameters);
+        return templateContext.buildLink((String)base, parameters);
 
     }
 
