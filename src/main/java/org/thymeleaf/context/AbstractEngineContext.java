@@ -17,16 +17,13 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine;
+package org.thymeleaf.context;
 
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.IEngineContext;
-import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.context.IdentifierSequences;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.ExpressionObjects;
 import org.thymeleaf.expression.IExpressionObjects;
@@ -37,19 +34,23 @@ import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   Utility abstract class partially implementing {@link ITemplateContext}.
+ *   Utility abstract class partially implementing {@link IEngineContext}.
  * </p>
  * <p>
- *   This class only takes care of the methods in {@link ITemplateContext} and not those in {@link IEngineContext},
- *   so that it allows engine context implementations to not have to duplicate a lot of code simpler than their
- *   own for management of inliners, local variables, etc.
+ *   This class is meant to be used as a base for implementations of {@link IEngineContext}. Note however that creating
+ *   an implementation of {@link IEngineContext} can be very complex and normally unneeded. The default
+ *   implementations should suffice for most scenarios.
+ * </p>
+ * <p>
+ *   Note this abstract implementation does not implement basic variable-management methods such as those coming from
+ *   the {@link IContext} interface because that is considered the responsibility of the implementing subclasses.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-abstract class AbstractEngineContext implements ITemplateContext {
+public abstract class AbstractEngineContext implements IEngineContext {
 
     // NOTE we are not extending AbstractContext or AbstractExpressionContext on purpose, as the variable-oriented
     // methods are going to be handled by the subclasses, not any superclasses.
@@ -112,7 +113,7 @@ abstract class AbstractEngineContext implements ITemplateContext {
     }
 
 
-    public String getMessage(
+    public final String getMessage(
             final Class<?> origin, final String key, final Object[] messageParameters, final boolean useAbsentMessageRepresentation) {
 
         // origin CAN be null
@@ -148,7 +149,7 @@ abstract class AbstractEngineContext implements ITemplateContext {
     }
 
 
-    public String buildLink(final String base, final Map<String, Object> parameters) {
+    public final String buildLink(final String base, final Map<String, Object> parameters) {
 
         // base CAN be null
         // parameters CAN be null

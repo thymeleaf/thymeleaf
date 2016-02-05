@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.AbstractEngineContext;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.ILazyContextVariable;
 import org.thymeleaf.inline.IInliner;

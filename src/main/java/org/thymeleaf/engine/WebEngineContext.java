@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.AbstractEngineContext;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.ILazyContextVariable;
 import org.thymeleaf.context.IWebContext;
