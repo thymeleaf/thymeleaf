@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.cache.ICacheManager;
+import org.thymeleaf.context.IEngineContextFactory;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.ElementDefinitions;
@@ -58,6 +59,8 @@ public interface IEngineConfiguration {
     public Set<ILinkBuilder> getLinkBuilders();
 
     public ICacheManager getCacheManager();
+
+    public IEngineContextFactory getEngineContextFactory();
 
     public Set<DialectConfiguration> getDialectConfigurations();
     public Set<IDialect> getDialects();

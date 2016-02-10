@@ -33,6 +33,8 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.cache.StandardCacheManager;
 import org.thymeleaf.context.IContext;
+import org.thymeleaf.context.IEngineContextFactory;
+import org.thymeleaf.context.StandardEngineContextFactory;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.exceptions.TemplateEngineException;
@@ -245,6 +247,7 @@ public class TemplateEngine implements ITemplateEngine {
     private final Set<IMessageResolver> messageResolvers = new LinkedHashSet<IMessageResolver>(3);
     private final Set<ILinkBuilder> linkBuilders = new LinkedHashSet<ILinkBuilder>(3);
     private ICacheManager cacheManager = null;
+    private IEngineContextFactory engineContextFactory = null;
 
     // TODO Make this configurable!
     private final ITextRepository textRepository = TextRepositories.createLimitedSizeCacheRepository();
@@ -269,6 +272,7 @@ public class TemplateEngine implements ITemplateEngine {
     public TemplateEngine() {
         super();
         setCacheManager(new StandardCacheManager());
+        setEngineContextFactory(new StandardEngineContextFactory());
         setMessageResolver(new StandardMessageResolver());
         setLinkBuilder(new StandardLinkBuilder());
         setDialect(new StandardDialect());
@@ -326,7 +330,9 @@ public class TemplateEngine implements ITemplateEngine {
 
                     this.configuration =
                             new EngineConfiguration(
-                                    this.templateResolvers, this.messageResolvers, this.linkBuilders, this.dialectConfigurations, this.cacheManager, this.textRepository);
+                                    this.templateResolvers, this.messageResolvers, this.linkBuilders,
+                                    this.dialectConfigurations, this.cacheManager, this.engineContextFactory,
+                                    this.textRepository);
                     ((EngineConfiguration)this.configuration).initialize();
 
                     initializeSpecific();
@@ -662,7 +668,7 @@ public class TemplateEngine implements ITemplateEngine {
         this.templateResolvers.add(templateResolver);
     }
 
-    
+
     /**
      * <p>
      *   Returns the cache manager in effect. This manager is in charge of providing
@@ -672,16 +678,16 @@ public class TemplateEngine implements ITemplateEngine {
      *   By default, an instance of {@link org.thymeleaf.cache.StandardCacheManager}
      *   is set.
      * </p>
-     * 
+     *
      * @return the cache manager
      */
-    public ICacheManager getCacheManager() {
+    public final ICacheManager getCacheManager() {
         if (this.initialized) {
             return this.configuration.getCacheManager();
         }
         return this.cacheManager;
     }
-    
+
     /**
      * <p>
      *   Sets the Cache Manager to be used. If set to null, no caches will be used 
@@ -697,14 +703,60 @@ public class TemplateEngine implements ITemplateEngine {
      *   <i>initialized</i>, and from then on any attempt to change its configuration
      *   will result in an exception.
      * </p>
-     * 
+     *
      * @param cacheManager the cache manager to be set.
-     * 
+     *
      */
     public void setCacheManager(final ICacheManager cacheManager) {
         // Can be set to null (= no caches at all)
         checkNotInitialized();
         this.cacheManager = cacheManager;
+    }
+
+
+    /**
+     * <p>
+     *   Returns the engine context factory in effect. This factory is responsible for creating the
+     *   (internally-used) instances of {@link org.thymeleaf.context.IEngineContext} that will support
+     *   template processing.
+     * </p>
+     * <p>
+     *   By default, an instance of {@link org.thymeleaf.context.StandardEngineContextFactory}
+     *   is set.
+     * </p>
+     *
+     * @return the cache manager
+     */
+    public final IEngineContextFactory getEngineContextFactory() {
+        if (this.initialized) {
+            return this.configuration.getEngineContextFactory();
+        }
+        return this.engineContextFactory;
+    }
+
+    /**
+     * <p>
+     *   Sets the Engine Context Factory (implementation of {@link IEngineContextFactory}) to be
+     *   used for template processing.
+     * </p>
+     * <p>
+     *   By default, an instance of {@link org.thymeleaf.context.StandardEngineContextFactory}
+     *   is set.
+     * </p>
+     * <p>
+     *   This operation can only be executed before processing templates for the first
+     *   time. Once a template is processed, the template engine is considered to be
+     *   <i>initialized</i>, and from then on any attempt to change its configuration
+     *   will result in an exception.
+     * </p>
+     *
+     * @param engineContextFactory the engine context factory to be used.
+     *
+     */
+    public void setEngineContextFactory(final IEngineContextFactory engineContextFactory) {
+        Validate.notNull(engineContextFactory, "Engine Context Factory cannot be set to null");
+        checkNotInitialized();
+        this.engineContextFactory = engineContextFactory;
     }
 
     

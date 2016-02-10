@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine;
+package org.thymeleaf.context;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,9 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.AbstractEngineContext;
-import org.thymeleaf.context.IEngineContext;
-import org.thymeleaf.context.ILazyContextVariable;
+import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
 import org.thymeleaf.util.Validate;
@@ -43,9 +41,11 @@ import org.thymeleaf.util.Validate;
  *   Basic non-web implementation of the {@link IEngineContext} interface.
  * </p>
  * <p>
- *   This is the context implementation that will be used by default for non-web processing. Note this is an
+ *   This is the context implementation that will be used by default for non-web processing. Note that <b>this is an
  *   internal implementation, and that there is no reason for users' code to directly reference or use it instead
- *   of its implemented interfaces.
+ *   of its implemented interfaces</b>. Normally, the only reason to directly use this class would be as a part of
+ *   some kind of integration/extension efforts (e.g. making Thymeleaf work in a specific type of non-Servlet-based
+ *   application server).
  * </p>
  * <p>
  *   This class is NOT thread-safe. Thread-safety is not a requirement for context implementations.
@@ -56,7 +56,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-final class EngineContext extends AbstractEngineContext implements IEngineContext {
+public class EngineContext extends AbstractEngineContext implements IEngineContext {
 
     /*
      * This class is in charge of managing the map of variables in place at each moment in the template processing,
@@ -91,11 +91,24 @@ final class EngineContext extends AbstractEngineContext implements IEngineContex
 
 
 
-    /*
-     * There is no reason for a user to directly create an instance of this - they should create Context or
-     * WebContext instances instead.
+    /**
+     * <p>
+     *   Creates a new instance of this {@link IEngineContext} implementation.
+     * </p>
+     * <p>
+     *   Note that implementations of {@link IEngineContext} are not meant to be used in order to execute
+     *   the template engine (use implementations of {@link IContext} such as {@link Context} or {@link WebContext}
+     *   instead). This is therefore mostly an <b>internal</b> implementation, and users should have no reason
+     *   to ever call this constructor except in very specific integration/extension scenarios.
+     * </p>
+     *
+     * @param configuration the configuration instance being used.
+     * @param templateData the template data for the template to be processed.
+     * @param templateResolutionAttributes the template resolution attributes.
+     * @param locale the locale.
+     * @param variables the context variables, probably coming from another {@link IContext} implementation.
      */
-    EngineContext(
+    public EngineContext(
             final IEngineConfiguration configuration,
             final TemplateData templateData,
             final Map<String,Object> templateResolutionAttributes,

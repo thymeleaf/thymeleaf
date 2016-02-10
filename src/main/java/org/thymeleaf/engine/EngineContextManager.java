@@ -19,15 +19,12 @@
  */
 package org.thymeleaf.engine;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IEngineContext;
-import org.thymeleaf.context.IWebContext;
+import org.thymeleaf.context.IEngineContextFactory;
 
 /**
  * <p>
@@ -83,39 +80,11 @@ final class EngineContextManager {
             return (IEngineContext) context;
         }
 
-        // NOTE calling getVariableNames() on an IWebContext would be very expensive, as it would mean
-        // calling HttpServletRequest#getAttributeNames(), which is very slow in some common implementations
-        // (e.g. Apache Tomcat). So it's a good thing we might have reused the IEngineContext above.
-        final Set<String> variableNames = context.getVariableNames();
-
-        if (variableNames == null || variableNames.isEmpty()) {
-            if (context instanceof IWebContext) {
-                final IWebContext webContext = (IWebContext)context;
-                return new WebEngineContext(
-                        configuration, templateData, templateResolutionAttributes,
-                        webContext.getRequest(), webContext.getResponse(), webContext.getServletContext(),
-                        webContext.getLocale(), Collections.EMPTY_MAP);
-            }
-            return new EngineContext(
-                    configuration, templateData, templateResolutionAttributes,
-                    context.getLocale(), Collections.EMPTY_MAP);
-        }
-
-        final Map<String,Object> variables = new LinkedHashMap<String, Object>(variableNames.size() + 1, 1.0f);
-        for (final String variableName : variableNames) {
-            variables.put(variableName, context.getVariable(variableName));
-        }
-        if (context instanceof IWebContext) {
-            final IWebContext webContext = (IWebContext)context;
-            return new WebEngineContext(
-                    configuration, templateData, templateResolutionAttributes,
-                    webContext.getRequest(), webContext.getResponse(), webContext.getServletContext(),
-                    webContext.getLocale(), variables);
-        }
-
-        return new EngineContext(
-                configuration, templateData, templateResolutionAttributes,
-                context.getLocale(), variables);
+        // It's the engine context factory the one who has the responsibility of creating the specific
+        // implementation of the engine context needed.
+        final IEngineContextFactory engineContextFactory = configuration.getEngineContextFactory();
+        return engineContextFactory.createEngineContext(
+                configuration, templateData, templateResolutionAttributes, context);
 
     }
 

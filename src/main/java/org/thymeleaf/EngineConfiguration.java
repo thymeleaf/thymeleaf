@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.thymeleaf.cache.ICacheManager;
+import org.thymeleaf.context.IEngineContextFactory;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.ElementDefinitions;
@@ -67,6 +68,7 @@ public class EngineConfiguration implements IEngineConfiguration {
     private final Set<IMessageResolver> messageResolvers;
     private final Set<ILinkBuilder> linkBuilders;
     private final ICacheManager cacheManager;
+    private final IEngineContextFactory engineContextFactory;
     private TemplateManager templateManager;
     private final ConcurrentHashMap<TemplateMode,IModelFactory> modelFactories;
 
@@ -80,6 +82,7 @@ public class EngineConfiguration implements IEngineConfiguration {
             final Set<ILinkBuilder> linkBuilders,
             final Set<DialectConfiguration> dialectConfigurations,
             final ICacheManager cacheManager,
+            final IEngineContextFactory engineContextFactory,
             final ITextRepository textRepository) {
 
         super();
@@ -90,6 +93,7 @@ public class EngineConfiguration implements IEngineConfiguration {
         Validate.notNull(messageResolvers, "Message Resolver set cannot be null");
         Validate.notNull(dialectConfigurations, "Dialect configuration set cannot be null");
         // Cache Manager CAN be null
+        Validate.notNull(engineContextFactory, "Engine Context Factory cannot be null");
         Validate.notNull(textRepository, "Text Repository cannot be null");
 
         final List<ITemplateResolver> templateResolversList = new ArrayList<ITemplateResolver>(templateResolvers);
@@ -105,6 +109,8 @@ public class EngineConfiguration implements IEngineConfiguration {
         this.linkBuilders = Collections.unmodifiableSet(new LinkedHashSet<ILinkBuilder>(linkBuilderList));
 
         this.cacheManager = cacheManager;
+
+        this.engineContextFactory = engineContextFactory;
 
         this.dialectSetConfiguration = DialectSetConfiguration.build(dialectConfigurations);
         this.textRepository = textRepository;
@@ -142,6 +148,12 @@ public class EngineConfiguration implements IEngineConfiguration {
 
     public ICacheManager getCacheManager() {
         return this.cacheManager;
+    }
+
+
+
+    public IEngineContextFactory getEngineContextFactory() {
+        return this.engineContextFactory;
     }
 
 

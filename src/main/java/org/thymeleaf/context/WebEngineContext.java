@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine;
+package org.thymeleaf.context;
 
 import java.lang.reflect.Array;
 import java.util.AbstractList;
@@ -40,22 +40,19 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.AbstractEngineContext;
-import org.thymeleaf.context.IEngineContext;
-import org.thymeleaf.context.ILazyContextVariable;
-import org.thymeleaf.context.IWebContext;
+import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
 import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   Basic web implementation of the {@link IEngineContext} interface.
+ *   Basic <b>web</b> implementation of the {@link IEngineContext} interface, based on the Servlet API.
  * </p>
  * <p>
- *   This is the context implementation that will be used by default for web processing. Note this is an
- *   internal implementation, and that there is no reason for users' code to directly reference or use it instead
- *   of its implemented interfaces.
+ *   This is the context implementation that will be used by default for web processing. Note that <b>this is an
+ *   internal implementation, and there is no reason for users' code to directly reference or use it instead
+ *   of its implemented interfaces</b>.
  * </p>
  * <p>
  *   This class is NOT thread-safe. Thread-safety is not a requirement for context implementations.
@@ -66,7 +63,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-final class WebEngineContext extends AbstractEngineContext implements IEngineContext, IWebContext {
+public class WebEngineContext extends AbstractEngineContext implements IEngineContext, IWebContext {
 
     /*
      * ---------------------------------------------------------------------------
@@ -79,7 +76,9 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
      * directly set on the request object are considered global and therefore
      * valid even when the level decreased (though they can be overridden). This
      * is so for better simulating the effect of directly working against the
-     * request object, and for better integration with JSP.
+     * request object, and for better integration with JSP or any other template
+     * engines or view-layer technologies that expect the HttpServletRequest to
+     * be the 'only source of truth' for context variables.
      * ---------------------------------------------------------------------------
      */
 
@@ -100,11 +99,28 @@ final class WebEngineContext extends AbstractEngineContext implements IEngineCon
 
 
 
-    /*
-     * There is no reason for a user to directly create an instance of this - they should create Context or
-     * WebContext instances instead.
+    /**
+     * <p>
+     *   Creates a new instance of this {@link IEngineContext} implementation binding engine execution to
+     *   the Servlet API.
+     * </p>
+     * <p>
+     *   Note that implementations of {@link IEngineContext} are not meant to be used in order to execute
+     *   the template engine (use implementations of {@link IContext} such as {@link Context} or {@link WebContext}
+     *   instead). This is therefore mostly an <b>internal</b> implementation, and users should have no reason
+     *   to ever call this constructor except in very specific integration/extension scenarios.
+     * </p>
+     *
+     * @param configuration the configuration instance being used.
+     * @param templateData the template data for the template to be processed.
+     * @param templateResolutionAttributes the template resolution attributes.
+     * @param request the servlet request object.
+     * @param response the servlet response object.
+     * @param servletContext the servlet context object.
+     * @param locale the locale.
+     * @param variables the context variables, probably coming from another {@link IContext} implementation.
      */
-    WebEngineContext(
+    public WebEngineContext(
             final IEngineConfiguration configuration,
             final TemplateData templateData,
             final Map<String,Object> templateResolutionAttributes,
