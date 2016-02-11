@@ -606,6 +606,8 @@ public class ThymeleafViewResolver
             return (View) getApplicationContext().getAutowireCapableBeanFactory().initializeBean(view, viewName);
         }
         if (viewName.startsWith(FORWARD_URL_PREFIX)) {
+            // The "forward:" prefix will actually create a Servlet/JSP view, and that's precisely its aim per the Spring
+            // documentation. See http://docs.spring.io/spring-framework/docs/4.2.4.RELEASE/spring-framework-reference/html/mvc.html#mvc-redirecting-forward-prefix
             vrlogger.trace("[THYMELEAF] View \"{}\" is a forward, and will not be handled directly by ThymeleafViewResolver.", viewName);
             final String forwardUrl = viewName.substring(FORWARD_URL_PREFIX.length(), viewName.length());
             return new InternalResourceView(forwardUrl);
