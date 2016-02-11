@@ -82,10 +82,10 @@ public final class RequestDataValueProcessorUtils {
         } else {
             if (isSpring40AtLeast) {
                 LOGGER.warn(
-                        "[THYMELEAF] You seem to be using the thymeleaf-spring3 module with Spring version 4.x. " +
+                        "[THYMELEAF] You seem to be using the thymeleaf-spring3 module with Spring version 4.x or newer. " +
                         "Even though most features should work OK, support for CSRF protection on websites will be " +
                         "disabled due to incompatibilities between the different versions of the " +
-                        "RequestDataValueProcessor interface in versions 3.x and 4.x.");
+                        "RequestDataValueProcessor interface in versions 3.x and 4.x/newer.");
             }
             spring31Delegate = null;
         }
