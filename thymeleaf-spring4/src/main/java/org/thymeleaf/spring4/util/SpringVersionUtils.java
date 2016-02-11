@@ -19,9 +19,13 @@
  */
 package org.thymeleaf.spring4.util;
 
+import org.springframework.core.SpringVersion;
 import org.thymeleaf.util.ClassLoaderUtils;
 
 /**
+ * <p>
+ *   Utility class useful for determining the version of Spring that is on the classpath.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  *
@@ -31,76 +35,123 @@ import org.thymeleaf.util.ClassLoaderUtils;
 public final class SpringVersionUtils {
 
 
+    private static final int SPRING_VERSION_MAJOR;
+    private static final int SPRING_VERSION_MINOR;
 
-    public static boolean isSpring30AtLeast() {
 
-        final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(SpringVersionUtils.class);
-        try {
-            Class.forName("org.springframework.web.bind.annotation.RequestBody", false, classLoader);
-            return true;
-        } catch (final Exception e) {
-            return false;
+
+    static {
+
+        String springVersion = SpringVersion.getVersion();
+
+        // There might be times when SpringVersion cannot determine the version due to CL restrictions (see doc)
+        if (springVersion != null) {
+
+            try {
+
+                String versionRemainder = springVersion;
+
+                int separatorIdx = versionRemainder.indexOf('.');
+                SPRING_VERSION_MAJOR = Integer.parseInt(versionRemainder.substring(0, separatorIdx));
+
+                int separator2Idx = versionRemainder.indexOf('.', separatorIdx + 1);
+                SPRING_VERSION_MINOR = Integer.parseInt(versionRemainder.substring(separatorIdx + 1, separator2Idx));
+
+            } catch (final Exception e) {
+                throw new ExceptionInInitializerError(
+                        "Exception during initialization of Spring versioning utilities. Identified Spring " +
+                                "version is '" + springVersion + "', which does not follow the {major}.{minor}.{...} scheme");
+            }
+
+        } else {
+
+            if (testClassExistence("org.springframework.core.annotation.AliasFor")) {
+                SPRING_VERSION_MAJOR = 4;
+                SPRING_VERSION_MINOR = 2;
+            } else if (testClassExistence("org.springframework.cache.annotation.CacheConfig")) {
+                SPRING_VERSION_MAJOR = 4;
+                SPRING_VERSION_MINOR = 1;
+            } else if (testClassExistence("org.springframework.core.io.PathResource")) {
+                SPRING_VERSION_MAJOR = 4;
+                SPRING_VERSION_MINOR = 0;
+            } else if (testClassExistence("org.springframework.web.context.request.async.DeferredResult")) {
+                SPRING_VERSION_MAJOR = 3;
+                SPRING_VERSION_MINOR = 2;
+            } else if (testClassExistence("org.springframework.web.servlet.support.RequestDataValueProcessor")) {
+                SPRING_VERSION_MAJOR = 3;
+                SPRING_VERSION_MINOR = 1;
+            } else if (testClassExistence("org.springframework.web.bind.annotation.RequestBody")) {
+                SPRING_VERSION_MAJOR = 3;
+                SPRING_VERSION_MINOR = 0;
+            } else {
+                // We will default to 2.5
+                SPRING_VERSION_MAJOR = 2;
+                SPRING_VERSION_MINOR = 5;
+            }
+
+
         }
 
+    }
+
+
+    private static boolean testClassExistence(final String className) {
+        final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(SpringVersionUtils.class);
+        try {
+            Class.forName(className, false, classLoader);
+            return true;
+        } catch (final Throwable t) {
+            return false;
+        }
+    }
+
+
+
+
+    public static int getSpringVersionMajor() {
+        return SPRING_VERSION_MAJOR;
+    }
+
+    public static int getSpringVersionMinor() {
+        return SPRING_VERSION_MINOR;
+    }
+
+
+
+    public static boolean isSpring30AtLeast() {
+        return SPRING_VERSION_MAJOR >= 3;
     }
 
 
     public static boolean isSpring31AtLeast() {
-
-        final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(SpringVersionUtils.class);
-        try {
-            Class.forName("org.springframework.web.servlet.support.RequestDataValueProcessor", false, classLoader);
-            return true;
-        } catch (final Exception e) {
-            return false;
-        }
-
+        return SPRING_VERSION_MAJOR > 3 || (SPRING_VERSION_MAJOR == 3 && SPRING_VERSION_MINOR >= 1);
     }
 
 
     public static boolean isSpring32AtLeast() {
-
-        final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(SpringVersionUtils.class);
-        try {
-            Class.forName("org.springframework.web.context.request.async.DeferredResult", false, classLoader);
-            return true;
-        } catch (final Exception e) {
-            return false;
-        }
-
+        return SPRING_VERSION_MAJOR > 3 || (SPRING_VERSION_MAJOR == 3 && SPRING_VERSION_MINOR >= 2);
     }
 
 
     public static boolean isSpring40AtLeast() {
-
-        final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(SpringVersionUtils.class);
-        try {
-            Class.forName("org.springframework.core.io.PathResource", false, classLoader);
-            return true;
-        } catch (final Exception e) {
-            return false;
-        }
-
+        return SPRING_VERSION_MAJOR >= 4;
     }
 
 
     public static boolean isSpring41AtLeast() {
+        return SPRING_VERSION_MAJOR > 4 || (SPRING_VERSION_MAJOR == 4 && SPRING_VERSION_MINOR >= 1);
+    }
 
-        final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(SpringVersionUtils.class);
-        try {
-            Class.forName("org.springframework.cache.annotation.CacheConfig", false, classLoader);
-            return true;
-        } catch (final Exception e) {
-            return false;
-        }
 
+    public static boolean isSpring42AtLeast() {
+        return SPRING_VERSION_MAJOR > 4 || (SPRING_VERSION_MAJOR == 4 && SPRING_VERSION_MINOR >= 2);
     }
 
 
 
     private SpringVersionUtils() {
-	    super();
+        super();
     }
 
-	
+
 }
