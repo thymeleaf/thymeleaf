@@ -603,8 +603,7 @@ public class ThymeleafViewResolver
             vrlogger.trace("[THYMELEAF] View \"{}\" is a redirect, and will not be handled directly by ThymeleafViewResolver.", viewName);
             final String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length(), viewName.length());
             final RedirectView view = new RedirectView(redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible());
-            view.setApplicationContext(getApplicationContext());
-            return view;
+            return (View) getApplicationContext().getAutowireCapableBeanFactory().initializeBean(view, viewName);
         }
         if (viewName.startsWith(FORWARD_URL_PREFIX)) {
             vrlogger.trace("[THYMELEAF] View \"{}\" is a forward, and will not be handled directly by ThymeleafViewResolver.", viewName);
