@@ -121,7 +121,7 @@ public class SPELVariableExpressionEvaluator
             /*
              * OBTAIN THE EXPRESSION (SpelExpression OBJECT) FROM THE CACHE, OR PARSE IT
              */
-            final ComputedSpelExpression exp = getExpression(configuration, spelExpression);
+            final ComputedSpelExpression exp = getExpression(configuration, PARSER, spelExpression);
 
 
             /*
@@ -237,7 +237,8 @@ public class SPELVariableExpressionEvaluator
     }
 
 
-    private static ComputedSpelExpression getExpression(final IEngineConfiguration configuration, final String spelExpression) {
+    private static ComputedSpelExpression getExpression(
+            final IEngineConfiguration configuration, final SpelExpressionParser spelParser, final String spelExpression) {
 
         ComputedSpelExpression exp = null;
         ICache<ExpressionCacheKey, Object> cache = null;
@@ -252,7 +253,7 @@ public class SPELVariableExpressionEvaluator
 
         if (exp == null) {
 
-            final SpelExpression spelExpressionObject = (SpelExpression) PARSER.parseExpression(spelExpression);
+            final SpelExpression spelExpressionObject = (SpelExpression) spelParser.parseExpression(spelExpression);
             final boolean mightNeedExpressionObjects = StandardExpressionUtils.mightNeedExpressionObjects(spelExpression);
 
             exp = new ComputedSpelExpression(spelExpressionObject, mightNeedExpressionObjects);
