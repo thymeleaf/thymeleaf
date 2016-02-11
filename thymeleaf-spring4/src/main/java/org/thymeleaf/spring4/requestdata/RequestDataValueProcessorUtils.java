@@ -51,8 +51,6 @@ import org.thymeleaf.util.ClassLoaderUtils;
 public final class RequestDataValueProcessorUtils {
 
     private static final boolean canApply;
-    private static final boolean isSpring31AtLeast;
-    private static final boolean isSpring40AtLeast;
 
     private static final String SPRING4_DELEGATE_CLASS =
             "org.thymeleaf.spring4.requestdata.RequestDataValueProcessor4Delegate";
@@ -63,13 +61,11 @@ public final class RequestDataValueProcessorUtils {
 
     static {
 
-        isSpring31AtLeast = SpringVersionUtils.isSpring31AtLeast();
-        isSpring40AtLeast = SpringVersionUtils.isSpring40AtLeast();
-        canApply = isSpring40AtLeast;
+        canApply = SpringVersionUtils.isSpring40AtLeast();
 
         final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(RequestDataValueProcessorUtils.class);
 
-        if (isSpring40AtLeast) {
+        if (canApply) {
             try {
                 final Class<?> implClass = Class.forName(SPRING4_DELEGATE_CLASS, true, classLoader);
                 spring4Delegate = (IRequestDataValueProcessorDelegate) implClass.newInstance();
@@ -81,7 +77,7 @@ public final class RequestDataValueProcessorUtils {
             }
         } else {
             LOGGER.warn(
-                    "[THYMELEAF] You seem to be using the thymeleaf-spring4 module with Spring version 3.x. " +
+                    "[THYMELEAF] You seem to be using the thymeleaf-spring4 module with a Spring version prior to 4.0. " +
                     "Even though most features should work OK, support for CSRF protection on websites will be " +
                     "disabled due to incompatibilities between the different versions of the " +
                     "RequestDataValueProcessor interface in versions 4.x and 3.x.");
