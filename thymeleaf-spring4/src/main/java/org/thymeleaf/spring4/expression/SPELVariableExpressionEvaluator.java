@@ -22,6 +22,8 @@ package org.thymeleaf.spring4.expression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.spel.SpelCompilerMode;
+import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -38,11 +40,13 @@ import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.spring4.util.FieldUtils;
+import org.thymeleaf.spring4.util.SpringVersionUtils;
 import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.util.StandardExpressionUtils;
+import org.thymeleaf.util.ClassLoaderUtils;
 
 /**
  * <p>
@@ -71,9 +75,48 @@ public class SPELVariableExpressionEvaluator
     
     private static final Logger logger = LoggerFactory.getLogger(SPELVariableExpressionEvaluator.class);
 
-    private static final SpelExpressionParser PARSER = new SpelExpressionParser();
+    private static final SpelExpressionParser PARSER_WITHOUT_COMPILED_SPEL = new SpelExpressionParser();
+    private static final SpelExpressionParser PARSER_WITH_COMPILED_SPEL;
 
-    
+
+    /*
+     *  INITIALIZATION OF THE Spring EL parser.
+     *  Two parsers will be always initialized: one with expression compilation enabled (if the Spring version allows)
+     *  and another one without. Then during template execution we will check which one should be used.
+     */
+    static {
+
+        SpelExpressionParser spelCompilerExpressionParser = null;
+        if (SpringVersionUtils.isSpring41AtLeast()) {
+            try {
+                final SpelParserConfiguration spelParserConfiguration =
+                        new SpelParserConfiguration(
+                                SpelCompilerMode.IMMEDIATE, // Enable the SpEL compiler
+                                ClassLoaderUtils.getClassLoader(SPELVariableExpressionEvaluator.class));
+                spelCompilerExpressionParser = new SpelExpressionParser(spelParserConfiguration);
+            } catch (final Throwable t) {
+                if (logger.isDebugEnabled()) {
+                    // We are issuing a WARN even if we checked for DEBUG, but in this case we will log the entire
+                    // exception trace (if DEBUG is not available, we will avoid polluting the log).
+                    logger.warn(
+                            "An error happened during the initialization of the Spring EL expression compiler. " +
+                            "However, initialization was completed anyway. Note that compilation of SpEL expressions " +
+                            "will not be available even if you configure your Spring dialect to use them.", t);
+                } else {
+                    logger.warn(
+                            "An error happened during the initialization of the Spring EL expression compiler. " +
+                            "However, initialization was completed anyway. Note that compilation of SpEL expressions " +
+                            "will not be available even if you configure your Spring dialect to use them. For more " +
+                            "info, set your log to at least DEBUG level: " + t.getMessage());
+                }
+            }
+        }
+
+        PARSER_WITH_COMPILED_SPEL = spelCompilerExpressionParser;
+
+    }
+
+
     protected SPELVariableExpressionEvaluator() {
         super();
     }
@@ -119,9 +162,16 @@ public class SPELVariableExpressionEvaluator
 
 
             /*
+             * SELECT THE ADEQUATE SpEL EXPRESSION PARSER depending on whether SpEL compilation is enabled
+             */
+            final SpelExpressionParser spelExpressionParser =
+                    PARSER_WITH_COMPILED_SPEL != null && SpringStandardExpressions.isSpringELCompilerEnabled(configuration)?
+                            PARSER_WITH_COMPILED_SPEL : PARSER_WITHOUT_COMPILED_SPEL;
+
+            /*
              * OBTAIN THE EXPRESSION (SpelExpression OBJECT) FROM THE CACHE, OR PARSE IT
              */
-            final ComputedSpelExpression exp = getExpression(configuration, spelExpression);
+            final ComputedSpelExpression exp = getExpression(configuration, spelExpressionParser, spelExpression);
 
 
             /*
@@ -237,7 +287,8 @@ public class SPELVariableExpressionEvaluator
     }
 
 
-    private static ComputedSpelExpression getExpression(final IEngineConfiguration configuration, final String spelExpression) {
+    private static ComputedSpelExpression getExpression(
+            final IEngineConfiguration configuration, final SpelExpressionParser spelParser, final String spelExpression) {
 
         ComputedSpelExpression exp = null;
         ICache<ExpressionCacheKey, Object> cache = null;
@@ -252,7 +303,7 @@ public class SPELVariableExpressionEvaluator
 
         if (exp == null) {
 
-            final SpelExpression spelExpressionObject = (SpelExpression) PARSER.parseExpression(spelExpression);
+            final SpelExpression spelExpressionObject = (SpelExpression) spelParser.parseExpression(spelExpression);
             final boolean mightNeedExpressionObjects = StandardExpressionUtils.mightNeedExpressionObjects(spelExpression);
 
             exp = new ComputedSpelExpression(spelExpressionObject, mightNeedExpressionObjects);

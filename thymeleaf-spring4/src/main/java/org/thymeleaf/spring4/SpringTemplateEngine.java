@@ -19,11 +19,14 @@
  */
 package org.thymeleaf.spring4;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.spring4.dialect.SpringStandardDialect;
@@ -61,6 +64,8 @@ public class SpringTemplateEngine
 
     private MessageSource messageSource = null;
     private MessageSource templateEngineMessageSource = null;
+
+
 
 
     public SpringTemplateEngine() {
@@ -107,6 +112,83 @@ public class SpringTemplateEngine
      */
     public void setTemplateEngineMessageSource(final MessageSource templateEngineMessageSource) {
         this.templateEngineMessageSource = templateEngineMessageSource;
+    }
+
+
+
+
+    /**
+     * <p>
+     *   Returns whether the SpringEL compiler should be enabled in SpringEL expressions or not.
+     * </p>
+     * <p>
+     *   (This is just a convenience method, equivalent to calling
+     *   {@link SpringStandardDialect#getEnableSpringELCompiler()} on the dialect instance itself. It is provided
+     *   here in order to allow users to enable the SpEL compiler without
+     *   having to directly create instances of the {@link SpringStandardDialect})
+     * </p>
+     * <p>
+     *   Expression compilation can significantly improve the performance of Spring EL expressions, but
+     *   might not be adequate for every environment. Read
+     *   <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html#expressions-spel-compilation">the
+     *   official Spring documentation</a> for more detail.
+     * </p>
+     * <p>
+     *   Also note that although Spring includes a SpEL compiler since Spring 4.1, most expressions
+     *   in Thymeleaf templates will only be able to properly benefit from this compilation step when at least
+     *   Spring Framework version 4.2.4 is used.
+     * </p>
+     * <p>
+     *   This flag is set to <tt>false</tt> by default.
+     * </p>
+     *
+     * @return <tt>true</tt> if SpEL expressions should be compiled if possible, <tt>false</tt> if not.
+     */
+    public boolean getEnableSpringELCompiler() {
+        final Set<IDialect> dialects = getDialects();
+        for (final IDialect dialect : dialects) {
+            if (dialect instanceof SpringStandardDialect) {
+                return ((SpringStandardDialect) dialect).getEnableSpringELCompiler();
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * <p>
+     *   Sets whether the SpringEL compiler should be enabled in SpringEL expressions or not.
+     * </p>
+     * <p>
+     *   (This is just a convenience method, equivalent to calling
+     *   {@link SpringStandardDialect#setEnableSpringELCompiler(boolean)} on the dialect instance itself. It is provided
+     *   here in order to allow users to enable the SpEL compiler without
+     *   having to directly create instances of the {@link SpringStandardDialect})
+     * </p>
+     * <p>
+     *   Expression compilation can significantly improve the performance of Spring EL expressions, but
+     *   might not be adequate for every environment. Read
+     *   <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html#expressions-spel-compilation">the
+     *   official Spring documentation</a> for more detail.
+     * </p>
+     * <p>
+     *   Also note that although Spring includes a SpEL compiler since Spring 4.1, most expressions
+     *   in Thymeleaf templates will only be able to properly benefit from this compilation step when at least
+     *   Spring Framework version 4.2.4 is used.
+     * </p>
+     * <p>
+     *   This flag is set to <tt>false</tt> by default.
+     * </p>
+     *
+     * @param enableSpringELCompiler <tt>true</tt> if SpEL expressions should be compiled if possible, <tt>false</tt> if not.
+     */
+    public void setEnableSpringELCompiler(final boolean enableSpringELCompiler) {
+        final Set<IDialect> dialects = getDialects();
+        for (final IDialect dialect : dialects) {
+            if (dialect instanceof SpringStandardDialect) {
+                ((SpringStandardDialect) dialect).setEnableSpringELCompiler(enableSpringELCompiler);
+            }
+        }
     }
 
 

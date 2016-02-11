@@ -20,6 +20,7 @@
 package org.thymeleaf.spring4.dialect;
 
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.expression.IExpressionObjectFactory;
@@ -27,6 +28,7 @@ import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.spring4.expression.SPELVariableExpressionEvaluator;
 import org.thymeleaf.spring4.expression.SpringStandardConversionService;
 import org.thymeleaf.spring4.expression.SpringStandardExpressionObjectFactory;
+import org.thymeleaf.spring4.expression.SpringStandardExpressions;
 import org.thymeleaf.spring4.processor.SpringActionTagProcessor;
 import org.thymeleaf.spring4.processor.SpringErrorClassTagProcessor;
 import org.thymeleaf.spring4.processor.SpringErrorsTagProcessor;
@@ -87,6 +89,8 @@ public class SpringStandardDialect extends StandardDialect {
     public static final int PROCESSOR_PRECEDENCE = 1000;
 
 
+    private boolean enableSpringELCompiler = false;
+
 
     private final IExpressionObjectFactory SPRING_STANDARD_EXPRESSION_OBJECTS_FACTORY = new SpringStandardExpressionObjectFactory();
     private final IStandardConversionService SPRING_STANDARD_CONVERSION_SERVICE = new SpringStandardConversionService();
@@ -96,6 +100,60 @@ public class SpringStandardDialect extends StandardDialect {
     
     public SpringStandardDialect() {
         super(NAME, PREFIX, PROCESSOR_PRECEDENCE);
+    }
+
+
+
+
+    /**
+     * <p>
+     *   Returns whether the SpringEL compiler should be enabled in SpringEL expressions or not.
+     * </p>
+     * <p>
+     *   Expression compilation can significantly improve the performance of Spring EL expressions, but
+     *   might not be adequate for every environment. Read
+     *   <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html#expressions-spel-compilation">the
+     *   official Spring documentation</a> for more detail.
+     * </p>
+     * <p>
+     *   Also note that although Spring includes a SpEL compiler since Spring 4.1, most expressions
+     *   in Thymeleaf templates will only be able to properly benefit from this compilation step when at least
+     *   Spring Framework version 4.2.4 is used.
+     * </p>
+     * <p>
+     *   This flag is set to <tt>false</tt> by default.
+     * </p>
+     *
+     * @return <tt>true</tt> if SpEL expressions should be compiled if possible, <tt>false</tt> if not.
+     */
+    public boolean getEnableSpringELCompiler() {
+        return enableSpringELCompiler;
+    }
+
+
+    /**
+     * <p>
+     *   Sets whether the SpringEL compiler should be enabled in SpringEL expressions or not.
+     * </p>
+     * <p>
+     *   Expression compilation can significantly improve the performance of Spring EL expressions, but
+     *   might not be adequate for every environment. Read
+     *   <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html#expressions-spel-compilation">the
+     *   official Spring documentation</a> for more detail.
+     * </p>
+     * <p>
+     *   Also note that although Spring includes a SpEL compiler since Spring 4.1, most expressions
+     *   in Thymeleaf templates will only be able to properly benefit from this compilation step when at least
+     *   Spring Framework version 4.2.4 is used.
+     * </p>
+     * <p>
+     *   This flag is set to <tt>false</tt> by default.
+     * </p>
+     *
+     * @param enableSpringELCompiler <tt>true</tt> if SpEL expressions should be compiled if possible, <tt>false</tt> if not.
+     */
+    public void setEnableSpringELCompiler(final boolean enableSpringELCompiler) {
+        this.enableSpringELCompiler = enableSpringELCompiler;
     }
 
 
@@ -125,6 +183,19 @@ public class SpringStandardDialect extends StandardDialect {
     @Override
     public Set<IProcessor> getProcessors(final String dialectPrefix) {
         return createSpringStandardProcessorsSet(dialectPrefix);
+    }
+
+
+
+    @Override
+    public Map<String, Object> getExecutionAttributes() {
+
+        final Map<String,Object> executionAttributes = super.getExecutionAttributes();
+        executionAttributes.put(
+                SpringStandardExpressions.ENABLE_SPRING_EL_COMPILER_ATTRIBUTE_NAME, Boolean.valueOf(getEnableSpringELCompiler()));
+
+        return executionAttributes;
+
     }
 
 
