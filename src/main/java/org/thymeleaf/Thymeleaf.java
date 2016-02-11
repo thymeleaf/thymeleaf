@@ -91,7 +91,7 @@ public final class Thymeleaf {
                 VERSION_TYPE = versionRemainder.substring(separatorIdx + 1);
 
             } catch (final Exception e) {
-                throw new RuntimeException(
+                throw new ExceptionInInitializerError(
                         "Exception during initialization of Thymeleaf versioning utilities. Identified Thymeleaf " +
                         "version is '" + VERSION + "', which does not follow the {major}.{minor}.{build}[.|-]{type} " +
                         "scheme");
