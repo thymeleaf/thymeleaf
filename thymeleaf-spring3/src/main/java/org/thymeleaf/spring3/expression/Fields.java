@@ -79,15 +79,27 @@ public final class Fields {
         return FieldUtils.globalErrors(this.context);
     }
 
-    
+
     public String idFromName(final String fieldName) {
         return FieldUtils.idFromName(fieldName);
     }
 
 
 
+    public List<DetailedError> allDetailedErrors() {
+        return FieldUtils.detailedErrors(this.context);
+    }
+
     public List<DetailedError> detailedErrors() {
         return FieldUtils.detailedErrors(this.context);
+    }
+
+    public List<DetailedError> detailedErrors(final String field) {
+        return FieldUtils.detailedErrors(this.context, field);
+    }
+
+    public List<DetailedError> globalDetailedErrors() {
+        return FieldUtils.globalDetailedErrors(this.context);
     }
 
 

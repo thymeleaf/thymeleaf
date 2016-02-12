@@ -53,7 +53,7 @@ import org.thymeleaf.util.Validate;
  *
  * @author Daniel Fern&aacute;ndez
  * @author Tobias Gafner
- * 
+ *
  * @since 3.0.0
  *
  */
@@ -62,69 +62,70 @@ public final class FieldUtils {
     public static final String ALL_FIELDS = "*";
     public static final String GLOBAL_EXPRESSION = "global";
     public static final String ALL_EXPRESSION = "all";
-    
-    
 
-    public static boolean hasErrors(
-            final IExpressionContext context, final String field) {
+
+
+    public static boolean hasErrors(final IExpressionContext context, final String field) {
         return checkErrors(context, convertToFieldExpression(field));
     }
-    
-    public static boolean hasAnyErrors(
-            final IExpressionContext context) {
+
+    public static boolean hasAnyErrors(final IExpressionContext context) {
         return checkErrors(context, ALL_EXPRESSION);
     }
-    
-    public static boolean hasGlobalErrors(
-            final IExpressionContext context) {
+
+    public static boolean hasGlobalErrors(final IExpressionContext context) {
         return checkErrors(context, GLOBAL_EXPRESSION);
     }
-    
-    
 
-    public static List<String> errors(
-            final IExpressionContext context, final String field) {
+
+
+    public static List<String> errors(final IExpressionContext context, final String field) {
         return computeErrors(context, convertToFieldExpression(field));
     }
-    
-    public static List<String> errors(
-            final IExpressionContext context) {
+
+    public static List<String> errors(final IExpressionContext context) {
         return computeErrors(context, ALL_EXPRESSION);
     }
-    
-    public static List<String> globalErrors(
-            final IExpressionContext context) {
+
+    public static List<String> globalErrors(final IExpressionContext context) {
         return computeErrors(context, GLOBAL_EXPRESSION);
     }
-    
-    private static List<String> computeErrors(
-            final IExpressionContext context, final String fieldExpression) {
+
+    private static List<String> computeErrors(final IExpressionContext context, final String fieldExpression) {
 
         final BindStatus bindStatus = FieldUtils.getBindStatus(context, fieldExpression);
         if (bindStatus == null) {
             return Collections.EMPTY_LIST;
         }
 
-        final String[] errorCodes = bindStatus.getErrorMessages();
-        if (errorCodes == null || errorCodes.length == 0) {
+        final String[] errorMessages = bindStatus.getErrorMessages();
+        if (errorMessages == null || errorMessages.length == 0) {
             // If we don't need a new object, we avoid creating it
             return Collections.EMPTY_LIST;
         }
-        return Arrays.asList(errorCodes);
+        return Arrays.asList(errorMessages);
 
     }
 
 
-    public static List<DetailedError> detailedErrors(
-            final IExpressionContext context) {
-        return computeDetailedErrors(context, ALL_EXPRESSION, true, true);
+
+
+    public static List<DetailedError> detailedErrors(final IExpressionContext context) {
+        return computeDetailedErrors(context, ALL_EXPRESSION);
+    }
+
+
+    public static List<DetailedError> detailedErrors(final IExpressionContext context, final String field) {
+        return computeDetailedErrors(context, convertToFieldExpression(field));
+    }
+
+    public static List<DetailedError> globalDetailedErrors(final IExpressionContext context) {
+        return computeDetailedErrors(context, GLOBAL_EXPRESSION);
     }
 
 
     private static List<DetailedError> computeDetailedErrors(
-            final IExpressionContext context,
-            final String fieldExpression,
-            final boolean includeGlobalErrors, final boolean includeFieldErrors) {
+            final IExpressionContext context, final String fieldExpression) {
 
         final BindStatus bindStatus =
                 FieldUtils.getBindStatus(context, fieldExpression);
@@ -146,7 +147,9 @@ public final class FieldUtils {
         // We will try to avoid creating the List if we don't need it
         List<DetailedError> errorObjects = null;
 
-        if (includeGlobalErrors) {
+        final String bindExpression = bindStatus.getExpression();
+
+        if (bindExpression == null || ALL_EXPRESSION.equals(bindExpression) || ALL_FIELDS.equals(bindExpression)) {
             final List<ObjectError> globalErrors = errors.getGlobalErrors();
             for (final ObjectError globalError : globalErrors) {
                 final String message = requestContext.getMessage(globalError, false);
@@ -159,8 +162,8 @@ public final class FieldUtils {
             }
         }
 
-        if (includeFieldErrors) {
-            final List<FieldError> fieldErrors = errors.getFieldErrors();
+        if (bindExpression != null) {
+            final List<FieldError> fieldErrors = errors.getFieldErrors(bindStatus.getExpression());
             for (final FieldError fieldError : fieldErrors) {
                 final String message = requestContext.getMessage(fieldError, false);
                 final DetailedError errorObject =
@@ -184,9 +187,9 @@ public final class FieldUtils {
     public static String idFromName(final String fieldName) {
         return StringUtils.deleteAny(fieldName, "[]");
     }
-    
-    
-    
+
+
+
     private static String convertToFieldExpression(final String field) {
         if (field == null) {
             return null;
@@ -319,16 +322,16 @@ public final class FieldUtils {
 
     }
 
-    
-    
-    
+
+
+
     private static String validateAndGetValueExpression(
             final IExpressionContext context, final boolean useSelectionAsRoot, final String expression) {
 
         /*
          * Only asterisk syntax (selection variable expressions) are allowed here.
          */
-        
+
         if (useSelectionAsRoot) {
 
             VariableExpression boundObjectValue =
@@ -357,7 +360,7 @@ public final class FieldUtils {
             }
 
             return boundObjectExpression + "." + expression;
-            
+
         }
 
         return expression;
