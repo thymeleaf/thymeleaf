@@ -198,6 +198,12 @@ public final class FieldUtils {
     private static boolean checkErrors(
             final IExpressionContext context, final String expression) {
         final BindStatus bindStatus = FieldUtils.getBindStatus(context, expression);
+        if (bindStatus == null) {
+            throw new TemplateProcessingException(
+                    "Could not bind form errors using expression \"" + expression + "\". Please check this " +
+                    "expression is being executed inside the adequate context (e.g. a <form> with a th:object " +
+                    "attribute)");
+        }
         return bindStatus.isError();
     }
 
