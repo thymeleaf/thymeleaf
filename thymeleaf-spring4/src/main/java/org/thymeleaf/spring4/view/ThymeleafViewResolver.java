@@ -90,6 +90,7 @@ public class ThymeleafViewResolver
     private boolean redirectContextRelative = true;
     private boolean redirectHttp10Compatible = true;
 
+    private boolean alwaysProcessRedirectAndForward = true;
 
     private Class<? extends AbstractThymeleafView> viewClass = ThymeleafView.class;   
     private String[] viewNames = null;
@@ -483,6 +484,67 @@ public class ThymeleafViewResolver
 
     /**
      * <p>
+     *   Set whether this view resolver should always process forwards and redirects independently of the value of
+     *   the <tt>viewNames</tt> property.
+     * </p>
+     * <p>
+     *   When this flag is set to <tt>true</tt> (default value), any view name that starts with the
+     *   <tt>redirect:</tt> or <tt>forward:</tt> prefixes will be resolved by this ViewResolver even if the view names
+     *   would not match what is established at the <tt>viewNames</tt> property.
+     * </p>
+     * <p>
+     *   Note that the behaviour of <em>resolving</em> view names with these prefixes is exactly the same with this
+     *   flag set to <tt>true</tt> or <tt>false</tt> (perform an HTTP redirect or forward to an internal JSP resource).
+     *   The only difference is whether the prefixes have to be explicitly specified at <tt>viewNames</tt> or not.
+     * </p>
+     * <p>
+     *   Default value is <tt>true</tt>.
+     * </p>
+     *
+     * @param alwaysProcessRedirectAndForward true if redirects and forwards are always processed, false if this will
+     *                                     depend on what is established at the viewNames property.
+     *
+     * @since 3.0.0
+     *
+     */
+    public void setAlwaysProcessRedirectAndForward(final boolean alwaysProcessRedirectAndForward) {
+        this.alwaysProcessRedirectAndForward = alwaysProcessRedirectAndForward;
+    }
+
+
+    /**
+     * <p>
+     *   Return whether this view resolver should always process forwards and redirects independently of the value of
+     *   the <tt>viewNames</tt> property.
+     * </p>
+     * <p>
+     *   When this flag is set to <tt>true</tt> (default value), any view name that starts with the
+     *   <tt>redirect:</tt> or <tt>forward:</tt> prefixes will be resolved by this ViewResolver even if the view names
+     *   would not match what is established at the <tt>viewNames</tt> property.
+     * </p>
+     * <p>
+     *   Note that the behaviour of <em>resolving</em> view names with these prefixes is exactly the same with this
+     *   flag set to <tt>true</tt> or <tt>false</tt> (perform an HTTP redirect or forward to an internal JSP resource).
+     *   The only difference is whether the prefixes have to be explicitly specified at <tt>viewNames</tt> or not.
+     * </p>
+     * <p>
+     *   Default value is <tt>true</tt>.
+     * </p>
+     *
+     * @return whether redirects and forwards will be always processed by this view resolver or else only when they are
+     *         matched by the <tt>viewNames</tt> property.
+     *
+     * @since 3.0.0
+     *
+     */
+    public boolean getAlwaysProcessRedirectAndForward() {
+        return this.alwaysProcessRedirectAndForward;
+    }
+
+
+
+    /**
+     * <p>
      *   Specify a set of name patterns that will applied to determine whether a view name
      *   returned by a controller will be resolved by this resolver or not.
      * </p>
@@ -595,22 +657,30 @@ public class ThymeleafViewResolver
     
     @Override
     protected View createView(final String viewName, final Locale locale) throws Exception {
-        if (!canHandle(viewName, locale)) {
+        // First possible call to check "viewNames": before processing redirects and forwards
+        if (!this.alwaysProcessRedirectAndForward && !canHandle(viewName, locale)) {
             vrlogger.trace("[THYMELEAF] View \"{}\" cannot be handled by ThymeleafViewResolver. Passing on to the next resolver in the chain.", viewName);
             return null;
         }
+        // Process redirects (HTTP redirects)
         if (viewName.startsWith(REDIRECT_URL_PREFIX)) {
             vrlogger.trace("[THYMELEAF] View \"{}\" is a redirect, and will not be handled directly by ThymeleafViewResolver.", viewName);
             final String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length(), viewName.length());
             final RedirectView view = new RedirectView(redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible());
             return (View) getApplicationContext().getAutowireCapableBeanFactory().initializeBean(view, viewName);
         }
+        // Process forwards (to JSP resources)
         if (viewName.startsWith(FORWARD_URL_PREFIX)) {
             // The "forward:" prefix will actually create a Servlet/JSP view, and that's precisely its aim per the Spring
             // documentation. See http://docs.spring.io/spring-framework/docs/4.2.4.RELEASE/spring-framework-reference/html/mvc.html#mvc-redirecting-forward-prefix
             vrlogger.trace("[THYMELEAF] View \"{}\" is a forward, and will not be handled directly by ThymeleafViewResolver.", viewName);
             final String forwardUrl = viewName.substring(FORWARD_URL_PREFIX.length(), viewName.length());
             return new InternalResourceView(forwardUrl);
+        }
+        // Second possible call to check "viewNames": after processing redirects and forwards
+        if (this.alwaysProcessRedirectAndForward && !canHandle(viewName, locale)) {
+            vrlogger.trace("[THYMELEAF] View \"{}\" cannot be handled by ThymeleafViewResolver. Passing on to the next resolver in the chain.", viewName);
+            return null;
         }
         vrlogger.trace("[THYMELEAF] View {} will be handled by ThymeleafViewResolver and a " +
                         "{} instance will be created for it", viewName, this.viewClass.getSimpleName());
