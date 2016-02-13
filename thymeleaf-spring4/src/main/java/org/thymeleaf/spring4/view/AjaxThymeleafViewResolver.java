@@ -48,8 +48,12 @@ import org.thymeleaf.exceptions.ConfigurationException;
  * 
  * @since 2.0.11
  *
+ * @deprecated Deprecated in 3.0.0. Moved to the <tt>org.thymeleaf.spring4.webflow.view</tt> package. Will be removed
+ *             from this package in Thymeleaf 3.1.
+ *
  */
-public class AjaxThymeleafViewResolver 
+@Deprecated
+public class AjaxThymeleafViewResolver
         extends ThymeleafViewResolver {
 
     

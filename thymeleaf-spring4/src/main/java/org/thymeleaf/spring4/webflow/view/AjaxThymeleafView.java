@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring3.view;
+package org.thymeleaf.spring4.webflow.view;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.util.StringUtils;
 import org.thymeleaf.exceptions.ConfigurationException;
+import org.thymeleaf.spring4.view.ThymeleafView;
 
 
 /**
@@ -54,33 +55,29 @@ import org.thymeleaf.exceptions.ConfigurationException;
  *
  * @since 2.0.11
  *
- * @deprecated Deprecated in 3.0.0. Moved to the <tt>org.thymeleaf.spring3.webflow.view</tt> package. Will be removed
- *             from this package in Thymeleaf 3.1.
- *
  */
-@Deprecated
 public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView {
 
     private static final Logger vlogger = LoggerFactory.getLogger(AjaxThymeleafView.class);
 
     private static final String FRAGMENTS_PARAM = "fragments";
-    
+
 
     private AjaxHandler ajaxHandler = null;
 
 
-    
+
     public AjaxThymeleafView() {
         super();
     }
 
-    
+
 
     public AjaxHandler getAjaxHandler() {
         return this.ajaxHandler;
     }
 
-    
+
     public void setAjaxHandler(final AjaxHandler ajaxHandler) {
         this.ajaxHandler = ajaxHandler;
     }
@@ -91,18 +88,18 @@ public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView 
     @Override
     public void render(final Map<String, ?> model, final HttpServletRequest request, final HttpServletResponse response)
             throws Exception {
-        
+
 
         final AjaxHandler templateAjaxHandler = getAjaxHandler();
-        
+
         if (templateAjaxHandler == null) {
             throw new ConfigurationException("[THYMELEAF] AJAX Handler set into " +
                     AjaxThymeleafView.class.getSimpleName() + " instance for template " +
                     getTemplateName() + " is null.");
         }
-        
+
         if (templateAjaxHandler.isAjaxRequest(request, response)) {
-            
+
             final Set<String> fragmentsToRender = getRenderFragments(model, request, response);
             if (fragmentsToRender == null || fragmentsToRender.size() == 0) {
                 vlogger.warn("[THYMELEAF] An Ajax request was detected, but no fragments were specified to be re-rendered.  "
@@ -115,15 +112,15 @@ public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView 
             super.renderFragment(fragmentsToRender, model, request, response);
 
         } else {
-            
-            super.render(model, request, response);
-            
-        }
-        
-    }
-    
 
-    
+            super.render(model, request, response);
+
+        }
+
+    }
+
+
+
 
     @SuppressWarnings({ "rawtypes", "unused" })
     protected Set<String> getRenderFragments(
@@ -138,7 +135,7 @@ public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView 
         }
         return new HashSet<String>(Arrays.asList(renderFragments));
     }
-    
+
 
 
 }

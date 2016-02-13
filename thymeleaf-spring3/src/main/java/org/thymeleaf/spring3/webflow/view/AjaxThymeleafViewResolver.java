@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring3.view;
+package org.thymeleaf.spring3.webflow.view;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -32,6 +32,7 @@ import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.exceptions.ConfigurationException;
+import org.thymeleaf.spring3.view.ThymeleafViewResolver;
 
 
 /**
@@ -48,12 +49,8 @@ import org.thymeleaf.exceptions.ConfigurationException;
  * 
  * @since 2.0.11
  *
- * @deprecated Deprecated in 3.0.0. Moved to the <tt>org.thymeleaf.spring3.webflow.view</tt> package. Will be removed
- *             from this package in Thymeleaf 3.1.
- *
  */
-@Deprecated
-public class AjaxThymeleafViewResolver
+public class AjaxThymeleafViewResolver 
         extends ThymeleafViewResolver {
 
     
@@ -131,7 +128,7 @@ public class AjaxThymeleafViewResolver
         
         if (view instanceof AjaxEnabledView) {
             // Set the AJAX handler into view, if it is an AjaxThymeleafView.
-            
+
             final AjaxEnabledView ajaxEnabledView = (AjaxEnabledView) view;
             
             if (ajaxEnabledView.getAjaxHandler() == null && getAjaxHandler() != null) {

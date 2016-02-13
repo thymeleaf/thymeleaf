@@ -43,12 +43,16 @@ import org.springframework.webflow.execution.View;
  *   Most people will need to use this class instead of 
  *   {@link AjaxThymeleafView} if you are using Spring WebFlow.
  * </p>
-*
-* @author Daniel Fern&aacute;ndez
-* 
-* @since 2.0.11
-*
-*/
+ *
+ * @author Daniel Fern&aacute;ndez
+ *
+ * @since 2.0.11
+ *
+ * @deprecated Deprecated in 3.0.0. Moved to the <tt>org.thymeleaf.spring4.webflow.view</tt> package. Will be removed
+ *             from this package in Thymeleaf 3.1.
+ *
+ */
+@Deprecated
 public class FlowAjaxThymeleafView extends AjaxThymeleafView {
 
     

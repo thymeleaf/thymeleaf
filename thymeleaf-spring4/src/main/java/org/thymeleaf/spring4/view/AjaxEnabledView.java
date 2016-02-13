@@ -34,7 +34,11 @@ import org.springframework.web.servlet.View;
  * 
  * @since 2.0.12
  *
+ * @deprecated Deprecated in 3.0.0. Moved to the <tt>org.thymeleaf.spring4.webflow.view</tt> package. Will be removed
+ *             from this package in Thymeleaf 3.1.
+ *
  */
+@Deprecated
 public interface AjaxEnabledView extends View {
 
 

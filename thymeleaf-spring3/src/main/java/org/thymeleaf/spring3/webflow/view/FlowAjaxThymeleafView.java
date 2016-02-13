@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring3.view;
+package org.thymeleaf.spring3.webflow.view;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,24 +35,20 @@ import org.springframework.webflow.execution.View;
 
 /**
  * <p>
- *   Subclass of {@link AjaxThymeleafView} for Spring WebFlow,
+ *   Subclass of {@link org.thymeleaf.spring3.view.AjaxThymeleafView} for Spring WebFlow,
  *   designed for obtaining the fragments to be rendered via
- *   AJAX in the way needed by Spring WebFlow. 
+ *   AJAX in the way needed by Spring WebFlow.
  * </p>
  * <p>
- *   Most people will need to use this class instead of 
- *   {@link AjaxThymeleafView} if you are using Spring WebFlow.
+ *   Most people will need to use this class instead of
+ *   {@link org.thymeleaf.spring3.view.AjaxThymeleafView} if you are using Spring WebFlow.
  * </p>
- *
- * @author Daniel Fern&aacute;ndez
- *
- * @since 2.0.11
- *
- * @deprecated Deprecated in 3.0.0. Moved to the <tt>org.thymeleaf.spring3.webflow.view</tt> package. Will be removed
- *             from this package in Thymeleaf 3.1.
- *             
- */
-@Deprecated
+*
+* @author Daniel Fern&aacute;ndez
+*
+* @since 2.0.11
+*
+*/
 public class FlowAjaxThymeleafView extends AjaxThymeleafView {
 
     
