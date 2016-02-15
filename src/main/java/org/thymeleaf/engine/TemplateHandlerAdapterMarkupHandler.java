@@ -19,11 +19,16 @@
  */
 package org.thymeleaf.engine;
 
+import java.util.List;
+
 import org.attoparser.AbstractMarkupHandler;
 import org.attoparser.ParseException;
+import org.attoparser.select.ParseSelection;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateparser.markup.decoupled.DecoupledInjectedAttribute;
+import org.thymeleaf.templateparser.markup.decoupled.DecoupledTemplateMetadata;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.Validate;
 
@@ -62,6 +67,13 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
     private ElementAttributes currentElementAttributes;
 
+
+    private final DecoupledTemplateMetadata decoupledTemplateMetadata;
+    private final boolean injectAttributes;
+    private int injectionLevel;
+    private ParseSelection parseSelection;
+
+
     
     public TemplateHandlerAdapterMarkupHandler(final String templateName,
                                                final ITemplateHandler templateHandler,
@@ -69,7 +81,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
                                                final ElementDefinitions elementDefinitions,
                                                final AttributeDefinitions attributeDefinitions,
                                                final TemplateMode templateMode,
-                                               final int lineOffset, final int colOffset) {
+                                               final int lineOffset, final int colOffset,
+                                               final DecoupledTemplateMetadata decoupledTemplateMetadata) {
         super();
 
         Validate.notNull(templateHandler, "Template handler cannot be null");
@@ -77,6 +90,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         Validate.notNull(elementDefinitions, "Element Definitions repository cannot be null");
         Validate.notNull(attributeDefinitions, "Attribute Definitions repository cannot be null");
         Validate.notNull(templateMode, "Template mode cannot be null");
+        // decoupledTemplateMetadata CAN be null
 
         this.templateName = templateName;
 
@@ -108,9 +122,24 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.closeElementTag = new CloseElementTag(this.templateMode, this.elementDefinitions);
 
         this.currentElementAttributes = null; // Will change as soon as we start processing an open or standalone tag
-        
-        
+
+        this.decoupledTemplateMetadata = decoupledTemplateMetadata;
+        this.injectAttributes = this.decoupledTemplateMetadata.hasInjectedAttributes();
+
     }
+
+
+
+
+    @Override
+    public void setParseSelection(final ParseSelection selection) {
+        this.parseSelection = selection;
+        if (this.parseSelection != null) {
+            this.injectionLevel = this.parseSelection.getSelectionLevels() - 1;
+        }
+        super.setParseSelection(selection);
+    }
+
 
 
 
@@ -270,6 +299,10 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final boolean minimized, final int line, final int col)
             throws ParseException {
 
+        if (this.injectAttributes) {
+            processInjectedAttributes(line, col);
+        }
+
         // Precompute the associated processors - this might help performance, especially when using an event cache
         this.standaloneElementTag.precomputeAssociatedProcessors();
         // Call the template handler method with the gathered info
@@ -293,12 +326,18 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
     }
 
+
+
     @Override
     public void handleOpenElementEnd(
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int line, final int col)
             throws ParseException {
+
+        if (this.injectAttributes) {
+            processInjectedAttributes(line, col);
+        }
 
         // Precompute the associated processors - this might help performance, especially when using an event cache
         this.openElementTag.precomputeAssociatedProcessors();
@@ -329,6 +368,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int nameOffset, final int nameLen,
             final int line, final int col)
             throws ParseException {
+
+        // No attribute injection for auto-open elements - only elements originally in template will be injectable
 
         // Precompute the associated processors - this might help performance, especially when using an event cache
         this.openElementTag.precomputeAssociatedProcessors();
@@ -517,7 +558,48 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.templateHandler.handleProcessingInstruction(this.processingInstruction);
 
     }
-    
+
+
+
+
+    private void processInjectedAttributes(final int line, final int col) {
+
+        if (this.parseSelection.isMatchingAny(this.injectionLevel)) {
+
+            final String[] selectors = this.parseSelection.getCurrentSelection(this.injectionLevel);
+            if (selectors != null && selectors.length > 0) {
+
+                for (final String selector : selectors) {
+
+                    final List<DecoupledInjectedAttribute> injectedAttributesForSelector =
+                            this.decoupledTemplateMetadata.getInjectedAttributesForSelector(selector);
+
+                    if (injectedAttributesForSelector != null) {
+
+                        for (final DecoupledInjectedAttribute injectedAttribute : injectedAttributesForSelector) {
+
+                            this.currentElementAttributes.setAttribute(
+                                    null,
+                                    injectedAttribute.getName(),
+                                    ATTRIBUTE_EQUALS_OPERATOR,
+                                    injectedAttribute.getValue(),
+                                    injectedAttribute.getValueQuotes(),
+                                    this.lineOffset + line,
+                                    (line == 1 ? this.colOffset : 0) + col,
+                                    true);
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
 
 
 }

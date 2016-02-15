@@ -30,13 +30,16 @@ import org.attoparser.MarkupParser;
 import org.attoparser.ParseException;
 import org.attoparser.config.ParseConfiguration;
 import org.attoparser.select.BlockSelectorMarkupHandler;
+import org.attoparser.select.NodeSelectorMarkupHandler;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.engine.TemplateHandlerAdapterMarkupHandler;
 import org.thymeleaf.exceptions.TemplateInputException;
+import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.ITemplateParser;
+import org.thymeleaf.templateparser.markup.decoupled.DecoupledTemplateMetadata;
 import org.thymeleaf.templateparser.reader.ParserLevelCommentMarkupReader;
 import org.thymeleaf.templateparser.reader.PrototypeOnlyCommentMarkupReader;
 import org.thymeleaf.templateresource.ITemplateResource;
@@ -142,6 +145,13 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
         try {
 
+            final DecoupledTemplateMetadata decoupledTemplateMetadata = new DecoupledTemplateMetadata();
+            decoupledTemplateMetadata.addInjectedAttribute("div//div", "seldivdiv", IElementAttributes.ValueQuotes.DOUBLE, "done");
+            decoupledTemplateMetadata.addInjectedAttribute("div", "thisisadiv", IElementAttributes.ValueQuotes.NONE, null);
+            decoupledTemplateMetadata.addInjectedAttribute("div", "reallyadiv", IElementAttributes.ValueQuotes.SINGLE, "true");
+            decoupledTemplateMetadata.addInjectedAttribute("div//input", "towrite", IElementAttributes.ValueQuotes.SINGLE, "here");
+
+
             // The final step of the handler chain will be the adapter that will convert attoparser's handler chain to thymeleaf's.
             IMarkupHandler handler =
                         new TemplateHandlerAdapterMarkupHandler(
@@ -151,7 +161,8 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                                 configuration.getElementDefinitions(),
                                 configuration.getAttributeDefinitions(),
                                 templateMode,
-                                lineOffset, colOffset);
+                                lineOffset, colOffset,
+                                decoupledTemplateMetadata);
 
             // Just before the adapter markup handler, we will insert the processing of inlined output expressions
             // but only if we are not going to disturb the execution of text processors coming from other dialects
@@ -167,16 +178,37 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             }
 
 
-            // If we need to select blocks, we will need a block selector here. Note this will get executed in the
-            // handler chain AFTER thymeleaf's own TemplateHandlerAdapterMarkupHandler, so that we will be able to
-            // include in selectors code inside prototype-only comments.
-            if (templateSelectors != null && !templateSelectors.isEmpty()) {
+            // Precompute flags
+            final boolean injectAttributes = decoupledTemplateMetadata != null && decoupledTemplateMetadata.hasInjectedAttributes();
+            final boolean selectBlock = templateSelectors != null && !templateSelectors.isEmpty();
 
+
+            // Pre-create reference resolver if needed, so that it can be used in both block and node selection
+
+            final TemplateFragmentMarkupReferenceResolver referenceResolver;
+            if (injectAttributes || selectBlock) {
                 final String standardDialectPrefix = configuration.getStandardDialectPrefix();
-
-                final TemplateFragmentMarkupReferenceResolver referenceResolver =
+                referenceResolver =
                         (standardDialectPrefix != null ?
-                            TemplateFragmentMarkupReferenceResolver.forPrefix(this.html, standardDialectPrefix) : null);
+                                TemplateFragmentMarkupReferenceResolver.forPrefix(this.html, standardDialectPrefix) : null);
+            } else {
+                referenceResolver = null;
+            }
+
+
+            // If we need to select nodes in order to inject additional attributes, we will need a node selector here.
+            // Note this will get executed in the handler chain AFTER thymeleaf's parser-level and prototype-only
+            // comment block readers, so that we will be able to include in selectors code inside prototype-only comments.
+            if (injectAttributes) {
+                final Set<String> nodeSelectors = decoupledTemplateMetadata.getAllInjectedAttributeSelectors();
+                handler = new NodeSelectorMarkupHandler(handler, handler, nodeSelectors.toArray(new String[nodeSelectors.size()]), referenceResolver);
+            }
+
+
+            // If we need to select blocks, we will need a block selector here. Note this will get executed in the
+            // handler chain AFTER thymeleaf's parser-level and prototype-only comment block readers, so that we
+            // will be able to include in selectors code inside prototype-only comments.
+            if (selectBlock) {
                 handler = new BlockSelectorMarkupHandler(handler, templateSelectors.toArray(new String[templateSelectors.size()]), referenceResolver);
             }
 
