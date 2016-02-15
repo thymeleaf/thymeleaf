@@ -66,7 +66,7 @@ public final class DecoupledTemplateMetadata {
         List<DecoupledInjectedAttribute> injectedAttributesForSelector = this.injectedAttributes.get(selector);
         if (injectedAttributesForSelector == null) {
             injectedAttributesForSelector = new ArrayList<DecoupledInjectedAttribute>(2);
-            injectedAttributes.put(selector, injectedAttributesForSelector);
+            this.injectedAttributes.put(selector, injectedAttributesForSelector);
         }
 
         injectedAttributesForSelector.add(new DecoupledInjectedAttribute(attributeName, valueQuotes, attributeValue));
