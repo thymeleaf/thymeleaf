@@ -22,6 +22,10 @@ package org.thymeleaf.templateparser.markup.decoupled;
 import org.thymeleaf.model.IElementAttributes;
 
 /**
+ * <p>
+ *   Value class used for containing each of the attributes that should be injected during parsing into a
+ *   template that is processed with associated <em>decoupled logic</em>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0

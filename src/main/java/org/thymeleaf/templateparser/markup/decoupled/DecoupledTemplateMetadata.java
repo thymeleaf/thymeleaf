@@ -28,6 +28,22 @@ import java.util.Set;
 import org.thymeleaf.model.IElementAttributes;
 
 /**
+ * <p>
+ *   This class specifies containers for template logic metadata, normally coming from separate template files
+ *   (decoupled templates).
+ * </p>
+ * <p>
+ *   Instances of this class are built and populated by instances of {@link DecoupledTemplateMetadataBuilderMarkupHandler},
+ *   acting as handlers on the {@link org.attoparser.IMarkupParser} being used for parsing the normal template
+ *   resources.
+ * </p>
+ * <p>
+ *   Once built and populated, instances of this class are handled over to
+ *   {@link org.thymeleaf.engine.TemplateHandlerAdapterMarkupHandler} instances which are one of the steps in
+ *   the template parsing chain (converting parser events into {@link org.thymeleaf.engine.ITemplateHandler} events).
+ *   Attributes specified here to be injected into the template are injected at real-time during the parsing operation
+ *   itself, so that overhead is minimal (and zero once the template is cached).
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
