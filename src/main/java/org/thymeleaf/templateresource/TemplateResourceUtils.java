@@ -133,6 +133,11 @@ final class TemplateResourceUtils {
                 return basePath.substring(slashPos + 1, dotPos);
             }
             return basePath.substring(slashPos + 1);
+        } else {
+            final int dotPos = basePath.lastIndexOf('.');
+            if (dotPos != -1) {
+                return basePath.substring(0, dotPos);
+            }
         }
 
         return (basePath.length() > 0? basePath : null);
