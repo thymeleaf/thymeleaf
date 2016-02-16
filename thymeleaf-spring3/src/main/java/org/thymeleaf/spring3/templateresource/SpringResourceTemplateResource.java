@@ -118,7 +118,7 @@ public final class SpringResourceTemplateResource implements ITemplateResource {
 
     static String computeBaseName(final String path) {
 
-        if (path == null) {
+        if (path == null || path.length() == 0) {
             return null;
         }
 
@@ -132,11 +132,15 @@ public final class SpringResourceTemplateResource implements ITemplateResource {
                 return basePath.substring(slashPos + 1, dotPos);
             }
             return basePath.substring(slashPos + 1);
+        } else {
+            final int dotPos = basePath.lastIndexOf('.');
+            if (dotPos != -1) {
+                return basePath.substring(0, dotPos);
+            }
         }
 
-        return basePath;
+        return (basePath.length() > 0? basePath : null);
 
     }
-
 
 }
