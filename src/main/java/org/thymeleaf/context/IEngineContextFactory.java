@@ -41,6 +41,9 @@ import org.thymeleaf.engine.TemplateData;
  *   {@link org.thymeleaf.TemplateEngine#getEngineContextFactory()} and
  *   {@link org.thymeleaf.TemplateEngine#setEngineContextFactory(IEngineContextFactory)} methods.
  * </p>
+ * <p>
+ *   Implementations of this interface should be <strong>thread-safe</strong>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *

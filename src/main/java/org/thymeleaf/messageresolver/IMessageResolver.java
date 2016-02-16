@@ -43,6 +43,9 @@ import org.thymeleaf.context.ITemplateContext;
  *   always ask for an <tt>absent message representation</tt>, whereas methods in the <tt>#messages</tt>
  *   expression object will do it depending on the specific method being called.
  * </p>
+ * <p>
+ *   Implementations of this interface should be <strong>thread-safe</strong>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * 

@@ -55,6 +55,12 @@ import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Default implementation of the {@link IEngineConfiguration} interface.
+ * </p>
+ * <p>
+ *   There is normally no reason why user code would directly use this class instead of its interface.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0

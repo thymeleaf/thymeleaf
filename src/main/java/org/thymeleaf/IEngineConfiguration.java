@@ -47,8 +47,18 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.text.ITextRepository;
 
 /**
+ * <p>
+ *   Interface defining the main configuration object that specifies how an {@link ITemplateEngine} instance
+ *   should behave.
+ * </p>
+ * <p>
+ *   Implementations of this interface should be <strong>thread-safe</strong>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
+ *
+ * @see EngineConfiguration
+ *
  * @since 3.0.0
  * 
  */

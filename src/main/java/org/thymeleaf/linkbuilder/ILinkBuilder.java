@@ -37,6 +37,9 @@ import org.thymeleaf.context.IExpressionContext;
  *   responsibilities for whatever reason). In such case, the next builder will be asked. If the entire chain of
  *   link builders fail, an exception will be raised.
  * </p>
+ * <p>
+ *   Implementations of this interface should be <strong>thread-safe</strong>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * 

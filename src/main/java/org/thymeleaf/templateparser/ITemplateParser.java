@@ -28,6 +28,13 @@ import org.thymeleaf.templateresource.ITemplateResource;
 
 
 /**
+ * <p>
+ *   Interface to be implemented by al the parsers used for parsing templates at a {@link org.thymeleaf.TemplateEngine}.
+ * </p>
+ * <p>
+ *   Implementations of this interface should be <strong>thread-safe</strong>.
+ * </p>
+ *
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0

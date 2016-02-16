@@ -63,6 +63,9 @@ import org.thymeleaf.templateresource.ITemplateResource;
  *   that are not configured an order will be executed last in the chain.
  * </p>
  * <p>
+ *   Implementations of this interface should be <strong>thread-safe</strong>.
+ * </p>
+ * <p>
  *   Note a class with this name existed since 1.0, but it was completely reimplemented
  *   in Thymeleaf 3.0
  * </p>
