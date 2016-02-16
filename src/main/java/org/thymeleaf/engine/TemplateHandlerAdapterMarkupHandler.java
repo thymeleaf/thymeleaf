@@ -124,7 +124,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.currentElementAttributes = null; // Will change as soon as we start processing an open or standalone tag
 
         this.decoupledTemplateMetadata = decoupledTemplateMetadata;
-        this.injectAttributes = this.decoupledTemplateMetadata.hasInjectedAttributes();
+        this.injectAttributes = (this.decoupledTemplateMetadata != null? this.decoupledTemplateMetadata.hasInjectedAttributes() : false);
 
     }
 
@@ -564,35 +564,36 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
     private void processInjectedAttributes(final int line, final int col) {
 
-        if (this.parseSelection.isMatchingAny(this.injectionLevel)) {
+        if (!this.parseSelection.isMatchingAny(this.injectionLevel)) {
+            return;
+        }
 
-            final String[] selectors = this.parseSelection.getCurrentSelection(this.injectionLevel);
-            if (selectors != null && selectors.length > 0) {
+        final String[] selectors = this.parseSelection.getCurrentSelection(this.injectionLevel);
 
-                for (final String selector : selectors) {
+        if (selectors == null || selectors.length == 0) {
+            return;
+        }
 
-                    final List<DecoupledInjectedAttribute> injectedAttributesForSelector =
-                            this.decoupledTemplateMetadata.getInjectedAttributesForSelector(selector);
+        for (final String selector : selectors) {
 
-                    if (injectedAttributesForSelector != null) {
+            final List<DecoupledInjectedAttribute> injectedAttributesForSelector =
+                    this.decoupledTemplateMetadata.getInjectedAttributesForSelector(selector);
 
-                        for (final DecoupledInjectedAttribute injectedAttribute : injectedAttributesForSelector) {
+            if (injectedAttributesForSelector == null) {
+                continue;
+            }
 
-                            this.currentElementAttributes.setAttribute(
-                                    null,
-                                    injectedAttribute.getName(),
-                                    ATTRIBUTE_EQUALS_OPERATOR,
-                                    injectedAttribute.getValue(),
-                                    injectedAttribute.getValueQuotes(),
-                                    this.lineOffset + line,
-                                    (line == 1 ? this.colOffset : 0) + col,
-                                    true);
+            for (final DecoupledInjectedAttribute injectedAttribute : injectedAttributesForSelector) {
 
-                        }
-
-                    }
-
-                }
+                this.currentElementAttributes.setAttribute(
+                        null,
+                        injectedAttribute.getName(),
+                        ATTRIBUTE_EQUALS_OPERATOR,
+                        injectedAttribute.getValue(),
+                        injectedAttribute.getValueQuotes(),
+                        this.lineOffset + line,
+                        (line == 1 ? this.colOffset : 0) + col,
+                        true);
 
             }
 

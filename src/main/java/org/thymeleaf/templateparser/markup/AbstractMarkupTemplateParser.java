@@ -35,10 +35,10 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.engine.TemplateHandlerAdapterMarkupHandler;
 import org.thymeleaf.exceptions.TemplateInputException;
-import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.ITemplateParser;
+import org.thymeleaf.templateparser.markup.decoupled.DecoupledTemplateLogicUtils;
 import org.thymeleaf.templateparser.markup.decoupled.DecoupledTemplateMetadata;
 import org.thymeleaf.templateparser.reader.ParserLevelCommentMarkupReader;
 import org.thymeleaf.templateparser.reader.PrototypeOnlyCommentMarkupReader;
@@ -145,11 +145,12 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
         try {
 
-            final DecoupledTemplateMetadata decoupledTemplateMetadata = new DecoupledTemplateMetadata();
-            decoupledTemplateMetadata.addInjectedAttribute("div//div", "seldivdiv", IElementAttributes.ValueQuotes.DOUBLE, "done");
-            decoupledTemplateMetadata.addInjectedAttribute("div", "thisisadiv", IElementAttributes.ValueQuotes.NONE, null);
-            decoupledTemplateMetadata.addInjectedAttribute("div", "reallyadiv", IElementAttributes.ValueQuotes.SINGLE, "true");
-            decoupledTemplateMetadata.addInjectedAttribute("div//input", "towrite", IElementAttributes.ValueQuotes.SINGLE, "here");
+            // TODO This should not be done always, but only when the TemplateResolver requires so (new arg in method?)
+            final DecoupledTemplateMetadata decoupledTemplateMetadata =
+                    (resource != null?
+                            DecoupledTemplateLogicUtils.computeDecoupledTemplateMetadata(
+                                    configuration, ownerTemplate, template, templateSelectors, resource, templateMode, this.parser) :
+                            null);
 
 
             // The final step of the handler chain will be the adapter that will convert attoparser's handler chain to thymeleaf's.
