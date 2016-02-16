@@ -45,6 +45,8 @@ import org.thymeleaf.linkbuilder.StandardLinkBuilder;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.standard.StandardDialect;
+import org.thymeleaf.templateparser.markup.decoupled.IDecoupledTemplateLogicResolver;
+import org.thymeleaf.templateparser.markup.decoupled.StandardDecoupledTemplateLogicResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
 import org.thymeleaf.text.ITextRepository;
@@ -248,6 +250,7 @@ public class TemplateEngine implements ITemplateEngine {
     private final Set<ILinkBuilder> linkBuilders = new LinkedHashSet<ILinkBuilder>(3);
     private ICacheManager cacheManager = null;
     private IEngineContextFactory engineContextFactory = null;
+    private IDecoupledTemplateLogicResolver decoupledTemplateLogicResolver = null;
 
     // TODO Make this configurable!
     private final ITextRepository textRepository = TextRepositories.createLimitedSizeCacheRepository();
@@ -275,6 +278,7 @@ public class TemplateEngine implements ITemplateEngine {
         setEngineContextFactory(new StandardEngineContextFactory());
         setMessageResolver(new StandardMessageResolver());
         setLinkBuilder(new StandardLinkBuilder());
+        setDecoupledTemplateLogicResolver(new StandardDecoupledTemplateLogicResolver());
         setDialect(new StandardDialect());
     }
 
@@ -332,7 +336,7 @@ public class TemplateEngine implements ITemplateEngine {
                             new EngineConfiguration(
                                     this.templateResolvers, this.messageResolvers, this.linkBuilders,
                                     this.dialectConfigurations, this.cacheManager, this.engineContextFactory,
-                                    this.textRepository);
+                                    this.decoupledTemplateLogicResolver, this.textRepository);
                     ((EngineConfiguration)this.configuration).initialize();
 
                     initializeSpecific();
@@ -757,6 +761,52 @@ public class TemplateEngine implements ITemplateEngine {
         Validate.notNull(engineContextFactory, "Engine Context Factory cannot be set to null");
         checkNotInitialized();
         this.engineContextFactory = engineContextFactory;
+    }
+
+
+    /**
+     * <p>
+     *   Returns the Decoupled Template Logic Resolver in effect. This resolver is responsible for obtaining
+     *   the resource containing the decoupled template logic to be added to templates that are marked during their
+     *   own resolution to need additional external logic (in order for them to be pure HTML/XML markup).
+     * </p>
+     * <p>
+     *   By default, an instance of {@link org.thymeleaf.templateparser.markup.decoupled.StandardDecoupledTemplateLogicResolver}
+     *   is set.
+     * </p>
+     *
+     * @return the decoupled template logic resolver
+     */
+    public final IDecoupledTemplateLogicResolver getDecoupledTemplateLogicResolver() {
+        if (this.initialized) {
+            return this.configuration.getDecoupledTemplateLogicResolver();
+        }
+        return this.decoupledTemplateLogicResolver;
+    }
+
+    /**
+     * <p>
+     *   Sets the Decoupled Template Logic Resolver (implementation of
+     *   {@link IDecoupledTemplateLogicResolver}) to be used for templates that require so.
+     * </p>
+     * <p>
+     *   By default, an instance of {@link org.thymeleaf.templateparser.markup.decoupled.StandardDecoupledTemplateLogicResolver}
+     *   is set.
+     * </p>
+     * <p>
+     *   This operation can only be executed before processing templates for the first
+     *   time. Once a template is processed, the template engine is considered to be
+     *   <i>initialized</i>, and from then on any attempt to change its configuration
+     *   will result in an exception.
+     * </p>
+     *
+     * @param decoupledTemplateLogicResolver the engine context factory to be used.
+     *
+     */
+    public void setDecoupledTemplateLogicResolver(final IDecoupledTemplateLogicResolver decoupledTemplateLogicResolver) {
+        Validate.notNull(decoupledTemplateLogicResolver, "Decoupled Template Logic Resolver cannot be set to null");
+        checkNotInitialized();
+        this.decoupledTemplateLogicResolver = decoupledTemplateLogicResolver;
     }
 
     

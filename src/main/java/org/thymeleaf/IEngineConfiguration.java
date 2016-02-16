@@ -43,6 +43,7 @@ import org.thymeleaf.processor.templateboundaries.ITemplateBoundariesProcessor;
 import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateparser.markup.decoupled.IDecoupledTemplateLogicResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.text.ITextRepository;
 
@@ -71,6 +72,8 @@ public interface IEngineConfiguration {
     public ICacheManager getCacheManager();
 
     public IEngineContextFactory getEngineContextFactory();
+
+    public IDecoupledTemplateLogicResolver getDecoupledTemplateLogicResolver();
 
     public Set<DialectConfiguration> getDialectConfigurations();
     public Set<IDialect> getDialects();

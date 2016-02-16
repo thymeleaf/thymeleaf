@@ -50,6 +50,7 @@ import org.thymeleaf.processor.templateboundaries.ITemplateBoundariesProcessor;
 import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateparser.markup.decoupled.IDecoupledTemplateLogicResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.Validate;
@@ -75,6 +76,7 @@ public class EngineConfiguration implements IEngineConfiguration {
     private final Set<ILinkBuilder> linkBuilders;
     private final ICacheManager cacheManager;
     private final IEngineContextFactory engineContextFactory;
+    private final IDecoupledTemplateLogicResolver decoupledTemplateLogicResolver;
     private TemplateManager templateManager;
     private final ConcurrentHashMap<TemplateMode,IModelFactory> modelFactories;
 
@@ -89,6 +91,7 @@ public class EngineConfiguration implements IEngineConfiguration {
             final Set<DialectConfiguration> dialectConfigurations,
             final ICacheManager cacheManager,
             final IEngineContextFactory engineContextFactory,
+            final IDecoupledTemplateLogicResolver decoupledTemplateLogicResolver,
             final ITextRepository textRepository) {
 
         super();
@@ -100,6 +103,7 @@ public class EngineConfiguration implements IEngineConfiguration {
         Validate.notNull(dialectConfigurations, "Dialect configuration set cannot be null");
         // Cache Manager CAN be null
         Validate.notNull(engineContextFactory, "Engine Context Factory cannot be null");
+        Validate.notNull(decoupledTemplateLogicResolver, "Decoupled Template Logic Resolver cannot be null");
         Validate.notNull(textRepository, "Text Repository cannot be null");
 
         final List<ITemplateResolver> templateResolversList = new ArrayList<ITemplateResolver>(templateResolvers);
@@ -117,6 +121,8 @@ public class EngineConfiguration implements IEngineConfiguration {
         this.cacheManager = cacheManager;
 
         this.engineContextFactory = engineContextFactory;
+
+        this.decoupledTemplateLogicResolver = decoupledTemplateLogicResolver;
 
         this.dialectSetConfiguration = DialectSetConfiguration.build(dialectConfigurations);
         this.textRepository = textRepository;
@@ -160,6 +166,12 @@ public class EngineConfiguration implements IEngineConfiguration {
 
     public IEngineContextFactory getEngineContextFactory() {
         return this.engineContextFactory;
+    }
+
+
+
+    public IDecoupledTemplateLogicResolver getDecoupledTemplateLogicResolver() {
+        return this.decoupledTemplateLogicResolver;
     }
 
 
