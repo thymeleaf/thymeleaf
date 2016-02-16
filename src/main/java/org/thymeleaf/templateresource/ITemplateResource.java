@@ -147,9 +147,7 @@ public interface ITemplateResource {
      *
      * @param relativeLocation the location of the resource we want to obtain, relative to the current one. Required.
      * @return the relative resource. Should never return <tt>null</tt>.
-     * @throws IOException if an input/output exception happens or if the resource does not exist (e.g.
-     *                     {@link java.io.FileNotFoundException}).
      */
-    public ITemplateResource relative(final String relativeLocation) throws IOException;
+    public ITemplateResource relative(final String relativeLocation);
 
 }

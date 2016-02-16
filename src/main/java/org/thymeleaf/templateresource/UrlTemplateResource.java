@@ -34,6 +34,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -139,13 +140,19 @@ public final class UrlTemplateResource implements ITemplateResource, Serializabl
 
 
 
-    public ITemplateResource relative(final String relativeLocation) throws IOException {
+    public ITemplateResource relative(final String relativeLocation) {
 
         Validate.notEmpty(relativeLocation, "Relative Path cannot be null or empty");
 
         // We will create a new URL using the current one as context, and the relative path as spec
-        final URL relativeURL =
-                new URL(this.url, (relativeLocation.charAt(0) == '/' ? relativeLocation.substring(1) : relativeLocation));
+        final URL relativeURL;
+        try {
+            relativeURL = new URL(this.url, (relativeLocation.charAt(0) == '/' ? relativeLocation.substring(1) : relativeLocation));
+        } catch (final MalformedURLException e) {
+            throw new TemplateInputException(
+                    "Could not create relative URL resource for resource \"" + getDescription() + "\" and " +
+                    "relative location \"" + relativeLocation + "\"", e);
+        }
 
         return new UrlTemplateResource(relativeURL, this.characterEncoding);
 

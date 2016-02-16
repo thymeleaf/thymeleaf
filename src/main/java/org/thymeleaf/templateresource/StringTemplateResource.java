@@ -19,11 +19,11 @@
  */
 package org.thymeleaf.templateresource;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
+import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.util.LoggingUtils;
 import org.thymeleaf.util.Validate;
 
@@ -79,8 +79,8 @@ public final class StringTemplateResource implements ITemplateResource {
 
 
 
-    public ITemplateResource relative(final String relativeLocation) throws IOException {
-        throw new FileNotFoundException(
+    public ITemplateResource relative(final String relativeLocation) {
+        throw new TemplateInputException(
                 String.format("Cannot create a relative resource for String resource  \"%s\"", LoggingUtils.loggifyTemplateName(this.resource)));
     }
 

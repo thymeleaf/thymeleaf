@@ -102,7 +102,7 @@ public final class ClassLoaderTemplateResource implements ITemplateResource {
 
 
 
-    public ITemplateResource relative(final String relativeLocation) throws IOException {
+    public ITemplateResource relative(final String relativeLocation) {
 
         Validate.notEmpty(relativeLocation, "Relative Path cannot be null or empty");
 
