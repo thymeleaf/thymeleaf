@@ -51,6 +51,14 @@ public final class StandardEngineContextFactory implements IEngineContextFactory
 
 
 
+
+    public StandardEngineContextFactory() {
+        super();
+    }
+
+
+
+
     public IEngineContext createEngineContext(
             final IEngineConfiguration configuration, final TemplateData templateData,
             final Map<String, Object> templateResolutionAttributes, final IContext context) {
