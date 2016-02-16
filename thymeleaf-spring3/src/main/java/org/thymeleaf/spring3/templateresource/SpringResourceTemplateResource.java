@@ -110,8 +110,17 @@ public final class SpringResourceTemplateResource implements ITemplateResource {
 
     }
 
-    public ITemplateResource relative(final String relativeLocation) throws IOException {
-        return new SpringResourceTemplateResource(this.resource.createRelative(relativeLocation), this.characterEncoding);
+    public ITemplateResource relative(final String relativeLocation) {
+        final Resource relativeResource;
+        try {
+            relativeResource = this.resource.createRelative(relativeLocation);
+        } catch (final IOException e) {
+            // Given we have delegated the createRelative(...) mechanism to Spring, it's better if we don't do
+            // any assumptions on what this IOException means and simply return a resource object that returns
+            // no reader and exists() == false.
+            return new SpringResourceInvalidRelativeTemplateResource(getDescription(), relativeLocation, e);
+        }
+        return new SpringResourceTemplateResource(relativeResource, this.characterEncoding);
     }
 
 
@@ -142,5 +151,61 @@ public final class SpringResourceTemplateResource implements ITemplateResource {
         return (basePath.length() > 0? basePath : null);
 
     }
+
+
+
+
+    private static final class SpringResourceInvalidRelativeTemplateResource implements ITemplateResource {
+
+        private final String originalResourceDescription;
+        private final String relativeLocation;
+        private final IOException ioException;
+
+
+        SpringResourceInvalidRelativeTemplateResource(
+                final String originalResourceDescription,
+                final String relativeLocation,
+                final IOException ioException) {
+            super();
+            this.originalResourceDescription = originalResourceDescription;
+            this.relativeLocation = relativeLocation;
+            this.ioException = ioException;
+        }
+
+
+        @Override
+        public String getDescription() {
+            return "Invalid relative resource for relative location \"" + this.relativeLocation +
+                    "\" and original resource " + this.originalResourceDescription + ": " + this.ioException.getMessage();
+        }
+
+        @Override
+        public String getBaseName() {
+            return "Invalid relative resource for relative location \"" + this.relativeLocation +
+                    "\" and original resource " + this.originalResourceDescription + ": " + this.ioException.getMessage();
+        }
+
+        @Override
+        public boolean exists() {
+            return false;
+        }
+
+        @Override
+        public Reader reader() throws IOException {
+            throw new IOException("Invalid relative resource", this.ioException);
+        }
+
+        @Override
+        public ITemplateResource relative(final String relativeLocation) {
+            return this;
+        }
+
+        @Override
+        public String toString() {
+            return getDescription();
+        }
+
+    }
+
 
 }
