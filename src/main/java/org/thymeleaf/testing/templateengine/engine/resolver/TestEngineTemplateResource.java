@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.templateresource.ITemplateResource;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
@@ -97,8 +98,8 @@ public class TestEngineTemplateResource implements ITemplateResource {
     }
 
 
-    public ITemplateResource relative(final String relativeLocation) throws IOException {
-        throw new IOException(String.format("Cannot create relative resource for test resource \"%s\"", this.resource.getName()));
+    public ITemplateResource relative(final String relativeLocation) {
+        throw new TemplateInputException(String.format("Cannot create relative resource for test resource \"%s\"", this.resource.getName()));
     }
 
 
