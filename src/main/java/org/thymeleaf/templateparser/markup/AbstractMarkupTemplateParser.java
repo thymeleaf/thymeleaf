@@ -84,6 +84,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             final Set<String> templateSelectors,
             final ITemplateResource resource,
             final TemplateMode templateMode,
+            final boolean useDecoupledLogic,
             final ITemplateHandler handler) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
@@ -95,7 +96,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
         Validate.isTrue(templateMode.isMarkup(), "Template Mode has to be a markup template mode");
         Validate.notNull(handler, "Template Handler cannot be null");
 
-        parse(configuration, ownerTemplate, template, templateSelectors, resource, 0, 0, templateMode, handler);
+        parse(configuration, ownerTemplate, template, templateSelectors, resource, 0, 0, templateMode, useDecoupledLogic, handler);
 
     }
 
@@ -116,7 +117,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
         Validate.isTrue(templateMode.isMarkup(), "Template Mode has to be a markup template mode");
         Validate.notNull(handler, "Template Handler cannot be null");
 
-        parse(configuration, ownerTemplate, template, null, null, lineOffset, colOffset, templateMode, handler);
+        parse(configuration, ownerTemplate, template, null, null, lineOffset, colOffset, templateMode, false, handler);
 
     }
 
@@ -128,6 +129,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             final ITemplateResource resource,
             final int lineOffset, final int colOffset,
             final TemplateMode templateMode,
+            final boolean useDecoupledLogic,
             final ITemplateHandler templateHandler) {
 
         if (templateMode == TemplateMode.HTML) {
@@ -145,9 +147,9 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
         try {
 
-            // TODO This should not be done always, but only when the TemplateResolver requires so (new arg in method?)
+            // We might need to first check for the existence of decoupled logic in a separate resource
             final DecoupledTemplateMetadata decoupledTemplateMetadata =
-                    (resource != null?
+                    (useDecoupledLogic && resource != null ?
                             DecoupledTemplateLogicUtils.computeDecoupledTemplateMetadata(
                                     configuration, ownerTemplate, template, templateSelectors, resource, templateMode, this.parser) :
                             null);

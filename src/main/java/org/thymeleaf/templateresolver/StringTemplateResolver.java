@@ -26,6 +26,7 @@ import org.thymeleaf.cache.AlwaysValidCacheEntryValidity;
 import org.thymeleaf.cache.ICacheEntryValidity;
 import org.thymeleaf.cache.NonCacheableCacheEntryValidity;
 import org.thymeleaf.cache.TTLCacheEntryValidity;
+import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresource.ITemplateResource;
 import org.thymeleaf.templateresource.StringTemplateResource;
@@ -209,6 +210,15 @@ public class StringTemplateResolver extends AbstractTemplateResolver {
         this.cacheTTLMs = cacheTTLMs;
     }
 
+
+
+    @Override
+    public void setUseDecoupledLogic(final boolean useDecoupledLogic) {
+        if (useDecoupledLogic) {
+            throw new ConfigurationException("The 'useDecoupledLogic' flag is not allowed for String template resolution");
+        }
+        super.setUseDecoupledLogic(useDecoupledLogic);
+    }
 
 
 

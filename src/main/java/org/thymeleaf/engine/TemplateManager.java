@@ -309,7 +309,7 @@ public final class TemplateManager {
         parser.parseStandalone(
                 this.configuration,
                 ownerTemplate, template, cleanTemplateSelectors, templateData.getTemplateResource(),
-                templateData.getTemplateMode(), builderHandler);
+                templateData.getTemplateMode(), templateResolution.getUseDecoupledLogic(), builderHandler);
 
 
         /*
@@ -662,7 +662,7 @@ public final class TemplateManager {
             parser.parseStandalone(
                     this.configuration,
                     null, template, templateSelectors, templateData.getTemplateResource(),
-                    engineContext.getTemplateMode(), builderHandler);
+                    engineContext.getTemplateMode(), templateResolution.getUseDecoupledLogic(), builderHandler);
 
             // Put the new template into cache
             this.templateCache.put(cacheKey, templateModel);
@@ -676,7 +676,7 @@ public final class TemplateManager {
             parser.parseStandalone(
                     this.configuration,
                     null, template, templateSelectors, templateData.getTemplateResource(),
-                    engineContext.getTemplateMode(), processingHandlerChain);
+                    engineContext.getTemplateMode(), templateResolution.getUseDecoupledLogic(),  processingHandlerChain);
 
         }
 

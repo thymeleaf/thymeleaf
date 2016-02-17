@@ -59,6 +59,7 @@ public final class TemplateResolution {
     private final ITemplateResource templateResource;
     private final boolean templateResourceExistenceVerified;
     private final TemplateMode templateMode;
+    private final boolean useDecoupledLogic;
     private final ICacheEntryValidity validity;
 
 
@@ -67,7 +68,7 @@ public final class TemplateResolution {
             final ITemplateResource templateResource,
             final TemplateMode templateMode,
             final ICacheEntryValidity validity) {
-        this(templateResource, false, templateMode, validity);
+        this(templateResource, false, templateMode, false, validity);
     }
 
 
@@ -75,6 +76,7 @@ public final class TemplateResolution {
             final ITemplateResource templateResource,
             final boolean templateResourceExistenceVerified,
             final TemplateMode templateMode,
+            final boolean useDecoupledLogic,
             final ICacheEntryValidity validity) {
         super();
         Validate.notNull(templateResource, "Template Resource cannot be null");
@@ -83,6 +85,7 @@ public final class TemplateResolution {
         this.templateResource = templateResource;
         this.templateResourceExistenceVerified = templateResourceExistenceVerified;
         this.templateMode = templateMode;
+        this.useDecoupledLogic = useDecoupledLogic;
         this.validity = validity;
     }
 
@@ -144,6 +147,23 @@ public final class TemplateResolution {
      */
     public boolean isTemplateResourceExistenceVerified() {
         return this.templateResourceExistenceVerified;
+    }
+
+
+    /**
+     * <p>
+     *   Returns whether the existence of decoupled logic (normally in a separate file) should be checked
+     *   for this template during parsing.
+     * </p>
+     * <p>
+     *   Note a <tt>true</tt> here does not mean that a decoupled logic resource has to necessarily exist for this
+     *   template, only that its existence should be checked and used if it exists.
+     * </p>
+     *
+     * @return whether the existence of decoupled logic should be checked.
+     */
+    public boolean getUseDecoupledLogic() {
+        return this.useDecoupledLogic;
     }
 
 

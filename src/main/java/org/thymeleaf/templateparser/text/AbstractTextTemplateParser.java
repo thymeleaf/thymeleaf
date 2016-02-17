@@ -74,6 +74,7 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
             final Set<String> templateSelectors,
             final ITemplateResource resource,
             final TemplateMode templateMode,
+            final boolean useDecoupledLogic,
             final ITemplateHandler handler) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
@@ -85,6 +86,7 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
                         "insertion operations must be always performed on whole template files, not fragments");
         Validate.notNull(templateMode, "Template Mode cannot be null");
         Validate.isTrue(templateMode.isText(), "Template Mode has to be a text template mode");
+        Validate.isTrue(!useDecoupledLogic, "Cannot use decoupled logic in template mode " + templateMode);
         Validate.notNull(handler, "Template Handler cannot be null");
 
         parse(configuration, ownerTemplate, template, templateSelectors, resource, 0, 0, templateMode, handler);

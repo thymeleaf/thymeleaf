@@ -50,6 +50,7 @@ public interface ITemplateParser {
                     final Set<String> templateSelectors,
                     final ITemplateResource resource,
                     final TemplateMode templateMode,
+                    final boolean useDecoupledLogic,
                     final ITemplateHandler handler);
 
 

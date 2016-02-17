@@ -55,10 +55,18 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      */
     public static final boolean DEFAULT_EXISTENCE_CHECK = false;
 
+    /**
+     * <p>
+     *   By default, resources will not be marked to look for decoupled logic.
+     * </p>
+     */
+    public static final boolean DEFAULT_USE_DECOUPLED_LOGIC = false;
+
     
     private String name = this.getClass().getName();
     private Integer order = null;
     private boolean checkExistence = DEFAULT_EXISTENCE_CHECK;
+    private boolean useDecoupledLogic = DEFAULT_USE_DECOUPLED_LOGIC;
 
     private final PatternSpec resolvablePatternSpec = new PatternSpec();
     
@@ -90,7 +98,7 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      * 
      * @param name the new name
      */
-    public final void setName(final String name) {
+    public void setName(final String name) {
         this.name = name;
     }
     
@@ -118,7 +126,7 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      * 
      * @param order the new order.
      */
-    public final void setOrder(final Integer order) {
+    public void setOrder(final Integer order) {
         this.order = order;
     }
     
@@ -181,7 +189,7 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      * 
      * @param resolvablePatterns the new patterns
      */
-    public final void setResolvablePatterns(final Set<String> resolvablePatterns) {
+    public void setResolvablePatterns(final Set<String> resolvablePatterns) {
         this.resolvablePatternSpec.setPatterns(resolvablePatterns);
     }
 
@@ -252,9 +260,83 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      * @since 3.0.0
      *
      */
-    public final void setCheckExistence(final boolean checkExistence) {
+    public void setCheckExistence(final boolean checkExistence) {
         this.checkExistence = checkExistence;
     }
+
+
+
+    /**
+     * <p>
+     *   Returns whether a separate (decoupled) resource containing template logic should be checked for existence
+     *   and its instructions included into the resolved template during parsing.
+     * </p>
+     * <p>
+     *   This mechanism allows the creation of <em>pure</em> HTML or XML markup templates, which acquire their logic
+     *   from an external resource. The way this decoupled resources are resolved is defined by a configured
+     *   implementation of the {@link org.thymeleaf.templateparser.markup.decoupled.IDecoupledTemplateLogicResolver}
+     *   interface.
+     * </p>
+     * <p>
+     *   Note this flag can only be <tt>true</tt> for the {@link TemplateMode#HTML} and {@link TemplateMode#XML}
+     *   template modes. Also, note that setting this flag to <tt>true</tt> does not mean that a resource with
+     *   decoupled logic must exist for the resolved template, only that it can exist.
+     * </p>
+     * <p>
+     *   Decoupled logic extracted from these additional resources is injected into the resolved templates in real-time
+     *   as the resolved templates are parsed and processed. This greatly reduces overhead caused by decoupled parsing
+     *   for non-cacheable templates, and completely removes any overhead for cached templates.
+     * </p>
+     * <p>
+     *   Default value is <tt>FALSE</tt>.
+     * </p>
+     *
+     * @return <tt>true</tt> if decoupled logic resources should be checked, <tt>false</tt> if not.
+     *
+     * @since 3.0.0
+     *
+     */
+    public final boolean getUseDecoupledLogic() {
+        return this.useDecoupledLogic;
+    }
+
+
+    /**
+     * <p>
+     *   Sets whether a separate (decoupled) resource containing template logic should be checked for existence
+     *   and its instructions included into the resolved template during parsing.
+     * </p>
+     * <p>
+     *   This mechanism allows the creation of <em>pure</em> HTML or XML markup templates, which acquire their logic
+     *   from an external resource. The way this decoupled resources are resolved is defined by a configured
+     *   implementation of the {@link org.thymeleaf.templateparser.markup.decoupled.IDecoupledTemplateLogicResolver}
+     *   interface.
+     * </p>
+     * <p>
+     *   Note this flag can only be <tt>true</tt> for the {@link TemplateMode#HTML} and {@link TemplateMode#XML}
+     *   template modes. Also, note that setting this flag to <tt>true</tt> does not mean that a resource with
+     *   decoupled logic must exist for the resolved template, only that it can exist and therefore it should be
+     *   checked.
+     * </p>
+     * <p>
+     *   Decoupled logic extracted from these additional resources is injected into the resolved templates in real-time
+     *   as the resolved templates are parsed and processed. This greatly reduces overhead caused by decoupled parsing
+     *   for non-cacheable templates, and completely removes any overhead for cached templates.
+     * </p>
+     * <p>
+     *   Default value is <tt>FALSE</tt>.
+     * </p>
+     *
+     * @param useDecoupledLogic <tt>true</tt> if resource existence should be checked, <tt>false</tt> if not
+     *
+     * @since 3.0.0
+     *
+     */
+    public void setUseDecoupledLogic(final boolean useDecoupledLogic) {
+        this.useDecoupledLogic = useDecoupledLogic;
+    }
+
+
 
 
     public final TemplateResolution resolveTemplate(
@@ -284,6 +366,7 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
                 templateResource,
                 this.checkExistence,
                 computeTemplateMode(configuration, ownerTemplate, template, templateResolutionAttributes),
+                this.useDecoupledLogic,
                 computeValidity(configuration, ownerTemplate, template, templateResolutionAttributes));
         
     }
