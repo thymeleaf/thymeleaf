@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.thymeleaf.model.IElementAttributes;
+import org.thymeleaf.util.Validate;
 
 /**
  * <p>
@@ -80,8 +80,10 @@ public final class DecoupledTemplateMetadata {
     }
 
 
-    public void addInjectedAttribute(final String selector,
-            final String attributeName, final IElementAttributes.ValueQuotes valueQuotes, final String attributeValue) {
+    public void addInjectedAttribute(final String selector, final DecoupledInjectedAttribute injectedAttribute) {
+
+        Validate.notNull(selector, "Selector cannot be null");
+        Validate.notNull(injectedAttribute, "Injected Attribute cannot be null");
 
         List<DecoupledInjectedAttribute> injectedAttributesForSelector = this.injectedAttributes.get(selector);
         if (injectedAttributesForSelector == null) {
@@ -89,7 +91,7 @@ public final class DecoupledTemplateMetadata {
             this.injectedAttributes.put(selector, injectedAttributesForSelector);
         }
 
-        injectedAttributesForSelector.add(new DecoupledInjectedAttribute(attributeName, valueQuotes, attributeValue));
+        injectedAttributesForSelector.add(injectedAttribute);
 
     }
 

@@ -19,12 +19,16 @@
  */
 package org.thymeleaf.templateparser.markup.decoupled;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.attoparser.AbstractMarkupHandler;
 import org.attoparser.ParseException;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.text.ITextRepository;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.TextUtils;
 import org.thymeleaf.util.Validate;
 
@@ -47,9 +51,11 @@ import org.thymeleaf.util.Validate;
  */
 public final class DecoupledTemplateMetadataBuilderMarkupHandler extends AbstractMarkupHandler {
 
+    public static final String TAG_NAME_LOGIC = "logic";
     public static final String TAG_NAME_ATTR = "attr";
     public static final String ATTRIBUTE_NAME_SEL = "sel";
 
+    private static final char[] TAG_NAME_LOGIC_CHARS = TAG_NAME_LOGIC.toCharArray();
     private static final char[] TAG_NAME_ATTR_CHARS = TAG_NAME_ATTR.toCharArray();
     private static final char[] ATTRIBUTE_NAME_SEL_CHARS = ATTRIBUTE_NAME_SEL.toCharArray();
 
@@ -58,9 +64,10 @@ public final class DecoupledTemplateMetadataBuilderMarkupHandler extends Abstrac
     private final TemplateMode templateMode;
     private final DecoupledTemplateMetadata decoupledTemplateMetadata;
 
-    // TODO this has to be made hierarchical!!
-    private boolean inAttr = false;
-    private String currentSelector = null;
+    private boolean inLogicBody = false;
+    private boolean inAttrTag = false;
+    private Selector selector = new Selector();
+    private List<DecoupledInjectedAttribute> currentInjectedAttributes = new ArrayList<DecoupledInjectedAttribute>(8);
 
 
 
@@ -93,12 +100,19 @@ public final class DecoupledTemplateMetadataBuilderMarkupHandler extends Abstrac
             final boolean minimized, final int line, final int col)
             throws ParseException {
 
+        if (!this.inLogicBody) {
+            // A standalone element that is not inside a <logic> tag makes no sense
+            return;
+        }
+
         if (!TextUtils.equals(this.templateMode.isCaseSensitive(), buffer, nameOffset, nameLen, TAG_NAME_ATTR_CHARS, 0, TAG_NAME_ATTR_CHARS.length)) {
             // This is not an <attr> tag, so just ignore
             return;
         }
 
-        this.inAttr = true;
+        this.selector.increaseLevel();
+        this.inAttrTag = true;
+        this.currentInjectedAttributes.clear();
 
     }
 
@@ -109,14 +123,28 @@ public final class DecoupledTemplateMetadataBuilderMarkupHandler extends Abstrac
             final boolean minimized, final int line, final int col)
             throws ParseException {
 
-        if (this.inAttr && this.currentSelector == null) {
-            throw new TemplateInputException(
-                    "Error while processing decoupled logic file: attr injection tag contains no " +
-                    "selector (\"sel\") attribute", this.templateName, line, col);
+        if (!this.inLogicBody) {
+            // A standalone element that is not inside a <logic> tag makes no sense
+            return;
         }
 
-        this.inAttr = false;
-        this.currentSelector = null;
+        if (this.inAttrTag && this.selector.isLevelEmpty()) {
+            throw new TemplateInputException(
+                    "Error while processing decoupled logic file: <attr> injection tag does not contain any " +
+                    "\"sel\" selector attributes.", this.templateName, line, col);
+        }
+
+        // Time to add the attributes to the metadata. We do it here in order to allow the "sel" attribute to
+        // be in any position inside the <attr> tag (even after the injected attributes themselves).
+        final String currentSelector = this.selector.getCurrentSelector();
+        for (final DecoupledInjectedAttribute injectedAttribute : this.currentInjectedAttributes) {
+            this.decoupledTemplateMetadata.addInjectedAttribute(currentSelector, injectedAttribute);
+        }
+
+        this.currentInjectedAttributes.clear();
+        this.inAttrTag = false;
+        this.selector.decreaseLevel();
+
 
     }
 
@@ -129,15 +157,21 @@ public final class DecoupledTemplateMetadataBuilderMarkupHandler extends Abstrac
             final int line, final int col)
             throws ParseException {
 
-        this.inAttr = false;
-        this.currentSelector = null;
+        if (!this.inLogicBody) {
+            if (TextUtils.equals(this.templateMode.isCaseSensitive(), buffer, nameOffset, nameLen, TAG_NAME_LOGIC_CHARS, 0, TAG_NAME_LOGIC_CHARS.length)) {
+                this.inLogicBody = true;
+            }
+            return;
+        }
 
         if (!TextUtils.equals(this.templateMode.isCaseSensitive(), buffer, nameOffset, nameLen, TAG_NAME_ATTR_CHARS, 0, TAG_NAME_ATTR_CHARS.length)) {
             // This is not an <attr> tag, so just ignore
             return;
         }
 
-        this.inAttr = true;
+        this.selector.increaseLevel();
+        this.inAttrTag = true;
+        this.currentInjectedAttributes.clear();
 
     }
 
@@ -150,29 +184,30 @@ public final class DecoupledTemplateMetadataBuilderMarkupHandler extends Abstrac
             final int line, final int col)
             throws ParseException {
 
-        if (this.inAttr && this.currentSelector == null) {
-            throw new TemplateInputException(
-                    "Error while processing decoupled logic file: attr injection tag contains no " +
-                    "selector (\"sel\") attribute", this.templateName, line, col);
+        if (!this.inLogicBody) {
+            // A standalone element that is not inside a <logic> tag makes no sense
+            return;
         }
 
-        this.inAttr = false;
-        this.currentSelector = null;
+        if (this.inAttrTag && this.selector.isLevelEmpty()) {
+            throw new TemplateInputException(
+                    "Error while processing decoupled logic file: <attr> injection tag does not contain any " +
+                    "\"sel\" selector attributes.", this.templateName, line, col);
+        }
+
+        // Time to add the attributes to the metadata. We do it here in order to allow the "sel" attribute to
+        // be in any position inside the <attr> tag (even after the injected attributes themselves).
+        final String currentSelector = this.selector.getCurrentSelector();
+        for (final DecoupledInjectedAttribute injectedAttribute : this.currentInjectedAttributes) {
+            this.decoupledTemplateMetadata.addInjectedAttribute(currentSelector, injectedAttribute);
+        }
+
+        this.currentInjectedAttributes.clear();
+        this.inAttrTag = false;
 
     }
 
 
-
-    @Override
-    public void handleCloseElementStart(
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
-            final int line, final int col)
-            throws ParseException {
-
-        // TODO Nothing to be done for now... but we will have to do things for hierarchical selectors
-
-    }
 
     @Override
     public void handleCloseElementEnd(
@@ -181,7 +216,20 @@ public final class DecoupledTemplateMetadataBuilderMarkupHandler extends Abstrac
             final int line, final int col)
             throws ParseException {
 
-        // TODO Nothing to be done for now... but we will have to do things for hierarchical selectors
+        if (!this.inLogicBody) {
+            // A standalone element that is not inside a <logic> tag makes no sense
+            return;
+        }
+
+        if (TextUtils.equals(this.templateMode.isCaseSensitive(), buffer, nameOffset, nameLen, TAG_NAME_LOGIC_CHARS, 0, TAG_NAME_LOGIC_CHARS.length)) {
+            this.inLogicBody = false;
+            return;
+        }
+
+        if (TextUtils.equals(this.templateMode.isCaseSensitive(), buffer, nameOffset, nameLen, TAG_NAME_ATTR_CHARS, 0, TAG_NAME_ATTR_CHARS.length)) {
+            this.selector.decreaseLevel();
+            return;
+        }
 
     }
 
@@ -200,7 +248,7 @@ public final class DecoupledTemplateMetadataBuilderMarkupHandler extends Abstrac
             throws ParseException {
 
 
-        if (!this.inAttr) {
+        if (!this.inAttrTag) {
             // Just ignore, we don't know what is this
             return;
         }
@@ -208,14 +256,13 @@ public final class DecoupledTemplateMetadataBuilderMarkupHandler extends Abstrac
         // Check for the "sel" attribute
         if (TextUtils.equals(this.templateMode.isCaseSensitive(), buffer, nameOffset, nameLen, ATTRIBUTE_NAME_SEL_CHARS, 0, ATTRIBUTE_NAME_SEL_CHARS.length)) {
 
-            if (this.currentSelector != null) {
+            if (!this.selector.isLevelEmpty()) {
                 throw new TemplateInputException(
                         "Error while processing decoupled logic file: selector (\"sel\") attribute found more than " +
                         "once in attr injection tag", this.templateName, nameLine, nameCol);
             }
 
-            // TODO Make this hierarchical
-            this.currentSelector = this.textRepository.getText(buffer, valueContentOffset, valueContentLen);
+            this.selector.setSelector(this.textRepository.getText(buffer, valueContentOffset, valueContentLen));
             return;
 
         }
@@ -246,10 +293,61 @@ public final class DecoupledTemplateMetadataBuilderMarkupHandler extends Abstrac
         }
 
         // Add the attribute to the decoupled metadata
-        this.decoupledTemplateMetadata.addInjectedAttribute(this.currentSelector, attributeName, valueQuotes, attributeValue);
+        final DecoupledInjectedAttribute injectedAttribute = new DecoupledInjectedAttribute(attributeName, valueQuotes, attributeValue);
+        this.currentInjectedAttributes.add(injectedAttribute);
 
     }
 
+
+
+
+    private static final class Selector {
+
+        private int level = -1;
+        private List<String> selectorLevels = new ArrayList<String>(5);
+        private String currentSelector = null;
+
+        Selector() {
+            super();
+        }
+
+        void increaseLevel() {
+            this.level++;
+        }
+
+        void decreaseLevel() {
+            if (this.level < 0) {
+                throw new IndexOutOfBoundsException("Cannot decrease level when the selector is clean");
+            }
+            if (this.selectorLevels.size() > this.level) {
+                this.selectorLevels.remove(this.level);
+            }
+            this.level--;
+        }
+
+        void setSelector(final String selector) {
+            this.selectorLevels.add((selector.charAt(0) == '/' ? selector : "//" + selector));
+            this.currentSelector = null;
+        }
+
+        boolean isLevelEmpty() {
+            return this.selectorLevels.size() <= this.level;
+        }
+
+        String getCurrentSelector() {
+            if (this.currentSelector == null) {
+                this.currentSelector = StringUtils.join(this.selectorLevels, "");
+            }
+            return this.currentSelector;
+        }
+
+
+        @Override
+        public String toString() {
+            return "[" + this.level + "]" + this.selectorLevels.toString();
+        }
+
+    }
 
 
 }
