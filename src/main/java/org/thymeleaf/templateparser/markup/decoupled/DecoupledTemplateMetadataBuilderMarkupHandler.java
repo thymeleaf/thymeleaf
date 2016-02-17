@@ -51,7 +51,7 @@ import org.thymeleaf.util.Validate;
  */
 public final class DecoupledTemplateMetadataBuilderMarkupHandler extends AbstractMarkupHandler {
 
-    public static final String TAG_NAME_LOGIC = "logic";
+    public static final String TAG_NAME_LOGIC = "thlogic";
     public static final String TAG_NAME_ATTR = "attr";
     public static final String ATTRIBUTE_NAME_SEL = "sel";
 
