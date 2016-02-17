@@ -172,6 +172,7 @@ public class TestEngineTemplateResolver implements ITemplateResolver {
                 templateResource,
                 true,         // Test template resolver always verifies the existence of resources (might be improvable)
                 templateMode,
+                false,
                 validity);
         
     }
