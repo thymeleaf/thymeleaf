@@ -44,6 +44,9 @@ import org.thymeleaf.model.IElementAttributes;
  *   Attributes specified here to be injected into the template are injected at real-time during the parsing operation
  *   itself, so that overhead is minimal (and zero once the template is cached).
  * </p>
+ * <p>
+ *   Instances of this class are <strong>not thread-safe</strong>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
