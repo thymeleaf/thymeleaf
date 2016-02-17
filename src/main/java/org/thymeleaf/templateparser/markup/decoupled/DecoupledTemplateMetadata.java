@@ -20,6 +20,7 @@
 package org.thymeleaf.templateparser.markup.decoupled;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,5 +92,30 @@ public final class DecoupledTemplateMetadata {
         injectedAttributesForSelector.add(new DecoupledInjectedAttribute(attributeName, valueQuotes, attributeValue));
 
     }
-    
+
+
+
+    @Override
+    public String toString() {
+
+        // We will order the keys so that we can more easily debug and test based on this toString()
+        final List<String> keys = new ArrayList<String>(this.injectedAttributes.keySet());
+        Collections.sort(keys);
+
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append('{');
+        for (int i = 0; i < keys.size(); i++) {
+            if (i > 0) {
+                strBuilder.append(", ");
+            }
+            strBuilder.append(keys.get(i));
+            strBuilder.append('=');
+            strBuilder.append(this.injectedAttributes.get(keys.get(i)));
+        }
+        strBuilder.append('}');
+
+        return strBuilder.toString();
+
+    }
+
 }

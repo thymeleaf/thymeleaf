@@ -59,4 +59,25 @@ public final class DecoupledInjectedAttribute {
         return value;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append(this.name);
+        if (this.value != null) {
+            strBuilder.append('=');
+            final char quoteC =
+                    (this.valueQuotes == IElementAttributes.ValueQuotes.DOUBLE? '"' : this.valueQuotes == IElementAttributes.ValueQuotes.SINGLE? '\'' : (char)0x0);
+            if (quoteC != (char)0x0) {
+                strBuilder.append(quoteC);
+            }
+            strBuilder.append(this.value);
+            if (quoteC != (char)0x0) {
+                strBuilder.append(quoteC);
+            }
+        }
+        return strBuilder.toString();
+    }
+
+
 }
+
