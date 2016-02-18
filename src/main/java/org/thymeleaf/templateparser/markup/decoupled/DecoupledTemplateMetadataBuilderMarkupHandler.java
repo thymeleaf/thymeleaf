@@ -25,7 +25,6 @@ import java.util.List;
 import org.attoparser.AbstractMarkupHandler;
 import org.attoparser.ParseException;
 import org.thymeleaf.exceptions.TemplateInputException;
-import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.StringUtils;
@@ -236,6 +235,32 @@ public final class DecoupledTemplateMetadataBuilderMarkupHandler extends Abstrac
 
 
     @Override
+    public void handleAutoCloseElementEnd(
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
+            final int line, final int col)
+            throws ParseException {
+
+        if (!this.inLogicBody) {
+            // A standalone element that is not inside a <logic> tag makes no sense
+            return;
+        }
+
+        if (TextUtils.equals(this.templateMode.isCaseSensitive(), buffer, nameOffset, nameLen, TAG_NAME_LOGIC_CHARS, 0, TAG_NAME_LOGIC_CHARS.length)) {
+            this.inLogicBody = false;
+            return;
+        }
+
+        if (TextUtils.equals(this.templateMode.isCaseSensitive(), buffer, nameOffset, nameLen, TAG_NAME_ATTR_CHARS, 0, TAG_NAME_ATTR_CHARS.length)) {
+            this.selector.decreaseLevel();
+            return;
+        }
+
+    }
+
+
+
+    @Override
     public void handleAttribute(
             final char[] buffer,
             final int nameOffset, final int nameLen,
@@ -273,27 +298,13 @@ public final class DecoupledTemplateMetadataBuilderMarkupHandler extends Abstrac
          * an attribute to be injected into the template being parsed.
          */
 
-        final String attributeName = this.textRepository.getText(buffer, nameOffset, nameLen);
-
-        final String attributeValue =
-                (operatorLen > 0 ?
-                        this.textRepository.getText(buffer, valueContentOffset, valueContentLen) : null);
-
-        final IElementAttributes.ValueQuotes valueQuotes;
-        if (attributeValue == null) {
-            valueQuotes = null;
-        } else if (valueOuterOffset == valueContentOffset) {
-            valueQuotes = IElementAttributes.ValueQuotes.NONE;
-        } else if (buffer[valueOuterOffset] == '"') {
-            valueQuotes = IElementAttributes.ValueQuotes.DOUBLE;
-        } else if (buffer[valueOuterOffset] == '\'') {
-            valueQuotes = IElementAttributes.ValueQuotes.SINGLE;
-        } else {
-            valueQuotes = IElementAttributes.ValueQuotes.NONE;
-        }
-
-        // Add the attribute to the decoupled metadata
-        final DecoupledInjectedAttribute injectedAttribute = new DecoupledInjectedAttribute(attributeName, valueQuotes, attributeValue);
+        final DecoupledInjectedAttribute injectedAttribute =
+                DecoupledInjectedAttribute.createAttribute(
+                        buffer,
+                        nameOffset, nameLen,
+                        operatorOffset, operatorLen,
+                        valueContentOffset, valueContentLen,
+                        valueOuterOffset, valueOuterLen);
         this.currentInjectedAttributes.add(injectedAttribute);
 
     }

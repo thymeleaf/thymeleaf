@@ -38,6 +38,7 @@ import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.ITemplateParser;
+import org.thymeleaf.templateparser.markup.decoupled.DecoupledTemplateLogicMarkupHandler;
 import org.thymeleaf.templateparser.markup.decoupled.DecoupledTemplateLogicUtils;
 import org.thymeleaf.templateparser.markup.decoupled.DecoupledTemplateMetadata;
 import org.thymeleaf.templateparser.reader.ParserLevelCommentMarkupReader;
@@ -164,8 +165,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                                 configuration.getElementDefinitions(),
                                 configuration.getAttributeDefinitions(),
                                 templateMode,
-                                lineOffset, colOffset,
-                                decoupledTemplateMetadata);
+                                lineOffset, colOffset);
 
             // Just before the adapter markup handler, we will insert the processing of inlined output expressions
             // but only if we are not going to disturb the execution of text processors coming from other dialects
@@ -199,20 +199,26 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             }
 
 
-            // If we need to select nodes in order to inject additional attributes, we will need a node selector here.
-            // Note this will get executed in the handler chain AFTER thymeleaf's parser-level and prototype-only
-            // comment block readers, so that we will be able to include in selectors code inside prototype-only comments.
-            if (injectAttributes) {
-                final Set<String> nodeSelectors = decoupledTemplateMetadata.getAllInjectedAttributeSelectors();
-                handler = new NodeSelectorMarkupHandler(handler, handler, nodeSelectors.toArray(new String[nodeSelectors.size()]), referenceResolver);
-            }
-
-
             // If we need to select blocks, we will need a block selector here. Note this will get executed in the
             // handler chain AFTER thymeleaf's parser-level and prototype-only comment block readers, so that we
             // will be able to include in selectors code inside prototype-only comments.
             if (selectBlock) {
                 handler = new BlockSelectorMarkupHandler(handler, templateSelectors.toArray(new String[templateSelectors.size()]), referenceResolver);
+            }
+
+
+            // If we need to select nodes in order to inject additional attributes, we will need a node selector here.
+            // Note this will get executed in the handler chain AFTER thymeleaf's parser-level and prototype-only
+            // comment block readers, so that we will be able to include in selectors code inside prototype-only comments.
+            if (injectAttributes) {
+                // This handler will be in charge of really injecting the attributes, reacting to the node-selection
+                // signals sent by the NodeSelectorMarkupHandler configured below
+                handler = new DecoupledTemplateLogicMarkupHandler(decoupledTemplateMetadata, handler);
+                // NOTE it is important that THIS IS THE FIRST NODE- OR BLOCK-SELECTION HANDLER TO BE APPLIED because
+                // structures in the DecoupledTemplateLogicMarkupHandler will consider 0 (zero) as their injection
+                // level of interest
+                final Set<String> nodeSelectors = decoupledTemplateMetadata.getAllInjectedAttributeSelectors();
+                handler = new NodeSelectorMarkupHandler(handler, handler, nodeSelectors.toArray(new String[nodeSelectors.size()]), referenceResolver);
             }
 
 
