@@ -34,10 +34,10 @@ import org.thymeleaf.util.Validate;
 /**
  * <p>
  *   Implementation of {@link org.attoparser.IMarkupHandler} used for building and populating instances of
- *   {@link DecoupledTemplateMetadata} as a result of parsing a decoupled template logic resource.
+ *   {@link DecoupledTemplateLogic} as a result of parsing a decoupled template logic resource.
  * </p>
  * <p>
- *   Once built and populated, instances of {@link DecoupledTemplateMetadata} are handled over to
+ *   Once built and populated, instances of {@link DecoupledTemplateLogic} are handled over to
  *   {@link org.thymeleaf.engine.TemplateHandlerAdapterMarkupHandler} instances which are one of the steps in
  *   the template parsing chain (converting parser events into {@link org.thymeleaf.engine.ITemplateHandler} events).
  *   Attributes specified here to be injected into the template are injected at real-time during the parsing operation
@@ -48,7 +48,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class DecoupledTemplateMetadataBuilderMarkupHandler extends AbstractMarkupHandler {
+public final class DecoupledTemplateLogicBuilderMarkupHandler extends AbstractMarkupHandler {
 
     public static final String TAG_NAME_LOGIC = "thlogic";
     public static final String TAG_NAME_ATTR = "attr";
@@ -61,7 +61,7 @@ public final class DecoupledTemplateMetadataBuilderMarkupHandler extends Abstrac
     private final String templateName;
     private final ITextRepository textRepository;
     private final TemplateMode templateMode;
-    private final DecoupledTemplateMetadata decoupledTemplateMetadata;
+    private final DecoupledTemplateLogic decoupledTemplateLogic;
 
     private boolean inLogicBody = false;
     private boolean inAttrTag = false;
@@ -71,24 +71,27 @@ public final class DecoupledTemplateMetadataBuilderMarkupHandler extends Abstrac
 
 
 
-    public DecoupledTemplateMetadataBuilderMarkupHandler(final String templateName,
-                                                         final ITextRepository textRepository,
-                                                         final TemplateMode templateMode,
-                                                         final DecoupledTemplateMetadata decoupledTemplateMetadata) {
+    public DecoupledTemplateLogicBuilderMarkupHandler(final String templateName,
+                                                      final ITextRepository textRepository,
+                                                      final TemplateMode templateMode) {
         super();
 
         Validate.notEmpty(templateName, "Template name cannot be null or empty");
         Validate.notNull(textRepository, "Text Repository cannot be null");
         Validate.notNull(templateMode, "Template mode cannot be null");
-        Validate.notNull(decoupledTemplateMetadata, "Decoupled template metadata cannot be null");
 
         this.templateName = templateName;
         this.textRepository = textRepository;
         this.templateMode = templateMode;
-        this.decoupledTemplateMetadata = decoupledTemplateMetadata;
+        this.decoupledTemplateLogic = new DecoupledTemplateLogic();
 
     }
 
+
+
+    public DecoupledTemplateLogic getDecoupledTemplateLogic() {
+        return this.decoupledTemplateLogic;
+    }
 
 
 
@@ -133,11 +136,11 @@ public final class DecoupledTemplateMetadataBuilderMarkupHandler extends Abstrac
                     "\"sel\" selector attributes.", this.templateName, line, col);
         }
 
-        // Time to add the attributes to the metadata. We do it here in order to allow the "sel" attribute to
+        // Time to add the attributes to the decoupled logic. We do it here in order to allow the "sel" attribute to
         // be in any position inside the <attr> tag (even after the injected attributes themselves).
         final String currentSelector = this.selector.getCurrentSelector();
         for (final DecoupledInjectedAttribute injectedAttribute : this.currentInjectedAttributes) {
-            this.decoupledTemplateMetadata.addInjectedAttribute(currentSelector, injectedAttribute);
+            this.decoupledTemplateLogic.addInjectedAttribute(currentSelector, injectedAttribute);
         }
 
         this.currentInjectedAttributes.clear();
@@ -194,11 +197,11 @@ public final class DecoupledTemplateMetadataBuilderMarkupHandler extends Abstrac
                     "\"sel\" selector attributes.", this.templateName, line, col);
         }
 
-        // Time to add the attributes to the metadata. We do it here in order to allow the "sel" attribute to
+        // Time to add the attributes to the decoupled logic. We do it here in order to allow the "sel" attribute to
         // be in any position inside the <attr> tag (even after the injected attributes themselves).
         final String currentSelector = this.selector.getCurrentSelector();
         for (final DecoupledInjectedAttribute injectedAttribute : this.currentInjectedAttributes) {
-            this.decoupledTemplateMetadata.addInjectedAttribute(currentSelector, injectedAttribute);
+            this.decoupledTemplateLogic.addInjectedAttribute(currentSelector, injectedAttribute);
         }
 
         this.currentInjectedAttributes.clear();

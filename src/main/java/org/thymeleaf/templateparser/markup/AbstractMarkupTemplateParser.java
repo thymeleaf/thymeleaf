@@ -38,9 +38,9 @@ import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.ITemplateParser;
+import org.thymeleaf.templateparser.markup.decoupled.DecoupledTemplateLogic;
 import org.thymeleaf.templateparser.markup.decoupled.DecoupledTemplateLogicMarkupHandler;
 import org.thymeleaf.templateparser.markup.decoupled.DecoupledTemplateLogicUtils;
-import org.thymeleaf.templateparser.markup.decoupled.DecoupledTemplateMetadata;
 import org.thymeleaf.templateparser.reader.ParserLevelCommentMarkupReader;
 import org.thymeleaf.templateparser.reader.PrototypeOnlyCommentMarkupReader;
 import org.thymeleaf.templateresource.ITemplateResource;
@@ -149,9 +149,9 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
         try {
 
             // We might need to first check for the existence of decoupled logic in a separate resource
-            final DecoupledTemplateMetadata decoupledTemplateMetadata =
+            final DecoupledTemplateLogic decoupledTemplateLogic =
                     (useDecoupledLogic && resource != null ?
-                            DecoupledTemplateLogicUtils.computeDecoupledTemplateMetadata(
+                            DecoupledTemplateLogicUtils.computeDecoupledTemplateLogic(
                                     configuration, ownerTemplate, template, templateSelectors, resource, templateMode, this.parser) :
                             null);
 
@@ -182,7 +182,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
 
             // Precompute flags
-            final boolean injectAttributes = decoupledTemplateMetadata != null && decoupledTemplateMetadata.hasInjectedAttributes();
+            final boolean injectAttributes = decoupledTemplateLogic != null && decoupledTemplateLogic.hasInjectedAttributes();
             final boolean selectBlock = templateSelectors != null && !templateSelectors.isEmpty();
 
 
@@ -213,11 +213,11 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             if (injectAttributes) {
                 // This handler will be in charge of really injecting the attributes, reacting to the node-selection
                 // signals sent by the NodeSelectorMarkupHandler configured below
-                handler = new DecoupledTemplateLogicMarkupHandler(decoupledTemplateMetadata, handler);
+                handler = new DecoupledTemplateLogicMarkupHandler(decoupledTemplateLogic, handler);
                 // NOTE it is important that THIS IS THE FIRST NODE- OR BLOCK-SELECTION HANDLER TO BE APPLIED because
                 // structures in the DecoupledTemplateLogicMarkupHandler will consider 0 (zero) as their injection
                 // level of interest
-                final Set<String> nodeSelectors = decoupledTemplateMetadata.getAllInjectedAttributeSelectors();
+                final Set<String> nodeSelectors = decoupledTemplateLogic.getAllInjectedAttributeSelectors();
                 handler = new NodeSelectorMarkupHandler(handler, handler, nodeSelectors.toArray(new String[nodeSelectors.size()]), referenceResolver);
             }
 

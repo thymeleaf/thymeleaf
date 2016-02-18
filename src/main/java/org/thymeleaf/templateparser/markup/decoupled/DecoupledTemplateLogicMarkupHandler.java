@@ -41,21 +41,21 @@ public final class DecoupledTemplateLogicMarkupHandler extends AbstractChainedMa
     // performed on attributes injected in a decoupled manner (eg: a "th:fragment"/"th:ref" injected externally)
     private static final int INJECTION_LEVEL = 0;
 
-    private final DecoupledTemplateMetadata decoupledTemplateMetadata;
+    private final DecoupledTemplateLogic decoupledTemplateLogic;
     private final boolean injectAttributes;
 
     private ParseSelection parseSelection;
 
 
 
-    public DecoupledTemplateLogicMarkupHandler(final DecoupledTemplateMetadata decoupledTemplateMetadata,
+    public DecoupledTemplateLogicMarkupHandler(final DecoupledTemplateLogic decoupledTemplateLogic,
                                                final IMarkupHandler handler) {
         super(handler);
 
-        Validate.notNull(decoupledTemplateMetadata, "Decoupled Template Metadata cannot be null");
+        Validate.notNull(decoupledTemplateLogic, "Decoupled Template Logic cannot be null");
 
-        this.decoupledTemplateMetadata = decoupledTemplateMetadata;
-        this.injectAttributes = this.decoupledTemplateMetadata.hasInjectedAttributes();
+        this.decoupledTemplateLogic = decoupledTemplateLogic;
+        this.injectAttributes = this.decoupledTemplateLogic.hasInjectedAttributes();
 
     }
 
@@ -122,7 +122,7 @@ public final class DecoupledTemplateLogicMarkupHandler extends AbstractChainedMa
         for (final String selector : selectors) {
 
             final List<DecoupledInjectedAttribute> injectedAttributesForSelector =
-                    this.decoupledTemplateMetadata.getInjectedAttributesForSelector(selector);
+                    this.decoupledTemplateLogic.getInjectedAttributesForSelector(selector);
 
             if (injectedAttributesForSelector == null) {
                 continue;

@@ -30,11 +30,11 @@ import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   This class specifies containers for template logic metadata, normally coming from separate template files
+ *   This class specifies containers for decoupled template logic, normally coming from separate template files
  *   (decoupled templates).
  * </p>
  * <p>
- *   Instances of this class are built and populated by instances of {@link DecoupledTemplateMetadataBuilderMarkupHandler},
+ *   Instances of this class are built and populated by instances of {@link DecoupledTemplateLogicBuilderMarkupHandler},
  *   acting as handlers on the {@link org.attoparser.IMarkupParser} being used for parsing the normal template
  *   resources.
  * </p>
@@ -53,14 +53,14 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class DecoupledTemplateMetadata {
+public final class DecoupledTemplateLogic {
 
 
     private final Map<String, List<DecoupledInjectedAttribute>> injectedAttributes =
             new HashMap<String, List<DecoupledInjectedAttribute>>(20);
 
 
-    public DecoupledTemplateMetadata() {
+    public DecoupledTemplateLogic() {
         super();
     }
 

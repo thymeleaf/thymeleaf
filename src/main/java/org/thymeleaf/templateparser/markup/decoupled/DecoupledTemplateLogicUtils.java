@@ -39,7 +39,7 @@ import org.thymeleaf.util.Validate;
  *   to a template being parsed.
  * </p>
  * <p>
- *   This class computes a {@link DecoupledTemplateMetadata} by parsing an additional resource
+ *   This class computes a {@link DecoupledTemplateLogic} by parsing an additional resource
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
@@ -54,7 +54,7 @@ public final class DecoupledTemplateLogicUtils {
 
 
 
-    public static DecoupledTemplateMetadata computeDecoupledTemplateMetadata(
+    public static DecoupledTemplateLogic computeDecoupledTemplateLogic(
             final IEngineConfiguration configuration,
             final String ownerTemplate, final String template, final Set<String> templateSelectors,
             final ITemplateResource resource, final TemplateMode templateMode,
@@ -93,17 +93,15 @@ public final class DecoupledTemplateLogicUtils {
 
         /*
          * The decoupled template logic resource exists, so we should parse it before the template itself, in order
-         * to obtain the metadata to be injected on the "real" template during parsing.
+         * to obtain the logic to be injected on the "real" template during parsing.
          */
 
-        final DecoupledTemplateMetadata decoupledTemplateMetadata = new DecoupledTemplateMetadata();
-        final DecoupledTemplateMetadataBuilderMarkupHandler decoupledMarkupHandler =
-                new DecoupledTemplateMetadataBuilderMarkupHandler(
-                        template, configuration.getTextRepository(), templateMode, decoupledTemplateMetadata);
+        final DecoupledTemplateLogicBuilderMarkupHandler decoupledMarkupHandler =
+                new DecoupledTemplateLogicBuilderMarkupHandler(template, configuration.getTextRepository(), templateMode);
 
         parser.parse(decoupledResource.reader(), decoupledMarkupHandler);
 
-        return decoupledTemplateMetadata;
+        return decoupledMarkupHandler.getDecoupledTemplateLogic();
 
     }
 
