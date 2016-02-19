@@ -121,6 +121,7 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
             super();
             this.mapper = new ObjectMapper();
             this.mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            this.mapper.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
             this.mapper.enable(JsonGenerator.Feature.ESCAPE_NON_ASCII);
             this.mapper.setDateFormat(new JacksonThymeleafISO8601DateFormat());
         }
