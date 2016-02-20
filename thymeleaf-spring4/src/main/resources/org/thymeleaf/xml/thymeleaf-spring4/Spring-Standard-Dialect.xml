@@ -30,20 +30,13 @@
 	<!-- ===================== -->
 
 	<attribute-processor
-		name="field"
-		class="org.thymeleaf.spring4.processor.AbstractSpringFieldTagProcessor">
-		<documentation
-			reference="Thymeleaf + Spring 3 section 6 on Creating a Form"/>
-		<restrictions
-			tags="input option select textarea"/>
-	</attribute-processor>
-
-	<attribute-processor
 		name="errorclass"
 		class="org.thymeleaf.spring4.processor.SpringErrorClassTagProcessor">
 		<documentation
 			see-also="fields.hasErrors"
-			reference="Thymeleaf + Spring 3 section 7 on Validation and Error Messages"/>
+			reference="Validation and Error Messages"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#validation-and-error-messages">http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#validation-and-error-messages</a>
+		]]></documentation>
 	</attribute-processor>
 
 	<attribute-processor
@@ -51,14 +44,29 @@
 		class="org.thymeleaf.spring4.processor.SpringErrorsTagProcessor">
 		<documentation
 			see-also="fields.errors"
-			reference="Thymeleaf + Spring 3 section 7 on Validation and Error Messages"/>
+			reference="Validation and Error Messages"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#validation-and-error-messages">http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#validation-and-error-messages</a>
+		]]></documentation>
+	</attribute-processor>
+
+	<attribute-processor
+		name="field"
+		class="org.thymeleaf.spring4.processor.AbstractSpringFieldTagProcessor">
+		<documentation
+			reference="Creating a Form"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#creating-a-form">http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#creating-a-form</a>
+		]]></documentation>
+		<restrictions
+			tags="input option select textarea"/>
 	</attribute-processor>
 
 	<attribute-processor
 		name="object"
 		class="org.thymeleaf.spring4.processor.SpringObjectTagProcessor">
 		<documentation
-			reference="Thymeleaf + Spring 3 section 6 on Creating a Form"/>
+			reference="Creating a Form"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#creating-a-form">http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#creating-a-form</a>
+		]]></documentation>
 	</attribute-processor>
 
 
@@ -106,7 +114,9 @@
 	<!-- Additional expression objects -->
 	<!-- ============================= -->
 
-	<expression-object name="fields" class="org.thymeleaf.spring4.expression.Fields"/>
-	<expression-object name="themes" class="org.thymeleaf.spring4.expression.Themes"/>
+	<expression-object name="fields"            class="org.thymeleaf.spring4.expression.Fields"/>
+	<expression-object name="mvc"               class="org.thymeleaf.spring4.expression.Mvc"/>
+	<expression-object name="requestdatavalues" class="org.thymeleaf.spring4.expression.RequestDataValues"/>
+	<expression-object name="themes"            class="org.thymeleaf.spring4.expression.Themes"/>
 
 </dialect>
