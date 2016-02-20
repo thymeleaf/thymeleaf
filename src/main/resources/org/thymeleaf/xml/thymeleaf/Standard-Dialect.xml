@@ -30,206 +30,264 @@
 
 	<attribute-processor
 		name="alt-title"
-		class="org.thymeleaf.standard.processor.attr.StandardAltTitleAttrProcessor"/>
+		class="org.thymeleaf.standard.processor.StandardAltTitleTagProcessor">
+		<documentation
+			see-also="alt title"/>
+	</attribute-processor>
 
 	<attribute-processor
 		name="assert"
-		class="org.thymeleaf.standard.processor.attr.StandardAssertAttrProcessor"/>
+		class="org.thymeleaf.standard.processor.StandardAssertTagProcessor"/>
 
 	<attribute-processor
 		name="attr"
-		class="org.thymeleaf.standard.processor.attr.StandardAttrAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardAttrTagProcessor">
 		<documentation
 			see-also="attrappend attrprepend"
-			reference="Using Thymeleaf section 5 on Setting Attribute Values"/>
+			reference="Setting Attribute Values"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#setting-attribute-values">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#setting-attribute-values</a>
+		]]></documentation>
 	</attribute-processor>
 
 	<attribute-processor
 		name="attrappend"
-		class="org.thymeleaf.standard.processor.attr.StandardAttrappendAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardAttrappendTagProcessor">
 		<documentation
 			see-also="attr attrprepend classappend"
-			reference="Using Thymeleaf section 5.4 on Appending And Prepending"/>
+			reference="Appending And Prepending attribute values"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#appending-and-prepending">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#appending-and-prepending</a>
+		]]></documentation>
 	</attribute-processor>
 
 	<attribute-processor
 		name="attrprepend"
-		class="org.thymeleaf.standard.processor.attr.StandardAttrprependAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardAttrprependTagProcessor">
 		<documentation
 			see-also="attr attrappend"
-			reference="Using Thymeleaf section 5.4 on Appending And Prepending"/>
+			reference="Appending And Prepending attribute values"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#appending-and-prepending">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#appending-and-prepending</a>
+		]]></documentation>
 	</attribute-processor>
 
 	<attribute-processor
 		name="case"
-		class="org.thymeleaf.standard.processor.attr.StandardCaseAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardCaseTagProcessor">
 		<documentation
 			see-also="switch"
-			reference="Using Thymeleaf section 7.2 on Switch Statements"/>
+			reference="Switch Statements"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#switch-statements">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#switch-statements</a>
+		]]></documentation>
 	</attribute-processor>
 
 	<attribute-processor
 		name="classappend"
-		class="org.thymeleaf.standard.processor.attr.StandardClassappendAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardClassappendTagProcessor">
 		<documentation
 			see-also="attrappend class"
-			reference="Using Thymeleaf section 5.4 on Appending And Prepending"/>
+			reference="Appending And Prepending attribute values"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#appending-and-prepending">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#appending-and-prepending</a>
+		]]></documentation>
 	</attribute-processor>
 
 	<attribute-processor
 		name="each"
-		class="org.thymeleaf.standard.processor.attr.StandardEachAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardEachTagProcessor">
 		<documentation
-			reference="Using Thymeleaf section 6.2 on Keeping Iteration Status"/>
+			reference="Iteration"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#iteration">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#iteration</a>
+		]]></documentation>
 	</attribute-processor>
 
 	<attribute-processor
 		name="fragment"
-		class="org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardFragmentTagProcessor">
 		<documentation
-			see-also="include substituteby"
-			reference="Using Thymeleaf section 8.1 on Including Template Fragments"/>
-	</attribute-processor>
-
-	<attribute-processor
-		name="object"
-		class="org.thymeleaf.standard.processor.attr.StandardObjectAttrProcessor">
-		<documentation
-			see-also="with"
-			reference="Using Thymeleaf section 4.3 on the asterisk syntax"/>
+			see-also="include insert replace"
+			reference="Including Template Fragments"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments</a>
+		]]></documentation>
 	</attribute-processor>
 
 	<attribute-processor
 		name="if"
-		class="org.thymeleaf.standard.processor.attr.StandardIfAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardIfTagProcessor">
 		<documentation
 			see-also="unless"
-			reference="Using Thymeleaf section 7.1 on Simple Conditionals"/>
+			reference="Simple Conditionals"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#simple-conditionals-if-and-unless">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#simple-conditionals-if-and-unless</a>
+		]]></documentation>
+	</attribute-processor>
+
+	<attribute-processor
+		name="include"
+		class="org.thymeleaf.standard.processor.StandardIncludeTagProcessor">
+		<documentation
+			see-also="insert replace fragment"
+			reference="Including Template Fragments"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments</a>
+		]]></documentation>
 	</attribute-processor>
 
 	<attribute-processor
 		name="inline"
-		class="org.thymeleaf.standard.processor.attr.StandardInlineAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardInlineTextualTagProcessor">
 		<documentation
-			reference="Using Thymeleaf section 11 on Inlining"/>
+			reference="Inlining"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#inlining">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#inlining</a>
+		]]></documentation>
 		<restrictions
 			values="text javascript dart"/>
 	</attribute-processor>
 
 	<attribute-processor
-		name="unless"
-		class="org.thymeleaf.standard.processor.attr.StandardUnlessAttrProcessor">
+		name="insert"
+		class="org.thymeleaf.standard.processor.StandardInsertTagProcessor">
 		<documentation
-			see-also="if"
-			reference="Using Thymeleaf section 7.1 on Simple Conditionals"/>
-	</attribute-processor>
-
-	<attribute-processor
-		name="include"
-		class="org.thymeleaf.standard.processor.attr.StandardIncludeFragmentAttrProcessor">
-		<documentation
-			see-also="replace substituteby fragment"
-			reference="Using Thymeleaf section 8.1 on Including Template Fragments"/>
+			see-also="include replace fragment"
+			reference="Including Template Fragments"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments</a>
+		]]></documentation>
 	</attribute-processor>
 
 	<attribute-processor
 		name="lang-xmllang"
-		class="org.thymeleaf.standard.processor.attr.StandardLangXmlLangAttrProcessor"/>
+		class="org.thymeleaf.standard.processor.StandardLangXmlLangTagProcessor">
+		<documentation
+			see-also="lang xmllang"/>
+	</attribute-processor>
+
+	<attribute-processor
+		name="object"
+		class="org.thymeleaf.standard.processor.StandardObjectTagProcessor">
+		<documentation
+			see-also="with"
+			reference="Asterisk Syntax"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#expressions-on-selections-asterisk-syntax">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#expressions-on-selections-asterisk-syntax</a>
+		]]></documentation>
+	</attribute-processor>
+
+	<attribute-processor
+		name="ref"
+		class="org.thymeleaf.standard.processor.StandardRefAttributeTagProcessor"/>
 
 	<attribute-processor
 		name="remove"
-		class="org.thymeleaf.standard.processor.attr.StandardRemoveAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardRemoveTagProcessor">
 		<documentation
-			reference="Using Thymeleaf section 8.2 on Removing Template Fragments"/>
+			reference="Removing Template Fragments"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#removing-template-fragments">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#removing-template-fragments</a>
+		]]></documentation>
 		<restrictions
 			values="all body tag all-but-first"/>
 	</attribute-processor>
 
 	<attribute-processor
 		name="replace"
-		class="org.thymeleaf.standard.processor.attr.StandardReplaceFragmentAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardReplaceTagProcessor">
 		<documentation
-			see-also="include fragment"
-			reference="Using Thymeleaf section 8.1 on Including Template Fragments"/>
+			see-also="include insert fragment"
+			reference="Including Template Fragments"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments</a>
+		]]></documentation>
 	</attribute-processor>
 
     <attribute-processor
         name="styleappend"
-        class="org.thymeleaf.standard.processor.attr.StandardStyleappendAttrProcessor">
+        class="org.thymeleaf.standard.processor.StandardStyleappendTagProcessor">
         <documentation
             see-also="attrappend style"
-            reference="Using Thymeleaf section 5.4 on Appending And Prepending"/>
+			reference="Appending And Prepending attribute values"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#appending-and-prepending">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#appending-and-prepending</a>
+		]]></documentation>
     </attribute-processor>
-    
+
 	<attribute-processor
 		name="substituteby"
-		class="org.thymeleaf.standard.processor.attr.StandardSubstituteByFragmentAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardSubstituteByTagProcessor">
 		<documentation
-			see-also="include fragment"
-			reference="Using Thymeleaf section 8.1 on Including Template Fragments"/>
+			see-also="include insert replace fragment"
+			reference="Including Template Fragments"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments</a>
+		]]></documentation>
 	</attribute-processor>
 
 	<attribute-processor
 		name="switch"
-		class="org.thymeleaf.standard.processor.attr.StandardSwitchAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardSwitchTagProcessor">
 		<documentation
 			see-also="case if"
-			reference="Using Thymeleaf section section 7.2 on Switch Statements"/>
+			reference="Switch Statements"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#switch-statements">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#switch-statements</a>
+		]]></documentation>
 	</attribute-processor>
 
 	<attribute-processor
 		name="text"
-		class="org.thymeleaf.standard.processor.attr.StandardTextAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardTextTagProcessor">
 		<documentation
 			see-also="utext"
-			reference="Using Thymeleaf section 3 on Using Texts"/>
+			reference="Using Texts"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#using-texts">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#using-texts</a>
+		]]></documentation>
+	</attribute-processor>
+
+	<attribute-processor
+		name="unless"
+		class="org.thymeleaf.standard.processor.StandardUnlessTagProcessor">
+		<documentation
+			see-also="if"
+			reference="Simple Conditionals"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#simple-conditionals-if-and-unless">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#simple-conditionals-if-and-unless</a>
+		]]></documentation>
 	</attribute-processor>
 
 	<attribute-processor
 		name="utext"
-		class="org.thymeleaf.standard.processor.attr.StandardUtextAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardUtextTagProcessor">
 		<documentation
 			see-also="text"
-			reference="Using Thymeleaf section 3.2 on Unescaped Text"/>
+			reference="Unescaped Text"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#unescaped-text">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#unescaped-text</a>
+		]]></documentation>
 	</attribute-processor>
 
 	<attribute-processor
 		name="with"
-		class="org.thymeleaf.standard.processor.attr.StandardWithAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardWithTagProcessor">
 		<documentation
 			see-also="object"
-			reference="Using Thymeleaf section 9 on Local Variables"/>
+			reference="Local Variables"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#local-variables">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#local-variables</a>
+		]]></documentation>
 	</attribute-processor>
 
 	<attribute-processor
 		name="xmlbase"
-		class="org.thymeleaf.standard.processor.attr.StandardXmlBaseAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardXmlBaseTagProcessor">
 		<documentation
 			see-also="xmllang xmlspace"/>
 	</attribute-processor>
 
 	<attribute-processor
 		name="xmllang"
-		class="org.thymeleaf.standard.processor.attr.StandardXmlLangAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardXmlLangTagProcessor">
 		<documentation
 			see-also="xmlbase xmlspace"/>
 	</attribute-processor>
 
 	<attribute-processor
 		name="xmlspace"
-		class="org.thymeleaf.standard.processor.attr.StandardXmlSpaceAttrProcessor">
+		class="org.thymeleaf.standard.processor.StandardXmlSpaceTagProcessor">
 		<documentation
 			see-also="xmlbase xmllang"/>
 	</attribute-processor>
-
-	<!-- Text inline processor??? -->
 
 
 	<!-- Introduced Thymeleaf element processors -->
 	<!-- ======================================= -->
 
 	<element-processor name="block"
-		class="org.thymeleaf.standard.processor.element.StandardBlockElementProcessor"/>
+		class="org.thymeleaf.standard.processor.StandardBlockTagProcessor"/>
 
 
 	<!-- URL and form-specific attribute processors -->
@@ -237,23 +295,23 @@
 
 	<attribute-processor
 		name="action"
-		class="org.thymeleaf.standard.processor.attr.StandardActionAttrProcessor"/>
+		class="org.thymeleaf.standard.processor.StandardActionTagProcessor"/>
 
 	<attribute-processor
 		name="href"
-		class="org.thymeleaf.standard.processor.attr.StandardHrefAttrProcessor"/>
+		class="org.thymeleaf.standard.processor.StandardHrefTagProcessor"/>
 
 	<attribute-processor
 		name="method"
-		class="org.thymeleaf.standard.processor.attr.StandardMethodAttrProcessor"/>
+		class="org.thymeleaf.standard.processor.StandardMethodTagProcessor"/>
 
 	<attribute-processor
 		name="src"
-		class="org.thymeleaf.standard.processor.attr.StandardSrcAttrProcessor"/>
+		class="org.thymeleaf.standard.processor.StandardSrcTagProcessor"/>
 
 	<attribute-processor
 		name="value"
-		class="org.thymeleaf.standard.processor.attr.StandardValueAttrProcessor"/>
+		class="org.thymeleaf.standard.processor.StandardValueTagProcessor"/>
 
 
 	<!-- Fixed value processors -->
@@ -491,16 +549,26 @@
 	<expression-object name="ctx"                class="org.thymeleaf.context.IContext"/>
 	<expression-object name="root"               class="org.thymeleaf.context.IContext"/>
 	<expression-object name="vars"               class="org.thymeleaf.context.IContext"/>
+	<expression-object name="object"             class="org.thymeleaf.context.IContext"/>
 	<expression-object name="locale"             class="java.util.Locale"/>
+
+	<expression-object name="request"            class="javax.servlet.http.HttpServletRequest"/>
+	<expression-object name="response"           class="javax.servlet.http.HttpServletResponse"/>
+	<expression-object name="session"            class="javax.servlet.http.HttpSession"/>
+	<expression-object name="servletContext"     class="javax.servlet.ServletContext"/>
+
 	<expression-object name="httpServletRequest" class="javax.servlet.http.HttpServletRequest"/>
 	<expression-object name="httpSession"        class="javax.servlet.http.HttpSession"/>
 
-	<expression-object name="dates"      class="org.thymeleaf.expression.Dates"/>
+	<expression-object name="conversions" class="org.thymeleaf.expression.Conversions"/>
+	<expression-object name="uris"        class="org.thymeleaf.expression.Uris"/>
+
 	<expression-object name="calendars"  class="org.thymeleaf.expression.Calendars"/>
-	<expression-object name="numbers"    class="org.thymeleaf.expression.Numbers"/>
-	<expression-object name="strings"    class="org.thymeleaf.expression.Strings"/>
-	<expression-object name="objects"    class="org.thymeleaf.expression.Objects"/>
+	<expression-object name="dates"      class="org.thymeleaf.expression.Dates"/>
 	<expression-object name="bools"      class="org.thymeleaf.expression.Bools"/>
+	<expression-object name="numbers"    class="org.thymeleaf.expression.Numbers"/>
+	<expression-object name="objects"    class="org.thymeleaf.expression.Objects"/>
+	<expression-object name="strings"    class="org.thymeleaf.expression.Strings"/>
 	<expression-object name="arrays"     class="org.thymeleaf.expression.Arrays"/>
 	<expression-object name="lists"      class="org.thymeleaf.expression.Lists"/>
 	<expression-object name="sets"       class="org.thymeleaf.expression.Sets"/>
@@ -508,5 +576,7 @@
 	<expression-object name="aggregates" class="org.thymeleaf.expression.Aggregates"/>
 	<expression-object name="messages"   class="org.thymeleaf.expression.Messages"/>
 	<expression-object name="ids"        class="org.thymeleaf.expression.Ids"/>
+
+	<expression-object name="execInfo" class="org.thymeleaf.expression.ExecutionInfo"/>
 
 </dialect>
