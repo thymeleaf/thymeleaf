@@ -47,6 +47,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.thymeleaf.context.IWebContext;
+import org.thymeleaf.spring4.naming.SpringContextVariableNames;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.testable.ITest;
 
@@ -136,6 +137,7 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
         final RequestContext requestContext =
                 new RequestContext(request, response, servletContext, variables);
         variables.put(AbstractTemplateView.SPRING_MACRO_REQUEST_CONTEXT_ATTRIBUTE, requestContext);
+        variables.put(SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
 
 
         /*
