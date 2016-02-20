@@ -41,10 +41,14 @@ public final class DecoupledTemplateLogicMarkupHandler extends AbstractChainedMa
     // performed on attributes injected in a decoupled manner (eg: a "th:fragment"/"th:ref" injected externally)
     private static final int INJECTION_LEVEL = 0;
 
+    private static final char[] INNER_WHITE_SPACE = " ".toCharArray();
+
     private final DecoupledTemplateLogic decoupledTemplateLogic;
     private final boolean injectAttributes;
 
     private ParseSelection parseSelection;
+
+    private boolean lastWasInnerWhiteSpace = false;
 
 
 
@@ -104,6 +108,44 @@ public final class DecoupledTemplateLogicMarkupHandler extends AbstractChainedMa
 
 
 
+    @Override
+    public void handleInnerWhiteSpace(
+            final char[] buffer,
+            final int offset, final int len,
+            final int line, final int col)
+            throws ParseException {
+
+        this.lastWasInnerWhiteSpace = true;
+        super.handleInnerWhiteSpace(buffer, offset, len, line, col);
+
+    }
+
+
+
+    @Override
+    public void handleAttribute(
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
+            final int nameLine, final int nameCol,
+            final int operatorOffset, final int operatorLen,
+            final int operatorLine, final int operatorCol,
+            final int valueContentOffset, final int valueContentLen,
+            final int valueOuterOffset, final int valueOuterLen,
+            final int valueLine, final int valueCol)
+            throws ParseException {
+
+        this.lastWasInnerWhiteSpace = false;
+        super.handleAttribute(
+                buffer,
+                nameOffset, nameLen,
+                nameLine, nameCol,
+                operatorOffset, operatorLen,
+                operatorLine, operatorCol,
+                valueContentOffset, valueContentLen,
+                valueOuterOffset, valueOuterLen,
+                valueLine, valueCol);
+
+    }
 
 
 
@@ -130,6 +172,10 @@ public final class DecoupledTemplateLogicMarkupHandler extends AbstractChainedMa
 
             for (final DecoupledInjectedAttribute injectedAttribute : injectedAttributesForSelector) {
 
+                if (!this.lastWasInnerWhiteSpace) {
+                    super.handleInnerWhiteSpace(INNER_WHITE_SPACE, 0, 1, line, col);
+                }
+
                 super.handleAttribute(
                         injectedAttribute.buffer,
                         injectedAttribute.nameOffset, injectedAttribute.nameLen,
@@ -139,6 +185,8 @@ public final class DecoupledTemplateLogicMarkupHandler extends AbstractChainedMa
                         injectedAttribute.valueContentOffset, injectedAttribute.valueContentLen,
                         injectedAttribute.valueOuterOffset, injectedAttribute.valueOuterLen,
                         line, col);
+
+                this.lastWasInnerWhiteSpace = false;
 
             }
 
