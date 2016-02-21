@@ -28,7 +28,6 @@ import java.util.Set;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.NumberPointType;
 import org.thymeleaf.util.NumberUtils;
-import org.thymeleaf.util.Validate;
 
 
 /**
@@ -60,6 +59,9 @@ public final class Numbers {
     
     
     public String formatInteger(final Number target, final Integer minIntegerDigits) {
+        if (target == null) {
+            return null;
+        }
         try {
             return NumberUtils.format(target, minIntegerDigits, this.locale);
         } catch (final Exception e) {
@@ -69,7 +71,9 @@ public final class Numbers {
     }
 
     public String[] arrayFormatInteger(final Object[] target, final Integer minIntegerDigits) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = formatInteger((Number)target[i], minIntegerDigits);
@@ -78,7 +82,9 @@ public final class Numbers {
     }
 
     public List<String> listFormatInteger(final List<? extends Number> target, final Integer minIntegerDigits) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatInteger(element, minIntegerDigits));
@@ -87,7 +93,9 @@ public final class Numbers {
     }
 
     public Set<String> setFormatInteger(final Set<? extends Number> target, final Integer minIntegerDigits) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatInteger(element, minIntegerDigits));
@@ -99,6 +107,9 @@ public final class Numbers {
     
     
     public String formatInteger(final Number target, final Integer minIntegerDigits, final String thousandsPointType) {
+        if (target == null) {
+            return null;
+        }
         final NumberPointType thousandsNumberPointType = NumberPointType.match(thousandsPointType);
         if (thousandsNumberPointType == null) {
             throw new TemplateProcessingException(
@@ -114,7 +125,9 @@ public final class Numbers {
     }
 
     public String[] arrayFormatInteger(final Object[] target, final Integer minIntegerDigits, final String thousandsPointType) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = formatInteger((Number)target[i], minIntegerDigits, thousandsPointType);
@@ -123,7 +136,9 @@ public final class Numbers {
     }
 
     public List<String> listFormatInteger(final List<? extends Number> target, final Integer minIntegerDigits, final String thousandsPointType) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatInteger(element, minIntegerDigits, thousandsPointType));
@@ -132,7 +147,9 @@ public final class Numbers {
     }
 
     public Set<String> setFormatInteger(final Set<? extends Number> target, final Integer minIntegerDigits, final String thousandsPointType) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatInteger(element, minIntegerDigits, thousandsPointType));
@@ -146,6 +163,9 @@ public final class Numbers {
     
     
     public String formatDecimal(final Number target, final Integer minIntegerDigits, final Integer decimalDigits) {
+        if (target == null) {
+            return null;
+        }
         try {
             return NumberUtils.format(target, minIntegerDigits, decimalDigits, this.locale);
         } catch (final Exception e) {
@@ -156,7 +176,9 @@ public final class Numbers {
     }
 
     public String[] arrayFormatDecimal(final Object[] target, final Integer minIntegerDigits, final Integer decimalDigits) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = formatDecimal((Number)target[i], minIntegerDigits, decimalDigits);
@@ -165,7 +187,9 @@ public final class Numbers {
     }
 
     public List<String> listFormatDecimal(final List<? extends Number> target, final Integer minIntegerDigits, final Integer decimalDigits) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, decimalDigits));
@@ -174,7 +198,9 @@ public final class Numbers {
     }
 
     public Set<String> setFormatDecimal(final Set<? extends Number> target, final Integer minIntegerDigits, final Integer decimalDigits) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, decimalDigits));
@@ -189,6 +215,9 @@ public final class Numbers {
     
     
     public String formatDecimal(final Number target, final Integer minIntegerDigits, final Integer decimalDigits, final String decimalPointType) {
+        if (target == null) {
+            return null;
+        }
         final NumberPointType decimalNumberPointType = NumberPointType.match(decimalPointType);
         if (decimalNumberPointType == null) {
             throw new TemplateProcessingException(
@@ -204,7 +233,9 @@ public final class Numbers {
     }
 
     public String[] arrayFormatDecimal(final Object[] target, final Integer minIntegerDigits, final Integer decimalDigits, final String decimalPointType) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = formatDecimal((Number)target[i], minIntegerDigits, decimalDigits, decimalPointType);
@@ -213,7 +244,9 @@ public final class Numbers {
     }
 
     public List<String> listFormatDecimal(final List<? extends Number> target, final Integer minIntegerDigits, final Integer decimalDigits, final String decimalPointType) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, decimalDigits, decimalPointType));
@@ -222,7 +255,9 @@ public final class Numbers {
     }
 
     public Set<String> setFormatDecimal(final Set<? extends Number> target, final Integer minIntegerDigits, final Integer decimalDigits, final String decimalPointType) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, decimalDigits, decimalPointType));
@@ -237,6 +272,9 @@ public final class Numbers {
     
     
     public String formatDecimal(final Number target, final Integer minIntegerDigits, final String thousandsPointType, final Integer decimalDigits, final String decimalPointType) {
+        if (target == null) {
+            return null;
+        }
         final NumberPointType decimalNumberPointType = NumberPointType.match(decimalPointType);
         if (decimalNumberPointType == null) {
             throw new TemplateProcessingException(
@@ -258,7 +296,9 @@ public final class Numbers {
     }
 
     public String[] arrayFormatDecimal(final Object[] target, final Integer minIntegerDigits, final String thousandsPointType, final Integer decimalDigits, final String decimalPointType) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = formatDecimal((Number)target[i], minIntegerDigits, thousandsPointType, decimalDigits, decimalPointType);
@@ -267,7 +307,9 @@ public final class Numbers {
     }
 
     public List<String> listFormatDecimal(final List<? extends Number> target, final Integer minIntegerDigits, final String thousandsPointType, final Integer decimalDigits, final String decimalPointType) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, thousandsPointType, decimalDigits, decimalPointType));
@@ -276,7 +318,9 @@ public final class Numbers {
     }
 
     public Set<String> setFormatDecimal(final Set<? extends Number> target, final Integer minIntegerDigits, final String thousandsPointType, final Integer decimalDigits, final String decimalPointType) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, thousandsPointType, decimalDigits, decimalPointType));

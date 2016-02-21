@@ -41,13 +41,17 @@ public final class NumberUtils {
     
     
     public static String format(final Number target, final Integer minIntegerDigits, final Locale locale) {
-        Validate.notNull(target, "Cannot apply format on null");
+        if (target == null) {
+            return null;
+        }
         Validate.notNull(minIntegerDigits, "Minimum integer digits cannot be null");
         return formatNumber(target, minIntegerDigits, NumberPointType.NONE, Integer.valueOf(0), NumberPointType.NONE, locale);
     }
     
     public static String format(final Number target, final Integer minIntegerDigits, final NumberPointType thousandsPointType, final Locale locale) {
-        Validate.notNull(target, "Cannot apply format on null");
+        if (target == null) {
+            return null;
+        }
         Validate.notNull(minIntegerDigits, "Minimum integer digits cannot be null");
         Validate.notNull(thousandsPointType, "Thousands point type cannot be null");
         return formatNumber(target, minIntegerDigits, thousandsPointType, Integer.valueOf(0), NumberPointType.NONE, locale);
@@ -56,7 +60,9 @@ public final class NumberUtils {
     
     
     public static String format(final Number target, final Integer minIntegerDigits, final Integer decimalDigits, final Locale locale) {
-        Validate.notNull(target, "Cannot apply format on null");
+        if (target == null) {
+            return null;
+        }
         Validate.notNull(minIntegerDigits, "Minimum integer digits cannot be null");
         Validate.notNull(decimalDigits, "Decimal digits cannot be null");
         return formatNumber(target, minIntegerDigits, NumberPointType.NONE, decimalDigits, NumberPointType.DEFAULT, locale);
@@ -65,7 +71,9 @@ public final class NumberUtils {
     
     
     public static String format(final Number target, final Integer minIntegerDigits, final Integer decimalDigits, final NumberPointType decimalPointType, final Locale locale) {
-        Validate.notNull(target, "Cannot apply format on null");
+        if (target == null) {
+            return null;
+        }
         Validate.notNull(minIntegerDigits, "Minimum integer digits cannot be null");
         Validate.notNull(decimalDigits, "Decimal digits cannot be null");
         Validate.notNull(decimalPointType, "Decimal point type cannot be null");
@@ -75,7 +83,9 @@ public final class NumberUtils {
     
     
     public static String format(final Number target, final Integer minIntegerDigits, final NumberPointType thousandsPointType, final Integer decimalDigits, final Locale locale) {
-        Validate.notNull(target, "Cannot apply format on null");
+        if (target == null) {
+            return null;
+        }
         Validate.notNull(minIntegerDigits, "Minimum integer digits cannot be null");
         Validate.notNull(thousandsPointType, "Thousands point type cannot be null");
         Validate.notNull(decimalDigits, "Decimal digits cannot be null");
@@ -85,7 +95,9 @@ public final class NumberUtils {
     
     
     public static String format(final Number target, final Integer minIntegerDigits, final NumberPointType thousandsPointType, final Integer decimalDigits, final NumberPointType decimalPointType, final Locale locale) {
-        Validate.notNull(target, "Cannot apply format on null");
+        if (target == null) {
+            return null;
+        }
         Validate.notNull(minIntegerDigits, "Minimum integer digits cannot be null");
         Validate.notNull(thousandsPointType, "Thousands point type cannot be null");
         Validate.notNull(decimalDigits, "Decimal digits cannot be null");
@@ -179,11 +191,14 @@ public final class NumberUtils {
     private static String formatNumber(
             final Number target, final Integer minIntegerDigits, final NumberPointType thousandsPointType, final Integer fractionDigits, final NumberPointType decimalPointType, final Locale locale) {
 
-        Validate.notNull(target, "Cannot apply format on null");
         Validate.notNull(fractionDigits, "Fraction digits cannot be null");
         Validate.notNull(decimalPointType, "Decimal point type cannot be null");
         Validate.notNull(thousandsPointType, "Thousands point type cannot be null");
         Validate.notNull(locale, "Locale cannot be null");
+
+        if (target == null) {
+            return null;
+        }
 
         DecimalFormat format = null;
         
