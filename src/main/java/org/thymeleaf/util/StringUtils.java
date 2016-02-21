@@ -177,7 +177,9 @@ public final class StringUtils {
 
     public static String substring(final Object target, final int beginIndex, final int endIndex) {
 
-        Validate.notNull(target, "Cannot apply substring on null");
+        if (target == null) {
+            return null;
+        }
         Validate.isTrue(beginIndex >= 0, "Begin index must be >= 0");
 
         // The String constructor is called on purpose to avoid problems from
@@ -196,12 +198,14 @@ public final class StringUtils {
      *
      * @param target source of the copy.
      * @param beginIndex index where the copy start.
-     * @return part of target.
+     * @return part of target, or <tt>null</tt> if target is null.
      * @since 1.1.2
      */
     public static String substring(final Object target, final int beginIndex) {
 
-        Validate.notNull(target, "Cannot apply substring on null");
+        if (target == null) {
+            return null;
+        }
         final String str = target.toString();
         final int len = str.length();
         Validate.isTrue(beginIndex >= 0 && beginIndex < len, "beginIndex must be >= 0 and < " + len);
@@ -214,8 +218,11 @@ public final class StringUtils {
 
     public static String substringAfter(final Object target, final String substr) {
 
-        Validate.notNull(target, "Cannot apply substringAfter on null");
         Validate.notNull(substr, "Parameter substring cannot be null");
+
+        if (target == null) {
+            return null;
+        }
 
         final String str = target.toString();
         final int index = str.indexOf(substr);
@@ -232,8 +239,11 @@ public final class StringUtils {
 
     public static String substringBefore(final Object target, final String substr) {
 
-        Validate.notNull(target, "Cannot apply substringBefore on null");
         Validate.notNull(substr, "Parameter substring cannot be null");
+
+        if (target == null) {
+            return null;
+        }
 
         final String str = target.toString();
         final int index = str.indexOf(substr);
@@ -251,16 +261,20 @@ public final class StringUtils {
 
 
     public static String prepend(final Object target, final String prefix) {
-        Validate.notNull(target, "Cannot apply prepend on null");
         Validate.notNull(prefix, "Prefix cannot be null");
+        if (target == null) {
+            return null;
+        }
         return prefix + target;
     }
 
 
 
     public static String append(final Object target, final String suffix) {
-        Validate.notNull(target, "Cannot apply append on null");
         Validate.notNull(suffix, "Suffix cannot be null");
+        if (target == null) {
+            return null;
+        }
         return target + suffix;
     }
 
@@ -370,8 +384,11 @@ public final class StringUtils {
 
     public static String join(final Object[] target, final String separator) {
 
-        Validate.notNull(target, "Cannot apply join on null");
         Validate.notNull(separator, "Separator cannot be null");
+
+        if (target == null) {
+            return null;
+        }
 
         final StringBuilder sb = new StringBuilder();
         if (target.length > 0) {
@@ -388,8 +405,11 @@ public final class StringUtils {
 
     public static String join(final Iterable<?> target, final String separator) {
 
-        Validate.notNull(target, "Cannot apply join on null");
         Validate.notNull(separator, "Separator cannot be null");
+
+        if (target == null) {
+            return null;
+        }
 
         final StringBuilder sb = new StringBuilder();
         final Iterator<?> it = target.iterator();
@@ -407,7 +427,9 @@ public final class StringUtils {
 
     public static String join(final Iterable<?> target, final char separator) {
 
-        Validate.notNull(target, "Cannot apply join on null");
+        if (target == null) {
+            return null;
+        }
 
         final StringBuilder sb = new StringBuilder();
         final Iterator<?> it = target.iterator();
@@ -426,8 +448,11 @@ public final class StringUtils {
 
     public static String[] split(final Object target, final String separator) {
 
-        Validate.notNull(target, "Cannot apply split on null");
         Validate.notNull(separator, "Separator cannot be null");
+
+        if (target == null) {
+            return null;
+        }
 
         final StringTokenizer strTok = new StringTokenizer(target.toString(), separator);
         final int size = strTok.countTokens();
@@ -452,9 +477,12 @@ public final class StringUtils {
 
     public static String replace(final Object target, final String before, final String after) {
 
-        Validate.notNull(target, "Cannot apply replace on null");
         Validate.notNull(before, "Parameter \"before\" cannot be null");
         Validate.notNull(after, "Parameter \"after\" cannot be null");
+
+        if (target == null) {
+            return null;
+        }
 
         final String targetStr = target.toString();
         final int targetStrLen = targetStr.length();

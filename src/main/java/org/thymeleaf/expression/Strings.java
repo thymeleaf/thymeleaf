@@ -72,6 +72,9 @@ public final class Strings {
      * @since 2.0.12
      */
     public String toString(final Object target) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.toString(target);
     }
     
@@ -149,6 +152,9 @@ public final class Strings {
     
     
     public String abbreviate(final Object target, final int maxSize) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.abbreviate(target, maxSize);
     }
     
@@ -216,7 +222,9 @@ public final class Strings {
     }
     
     public Boolean[] arrayContains(final Object[] target, final String fragment) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Boolean[] result = new Boolean[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = contains(target[i], fragment);
@@ -225,7 +233,9 @@ public final class Strings {
     }
     
     public List<Boolean> listContains(final List<?> target, final String fragment) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<Boolean> result = new ArrayList<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(contains(element, fragment));
@@ -234,7 +244,9 @@ public final class Strings {
     }
     
     public Set<Boolean> setContains(final Set<?> target, final String fragment) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<Boolean> result = new LinkedHashSet<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(contains(element, fragment));
@@ -252,7 +264,9 @@ public final class Strings {
     }
     
     public Boolean[] arrayContainsIgnoreCase(final Object[] target, final String fragment) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Boolean[] result = new Boolean[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = containsIgnoreCase(target[i], fragment);
@@ -261,7 +275,9 @@ public final class Strings {
     }
     
     public List<Boolean> listContainsIgnoreCase(final List<?> target, final String fragment) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<Boolean> result = new ArrayList<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(containsIgnoreCase(element, fragment));
@@ -270,7 +286,9 @@ public final class Strings {
     }
     
     public Set<Boolean> setContainsIgnoreCase(final Set<?> target, final String fragment) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<Boolean> result = new LinkedHashSet<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(containsIgnoreCase(element, fragment));
@@ -288,7 +306,9 @@ public final class Strings {
     }
     
     public Boolean[] arrayStartsWith(final Object[] target, final String prefix) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Boolean[] result = new Boolean[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = startsWith(target[i], prefix);
@@ -297,7 +317,9 @@ public final class Strings {
     }
     
     public List<Boolean> listStartsWith(final List<?> target, final String prefix) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<Boolean> result = new ArrayList<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(startsWith(element, prefix));
@@ -306,7 +328,9 @@ public final class Strings {
     }
     
     public Set<Boolean> setStartsWith(final Set<?> target, final String prefix) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<Boolean> result = new LinkedHashSet<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(startsWith(element, prefix));
@@ -324,7 +348,9 @@ public final class Strings {
     }
     
     public Boolean[] arrayEndsWith(final Object[] target, final String suffix) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Boolean[] result = new Boolean[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = endsWith(target[i], suffix);
@@ -333,7 +359,9 @@ public final class Strings {
     }
     
     public List<Boolean> listEndsWith(final List<?> target, final String suffix) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<Boolean> result = new ArrayList<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(endsWith(element, suffix));
@@ -342,7 +370,9 @@ public final class Strings {
     }
     
     public Set<Boolean> setEndsWith(final Set<?> target, final String suffix) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<Boolean> result = new LinkedHashSet<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(endsWith(element, suffix));
@@ -356,11 +386,16 @@ public final class Strings {
     
     
     public String substring(final Object target, final int start, final int end) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.substring(target, start, end);
     }
     
     public String[] arraySubstring(final Object[] target, final int start, final int end) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = substring(target[i], start, end);
@@ -369,7 +404,9 @@ public final class Strings {
     }
     
     public List<String> listSubstring(final List<?> target, final int start, final int end) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(substring(element, start, end));
@@ -378,7 +415,9 @@ public final class Strings {
     }
     
     public Set<String> setSubstring(final Set<?> target, final int start, final int end) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(substring(element, start, end));
@@ -395,12 +434,15 @@ public final class Strings {
      * @param target  source of the copy.
      * @param start   index where the copy start.
      * 
-     * @return part of target.
+     * @return part of target, or <tt>null</tt> if target is null.
      *
      * @since 1.1.2
      * 
      */    
     public String substring(final Object target, final int start) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.substring(target, start);
     }
     
@@ -413,13 +455,15 @@ public final class Strings {
      * @param target source of the copy.
      * @param start  index where the copy start.
      * 
-     * @return part of target.
+     * @return part of target, or <tt>null</tt> if target is null.
      *
      * @since 1.1.2
      * 
      */    
     public String[] arraySubstring(final Object[] target, final int start) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = substring(target[i], start);
@@ -436,13 +480,15 @@ public final class Strings {
      * @param target   source of the copy.
      * @param start    index where the copy start.
      * 
-     * @return part of target.
+     * @return part of target, or <tt>null</tt> if target is null.
      *
      * @since 1.1.2
      * 
      */    
     public List<String> listSubstring(final List<?> target, final int start) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(substring(element, start));
@@ -459,13 +505,15 @@ public final class Strings {
      * @param target source of the copy.
      * @param start  index where the copy start.
      * 
-     * @return part of target.
+     * @return part of target, or <tt>null</tt> if target is null.
      *
      * @since 1.1.2
      * 
      */    
     public Set<String> setSubstring(final Set<?> target, final int start) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(substring(element, start));
@@ -479,11 +527,16 @@ public final class Strings {
     
     
     public String substringAfter(final Object target, final String substr) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.substringAfter(target, substr);
     }
     
     public String[] arraySubstringAfter(final Object[] target, final String substr) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = substringAfter(target[i], substr);
@@ -492,7 +545,9 @@ public final class Strings {
     }
     
     public List<String> listSubstringAfter(final List<?> target, final String substr) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(substringAfter(element, substr));
@@ -501,7 +556,9 @@ public final class Strings {
     }
     
     public Set<String> setSubstringAfter(final Set<?> target, final String substr) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(substringAfter(element, substr));
@@ -515,11 +572,16 @@ public final class Strings {
 
     
     public String substringBefore(final Object target, final String substr) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.substringBefore(target, substr);
     }
     
     public String[] arraySubstringBefore(final Object[] target, final String substr) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = substringBefore(target[i], substr);
@@ -528,7 +590,9 @@ public final class Strings {
     }
     
     public List<String> listSubstringBefore(final List<?> target, final String substr) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(substringBefore(element, substr));
@@ -537,7 +601,9 @@ public final class Strings {
     }
     
     public Set<String> setSubstringBefore(final Set<?> target, final String substr) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(substringBefore(element, substr));
@@ -551,11 +617,16 @@ public final class Strings {
     
     
     public String prepend(final Object target, final String prefix) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.prepend(target, prefix);
     }
     
     public String[] arrayPrepend(final Object[] target, final String prefix) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = prepend(target[i], prefix);
@@ -564,7 +635,9 @@ public final class Strings {
     }
     
     public List<String> listPrepend(final List<?> target, final String prefix) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(prepend(element, prefix));
@@ -573,7 +646,9 @@ public final class Strings {
     }
     
     public Set<String> setPrepend(final Set<?> target, final String prefix) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(prepend(element, prefix));
@@ -594,6 +669,9 @@ public final class Strings {
      * @since 2.1.0
      */
     public String repeat(final Object target, final int times) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.repeat(target, times);
     }
 
@@ -603,6 +681,9 @@ public final class Strings {
     
     
     public String append(final Object target, final String suffix) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.append(target, suffix);
     }
     
@@ -628,7 +709,9 @@ public final class Strings {
     }
     
     public String[] arrayAppend(final Object[] target, final String suffix) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = append(target[i], suffix);
@@ -637,7 +720,9 @@ public final class Strings {
     }
     
     public List<String> listAppend(final List<?> target, final String suffix) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(append(element, suffix));
@@ -646,7 +731,9 @@ public final class Strings {
     }
     
     public Set<String> setAppend(final Set<?> target, final String suffix) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(append(element, suffix));
@@ -664,7 +751,9 @@ public final class Strings {
     }
     
     public Integer[] arrayIndexOf(final Object[] target, final String fragment) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Integer[] result = new Integer[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = indexOf(target[i], fragment);
@@ -673,7 +762,9 @@ public final class Strings {
     }
     
     public List<Integer> listIndexOf(final List<?> target, final String fragment) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Object element : target) {
             result.add(indexOf(element, fragment));
@@ -682,7 +773,9 @@ public final class Strings {
     }
     
     public Set<Integer> setIndexOf(final Set<?> target, final String fragment) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Object element : target) {
             result.add(indexOf(element, fragment));
@@ -701,7 +794,9 @@ public final class Strings {
     }
     
     public Boolean[] arrayIsEmpty(final Object[] target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Boolean[] result = new Boolean[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = isEmpty(target[i]);
@@ -710,7 +805,9 @@ public final class Strings {
     }
     
     public List<Boolean> listIsEmpty(final List<?> target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<Boolean> result = new ArrayList<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(isEmpty(element));
@@ -719,7 +816,9 @@ public final class Strings {
     }
     
     public Set<Boolean> setIsEmpty(final Set<?> target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<Boolean> result = new LinkedHashSet<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(isEmpty(element));
@@ -734,14 +833,23 @@ public final class Strings {
     
     
     public String arrayJoin(final Object[] stringArray, final String separator) {
+        if (stringArray == null) {
+            return null;
+        }
         return StringUtils.join(stringArray, separator);
     }
     
     public String listJoin(final List<?> stringIter, final String separator) {
+        if (stringIter == null) {
+            return null;
+        }
         return StringUtils.join(stringIter, separator);
     }
     
     public String setJoin(final Set<?> stringIter, final String separator) {
+        if (stringIter == null) {
+            return null;
+        }
         return StringUtils.join(stringIter, separator);
     }
     
@@ -750,14 +858,23 @@ public final class Strings {
     
     
     public String[] arraySplit(final Object target, final String separator) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.split(target, separator);
     }
     
     public List<String> listSplit(final Object target, final String separator) {
+        if (target == null) {
+            return null;
+        }
         return new ArrayList<String>(java.util.Arrays.asList(StringUtils.split(target, separator)));
     }
     
     public Set<String> setSplit(final Object target, final String separator) {
+        if (target == null) {
+            return null;
+        }
         return new LinkedHashSet<String>(java.util.Arrays.asList(StringUtils.split(target, separator)));
     }
 
@@ -770,7 +887,9 @@ public final class Strings {
     }
     
     public Integer[] arrayLength(final Object[] target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Integer[] result = new Integer[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = length(target[i]);
@@ -779,7 +898,9 @@ public final class Strings {
     }
     
     public List<Integer> listLength(final List<?> target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Object element : target) {
             result.add(length(element));
@@ -788,7 +909,9 @@ public final class Strings {
     }
     
     public Set<Integer> setLength(final Set<?> target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Object element : target) {
             result.add(length(element));
@@ -803,11 +926,16 @@ public final class Strings {
     
     
     public String replace(final Object target, final String before, final String after) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.replace(target, before, after);
     }
 
     public String[] arrayReplace(final Object[] target, final String before, final String after) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = replace(target[i], before, after);
@@ -816,7 +944,9 @@ public final class Strings {
     }
     
     public List<String> listReplace(final List<?> target, final String before, final String after) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(replace(element, before, after));
@@ -825,7 +955,9 @@ public final class Strings {
     }
     
     public Set<String> setReplace(final Set<?> target, final String before, final String after) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(replace(element, before, after));
@@ -841,12 +973,15 @@ public final class Strings {
     public String multipleReplace(final Object target, 
             final String[] before, final String[] after) {
         
-        Validate.notNull(target, "Target cannot be null");
         Validate.notNull(before, "Array of 'before' values cannot be null");
         Validate.notNull(after, "Array of 'after' values cannot be null");
         Validate.isTrue(before.length == after.length, 
                 "Arrays of 'before' and 'after' values must have the same length");
-        
+
+        if (target == null) {
+            return null;
+        }
+
         String ret = target.toString();
         for (int i = 0; i < before.length; i++) {
             ret = StringUtils.replace(ret, before[i], after[i]);
@@ -857,7 +992,9 @@ public final class Strings {
     
     public String[] arrayMultipleReplace(final Object[] target, 
             final String[] before, final String[] after) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = multipleReplace(target[i], before, after);
@@ -867,7 +1004,9 @@ public final class Strings {
     
     public List<String> listMultipleReplace(final List<?> target, 
             final String[] before, final String[] after) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(multipleReplace(element, before, after));
@@ -877,7 +1016,9 @@ public final class Strings {
     
     public Set<String> setMultipleReplace(final Set<?> target, final String[] before,
             final String[] after) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(multipleReplace(element, before, after));
@@ -891,6 +1032,9 @@ public final class Strings {
 
     
     public String toUpperCase(final Object target) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.toUpperCase(target, this.locale);
     }
     
@@ -933,6 +1077,9 @@ public final class Strings {
     
     
     public String toLowerCase(final Object target) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.toLowerCase(target, this.locale);
     }
     
@@ -974,6 +1121,9 @@ public final class Strings {
     
     
     public String trim(final Object target) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.trim(target);
     }
     
@@ -1024,6 +1174,9 @@ public final class Strings {
      * 
      */
     public String capitalize(final Object target) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.capitalize(target);
     }
     
@@ -1118,6 +1271,9 @@ public final class Strings {
      * 
      */
     public String unCapitalize(final Object target) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.unCapitalize(target);
     }
     
@@ -1221,6 +1377,9 @@ public final class Strings {
      * 
      */
     public String capitalizeWords(final Object target) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.capitalizeWords(target);
     }
     
@@ -1336,7 +1495,10 @@ public final class Strings {
      */
     public String capitalizeWords(final Object target, 
             final Object delimiters) {
-        
+
+        if (target == null) {
+            return null;
+        }
         return StringUtils.capitalizeWords(target, delimiters);
     }
     
@@ -1455,6 +1617,9 @@ public final class Strings {
      * @since 2.0.9
      */
     public String escapeXml(final Object target) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.escapeXml(target);
     }
     
@@ -1556,6 +1721,9 @@ public final class Strings {
      * @since 2.0.11
      */
     public String escapeJavaScript(final Object target) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.escapeJavaScript(target);
     }
     
@@ -1656,6 +1824,9 @@ public final class Strings {
      * @since 2.0.11
      */
     public String unescapeJavaScript(final Object target) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.unescapeJavaScript(target);
     }
     
@@ -1756,6 +1927,9 @@ public final class Strings {
      * @since 2.0.11
      */
     public String escapeJava(final Object target) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.escapeJava(target);
     }
     
@@ -1859,6 +2033,9 @@ public final class Strings {
      * @since 2.0.11
      */
     public String unescapeJava(final Object target) {
+        if (target == null) {
+            return null;
+        }
         return StringUtils.unescapeJava(target);
     }
     
@@ -1974,14 +2151,19 @@ public final class Strings {
      * @since 2.1.3
      */
     public String defaultString(final Object target, final Object defaultValue) {
-    	Validate.notNull(defaultValue, "Default value cannot be null");
-    	
+
     	if (target == null) {
+            if (defaultValue == null) {
+                return "null";
+            }
     		return defaultValue.toString();
     	}
     	
     	String targetString = target.toString();
     	if (StringUtils.isEmptyOrWhitespace(targetString)) {
+            if (defaultValue == null) {
+                return "null";
+            }
     		return defaultValue.toString();
     	}
     	return targetString;
