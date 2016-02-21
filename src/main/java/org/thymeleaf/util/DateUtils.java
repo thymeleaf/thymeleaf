@@ -349,92 +349,120 @@ public final class DateUtils {
 
     
     public static String format(final Object target, final Locale locale) {
-        Validate.notNull(target, "Cannot apply format on null");
+        if (target == null) {
+            return null;
+        }
         return formatDate(target, locale);
     }
     
     public static String format(final Object target, final String pattern, final Locale locale) {
-        Validate.notNull(target, "Cannot apply format on null");
         Validate.notEmpty(pattern, "Pattern cannot be null or empty");
+        if (target == null) {
+            return null;
+        }
         return formatDate(target, pattern, locale);
     }
     
 
     public static Integer day(final Object target) {
-        Validate.notNull(target, "Cannot retrieve day from null");
+        if (target == null) {
+            return null;
+        }
         final Calendar cal = normalizeDate(target);
         return Integer.valueOf(cal.get(Calendar.DAY_OF_MONTH));
     }
     
 
     public static Integer month(final Object target) {
-        Validate.notNull(target, "Cannot retrieve month from null");
+        if (target == null) {
+            return null;
+        }
         final Calendar cal = normalizeDate(target);
         return Integer.valueOf(cal.get(Calendar.MONTH) + 1);
     }
     
 
     public static String monthName(final Object target, final Locale locale) {
-        Validate.notNull(target, "Cannot retrieve month name from null");
+        if (target == null) {
+            return null;
+        }
         return format(target, "MMMM", locale);
     }
     
 
     public static String monthNameShort(final Object target, final Locale locale) {
-        Validate.notNull(target, "Cannot retrieve month name short from null");
+        if (target == null) {
+            return null;
+        }
         return format(target, "MMM", locale);
     }
     
 
     public static Integer year(final Object target) {
-        Validate.notNull(target, "Cannot retrieve year from null");
+        if (target == null) {
+            return null;
+        }
         final Calendar cal = normalizeDate(target);
         return Integer.valueOf(cal.get(Calendar.YEAR));
     }
     
 
     public static Integer dayOfWeek(final Object target) {
-        Validate.notNull(target, "Cannot retrieve day of week from null");
+        if (target == null) {
+            return null;
+        }
         final Calendar cal = normalizeDate(target);
         return Integer.valueOf(cal.get(Calendar.DAY_OF_WEEK));
     }
     
 
     public static String dayOfWeekName(final Object target, final Locale locale) {
-        Validate.notNull(target, "Cannot retrieve day of week name from null");
+        if (target == null) {
+            return null;
+        }
         return format(target, "EEEE", locale);
     }
     
 
     public static String dayOfWeekNameShort(final Object target, final Locale locale) {
-        Validate.notNull(target, "Cannot retrieve day of week name shortfrom null");
+        if (target == null) {
+            return null;
+        }
         return format(target, "EEE", locale);
     }
     
 
     public static Integer hour(final Object target) {
-        Validate.notNull(target, "Cannot retrieve hour from null");
+        if (target == null) {
+            return null;
+        }
         final Calendar cal = normalizeDate(target);
         return Integer.valueOf(cal.get(Calendar.HOUR_OF_DAY));
     }
     
 
     public static Integer minute(final Object target) {
-        Validate.notNull(target, "Cannot retrieve hour from null");
+        if (target == null) {
+            return null;
+        }
         final Calendar cal = normalizeDate(target);
         return Integer.valueOf(cal.get(Calendar.MINUTE));
     }
     
 
     public static Integer second(final Object target) {
-        Validate.notNull(target, "Cannot retrieve hour from null");
+        if (target == null) {
+            return null;
+        }
         final Calendar cal = normalizeDate(target);
         return Integer.valueOf(cal.get(Calendar.SECOND));
     }
     
 
     public static Integer millisecond(final Object target) {
-        Validate.notNull(target, "Cannot retrieve hour from null");
+        if (target == null) {
+            return null;
+        }
         final Calendar cal = normalizeDate(target);
         return Integer.valueOf(cal.get(Calendar.MILLISECOND));
     }
@@ -445,6 +473,9 @@ public final class DateUtils {
     
     
     private static Calendar normalizeDate(final Object target) {
+        if (target == null) {
+            return null;
+        }
         if (target instanceof Calendar) {
             return (Calendar) target;
         } else if (target instanceof java.util.Date) {
@@ -462,15 +493,20 @@ public final class DateUtils {
     
     
     private static String formatDate(final Object target, final Locale locale) {
+        if (target == null) {
+            return null;
+        }
         return formatDate(target, null, locale);
     }
     
     
     private static String formatDate(final Object target, final String pattern, final Locale locale) {
 
-        Validate.notNull(target, "Cannot apply format on null");
         Validate.notNull(locale, "Locale cannot be null");
-        
+
+        if (target == null) {
+            return null;
+        }
 
         final DateFormatKey key = new DateFormatKey(target, pattern, locale);
         
@@ -514,7 +550,9 @@ public final class DateUtils {
      */
     public static String formatISO(final Object target) {
 
-        Validate.notNull(target, "Cannot apply format on null");
+        if (target == null) {
+            return null;
+        }
 
         final java.util.Date targetDate;
         if (target instanceof Calendar) {
