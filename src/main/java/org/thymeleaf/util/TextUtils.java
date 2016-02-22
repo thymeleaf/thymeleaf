@@ -92,10 +92,7 @@ public final class TextUtils {
      * @return whether both texts are equal or not.
      */
     public static boolean equals(final boolean caseSensitive, final char[] text1, final char[] text2) {
-        if (text1 == text2) {
-            return true;
-        }
-        return equals(caseSensitive, text1, 0, text1.length, text2, 0, text2.length);
+        return text1 == text2 || equals(caseSensitive, text1, 0, text1.length, text2, 0, text2.length);
     }
 
 
