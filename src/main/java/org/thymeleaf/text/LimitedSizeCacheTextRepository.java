@@ -36,7 +36,7 @@ import org.thymeleaf.util.TextUtils;
  *     in bytes too).
  * </p>
  * <p>
- *     When full, objects of this class will be evited following a first-in, first-out policy. Oldest texts
+ *     When full, objects of this class will be evicted following a first-in, first-out policy. Oldest texts
  *     added to the repository will be removed to make room for new ones no matter how many times they have been
  *     retrieved.
  * </p>

@@ -365,7 +365,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                 }
             }
 
-            // Given this is a simple (originally unwrapped) fragment expression, we will consider the non-existance
+            // Given this is a simple (originally unwrapped) fragment expression, we will consider the non-existence
             // of the fragment a failure. The reason we do this here instead of just waiting and seeing if we receive
             // a null and then failing is that, in order to receive such "null", the underlying resolution system would
             // have to execute a (potentially costly) resource.exists() call on the resolved resource.

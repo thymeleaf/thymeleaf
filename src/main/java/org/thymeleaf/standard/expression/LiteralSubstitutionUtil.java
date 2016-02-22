@@ -55,7 +55,7 @@ final class LiteralSubstitutionUtil {
      *
      * So: |${onevar} ${twovar}| --> ${onevar} + ' ' + ${twovar}
      *
-     * NOTE literal substitution expressions do not allow literals, numeric/bookean tokens, conditional expressions, etc.
+     * NOTE literal substitution expressions do not allow literals, numeric/boolean tokens, conditional expressions, etc.
      *
      */
 

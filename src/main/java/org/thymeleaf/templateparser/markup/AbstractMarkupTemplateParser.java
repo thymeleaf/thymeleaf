@@ -172,7 +172,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             // (which might see text blocks coming as several blocks instead of just one). We will not really worry
             // about pre-processors and post-processors because they are single classes that can always merge
             // consecutive text events.
-            if (canPreProcessInlinedOutputExpresssions(configuration, templateMode)) {
+            if (canPreProcessInlinedOutputExpressions(configuration, templateMode)) {
                 handler = new InlinedOutputExpressionMarkupHandler(
                                 configuration,
                                 templateMode,
@@ -249,7 +249,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
 
 
-    private static boolean canPreProcessInlinedOutputExpresssions(
+    private static boolean canPreProcessInlinedOutputExpressions(
             final IEngineConfiguration configuration, final TemplateMode templateMode) {
 
         if (!configuration.isStandardDialectPresent()) {

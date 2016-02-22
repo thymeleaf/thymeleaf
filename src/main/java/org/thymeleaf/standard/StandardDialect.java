@@ -125,7 +125,7 @@ public class StandardDialect
     private final IExpressionObjectFactory STANDARD_EXPRESSION_OBJECTS_FACTORY = new StandardExpressionObjectFactory();
 
 
-    // We will avoid setting this variableExpressionEvaluator variable to "OgnlVariableExprtessionEvalutator.INSTANCE"
+    // We will avoid setting this variableExpressionEvaluator variable to "OgnlVariableExpressionEvaluator.INSTANCE"
     // in order to not cause this OGNL-related class to initialize, therefore introducing a forced dependency on OGNL
     // to Spring users (who don't need OGNL at all).
     private IStandardVariableExpressionEvaluator variableExpressionEvaluator = null;
