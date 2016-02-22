@@ -77,10 +77,8 @@ public final class TextRepositories {
         unremovableTexts.add("\n\t\t\t\t");
 
         // (1 char = 2 bytes), thus we divide by 2 the default size in bytes
-        final ITextRepository textRepository =
-                new LimitedSizeCacheTextRepository(cacheSizeBytes / 2, unremovableTexts.toArray(new String[unremovableTexts.size()]));
 
-        return textRepository;
+        return new LimitedSizeCacheTextRepository(cacheSizeBytes / 2, unremovableTexts.toArray(new String[unremovableTexts.size()]));
 
     }
 
