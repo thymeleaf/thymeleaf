@@ -66,10 +66,7 @@ final class OGNLExpressionObjectsWrapper extends HashMap<String, Object> {
 
     @Override
     public boolean containsKey(final Object key) {
-        if (this.expressionObjects.containsObject(key.toString())) {
-            return true;
-        }
-        return super.containsKey(key);
+        return this.expressionObjects.containsObject(key.toString()) || super.containsKey(key);
     }
 
     @Override
