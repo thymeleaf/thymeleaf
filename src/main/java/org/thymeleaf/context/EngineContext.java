@@ -305,7 +305,7 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
 
     public void setInliner(final IInliner inliner) {
         ensureLevelInitialized(DEFAULT_MAP_SIZE);
-        // We use NoOpInliner.INSTACE in order to signal when inlining has actually been disabled
+        // We use NoOpInliner.INSTANCE in order to signal when inlining has actually been disabled
         this.lastInliner = (inliner == null? NoOpInliner.INSTANCE : inliner);
         this.inliners[this.index] = this.lastInliner;
     }
@@ -470,18 +470,18 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
                 if (strBuilder.length() > 1) {
                     strBuilder.append(',');
                 }
-                strBuilder.append(this.levels[n] + ":");
+                strBuilder.append(this.levels[n]).append(":");
                 if (!levelVars.isEmpty() || n == 0) {
                     strBuilder.append(levelVars);
                 }
                 if (this.selectionTargets[n] != null) {
-                    strBuilder.append("<" + this.selectionTargets[n].selectionTarget + ">");
+                    strBuilder.append("<").append(this.selectionTargets[n].selectionTarget).append(">");
                 }
                 if (this.inliners[n] != null) {
-                    strBuilder.append("[" + this.inliners[n].getName() + "]");
+                    strBuilder.append("[").append(this.inliners[n].getName()).append("]");
                 }
                 if (this.templateDatas[n] != null) {
-                    strBuilder.append("(" + this.templateDatas[n].getTemplate() + ")");
+                    strBuilder.append("(").append(this.templateDatas[n].getTemplate()).append(")");
                 }
             }
         }
