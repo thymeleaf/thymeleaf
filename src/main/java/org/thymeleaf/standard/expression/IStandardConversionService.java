@@ -34,7 +34,7 @@ import org.thymeleaf.context.IExpressionContext;
  *   is {@link StandardConversionService}, which performs some standard conversions, but the
  *   Spring Standard Dialect used by the Thymeleaf + Spring integration module automatically registers an implementation
  *   of this interface that delegates on any existing Spring <tt>ConversionService</tt> objects (thus using
- *   the Converters and Formatters regitered at the Spring Application Context).
+ *   the Converters and Formatters registered at the Spring Application Context).
  * </p>
  * <p>
  *   <strong>Important</strong>: there is one conversion that implementations of this interface should

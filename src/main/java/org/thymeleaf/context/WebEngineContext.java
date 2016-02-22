@@ -176,10 +176,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
         if (PARAM_VARIABLE_NAME.equals(name)) {
             return true;
         }
-        if (APPLICATION_VARIABLE_NAME.equals(name)) {
-            return true;
-        }
-        return this.requestAttributesVariablesMap.containsVariable(name);
+        return APPLICATION_VARIABLE_NAME.equals(name) || this.requestAttributesVariablesMap.containsVariable(name);
     }
 
 
@@ -1079,18 +1076,18 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
                     if (strBuilder.length() > 1) {
                         strBuilder.append(',');
                     }
-                    strBuilder.append(this.levels[n] + ":");
+                    strBuilder.append(this.levels[n]).append(":");
                     if (!levelVars.isEmpty() || n == 0) {
                         strBuilder.append(levelVars);
                     }
                     if (this.selectionTargets[n] != null) {
-                        strBuilder.append("<" + this.selectionTargets[n].selectionTarget + ">");
+                        strBuilder.append("<").append(this.selectionTargets[n].selectionTarget).append(">");
                     }
                     if (this.inliners[n] != null) {
-                        strBuilder.append("[" + this.inliners[n].getName() + "]");
+                        strBuilder.append("[").append(this.inliners[n].getName()).append("]");
                     }
                     if (this.templateDatas[n] != null) {
-                        strBuilder.append("(" + this.templateDatas[n].getTemplate() + ")");
+                        strBuilder.append("(").append(this.templateDatas[n].getTemplate()).append(")");
                     }
                 }
             }
@@ -1120,16 +1117,16 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
             if (strBuilder.length() > 1) {
                 strBuilder.append(',');
             }
-            strBuilder.append(this.levels[n] + ":");
+            strBuilder.append(this.levels[n]).append(":");
             strBuilder.append(requestAttributes.toString());
             if (this.selectionTargets[0] != null) {
-                strBuilder.append("<" + this.selectionTargets[0].selectionTarget + ">");
+                strBuilder.append("<").append(this.selectionTargets[0].selectionTarget).append(">");
             }
             if (this.inliners[0] != null) {
-                strBuilder.append("[" + this.inliners[0].getName() + "]");
+                strBuilder.append("[").append(this.inliners[0].getName()).append("]");
             }
             if (this.templateDatas[0] != null) {
-                strBuilder.append("(" + this.templateDatas[0].getTemplate() + ")");
+                strBuilder.append("(").append(this.templateDatas[0].getTemplate()).append(")");
             }
             strBuilder.append("}[");
             strBuilder.append(this.level);

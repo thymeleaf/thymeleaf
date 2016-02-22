@@ -267,7 +267,7 @@ public final class FragmentExpression extends SimpleExpression {
 
         if (!StringUtils.isEmptyOrWhitespace(parametersStr)) {
 
-            // When parsing this, we don't allow parameters without value because we would be mistakingly
+            // When parsing this, we don't allow parameters without value because we would be mistakenly
             // parsing as parameter names what in fact are values for synthetically named parameters.
             final AssignationSequence parametersAsSeq =
                     AssignationUtils.internalParseAssignationSequence(parametersStr, false);
@@ -276,7 +276,7 @@ public final class FragmentExpression extends SimpleExpression {
                 return new FragmentExpression(templateNameExpression, fragmentSpecExpression, parametersAsSeq, false);
             }
 
-            // Parameters wheren't parseable as an assignation sequence. So we should try parsing as Expression
+            // Parameters wheren't parsable as an assignation sequence. So we should try parsing as Expression
             // sequence and create a synthetically named parameter sequence with the expressions in the sequence as
             // values.
 

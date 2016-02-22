@@ -494,7 +494,7 @@ final class OGNLShortcutExpression {
      * expression, and therefore the OGNLVariableExpressionEvaluator should default to standard pure-OGNL
      * evaluation.
      *
-     * Most common reason for this is the existance of a custom property accessor registered in OGNL for accessing
+     * Most common reason for this is the existence of a custom property accessor registered in OGNL for accessing
      * the properties of one of the objects involved in the expression, which behaviour (the custom property accessor's)
      * cannot be replicated by OGNLShortcutExpressions.
      */

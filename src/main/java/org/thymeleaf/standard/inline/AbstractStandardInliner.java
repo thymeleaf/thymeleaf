@@ -162,7 +162,6 @@ public abstract class AbstractStandardInliner implements IInliner {
         performInlining(context, text, 0, textLen, text.getTemplateName(), text.getLine(), text.getCol(), strBuilder);
 
         text.setText(strBuilder.toString());
-        return;
 
     }
 
@@ -234,7 +233,6 @@ public abstract class AbstractStandardInliner implements IInliner {
         performInlining(context, cdataSection, 9, cdataSectionLen - 12, cdataSection.getTemplateName(), cdataSection.getLine(), cdataSection.getCol(), strBuilder);
 
         cdataSection.setContent(strBuilder.toString());
-        return;
 
     }
 
@@ -306,7 +304,6 @@ public abstract class AbstractStandardInliner implements IInliner {
         performInlining(context, comment, 4, commentLen - 7, comment.getTemplateName(), comment.getLine(), comment.getCol(), strBuilder);
 
         comment.setContent(strBuilder.toString());
-        return;
 
     }
 
