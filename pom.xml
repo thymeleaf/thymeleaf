@@ -24,7 +24,7 @@
   <groupId>org.thymeleaf</groupId>
   <artifactId>thymeleaf</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.0.BETA02</version>
+  <version>3.0.0-SNAPSHOT</version>
   <name>thymeleaf</name>
   <url>http://www.thymeleaf.org</url>
 
@@ -47,7 +47,7 @@
     <url>scm:git:git@github.com:thymeleaf/thymeleaf.git</url>
     <connection>scm:git:git@github.com:thymeleaf/thymeleaf.git</connection>
     <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf.git</developerConnection>
-    <tag>thymeleaf-3.0.0.BETA02</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <developers>
