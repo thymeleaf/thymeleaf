@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------------
+THYMELEAF LOGO USAGE AND SPECIFICATIONS
+-------------------------------------------------------------------------------
+
+The Thymeleaf Logo is (c) The THYMELEAF Team and licensed under a
+Creative Commons Attribution 3.0 Unported License.
+
+The Thymeleaf logo artwork can be found at:
+https://github.com/thymeleaf/thymeleaf-dist/tree/master/src/artwork/
+
+-------------------------------------------------------------------------------
+
+The are two versions of the Thymeleaf logo:
+
+   1. With the "thymeleaf" text
+   2. Without the "thymeleaf" text
+
+The version of the logo with the "thymeleaf" text can be displayed on white,
+green or dark (gray) background.
+
+WHITE is the preferred background, and that should be considered the default
+version of the logo.
+
+-------------------------------------------------------------------------------
+
+Specifications:
+
+  * Font: Ubuntu (Regular Italic) - http://font.ubuntu.com/
+  * Colors:
+    * White:      rgb(255,255,255) #ffffff
+    * Green:      rgb(0,95,15)     #005f0f
+    * Light Gray: rgb(174,169,159) #aea99f
+    * Dark Gray:  rgb(51,51,51)    #333333
+  * SVG creator software and format: Inkscape - https://inkscape.org/
+
+-------------------------------------------------------------------------------
