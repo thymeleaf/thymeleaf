@@ -801,7 +801,7 @@ public final class TemplateManager {
          */
         if (setPreProcessors) {
             final Set<IPreProcessor> preProcessors = configuration.getPreProcessors(context.getTemplateMode());
-            if (preProcessors != null) {
+            if (preProcessors != null && preProcessors.size() > 0) {
                 for (final IPreProcessor preProcessor : preProcessors) {
                     final Class<? extends ITemplateHandler> preProcessorClass = preProcessor.getHandlerClass();
                     final ITemplateHandler preProcessorHandler;
@@ -844,7 +844,7 @@ public final class TemplateManager {
          */
         if (setPostProcessors) {
             final Set<IPostProcessor> postProcessors = configuration.getPostProcessors(context.getTemplateMode());
-            if (postProcessors != null) {
+            if (postProcessors != null && postProcessors.size() > 0) {
                 for (final IPostProcessor postProcessor : postProcessors) {
                     final Class<? extends ITemplateHandler> postProcessorClass = postProcessor.getHandlerClass();
                     final ITemplateHandler postProcessorHandler;
