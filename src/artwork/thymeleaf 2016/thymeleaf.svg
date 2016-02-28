@@ -28,8 +28,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.80076228"
-     inkscape:cx="371.63457"
-     inkscape:cy="639.51583"
+     inkscape:cx="168.70293"
+     inkscape:cy="489.65862"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -151,8 +151,8 @@
        width="740"
        id="rect8177"
        style="fill:#333333;fill-opacity:1;stroke:none;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:export-xdpi="300.04053"
-       inkscape:export-ydpi="300.04053" />
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <g
        id="g4286"
        transform="translate(-1.2198914,-12.537346)"
@@ -229,97 +229,95 @@
          d="m 137.64601,496.80521 c -18.3654,14.55134 -33.05545,22.41552 -51.837589,29.18031 -5.668593,2.42556 -11.743691,5.50377 -14.377129,11.45566 -2.711352,5.63098 -1.715768,12.03975 1.394577,17.25363 0.03467,-2.14145 0.832954,-4.29728 2.577458,-5.96204 5.78876,-6.44655 13.328608,-10.67036 19.960735,-15.5653 l 0.01587,-0.0135 0.01587,-0.0107 c 15.348728,-10.54102 29.738478,-22.58634 42.250188,-36.33844 z"
          id="path4223" />
     </g>
-    <g
-       id="g4295"
-       transform="translate(-1.2198914,-3.703468)"
-       inkscape:export-xdpi="300.04053"
-       inkscape:export-ydpi="300.04053">
-      <path
-         inkscape:export-ydpi="283.16165"
-         inkscape:export-xdpi="283.16165"
-         inkscape:export-filename="C:\Users\dfernandez\Desktop\thymeleaf_new.png"
-         style="fill:#ffffff;fill-opacity:1"
-         id="path8185"
-         sodipodi:type="arc"
-         sodipodi:cx="101.11364"
-         sodipodi:cy="758.66809"
-         sodipodi:rx="21.532141"
-         sodipodi:ry="21.532141"
-         sodipodi:start="0.1882215"
-         sodipodi:end="0.18880423"
-         d="m 122.26549,762.69701 a 21.532141,21.532141 0 0 1 -0.002,0.0123"
-         sodipodi:open="true" />
-      <path
-         inkscape:export-ydpi="283.16165"
-         inkscape:export-xdpi="283.16165"
-         inkscape:export-filename="C:\Users\dfernandez\Desktop\thymeleaf_new.png"
-         style="fill:#ffffff;fill-opacity:1"
-         id="path4242"
-         sodipodi:type="arc"
-         sodipodi:cx="101.11364"
-         sodipodi:cy="759.00031"
-         sodipodi:rx="21.532141"
-         sodipodi:ry="21.532141"
-         sodipodi:start="0.1882215"
-         sodipodi:end="0.18880423"
-         d="m 122.26549,763.02923 a 21.532141,21.532141 0 0 1 -0.002,0.0123"
-         sodipodi:open="true" />
-      <text
-         inkscape:export-ydpi="283.16165"
-         inkscape:export-xdpi="283.16165"
-         inkscape:export-filename="C:\Users\dfernandez\Desktop\thymeleaf_new.png"
-         sodipodi:linespacing="125%"
-         id="text4244"
-         y="762.7074"
-         x="174.59401"
-         style="font-style:normal;font-weight:normal;font-size:112.82263947px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#aea99f;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           dy="0"
-           rotate="0 0 0 0 0 0 0 0 0 0 0"
-           dx="0"
-           style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:119.32006073px;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu Italic';letter-spacing:-3.21761966px;fill:#aea99f;fill-opacity:1"
-           y="762.7074"
-           x="174.59401"
-           id="tspan4246"
-           sodipodi:role="line">thymeleaf </tspan></text>
-      <rect
-         inkscape:export-ydpi="283.16165"
-         inkscape:export-xdpi="283.16165"
-         inkscape:export-filename="C:\Users\dfernandez\Desktop\thymeleaf_new.png"
-         style="fill:#005f0f;fill-opacity:1;stroke:#ffffff;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         id="rect4248"
-         width="119.77252"
-         height="119.97438"
-         x="44.025024"
-         y="666.19617"
-         ry="8.532815" />
-      <path
-         inkscape:export-ydpi="283.16165"
-         inkscape:export-xdpi="283.16165"
-         inkscape:export-filename="C:\Users\dfernandez\Desktop\thymeleaf_new.png"
-         style="fill:#ffffff;fill-opacity:1"
-         id="path4250"
-         sodipodi:type="arc"
-         sodipodi:cx="98.528236"
-         sodipodi:cy="755.01636"
-         sodipodi:rx="21.532141"
-         sodipodi:ry="21.532141"
-         sodipodi:start="0.1882215"
-         sodipodi:end="0.18880423"
-         d="m 119.68009,759.04528 a 21.532141,21.532141 0 0 1 -0.002,0.0123"
-         sodipodi:open="true" />
-      <path
-         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.97172701;stroke-opacity:1"
-         d="m 146.10611,682.55476 c -14.75059,18.0753 -32.76516,33.21447 -51.976192,46.33833 -6.245302,4.47053 -13.139806,8.44942 -17.941231,14.57134 -1.833821,3.22185 -2.276372,7.7589 0.858967,10.37319 5.221507,4.9207 13.354632,5.9911 19.895962,3.23635 9.158064,-3.48812 15.483064,-11.42829 20.799874,-19.29903 11.86434,-17.09268 19.05934,-36.75288 28.36262,-55.22018 z"
-         id="path4252"
-         inkscape:connector-curvature="0" />
-      <path
-         id="path4254"
-         d="m 137.64601,688.80521 c -18.3654,14.55134 -33.05545,22.41552 -51.837589,29.18031 -5.668593,2.42556 -11.743691,5.50377 -14.377129,11.45566 -2.711352,5.63098 -1.715768,12.03975 1.394577,17.25363 0.03467,-2.14145 0.832954,-4.29728 2.577458,-5.96204 5.78876,-6.44655 13.328608,-10.67036 19.960735,-15.5653 l 0.01587,-0.0135 0.01587,-0.0107 c 15.348728,-10.54102 29.738478,-22.58634 42.250188,-36.33844 z"
-         style="fill:#aea99f;fill-opacity:1;stroke:none;stroke-width:0.97172701;stroke-opacity:1"
-         inkscape:connector-curvature="0"
-         sodipodi:nodetypes="cccccccccc" />
-    </g>
+    <path
+       sodipodi:open="true"
+       d="m 121.0456,758.99352 a 21.532141,21.532141 0 0 1 -0.002,0.0123"
+       sodipodi:end="0.18880423"
+       sodipodi:start="0.1882215"
+       sodipodi:ry="21.532141"
+       sodipodi:rx="21.532141"
+       sodipodi:cy="754.9646"
+       sodipodi:cx="99.893745"
+       sodipodi:type="arc"
+       id="path8185"
+       style="fill:#ffffff;fill-opacity:1"
+       inkscape:export-filename="C:\Users\dfernandez\Desktop\thymeleaf_new.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       sodipodi:open="true"
+       d="m 121.0456,759.32574 a 21.532141,21.532141 0 0 1 -0.002,0.0123"
+       sodipodi:end="0.18880423"
+       sodipodi:start="0.1882215"
+       sodipodi:ry="21.532141"
+       sodipodi:rx="21.532141"
+       sodipodi:cy="755.29681"
+       sodipodi:cx="99.893745"
+       sodipodi:type="arc"
+       id="path4242"
+       style="fill:#ffffff;fill-opacity:1"
+       inkscape:export-filename="C:\Users\dfernandez\Desktop\thymeleaf_new.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:112.82263947px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
+       x="173.37411"
+       y="759.00391"
+       id="text4244"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="C:\Users\dfernandez\Desktop\thymeleaf_new.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"><tspan
+         sodipodi:role="line"
+         id="tspan4246"
+         x="173.37411"
+         y="759.00391"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:119.32006073px;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu Italic';letter-spacing:-3.21761966px;fill:#ffffff;fill-opacity:1;"
+         dx="0"
+         rotate="0 0 0 0 0 0 0 0 0 0 0"
+         dy="0">thymeleaf </tspan></text>
+    <rect
+       ry="8.532815"
+       y="662.49268"
+       x="42.805134"
+       height="119.97438"
+       width="119.77252"
+       id="rect4248"
+       style="fill:#005f0f;fill-opacity:1;stroke:#ffffff;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:export-filename="C:\Users\dfernandez\Desktop\thymeleaf_new.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       sodipodi:open="true"
+       d="m 118.46019,755.34179 a 21.532141,21.532141 0 0 1 -0.002,0.0123"
+       sodipodi:end="0.18880423"
+       sodipodi:start="0.1882215"
+       sodipodi:ry="21.532141"
+       sodipodi:rx="21.532141"
+       sodipodi:cy="751.31287"
+       sodipodi:cx="97.308342"
+       sodipodi:type="arc"
+       id="path4250"
+       style="fill:#ffffff;fill-opacity:1"
+       inkscape:export-filename="C:\Users\dfernandez\Desktop\thymeleaf_new.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4252"
+       d="m 144.88622,678.85129 c -14.75059,18.0753 -32.76516,33.21447 -51.976193,46.33833 -6.245302,4.47053 -13.139806,8.44942 -17.941231,14.57134 -1.833821,3.22185 -2.276372,7.7589 0.858967,10.37319 5.221507,4.9207 13.354632,5.9911 19.895962,3.23635 9.158065,-3.48812 15.483065,-11.42829 20.799875,-19.29903 11.86434,-17.09268 19.05934,-36.75288 28.36262,-55.22018 z"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.97172701;stroke-opacity:1"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       sodipodi:nodetypes="cccccccccc"
+       inkscape:connector-curvature="0"
+       style="fill:#aea99f;fill-opacity:1;stroke:none;stroke-width:0.97172701;stroke-opacity:1"
+       d="m 136.42612,685.10174 c -18.3654,14.55134 -33.05545,22.41552 -51.83759,29.18031 -5.668593,2.42556 -11.743691,5.50377 -14.377129,11.45566 -2.711352,5.63098 -1.715768,12.03975 1.394577,17.25363 0.03467,-2.14145 0.832954,-4.29728 2.577458,-5.96204 5.78876,-6.44655 13.328608,-10.67036 19.960735,-15.5653 l 0.01587,-0.0135 0.01587,-0.0107 C 109.52464,710.89878 123.91439,698.85346 136.4261,685.10136 Z"
+       id="path4254"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
     <rect
        inkscape:export-ydpi="489.29678"
        inkscape:export-xdpi="489.29678"
