@@ -19,18 +19,19 @@
  */
 package thymeleafexamples.stsm.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Description;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import thymeleafexamples.stsm.web.conversion.DateFormatter;
 import thymeleafexamples.stsm.web.conversion.VarietyFormatter;
 
@@ -38,6 +39,9 @@ import thymeleafexamples.stsm.web.conversion.VarietyFormatter;
 @EnableWebMvc
 @ComponentScan("thymeleafexamples.stsm.business, thymeleafexamples.stsm.web")
 public class ServletConfig extends WebMvcConfigurerAdapter {
+
+    @Autowired
+    private ApplicationContext appContext;
 
     /**
      *  Message externalization/internationalization
@@ -55,8 +59,9 @@ public class ServletConfig extends WebMvcConfigurerAdapter {
     /* **************************************************************** */
 
     @Bean
-    public org.thymeleaf.templateresolver.ServletContextTemplateResolver templateResolver(){
-        ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver();
+    public SpringResourceTemplateResolver templateResolver(){
+        SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
+        templateResolver.setApplicationContext(this.appContext);
         templateResolver.setPrefix("/WEB-INF/templates/");
         templateResolver.setSuffix(".html");
         templateResolver.setTemplateMode("HTML5");
@@ -67,14 +72,14 @@ public class ServletConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public org.thymeleaf.spring4.SpringTemplateEngine templateEngine(){
+    public SpringTemplateEngine templateEngine(){
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(templateResolver());
         return templateEngine;
     }
 
     @Bean
-    public org.thymeleaf.spring4.view.ThymeleafViewResolver viewResolver(){
+    public ThymeleafViewResolver viewResolver(){
         ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
         viewResolver.setTemplateEngine(templateEngine());
         return viewResolver;
