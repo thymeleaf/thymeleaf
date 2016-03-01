@@ -37,6 +37,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
     private static final String ATTRIBUTE_EQUALS_OPERATOR = "=";
 
+    private static final String WHITE_SPACE_ONE = " ";
+
     private final String templateName;
     private final ITemplateHandler templateHandler;
     private final ITextRepository textRepository;
@@ -61,6 +63,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
     private final CloseElementTag closeElementTag;
 
     private ElementAttributes currentElementAttributes;
+    private boolean inCloseElement;
 
     
     public TemplateHandlerAdapterMarkupHandler(final String templateName,
@@ -108,7 +111,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.closeElementTag = new CloseElementTag(this.templateMode, this.elementDefinitions);
 
         this.currentElementAttributes = null; // Will change as soon as we start processing an open or standalone tag
-
+        this.inCloseElement = false;
 
     }
 
@@ -349,6 +352,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         this.closeElementTag.reset(this.textRepository.getText(buffer, nameOffset, nameLen), false, false, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         this.currentElementAttributes = null;
+        this.inCloseElement = true;
 
     }
 
@@ -362,6 +366,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         // Call the template handler method with the gathered info
         this.templateHandler.handleCloseElement(this.closeElementTag);
         this.currentElementAttributes = null;
+        this.inCloseElement = false;
 
     }
 
@@ -376,6 +381,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         this.closeElementTag.reset(this.textRepository.getText(buffer, nameOffset, nameLen), true, false, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         this.currentElementAttributes = null;
+        this.inCloseElement = true;
 
     }
 
@@ -389,6 +395,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         // Call the template handler method with the gathered info
         this.templateHandler.handleCloseElement(this.closeElementTag);
         this.currentElementAttributes = null;
+        this.inCloseElement = false;
 
     }
 
@@ -403,6 +410,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         this.closeElementTag.reset(this.textRepository.getText(buffer, nameOffset, nameLen), false, true, this.templateName, this.lineOffset + line, (line == 1 ? this.colOffset : 0) + col);
         this.currentElementAttributes = null;
+        this.inCloseElement = true;
 
     }
 
@@ -417,6 +425,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         // Call the template handler method with the gathered info
         this.templateHandler.handleCloseElement(this.closeElementTag);
         this.currentElementAttributes = null;
+        this.inCloseElement = false;
 
     }
 
@@ -482,12 +491,24 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        if (this.currentElementAttributes == null) {
+        if (this.currentElementAttributes == null && !this.inCloseElement) {
             throw new TemplateProcessingException(
                     "Cannot process: inner whitespace is not related to an open/standalone tag", this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
         }
 
-        final String elementWhiteSpace = this.textRepository.getText(buffer, offset, len);
+        final String elementWhiteSpace;
+        if (len == 1 && buffer[offset] == ' ') {
+            // Quicker than asking the text repository
+            elementWhiteSpace = WHITE_SPACE_ONE;
+        } else {
+            elementWhiteSpace = this.textRepository.getText(buffer, offset, len);
+        }
+
+        if (this.inCloseElement) {
+            // It's not an open/standalone tag where we have to add the white space, but (weirdly) for a close tag
+            this.closeElementTag.setTrailingWhiteSpace(elementWhiteSpace);
+            return;
+        }
 
         // We can safely cast here, because we know the specific implementation classes we are using
         // Also note line and col are discarded for white spaces

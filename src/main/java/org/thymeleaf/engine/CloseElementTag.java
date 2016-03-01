@@ -44,7 +44,7 @@ final class CloseElementTag
      * should allow reducing the number of instances of this class to the minimum.
      */
 
-
+    private String trailingWhiteSpace = null;
     private boolean unmatched;
 
 
@@ -66,6 +66,7 @@ final class CloseElementTag
             final boolean unmatched) {
         super(templateMode, elementDefinitions, elementName, synthetic);
         this.unmatched = unmatched;
+        this.trailingWhiteSpace = null; // No white space to be added -- white space here is a very special case
     }
 
 
@@ -87,10 +88,19 @@ final class CloseElementTag
                final String templateName, final int line, final int col) {
         resetElementTag(elementName, synthetic, templateName, line, col);
         this.unmatched = unmatched;
+        this.trailingWhiteSpace = null; // No white space to be added -- white space here is a very special case
     }
 
 
 
+    public String getTrailingWhiteSpace() {
+        return this.trailingWhiteSpace;
+    }
+
+
+    public void setTrailingWhiteSpace(final String trailingWhiteSpace) {
+        this.trailingWhiteSpace = trailingWhiteSpace;
+    }
 
 
 
@@ -110,11 +120,17 @@ final class CloseElementTag
         if (this.templateMode.isText()) {
             writer.write("[/");
             writer.write(this.elementName);
+            if (this.trailingWhiteSpace != null) {
+                writer.write(this.trailingWhiteSpace);
+            }
             writer.write("]");
             return;
         }
         writer.write("</");
         writer.write(this.elementName);
+        if (this.trailingWhiteSpace != null) {
+            writer.write(this.trailingWhiteSpace);
+        }
         writer.write('>');
     }
 
@@ -133,6 +149,7 @@ final class CloseElementTag
     void resetAsCloneOf(final CloseElementTag original) {
         super.resetAsCloneOfElementTag(original);
         this.unmatched = original.unmatched;
+        this.trailingWhiteSpace = original.trailingWhiteSpace;
     }
 
 
@@ -142,6 +159,7 @@ final class CloseElementTag
         // whether the tag is open or standalone...
         super.resetAsCloneOfElementTag(original);
         this.unmatched = false;
+        this.trailingWhiteSpace = null;
     }
 
 
