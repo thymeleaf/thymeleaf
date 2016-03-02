@@ -79,6 +79,14 @@ final class Text extends AbstractTemplateEvent implements IText, IEngineTemplate
 
 
 
+
+    public EventType getEventType() {
+        return EventType.TEXT;
+    }
+
+
+
+
     public String getText() {
 
         // Either we have a non-null text, or a non-null buffer specification (char[],offset,len)

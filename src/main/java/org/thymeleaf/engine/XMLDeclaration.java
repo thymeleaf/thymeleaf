@@ -84,6 +84,13 @@ final class XMLDeclaration extends AbstractTemplateEvent implements IXMLDeclarat
 
 
 
+    public EventType getEventType() {
+        return EventType.XML_DECLARATION;
+    }
+
+
+
+
     public String getKeyword() {
         return this.keyword;
     }

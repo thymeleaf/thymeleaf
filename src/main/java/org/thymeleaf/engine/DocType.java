@@ -92,6 +92,14 @@ final class DocType extends AbstractTemplateEvent implements IDocType, IEngineTe
 
 
 
+
+    public EventType getEventType() {
+        return EventType.DOC_TYPE;
+    }
+
+
+
+
     public String getKeyword() {
         return this.keyword;
     }

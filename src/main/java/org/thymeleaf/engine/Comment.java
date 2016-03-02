@@ -85,6 +85,11 @@ final class Comment extends AbstractTemplateEvent implements IComment, IEngineTe
 
 
 
+    public EventType getEventType() {
+        return EventType.COMMENT;
+    }
+
+
 
 
     public String getComment() {

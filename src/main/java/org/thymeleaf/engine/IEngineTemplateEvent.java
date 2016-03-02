@@ -29,6 +29,11 @@ import org.thymeleaf.model.ITemplateEvent;
  */
 interface IEngineTemplateEvent extends ITemplateEvent {
 
-    // Nothing to add. Just a marker interface grouping all internal event implementations
+    enum EventType {
+        TEXT, OPEN_ELEMENT, CLOSE_ELEMENT, STANDALONE_ELEMENT,
+        DOC_TYPE, COMMENT, CDATA_SECTION, XML_DECLARATION, PROCESSING_INSTRUCTION,
+        TEMPLATE_START, TEMPLATE_END }
+
+    EventType getEventType();
 
 }
