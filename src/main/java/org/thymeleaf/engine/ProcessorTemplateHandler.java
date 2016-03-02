@@ -513,7 +513,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(queueProcessable ? this : getNext(), true);
+        queue.process(queueProcessable ? this : getNext());
+        queue.reset();
 
 
         /*
@@ -612,7 +613,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events (BEFORE DELEGATING)
          */
-        queue.process(queueProcessable ? this : getNext(), true);
+        queue.process(queueProcessable ? this : getNext());
+        queue.reset();
 
 
         /*
@@ -732,7 +734,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(queueProcessable ? this : getNext(), true);
+        queue.process(queueProcessable ? this : getNext());
+        queue.reset();
 
 
         /*
@@ -844,7 +847,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(queueProcessable ? this : getNext(), true);
+        queue.process(queueProcessable ? this : getNext());
+        queue.reset();
 
 
         /*
@@ -955,7 +959,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(queueProcessable ? this : getNext(), true);
+        queue.process(queueProcessable ? this : getNext());
+        queue.reset();
 
 
         /*
@@ -1279,7 +1284,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                         queue.addModel(insertedModel);
                         // Model inserted BEFORE is never processable, so we will always use getNext() here
-                        queue.process(getNext(), true);
+                        queue.process(getNext());
+                        queue.reset();
 
                     } else {
                         // The current queue object is not empty :-( so in order to process this inserted model
@@ -1288,7 +1294,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                         final EngineEventQueue newQueue = new EngineEventQueue(this.configuration, this.templateMode, 5);
                         newQueue.addModel(insertedModel);
                         // Model inserted BEFORE is never processable, so we will always use getNext() here
-                        newQueue.process(getNext(), true);
+                        newQueue.process(getNext());
+                        newQueue.reset();
 
                     }
 
@@ -1482,7 +1489,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(queueProcessable ? this : getNext(), true);
+        queue.process(queueProcessable ? this : getNext());
+        queue.reset();
 
 
         /*
@@ -1758,7 +1766,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                         queue.addModel(insertedModel);
                         // Model inserted BEFORE is never processable, so we will always use getNext() here
-                        queue.process(getNext(), true);
+                        queue.process(getNext());
+                        queue.reset();
 
                     } else {
                         // The current queue object is not empty :-( so in order to process this inserted model
@@ -1767,7 +1776,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                         final EngineEventQueue newQueue = new EngineEventQueue(this.configuration, this.templateMode, 5);
                         newQueue.addModel(insertedModel);
                         // Model inserted BEFORE is never processable, so we will always use getNext() here
-                        newQueue.process(getNext(), true);
+                        newQueue.process(getNext());
+                        newQueue.reset();
 
                     }
 
@@ -1983,7 +1993,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(queueProcessable ? this : getNext(), true);
+        queue.process(queueProcessable ? this : getNext());
+        queue.reset();
 
 
         /*
@@ -2291,7 +2302,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(queueProcessable ? this : getNext(), true);
+        queue.process(queueProcessable ? this : getNext());
+        queue.reset();
 
 
         /*
@@ -2406,7 +2418,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(queueProcessable ? this : getNext(), true);
+        queue.process(queueProcessable ? this : getNext());
+        queue.reset();
 
 
         /*
@@ -2520,7 +2533,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(queueProcessable ? this : getNext(), true);
+        queue.process(queueProcessable ? this : getNext());
+        queue.reset();
 
 
         /*
@@ -2655,7 +2669,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             prepareIterationQueueForIteration(iterArtifacts, status.index, !iterHasNext);
 
             // Execute the queue itself
-            iterArtifacts.iterationQueue.process(this, false);
+            iterArtifacts.iterationQueue.process(this);
 
             this.engineContext.decreaseLevel();
 
@@ -2723,7 +2737,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * PERFORM THE EXECUTION
          */
 
-        elemArtifacts.modelQueue.process(this, false);
+        elemArtifacts.modelQueue.process(this);
 
         // Allow the reuse of the artifacts
         this.elementModelArtifactsIndex--;

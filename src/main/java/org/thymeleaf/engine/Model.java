@@ -175,9 +175,9 @@ final class Model implements IModel {
         final EngineEventQueue eventQueue = this.queue.cloneEventQueue(false, false);
 
         // Process the new, cloned queue
-        // NOTE It is VERY important that 'reset' is here set to FALSE, because we will be sharing the actual
+        // NOTE It is VERY important that 'eventQueue.reset()' is NOT called here, because we will be sharing the actual
         // event array with the original (cached) event queue!
-        eventQueue.process(templateHandler, false);
+        eventQueue.process(templateHandler);
 
     }
 

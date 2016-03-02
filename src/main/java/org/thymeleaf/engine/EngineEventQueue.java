@@ -295,20 +295,26 @@ final class EngineEventQueue {
 
 
 
+    int process(final ITemplateHandler handler) {
+        return process(handler, 0, Integer.MAX_VALUE);
+    }
 
-    void process(final ITemplateHandler handler, final boolean reset) {
 
-        if (handler == null || this.queueSize == 0) {
-            return;
+    int process(final ITemplateHandler handler, final int offset, final int len) {
+
+        if (handler == null || this.queueSize == 0 || offset >= this.queueSize) {
+            return 0;
         }
 
+        int processed = 0;
+
+        final int maxi = (len == Integer.MAX_VALUE? this.queueSize : Math.min(this.queueSize, offset + len));
+
         IEngineTemplateEvent event;
-        int n = this.queueSize;
-        int i = 0;
+        for (int i = offset; i < maxi; i++) {
 
-        while (n-- != 0) {
+            event = this.queue[i];
 
-            event = this.queue[i++];
             switch (event.getEventType()) {
 
                 case TEXT:
@@ -361,11 +367,11 @@ final class EngineEventQueue {
 
             }
 
+            processed++;
+
         }
 
-        if (reset) {
-            this.queueSize = 0;
-        }
+        return processed;
 
     }
 
