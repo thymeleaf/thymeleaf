@@ -16,10 +16,10 @@ The are two versions of the Thymeleaf logo:
    2. Without the "thymeleaf" text
 
 The version of the logo with the "thymeleaf" text can be displayed on white,
-green or dark (gray) background.
+green, grey or dark (grey) background.
 
-WHITE is the preferred background, and that should be considered the default
-version of the logo.
+WHITE and GREY are the preferred backgrounds, and those should be considered 
+the default versions of the logo.
 
 -------------------------------------------------------------------------------
 
@@ -29,8 +29,9 @@ Specifications:
   * Colors:
     * White:      rgb(255,255,255) #ffffff
     * Green:      rgb(0,95,15)     #005f0f
-    * Light Gray: rgb(174,169,159) #aea99f
-    * Dark Gray:  rgb(51,51,51)    #333333
+    * Leaf Grey:  rgb(174,169,159) #aea99f
+    * Light Grey: rgb(236,236,236) #ececec
+    * Dark Grey:  rgb(51,51,51)    #333333
   * SVG creator software and format: Inkscape - https://inkscape.org/
 
 -------------------------------------------------------------------------------
