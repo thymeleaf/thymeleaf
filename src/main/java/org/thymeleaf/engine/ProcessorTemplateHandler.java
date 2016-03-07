@@ -427,8 +427,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * FAIL FAST in case this structure has no associated processors.
          */
         if (!this.hasTemplateBoundariesProcessors) {
-            super.handleTemplateStart(itemplateStart);
             increaseHandlerExecLevel(); // Handling template start will always increase the handler exec level
+            super.handleTemplateStart(itemplateStart);
             return;
         }
 
@@ -1023,7 +1023,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
          */
         if (!this.suspended && !istandaloneElementTag.hasAssociatedProcessors()) {
+            if (this.engineContext != null) {
+                this.engineContext.increaseLevel();
+            }
             super.handleStandaloneElement(istandaloneElementTag);
+            if (this.engineContext != null) {
+                this.engineContext.decreaseLevel();
+            }
             return;
         }
 
@@ -1565,11 +1571,11 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
          */
         if (!this.suspended && !iopenElementTag.hasAssociatedProcessors()) {
-            super.handleOpenElement(iopenElementTag);
-            increaseModelLevel();
             if (this.engineContext != null) {
                 this.engineContext.increaseLevel();
             }
+            super.handleOpenElement(iopenElementTag);
+            increaseModelLevel();
             return;
         }
 
