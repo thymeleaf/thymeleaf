@@ -105,6 +105,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private static final IXMLDeclarationProcessor[] EMPTY_XML_DECLARATION_PROCESSORS = new IXMLDeclarationProcessor[0];
 
 
+    private static final QueueAndLevelPendingLoad PENDING_LOAD_QUEUE_AND_LEVEL = new QueueAndLevelPendingLoad();
+
     // Structure handlers are reusable objects that will be used by processors in order to instruct the engine to
     // do things with the processed structures themselves (things that cannot be directly done from the processors like
     // removing structures or iterating elements)
@@ -159,6 +161,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     // These structures will be indexed by the handlerExecLevel, which allows structures to be used across different levels of nesting
     private EngineEventQueue[] eventQueues = null;
+    private boolean[] eventQueuesProcessable = null;
 
     // Putting a text node to the queue for immediate execution is so common we will have a common buffer object for that
     private Text textBuffer = null;
@@ -355,6 +358,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.eventQueues = new EngineEventQueue[3];
             Arrays.fill(this.eventQueues, null);
 
+            this.eventQueuesProcessable = new boolean[3];
+            Arrays.fill(this.eventQueuesProcessable, false);
+
         }
 
         if (this.eventQueues.length == this.handlerExecLevel) {
@@ -365,6 +371,11 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             System.arraycopy(this.eventQueues, 0, newEventQueues, 0, this.handlerExecLevel);
             this.eventQueues = newEventQueues;
 
+            final boolean[] newEventQueuesProcessable = new boolean[this.handlerExecLevel + 3];
+            Arrays.fill(newEventQueuesProcessable, false);
+            System.arraycopy(this.eventQueuesProcessable, 0, newEventQueuesProcessable, 0, this.handlerExecLevel);
+            this.eventQueuesProcessable = newEventQueuesProcessable;
+
         }
 
         if (this.eventQueues[this.handlerExecLevel] == null) {
@@ -372,6 +383,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         } else {
             this.eventQueues[this.handlerExecLevel].reset();
         }
+        this.eventQueuesProcessable[this.handlerExecLevel] = false;
 
     }
 
@@ -434,16 +446,16 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
-         */
-        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
-
-
-        /*
          * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
          */
         increaseHandlerExecLevel();
         final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        this.eventQueuesProcessable[this.handlerExecLevel] = false; // When elements are added to a queue, we need to know whether it is processable or not
 
 
         /*
@@ -486,7 +498,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             if (this.templateStructureHandler.insertText) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.templateStructureHandler.insertTextProcessable;
+                this.eventQueuesProcessable[this.handlerExecLevel] = this.templateStructureHandler.insertTextProcessable;
 
                 this.textBuffer.setText(this.templateStructureHandler.insertTextValue);
                 queue.build(this.textBuffer);
@@ -494,7 +506,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             } else if (this.templateStructureHandler.insertModel) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.templateStructureHandler.insertModelProcessable;
+                this.eventQueuesProcessable[this.handlerExecLevel] = this.templateStructureHandler.insertModelProcessable;
 
                 // Model will be automatically cloned if mutable
                 queue.addModel(this.templateStructureHandler.insertModelValue);
@@ -513,7 +525,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(queueProcessable ? this : getNext());
+        queue.process(this.eventQueuesProcessable[this.handlerExecLevel] ? this : getNext());
         queue.reset();
 
 
@@ -540,16 +552,16 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
-         */
-        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
-
-
-        /*
          * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
          */
         increaseHandlerExecLevel();
         final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        this.eventQueuesProcessable[this.handlerExecLevel] = false; // When elements are added to a queue, we need to know whether it is processable or not
 
 
         /*
@@ -592,7 +604,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             if (this.templateStructureHandler.insertText) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.templateStructureHandler.insertTextProcessable;
+                this.eventQueuesProcessable[this.handlerExecLevel] = this.templateStructureHandler.insertTextProcessable;
 
                 this.textBuffer.setText(this.templateStructureHandler.insertTextValue);
                 queue.build(this.textBuffer);
@@ -600,7 +612,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             } else if (this.templateStructureHandler.insertModel) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.templateStructureHandler.insertModelProcessable;
+                this.eventQueuesProcessable[this.handlerExecLevel] = this.templateStructureHandler.insertModelProcessable;
 
                 // Model will be automatically cloned if mutable
                 queue.addModel(this.templateStructureHandler.insertModelValue);
@@ -613,7 +625,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events (BEFORE DELEGATING)
          */
-        queue.process(queueProcessable ? this : getNext());
+        queue.process(this.eventQueuesProcessable[this.handlerExecLevel] ? this : getNext());
         queue.reset();
 
 
@@ -679,17 +691,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
-         */
-        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
-        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
-
-
-        /*
          * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
          */
         increaseHandlerExecLevel();
         final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
+        this.eventQueuesProcessable[this.handlerExecLevel] = false; // When elements are added to a queue, we need to know whether it is processable or not
 
 
         /*
@@ -705,7 +717,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             if (this.textStructureHandler.replaceWithModel) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.textStructureHandler.replaceWithModelProcessable;
+                this.eventQueuesProcessable[this.handlerExecLevel] = this.textStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
                 queue.addModel(this.textStructureHandler.replaceWithModelValue);
@@ -730,18 +742,19 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             super.handleText(itext);
         }
 
-
-        /*
-         * PROCESS THE QUEUE, launching all the queued events
-         */
-        queue.process(queueProcessable ? this : getNext());
-        queue.reset();
-
-
-        /*
-         * DECREASE THE EXEC LEVEL, so that the structures can be reused
-         */
-        decreaseHandlerExecLevel();
+        PENDING_LOAD_QUEUE_AND_LEVEL.execute(this);
+//
+//        /*
+//         * PROCESS THE QUEUE, launching all the queued events
+//         */
+//        queue.process(this.eventQueuesProcessable[this.handlerExecLevel] ? this : getNext());
+//        queue.reset();
+//
+//
+//        /*
+//         * DECREASE THE EXEC LEVEL, so that the structures can be reused
+//         */
+//        decreaseHandlerExecLevel();
 
     }
 
@@ -792,17 +805,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
-         */
-        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
-        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
-
-
-        /*
          * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
          */
         increaseHandlerExecLevel();
         final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
+        this.eventQueuesProcessable[this.handlerExecLevel] = false; // When elements are added to a queue, we need to know whether it is processable or not
 
 
         /*
@@ -818,7 +831,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             if (this.commentStructureHandler.replaceWithModel) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.commentStructureHandler.replaceWithModelProcessable;
+                this.eventQueuesProcessable[this.handlerExecLevel] = this.commentStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
                 queue.addModel(this.commentStructureHandler.replaceWithModelValue);
@@ -847,7 +860,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(queueProcessable ? this : getNext());
+        queue.process(this.eventQueuesProcessable[this.handlerExecLevel] ? this : getNext());
         queue.reset();
 
 
@@ -904,17 +917,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
-         */
-        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
-        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
-
-
-        /*
          * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
          */
         increaseHandlerExecLevel();
         final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
+        this.eventQueuesProcessable[this.handlerExecLevel] = false; // When elements are added to a queue, we need to know whether it is processable or not
 
 
         /*
@@ -930,7 +943,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             if (this.cdataSectionStructureHandler.replaceWithModel) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.cdataSectionStructureHandler.replaceWithModelProcessable;
+                this.eventQueuesProcessable[this.handlerExecLevel] = this.cdataSectionStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
                 queue.addModel(this.cdataSectionStructureHandler.replaceWithModelValue);
@@ -959,7 +972,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(queueProcessable ? this : getNext());
+        queue.process(this.eventQueuesProcessable[this.handlerExecLevel] ? this : getNext());
         queue.reset();
 
 
@@ -1042,17 +1055,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
-         */
-        boolean tagsRemoved = false; // If the tag is removed, we have to immediately stop the execution of processors
-        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
-
-
-        /*
          * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
          */
         increaseHandlerExecLevel();
         final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean tagsRemoved = false; // If the tag is removed, we have to immediately stop the execution of processors
+        this.eventQueuesProcessable[this.handlerExecLevel] = false; // When elements are added to a queue, we need to know whether it is processable or not
 
 
         /*
@@ -1081,7 +1094,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
              * RETRIEVE THE QUEUE TO BE USED, potentially already containing some nodes. And also the flags.
              */
             queue.resetAsCloneOf(this.suspensionSpec.suspendedQueue, false);
-            queueProcessable = this.suspensionSpec.queueProcessable;
+            this.eventQueuesProcessable[this.handlerExecLevel] = this.suspensionSpec.queueProcessable;
             this.elementProcessorIterator.resetAsCloneOf(this.suspensionSpec.suspendedIterator);
             this.suspended = false;
             this.suspensionSpec.reset();
@@ -1161,7 +1174,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.suspended = true;
                     this.suspensionSpec.allowedElementCountInBody = Integer.MAX_VALUE;
                     this.suspensionSpec.allowedNonElementStructuresInBody = true;
-                    this.suspensionSpec.queueProcessable = queueProcessable;
+                    this.suspensionSpec.queueProcessable = this.eventQueuesProcessable[this.handlerExecLevel];
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
@@ -1309,7 +1322,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    queueProcessable = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
+                    this.eventQueuesProcessable[this.handlerExecLevel] = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
 
                     // Model will be automatically cloned if mutable
                     queue.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
@@ -1319,7 +1332,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 } else if (this.elementTagStructureHandler.replaceWithText) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementTagStructureHandler.replaceWithTextProcessable;
+                    this.eventQueuesProcessable[this.handlerExecLevel] = this.elementTagStructureHandler.replaceWithTextProcessable;
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
@@ -1331,7 +1344,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 } else if (this.elementTagStructureHandler.replaceWithModel) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
+                    this.eventQueuesProcessable[this.handlerExecLevel] = this.elementTagStructureHandler.replaceWithModelProcessable;
 
                     // Model will be automatically cloned if mutable
                     queue.addModel(this.elementTagStructureHandler.replaceWithModelValue);
@@ -1467,7 +1480,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                  */
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = true; // We actually NEED TO process this queue
+                this.eventQueuesProcessable[this.handlerExecLevel] = true; // We actually NEED TO process this queue
 
                 // Model will be automatically cloned if mutable
                 queue.addModel(this.modelBuffer);
@@ -1495,7 +1508,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(queueProcessable ? this : getNext());
+        queue.process(this.eventQueuesProcessable[this.handlerExecLevel] ? this : getNext());
         queue.reset();
 
 
@@ -1588,19 +1601,19 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
-         */
-        boolean tagsRemoved = false; // If the tag is removed, we have to immediately stop the execution of processors
-        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
-        boolean allowedNonElementStructuresInBody = true; // Needed to discard the body, or allow only a certain amount of children to execute
-        int allowedElementCountInBody = Integer.MAX_VALUE; // Needed to discard the body, or allow only a certain amount of children to execute
-
-
-        /*
          * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
          */
         increaseHandlerExecLevel();
         final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean tagsRemoved = false; // If the tag is removed, we have to immediately stop the execution of processors
+        this.eventQueuesProcessable[this.handlerExecLevel] = false; // When elements are added to a queue, we need to know whether it is processable or not
+        boolean allowedNonElementStructuresInBody = true; // Needed to discard the body, or allow only a certain amount of children to execute
+        int allowedElementCountInBody = Integer.MAX_VALUE; // Needed to discard the body, or allow only a certain amount of children to execute
 
 
         /*
@@ -1629,7 +1642,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
              * RETRIEVE THE QUEUE TO BE USED, potentially already containing some nodes. And also the flags.
              */
             queue.resetAsCloneOf(this.suspensionSpec.suspendedQueue, false);
-            queueProcessable = this.suspensionSpec.queueProcessable;
+            this.eventQueuesProcessable[this.handlerExecLevel] = this.suspensionSpec.queueProcessable;
             allowedElementCountInBody = this.suspensionSpec.allowedElementCountInBody;
             allowedNonElementStructuresInBody = this.suspensionSpec.allowedNonElementStructuresInBody;
             this.elementProcessorIterator.resetAsCloneOf(this.suspensionSpec.suspendedIterator);
@@ -1720,7 +1733,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.suspended = true;
                     this.suspensionSpec.allowedElementCountInBody = allowedElementCountInBody;
                     this.suspensionSpec.allowedNonElementStructuresInBody = allowedNonElementStructuresInBody;
-                    this.suspensionSpec.queueProcessable = queueProcessable;
+                    this.suspensionSpec.queueProcessable = this.eventQueuesProcessable[this.handlerExecLevel];
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue, false);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
@@ -1741,7 +1754,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 } else if (this.elementTagStructureHandler.setBodyText) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
+                    this.eventQueuesProcessable[this.handlerExecLevel] = this.elementTagStructureHandler.setBodyTextProcessable;
 
                     // For now we will not be cloning the buffer and just hoping it will be executed as is. This is
                     // the most common case (th:text) and this will save us a good number of Text nodes. But note that
@@ -1756,7 +1769,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 } else if (this.elementTagStructureHandler.setBodyModel) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
+                    this.eventQueuesProcessable[this.handlerExecLevel] = this.elementTagStructureHandler.setBodyModelProcessable;
 
                     // Model will be automatically cloned if mutable
                     queue.addModel(this.elementTagStructureHandler.setBodyModelValue);
@@ -1791,7 +1804,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    queueProcessable = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
+                    this.eventQueuesProcessable[this.handlerExecLevel] = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
 
                     // Model will be automatically cloned if mutable
                     queue.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
@@ -1801,7 +1814,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 } else if (this.elementTagStructureHandler.replaceWithText) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementTagStructureHandler.replaceWithTextProcessable;
+                    this.eventQueuesProcessable[this.handlerExecLevel] = this.elementTagStructureHandler.replaceWithTextProcessable;
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
@@ -1815,7 +1828,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 } else if (this.elementTagStructureHandler.replaceWithModel) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
+                    this.eventQueuesProcessable[this.handlerExecLevel] = this.elementTagStructureHandler.replaceWithModelProcessable;
 
                     // Model will be automatically cloned if mutable
                     queue.addModel(this.elementTagStructureHandler.replaceWithModelValue);
@@ -1963,7 +1976,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                  */
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = true; // We actually NEED TO process this queue
+                this.eventQueuesProcessable[this.handlerExecLevel] = true; // We actually NEED TO process this queue
 
                 // Model will be automatically cloned if mutable
                 queue.addModel(this.modelBuffer);
@@ -1999,7 +2012,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(queueProcessable ? this : getNext());
+        queue.process(this.eventQueuesProcessable[this.handlerExecLevel] ? this : getNext());
         queue.reset();
 
 
@@ -2253,17 +2266,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
-         */
-        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
-        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
-
-
-        /*
          * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
          */
         increaseHandlerExecLevel();
         final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
+        this.eventQueuesProcessable[this.handlerExecLevel] = false; // When elements are added to a queue, we need to know whether it is processable or not
 
 
         /*
@@ -2279,7 +2292,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             if (this.docTypeStructureHandler.replaceWithModel) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.docTypeStructureHandler.replaceWithModelProcessable;
+                this.eventQueuesProcessable[this.handlerExecLevel] = this.docTypeStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
                 queue.addModel(this.docTypeStructureHandler.replaceWithModelValue);
@@ -2308,7 +2321,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(queueProcessable ? this : getNext());
+        queue.process(this.eventQueuesProcessable[this.handlerExecLevel] ? this : getNext());
         queue.reset();
 
 
@@ -2369,17 +2382,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
-         */
-        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
-        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
-
-
-        /*
          * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
          */
         increaseHandlerExecLevel();
         final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
+        this.eventQueuesProcessable[this.handlerExecLevel] = false; // When elements are added to a queue, we need to know whether it is processable or not
 
 
         /*
@@ -2395,7 +2408,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             if (this.xmlDeclarationStructureHandler.replaceWithModel) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.xmlDeclarationStructureHandler.replaceWithModelProcessable;
+                this.eventQueuesProcessable[this.handlerExecLevel] = this.xmlDeclarationStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
                 queue.addModel(this.xmlDeclarationStructureHandler.replaceWithModelValue);
@@ -2424,7 +2437,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(queueProcessable ? this : getNext());
+        queue.process(this.eventQueuesProcessable[this.handlerExecLevel] ? this : getNext());
         queue.reset();
 
 
@@ -2484,17 +2497,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
-         */
-        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
-        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
-
-
-        /*
          * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
          */
         increaseHandlerExecLevel();
         final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
+        this.eventQueuesProcessable[this.handlerExecLevel] = false; // When elements are added to a queue, we need to know whether it is processable or not
 
 
         /*
@@ -2510,7 +2523,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             if (this.processingInstructionStructureHandler.replaceWithModel) {
 
                 queue.reset(); // Remove any previous results on the queue
-                queueProcessable = this.processingInstructionStructureHandler.replaceWithModelProcessable;
+                this.eventQueuesProcessable[this.handlerExecLevel] = this.processingInstructionStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
                 queue.addModel(this.processingInstructionStructureHandler.replaceWithModelValue);
@@ -2539,7 +2552,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(queueProcessable ? this : getNext());
+        queue.process(this.eventQueuesProcessable[this.handlerExecLevel] ? this : getNext());
         queue.reset();
 
 
@@ -3168,5 +3181,31 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
     }
+
+
+
+
+    private static interface IPendingLoad {
+
+        void execute(final ProcessorTemplateHandler handler);
+
+    }
+
+
+    private static final class QueueAndLevelPendingLoad implements IPendingLoad {
+
+        @Override
+        public void execute(final ProcessorTemplateHandler handler) {
+
+            final EngineEventQueue queue = handler.eventQueues[handler.handlerExecLevel];
+            queue.process(handler.eventQueuesProcessable[handler.handlerExecLevel] ? handler : handler.getNext());
+            queue.reset();
+
+            handler.decreaseHandlerExecLevel();
+
+        }
+
+    }
+
 
 }
