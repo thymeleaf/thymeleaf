@@ -585,6 +585,21 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
+         * LAST CHECKS. If we have not returned our indexes to -1, something has gone wrong during processing
+         */
+        if (this.execLevel >= 0) {
+            throw new TemplateProcessingException(
+                    "Bad markup or template processing sequence. Execution level is >= 0 (" + this.execLevel + ") " +
+                    "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
+        }
+        if (this.modelLevel >= 0) {
+            throw new TemplateProcessingException(
+                    "Bad markup or template processing sequence. Model level is >= 0 (" + this.modelLevel + ") " +
+                    "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
+        }
+
+
+        /*
          * PROCESS THE REST OF THE HANDLER CHAIN.
          */
         super.handleTemplateEnd(itemplateEnd);
