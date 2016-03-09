@@ -138,11 +138,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private boolean hasXMLDeclarationProcessors = false;
 
 
-    // We will have just one (reusable) instance of the element processor iterator, which will take into account the
-    // fact that the processors applicable to an element might change during the execution of other processors, because
-    // the applicability of an element processor is based on its attributes, and these might change in runtime
-    private final ElementProcessorIterator elementProcessorIterator = new ElementProcessorIterator();
-
     // These arrays will be initialized with all the registered processors for the different kind of non-element
     // processors. This is done so because non-element processors will not change during the execution of the engine
     // (whereas element processors can). And they are kept in the form of an array because they will be faster to
@@ -174,10 +169,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     // In order to execute IElementModelProcessor processors we will use a buffer so that we don't create so many Model objects
     private Model modelBuffer = null;
 
-    // Used for suspending the execution of a tag and replacing it for a different event (perhaps after building a
-    // queue) or iterating the suspended event and its body.
-    private boolean suspended = false;
-    private SuspensionSpec suspensionSpec; // Will be initialized once we have the processing context
+    // Used for gathering and keeping account of model events when
     private boolean gatheringIteration = false;
     private IterationSpec iterationSpec = null;
     private boolean gatheringElementModel = false;
@@ -274,7 +266,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         // Specs containing all the info required for suspending the execution of a processor in order to e.g. change
         // handling method (standalone -> open) or start caching an iteration
-        this.suspensionSpec = new SuspensionSpec(this.templateMode, this.configuration);
         this.iterationSpec = new IterationSpec(this.templateMode, this.configuration);
         this.elementModelSpec = new ElementModelSpec(this.templateMode, this.configuration);
 
@@ -969,10 +960,19 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
+         * COMPUTE WHETHER WE SHOULD CONTINUE WHERE WE SUSPENDED THE EXECUTION OF A HANDLER (and re-init flag)
+         */
+        final boolean wasSuspended = this.execLevel >= 0 && this.execLevelData[this.execLevel].suspended;
+        if (wasSuspended) {
+            this.execLevelData[this.execLevel].suspended = false;
+        }
+
+
+        /*
          * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
          * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
          */
-        if (!this.suspended && !istandaloneElementTag.hasAssociatedProcessors()) {
+        if (!wasSuspended && !istandaloneElementTag.hasAssociatedProcessors()) {
             if (this.engineContext != null) {
                 this.engineContext.increaseLevel();
             }
@@ -993,8 +993,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         /*
          * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
+         * Note this is not done if execution was suspended, as in that case what we want to do is actually continue
+         * were we left.
          */
-        increaseExecLevel();
+        if (!wasSuspended) {
+            increaseExecLevel();
+        }
         final ExecLevelData execLevelData = this.execLevelData[this.execLevel];
 
 
@@ -1008,37 +1012,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * INITIALIZE THE EXECUTION LEVEL depending on whether we have a suspended a previous execution or not
-         */
-        if (!this.suspended) {
-
-            /*
-             * INITIALIZE THE PROCESSOR ITERATOR that will be used for executing all the processors
-             */
-            this.elementProcessorIterator.reset();
-
-        } else {
-            // Execution of a tag was suspended, we need to recover the data
-
-            /*
-             * RETRIEVE THE QUEUE TO BE USED, potentially already containing some nodes. And also the flags.
-             */
-            this.execLevelData[this.execLevel].queue.resetAsCloneOf(this.suspensionSpec.suspendedQueue, false);
-            this.execLevelData[this.execLevel].queueProcessable = this.suspensionSpec.queueProcessable;
-            this.elementProcessorIterator.resetAsCloneOf(this.suspensionSpec.suspendedIterator);
-            this.suspended = false;
-            this.suspensionSpec.reset();
-
-            // Note we will not increase the VariablesMap level here, as are keeping the level from the suspended execution
-
-        }
-
-
-        /*
          * EXECUTE PROCESSORS
          */
         IElementProcessor processor;
-        while (!execLevelData.discardEvent && (processor = this.elementProcessorIterator.next(standaloneElementTag)) != null) {
+        while (!execLevelData.discardEvent && (processor = execLevelData.processorIterator.next(standaloneElementTag)) != null) {
 
             this.elementTagStructureHandler.reset();
             this.elementModelStructureHandler.reset();
@@ -1100,19 +1077,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                         }
                     }
 
-                    // Suspend the queue - execution will be restarted by the handleOpenElement event
-                    this.suspended = true;
-                    this.suspensionSpec.bodyBehaviour = BodyBehaviour.PROCESS;
-                    this.suspensionSpec.queueProcessable = execLevelData.queueProcessable;
-                    this.suspensionSpec.suspendedQueue.resetAsCloneOf(execLevelData.queue, false);
-                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
+                    // Suspend execution - execution will be restarted by the handleOpenElement event at the
+                    // processIteration() call performed after gathering all the iterated markup
+                    execLevelData.suspended = true;
 
                     // Add this standalone tag to the iteration queue
                     this.iterationSpec.iterationQueue.build(standaloneElementTag.cloneEvent());
 
-                    // Decrease the handler execution level (all important bits are already in suspensionSpec)
-                    decreaseExecLevel();
-
+                    // Note we DO NOT DECREASE THE EXEC LEVEL -- we need processIteration() to read our data
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Process the queue by iterating it
@@ -1142,17 +1114,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     final Text text = new Text(this.configuration.getTextRepository());
                     text.setText(this.elementTagStructureHandler.setBodyTextValue);
                     execLevelData.queue.build(text);
+                    execLevelData.queueProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
 
-                    // Suspend the queue - execution will be restarted by the handleOpenElement event
-                    this.suspended = true;
-                    this.suspensionSpec.bodyBehaviour = BodyBehaviour.PROCESS;
-                    this.suspensionSpec.queueProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
-                    this.suspensionSpec.suspendedQueue.resetAsCloneOf(execLevelData.queue, false);
-                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
+                    // Suspend execution - execution will be restarted by the handleOpenElement event
+                    execLevelData.suspended = true;
 
-                    // Decrease the handler execution level (all important bits are already in suspensionSpec)
-                    decreaseExecLevel();
-
+                    // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be the responsibility of handleOpenElement
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Fire the now-equivalent events. Note the handleOpenElement event will take care of the suspended queue
@@ -1182,17 +1149,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Prepare the queue (that we will suspend)
                     // Model will be automatically cloned if mutable
                     execLevelData.queue.addModel(this.elementTagStructureHandler.setBodyModelValue);
+                    execLevelData.queueProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
 
-                    // Suspend the queue - execution will be restarted by the handleOpenElement event
-                    this.suspended = true;
-                    this.suspensionSpec.bodyBehaviour = BodyBehaviour.PROCESS;
-                    this.suspensionSpec.queueProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
-                    this.suspensionSpec.suspendedQueue.resetAsCloneOf(execLevelData.queue, false);
-                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
+                    // Suspend execution - execution will be restarted by the handleOpenElement event
+                    execLevelData.suspended = true;
 
-                    // Decrease the handler execution level (all important bits are already in suspensionSpec)
-                    decreaseExecLevel();
-
+                    // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be the responsibility of handleOpenElement
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Fire the now-equivalent events. Note the handleOpenElement event will take care of the suspended queue
@@ -1291,7 +1253,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                  * if this is the first or the second time we execute this processor.
                  */
 
-                if (!this.elementProcessorIterator.lastWasRepeated()){
+                if (!execLevelData.processorIterator.lastWasRepeated()){
 
                     if (execLevelData.queue.size() > 0) {
                         throw new TemplateProcessingException(
@@ -1308,19 +1270,16 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.elementModelSpec.modelQueue.reset();
 
                     // Set the processor to be executed again, because this time we will just set the "model gathering" mechanism
-                    this.elementProcessorIterator.setLastToBeRepeated(standaloneElementTag);
+                    execLevelData.processorIterator.setLastToBeRepeated(standaloneElementTag);
 
                     // Suspend the queue - execution will be restarted by the execution of this event again once model is gathered
                     // Note there is no queue to be suspended --we've made sure of that before, so we are only suspending the iterator
-                    this.suspended = true;
-                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
+                    execLevelData.suspended = true;
 
                     // Add this standalone tag to the element model queue
                     this.elementModelSpec.modelQueue.build(standaloneElementTag.cloneEvent());
 
-                    // Decrease the handler execution level (all important bits are already in suspensionSpec)
-                    decreaseExecLevel();
-
+                    // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be done when we re-execute this after gathering model
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Process the queue by iterating it
@@ -1494,10 +1453,19 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
+         * COMPUTE WHETHER WE SHOULD CONTINUE WHERE WE SUSPENDED THE EXECUTION OF A HANDLER (and re-init flag)
+         */
+        final boolean wasSuspended = this.execLevel >= 0 && this.execLevelData[this.execLevel].suspended;
+        if (wasSuspended) {
+            this.execLevelData[this.execLevel].suspended = false;
+        }
+
+
+        /*
          * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
          * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
          */
-        if (!this.suspended && !iopenElementTag.hasAssociatedProcessors()) {
+        if (!wasSuspended && !iopenElementTag.hasAssociatedProcessors()) {
             if (this.engineContext != null) {
                 this.engineContext.increaseLevel();
             }
@@ -1516,15 +1484,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         /*
          * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
+         * Note this is not done if execution was suspended, as in that case what we want to do is actually continue
+         * were we left.
          */
-        increaseExecLevel();
+        if (!wasSuspended) {
+            increaseExecLevel();
+        }
         final ExecLevelData execLevelData = this.execLevelData[this.execLevel];
-
-
-        /*
-         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
-         */
-        BodyBehaviour bodyBehaviour = BodyBehaviour.PROCESS; // TODO this should go to the execLevelData
 
 
         /*
@@ -1537,38 +1503,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * INITIALIZE THE EXECUTION LEVEL depending on whether we have a suspended a previous execution or not
-         */
-        if (!this.suspended) {
-
-            /*
-             * INITIALIZE THE PROCESSOR ITERATOR that will be used for executing all the processors
-             */
-            this.elementProcessorIterator.reset();
-
-        } else {
-            // Execution of a tag was suspended, we need to recover the data
-
-            /*
-             * RETRIEVE THE QUEUE TO BE USED, potentially already containing some nodes. And also the flags.
-             */
-            execLevelData.queue.resetAsCloneOf(this.suspensionSpec.suspendedQueue, false);
-            execLevelData.queueProcessable = this.suspensionSpec.queueProcessable;
-            bodyBehaviour = this.suspensionSpec.bodyBehaviour;
-            this.elementProcessorIterator.resetAsCloneOf(this.suspensionSpec.suspendedIterator);
-            this.suspended = false;
-            this.suspensionSpec.reset();
-
-            // Note we will not increase the VariablesMap level here, as are keeping the level from the suspended execution
-
-        }
-
-
-        /*
          * EXECUTE PROCESSORS
          */
         IElementProcessor processor;
-        while (!execLevelData.discardEvent && (processor = this.elementProcessorIterator.next(openElementTag)) != null) {
+        while (!execLevelData.discardEvent && (processor = execLevelData.processorIterator.next(openElementTag)) != null) {
 
             this.elementTagStructureHandler.reset();
             this.elementModelStructureHandler.reset();
@@ -1639,23 +1577,19 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                         execLevelData.queue.build(this.textBuffer.cloneEvent());
                     }
 
-                    // Suspend the queue - execution will be restarted by the handleOpenElement event
-                    this.suspended = true;
-                    this.suspensionSpec.bodyBehaviour = bodyBehaviour;
-                    this.suspensionSpec.queueProcessable = execLevelData.queueProcessable;
-                    this.suspensionSpec.suspendedQueue.resetAsCloneOf(execLevelData.queue, false);
-                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
+                    // Suspend execution - execution will be restarted by the handleOpenElement event at the
+                    // processIteration() call performed after gathering all the iterated markup
+                    execLevelData.suspended = true;
 
                     // Add the tag itself to the iteration queue
                     this.iterationSpec.iterationQueue.build(openElementTag.cloneEvent());
 
-                    // Increase model level, as normal with open tags
+                    // Increase model level, as normal with open tags (we still need to traverse and gather
+                    // all events until the close one before processing iteration itself)
                     increaseModelLevel();
 
-                    // Decrease the handler execution level (all important bits are already in suspensionSpec)
-                    decreaseExecLevel();
-
-                    // Note we DO NOT DECREASE THE CONTEXT LEVEL -- that's the responsibility of the close event
+                    // Note we DO NOT DECREASE THE EXEC LEVEL -- we need processIteration() to read our data
+                    // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Nothing else to be done by this handler... let's just queue the rest of the events to be iterated
                     return;
@@ -1672,7 +1606,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.textBuffer.setText(this.elementTagStructureHandler.setBodyTextValue);
                     execLevelData.queue.build(this.textBuffer);
 
-                    bodyBehaviour = BodyBehaviour.SKIP_ALL;
+                    execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
 
                 } else if (this.elementTagStructureHandler.setBodyModel) {
 
@@ -1682,7 +1616,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Model will be automatically cloned if mutable
                     execLevelData.queue.addModel(this.elementTagStructureHandler.setBodyModelValue);
 
-                    bodyBehaviour = BodyBehaviour.SKIP_ALL;
+                    execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
 
                 } else if (this.elementTagStructureHandler.insertBeforeModel) {
 
@@ -1729,7 +1663,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     execLevelData.queue.build(this.textBuffer);
 
                     execLevelData.discardEvent = true;
-                    bodyBehaviour = BodyBehaviour.SKIP_ALL;
+                    execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
 
                 } else if (this.elementTagStructureHandler.replaceWithModel) {
 
@@ -1740,14 +1674,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     execLevelData.queue.addModel(this.elementTagStructureHandler.replaceWithModelValue);
 
                     execLevelData.discardEvent = true;
-                    bodyBehaviour = BodyBehaviour.SKIP_ALL;
+                    execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
 
                 } else if (this.elementTagStructureHandler.removeElement) {
 
                     execLevelData.queue.reset(); // Remove any previous results on the queue
 
                     execLevelData.discardEvent = true;
-                    bodyBehaviour = BodyBehaviour.SKIP_ALL;
+                    execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
 
                 } else if (this.elementTagStructureHandler.removeTags) {
 
@@ -1759,13 +1693,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     execLevelData.queue.reset(); // Remove any previous results on the queue
 
-                    bodyBehaviour = BodyBehaviour.SKIP_ALL;
+                    execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
 
                 } else if (this.elementTagStructureHandler.removeAllButFirstChild) {
 
                     execLevelData.queue.reset(); // Remove any previous results on the queue
 
-                    bodyBehaviour = BodyBehaviour.SKIP_ELEMENTS_BUT_FIRST;
+                    execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ELEMENTS_BUT_FIRST;
 
                 }
 
@@ -1782,7 +1716,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                  * if this is the first or the second time we execute this processor.
                  */
 
-                if (!this.elementProcessorIterator.lastWasRepeated()){
+                if (!execLevelData.processorIterator.lastWasRepeated()){
 
                     if (execLevelData.queue.size() > 0) {
                         throw new TemplateProcessingException(
@@ -1799,12 +1733,11 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.elementModelSpec.modelQueue.reset();
 
                     // Set the processor to be executed again, because this time we will just set the "model gathering" mechanism
-                    this.elementProcessorIterator.setLastToBeRepeated(openElementTag);
+                    execLevelData.processorIterator.setLastToBeRepeated(openElementTag);
 
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
                     // Note there is no queue to be suspended --we've made sure of that before, so we are only suspending the iterator
-                    this.suspended = true;
-                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
+                    execLevelData.suspended = true;
 
                     // Add the tag itself to the element model queue
                     this.elementModelSpec.modelQueue.build(openElementTag.cloneEvent());
@@ -1812,9 +1745,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Increase model level, as normal with open tags
                     increaseModelLevel();
 
-                    // Decrease the handler execution level (all important bits are already in suspensionSpec)
-                    decreaseExecLevel();
-
+                    // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be done when we re-execute this after gathering model
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- that's the responsibility of the close event
 
                     // Nothing else to be done by this handler... let's just queue the rest of the events in this element
@@ -1884,7 +1815,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 execLevelData.queue.addModel(this.modelBuffer);
 
                 execLevelData.discardEvent = true;
-                bodyBehaviour = BodyBehaviour.SKIP_ALL;
+                execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
 
 
             } else {
@@ -1905,13 +1836,18 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * INCREASE THE MODEL LEVEL to the value that will be applied to the tag's bodies
+         * INCREASE THE MODEL LEVEL to the value that will be applied to the tag's bodies. Note we will do even
+         * if during the execution of processors this open tag has been replaced by something else, because
+         * we will still be processing the body of the open tag when it still was an open tag.
          */
         increaseModelLevel();
 
 
         /*
-         * PROCESS THE QUEUE, launching all the queued events
+         * PROCESS THE QUEUE, launching all the queued events. Note executing the queue after increasing the model
+         * level makes sense even if what the queue contains is a replacement for the complete element (including open
+         * and close tags), because that way whatever comes in the queue will be encapsulated in a different model level
+         * and its internal open/close tags should not affect the correct delimitation of this block.
          */
         execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
         execLevelData.queue.reset();
@@ -1920,7 +1856,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * SET BODY TO BE SKIPPED, if required. Importantly, this has to be done AFTER executing the queue
          */
-        this.modelLevelData[this.modelLevel].bodyBehaviour = bodyBehaviour;
+        this.modelLevelData[this.modelLevel].bodyBehaviour = execLevelData.bodyBehaviour;
 
 
         /*
@@ -2040,16 +1976,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.engineContext != null) {
             this.engineContext.decreaseLevel();
         }
-
-        /*
-         * CHECK WHETHER WE SHOULD KEEP SKIPPING MODEL or we just got to the end of the discarded block
-         */
-// ONCE WE reset() at the decreaseModelLevel(), this should not be necessary
-//        if (this.modelLevelData[this.modelLevel + 1].allowedElementCount <= 0) {
-//            // We've reached the last point where model should be discarded, so we should reset the variable
-//            Arrays.fill(this.allowedElementCountByModelLevel, this.modelLevel + 1, this.allowedElementCountByModelLevel.length, Integer.MAX_VALUE);
-//            Arrays.fill(this.allowedNonElementStructuresByModelLevel, this.modelLevel + 1, this.allowedNonElementStructuresByModelLevel.length, true);
-//        }
 
         /*
          * CHECK WHETHER THIS CLOSE TAG ITSELF MUST BE DISCARDED because we also discarded the open one (even if not necessarily the body)
@@ -2518,14 +2444,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * FIX THE SUSPENSION-RELATED VARIABLES
          */
 
-        final BodyBehaviour suspendedBodyBehaviour = this.suspensionSpec.bodyBehaviour;
-        final boolean suspendedQueueProcessable = this.suspensionSpec.queueProcessable;
-        iterArtifacts.suspendedQueue.resetAsCloneOf(this.suspensionSpec.suspendedQueue, false);
-        iterArtifacts.suspendedElementProcessorIterator.resetAsCloneOf(this.suspensionSpec.suspendedIterator);
+        final ExecLevelData execLevelData = this.execLevelData[this.execLevel];
 
-        // We need to reset it or we won't be able to reuse it in nested executions
-        this.suspensionSpec.reset();
-        this.suspended = false;
+        final BodyBehaviour suspendedBodyBehaviour = execLevelData.bodyBehaviour;
+        final boolean suspendedQueueProcessable = execLevelData.queueProcessable;
+        iterArtifacts.suspendedQueue.resetAsCloneOf(execLevelData.queue, false);
+        iterArtifacts.suspendedElementProcessorIterator.resetAsCloneOf(execLevelData.processorIterator);
+
+        // We already saved the required info, so we will decrease exec level, and then increase it for each iteration
+        decreaseExecLevel();
 
 
         /*
@@ -2545,15 +2472,24 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.engineContext.setVariable(iterVariableName, status.current);
             this.engineContext.setVariable(iterStatusVariableName, status);
 
-            // We will initialize the suspension artifacts just as if we had just suspended it
-            this.suspensionSpec.bodyBehaviour = suspendedBodyBehaviour;
-            this.suspensionSpec.queueProcessable = suspendedQueueProcessable;
-            this.suspensionSpec.suspendedQueue.resetAsCloneOf(iterArtifacts.suspendedQueue, false);
-            this.suspensionSpec.suspendedIterator.resetAsCloneOf(iterArtifacts.suspendedElementProcessorIterator);
-            this.suspended = true;
+            // We will increase the exec level because that was the state in which it was when suspended
+            // Note there is no need to decrease it because that will be done by the handleOpenElement or handleStandaloneElement
+            // that originally suspended execution in order to gather iterated markup
+            increaseExecLevel();
+
+            // We will initialize the execution level artifacts just as if we had just suspended them
+            execLevelData.suspended = true;
+            execLevelData.bodyBehaviour = suspendedBodyBehaviour;
+            execLevelData.queueProcessable = suspendedQueueProcessable;
+            execLevelData.queue.resetAsCloneOf(iterArtifacts.suspendedQueue, false);
+            execLevelData.processorIterator.resetAsCloneOf(iterArtifacts.suspendedElementProcessorIterator);
 
             // If this iterator (e.g. th:each) lived in a tag with a "remove all but first" instruction,
             // we need to reinitialize SKIP_ELEMENTS -> SKIP_ELEMENTS_BUT_FIRST
+            // The reason this is done on modelLevel and not on execLevel is because execLevel is for things
+            // that have been changed by the iterated element itself before processing the iteration, and in this case
+            // we are talking about an element-skipping operation performed by a higher-level tag that was
+            // executed previously.
             if (this.modelLevelData[this.modelLevel].bodyBehaviour == BodyBehaviour.SKIP_ELEMENTS) {
                 this.modelLevelData[this.modelLevel].bodyBehaviour = BodyBehaviour.SKIP_ELEMENTS_BUT_FIRST;
             }
@@ -2580,10 +2516,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             status.index++;
 
         }
-
-        // Finally, clean just in case --even if the queued events should have already cleaned this
-        this.suspensionSpec.reset();
-        this.suspended = false;
 
         // Allow the reuse of the iteration artifacts
         this.iterationArtifactsIndex--;
@@ -2937,21 +2869,28 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     private static final class ExecLevelData {
 
+        boolean suspended;
         EngineEventQueue queue;
+        ElementProcessorIterator processorIterator;
         boolean queueProcessable;
         boolean discardEvent;
+        BodyBehaviour bodyBehaviour;
 
 
         ExecLevelData(final IEngineConfiguration configuration, final TemplateMode templateMode) {
             super();
             this.queue = new EngineEventQueue(configuration, templateMode);
+            this.processorIterator = new ElementProcessorIterator();
             reset();
         }
 
         void reset() {
+            this.suspended = false;
             this.queue.reset();
+            this.processorIterator.reset();
             this.queueProcessable = false;
             this.discardEvent = false;
+            this.bodyBehaviour = BodyBehaviour.PROCESS;
         }
 
     }
@@ -3007,29 +2946,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.iterationLastBodyEventIterMax = new Text(configuration.getTextRepository());
             this.suspendedQueue = new EngineEventQueue(configuration, templateMode, 5);
             this.suspendedElementProcessorIterator = new ElementProcessorIterator();
-        }
-
-    }
-
-
-    private static final class SuspensionSpec {
-
-        BodyBehaviour bodyBehaviour;
-        boolean queueProcessable;
-        final EngineEventQueue suspendedQueue;
-        final ElementProcessorIterator suspendedIterator;
-
-        SuspensionSpec(final TemplateMode templateMode, final IEngineConfiguration configuration) {
-            super();
-            this.suspendedQueue = new EngineEventQueue(configuration, templateMode, 5); // 5 events will probably be enough
-            this.suspendedIterator = new ElementProcessorIterator();
-        }
-
-        void reset() {
-            this.bodyBehaviour = BodyBehaviour.PROCESS;
-            this.queueProcessable = false;
-            this.suspendedQueue.reset();
-            this.suspendedIterator.reset();
         }
 
     }
