@@ -123,19 +123,11 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private final TextStructureHandler textStructureHandler;
     private final XMLDeclarationStructureHandler xmlDeclarationStructureHandler;
 
-    private IEngineConfiguration configuration;
-    private TemplateMode templateMode;
+    private IEngineConfiguration configuration = null;
+    private TemplateMode templateMode = null;
 
-    private ITemplateContext context;
-    private IEngineContext engineContext;
-
-    private boolean hasTemplateBoundariesProcessors = false;
-    private boolean hasCDATASectionProcessors = false;
-    private boolean hasCommentProcessors = false;
-    private boolean hasDocTypeProcessors = false;
-    private boolean hasProcessingInstructionProcessors = false;
-    private boolean hasTextProcessors = false;
-    private boolean hasXMLDeclarationProcessors = false;
+    private ITemplateContext context = null;
+    private IEngineContext engineContext = null;
 
 
     // These arrays will be initialized with all the registered processors for the different kind of non-element
@@ -257,38 +249,22 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final Set<IProcessingInstructionProcessor> processingInstructionProcessorSet = this.configuration.getProcessingInstructionProcessors(this.templateMode);
         final Set<ITextProcessor> textProcessorSet = this.configuration.getTextProcessors(this.templateMode);
         final Set<IXMLDeclarationProcessor> xmlDeclarationProcessorSet = this.configuration.getXMLDeclarationProcessors(this.templateMode);
-        final int templateBoundariesProcessorSetSize = templateBoundariesProcessorSet.size();
-        final int cdataSectionProcessorSetSize = cdataSectionProcessorSet.size();
-        final int commentProcessorSetSize = commentProcessorSet.size();
-        final int docTypeProcessorSetSize = docTypeProcessorSet.size();
-        final int processingInstructionProcessorSetSize = processingInstructionProcessorSet.size();
-        final int textProcessorSetSize = textProcessorSet.size();
-        final int xmlDeclarationProcessorSetSize = xmlDeclarationProcessorSet.size();
-
-        // Flags used for quickly determining if a non-element structure might have to be processed or not
-        this.hasTemplateBoundariesProcessors = templateBoundariesProcessorSetSize > 0;
-        this.hasCDATASectionProcessors = cdataSectionProcessorSetSize > 0;
-        this.hasCommentProcessors = commentProcessorSetSize > 0;
-        this.hasDocTypeProcessors = docTypeProcessorSetSize > 0;
-        this.hasProcessingInstructionProcessors = processingInstructionProcessorSetSize > 0;
-        this.hasTextProcessors = textProcessorSetSize > 0;
-        this.hasXMLDeclarationProcessors = xmlDeclarationProcessorSetSize > 0;
 
         // Initialize arrays containing the processors for all the non-element structures (these do not change during execution)
         this.templateBoundariesProcessors =
-                templateBoundariesProcessorSetSize == 0? EMPTY_TEMPLATE_BOUNDARIES_PROCESSORS : templateBoundariesProcessorSet.toArray(new ITemplateBoundariesProcessor[templateBoundariesProcessorSetSize]);
+                templateBoundariesProcessorSet.size() == 0? EMPTY_TEMPLATE_BOUNDARIES_PROCESSORS : templateBoundariesProcessorSet.toArray(new ITemplateBoundariesProcessor[templateBoundariesProcessorSet.size()]);
         this.cdataSectionProcessors =
-                cdataSectionProcessorSetSize == 0? EMPTY_CDATA_SECTION_PROCESSORS : cdataSectionProcessorSet.toArray(new ICDATASectionProcessor[cdataSectionProcessorSetSize]);
+                cdataSectionProcessorSet.size() == 0? EMPTY_CDATA_SECTION_PROCESSORS : cdataSectionProcessorSet.toArray(new ICDATASectionProcessor[cdataSectionProcessorSet.size()]);
         this.commentProcessors =
-                commentProcessorSetSize == 0? EMPTY_COMMENT_PROCESSORS : commentProcessorSet.toArray(new ICommentProcessor[commentProcessorSetSize]);
+                commentProcessorSet.size() == 0? EMPTY_COMMENT_PROCESSORS : commentProcessorSet.toArray(new ICommentProcessor[commentProcessorSet.size()]);
         this.docTypeProcessors =
-                docTypeProcessorSetSize == 0? EMPTY_DOCTYPE_PROCESSORS : docTypeProcessorSet.toArray(new IDocTypeProcessor[docTypeProcessorSetSize]);
+                docTypeProcessorSet.size() == 0? EMPTY_DOCTYPE_PROCESSORS : docTypeProcessorSet.toArray(new IDocTypeProcessor[docTypeProcessorSet.size()]);
         this.processingInstructionProcessors =
-                processingInstructionProcessorSetSize == 0? EMPTY_PROCESSING_INSTRUCTION_PROCESSORS : processingInstructionProcessorSet.toArray(new IProcessingInstructionProcessor[processingInstructionProcessorSetSize]);
+                processingInstructionProcessorSet.size() == 0? EMPTY_PROCESSING_INSTRUCTION_PROCESSORS : processingInstructionProcessorSet.toArray(new IProcessingInstructionProcessor[processingInstructionProcessorSet.size()]);
         this.textProcessors =
-                textProcessorSetSize == 0? EMPTY_TEXT_PROCESSORS : textProcessorSet.toArray(new ITextProcessor[textProcessorSetSize]);
+                textProcessorSet.size() == 0? EMPTY_TEXT_PROCESSORS : textProcessorSet.toArray(new ITextProcessor[textProcessorSet.size()]);
         this.xmlDeclarationProcessors =
-                xmlDeclarationProcessorSetSize == 0? EMPTY_XML_DECLARATION_PROCESSORS : xmlDeclarationProcessorSet.toArray(new IXMLDeclarationProcessor[xmlDeclarationProcessorSetSize]);
+                xmlDeclarationProcessorSet.size() == 0? EMPTY_XML_DECLARATION_PROCESSORS : xmlDeclarationProcessorSet.toArray(new IXMLDeclarationProcessor[xmlDeclarationProcessorSet.size()]);
 
     }
 
@@ -375,7 +351,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * FAIL FAST in case this structure has no associated processors.
          */
-        if (!this.hasTemplateBoundariesProcessors) {
+        if (this.templateBoundariesProcessors.length == 0) {
             super.handleTemplateStart(itemplateStart);
             return;
         }
@@ -474,7 +450,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * FAIL FAST in case this structure has no associated processors.
          */
-        if (!this.hasTemplateBoundariesProcessors) {
+        if (templateBoundariesProcessors.length == 0) {
             decreaseModelLevel(); // Decrease the model level increased during template start (should be now: -1)
             super.handleTemplateEnd(itemplateEnd);
             return;
@@ -621,7 +597,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * FAIL FAST in case this structure has no associated processors.
          */
-        if (!this.hasTextProcessors) {
+        if (this.textProcessors.length == 0) {
             super.handleText(itext);
             return;
         }
@@ -720,7 +696,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * FAIL FAST in case this structure has no associated processors.
          */
-        if (!this.hasCommentProcessors) {
+        if (this.commentProcessors.length == 0) {
             super.handleComment(icomment);
             return;
         }
@@ -817,7 +793,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * FAIL FAST in case this structure has no associated processors.
          */
-        if (!this.hasCDATASectionProcessors) {
+        if (this.cdataSectionProcessors.length == 0) {
             super.handleCDATASection(icdataSection);
             return;
         }
@@ -2004,7 +1980,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * FAIL FAST in case this structure has no associated processors.
          */
-        if (!this.hasDocTypeProcessors) {
+        if (this.docTypeProcessors.length == 0) {
             super.handleDocType(idocType);
             return;
         }
@@ -2103,7 +2079,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * FAIL FAST in case this structure has no associated processors.
          */
-        if (!this.hasXMLDeclarationProcessors) {
+        if (this.xmlDeclarationProcessors.length == 0) {
             super.handleXMLDeclaration(ixmlDeclaration);
             return;
         }
@@ -2204,7 +2180,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * FAIL FAST in case this structure has no associated processors.
          */
-        if (!this.hasProcessingInstructionProcessors) {
+        if (this.processingInstructionProcessors.length == 0) {
             super.handleProcessingInstruction(iprocessingInstruction);
             return;
         }
