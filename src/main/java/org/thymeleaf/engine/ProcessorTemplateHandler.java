@@ -295,7 +295,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     private void decreaseModelLevel() {
-        this.modelLevelData[this.modelLevel].reset();
         this.modelLevel--;
     }
 
@@ -326,7 +325,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     private void decreaseExecLevel() {
-        this.execLevelData[this.execLevel].reset();
         this.execLevel--;
     }
 
@@ -999,6 +997,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 if (this.elementTagStructureHandler.iterateElement) {
 
+                    // Initialize gathering at the current execution level (if not initialized before)
+                    execLevelData.enableGathering();
+
                     // Set the iteration info in order to start gathering all iterated events
                     execLevelData.gatheringType = ExecLevelData.GatheringType.ITERATION;
                     execLevelData.gatheringModelLevel = this.modelLevel + 1;
@@ -1205,6 +1206,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                                         "might contain unprocessable events (e.g. as a result of a 'th:text' or similar)",
                                 standaloneElementTag.getTemplateName(), standaloneElementTag.getLine(), standaloneElementTag.getCol());
                     }
+
+                    // Initialize gathering at the current execution level (if not initialized before)
+                    execLevelData.enableGathering();
 
                     // Set the element model info in order to start gathering all the element model's events
                     execLevelData.gatheringType = ExecLevelData.GatheringType.MODEL;
@@ -1481,6 +1485,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 if (this.elementTagStructureHandler.iterateElement) {
 
+                    // Initialize gathering at the current execution level (if not initialized before)
+                    execLevelData.enableGathering();
+
                     // Set the iteration info in order to start gathering all iterated events
                     execLevelData.gatheringType = ExecLevelData.GatheringType.ITERATION;
                     execLevelData.gatheringModelLevel = this.modelLevel + 1;
@@ -1659,6 +1666,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                                 "might contain unprocessable events (e.g. as a result of a 'th:text' or similar)",
                                 openElementTag.getTemplateName(), openElementTag.getLine(), openElementTag.getCol());
                     }
+
+                    // Initialize gathering at the current execution level (if not initialized before)
+                    execLevelData.enableGathering();
 
                     // Set the element model info in order to start gathering all the element model's events
                     execLevelData.gatheringType = ExecLevelData.GatheringType.MODEL;
@@ -2343,12 +2353,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             /*
              * We need to clone the execution level. We protected the previous one by increasing the level, but now we
              * need to provide to the suspended event exactly the same environment (execLevelData) as when it was
-             * suspended, except of course for the fact that we have already reset the gathering-oriented flags and
-             * we will now reset the gathering queue also so that suspended data is perfectly clean of gathering artifacts
+             * suspended, except of course for the event-gathering structures, which we will not need at the new level
              */
-            innerExecLevelData.resetAsCloneOf(outerExecLevelData);
-            innerExecLevelData.gatheringQueue.reset();
-            innerExecLevelData.iterationArtifacts.reset();
+            innerExecLevelData.resetAsCloneOf(outerExecLevelData, false);
 
 
             /*
@@ -2469,11 +2476,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * We need to clone the execution level. We protected the previous one by increasing the level, but now we
          * need to provide to the suspended event exactly the same environment (execLevelData) as when it was
-         * suspended, except of course for the fact that we have already reset the gathering-oriented flags and
-         * we will now reset the gathering queue also so that suspended data is perfectly clean of gathering artifacts.
+         * suspended, except of course for the event-gathering structures, which we will not need at the new level
          */
-        innerExecLevelData.resetAsCloneOf(outerExecLevelData);
-        innerExecLevelData.gatheringQueue.reset();
+        innerExecLevelData.resetAsCloneOf(outerExecLevelData, false);
 
         /*
          * PERFORM THE EXECUTION on the gathered queue, which now does not live at the current exec level, but
@@ -2811,25 +2816,40 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         enum GatheringType { ITERATION, MODEL, NONE }
 
+        final IEngineConfiguration configuration;
+        final TemplateMode templateMode;
+
         boolean suspended;
         final EngineEventQueue queue;
         final ElementProcessorIterator processorIterator;
         boolean queueProcessable;
         boolean discardEvent;
         BodyBehaviour bodyBehaviour;
+
+        boolean gatheringEnabled;
         GatheringType gatheringType;
-        final EngineEventQueue gatheringQueue;
+        EngineEventQueue gatheringQueue;
         int gatheringModelLevel;
-        final IterationArtifacts iterationArtifacts;
+        IterationArtifacts iterationArtifacts;
 
 
         ExecLevelData(final IEngineConfiguration configuration, final TemplateMode templateMode) {
             super();
+            this.configuration = configuration;
+            this.templateMode = templateMode;
             this.queue = new EngineEventQueue(configuration, templateMode);
             this.processorIterator = new ElementProcessorIterator();
-            this.gatheringQueue = new EngineEventQueue(configuration, templateMode);
-            this.iterationArtifacts = new IterationArtifacts();
+            this.gatheringEnabled = false;
             reset();
+        }
+
+
+        void enableGathering() {
+            if (!this.gatheringEnabled) {
+                this.gatheringQueue = new EngineEventQueue(this.configuration, this.templateMode);
+                this.iterationArtifacts = new IterationArtifacts();
+                this.gatheringEnabled = true;
+            }
         }
 
         void reset() {
@@ -2839,23 +2859,36 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.queueProcessable = false;
             this.discardEvent = false;
             this.bodyBehaviour = BodyBehaviour.PROCESS;
-            this.gatheringType = GatheringType.NONE;
-            this.gatheringQueue.reset();
-            this.gatheringModelLevel = Integer.MAX_VALUE;
-            this.iterationArtifacts.reset();
+            if (this.gatheringEnabled) { // Note this flag is itself not reset. It's just a way to perform lazy init
+                this.gatheringType = GatheringType.NONE;
+                this.gatheringQueue.reset();
+                this.gatheringModelLevel = Integer.MAX_VALUE;
+                this.iterationArtifacts.reset();
+            } else {
+                this.gatheringType = GatheringType.NONE; // null would be a bad idea here, as this is checked in handlers
+                this.gatheringQueue = null;
+                this.gatheringModelLevel = Integer.MAX_VALUE;
+                this.iterationArtifacts = null;
+            }
         }
 
-        void resetAsCloneOf(final ExecLevelData execLevelData) {
+        void resetAsCloneOf(final ExecLevelData execLevelData, final boolean cloneGathering) {
+            reset();
             this.suspended = execLevelData.suspended;
             this.queue.resetAsCloneOf(execLevelData.queue, false);
             this.processorIterator.resetAsCloneOf(execLevelData.processorIterator);
             this.queueProcessable = execLevelData.queueProcessable;
             this.discardEvent = execLevelData.discardEvent;
             this.bodyBehaviour = execLevelData.bodyBehaviour;
-            this.gatheringType = execLevelData.gatheringType;
-            this.gatheringQueue.resetAsCloneOf(execLevelData.gatheringQueue, false);
-            this.gatheringModelLevel = execLevelData.gatheringModelLevel;
-            this.iterationArtifacts.resetAsCloneOf(execLevelData.iterationArtifacts);
+            if (cloneGathering && execLevelData.gatheringEnabled) {
+                if (!this.gatheringEnabled) {
+                    enableGathering();
+                }
+                this.gatheringType = execLevelData.gatheringType;
+                this.gatheringQueue.resetAsCloneOf(execLevelData.gatheringQueue, false);
+                this.gatheringModelLevel = execLevelData.gatheringModelLevel;
+                this.iterationArtifacts.resetAsCloneOf(execLevelData.iterationArtifacts);
+            }
         }
 
     }
