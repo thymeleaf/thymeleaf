@@ -422,6 +422,10 @@ final class EngineEventQueue {
             return;
         }
 
+        if (this.queueSize == 0) {
+            return;
+        }
+
         if (this.queue.length < original.queueSize) {
             this.queue = new IEngineTemplateEvent[Math.max(DEFAULT_INITIAL_SIZE, original.queueSize)];
         }
