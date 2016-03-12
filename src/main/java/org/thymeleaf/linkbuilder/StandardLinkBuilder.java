@@ -66,6 +66,7 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
 
     private static final char URL_TEMPLATE_DELIMITER_PREFIX = '{';
     private static final char URL_TEMPLATE_DELIMITER_SUFFIX = '}';
+    private static final String URL_TEMPLATE_DELIMITER_SEGMENT_PREFIX = "{/";
 
 
 
@@ -313,14 +314,25 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
 
         for (final String parameterName : parameterNames) {
 
-            // We use the text repository in order to avoid the unnecessary creation of too many instances of the same string
-            final String template = URL_TEMPLATE_DELIMITER_PREFIX + parameterName + URL_TEMPLATE_DELIMITER_SUFFIX;
+            // We default to escaping as a path, not a path segment
+            boolean escapeAsPathSegment = false;
 
-            final int templateIndex = linkBase.indexOf(template); // not great, because StringBuilder.indexOf ends up calling template.toCharArray(), but...
+            // We use the text repository in order to avoid the unnecessary creation of too many instances of the same string
+            String template = URL_TEMPLATE_DELIMITER_PREFIX + parameterName + URL_TEMPLATE_DELIMITER_SUFFIX;
+
+            int templateIndex = linkBase.indexOf(template); // not great, because StringBuilder.indexOf ends up calling template.toCharArray(), but...
 
             if (templateIndex < 0) {
-                // This parameter is not one of those used in path variables
-                continue;
+                template = URL_TEMPLATE_DELIMITER_SEGMENT_PREFIX + parameterName + URL_TEMPLATE_DELIMITER_SUFFIX;
+                templateIndex = linkBase.indexOf(template);
+
+                if (templateIndex < 0) {
+                    // This parameter is not one of those used in path variables
+                    continue;
+                }
+
+                // We need to escape this parameter value as a path segment rather than a path
+                escapeAsPathSegment = true;
             }
 
             // Add the parameter name to the set of processed ones so that it is later removed from the parameters object
@@ -342,8 +354,9 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
             while (start > -1) {
                 // Depending on whether the template appeared before or after the ?, we will apply different escaping
                 final String escapedReplacement =
-                        (start < questionMarkPosition?
-                                UriEscape.escapeUriPath(templateReplacement) : UriEscape.escapeUriQueryParam(templateReplacement));
+                        (questionMarkPosition == -1 || start < questionMarkPosition?
+                                (escapeAsPathSegment ? UriEscape.escapeUriPathSegment(templateReplacement) : UriEscape.escapeUriPath(templateReplacement))
+                                : UriEscape.escapeUriQueryParam(templateReplacement));
                 linkBase.replace(start, start + templateLen, escapedReplacement);
                 start = linkBase.indexOf(template, start + templateReplacementLen);
             }
