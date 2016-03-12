@@ -73,13 +73,6 @@ final class ProcessingInstruction extends AbstractTemplateEvent implements IProc
 
 
 
-    public EventType getEventType() {
-        return EventType.PROCESSING_INSTRUCTION;
-    }
-
-
-
-
     public String getTarget() {
         return this.target;
     }

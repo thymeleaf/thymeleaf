@@ -44,14 +44,6 @@ final class TemplateStart extends AbstractTemplateEvent implements ITemplateStar
 
 
 
-
-    public EventType getEventType() {
-        return EventType.TEMPLATE_START;
-    }
-
-
-
-
     public long getStartTimeNanos() {
         return this.startTimeNanos;
     }

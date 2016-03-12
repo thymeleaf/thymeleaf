@@ -315,56 +315,42 @@ final class EngineEventQueue {
 
             event = this.queue[i];
 
-            switch (event.getEventType()) {
-
-                case TEXT:
-                    this.textBuffer.resetAsCloneOf((Text) event);
-                    handler.handleText(this.textBuffer);
-                    break;
-                case OPEN_ELEMENT:
-                    this.openElementTagBuffer.resetAsCloneOf((OpenElementTag) event);
-                    handler.handleOpenElement(this.openElementTagBuffer);
-                    break;
-                case CLOSE_ELEMENT:
-                    this.closeElementTagBuffer.resetAsCloneOf((CloseElementTag) event);
-                    handler.handleCloseElement(this.closeElementTagBuffer);
-                    break;
-                case STANDALONE_ELEMENT:
-                    this.standaloneElementTagBuffer.resetAsCloneOf((StandaloneElementTag) event);
-                    handler.handleStandaloneElement(this.standaloneElementTagBuffer);
-                    break;
-                case DOC_TYPE:
-                    this.docTypeBuffer.resetAsCloneOf((DocType) event);
-                    handler.handleDocType(this.docTypeBuffer);
-                    break;
-                case COMMENT:
-                    this.commentBuffer.resetAsCloneOf((Comment) event);
-                    handler.handleComment(this.commentBuffer);
-                    break;
-                case CDATA_SECTION:
-                    this.cdataSectionBuffer.resetAsCloneOf((CDATASection) event);
-                    handler.handleCDATASection(this.cdataSectionBuffer);
-                    break;
-                case XML_DECLARATION:
-                    this.xmlDeclarationBuffer.resetAsCloneOf((XMLDeclaration) event);
-                    handler.handleXMLDeclaration(this.xmlDeclarationBuffer);
-                    break;
-                case PROCESSING_INSTRUCTION:
-                    this.processingInstructionBuffer.resetAsCloneOf((ProcessingInstruction) event);
-                    handler.handleProcessingInstruction(this.processingInstructionBuffer);
-                    break;
-                case TEMPLATE_START:
-                    this.templateStartBuffer.resetAsCloneOf((TemplateStart) event);
-                    handler.handleTemplateStart(this.templateStartBuffer);
-                    break;
-                case TEMPLATE_END:
-                    this.templateEndBuffer.resetAsCloneOf((TemplateEnd) event);
-                    handler.handleTemplateEnd(this.templateEndBuffer);
-                    break;
-                default:
-                    throw new TemplateProcessingException(
-                            "Cannot handle in queue event of type: " + event.getClass().getName());
-
+            if (event instanceof Text) {
+                this.textBuffer.resetAsCloneOf((Text) event);
+                handler.handleText(this.textBuffer);
+            } else if (event instanceof OpenElementTag) {
+                this.openElementTagBuffer.resetAsCloneOf((OpenElementTag) event);
+                handler.handleOpenElement(this.openElementTagBuffer);
+            } else if (event instanceof CloseElementTag) {
+                this.closeElementTagBuffer.resetAsCloneOf((CloseElementTag) event);
+                handler.handleCloseElement(this.closeElementTagBuffer);
+            } else if (event instanceof StandaloneElementTag) {
+                this.standaloneElementTagBuffer.resetAsCloneOf((StandaloneElementTag) event);
+                handler.handleStandaloneElement(this.standaloneElementTagBuffer);
+            } else if (event instanceof DocType) {
+                this.docTypeBuffer.resetAsCloneOf((DocType) event);
+                handler.handleDocType(this.docTypeBuffer);
+            } else if (event instanceof Comment) {
+                this.commentBuffer.resetAsCloneOf((Comment) event);
+                handler.handleComment(this.commentBuffer);
+            } else if (event instanceof CDATASection) {
+                this.cdataSectionBuffer.resetAsCloneOf((CDATASection) event);
+                handler.handleCDATASection(this.cdataSectionBuffer);
+            } else if (event instanceof XMLDeclaration) {
+                this.xmlDeclarationBuffer.resetAsCloneOf((XMLDeclaration) event);
+                handler.handleXMLDeclaration(this.xmlDeclarationBuffer);
+            } else if (event instanceof ProcessingInstruction) {
+                this.processingInstructionBuffer.resetAsCloneOf((ProcessingInstruction) event);
+                handler.handleProcessingInstruction(this.processingInstructionBuffer);
+            } else if (event instanceof TemplateStart) {
+                this.templateStartBuffer.resetAsCloneOf((TemplateStart) event);
+                handler.handleTemplateStart(this.templateStartBuffer);
+            } else if (event instanceof TemplateEnd) {
+                this.templateEndBuffer.resetAsCloneOf((TemplateEnd) event);
+                handler.handleTemplateEnd(this.templateEndBuffer);
+            } else {
+                throw new TemplateProcessingException(
+                        "Cannot handle in queue event of type: " + event.getClass().getName());
             }
 
             processed++;

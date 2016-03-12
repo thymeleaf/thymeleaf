@@ -77,13 +77,6 @@ final class OpenElementTag
 
 
 
-    public EventType getEventType() {
-        return EventType.OPEN_ELEMENT;
-    }
-
-
-
-
     // Meant to be called only from within the engine
     void reset(final String elementName, final boolean synthetic,
                final String templateName, final int line, final int col) {

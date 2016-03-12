@@ -84,11 +84,6 @@ final class CDATASection extends AbstractTemplateEvent implements ICDATASection,
 
 
 
-    public EventType getEventType() {
-        return EventType.CDATA_SECTION;
-    }
-
-
 
 
     public String getCDATASection() {
