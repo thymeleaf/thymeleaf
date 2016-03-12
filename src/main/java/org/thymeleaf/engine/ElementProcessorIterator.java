@@ -282,17 +282,13 @@ final class ElementProcessorIterator {
         this.lastToBeRepeated = original.lastToBeRepeated;
         this.lastWasRepeated = original.lastWasRepeated;
 
-        if (original.processors != null) {
-            if (this.processors == null || this.processors.length < original.processors.length) {
-                this.processors = new IElementProcessor[original.processors.length];
+        if (this.size > 0 && original.processors != null) { // original.visited will also be != null
+            if (this.processors == null || this.processors.length < this.size) {
+                this.processors = new IElementProcessor[this.size];
+                this.visited = new boolean[this.size];
             }
-            System.arraycopy(original.processors, 0, this.processors, 0, original.processors.length);
-        }
-        if (original.visited != null) {
-            if (this.visited == null || this.visited.length < original.visited.length) {
-                this.visited = new boolean[original.visited.length];
-            }
-            System.arraycopy(original.visited, 0, this.visited, 0, original.visited.length);
+            System.arraycopy(original.processors, 0, this.processors, 0, this.size);
+            System.arraycopy(original.visited, 0, this.visited, 0, this.size);
         }
 
     }
