@@ -45,14 +45,6 @@ final class TemplateEnd extends AbstractTemplateEvent implements ITemplateEnd, I
 
 
 
-
-    public EventType getEventType() {
-        return EventType.TEMPLATE_END;
-    }
-
-
-
-
     public long getEndTimeNanos() {
         return this.endTimeNanos;
     }

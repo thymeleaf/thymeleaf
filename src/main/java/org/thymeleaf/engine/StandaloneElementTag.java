@@ -74,14 +74,6 @@ final class StandaloneElementTag
 
 
 
-
-    public EventType getEventType() {
-        return EventType.STANDALONE_ELEMENT;
-    }
-
-
-
-
     // Meant to be called only from the cloneElementTag method
     private StandaloneElementTag() {
         super();

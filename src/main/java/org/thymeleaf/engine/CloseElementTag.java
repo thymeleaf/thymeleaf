@@ -78,14 +78,6 @@ final class CloseElementTag
 
 
 
-
-    public EventType getEventType() {
-        return EventType.CLOSE_ELEMENT;
-    }
-
-
-
-
     public boolean isUnmatched() {
         return this.unmatched;
     }
