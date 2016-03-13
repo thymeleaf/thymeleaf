@@ -45,8 +45,6 @@ public interface ITemplateHandler {
 
     public void setContext(final ITemplateContext context);
 
-    public void setStatus(final ITemplateHandlerStatus status);
-
 
     public void handleTemplateStart(final ITemplateStart templateStart);
 
@@ -74,8 +72,6 @@ public interface ITemplateHandler {
 
     public void handleProcessingInstruction(final IProcessingInstruction processingInstruction);
 
-
-    public void handlePending();
 
 
 }
