@@ -226,10 +226,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.engineContext = (IEngineContext) this.context;
         } else {
             logger.warn("Unknown implementation of the " + ITemplateContext.class.getName() + " interface: " +
-                    this.context.getClass().getName() + ". Local variable support will be DISABLED (this " +
-                    "includes iteration, target selection and inlining). In order to enable these, context " +
-                    "implementations should also implement the " + IEngineContext.class.getName() +
-                    " interface.");
+                        this.context.getClass().getName() + ". Local variable support will be DISABLED (this " +
+                        "includes iteration, target selection and inlining). In order to enable these, context " +
+                        "implementations should also implement the " + IEngineContext.class.getName() +
+                        " interface.");
             this.engineContext = null;
         }
 
@@ -542,12 +542,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.execLevel >= 0) {
             throw new TemplateProcessingException(
                     "Bad markup or template processing sequence. Execution level is >= 0 (" + this.execLevel + ") " +
-                            "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
+                    "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
         }
         if (this.modelLevel >= 0) {
             throw new TemplateProcessingException(
                     "Bad markup or template processing sequence. Model level is >= 0 (" + this.modelLevel + ") " +
-                            "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
+                    "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
         }
 
 
@@ -756,7 +756,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     }
 
-
+    
     @Override
     public void handleCDATASection(final ICDATASection icdataSection) {
 
@@ -881,7 +881,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
-
+        
         /*
          * SAVE AND RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
          * Note we will only be interested on it if it is whitespace, in order to add it to iteration queues, so
@@ -1017,7 +1017,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // If there is a preceding whitespace, add it to the iteration spec
                     if (lastText != null &&
                             ((this.templateMode == TemplateMode.XML) ||
-                                    (this.templateMode == TemplateMode.HTML && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(standaloneElementTag.elementDefinition.elementName)))) {
+                             (this.templateMode == TemplateMode.HTML && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(standaloneElementTag.elementDefinition.elementName)))) {
                         final Text lastEngineText = Text.asEngineText(this.configuration, lastText, true);
                         if (lastEngineText.isWhitespace()) {
                             execLevelData.iterationArtifacts.precedingWhitespace = lastEngineText;
@@ -1303,7 +1303,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             } else {
                 throw new IllegalStateException(
                         "An element has been found with an associated processor of type " + processor.getClass().getName() +
-                                " which is neither a Tag Element Processor nor a Model Element Processor.");
+                        " which is neither a Tag Element Processor nor a Model Element Processor.");
             }
 
         }
@@ -1658,9 +1658,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     if (execLevelData.queue.size() > 0) {
                         throw new TemplateProcessingException(
                                 "Cannot execute model processor " + processor.getClass().getName() + " as the body " +
-                                        "of the target element has already been modified by a previously executed processor " +
-                                        "on the same tag. Model processors cannot execute on already-modified bodies as these " +
-                                        "might contain unprocessable events (e.g. as a result of a 'th:text' or similar)",
+                                "of the target element has already been modified by a previously executed processor " +
+                                "on the same tag. Model processors cannot execute on already-modified bodies as these " +
+                                "might contain unprocessable events (e.g. as a result of a 'th:text' or similar)",
                                 openElementTag.getTemplateName(), openElementTag.getLine(), openElementTag.getCol());
                     }
 
@@ -1759,7 +1759,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             } else {
                 throw new IllegalStateException(
                         "An element has been found with an associated processor of type " + processor.getClass().getName() +
-                                " which is neither a Tag Element Processor nor a Model Element Processor.");
+                        " which is neither a Tag Element Processor nor a Model Element Processor.");
             }
 
         }
@@ -1932,7 +1932,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
-
+        
         /*
          * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
          */
@@ -1977,7 +1977,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
-
+        
         /*
          * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
          */
@@ -2052,9 +2052,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     }
 
-
-
-
+    
+    
+    
     @Override
     public void handleXMLDeclaration(final IXMLDeclaration ixmlDeclaration) {
 
@@ -2076,7 +2076,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
-
+        
         /*
          * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
          */
@@ -2177,7 +2177,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
-
+        
         /*
          * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
          */
@@ -2262,10 +2262,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.engineContext == null) {
             throw new TemplateProcessingException(
                     "Iteration is not supported because local variable support is DISABLED. This is due to " +
-                            "the use of an implementation of the " + ITemplateContext.class.getName() + " interface that does " +
-                            "not provide local-variable support. In order to have local-variable support, the context " +
-                            "implementation should also implement the " + IEngineContext.class.getName() +
-                            " interface");
+                    "the use of an implementation of the " + ITemplateContext.class.getName() + " interface that does " +
+                    "not provide local-variable support. In order to have local-variable support, the context " +
+                    "implementation should also implement the " + IEngineContext.class.getName() +
+                    " interface");
         }
 
 
