@@ -108,6 +108,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private static enum BodyBehaviour { PROCESS, SKIP_ELEMENTS, SKIP_ELEMENTS_BUT_FIRST, SKIP_ALL}
 
 
+    private static final QueueAndLevelPendingLoad PENDING_LOAD_QUEUE_AND_LEVEL = new QueueAndLevelPendingLoad();
+
     // Structure handlers are reusable objects that will be used by processors in order to instruct the engine to
     // do things with the processed structures themselves (things that cannot be directly done from the processors like
     // removing structures or iterating elements)
@@ -643,18 +645,19 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             super.handleText(itext);
         }
 
-
-        /*
-         * PROCESS THE QUEUE, launching all the queued events
-         */
-        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
-        execLevelData.queue.reset();
-
-
-        /*
-         * DECREASE THE EXEC LEVEL, so that the structures can be reused
-         */
-        decreaseExecLevel();
+        PENDING_LOAD_QUEUE_AND_LEVEL.execute(this);
+//
+//        /*
+//         * PROCESS THE QUEUE, launching all the queued events
+//         */
+//        queue.process(this.eventQueuesProcessable[this.handlerExecLevel] ? this : getNext());
+//        queue.reset();
+//
+//
+//        /*
+//         * DECREASE THE EXEC LEVEL, so that the structures can be reused
+//         */
+//        decreaseExecLevel();
 
     }
 
@@ -2937,6 +2940,34 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     (iterationArtifacts.iterationLastBodyEventIterN == null? null : iterationArtifacts.iterationLastBodyEventIterN.cloneEvent());
             this.iterationLastBodyEventIterMax =
                     (iterationArtifacts.iterationLastBodyEventIterMax == null? null : iterationArtifacts.iterationLastBodyEventIterMax.cloneEvent());
+        }
+
+    }
+
+
+
+
+
+
+    private static interface IPendingLoad {
+
+        void execute(final ProcessorTemplateHandler handler);
+
+    }
+
+
+    private static final class QueueAndLevelPendingLoad implements IPendingLoad {
+
+        @Override
+        public void execute(final ProcessorTemplateHandler handler) {
+
+            final ExecLevelData execLevelData = handler.execLevelData[handler.execLevel];
+
+            execLevelData.queue.process(execLevelData.queueProcessable ? handler : handler.getNext());
+            execLevelData.queue.reset();
+
+            handler.decreaseExecLevel();
+
         }
 
     }
