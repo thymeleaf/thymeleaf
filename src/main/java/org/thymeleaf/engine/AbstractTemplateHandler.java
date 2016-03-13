@@ -45,6 +45,7 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
     private ITemplateHandler next = null;
     private ITemplateContext context = null;
+    private ITemplateHandlerStatus status = null;
 
 
     /**
@@ -106,6 +107,28 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
     /**
      * <p>
+     *   Set the template handler status object to be used.
+     * </p>
+     * <p>
+     *   This status object is used for keeping the internal status of the template event handling process, and
+     *   is normally used for checking whether events recently triggered have completed successfully or not,
+     *   in which case there could be a <em>pending</em> processing load to be executed before the next
+     *   event comes.
+     * </p>
+     * <p>
+     *   This method is called always before starting the parsing and processing of a template.
+     * </p>
+     *
+     * @param status the processing context.
+     */
+    public void setStatus(final ITemplateHandlerStatus status) {
+        Validate.notNull(status, "Status object cannot be null");
+        this.status = status;
+    }
+
+
+    /**
+     * <p>
      *   Return the next handler in the chain, so that events can be delegated to it.
      * </p>
      *
@@ -126,6 +149,19 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
      */
     protected final ITemplateContext getContext() {
         return this.context;
+    }
+
+
+    /**
+     * <p>
+     *   Return the processing context corresponding to the template execution for
+     *   which the template handler instance has been created.
+     * </p>
+     *
+     * @return the processing context
+     */
+    protected final ITemplateHandlerStatus getStatus() {
+        return this.status;
     }
 
 
@@ -255,6 +291,18 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
         }
 
         this.next.handleProcessingInstruction(processingInstruction);
+
+    }
+
+
+
+    public void handlePending() {
+
+        if (this.next == null) {
+            return;
+        }
+
+        this.next.handlePending();
 
     }
 
