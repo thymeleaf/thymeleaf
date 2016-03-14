@@ -1113,12 +1113,19 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Suspend execution - execution will be restarted by the handleOpenElement event
                     execLevelData.suspended = true;
 
+                    // We will use the gathering queue as if we had just gathered open+close events corresponding
+                    // to this standalone element we want to substitute
+                    execLevelData.enableGathering();
+                    execLevelData.gatheringType = ExecLevelData.GatheringType.MODEL;
+                    execLevelData.gatheringQueue.reset();
+                    execLevelData.gatheringQueue.build(openTag);
+                    execLevelData.gatheringQueue.build(closeTag);
+
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be the responsibility of handleOpenElement
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Fire the now-equivalent events. Note the handleOpenElement event will take care of the suspended queue
-                    handleOpenElement(openTag);
-                    handleCloseElement(closeTag);
+                    processElementModel();
 
                     // Decrease the context level
                     if (this.engineContext != null) {
@@ -1148,12 +1155,19 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Suspend execution - execution will be restarted by the handleOpenElement event
                     execLevelData.suspended = true;
 
+                    // We will use the gathering queue as if we had just gathered open+close events corresponding
+                    // to this standalone element we want to substitute
+                    execLevelData.enableGathering();
+                    execLevelData.gatheringType = ExecLevelData.GatheringType.MODEL;
+                    execLevelData.gatheringQueue.reset();
+                    execLevelData.gatheringQueue.build(openTag);
+                    execLevelData.gatheringQueue.build(closeTag);
+
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be the responsibility of handleOpenElement
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Fire the now-equivalent events. Note the handleOpenElement event will take care of the suspended queue
-                    handleOpenElement(openTag);
-                    handleCloseElement(closeTag);
+                    processElementModel();
 
                     // Decrease the context level
                     if (this.engineContext != null) {
