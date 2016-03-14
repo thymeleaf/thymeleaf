@@ -1179,26 +1179,16 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 } else if (this.elementTagStructureHandler.insertBeforeModel) {
 
+                    execLevelData.queue.reset(); // Remove any previous results on the queue
+
                     final IModel insertedModel = this.elementTagStructureHandler.insertBeforeModelValue;
-                    if (execLevelData.queue.size() == 0) {
-                        // The current queue object is empty, so we can use it to process this inserted model
 
-                        execLevelData.queue.addModel(insertedModel);
-                        // Model inserted BEFORE is never processable, so we will always use getNext() here
-                        execLevelData.queue.process(getNext());
-                        execLevelData.queue.reset();
+                    // The current queue object is empty, so we can use it to process this inserted model
 
-                    } else {
-                        // The current queue object is not empty :-( so in order to process this inserted model
-                        // we will need to use a new queue...
-
-                        final EngineEventQueue newQueue = new EngineEventQueue(this.configuration, this.templateMode, 5);
-                        newQueue.addModel(insertedModel);
-                        // Model inserted BEFORE is never processable, so we will always use getNext() here
-                        newQueue.process(getNext());
-                        newQueue.reset();
-
-                    }
+                    execLevelData.queue.addModel(insertedModel);
+                    // Model inserted BEFORE is never processable, so we will always use getNext() here
+                    execLevelData.queue.process(getNext());
+                    execLevelData.queue.reset();
 
                 } else if (this.elementTagStructureHandler.insertImmediatelyAfterModel) {
 
@@ -1642,11 +1632,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                         // The current queue object is not empty :-( so in order to process this inserted model
                         // we will need to use a new queue...
 
-                        final EngineEventQueue newQueue = new EngineEventQueue(this.configuration, this.templateMode, 5);
-                        newQueue.addModel(insertedModel);
-                        // Model inserted BEFORE is never processable, so we will always use getNext() here
-                        newQueue.process(getNext());
-                        newQueue.reset();
+                        throw new TemplateProcessingException(
+                                "Baaaaaaaaaaad!!!!!");
+
+//                        final EngineEventQueue newQueue = new EngineEventQueue(this.configuration, this.templateMode, 5);
+//                        newQueue.addModel(insertedModel);
+//                        // Model inserted BEFORE is never processable, so we will always use getNext() here
+//                        newQueue.process(getNext());
+//                        newQueue.reset();
 
                     }
 
@@ -2889,6 +2882,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final EngineEventQueue queue;
         final ElementProcessorIterator processorIterator;
         boolean queueProcessable;
+        boolean queueProcessBeforeDelegate;
         boolean discardEvent;
         BodyBehaviour bodyBehaviour;
 
@@ -2923,6 +2917,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.queue.reset();
             this.processorIterator.reset();
             this.queueProcessable = false;
+            this.queueProcessBeforeDelegate = false;
             this.discardEvent = false;
             this.bodyBehaviour = BodyBehaviour.PROCESS;
             if (this.gatheringEnabled) { // Note this flag is itself not reset. It's just a way to perform lazy init
@@ -2944,6 +2939,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.queue.resetAsCloneOf(execLevelData.queue, false);
             this.processorIterator.resetAsCloneOf(execLevelData.processorIterator);
             this.queueProcessable = execLevelData.queueProcessable;
+            this.queueProcessBeforeDelegate = execLevelData.queueProcessBeforeDelegate;
             this.discardEvent = execLevelData.discardEvent;
             this.bodyBehaviour = execLevelData.bodyBehaviour;
             if (cloneGathering && execLevelData.gatheringEnabled) {
