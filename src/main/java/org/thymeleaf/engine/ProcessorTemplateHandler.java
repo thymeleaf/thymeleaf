@@ -333,27 +333,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
 
-    private void finalizeHandleEvent() {
-
-        /*
-         * Obtain the data bound to the execution level
-         */
-        final ExecLevelData execLevelData = this.execLevelData[this.execLevel];
 
 
-        /*
-         * PROCESS THE QUEUE, launching all the queued events
-         */
-        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
-        execLevelData.queue.reset();
 
 
-        /*
-         * DECREASE THE EXEC LEVEL, so that the structures can be reused
-         */
-        decreaseExecLevel();
-
-    }
 
 
 
@@ -466,9 +449,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * FINALIZE HANDLER EXECUTION
+         * PROCESS THE QUEUE, launching all the queued events
          */
-        finalizeHandleEvent();
+        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+
+
+        /*
+         * DECREASE THE EXEC LEVEL, so that the structures can be reused
+         */
+        decreaseExecLevel();
 
     }
 
@@ -557,28 +546,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * FINALIZE HANDLER EXECUTION
-         */
-        finalizeHandleTemplateEnd(itemplateEnd);
-
-
-    }
-
-
-
-    private void finalizeHandleTemplateEnd(final ITemplateEnd itemplateEnd) {
-
-        /*
-         * Obtain the data bound to the execution level
-         */
-        final ExecLevelData execLevelData = this.execLevelData[this.execLevel];
-
-
-        /*
          * PROCESS THE QUEUE, launching all the queued events (BEFORE DELEGATING)
          */
         execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
-        execLevelData.queue.reset();
 
 
         /*
@@ -705,9 +675,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * FINALIZE HANDLER EXECUTION
+         * PROCESS THE QUEUE, launching all the queued events
          */
-        finalizeHandleEvent();
+        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+
+
+        /*
+         * DECREASE THE EXEC LEVEL, so that the structures can be reused
+         */
+        decreaseExecLevel();
 
     }
 
@@ -801,9 +777,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * FINALIZE HANDLER EXECUTION
+         * PROCESS THE QUEUE, launching all the queued events
          */
-        finalizeHandleEvent();
+        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+
+
+        /*
+         * DECREASE THE EXEC LEVEL, so that the structures can be reused
+         */
+        decreaseExecLevel();
 
     }
 
@@ -897,9 +879,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * FINALIZE HANDLER EXECUTION
+         * PROCESS THE QUEUE, launching all the queued events
          */
-        finalizeHandleEvent();
+        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+
+
+        /*
+         * DECREASE THE EXEC LEVEL, so that the structures can be reused
+         */
+        decreaseExecLevel();
 
     }
 
@@ -966,7 +954,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 this.engineContext.increaseLevel();
             }
             super.handleStandaloneElement(istandaloneElementTag);
-            finalizeHandleDecreaseContextLevel();
+            if (this.engineContext != null) {
+                this.engineContext.decreaseLevel();
+            }
             return;
         }
 
@@ -2114,9 +2104,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * FINALIZE HANDLER EXECUTION
+         * PROCESS THE QUEUE, launching all the queued events
          */
-        finalizeHandleEvent();
+        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+
+
+        /*
+         * DECREASE THE EXEC LEVEL, so that the structures can be reused
+         */
+        decreaseExecLevel();
 
     }
 
@@ -2306,9 +2302,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * FINALIZE HANDLER EXECUTION
+         * PROCESS THE QUEUE, launching all the queued events
          */
-        finalizeHandleEvent();
+        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+
+
+        /*
+         * DECREASE THE EXEC LEVEL, so that the structures can be reused
+         */
+        decreaseExecLevel();
 
     }
 
