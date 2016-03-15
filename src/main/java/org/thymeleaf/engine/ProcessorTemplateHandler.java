@@ -32,6 +32,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.EngineContext;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -39,7 +40,6 @@ import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
-import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
@@ -340,7 +340,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
 
-    private void finalizeHandleDecreaseContextLevel() {
+    @Override
+    public void handleTemplateStart(final ITemplateStart itemplateStart) {
 
         /*
          * Decrease engine context level, once the handler was executed
@@ -348,18 +349,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.engineContext != null) {
             this.engineContext.decreaseLevel();
         }
-
-    }
-
-
-
-
-
-
-
-
-    @Override
-    public void handleTemplateStart(final ITemplateStart itemplateStart) {
 
         /*
          *  INCREASE THE MODEL LEVEL. Markup parsing is starting, and we need to set it to 0.
@@ -582,6 +571,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * PROCESS THE REST OF THE HANDLER CHAIN.
          */
         super.handleTemplateEnd(itemplateEnd);
+
 
     }
 
@@ -1167,18 +1157,21 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 } else if (this.elementTagStructureHandler.insertBeforeModel) {
 
-                    execLevelData.queue.reset(); // Remove any previous results on the queue
+                    execLevelData.resetQueue(); // Remove any previous results on the queue
 
-                    final IModel insertedModel = this.elementTagStructureHandler.insertBeforeModelValue;
-
-                    // The current queue object is empty, so we can use it to process this inserted model
-
-                    execLevelData.queue.addModel(insertedModel);
+                    execLevelData.queue.addModel(this.elementTagStructureHandler.insertBeforeModelValue);
                     // Model inserted BEFORE is never processable, so we will always use getNext() here
-                    execLevelData.queue.process(getNext());
-                    execLevelData.queue.reset();
+                    execLevelData.queueProcessable = false;
+                    // This queue should be processed BEFORE delegating the event
+                    execLevelData.queueProcessBeforeDelegate = true;
 
                 } else if (this.elementTagStructureHandler.insertImmediatelyAfterModel) {
+
+                    // We will only be resetting the queue if we had set it to be executed before delegating, as in that
+                    // case adding our new model to the beginning of what already is in the queue would make no sense
+                    if (execLevelData.queueProcessBeforeDelegate) {
+                        execLevelData.resetQueue(); // Remove any previous results on the queue
+                    }
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
@@ -1356,6 +1349,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
+         * PROCESS THE QUEUE BEFORE DELEGATING, if specified to do so
+         */
+        if (execLevelData.queueProcessBeforeDelegate) {
+            execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+        }
+
+
+        /*
          * PROCESS THE REST OF THE HANDLER CHAIN
          */
         if (!execLevelData.discardEvent) {
@@ -1366,8 +1367,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
-        execLevelData.queue.reset();
+        if (!execLevelData.queueProcessBeforeDelegate) {
+            execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+        }
+
 
 
         /*
@@ -1607,31 +1610,21 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 } else if (this.elementTagStructureHandler.insertBeforeModel) {
 
-                    final IModel insertedModel = this.elementTagStructureHandler.insertBeforeModelValue;
-                    if (execLevelData.queue.size() == 0) {
-                        // The current queue object is empty, so we can use it to process this inserted model
+                    execLevelData.resetQueue(); // Remove any previous results on the queue
 
-                        execLevelData.queue.addModel(insertedModel);
-                        // Model inserted BEFORE is never processable, so we will always use getNext() here
-                        execLevelData.queue.process(getNext());
-                        execLevelData.queue.reset();
-
-                    } else {
-                        // The current queue object is not empty :-( so in order to process this inserted model
-                        // we will need to use a new queue...
-
-                        throw new TemplateProcessingException(
-                                "Baaaaaaaaaaad!!!!!");
-
-//                        final EngineEventQueue newQueue = new EngineEventQueue(this.configuration, this.templateMode, 5);
-//                        newQueue.addModel(insertedModel);
-//                        // Model inserted BEFORE is never processable, so we will always use getNext() here
-//                        newQueue.process(getNext());
-//                        newQueue.reset();
-
-                    }
+                    execLevelData.queue.addModel(this.elementTagStructureHandler.insertBeforeModelValue);
+                    // Model inserted BEFORE is never processable, so we will always use getNext() here
+                    execLevelData.queueProcessable = false;
+                    // This queue should be processed BEFORE delegating the event
+                    execLevelData.queueProcessBeforeDelegate = true;
 
                 } else if (this.elementTagStructureHandler.insertImmediatelyAfterModel) {
+
+                    // We will only be resetting the queue if we had set it to be executed before delegating, as in that
+                    // case adding our new model to the beginning of what already is in the queue would make no sense
+                    if (execLevelData.queueProcessBeforeDelegate) {
+                        execLevelData.resetQueue(); // Remove any previous results on the queue
+                    }
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
@@ -1819,6 +1812,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
+         * PROCESS THE QUEUE BEFORE DELEGATING, if specified to do so
+         */
+        if (execLevelData.queueProcessBeforeDelegate) {
+            execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+        }
+
+
+        /*
          * PROCESS THE REST OF THE HANDLER CHAIN and INCREASE THE MODEL LEVEL RIGHT AFTERWARDS
          */
         if (!execLevelData.discardEvent) {
@@ -1840,8 +1841,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * and close tags), because that way whatever comes in the queue will be encapsulated in a different model level
          * and its internal open/close tags should not affect the correct delimitation of this block.
          */
-        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
-        execLevelData.queue.reset();
+        if (!execLevelData.queueProcessBeforeDelegate) {
+            execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+        }
 
 
         /*
