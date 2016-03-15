@@ -465,7 +465,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * FAIL FAST in case this structure has no associated processors.
          */
-        if (templateBoundariesProcessors.length == 0) {
+        if (this.templateBoundariesProcessors.length == 0) {
             decreaseModelLevel(); // Decrease the model level increased during template start (should be now: -1)
             super.handleTemplateEnd(itemplateEnd);
             return;
