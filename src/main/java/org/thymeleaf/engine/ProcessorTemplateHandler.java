@@ -423,7 +423,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             if (this.templateStructureHandler.insertText) {
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.templateStructureHandler.insertTextProcessable;
 
                 this.textBuffer.setText(this.templateStructureHandler.insertTextValue);
@@ -431,7 +431,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             } else if (this.templateStructureHandler.insertModel) {
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.templateStructureHandler.insertModelProcessable;
 
                 // Model will be automatically cloned if mutable
@@ -526,7 +526,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             if (this.templateStructureHandler.insertText) {
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.templateStructureHandler.insertTextProcessable;
 
                 this.textBuffer.setText(this.templateStructureHandler.insertTextValue);
@@ -534,7 +534,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             } else if (this.templateStructureHandler.insertModel) {
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.templateStructureHandler.insertModelProcessable;
 
                 // Model will be automatically cloned if mutable
@@ -647,7 +647,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             if (this.textStructureHandler.replaceWithModel) {
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.textStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
@@ -657,7 +657,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             } else if (this.textStructureHandler.removeText) {
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
 
                 execLevelData.discardEvent = true;
 
@@ -749,7 +749,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             if (this.commentStructureHandler.replaceWithModel) {
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.commentStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
@@ -759,7 +759,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             } else if (this.commentStructureHandler.removeComment) {
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
 
                 execLevelData.discardEvent = true;
 
@@ -851,7 +851,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             if (this.cdataSectionStructureHandler.replaceWithModel) {
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.cdataSectionStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
@@ -861,7 +861,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             } else if (this.cdataSectionStructureHandler.removeCDATASection) {
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
 
                 execLevelData.discardEvent = true;
 
@@ -1082,7 +1082,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 } else if (this.elementTagStructureHandler.setBodyText) {
 
-                    execLevelData.queue.reset(); // Remove any previous results on the queue
+                    execLevelData.resetQueue(); // Remove any previous results on the queue
 
                     // Prepare the now-equivalent open and close tags
                     final OpenElementTag openTag =
@@ -1125,7 +1125,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 } else if (this.elementTagStructureHandler.setBodyModel) {
 
-                    execLevelData.queue.reset(); // Remove any previous results on the queue
+                    execLevelData.resetQueue(); // Remove any previous results on the queue
 
                     // Prepare the now-equivalent open and close tags
                     final OpenElementTag openTag =
@@ -1191,7 +1191,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 } else if (this.elementTagStructureHandler.replaceWithText) {
 
-                    execLevelData.queue.reset(); // Remove any previous results on the queue
+                    execLevelData.resetQueue(); // Remove any previous results on the queue
                     execLevelData.queueProcessable = this.elementTagStructureHandler.replaceWithTextProcessable;
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
@@ -1203,7 +1203,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 } else if (this.elementTagStructureHandler.replaceWithModel) {
 
-                    execLevelData.queue.reset(); // Remove any previous results on the queue
+                    execLevelData.resetQueue(); // Remove any previous results on the queue
                     execLevelData.queueProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
 
                     // Model will be automatically cloned if mutable
@@ -1213,7 +1213,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 } else if (this.elementTagStructureHandler.removeElement) {
 
-                    execLevelData.queue.reset(); // Remove any previous results on the queue
+                    execLevelData.resetQueue(); // Remove any previous results on the queue
 
                     execLevelData.discardEvent = true;
 
@@ -1337,7 +1337,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                  * returns a result of type "replaceWithModel".
                  */
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = true; // We actually NEED TO process this queue
 
                 // Model will be automatically cloned if mutable
@@ -1583,7 +1583,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 } else if (this.elementTagStructureHandler.setBodyText) {
 
-                    execLevelData.queue.reset(); // Remove any previous results on the queue
+                    execLevelData.resetQueue(); // Remove any previous results on the queue
                     execLevelData.queueProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
 
                     // For now we will not be cloning the buffer and just hoping it will be executed as is. This is
@@ -1597,7 +1597,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 } else if (this.elementTagStructureHandler.setBodyModel) {
 
-                    execLevelData.queue.reset(); // Remove any previous results on the queue
+                    execLevelData.resetQueue(); // Remove any previous results on the queue
                     execLevelData.queueProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
 
                     // Model will be automatically cloned if mutable
@@ -1644,7 +1644,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 } else if (this.elementTagStructureHandler.replaceWithText) {
 
-                    execLevelData.queue.reset(); // Remove any previous results on the queue
+                    execLevelData.resetQueue(); // Remove any previous results on the queue
                     execLevelData.queueProcessable = this.elementTagStructureHandler.replaceWithTextProcessable;
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
@@ -1657,7 +1657,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 } else if (this.elementTagStructureHandler.replaceWithModel) {
 
-                    execLevelData.queue.reset(); // Remove any previous results on the queue
+                    execLevelData.resetQueue(); // Remove any previous results on the queue
                     execLevelData.queueProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
 
                     // Model will be automatically cloned if mutable
@@ -1668,7 +1668,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 } else if (this.elementTagStructureHandler.removeElement) {
 
-                    execLevelData.queue.reset(); // Remove any previous results on the queue
+                    execLevelData.resetQueue(); // Remove any previous results on the queue
 
                     execLevelData.discardEvent = true;
                     execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
@@ -1681,13 +1681,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 } else if (this.elementTagStructureHandler.removeBody) {
 
-                    execLevelData.queue.reset(); // Remove any previous results on the queue
+                    execLevelData.resetQueue(); // Remove any previous results on the queue
 
                     execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
 
                 } else if (this.elementTagStructureHandler.removeAllButFirstChild) {
 
-                    execLevelData.queue.reset(); // Remove any previous results on the queue
+                    execLevelData.resetQueue(); // Remove any previous results on the queue
 
                     execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ELEMENTS_BUT_FIRST;
 
@@ -1799,7 +1799,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                  * returns a result of type "replaceWithModel".
                  */
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = true; // We actually NEED TO process this queue
 
                 // Model will be automatically cloned if mutable
@@ -2076,7 +2076,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             if (this.docTypeStructureHandler.replaceWithModel) {
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.docTypeStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
@@ -2086,7 +2086,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             } else if (this.docTypeStructureHandler.removeDocType) {
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
 
                 execLevelData.discardEvent = true;
 
@@ -2178,7 +2178,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             if (this.xmlDeclarationStructureHandler.replaceWithModel) {
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.xmlDeclarationStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
@@ -2188,7 +2188,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             } else if (this.xmlDeclarationStructureHandler.removeXMLDeclaration) {
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
 
                 execLevelData.discardEvent = true;
 
@@ -2206,9 +2206,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * FINALIZE HANDLER EXECUTION
+         * PROCESS THE QUEUE, launching all the queued events
          */
-        finalizeHandleEvent();
+        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+
+
+        /*
+         * DECREASE THE EXEC LEVEL, so that the structures can be reused
+         */
+        decreaseExecLevel();
 
     }
 
@@ -2274,7 +2280,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             if (this.processingInstructionStructureHandler.replaceWithModel) {
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.processingInstructionStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
@@ -2284,7 +2290,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             } else if (this.processingInstructionStructureHandler.removeProcessingInstruction) {
 
-                execLevelData.queue.reset(); // Remove any previous results on the queue
+                execLevelData.resetQueue(); // Remove any previous results on the queue
 
                 execLevelData.discardEvent = true;
 
@@ -2903,6 +2909,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             reset();
         }
 
+        void resetQueue() {
+            this.queue.reset();
+            this.queueProcessable = false;
+            this.queueProcessBeforeDelegate = false;
+        }
+
 
         void enableGathering() {
             if (!this.gatheringEnabled) {
@@ -2913,11 +2925,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         void reset() {
+            resetQueue();
             this.suspended = false;
-            this.queue.reset();
             this.processorIterator.reset();
-            this.queueProcessable = false;
-            this.queueProcessBeforeDelegate = false;
             this.discardEvent = false;
             this.bodyBehaviour = BodyBehaviour.PROCESS;
             if (this.gatheringEnabled) { // Note this flag is itself not reset. It's just a way to perform lazy init
