@@ -288,6 +288,11 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
 
 
+    public int level() {
+        return this.requestAttributesVariablesMap.level();
+    }
+
+
     public void increaseLevel() {
         this.requestAttributesVariablesMap.increaseLevel();
     }
@@ -988,6 +993,11 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
         }
 
 
+
+
+        public int level() {
+            return this.level;
+        }
 
 
         public void increaseLevel() {

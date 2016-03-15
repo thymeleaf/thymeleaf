@@ -184,4 +184,16 @@ public interface IEngineContext extends ITemplateContext {
     public void decreaseLevel();
 
 
+    /**
+     * <p>
+     *   Return the current <em>context level</em>.
+     * </p>
+     * <p>
+     *   <strong>This method should only be called internally</strong>.
+     * </p>
+     *
+     * @return the current level
+     */
+    public int level();
+
 }

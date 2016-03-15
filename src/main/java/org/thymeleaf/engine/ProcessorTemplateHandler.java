@@ -141,6 +141,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private IXMLDeclarationProcessor[] xmlDeclarationProcessors = null;
 
 
+    private Integer initialContextLevel = null;
+
     // Declare the structure that will hold the processing data/flags needed to be indexed by the
     // model level (the hierarchy of the markup)
     private ModelLevelData[] modelLevelData;
@@ -344,10 +346,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     public void handleTemplateStart(final ITemplateStart itemplateStart) {
 
         /*
-         * Decrease engine context level, once the handler was executed
+         * Save the initial engine context level, so that after processing we can ensure it matches
          */
         if (this.engineContext != null) {
-            this.engineContext.decreaseLevel();
+            this.initialContextLevel = Integer.valueOf(this.engineContext.level());
         }
 
         /*
@@ -558,12 +560,20 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.execLevel >= 0) {
             throw new TemplateProcessingException(
                     "Bad markup or template processing sequence. Execution level is >= 0 (" + this.execLevel + ") " +
-                            "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
+                    "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
         }
         if (this.modelLevel >= 0) {
             throw new TemplateProcessingException(
                     "Bad markup or template processing sequence. Model level is >= 0 (" + this.modelLevel + ") " +
-                            "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
+                    "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
+        }
+        if (this.engineContext != null) {
+            if (this.engineContext.level() != this.initialContextLevel.intValue()) {
+                throw new TemplateProcessingException(
+                        "Bad markup or template processing sequence. Context level after processing (" + this.engineContext.level() + ") " +
+                        "does not correspond to context level before processing (" + this.initialContextLevel.intValue() + ").",
+                        itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
+            }
         }
 
 

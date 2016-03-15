@@ -403,6 +403,9 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
     }
 
 
+    public int level() {
+        return this.level;
+    }
 
 
     public void increaseLevel() {
