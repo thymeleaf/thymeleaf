@@ -549,6 +549,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
+         * PROCESS THE REST OF THE HANDLER CHAIN.
+         */
+        super.handleTemplateEnd(itemplateEnd);
+
+
+        /*
          * DECREASE THE MODEL LEVEL
          */
         decreaseModelLevel();
@@ -575,12 +581,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                         itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
             }
         }
-
-
-        /*
-         * PROCESS THE REST OF THE HANDLER CHAIN.
-         */
-        super.handleTemplateEnd(itemplateEnd);
 
 
     }
