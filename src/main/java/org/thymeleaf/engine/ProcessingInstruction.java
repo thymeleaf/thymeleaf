@@ -22,11 +22,8 @@ package org.thymeleaf.engine;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.model.IProcessingInstruction;
-import org.thymeleaf.text.ITextRepository;
-import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -36,38 +33,32 @@ import org.thymeleaf.util.Validate;
  */
 final class ProcessingInstruction extends AbstractTemplateEvent implements IProcessingInstruction, IEngineTemplateEvent {
 
-    private final ITextRepository textRepository;
+    private final String target;
+    private final String content;
 
-    private String processingInstruction;
-    private String target;
-    private String content;
-
-
-    /*
-     * Objects of this class are meant to both be reused by the engine and also created fresh by the processors. This
-     * should allow reducing the number of instances of this class to the minimum.
-     *
-     * The 'processingInstruction' property, which is computed from the other properties, should be computed lazily
-     * in order to avoid unnecessary creation of Strings which would use more memory than needed.
-     */
-
-
-    // Meant to be called only from the template handler adapter
-    ProcessingInstruction(final ITextRepository textRepository) {
-        super();
-        this.textRepository = textRepository;
-    }
+    private final String processingInstruction;
 
 
 
-    // Meant to be called only from the model factory
+
     ProcessingInstruction(
-            final ITextRepository textRepository,
             final String target,
             final String content) {
         super();
-        this.textRepository = textRepository;
-        initializeFromProcessingInstruction(target, content);
+        this.target = target;
+        this.content = content;
+        this.processingInstruction = computeProcessingInstruction();
+    }
+
+
+    ProcessingInstruction(
+            final String target,
+            final String content,
+            final String templateName, final int line, final int col) {
+        super(templateName, line, col);
+        this.target = target;
+        this.content = content;
+        this.processingInstruction = computeProcessingInstruction();
     }
 
 
@@ -81,79 +72,27 @@ final class ProcessingInstruction extends AbstractTemplateEvent implements IProc
         return this.content;
     }
 
-
-
-
     public String getProcessingInstruction() {
-
-        if (this.processingInstruction == null) {
-
-            final StringBuilder strBuilder = new StringBuilder();
-
-            strBuilder.append("<?");
-            strBuilder.append(this.target);
-            if (this.content != null) {
-                strBuilder.append(' ');
-                strBuilder.append(this.content);
-            }
-            strBuilder.append("?>");
-
-            this.processingInstruction = this.textRepository.getText(strBuilder);
-
-        }
-
         return this.processingInstruction;
-
     }
 
 
 
+    private String computeProcessingInstruction() {
 
-    public void setTarget(final String target) {
-        initializeFromProcessingInstruction(target, this.content);
-    }
+        final StringBuilder strBuilder = new StringBuilder(100);
 
-    public void setContent(final String content) {
-        initializeFromProcessingInstruction(this.target, content);
-    }
-
-
-
-
-    // Meant to be called only from within the engine - removes the need to validate compute the 'processingInstruction' field
-    void reset(final String processingInstruction,
-               final String target,
-               final String content,
-               final String templateName, final int line, final int col) {
-
-        super.resetTemplateEvent(templateName, line, col);
-
-        this.target = target;
-        this.content = content;
-
-        this.processingInstruction = processingInstruction;
-
-    }
-
-
-
-    private void initializeFromProcessingInstruction(
-            final String target,
-            final String content) {
-
-        if (target == null || target.trim().length() == 0) {
-            throw new IllegalArgumentException("Processing Instruction target cannot be null or empty");
+        strBuilder.append("<?");
+        strBuilder.append(this.target);
+        if (this.content != null) {
+            strBuilder.append(' ');
+            strBuilder.append(this.content);
         }
+        strBuilder.append("?>");
 
-        super.resetTemplateEvent(null, -1, -1);
-
-        this.target = target;
-        this.content = content;
-
-        this.processingInstruction = null;
+        return strBuilder.toString();
 
     }
-
 
 
 
@@ -164,50 +103,21 @@ final class ProcessingInstruction extends AbstractTemplateEvent implements IProc
 
 
     public void write(final Writer writer) throws IOException {
-        Validate.notNull(writer, "Writer cannot be null");
-        writer.write(getProcessingInstruction());
+        writer.write(this.processingInstruction);
     }
 
 
 
 
-
-
-    public ProcessingInstruction cloneEvent() {
-        final ProcessingInstruction clone = new ProcessingInstruction(this.textRepository);
-        clone.resetAsCloneOf(this);
-        return clone;
-    }
-
-
-    // Meant to be called only from within the engine
-    void resetAsCloneOf(final ProcessingInstruction original) {
-
-        super.resetAsCloneOfTemplateEvent(original);
-        this.processingInstruction = original.processingInstruction;
-        this.target = original.target;
-        this.content = original.content;
-
-    }
-
-
-    // Meant to be called only from within the engine
-    static ProcessingInstruction asEngineProcessingInstruction(
-            final IEngineConfiguration configuration, final IProcessingInstruction processingInstruction, final boolean cloneAlways) {
+    static ProcessingInstruction asEngineProcessingInstruction(final IProcessingInstruction processingInstruction) {
 
         if (processingInstruction instanceof ProcessingInstruction) {
-            if (cloneAlways) {
-                return ((ProcessingInstruction) processingInstruction).cloneEvent();
-            }
             return (ProcessingInstruction) processingInstruction;
         }
 
-        final ProcessingInstruction newInstance = new ProcessingInstruction(configuration.getTextRepository());
-        newInstance.processingInstruction = processingInstruction.getProcessingInstruction();
-        newInstance.target = processingInstruction.getTarget();
-        newInstance.content = processingInstruction.getContent();
-        newInstance.resetTemplateEvent(processingInstruction.getTemplateName(), processingInstruction.getLine(), processingInstruction.getCol());
-        return newInstance;
+        return new ProcessingInstruction(
+                processingInstruction.getTarget(), processingInstruction.getContent(),
+                processingInstruction.getTemplateName(), processingInstruction.getLine(), processingInstruction.getCol());
 
     }
 
@@ -216,7 +126,7 @@ final class ProcessingInstruction extends AbstractTemplateEvent implements IProc
 
 
     @Override
-    public final String toString() {
+    public String toString() {
         return getProcessingInstruction();
     }
 

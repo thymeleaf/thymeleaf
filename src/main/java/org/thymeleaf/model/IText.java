@@ -29,8 +29,4 @@ public interface IText extends ITemplateEvent, CharSequence {
 
     public String getText();
 
-    public void setText(final CharSequence text);
-
-    public IText cloneEvent();
-
 }

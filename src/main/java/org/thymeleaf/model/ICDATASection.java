@@ -30,8 +30,4 @@ public interface ICDATASection extends ITemplateEvent, CharSequence {
     public String getCDATASection();
     public String getContent();
 
-    public void setContent(final CharSequence content);
-
-    public ICDATASection cloneEvent();
-
 }

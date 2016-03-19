@@ -39,8 +39,6 @@ public interface ITemplateEvent {
     public int getLine();
     public int getCol();
 
-    public ITemplateEvent cloneEvent();
-
     public void accept(final IModelVisitor visitor);
 
     public void write(final Writer writer) throws IOException;

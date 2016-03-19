@@ -33,16 +33,7 @@ public interface IDocType extends ITemplateEvent {
     public String getPublicId();
     public String getSystemId();
     public String getInternalSubset();
+
     public String getDocType();
-
-
-    public void setKeyword(final String keyword);
-    public void setElementName(final String elementName);
-    public void setToHTML5();
-    public void setIDs(final String publicId, final String systemId);
-    public void setIDs(final String type, final String publicId, final String systemId);
-    public void setInternalSubset(final String internalSubset);
-
-    public IDocType cloneEvent();
 
 }

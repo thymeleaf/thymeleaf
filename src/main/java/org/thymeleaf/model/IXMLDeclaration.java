@@ -33,10 +33,4 @@ public interface IXMLDeclaration extends ITemplateEvent {
     public String getStandalone();
     public String getXmlDeclaration();
 
-    public void setVersion(final String version);
-    public void setEncoding(final String encoding);
-    public void setStandalone(final String standalone);
-
-    public IXMLDeclaration cloneEvent();
-
 }

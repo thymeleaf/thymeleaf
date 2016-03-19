@@ -29,28 +29,30 @@ import org.thymeleaf.model.ITemplateEvent;
  */
 abstract class AbstractTemplateEvent implements ITemplateEvent {
 
-    private String templateName;
-    private int line;
-    private int col;
-
-
-    /*
-     * Object of this class can contain their data both as a String and as a char[] buffer. The buffer will only
-     * be used internally to the 'engine' package, in order to avoid the creation of unnecessary String objects
-     * (most times the parsing buffer itself will be used). Computation of the String form will be performed lazily
-     * and only if specifically required.
-     *
-     * Objects of this class are meant to both be reused by the engine and also created fresh by the processors. This
-     * should allow reducing the number of instances of this class to the minimum.
-     */
+    private final String templateName;
+    private final int line;
+    private final int col;
 
 
     AbstractTemplateEvent() {
-        super();
-        resetTemplateEvent(null, -1, -1);
+        this(null, -1, -1);
     }
 
 
+    AbstractTemplateEvent(final String templateName, final int line, final int col) {
+        super();
+        this.templateName = templateName;
+        this.line = line;
+        this.col = col;
+    }
+
+
+    AbstractTemplateEvent(final AbstractTemplateEvent original) {
+        super();
+        this.templateName = original.templateName;
+        this.line = original.line;
+        this.col = original.col;
+    }
 
 
 
@@ -70,26 +72,6 @@ abstract class AbstractTemplateEvent implements ITemplateEvent {
         return this.col;
     }
 
-
-
-
-    protected void resetTemplateEvent(
-            final String templateName, final int line, final int col) {
-        this.templateName = templateName;
-        this.line = line;
-        this.col = col;
-    }
-
-
-
-
-
-
-    protected final void resetAsCloneOfTemplateEvent(final AbstractTemplateEvent original) {
-        this.templateName = original.templateName;
-        this.line = original.line;
-        this.col = original.col;
-    }
 
 
 }

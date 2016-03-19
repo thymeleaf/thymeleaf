@@ -31,10 +31,4 @@ public interface IProcessingInstruction extends ITemplateEvent {
     public String getContent();
     public String getProcessingInstruction();
 
-
-    public void setTarget(final String target);
-    public void setContent(final String content);
-
-    public IProcessingInstruction cloneEvent();
-
 }
