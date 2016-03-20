@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.AttributeValueQuotes;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
@@ -709,15 +710,15 @@ public final class TemplateModel implements IModel {
             return this.wrapped.getAttributeDefinition(attributeName);
         }
 
-        public ValueQuotes getValueQuotes(final String completeName) {
+        public AttributeValueQuotes getValueQuotes(final String completeName) {
             return this.wrapped.getValueQuotes(completeName);
         }
 
-        public ValueQuotes getValueQuotes(final String prefix, final String name) {
+        public AttributeValueQuotes getValueQuotes(final String prefix, final String name) {
             return this.wrapped.getValueQuotes(prefix, name);
         }
 
-        public ValueQuotes getValueQuotes(final AttributeName attributeName) {
+        public AttributeValueQuotes getValueQuotes(final AttributeName attributeName) {
             return this.wrapped.getValueQuotes(attributeName);
         }
 
@@ -765,7 +766,7 @@ public final class TemplateModel implements IModel {
             immutableEventException();
         }
 
-        public void setAttribute(final String completeName, final String value, final ValueQuotes valueQuotes) {
+        public void setAttribute(final String completeName, final String value, final AttributeValueQuotes valueQuotes) {
             immutableEventException();
         }
 
@@ -773,7 +774,7 @@ public final class TemplateModel implements IModel {
             immutableEventException();
         }
 
-        public void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value, final ValueQuotes valueQuotes) {
+        public void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value, final AttributeValueQuotes valueQuotes) {
             immutableEventException();
         }
 

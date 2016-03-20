@@ -22,7 +22,7 @@ package org.thymeleaf.engine;
 import org.attoparser.AbstractMarkupHandler;
 import org.attoparser.ParseException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IElementAttributes;
+import org.thymeleaf.model.AttributeValueQuotes;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.Validate;
@@ -462,17 +462,17 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
                         this.textRepository.getText(buffer, valueContentOffset, valueContentLen) :
                         null);
 
-        final IElementAttributes.ValueQuotes valueQuotes;
+        final AttributeValueQuotes valueQuotes;
         if (value == null) {
             valueQuotes = null;
         } else if (valueOuterOffset == valueContentOffset) {
-            valueQuotes = IElementAttributes.ValueQuotes.NONE;
+            valueQuotes = AttributeValueQuotes.NONE;
         } else if (buffer[valueOuterOffset] == '"') {
-            valueQuotes = IElementAttributes.ValueQuotes.DOUBLE;
+            valueQuotes = AttributeValueQuotes.DOUBLE;
         } else if (buffer[valueOuterOffset] == '\'') {
-            valueQuotes = IElementAttributes.ValueQuotes.SINGLE;
+            valueQuotes = AttributeValueQuotes.SINGLE;
         } else {
-            valueQuotes = IElementAttributes.ValueQuotes.NONE;
+            valueQuotes = AttributeValueQuotes.NONE;
         }
 
         // Set the attribute, not allowing auto-whitespace given the parser should be creating the corresponding events

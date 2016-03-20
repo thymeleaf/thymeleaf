@@ -20,7 +20,7 @@
 package org.thymeleaf.engine;
 
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IElementAttributes;
+import org.thymeleaf.model.AttributeValueQuotes;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.text.AbstractTextHandler;
 import org.thymeleaf.templateparser.text.TextParseException;
@@ -259,17 +259,17 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
                         this.textRepository.getText(buffer, valueContentOffset, valueContentLen) :
                         null);
 
-        final IElementAttributes.ValueQuotes valueQuotes;
+        final AttributeValueQuotes valueQuotes;
         if (value == null) {
             valueQuotes = null;
         } else if (valueOuterOffset == valueContentOffset) {
-            valueQuotes = IElementAttributes.ValueQuotes.NONE;
+            valueQuotes = AttributeValueQuotes.NONE;
         } else if (buffer[valueOuterOffset] == '"') {
-            valueQuotes = IElementAttributes.ValueQuotes.DOUBLE;
+            valueQuotes = AttributeValueQuotes.DOUBLE;
         } else if (buffer[valueOuterOffset] == '\'') {
-            valueQuotes = IElementAttributes.ValueQuotes.SINGLE;
+            valueQuotes = AttributeValueQuotes.SINGLE;
         } else {
-            valueQuotes = IElementAttributes.ValueQuotes.NONE;
+            valueQuotes = AttributeValueQuotes.NONE;
         }
 
         // Note we are using 'autowhitespace', given text-mode parsing does not include whitespace parsing

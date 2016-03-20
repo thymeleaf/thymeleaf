@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IElementAttributes;
+import org.thymeleaf.model.AttributeValueQuotes;
 import org.thymeleaf.util.FastStringWriter;
 import org.thymeleaf.util.Validate;
 
@@ -49,7 +49,7 @@ final class ElementAttribute {
     String name = null;
     String operator = DEFAULT_OPERATOR;
     String value = null;
-    IElementAttributes.ValueQuotes valueQuotes = null;
+    AttributeValueQuotes valueQuotes = null;
     int line = -1;
     int col = -1;
 
@@ -69,7 +69,7 @@ final class ElementAttribute {
     // Used internally, only from the engine
     void reset(final AttributeDefinition definition,
                final String name, final String operator, final String value,
-               final IElementAttributes.ValueQuotes valueQuotes,
+               final AttributeValueQuotes valueQuotes,
                final int line, final int col) {
 
         this.name = name;
@@ -91,10 +91,10 @@ final class ElementAttribute {
             this.valueQuotes = (value == null? null : valueQuotes);
         } else if (this.valueQuotes == null) {
             // No existing quotes, and we are not specifically setting any either
-            this.valueQuotes = (this.value == null && value != null? IElementAttributes.ValueQuotes.DOUBLE : null);
+            this.valueQuotes = (this.value == null && value != null? AttributeValueQuotes.DOUBLE : null);
         } else if (value != null && value.length() == 0) {
             // We cannot respect the existing quotes if they were none and we are setting an empty string value
-            this.valueQuotes = (IElementAttributes.ValueQuotes.NONE.equals(this.valueQuotes)? IElementAttributes.ValueQuotes.DOUBLE : this.valueQuotes);
+            this.valueQuotes = (AttributeValueQuotes.NONE.equals(this.valueQuotes)? AttributeValueQuotes.DOUBLE : this.valueQuotes);
         }
 
         this.value = value;

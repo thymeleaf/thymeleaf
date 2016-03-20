@@ -34,8 +34,6 @@ import org.thymeleaf.engine.AttributeName;
  */
 public interface IElementAttributes {
 
-    public static enum ValueQuotes { DOUBLE, SINGLE, NONE }
-
 
     public int size();
 
@@ -58,9 +56,9 @@ public interface IElementAttributes {
     public AttributeDefinition getAttributeDefinition(final String prefix, final String name);
     public AttributeDefinition getAttributeDefinition(final AttributeName attributeName);
 
-    public ValueQuotes getValueQuotes(final String completeName);
-    public ValueQuotes getValueQuotes(final String prefix, final String name);
-    public ValueQuotes getValueQuotes(final AttributeName attributeName);
+    public AttributeValueQuotes getValueQuotes(final String completeName);
+    public AttributeValueQuotes getValueQuotes(final String prefix, final String name);
+    public AttributeValueQuotes getValueQuotes(final AttributeName attributeName);
 
     public boolean hasLocation(final String completeName);
     public boolean hasLocation(final String prefix, final String name);
@@ -77,10 +75,10 @@ public interface IElementAttributes {
     public void clearAll();
 
     public void setAttribute(final String completeName, final String value);
-    public void setAttribute(final String completeName, final String value, final ValueQuotes valueQuotes);
+    public void setAttribute(final String completeName, final String value, final AttributeValueQuotes valueQuotes);
 
     public void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value);
-    public void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value, final ValueQuotes valueQuotes);
+    public void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value, final AttributeValueQuotes valueQuotes);
 
     public void removeAttribute(final String prefix, final String name);
     public void removeAttribute(final String completeName);

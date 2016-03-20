@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.AttributeValueQuotes;
 import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.FastStringWriter;
@@ -256,7 +257,7 @@ public final class ElementAttributes implements IElementAttributes {
 
 
 
-    public final ValueQuotes getValueQuotes(final String completeName) {
+    public final AttributeValueQuotes getValueQuotes(final String completeName) {
         Validate.notNull(completeName, "Attribute name cannot be null");
         final int pos = searchAttribute(completeName);
         if (pos < 0) {
@@ -266,7 +267,7 @@ public final class ElementAttributes implements IElementAttributes {
     }
 
 
-    public final ValueQuotes getValueQuotes(final String prefix, final String name) {
+    public final AttributeValueQuotes getValueQuotes(final String prefix, final String name) {
         Validate.notNull(name, "Attribute name cannot be null");
         final int pos = searchAttribute(prefix, name);
         if (pos < 0) {
@@ -276,7 +277,7 @@ public final class ElementAttributes implements IElementAttributes {
     }
 
 
-    public final ValueQuotes getValueQuotes(final AttributeName attributeName) {
+    public final AttributeValueQuotes getValueQuotes(final AttributeName attributeName) {
         Validate.notNull(attributeName, "Attribute name cannot be null");
         final int pos = searchAttribute(attributeName);
         if (pos < 0) {
@@ -392,25 +393,25 @@ public final class ElementAttributes implements IElementAttributes {
     }
 
 
-    public final void setAttribute(final String completeName, final String value, final ValueQuotes valueQuotes) {
+    public final void setAttribute(final String completeName, final String value, final AttributeValueQuotes valueQuotes) {
         Validate.isTrue(
-                !(ValueQuotes.NONE.equals(valueQuotes) && this.templateMode == TemplateMode.XML),
+                !(AttributeValueQuotes.NONE.equals(valueQuotes) && this.templateMode == TemplateMode.XML),
                 "Cannot set no-quote attributes when in XML template mode");
         Validate.isTrue(
-                !(ValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
+                !(AttributeValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
                 "Cannot set an empty-string value to an attribute with no quotes");
         setAttribute(null, completeName, null, value, valueQuotes, -1, -1, true);
     }
 
 
     public final void setAttribute(
-            final AttributeDefinition attributeDefinition, final String completeName, final String value, final ValueQuotes valueQuotes) {
+            final AttributeDefinition attributeDefinition, final String completeName, final String value, final AttributeValueQuotes valueQuotes) {
         Validate.notNull(attributeDefinition, "Attribute Definition cannot be null");
         Validate.isTrue(
-                !(ValueQuotes.NONE.equals(valueQuotes) && this.templateMode == TemplateMode.XML),
+                !(AttributeValueQuotes.NONE.equals(valueQuotes) && this.templateMode == TemplateMode.XML),
                 "Cannot set no-quote attributes when in XML template mode");
         Validate.isTrue(
-                !(ValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
+                !(AttributeValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
                 "Cannot set an empty-string value to an attribute with no quotes");
         setAttribute(attributeDefinition, completeName, null, value, valueQuotes, -1, -1, true);
     }
@@ -418,7 +419,7 @@ public final class ElementAttributes implements IElementAttributes {
 
     // Meant to be used from within the engine
     final void setAttribute(
-            final AttributeDefinition attributeDefinition, final String completeName, final String operator, final String value, final ValueQuotes valueQuotes,
+            final AttributeDefinition attributeDefinition, final String completeName, final String operator, final String value, final AttributeValueQuotes valueQuotes,
             final int line, final int col, final boolean autoWhiteSpace) {
 
         // attributeDefinition might be null if it wasn't available at the moment of calling this method (note the
@@ -485,7 +486,7 @@ public final class ElementAttributes implements IElementAttributes {
                 completeName,
                 (operator == null? ElementAttribute.DEFAULT_OPERATOR : operator),
                 value,
-                (valueQuotes == null? IElementAttributes.ValueQuotes.DOUBLE : valueQuotes),
+                (valueQuotes == null? AttributeValueQuotes.DOUBLE : valueQuotes),
                 line, col);
 
         this.attributeNames[this.attributesSize] = newAttribute.definition.getAttributeName();
@@ -515,24 +516,24 @@ public final class ElementAttributes implements IElementAttributes {
     }
 
 
-    public final void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value, final ValueQuotes valueQuotes) {
+    public final void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value, final AttributeValueQuotes valueQuotes) {
         Validate.isTrue(
-                !(ValueQuotes.NONE.equals(valueQuotes) && this.templateMode == TemplateMode.XML),
+                !(AttributeValueQuotes.NONE.equals(valueQuotes) && this.templateMode == TemplateMode.XML),
                 "Cannot set no-quote attributes when in XML template mode");
         Validate.isTrue(
-                !(ValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
+                !(AttributeValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
                 "Cannot set an empty-string value to an attribute with no quotes");
         replaceAttribute(oldName, null, completeNewName, null, value, valueQuotes, -1, -1, true);
     }
 
 
-    public final void replaceAttribute(final AttributeName oldName, final AttributeDefinition newAttributeDefinition, final String completeNewName, final String value, final ValueQuotes valueQuotes) {
+    public final void replaceAttribute(final AttributeName oldName, final AttributeDefinition newAttributeDefinition, final String completeNewName, final String value, final AttributeValueQuotes valueQuotes) {
         Validate.notNull(newAttributeDefinition, "New Attribute Definition cannot be null");
         Validate.isTrue(
-                !(ValueQuotes.NONE.equals(valueQuotes) && this.templateMode == TemplateMode.XML),
+                !(AttributeValueQuotes.NONE.equals(valueQuotes) && this.templateMode == TemplateMode.XML),
                 "Cannot set no-quote attributes when in XML template mode");
         Validate.isTrue(
-                !(ValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
+                !(AttributeValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
                 "Cannot set an empty-string value to an attribute with no quotes");
         replaceAttribute(oldName, newAttributeDefinition, completeNewName, null, value, valueQuotes, -1, -1, true);
     }
@@ -540,7 +541,7 @@ public final class ElementAttributes implements IElementAttributes {
 
     // Meant to be used from within the engine
     final void replaceAttribute(
-            final AttributeName oldName, final AttributeDefinition newAttributeDefinition, final String completeNewName, final String operator, final String value, final ValueQuotes valueQuotes,
+            final AttributeName oldName, final AttributeDefinition newAttributeDefinition, final String completeNewName, final String operator, final String value, final AttributeValueQuotes valueQuotes,
             final int line, final int col, final boolean autoWhiteSpace) {
 
         // attributeDefinition might be null if it wasn't available at the moment of calling this method (note the

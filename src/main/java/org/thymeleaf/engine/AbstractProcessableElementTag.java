@@ -40,6 +40,12 @@ import org.thymeleaf.util.ProcessorComparators;
 abstract class AbstractProcessableElementTag
         extends AbstractElementTag implements IProcessableElementTag {
 
+
+
+    // TODO Probably a good idea would be to have an "IAttribute/Attribute" class with name, definition, quote, value. And have an array of them here
+
+
+
     private static final int DEFAULT_ASSOCIATED_PROCESSORS_LENGTH = 4;
 
     protected ElementAttributes elementAttributes;
