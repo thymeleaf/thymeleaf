@@ -44,8 +44,8 @@ final class Attribute implements IAttribute {
      */
 
 
-    final String name;
     final AttributeDefinition definition;
+    final String completeName;
     final String operator; // can be null
     final String value;
     final AttributeValueQuotes valueQuotes;
@@ -57,8 +57,8 @@ final class Attribute implements IAttribute {
 
 
     Attribute(
-            final String name,
             final AttributeDefinition definition,
+            final String completeName,
             final String operator,
             final String value,
             final AttributeValueQuotes valueQuotes,
@@ -66,8 +66,8 @@ final class Attribute implements IAttribute {
             final int line,
             final int col) {
         super();
-        this.name = name;
         this.definition = definition;
+        this.completeName = completeName;
         this.value = value;
         if (value == null) {
             this.operator = null;
@@ -104,8 +104,8 @@ final class Attribute implements IAttribute {
         return this.definition;
     }
 
-    public String getName() {
-        return this.name;
+    public String getCompleteName() {
+        return this.completeName;
     }
 
     public String getOperator() {
@@ -143,24 +143,20 @@ final class Attribute implements IAttribute {
      * This method allows the easy creation of instances derivate from this one but keeping some specific fields
      */
     Attribute modify(
-            final String name,
             final AttributeDefinition definition,
-            final String operator,
+            final String completeName,
             final String value,
-            final AttributeValueQuotes valueQuotes,
-            final String templateName,
-            final int line,
-            final int col) {
+            final AttributeValueQuotes valueQuotes) {
 
         return new Attribute(
-                (name == null? this.name : name),
                 (definition == null? this.definition : definition),
-                (operator == null? this.operator : operator),
+                (completeName == null? this.completeName : completeName),
+                this.operator,
                 value, // This is not keepable
                 (valueQuotes == null? this.valueQuotes : valueQuotes),
-                (templateName == null? this.templateName : templateName),
-                (line < 0 ? this.line : line),
-                (col < 0 ? this.col : col));
+                this.templateName,
+                this.line,
+                this.col);
     }
 
 
@@ -174,7 +170,7 @@ final class Attribute implements IAttribute {
          *    - If value != null : the attribute will be written according to its quotes
          */
 
-        writer.write(this.name);
+        writer.write(this.completeName);
         if (this.value != null) {
             writer.write(this.operator);
             if (this.valueQuotes == null) {

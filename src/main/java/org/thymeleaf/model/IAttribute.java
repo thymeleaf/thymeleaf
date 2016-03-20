@@ -33,7 +33,7 @@ import org.thymeleaf.engine.AttributeDefinition;
 public interface IAttribute {
 
 
-    public String getName();
+    public String getCompleteName();
     public AttributeDefinition getDefinition();
     public String getOperator();
     public String getValue();

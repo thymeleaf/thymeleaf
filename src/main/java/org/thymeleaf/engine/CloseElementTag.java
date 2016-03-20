@@ -64,7 +64,7 @@ final class CloseElementTag
             final String elementName,
             final boolean synthetic,
             final boolean unmatched) {
-        super(templateMode, elementDefinitions, elementName, synthetic);
+        super(templateMode, elementName, elementDefinitions, synthetic);
         this.unmatched = unmatched;
         this.trailingWhiteSpace = null; // No white space to be added -- white space here is a very special case
     }

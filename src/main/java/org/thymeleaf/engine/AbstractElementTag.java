@@ -36,8 +36,8 @@ import org.thymeleaf.util.FastStringWriter;
 abstract class AbstractElementTag extends AbstractTemplateEvent implements IElementTag {
 
     protected final TemplateMode templateMode;
-    protected final String elementName;
     protected final ElementDefinition elementDefinition;
+    protected final String elementCompleteName;
     protected final boolean synthetic;
 
 
@@ -45,27 +45,27 @@ abstract class AbstractElementTag extends AbstractTemplateEvent implements IElem
 
     protected AbstractElementTag(
             final TemplateMode templateMode,
-            final String elementName,
             final ElementDefinition elementDefinition,
+            final String elementCompleteName,
             final boolean synthetic) {
         super();
         this.templateMode = templateMode;
-        this.elementName = elementName;
         this.elementDefinition = elementDefinition;
+        this.elementCompleteName = elementCompleteName;
         this.synthetic = synthetic;
     }
 
 
     protected AbstractElementTag(
             final TemplateMode templateMode,
-            final String elementName,
             final ElementDefinition elementDefinition,
+            final String elementCompleteName,
             final boolean synthetic,
             final String templateName, final int line, final int col) {
         super(templateName, line, col);
         this.templateMode = templateMode;
-        this.elementName = elementName;
         this.elementDefinition = elementDefinition;
+        this.elementCompleteName = elementCompleteName;
         this.synthetic = synthetic;
     }
 
@@ -76,8 +76,8 @@ abstract class AbstractElementTag extends AbstractTemplateEvent implements IElem
         return this.templateMode;
     }
 
-    public final String getElementName() {
-        return this.elementName;
+    public final String getElementCompleteName() {
+        return this.elementCompleteName;
     }
 
     public final ElementDefinition getElementDefinition() {

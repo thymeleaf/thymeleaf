@@ -37,8 +37,6 @@ import org.thymeleaf.util.Validate;
 final class Attributes {
 
     private static final String DEFAULT_WHITE_SPACE = " ";
-
-    private static final String[] NO_WHITE_SPACE_ARRAY = new String[0];
     private static final String[] DEFAULT_WHITE_SPACE_ARRAY = new String[] { DEFAULT_WHITE_SPACE };
 
 
@@ -67,7 +65,7 @@ final class Attributes {
         // on the base case (use the AttributeDefinition).
         int n = this.attributes.length;
         while (n-- != 0) {
-            if (this.attributes[n].name.equals(completeName)) {
+            if (this.attributes[n].completeName.equals(completeName)) {
                 return n;
             }
         }
@@ -106,19 +104,16 @@ final class Attributes {
 
 
     boolean hasAttribute(final TemplateMode templateMode, final String completeName) {
-        Validate.notNull(completeName, "Attribute name cannot be null");
         return searchAttribute(templateMode, completeName) >= 0;
     }
 
 
     boolean hasAttribute(final TemplateMode templateMode, final String prefix, final String name) {
-        Validate.notNull(name, "Attribute name cannot be null");
         return searchAttribute(templateMode, prefix, name) >= 0;
     }
 
 
     boolean hasAttribute(final AttributeName attributeName) {
-        Validate.notNull(attributeName, "Attribute name cannot be null");
         return searchAttribute(attributeName) >= 0;
     }
 
@@ -126,7 +121,6 @@ final class Attributes {
 
 
     Attribute getAttribute(final TemplateMode templateMode, final String completeName) {
-        Validate.notNull(completeName, "Attribute name cannot be null");
         final int pos = searchAttribute(templateMode, completeName);
         if (pos < 0) {
             return null;
@@ -136,7 +130,6 @@ final class Attributes {
 
 
     Attribute getAttribute(final TemplateMode templateMode, final String prefix, final String name) {
-        Validate.notNull(name, "Attribute name cannot be null");
         final int pos = searchAttribute(templateMode, prefix, name);
         if (pos < 0) {
             return null;
@@ -146,7 +139,6 @@ final class Attributes {
 
 
     Attribute getAttribute(final AttributeName attributeName) {
-        Validate.notNull(attributeName, "Attribute name cannot be null");
         final int pos = searchAttribute(attributeName);
         if (pos < 0) {
             return null;
@@ -191,8 +183,7 @@ final class Attributes {
     Attributes setAttribute(
             final AttributeDefinitions attributeDefinitions, final TemplateMode templateMode,
             final AttributeDefinition attributeDefinition, final String completeName,
-            final String operator, final String value, final AttributeValueQuotes valueQuotes,
-            final String templateName, final int line, final int col) {
+            final String value, final AttributeValueQuotes valueQuotes) {
 
         // attributeDefinition might be null if it wasn't available at the moment of calling this method
         // (including it is basically an optimization for classes that can work against engine implementations)
@@ -207,7 +198,7 @@ final class Attributes {
 
             final Attribute[] newAttributes = this.attributes.clone();
             newAttributes[existingIdx] =
-                    newAttributes[existingIdx].modify(completeName, null, operator, value, valueQuotes, templateName, line, col);
+                    newAttributes[existingIdx].modify(null, completeName, value, valueQuotes);
 
             return new Attributes(newAttributes, this.innerWhiteSpaces);
 
@@ -217,7 +208,7 @@ final class Attributes {
                 (attributeDefinition != null ? attributeDefinition : attributeDefinitions.forName(templateMode, completeName));
 
         final Attribute newAttribute =
-                new Attribute(completeName, newAttributeDefinition, operator, value, valueQuotes, templateName, line, col);
+                new Attribute(newAttributeDefinition, completeName, null, value, valueQuotes, null, -1, -1);
 
 
         final Attribute[] newAttributes;
@@ -285,9 +276,9 @@ final class Attributes {
 
     Attributes replaceAttribute(
             final AttributeDefinitions attributeDefinitions, final TemplateMode templateMode,
-            final AttributeName oldName, final AttributeDefinition newAttributeDefinition, final String newCompleteName,
-            final String operator, final String value, final AttributeValueQuotes valueQuotes,
-            final String templateName, final int line, final int col) {
+            final AttributeName oldName,
+            final AttributeDefinition newAttributeDefinition, final String newCompleteName,
+            final String value, final AttributeValueQuotes valueQuotes) {
 
         // attributeDefinition might be null if it wasn't available at the moment of calling this method
         // (including it is basically an optimization for classes that can work against engine implementations)
@@ -296,14 +287,14 @@ final class Attributes {
 
 
         if (this.attributes == null || oldName == newAttributeDefinition.attributeName) {
-            return setAttribute(attributeDefinitions, templateMode, newAttributeDefinition, newCompleteName, operator, value, valueQuotes, templateName, line, col);
+            return setAttribute(attributeDefinitions, templateMode, newAttributeDefinition, newCompleteName, value, valueQuotes);
         }
 
 
         // First check existence of the old one -- if it does not exist, this is exactly the same as setAttribute
         final int oldIdx = searchAttribute(oldName);
         if (oldIdx < 0) {
-            return setAttribute(attributeDefinitions, templateMode, newAttributeDefinition, newCompleteName, operator, value, valueQuotes, templateName, line, col);
+            return setAttribute(attributeDefinitions, templateMode, newAttributeDefinition, newCompleteName, value, valueQuotes);
         }
 
 
@@ -338,21 +329,24 @@ final class Attributes {
 
             // Now modify the existing new attribute directly in the new array
             newAttributes[existingIdx] =
-                    newAttributes[existingIdx].modify(newCompleteName, null, operator, value, valueQuotes, templateName, line, col);
+                    newAttributes[existingIdx].modify(null, newCompleteName, value, valueQuotes);
 
             return new Attributes(newAttributes, this.innerWhiteSpaces);
 
         }
 
 
-        // By now we know the old one exists, but the new one doesn't, so let's simply turn the old one into the new one
+        // By now we know the old one exists, but the new one doesn't, so let's simply replace the old one with the new one
 
         final AttributeDefinition computedNewAttributeDefinition =
                 (newAttributeDefinition != null ? newAttributeDefinition : attributeDefinitions.forName(templateMode, newCompleteName));
 
+        // We will not 'modify' the old one, but create a new object. We specifically don't want to save the operator,
+        // template name, line or col because it is a new attribute with a different name (and which did not exist at
+        // the original markup).
         final Attribute[] newAttributes = this.attributes.clone();
         newAttributes[oldIdx] =
-                newAttributes[oldIdx].modify(newCompleteName, computedNewAttributeDefinition, operator, value, valueQuotes, templateName, line, col);
+                new Attribute(computedNewAttributeDefinition, newCompleteName, null, value, valueQuotes, null, -1, -1);
 
 
         return new Attributes(newAttributes, this.innerWhiteSpaces);
