@@ -24,12 +24,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.thymeleaf.model.IElementAttributes;
+import org.thymeleaf.model.AttributeValueQuotes;
+import org.thymeleaf.model.IAttribute;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementProcessor;
 import org.thymeleaf.processor.element.MatchingElementName;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.ProcessorComparators;
+import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -41,14 +43,7 @@ abstract class AbstractProcessableElementTag
         extends AbstractElementTag implements IProcessableElementTag {
 
 
-
-    // TODO Probably a good idea would be to have an "IAttribute/Attribute" class with name, definition, quote, value. And have an array of them here
-
-
-
-    private static final int DEFAULT_ASSOCIATED_PROCESSORS_LENGTH = 4;
-
-    protected ElementAttributes elementAttributes;
+    final Attributes attributes;
 
     // Dialect constraints ensure anyway that we will never have duplicates here, because the same processor can
     // never be applied to more than one attribute.
@@ -58,50 +53,92 @@ abstract class AbstractProcessableElementTag
 
 
 
-    /*
-     * Objects of this class are meant to both be reused by the engine and also created fresh by the processors. This
-     * should allow reducing the number of instances of this class to the minimum.
-     */
 
-
-    // Meant to be called only from the template handler adapter
     AbstractProcessableElementTag(
             final TemplateMode templateMode,
-            final ElementDefinitions elementDefinitions,
-            final AttributeDefinitions attributeDefinitions) {
-        super(templateMode, elementDefinitions);
-        this.elementAttributes = new ElementAttributes(this.templateMode, attributeDefinitions);
-    }
-
-
-
-    // Meant to be called only from the model factory
-    AbstractProcessableElementTag(
-            final TemplateMode templateMode,
-            final ElementDefinitions elementDefinitions,
-            final AttributeDefinitions attributeDefinitions,
             final String elementName,
-            final boolean synthetic) {
-        super(templateMode, elementDefinitions, elementName, synthetic);
-        this.elementAttributes = new ElementAttributes(this.templateMode, attributeDefinitions);
-    }
-
-
-
-    // Meant to be called only from the cloning infrastructure
-    protected AbstractProcessableElementTag() {
-        super();
-    }
-
-
-
-    public final IElementAttributes getAttributes() {
-        return this.elementAttributes;
+            final ElementDefinition elementDefinition,
+            final Attributes attributes,
+            final boolean synthetic,
+            final String templateName,
+            final int line,
+            final int col) {
+        super(templateMode, elementDefinition, elementName, synthetic, templateName, line, col);
+        this.attributes = attributes;
     }
 
 
 
 
+    public final boolean hasAttribute(final String completeName) {
+        Validate.notNull(completeName, "Attribute name cannot be null");
+        return this.attributes.hasAttribute(this.templateMode, completeName);
+    }
+
+
+    public final boolean hasAttribute(final String prefix, final String name) {
+        Validate.notNull(name, "Attribute name cannot be null");
+        return this.attributes.hasAttribute(this.templateMode, prefix, name);
+    }
+
+
+    public final boolean hasAttribute(final AttributeName attributeName) {
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        return this.attributes.hasAttribute(attributeName);
+    }
+
+
+    public final IAttribute getAttribute(final String completeName) {
+        Validate.notNull(completeName, "Attribute name cannot be null");
+        return this.attributes.getAttribute(this.templateMode, completeName);
+    }
+
+
+    public final IAttribute getAttribute(final String prefix, final String name) {
+        Validate.notNull(name, "Attribute name cannot be null");
+        return this.attributes.getAttribute(this.templateMode, prefix, name);
+    }
+
+
+    public final IAttribute getAttribute(final AttributeName attributeName) {
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        return this.attributes.getAttribute(attributeName);
+    }
+
+
+
+
+    public abstract AbstractProcessableElementTag setAttribute(final String completeName, final String value);
+
+
+    public abstract AbstractProcessableElementTag setAttribute(final String completeName, final String value, final AttributeValueQuotes valueQuotes);
+
+
+    abstract AbstractProcessableElementTag setAttribute(
+            final AttributeDefinition attributeDefinition, final String completeName, final String value, final AttributeValueQuotes valueQuotes);
+
+
+
+
+    public abstract AbstractProcessableElementTag replaceAttribute(final AttributeName oldName, final String completeNewName, final String value);
+
+
+    public abstract AbstractProcessableElementTag replaceAttribute(final AttributeName oldName, final String completeNewName, final String value, final AttributeValueQuotes valueQuotes);
+
+
+    abstract AbstractProcessableElementTag replaceAttribute(
+            final AttributeName oldName, final AttributeDefinition newAttributeDefinition, final String completeNewName, final String value, final AttributeValueQuotes valueQuotes);
+
+
+
+
+    public abstract AbstractProcessableElementTag removeAttribute(final String prefix, final String name);
+
+
+    public abstract AbstractProcessableElementTag removeAttribute(final String completeName);
+
+
+    public abstract AbstractProcessableElementTag removeAttribute(final AttributeName attributeName);
 
 
 
@@ -230,33 +267,7 @@ abstract class AbstractProcessableElementTag
 
 
 
-    protected final void resetProcessableElementTag(
-            final String elementName, final boolean synthetic,
-            final String templateName, final int line, final int col) {
-
-        resetElementTag(elementName, synthetic, templateName, line, col);
-        this.elementAttributes.clearAll();
-        this.associatedProcessorsAttributesVersion = Integer.MIN_VALUE;
-
-    }
-
-
-
-
-
-    protected final void resetAsCloneOfProcessableElementTag(final AbstractProcessableElementTag original) {
-        super.resetAsCloneOfElementTag(original);
-        if (this.elementAttributes == null) {
-            this.elementAttributes = original.elementAttributes.cloneElementAttributes();
-        } else {
-            this.elementAttributes.resetAsCloneOf(original.elementAttributes); // not the same as cloning the ElementAttributes object, because we want
-        }
-        this.associatedProcessorsSize = 0;
-        if (original.associatedProcessorsSize > 0) {
-            addAssociatedProcessors(original.associatedProcessors, original.associatedProcessorsSize);
-        }
-        this.associatedProcessorsAttributesVersion = original.associatedProcessorsAttributesVersion;
-    }
+    
 
 
 }
