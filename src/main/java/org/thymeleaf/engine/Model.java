@@ -21,6 +21,7 @@ package org.thymeleaf.engine;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -51,23 +52,32 @@ import org.thymeleaf.util.Validate;
  */
 final class Model implements IModel {
 
-    private static final int INITIAL_EVENT_QUEUE_SIZE = 100; // 100 events by default, will auto-grow
+    private static final int INITIAL_EVENT_QUEUE_SIZE = 50; // 50 events by default, will auto-grow
 
-    private final IEngineConfiguration configuration;
-    private final TemplateMode templateMode;
-    private final EngineEventQueue queue;
+    final IEngineConfiguration configuration;
+    final TemplateMode templateMode;
+
+    IEngineTemplateEvent[] queue;
+    int queueSize;
 
 
 
 
-    // Only to be called from the IModelFactory
     Model(final IEngineConfiguration configuration, final TemplateMode templateMode) {
+
         super();
+
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(templateMode, "Template Mode cannot be null");
-        this.configuration = configuration;
+
         this.templateMode = templateMode;
-        this.queue = new EngineEventQueue(this.configuration, this.templateMode, INITIAL_EVENT_QUEUE_SIZE);
+        this.configuration = configuration;
+
+        this.queue = new IEngineTemplateEvent[INITIAL_EVENT_QUEUE_SIZE];
+        Arrays.fill(this.queue, null);
+
+        this.queueSize = 0;
+
     }
 
 
@@ -79,22 +89,26 @@ final class Model implements IModel {
 
         this.configuration = model.getConfiguration();
         this.templateMode = model.getTemplateMode();
-        this.queue = new EngineEventQueue(this.configuration, this.templateMode, INITIAL_EVENT_QUEUE_SIZE);
 
         if (model instanceof Model) {
 
-            this.queue.resetAsCloneOf(((Model)model).queue, true);
+            final Model mmodel = (Model) model;
+            this.queue = mmodel.queue.clone();
+            this.queueSize = mmodel.queueSize;
 
         } else if (model instanceof TemplateModel) {
 
-            this.queue.resetAsCloneOf(((TemplateModel)model).getInternalModel().queue, true);
+            final TemplateModel templateModel = (TemplateModel) model;
+            this.queue = new IEngineTemplateEvent[templateModel.queue.length + INITIAL_EVENT_QUEUE_SIZE/2];
+            System.arraycopy(templateModel.queue, 1, this.queue, 0, templateModel.queue.length - 2);
+            this.queueSize = templateModel.queue.length - 2;
 
         } else {
 
-            final int modelSize = model.size();
-            for (int i = 0; i < modelSize; i++) {
-                this.queue.build(asEngineEvent(this.configuration, this.templateMode, model.get(i), true));
-            }
+            this.queue = new IEngineTemplateEvent[INITIAL_EVENT_QUEUE_SIZE];
+            Arrays.fill(this.queue, null);
+            this.queueSize = 0;
+            insertModel(0, model);
 
         }
 
@@ -113,73 +127,164 @@ final class Model implements IModel {
     }
 
 
-
     public int size() {
-        return this.queue.size();
+        return this.queueSize;
     }
 
 
     public ITemplateEvent get(final int pos) {
-        return this.queue.get(pos);
+        return this.queue[pos];
     }
 
 
     public void add(final ITemplateEvent event) {
-        this.queue.add(asEngineEvent(this.configuration, this.templateMode, event, true), false);
+        insert(this.queueSize, event);
     }
 
 
     public void insert(final int pos, final ITemplateEvent event) {
-        this.queue.insert(pos, asEngineEvent(this.configuration, this.templateMode, event, true), false);
+
+        if (event == null) {
+            return;
+        }
+
+        final IEngineTemplateEvent engineEvent = asEngineEvent(event);
+
+        // Check that the event that is going to be inserted is not a template start/end
+        if (engineEvent == TemplateStart.TEMPLATE_START_INSTANCE || engineEvent == TemplateEnd.TEMPLATE_END_INSTANCE) {
+            throw new TemplateProcessingException(
+                    "Cannot insert event of type TemplateStart/TemplateEnd. These " +
+                    "events can only be added to models internally during template parsing.");
+        }
+
+        // Check there is room for a new event, or grow the queue if not
+        if (this.queue.length == this.queueSize) {
+            final IEngineTemplateEvent[] newQueue = new IEngineTemplateEvent[this.queue.length + INITIAL_EVENT_QUEUE_SIZE/2];
+            Arrays.fill(newQueue, null);
+            System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
+            this.queue = newQueue;
+        }
+
+        // Make room for the new event
+        System.arraycopy(this.queue, pos, this.queue, pos + 1, this.queueSize - pos);
+
+        // Set the new event in its new position
+        this.queue[pos] = engineEvent;
+
+        this.queueSize++;
+
     }
 
 
     public void addModel(final IModel model) {
-        this.queue.addModel(model);
+        insertModel(this.queueSize, model);
     }
 
 
     public void insertModel(final int pos, final IModel model) {
-        this.queue.insertModel(pos, model);
+
+        if (model == null || model.size() == 0) {
+            return;
+        }
+
+        if (!this.configuration.equals(model.getConfiguration())) {
+            throw new TemplateProcessingException(
+                    "Cannot add model of class " + model.getClass().getName() + " to the current template, as " +
+                    "it was created using a different Template Engine Configuration.");
+        }
+
+        if (this.templateMode != model.getTemplateMode()) {
+            throw new TemplateProcessingException(
+                    "Cannot add model of class " + model.getClass().getName() + " to the current template, as " +
+                    "it was created using a different Template Mode: " + model.getTemplateMode() + " instead of " +
+                    "the current " + this.templateMode);
+        }
+
+        if (this.queue.length <= (this.queueSize + model.size())) {
+            // We need to grow the queue!
+            final IEngineTemplateEvent[] newQueue = new IEngineTemplateEvent[Math.max(this.queueSize + model.size(), this.queue.length + INITIAL_EVENT_QUEUE_SIZE/2)];
+            Arrays.fill(newQueue, null);
+            System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
+            this.queue = newQueue;
+        }
+
+        if (model instanceof TemplateModel) {
+            doInsertTemplateModel(pos, (TemplateModel)model);
+        } else if (model instanceof Model) {
+            doInsertModel(pos, (Model)model);
+        } else {
+            doInsertOtherModel(pos, model);
+        }
+
+    }
+
+
+    private void doInsertModel(final int pos, final Model model) {
+        // Make room for the new events (if necessary because pos < this.queueSize)
+        System.arraycopy(this.queue, pos, this.queue, pos + model.queueSize, this.queueSize - pos);
+        // Copy the new events to their new position
+        System.arraycopy(model.queue, 0, this.queue, pos, model.queueSize);
+        this.queueSize += model.queueSize;
+    }
+
+
+    private void doInsertTemplateModel(final int pos, final TemplateModel model) {
+        // We compute the insertion size by subtracting the TemplateStart/TemplateEnd events
+        final int insertionSize = model.queue.length - 2;
+        // Make room for the new events (if necessary because pos < this.queueSize)
+        System.arraycopy(this.queue, pos, this.queue, pos + insertionSize, this.queueSize - pos);
+        // Copy the new events to their new position
+        System.arraycopy(model.queue, 1, this.queue, pos, insertionSize);
+        this.queueSize += insertionSize;
+    }
+
+
+    private void doInsertOtherModel(final int pos, final IModel model) {
+        // We know nothing about this model implementation, so we will use the public interface methods
+        final int modelSize = model.size();
+        for (int i = 0; i < modelSize; i++) {
+            insert(pos + i, model.get(i));
+        }
     }
 
 
     public void remove(final int pos) {
-        this.queue.remove(pos);
+        System.arraycopy(this.queue, pos + 1, this.queue, pos, this.queueSize - (pos + 1));
+        this.queueSize--;
     }
 
 
     public void reset() {
-        this.queue.reset();
+        this.queueSize = 0;
     }
 
 
 
-
-    // Note we don't want to put this visibility to public, because we want to access the internal queue only from
-    // the engine...
-    EngineEventQueue getEventQueue() {
-        return this.queue;
+    int process(final ITemplateHandler handler) {
+        return process(handler, 0, Integer.MAX_VALUE);
     }
 
 
+    int process(final ITemplateHandler handler, final int offset, final int len) {
 
-    void process(final ITemplateHandler templateHandler) {
+        if (handler == null || this.queueSize == 0 || offset >= this.queueSize) {
+            return 0;
+        }
 
-        // Queued events themselves will not be cloned, our events will remain as the master ones,
-        // and the new EngineEventQueue will use its own buffers.
-        // The reason we are cloning the queue object itself before processing is precisely that the buffer objects
-        // (which are part of the state of the EngineEventQueue object) will be used for firing the events, and those
-        // can be modified during processing. So not queuing the queue and therefore not creating a new ser of buffers
-        // could result in pretty bad interactions between template executions...
-        final EngineEventQueue eventQueue = this.queue.cloneEventQueue(false, false);
+        int processed = 0;
 
-        // Process the new, cloned queue
-        // NOTE It is VERY important that 'eventQueue.reset()' is NOT called here, because we will be sharing the actual
-        // event array with the original (cached) event queue!
-        eventQueue.process(templateHandler);
+        final int maxi = (len == Integer.MAX_VALUE? this.queueSize : Math.min(this.queueSize, offset + len));
+
+        for (int i = offset; i < maxi; i++) {
+            this.queue[i].beHandled(handler);
+            processed++;
+        }
+
+        return processed;
 
     }
+
+
 
 
 
@@ -190,28 +295,26 @@ final class Model implements IModel {
 
 
 
-    public void write(final Writer writer) throws IOException {
-        final OutputTemplateHandler outputTemplateHandler = new OutputTemplateHandler(writer);
-        process(outputTemplateHandler);
+    public final void write(final Writer writer) throws IOException {
+        for (int i = 0; i < this.queue.length; i++) {
+            this.queue[i].write(writer);
+        }
     }
 
 
 
 
     public void accept(final IModelVisitor visitor) {
-
-        final int queueSize = this.queue.size();
-        for (int i = 0; i < queueSize; i++) {
-            this.queue.get(i).accept(visitor);
+        for (int i = 0; i < this.queue.length; i++) {
+            // We will execute the visitor on the Immutable events, that we need to create during the visit
+            this.queue[i].accept(visitor);
         }
-
     }
 
 
 
-
     @Override
-    public String toString() {
+    public final String toString() {
         try {
             final Writer writer = new FastStringWriter();
             write(writer);
@@ -225,48 +328,49 @@ final class Model implements IModel {
 
 
 
-    private static IEngineTemplateEvent asEngineEvent(
-            final IEngineConfiguration configuration, final TemplateMode templateMode,
-            final ITemplateEvent event, final boolean cloneAlways) {
+    static IEngineTemplateEvent asEngineEvent(final ITemplateEvent event) {
+
+        if (event instanceof IEngineTemplateEvent) {
+            return (IEngineTemplateEvent)event;
+        }
 
         if (event instanceof IText) {
-            return Text.asEngineText(configuration, (IText) event, cloneAlways);
+            return Text.asEngineText((IText) event);
         }
         if (event instanceof IOpenElementTag) {
-            return OpenElementTag.asEngineOpenElementTag(templateMode, configuration, (IOpenElementTag) event, cloneAlways);
+            return OpenElementTag.asEngineOpenElementTag((IOpenElementTag) event);
         }
         if (event instanceof ICloseElementTag) {
-            return CloseElementTag.asEngineCloseElementTag(templateMode, configuration, (ICloseElementTag) event, cloneAlways);
+            return CloseElementTag.asEngineCloseElementTag((ICloseElementTag) event);
         }
         if (event instanceof IStandaloneElementTag) {
-            return StandaloneElementTag.asEngineStandaloneElementTag(templateMode, configuration, (IStandaloneElementTag) event, cloneAlways);
+            return StandaloneElementTag.asEngineStandaloneElementTag((IStandaloneElementTag) event);
         }
         if (event instanceof IDocType) {
-            return DocType.asEngineDocType(configuration, (IDocType) event, cloneAlways);
+            return DocType.asEngineDocType((IDocType) event);
         }
         if (event instanceof IComment) {
-            return Comment.asEngineComment(configuration, (IComment) event, cloneAlways);
+            return Comment.asEngineComment((IComment) event);
         }
         if (event instanceof ICDATASection) {
-            return CDATASection.asEngineCDATASection(configuration, (ICDATASection) event, cloneAlways);
+            return CDATASection.asEngineCDATASection((ICDATASection) event);
         }
         if (event instanceof IXMLDeclaration) {
-            return XMLDeclaration.asEngineXMLDeclaration(configuration, (IXMLDeclaration) event, cloneAlways);
+            return XMLDeclaration.asEngineXMLDeclaration((IXMLDeclaration) event);
         }
         if (event instanceof IProcessingInstruction) {
-            return ProcessingInstruction.asEngineProcessingInstruction(configuration, (IProcessingInstruction) event, cloneAlways);
+            return ProcessingInstruction.asEngineProcessingInstruction((IProcessingInstruction) event);
         }
         if (event instanceof ITemplateStart) {
-            return TemplateStart.asEngineTemplateStart((ITemplateStart) event, cloneAlways);
+            return TemplateStart.asEngineTemplateStart((ITemplateStart) event);
         }
         if (event instanceof ITemplateEnd) {
-            return TemplateEnd.asEngineTemplateEnd((ITemplateEnd) event, cloneAlways);
+            return TemplateEnd.asEngineTemplateEnd((ITemplateEnd) event);
         }
         throw new TemplateProcessingException(
-                "Cannot handle in queue event of type: " + event.getClass().getName());
+                "Cannot handle in event of type: " + event.getClass().getName());
 
     }
-
 
 
 }
