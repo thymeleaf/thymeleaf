@@ -38,13 +38,6 @@ public final class TemplateHandlerAdapterRawHandler implements IRawHandler {
     private final int lineOffset;
     private final int colOffset;
 
-    private final TemplateStart templateStart;
-    private final TemplateEnd templateEnd;
-
-    private final Text text;
-
-    private ElementAttributes currentElementAttributes;
-
 
     public TemplateHandlerAdapterRawHandler(final String templateName,
                                             final ITemplateHandler templateHandler,
@@ -66,12 +59,6 @@ public final class TemplateHandlerAdapterRawHandler implements IRawHandler {
         this.lineOffset = (lineOffset > 0 ? lineOffset - 1 : lineOffset); // line n for offset will be line 1 for the newly parsed template
         this.colOffset = (colOffset > 0 ? colOffset - 1 : colOffset); // line n for offset will be line 1 for the newly parsed template
 
-        // We will be using these as objectual buffers in order to avoid creating too many objects
-        this.templateStart = new TemplateStart();
-        this.templateEnd = new TemplateEnd();
-
-        this.text = new Text(this.textRepository);
-
     }
 
 
@@ -79,20 +66,16 @@ public final class TemplateHandlerAdapterRawHandler implements IRawHandler {
     public void handleDocumentStart(
             final long startTimeNanos, final int line, final int col)
             throws RawParseException {
-
-        this.templateStart.reset(startTimeNanos, this.templateName, this.lineOffset + line, (line == 1 ? this.colOffset : 0) + col);
-        this.templateHandler.handleTemplateStart(this.templateStart);
-
+        // The reported times refer to parsing times, and processing a template is more complex, so we'll just ignore the info
+        this.templateHandler.handleTemplateStart(TemplateStart.TEMPLATE_START_INSTANCE);
     }
 
 
     public void handleDocumentEnd(
             final long endTimeNanos, final long totalTimeNanos, final int line, final int col)
             throws RawParseException {
-
-        this.templateEnd.reset(endTimeNanos, totalTimeNanos, this.templateName, this.lineOffset + line, (line == 1 ? this.colOffset : 0) + col);
-        this.templateHandler.handleTemplateEnd(this.templateEnd);
-
+        // The reported times refer to parsing times, and processing a template is more complex, so we'll just ignore the info
+        this.templateHandler.handleTemplateEnd(TemplateEnd.TEMPLATE_END_INSTANCE);
     }
 
 
@@ -102,9 +85,8 @@ public final class TemplateHandlerAdapterRawHandler implements IRawHandler {
             final int offset, final int len,
             final int line, final int col)
             throws RawParseException {
-        this.text.reset(buffer, offset, len, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col);
-        this.text.computeContentFlags();
-        this.templateHandler.handleText(this.text);
+        this.templateHandler.handleText(
+                new Text(this.textRepository.getText(buffer, offset, len), this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
     }
 
 
