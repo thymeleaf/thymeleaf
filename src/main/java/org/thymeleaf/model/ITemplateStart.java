@@ -27,8 +27,6 @@ package org.thymeleaf.model;
  */
 public interface ITemplateStart extends ITemplateEvent {
 
-    public long getStartTimeNanos();
-
-    public ITemplateStart cloneEvent();
+    // Only a marker interface
 
 }

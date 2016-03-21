@@ -148,6 +148,14 @@ final class Comment extends AbstractTextualTemplateEvent implements IComment {
 
 
     @Override
+    public void beHandled(final ITemplateHandler handler) {
+        handler.handleComment(this);
+    }
+
+
+
+
+    @Override
     public String toString() {
         return getComment();
     }

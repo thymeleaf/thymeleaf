@@ -20,6 +20,7 @@
 package org.thymeleaf.model;
 
 import org.thymeleaf.engine.ElementDefinition;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  *
@@ -29,7 +30,8 @@ import org.thymeleaf.engine.ElementDefinition;
  */
 public interface IElementTag extends ITemplateEvent {
 
-    public String getElementName();
+    public TemplateMode getTemplateMode();
+    public String getElementCompleteName();
     public ElementDefinition getElementDefinition();
 
     public boolean isSynthetic();

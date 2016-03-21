@@ -33,30 +33,13 @@ import org.thymeleaf.model.ITemplateStart;
  */
 final class TemplateStart extends AbstractTemplateEvent implements ITemplateStart, IEngineTemplateEvent {
 
-    private long startTimeNanos;
+    final static TemplateStart TEMPLATE_START_INSTANCE = new TemplateStart();
 
 
 
-    // Meant to be called only from the template handler adapter
-    TemplateStart() {
+
+    private TemplateStart() {
         super();
-    }
-
-
-
-    public long getStartTimeNanos() {
-        return this.startTimeNanos;
-    }
-
-
-
-
-    void reset(final long startTimeNanos,
-               final String templateName, final int line, final int col) {
-
-        super.resetTemplateEvent(templateName, line, col);
-        this.startTimeNanos = startTimeNanos;
-
     }
 
 
@@ -72,41 +55,20 @@ final class TemplateStart extends AbstractTemplateEvent implements ITemplateStar
     }
 
 
-    public TemplateStart cloneEvent() {
-        // When cloning we will protect the buffer as only the instances used themselves as buffers in the 'engine'
-        // package should reference a buffer.
-        final TemplateStart clone = new TemplateStart();
-        clone.resetAsCloneOf(this);
-        return clone;
-    }
 
 
     // Meant to be called only from within the engine
-    void resetAsCloneOf(final TemplateStart original) {
-
-        super.resetAsCloneOfTemplateEvent(original);
-        this.startTimeNanos = original.startTimeNanos;
-
+    static TemplateStart asEngineTemplateStart(final ITemplateStart templateStart) {
+        return TEMPLATE_START_INSTANCE;
     }
 
 
-    // Meant to be called only from within the engine
-    static TemplateStart asEngineTemplateStart(final ITemplateStart templateStart, final boolean cloneAlways) {
 
-        if (templateStart instanceof TemplateStart) {
-            if (cloneAlways) {
-                return ((TemplateStart) templateStart).cloneEvent();
-            }
-            return (TemplateStart) templateStart;
-        }
 
-        final TemplateStart newInstance = new TemplateStart();
-        newInstance.startTimeNanos = templateStart.getStartTimeNanos();
-        newInstance.resetTemplateEvent(templateStart.getTemplateName(), templateStart.getLine(), templateStart.getCol());
-        return newInstance;
-
+    @Override
+    public void beHandled(final ITemplateHandler handler) {
+        handler.handleTemplateStart(this);
     }
-
 
 
 

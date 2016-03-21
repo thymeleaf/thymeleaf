@@ -29,6 +29,6 @@ import org.thymeleaf.model.ITemplateEvent;
  */
 interface IEngineTemplateEvent extends ITemplateEvent {
 
-    // Nothing to add. Just a marker interface grouping all internal event implementations
+    void beHandled(final ITemplateHandler handler);
 
 }

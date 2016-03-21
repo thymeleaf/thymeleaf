@@ -78,6 +78,7 @@ final class DocType extends AbstractTemplateEvent implements IDocType, IEngineTe
 
 
     DocType(
+            final String docType,
             final String keyword,
             final String elementName,
             final String type,
@@ -92,7 +93,7 @@ final class DocType extends AbstractTemplateEvent implements IDocType, IEngineTe
         this.publicId = publicId;
         this.systemId = systemId;
         this.internalSubset = internalSubset;
-        this.docType = computeDocType();
+        this.docType = (docType != null? docType : computeDocType());
     }
 
 
@@ -204,6 +205,7 @@ final class DocType extends AbstractTemplateEvent implements IDocType, IEngineTe
         }
 
         return new DocType(
+                null,
                 docType.getKeyword(),
                 docType.getElementName(),
                 docType.getType(),
@@ -212,6 +214,14 @@ final class DocType extends AbstractTemplateEvent implements IDocType, IEngineTe
                 docType.getInternalSubset(),
                 docType.getTemplateName(), docType.getLine(), docType.getCol());
 
+    }
+
+
+
+
+    @Override
+    public void beHandled(final ITemplateHandler handler) {
+        handler.handleDocType(this);
     }
 
 

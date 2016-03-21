@@ -27,9 +27,6 @@ package org.thymeleaf.model;
  */
 public interface ITemplateEnd extends ITemplateEvent {
 
-    public long getEndTimeNanos();
-    public long getTotalTimeNanos();
-
-    public ITemplateEnd cloneEvent();
+    // Only a marker interface
 
 }

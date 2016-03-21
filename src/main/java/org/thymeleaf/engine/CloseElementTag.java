@@ -22,11 +22,9 @@ package org.thymeleaf.engine;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -39,42 +37,40 @@ final class CloseElementTag
             implements ICloseElementTag, IEngineTemplateEvent {
 
 
-    /*
-     * Objects of this class are meant to both be reused by the engine and also created fresh by the processors. This
-     * should allow reducing the number of instances of this class to the minimum.
-     */
-
-    private String trailingWhiteSpace = null;
-    private boolean unmatched;
+    final String trailingWhiteSpace; // can be null if there is none
+    final boolean unmatched;
 
 
-    // Meant to be called only from the template handler adapter
+
+
     CloseElementTag(
             final TemplateMode templateMode,
-            final ElementDefinitions elementDefinitions) {
-        super(templateMode, elementDefinitions);
-    }
-
-
-
-    // Meant to be called only from the model factory
-    CloseElementTag(
-            final TemplateMode templateMode,
-            final ElementDefinitions elementDefinitions,
-            final String elementName,
+            final ElementDefinition elementDefinition,
+            final String elementCompleteName,
+            final String trailingWhiteSpace,
             final boolean synthetic,
             final boolean unmatched) {
-        super(templateMode, elementName, elementDefinitions, synthetic);
+        super(templateMode, elementDefinition, elementCompleteName, synthetic);
+        this.trailingWhiteSpace = trailingWhiteSpace;
         this.unmatched = unmatched;
-        this.trailingWhiteSpace = null; // No white space to be added -- white space here is a very special case
     }
 
 
-
-    // Meant to be called only from the cloneElementTag method
-    protected CloseElementTag() {
-        super();
+    CloseElementTag(
+            final TemplateMode templateMode,
+            final ElementDefinition elementDefinition,
+            final String elementCompleteName,
+            final String trailingWhiteSpace,
+            final boolean synthetic,
+            final boolean unmatched,
+            final String templateName,
+            final int line,
+            final int col) {
+        super(templateMode, elementDefinition, elementCompleteName, synthetic, templateName, line, col);
+        this.trailingWhiteSpace = trailingWhiteSpace;
+        this.unmatched = unmatched;
     }
+
 
 
 
@@ -83,24 +79,9 @@ final class CloseElementTag
     }
 
 
-    // Meant to be called only from within the engine
-    void reset(final String elementName, final boolean synthetic, final boolean unmatched,
-               final String templateName, final int line, final int col) {
-        resetElementTag(elementName, synthetic, templateName, line, col);
-        this.unmatched = unmatched;
-        this.trailingWhiteSpace = null; // No white space to be added -- white space here is a very special case
-    }
-
-
-
-    public String getTrailingWhiteSpace() {
-        return this.trailingWhiteSpace;
-    }
-
-
-    public void setTrailingWhiteSpace(final String trailingWhiteSpace) {
-        this.trailingWhiteSpace = trailingWhiteSpace;
-    }
+    // ------------
+    // NO GETTER for trailingWhiteSpace, as it is an internal-only property with no interest outside the engine
+    // ------------
 
 
 
@@ -116,10 +97,9 @@ final class CloseElementTag
             return;
         }
         // NOTE that being unmatched or not doesn't have an influence in how the tag is represented in output
-        Validate.notNull(writer, "Writer cannot be null");
         if (this.templateMode.isText()) {
             writer.write("[/");
-            writer.write(this.elementName);
+            writer.write(this.elementCompleteName);
             if (this.trailingWhiteSpace != null) {
                 writer.write(this.trailingWhiteSpace);
             }
@@ -127,7 +107,7 @@ final class CloseElementTag
             return;
         }
         writer.write("</");
-        writer.write(this.elementName);
+        writer.write(this.elementCompleteName);
         if (this.trailingWhiteSpace != null) {
             writer.write(this.trailingWhiteSpace);
         }
@@ -137,48 +117,26 @@ final class CloseElementTag
 
 
 
-
-    public CloseElementTag cloneEvent() {
-        final CloseElementTag clone = new CloseElementTag();
-        clone.resetAsCloneOf(this);
-        return clone;
-    }
-
-
     // Meant to be called only from within the engine
-    void resetAsCloneOf(final CloseElementTag original) {
-        super.resetAsCloneOfElementTag(original);
-        this.unmatched = original.unmatched;
-        this.trailingWhiteSpace = original.trailingWhiteSpace;
-    }
-
-
-    // Meant to be called only from within the engine
-    void resetAsCloneOf(final StandaloneElementTag original) {
-        // It's exactly the same as with open tags - even the processors, because processors don't apply depending on
-        // whether the tag is open or standalone...
-        super.resetAsCloneOfElementTag(original);
-        this.unmatched = false;
-        this.trailingWhiteSpace = null;
-    }
-
-
-    // Meant to be called only from within the engine
-    static CloseElementTag asEngineCloseElementTag(
-            final TemplateMode templateMode, final IEngineConfiguration configuration,
-            final ICloseElementTag closeElementTag, final boolean cloneAlways) {
+    static CloseElementTag asEngineCloseElementTag(final ICloseElementTag closeElementTag) {
 
         if (closeElementTag instanceof CloseElementTag) {
-            if (cloneAlways) {
-                return ((CloseElementTag) closeElementTag).cloneEvent();
-            }
             return (CloseElementTag) closeElementTag;
         }
 
-        final CloseElementTag newInstance = new CloseElementTag(templateMode, configuration.getElementDefinitions());
-        newInstance.reset(closeElementTag.getElementName(), closeElementTag.isSynthetic(), closeElementTag.isUnmatched(), closeElementTag.getTemplateName(), closeElementTag.getLine(), closeElementTag.getCol());
-        return newInstance;
+        return new CloseElementTag(
+                closeElementTag.getTemplateMode(), closeElementTag.getElementDefinition(), closeElementTag.getElementCompleteName(),
+                null, closeElementTag.isSynthetic(), closeElementTag.isUnmatched(),
+                closeElementTag.getTemplateName(), closeElementTag.getLine(), closeElementTag.getCol());
 
+    }
+
+
+
+
+    @Override
+    public void beHandled(final ITemplateHandler handler) {
+        handler.handleCloseElement(this);
     }
 
 

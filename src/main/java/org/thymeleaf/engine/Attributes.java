@@ -36,15 +36,16 @@ import org.thymeleaf.util.Validate;
  */
 final class Attributes {
 
-    private static final String DEFAULT_WHITE_SPACE = " ";
-    private static final String[] DEFAULT_WHITE_SPACE_ARRAY = new String[] { DEFAULT_WHITE_SPACE };
-
+    static final String DEFAULT_WHITE_SPACE = " ";
+    static final String[] DEFAULT_WHITE_SPACE_ARRAY = new String[] { DEFAULT_WHITE_SPACE };
 
     static final Attributes EMPTY_ATTRIBUTES = new Attributes(null, null);
+    static final Attribute[] EMPTY_ATTRIBUTE_ARRAY = new Attribute[0];
 
 
     final Attribute[] attributes; // might be null if there are no attributes
     final String[] innerWhiteSpaces; // might be null if there are no attributes and no whitespaces
+    final int associatedProcessorCount;
 
 
 
@@ -52,6 +53,24 @@ final class Attributes {
         super();
         this.attributes = attributes;
         this.innerWhiteSpaces = innerWhiteSpaces;
+        this.associatedProcessorCount = computeAssociatedProcessorCount();
+    }
+
+
+
+
+    private int computeAssociatedProcessorCount() {
+        if (this.attributes == null || this.attributes.length == 0) {
+            return 0;
+        }
+        int count = 0;
+        int n = this.attributes.length;
+        while (n-- != 0) {
+            if (this.attributes[n].definition.hasAssociatedProcessors) {
+                count += this.attributes[n].definition.associatedProcessors.length;
+            }
+        }
+        return count;
     }
 
 
@@ -149,36 +168,16 @@ final class Attributes {
 
 
 
-
-/*
-    public final void setAttribute(final String completeName, final String value) {
-        setAttribute(null, completeName, null, value, null, -1, -1, true);
+    Attribute[] getAllAttributes() {
+        if (this.attributes == null || this.attributes.length == 0) {
+            return EMPTY_ATTRIBUTE_ARRAY;
+        }
+        // We will be performing defensive cloning here. Still sleeker than returning an immutable Set or similar
+        return this.attributes.clone();
     }
 
 
-    public final void setAttribute(final String completeName, final String value, final AttributeValueQuotes valueQuotes) {
-        Validate.isTrue(
-                !(AttributeValueQuotes.NONE.equals(valueQuotes) && this.templateMode == TemplateMode.XML),
-                "Cannot set no-quote attributes when in XML template mode");
-        Validate.isTrue(
-                !(AttributeValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
-                "Cannot set an empty-string value to an attribute with no quotes");
-        setAttribute(null, completeName, null, value, valueQuotes, -1, -1, true);
-    }
 
-
-    public final void setAttribute(
-            final AttributeDefinition attributeDefinition, final String completeName, final String value, final AttributeValueQuotes valueQuotes) {
-        Validate.notNull(attributeDefinition, "Attribute Definition cannot be null");
-        Validate.isTrue(
-                !(AttributeValueQuotes.NONE.equals(valueQuotes) && this.templateMode == TemplateMode.XML),
-                "Cannot set no-quote attributes when in XML template mode");
-        Validate.isTrue(
-                !(AttributeValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
-                "Cannot set an empty-string value to an attribute with no quotes");
-        setAttribute(attributeDefinition, completeName, null, value, valueQuotes, -1, -1, true);
-    }
-*/
 
     Attributes setAttribute(
             final AttributeDefinitions attributeDefinitions, final TemplateMode templateMode,
@@ -244,36 +243,6 @@ final class Attributes {
 
 
 
-
-/*
-    public final void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value) {
-        replaceAttribute(oldName, null, completeNewName, null, value, null, -1, -1, true);
-    }
-
-
-    public final void replaceAttribute(final AttributeName oldName, final String completeNewName, final String value, final AttributeValueQuotes valueQuotes) {
-        Validate.isTrue(
-                !(AttributeValueQuotes.NONE.equals(valueQuotes) && this.templateMode == TemplateMode.XML),
-                "Cannot set no-quote attributes when in XML template mode");
-        Validate.isTrue(
-                !(AttributeValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
-                "Cannot set an empty-string value to an attribute with no quotes");
-        replaceAttribute(oldName, null, completeNewName, null, value, valueQuotes, -1, -1, true);
-    }
-
-
-    public final void replaceAttribute(final AttributeName oldName, final AttributeDefinition newAttributeDefinition, final String completeNewName, final String value, final AttributeValueQuotes valueQuotes) {
-        Validate.notNull(newAttributeDefinition, "New Attribute Definition cannot be null");
-        Validate.isTrue(
-                !(AttributeValueQuotes.NONE.equals(valueQuotes) && this.templateMode == TemplateMode.XML),
-                "Cannot set no-quote attributes when in XML template mode");
-        Validate.isTrue(
-                !(AttributeValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
-                "Cannot set an empty-string value to an attribute with no quotes");
-        replaceAttribute(oldName, newAttributeDefinition, completeNewName, null, value, valueQuotes, -1, -1, true);
-    }
-*/
-
     Attributes replaceAttribute(
             final AttributeDefinitions attributeDefinitions, final TemplateMode templateMode,
             final AttributeName oldName,
@@ -331,7 +300,7 @@ final class Attributes {
             newAttributes[existingIdx] =
                     newAttributes[existingIdx].modify(null, newCompleteName, value, valueQuotes);
 
-            return new Attributes(newAttributes, this.innerWhiteSpaces);
+            return new Attributes(newAttributes, newInnerWhiteSpaces);
 
         }
 
@@ -352,8 +321,6 @@ final class Attributes {
         return new Attributes(newAttributes, this.innerWhiteSpaces);
 
     }
-
-
 
 
 
@@ -450,14 +417,6 @@ final class Attributes {
 
 
 
-
-
-
-
-
-
-
-
     void write(final Writer writer) throws IOException {
 
         if (this.attributes == null) {
@@ -480,9 +439,6 @@ final class Attributes {
         }
 
     }
-
-
-
 
 
 

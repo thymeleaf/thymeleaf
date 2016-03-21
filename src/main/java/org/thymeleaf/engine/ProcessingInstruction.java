@@ -52,13 +52,14 @@ final class ProcessingInstruction extends AbstractTemplateEvent implements IProc
 
 
     ProcessingInstruction(
+            final String processingInstruction,
             final String target,
             final String content,
             final String templateName, final int line, final int col) {
         super(templateName, line, col);
         this.target = target;
         this.content = content;
-        this.processingInstruction = computeProcessingInstruction();
+        this.processingInstruction = (processingInstruction != null? processingInstruction : computeProcessingInstruction());
     }
 
 
@@ -116,11 +117,19 @@ final class ProcessingInstruction extends AbstractTemplateEvent implements IProc
         }
 
         return new ProcessingInstruction(
+                null,
                 processingInstruction.getTarget(), processingInstruction.getContent(),
                 processingInstruction.getTemplateName(), processingInstruction.getLine(), processingInstruction.getCol());
 
     }
 
+
+
+
+    @Override
+    public void beHandled(final ITemplateHandler handler) {
+        handler.handleProcessingInstruction(this);
+    }
 
 
 

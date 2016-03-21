@@ -29,9 +29,9 @@ import org.thymeleaf.model.ITemplateEvent;
  */
 abstract class AbstractTemplateEvent implements ITemplateEvent {
 
-    private final String templateName;
-    private final int line;
-    private final int col;
+    final String templateName;
+    final int line;
+    final int col;
 
 
     AbstractTemplateEvent() {

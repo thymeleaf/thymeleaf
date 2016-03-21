@@ -29,6 +29,4 @@ public interface ICloseElementTag extends IElementTag {
 
     public boolean isUnmatched();
 
-    public ICloseElementTag cloneEvent();
-
 }

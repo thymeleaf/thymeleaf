@@ -33,37 +33,13 @@ import org.thymeleaf.model.ITemplateEnd;
  */
 final class TemplateEnd extends AbstractTemplateEvent implements ITemplateEnd, IEngineTemplateEvent {
 
-    private long endTimeNanos;
-    private long totalTimeNanos;
+    final static TemplateEnd TEMPLATE_END_INSTANCE = new TemplateEnd();
 
 
 
-    // Meant to be called only from the template handler adapter
-    TemplateEnd() {
+
+    private TemplateEnd() {
         super();
-    }
-
-
-
-    public long getEndTimeNanos() {
-        return this.endTimeNanos;
-    }
-
-    public long getTotalTimeNanos() {
-        return this.totalTimeNanos;
-    }
-
-
-
-
-    void reset(final long endTimeNanos, final long totalTimeNanos,
-               final String templateName, final int line, final int col) {
-
-        super.resetTemplateEvent(templateName, line, col);
-
-        this.endTimeNanos = endTimeNanos;
-        this.totalTimeNanos = totalTimeNanos;
-
     }
 
 
@@ -79,44 +55,20 @@ final class TemplateEnd extends AbstractTemplateEvent implements ITemplateEnd, I
     }
 
 
-    public TemplateEnd cloneEvent() {
-        // When cloning we will protect the buffer as only the instances used themselves as buffers in the 'engine'
-        // package should reference a buffer.
-        final TemplateEnd clone = new TemplateEnd();
-        clone.resetAsCloneOf(this);
-        return clone;
-    }
 
 
     // Meant to be called only from within the engine
-    void resetAsCloneOf(final TemplateEnd original) {
-
-        super.resetAsCloneOfTemplateEvent(original);
-
-        this.endTimeNanos = original.endTimeNanos;
-        this.totalTimeNanos = original.totalTimeNanos;
-
+    static TemplateEnd asEngineTemplateEnd(final ITemplateEnd templateEnd) {
+        return TEMPLATE_END_INSTANCE;
     }
 
 
-    // Meant to be called only from within the engine
-    static TemplateEnd asEngineTemplateEnd(final ITemplateEnd templateEnd, final boolean cloneAlways) {
 
-        if (templateEnd instanceof TemplateEnd) {
-            if (cloneAlways) {
-                return ((TemplateEnd) templateEnd).cloneEvent();
-            }
-            return (TemplateEnd) templateEnd;
-        }
 
-        final TemplateEnd newInstance = new TemplateEnd();
-        newInstance.endTimeNanos = templateEnd.getEndTimeNanos();
-        newInstance.totalTimeNanos = templateEnd.getTotalTimeNanos();
-        newInstance.resetTemplateEvent(templateEnd.getTemplateName(), templateEnd.getLine(), templateEnd.getCol());
-        return newInstance;
-
+    @Override
+    public void beHandled(final ITemplateHandler handler) {
+        handler.handleTemplateEnd(this);
     }
-
 
 
 

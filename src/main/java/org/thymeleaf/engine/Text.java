@@ -93,6 +93,14 @@ final class Text extends AbstractTextualTemplateEvent implements IText {
 
 
     @Override
+    public void beHandled(final ITemplateHandler handler) {
+        handler.handleText(this);
+    }
+
+
+
+
+    @Override
     public String toString() {
         return getText();
     }

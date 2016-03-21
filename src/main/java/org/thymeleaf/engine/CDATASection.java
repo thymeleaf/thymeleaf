@@ -34,8 +34,8 @@ import org.thymeleaf.model.IModelVisitor;
 final class CDATASection extends AbstractTextualTemplateEvent implements ICDATASection {
 
     // CDATA Section nodes do not exist in text parsing, so we are safe expliciting markup structures here
-    private static final String CDATA_PREFIX = "<![CDATA[";
-    private static final String CDATA_SUFFIX = "]]>";
+    static final String CDATA_PREFIX = "<![CDATA[";
+    static final String CDATA_SUFFIX = "]]>";
 
 
     private final String prefix;
@@ -148,9 +148,16 @@ final class CDATASection extends AbstractTextualTemplateEvent implements ICDATAS
 
 
     @Override
+    public void beHandled(final ITemplateHandler handler) {
+        handler.handleCDATASection(this);
+    }
+
+
+
+
+    @Override
     public String toString() {
         return getCDATASection();
     }
-
 
 }

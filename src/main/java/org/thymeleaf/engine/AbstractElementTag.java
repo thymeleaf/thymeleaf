@@ -35,10 +35,10 @@ import org.thymeleaf.util.FastStringWriter;
  */
 abstract class AbstractElementTag extends AbstractTemplateEvent implements IElementTag {
 
-    protected final TemplateMode templateMode;
-    protected final ElementDefinition elementDefinition;
-    protected final String elementCompleteName;
-    protected final boolean synthetic;
+    final TemplateMode templateMode;
+    final ElementDefinition elementDefinition;
+    final String elementCompleteName;
+    final boolean synthetic;
 
 
 

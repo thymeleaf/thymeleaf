@@ -19,9 +19,7 @@
  */
 package org.thymeleaf.model;
 
-import java.util.List;
-
-import org.thymeleaf.processor.element.IElementProcessor;
+import org.thymeleaf.engine.AttributeName;
 
 /**
  *
@@ -31,12 +29,14 @@ import org.thymeleaf.processor.element.IElementProcessor;
  */
 public interface IProcessableElementTag extends IElementTag {
 
-    public IElementAttributes getAttributes();
+    public IAttribute[] getAllAttributes();
 
-    public IProcessableElementTag cloneEvent();
+    public boolean hasAttribute(final String completeName);
+    public boolean hasAttribute(final String prefix, final String name);
+    public boolean hasAttribute(final AttributeName attributeName);
 
-    public void precomputeAssociatedProcessors();
-    public boolean hasAssociatedProcessors();
-    public List<IElementProcessor> getAssociatedProcessorsInOrder();
+    public IAttribute getAttribute(final String completeName);
+    public IAttribute getAttribute(final String prefix, final String name);
+    public IAttribute getAttribute(final AttributeName attributeName);
 
 }

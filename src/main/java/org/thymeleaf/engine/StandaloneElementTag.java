@@ -21,14 +21,13 @@ package org.thymeleaf.engine;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.List;
+import java.util.Arrays;
 
-import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.model.IElementAttributes;
+import org.thymeleaf.model.AttributeValueQuotes;
+import org.thymeleaf.model.IAttribute;
 import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -40,43 +39,34 @@ final class StandaloneElementTag
             extends AbstractProcessableElementTag
             implements IStandaloneElementTag, IEngineTemplateEvent {
 
-    private boolean minimized;
+    final boolean minimized;
 
 
 
-    /*
-     * Objects of this class are meant to both be reused by the engine and also created fresh by the processors. This
-     * should allow reducing the number of instances of this class to the minimum.
-     */
-
-
-    // Meant to be called only from the template handler adapter
     StandaloneElementTag(
             final TemplateMode templateMode,
-            final ElementDefinitions elementDefinitions,
-            final AttributeDefinitions attributeDefinitions) {
-        super(templateMode, elementDefinitions, attributeDefinitions);
-    }
-
-
-
-    // Meant to be called only from the model factory
-    StandaloneElementTag(
-            final TemplateMode templateMode,
-            final ElementDefinitions elementDefinitions,
-            final AttributeDefinitions attributeDefinitions,
-            final String elementName,
+            final ElementDefinition elementDefinition,
+            final String elementCompleteName,
+            final Attributes attributes,
             final boolean synthetic,
             final boolean minimized) {
-        super(templateMode, elementDefinitions, attributeDefinitions, elementName, synthetic);
+        super(templateMode, elementDefinition, elementCompleteName, attributes, synthetic);
         this.minimized = minimized;
     }
 
 
-
-    // Meant to be called only from the cloneElementTag method
-    private StandaloneElementTag() {
-        super();
+    StandaloneElementTag(
+            final TemplateMode templateMode,
+            final ElementDefinition elementDefinition,
+            final String elementCompleteName,
+            final Attributes attributes,
+            final boolean synthetic,
+            final boolean minimized,
+            final String templateName,
+            final int line,
+            final int col) {
+        super(templateMode, elementDefinition, elementCompleteName, attributes, synthetic, templateName, line, col);
+        this.minimized = minimized;
     }
 
 
@@ -87,26 +77,48 @@ final class StandaloneElementTag
     }
 
 
-    public void setMinimized(final boolean minimized) {
-        if (this.templateMode != TemplateMode.HTML && !minimized) {
-            throw new IllegalArgumentException("Standalone tag can only be non-minimized when in HTML template mode. (mode is " + this.templateMode + ")");
-        }
-        this.minimized = minimized; // No need to do anything else
+
+
+    StandaloneElementTag setAttribute(
+            final AttributeDefinitions attributeDefinitions,
+            final AttributeDefinition attributeDefinition, final String completeName,
+            final String value, final AttributeValueQuotes valueQuotes) {
+        final Attributes newAttributes =
+                this.attributes.setAttribute(attributeDefinitions, this.templateMode, attributeDefinition, completeName, value, valueQuotes);
+        return new StandaloneElementTag(this.templateMode, this.elementDefinition, this.elementCompleteName, newAttributes, this.synthetic, this.minimized, this.templateName, this.line, this.col);
     }
 
 
 
 
-    // Meant to be called only from within the engine
-    void reset(final String elementName, final boolean synthetic,
-               final boolean minimized,
-               final String templateName, final int line, final int col) {
-
-        resetProcessableElementTag(elementName, synthetic, templateName, line, col);
-        this.minimized = minimized;
-
+    StandaloneElementTag replaceAttribute(
+            final AttributeDefinitions attributeDefinitions,
+            final AttributeName oldName, final AttributeDefinition newAttributeDefinition, final String completeNewName,
+            final String value, final AttributeValueQuotes valueQuotes) {
+        final Attributes newAttributes =
+                this.attributes.replaceAttribute(attributeDefinitions, this.templateMode, oldName, newAttributeDefinition, completeNewName, value, valueQuotes);
+        return new StandaloneElementTag(this.templateMode, this.elementDefinition, this.elementCompleteName, newAttributes, this.synthetic, this.minimized, this.templateName, this.line, this.col);
     }
 
+
+
+
+    StandaloneElementTag removeAttribute(final String prefix, final String name) {
+        final Attributes newAttributes = this.attributes.removeAttribute(this.templateMode, prefix, name);
+        return new StandaloneElementTag(this.templateMode, this.elementDefinition, this.elementCompleteName, newAttributes, this.synthetic, this.minimized, this.templateName, this.line, this.col);
+    }
+
+
+    StandaloneElementTag removeAttribute(final String completeName) {
+        final Attributes newAttributes = this.attributes.removeAttribute(this.templateMode, completeName);
+        return new StandaloneElementTag(this.templateMode, this.elementDefinition, this.elementCompleteName, newAttributes, this.synthetic, this.minimized, this.templateName, this.line, this.col);
+    }
+
+
+    StandaloneElementTag removeAttribute(final AttributeName attributeName) {
+        final Attributes newAttributes = this.attributes.removeAttribute(attributeName);
+        return new StandaloneElementTag(this.templateMode, this.elementDefinition, this.elementCompleteName, newAttributes, this.synthetic, this.minimized, this.templateName, this.line, this.col);
+    }
 
 
 
@@ -121,11 +133,12 @@ final class StandaloneElementTag
             // Nothing to be written... synthetic elements were not present at the original template!
             return;
         }
-        Validate.notNull(writer, "Writer cannot be null");
         if (this.templateMode.isText()) {
             writer.write("[#");
-            writer.write(this.elementName);
-            this.elementAttributes.write(writer);
+            writer.write(this.elementCompleteName);
+            if (this.attributes != null) {
+                this.attributes.write(writer);
+            }
             if (this.minimized) {
                 writer.write("/]");
             } else {
@@ -134,8 +147,10 @@ final class StandaloneElementTag
             return;
         }
         writer.write('<');
-        writer.write(this.elementName);
-        this.elementAttributes.write(writer);
+        writer.write(this.elementCompleteName);
+        if (this.attributes != null) {
+            this.attributes.write(writer);
+        }
         if (this.minimized) {
             writer.write("/>");
         } else {
@@ -146,50 +161,54 @@ final class StandaloneElementTag
 
 
 
-
-    public StandaloneElementTag cloneEvent() {
-        final StandaloneElementTag clone = new StandaloneElementTag();
-        clone.resetAsCloneOf(this);
-        return clone;
-    }
-
-
     // Meant to be called only from within the engine
-    void resetAsCloneOf(final StandaloneElementTag original) {
-        super.resetAsCloneOfProcessableElementTag(original);
-        this.minimized = original.minimized;
-    }
-
-
-    // Meant to be called only from within the engine
-    static StandaloneElementTag asEngineStandaloneElementTag(
-            final TemplateMode templateMode, final IEngineConfiguration configuration,
-            final IStandaloneElementTag standaloneElementTag, final boolean cloneAlways) {
+    static StandaloneElementTag asEngineStandaloneElementTag(final IStandaloneElementTag standaloneElementTag) {
 
         if (standaloneElementTag instanceof StandaloneElementTag) {
-            if (cloneAlways) {
-                return ((StandaloneElementTag) standaloneElementTag).cloneEvent();
-            }
             return (StandaloneElementTag) standaloneElementTag;
         }
 
-        final StandaloneElementTag newInstance = new StandaloneElementTag(templateMode, configuration.getElementDefinitions(), configuration.getAttributeDefinitions());
 
-        newInstance.reset(standaloneElementTag.getElementName(), standaloneElementTag.isSynthetic(), standaloneElementTag.isMinimized(), standaloneElementTag.getTemplateName(), standaloneElementTag.getLine(), standaloneElementTag.getCol());
+        final IAttribute[] originalAttributeArray = standaloneElementTag.getAllAttributes();
 
-        final IElementAttributes attributes = standaloneElementTag.getAttributes();
-        if (attributes != null) {
-            // We have to do this by iterating because we don't know the specific instance of the tag's attributes, and
-            // in fact we also don't want a complete clone (versioning, etc.). We are just copying the attributes
-            final List<String> attributeCompleteNames = attributes.getAllCompleteNames();
-            for (final String attributeCompleteName : attributeCompleteNames) {
-                newInstance.elementAttributes.setAttribute(
-                        attributeCompleteName, attributes.getValue(attributeCompleteName), attributes.getValueQuotes(attributeCompleteName));
+        final Attributes attributes;
+        if (originalAttributeArray == null || originalAttributeArray.length == 0) {
+            attributes = null;
+        } else {
+            // We will perform a deep cloning of the attributes into objects of the Attribute class, so that
+            // we make sure absolutely all Attributes in the new event are under the engine's control
+            final Attribute[] newAttributeArray = new Attribute[originalAttributeArray.length];
+            for (int i = 0; i < originalAttributeArray.length; i++) {
+                final IAttribute originalAttribute = originalAttributeArray[i];
+                newAttributeArray[i] =
+                        new Attribute(
+                                originalAttribute.getDefinition(), originalAttribute.getCompleteName(),
+                                originalAttribute.getOperator(), originalAttribute.getValue(), originalAttribute.getValueQuotes(),
+                                originalAttribute.getTemplateName(), originalAttribute.getLine(), originalAttribute.getCol());
             }
+            final String[] newInnerWhiteSpaces;
+            if (newAttributeArray.length == 1) {
+                newInnerWhiteSpaces = Attributes.DEFAULT_WHITE_SPACE_ARRAY;
+            } else {
+                newInnerWhiteSpaces = new String[newAttributeArray.length];
+                Arrays.fill(newInnerWhiteSpaces, Attributes.DEFAULT_WHITE_SPACE);
+            }
+            attributes = new Attributes(newAttributeArray, newInnerWhiteSpaces);
         }
 
-        return newInstance;
+        return new StandaloneElementTag(
+                standaloneElementTag.getTemplateMode(), standaloneElementTag.getElementDefinition(), standaloneElementTag.getElementCompleteName(),
+                attributes, standaloneElementTag.isSynthetic(), standaloneElementTag.isMinimized(),
+                standaloneElementTag.getTemplateName(), standaloneElementTag.getLine(), standaloneElementTag.getCol());
 
+    }
+
+
+
+
+    @Override
+    public void beHandled(final ITemplateHandler handler) {
+        handler.handleStandaloneElement(this);
     }
 
 }

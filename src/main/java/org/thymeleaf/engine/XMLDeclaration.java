@@ -70,6 +70,7 @@ final class XMLDeclaration extends AbstractTemplateEvent implements IXMLDeclarat
 
 
     XMLDeclaration(
+            final String xmlDeclaration,
             final String keyword,
             final String version,
             final String encoding,
@@ -80,7 +81,7 @@ final class XMLDeclaration extends AbstractTemplateEvent implements IXMLDeclarat
         this.version = version;
         this.encoding = encoding;
         this.standalone = standalone;
-        this.xmlDeclaration = computeXmlDeclaration();
+        this.xmlDeclaration = (xmlDeclaration != null? xmlDeclaration : computeXmlDeclaration());
     }
 
 
@@ -164,12 +165,21 @@ final class XMLDeclaration extends AbstractTemplateEvent implements IXMLDeclarat
         }
 
         return new XMLDeclaration(
+                null,
                 xmlDeclaration.getKeyword(),
                 xmlDeclaration.getVersion(),
                 xmlDeclaration.getEncoding(),
                 xmlDeclaration.getStandalone(),
                 xmlDeclaration.getTemplateName(), xmlDeclaration.getLine(), xmlDeclaration.getCol());
 
+    }
+
+
+
+
+    @Override
+    public void beHandled(final ITemplateHandler handler) {
+        handler.handleXMLDeclaration(this);
     }
 
 
