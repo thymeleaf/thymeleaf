@@ -21,6 +21,9 @@ package org.thymeleaf.engine;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.AttributeValueQuotes;
@@ -174,6 +177,18 @@ final class Attributes {
         }
         // We will be performing defensive cloning here. Still sleeker than returning an immutable Set or similar
         return this.attributes.clone();
+    }
+
+
+    Map<String,String> getAttributeMap() {
+        if (this.attributes == null || this.attributes.length == 0) {
+            return Collections.emptyMap();
+        }
+        final Map<String,String> attributeMap = new LinkedHashMap<String, String>(this.attributes.length + 5);
+        for (int i = 0; i < this.attributes.length; i++) {
+            attributeMap.put(this.attributes[i].completeName, this.attributes[i].value);
+        }
+        return attributeMap;
     }
 
 

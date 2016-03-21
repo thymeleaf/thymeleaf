@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.model;
 
+import java.util.Map;
+
 import org.thymeleaf.engine.AttributeName;
 
 /**
@@ -30,6 +32,7 @@ import org.thymeleaf.engine.AttributeName;
 public interface IProcessableElementTag extends IElementTag {
 
     public IAttribute[] getAllAttributes();
+    public Map<String,String> getAttributeMap();
 
     public boolean hasAttribute(final String completeName);
     public boolean hasAttribute(final String prefix, final String name);

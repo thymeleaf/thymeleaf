@@ -20,6 +20,8 @@
 package org.thymeleaf.engine;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 
 import org.thymeleaf.model.IAttribute;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -139,6 +141,14 @@ abstract class AbstractProcessableElementTag
             return Attributes.EMPTY_ATTRIBUTE_ARRAY;
         }
         return this.attributes.getAllAttributes();
+    }
+
+
+    public Map<String,String> getAttributeMap() {
+        if (this.attributes == null) {
+            return Collections.emptyMap();
+        }
+        return this.attributes.getAttributeMap();
     }
 
 
