@@ -19,6 +19,10 @@
  */
 package org.thymeleaf.model;
 
+import java.text.AttributedCharacterIterator;
+import java.util.Map;
+
+import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.TemplateData;
 
 /**
@@ -31,6 +35,7 @@ public interface IModelFactory {
 
 
     public IModel createModel();
+    public IModel createModel(final ITemplateEvent event);
 
     public IModel parse(final TemplateData ownerTemplate, final String template);
 
@@ -55,15 +60,33 @@ public interface IModelFactory {
     public IXMLDeclaration createXMLDeclaration(final String version, final String encoding, final String standalone);
 
 
-    public IStandaloneElementTag createStandaloneElementTag(final String elementName, final boolean minimized);
-    public IStandaloneElementTag createSyntheticStandaloneElementTag(final String elementName, final boolean minimized);
+    public IStandaloneElementTag createStandaloneElementTag(final String elementName, final boolean synthetic, final boolean minimized);
+    public IStandaloneElementTag createStandaloneElementTag(final String elementName, final String attributeName, final String attributeValue, final boolean synthetic, final boolean minimized);
+    public IStandaloneElementTag createStandaloneElementTag(final String elementName, final Map<String,String> attributes, final AttributeValueQuotes attributeValueQuotes, final boolean synthetic, final boolean minimized);
 
-    public IOpenElementTag createOpenElementTag(final String elementName);
-    public IOpenElementTag createSyntheticOpenElementTag(final String elementName);
+    public IStandaloneElementTag setAttribute(final IStandaloneElementTag standaloneElementTag, final String attributeName, final String attributeValue);
+    public IStandaloneElementTag setAttribute(final IStandaloneElementTag standaloneElementTag, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
+    public IStandaloneElementTag replaceAttribute(final IStandaloneElementTag standaloneElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue);
+    public IStandaloneElementTag replaceAttribute(final IStandaloneElementTag standaloneElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
+    public IStandaloneElementTag removeAttribute(final IStandaloneElementTag standaloneElementTag, final String attributeName);
+    public IStandaloneElementTag removeAttribute(final IStandaloneElementTag standaloneElementTag, final String prefix, final String name);
+    public IStandaloneElementTag removeAttribute(final IStandaloneElementTag standaloneElementTag, final AttributeName attributeName);
 
-    public ICloseElementTag createCloseElementTag(final String elementName);
-    public ICloseElementTag createSyntheticCloseElementTag(final String elementName);
-    public ICloseElementTag createUnmatchedCloseElementTag(final String elementName);
+
+    public IOpenElementTag createOpenElementTag(final String elementName, final boolean synthetic);
+    public IOpenElementTag createOpenElementTag(final String elementName, final String attributeName, final String attributeValue, final boolean synthetic);
+    public IOpenElementTag createOpenElementTag(final String elementName, final Map<String,String> attributes, final AttributeValueQuotes attributeValueQuotes, final boolean synthetic);
+
+    public IOpenElementTag setAttribute(final IOpenElementTag openElementTag, final String attributeName, final String attributeValue);
+    public IOpenElementTag setAttribute(final IOpenElementTag openElementTag, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
+    public IOpenElementTag replaceAttribute(final IOpenElementTag openElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue);
+    public IOpenElementTag replaceAttribute(final IOpenElementTag openElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
+    public IOpenElementTag removeAttribute(final IOpenElementTag openElementTag, final String attributeName);
+    public IOpenElementTag removeAttribute(final IOpenElementTag openElementTag, final String prefix, final String name);
+    public IOpenElementTag removeAttribute(final IOpenElementTag openElementTag, final AttributeName attributeName);
+
+
+    public ICloseElementTag createCloseElementTag(final String elementName, final boolean synthetic, final boolean unmatched);
 
 
 }

@@ -19,8 +19,12 @@
  */
 package org.thymeleaf.engine;
 
+import java.util.Arrays;
+import java.util.Map;
+
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.AttributeValueQuotes;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
@@ -30,10 +34,10 @@ import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
+import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -44,9 +48,17 @@ import org.thymeleaf.util.Validate;
  */
 public class StandardModelFactory implements IModelFactory {
 
+    private static final String[][] SYNTHETIC_INNER_WHITESPACES = new String[][] {
+            new String[0],
+            Attributes.DEFAULT_WHITE_SPACE_ARRAY,
+            new String[] { Attributes.DEFAULT_WHITE_SPACE, Attributes.DEFAULT_WHITE_SPACE },
+            new String[] { Attributes.DEFAULT_WHITE_SPACE, Attributes.DEFAULT_WHITE_SPACE, Attributes.DEFAULT_WHITE_SPACE },
+            new String[] { Attributes.DEFAULT_WHITE_SPACE, Attributes.DEFAULT_WHITE_SPACE, Attributes.DEFAULT_WHITE_SPACE, Attributes.DEFAULT_WHITE_SPACE },
+            new String[] { Attributes.DEFAULT_WHITE_SPACE, Attributes.DEFAULT_WHITE_SPACE, Attributes.DEFAULT_WHITE_SPACE, Attributes.DEFAULT_WHITE_SPACE, Attributes.DEFAULT_WHITE_SPACE }
+    };
+
 
     private final IEngineConfiguration configuration;
-    private final ITextRepository textRepository;
     private final AttributeDefinitions attributeDefinitions;
     private final ElementDefinitions elementDefinitions;
     private final TemplateMode templateMode;
@@ -64,7 +76,6 @@ public class StandardModelFactory implements IModelFactory {
         Validate.notNull(templateMode, "Template Mode cannot be null");
 
         this.configuration = configuration;
-        this.textRepository = this.configuration.getTextRepository();
         this.attributeDefinitions = this.configuration.getAttributeDefinitions();
         this.elementDefinitions = this.configuration.getElementDefinitions();
         this.templateMode = templateMode;
@@ -88,6 +99,14 @@ public class StandardModelFactory implements IModelFactory {
     }
 
 
+    public IModel createModel(final ITemplateEvent event) {
+        final Model model = new Model(this.configuration, this.templateMode);
+        model.add(event);
+        return model;
+    }
+
+
+
 
     public IModel parse(final TemplateData ownerTemplate, final String template) {
         // We will be setting useCache to false because we don't want to pollute the cache with mere String
@@ -98,9 +117,10 @@ public class StandardModelFactory implements IModelFactory {
 
 
 
+
     public ICDATASection createCDATASection(final CharSequence content) {
         checkRestrictedEventForTextTemplateMode("CDATASection");
-        return new CDATASection(this.textRepository, content);
+        return new CDATASection(content);
     }
 
 
@@ -108,7 +128,7 @@ public class StandardModelFactory implements IModelFactory {
 
     public IComment createComment(final CharSequence content) {
         checkRestrictedEventForTextTemplateMode("Comment");
-        return new Comment(this.textRepository, content);
+        return new Comment(content);
     }
 
 
@@ -116,13 +136,15 @@ public class StandardModelFactory implements IModelFactory {
 
     public IDocType createHTML5DocType() {
         checkRestrictedEventForTextTemplateMode("DocType");
-        return new DocType(this.textRepository, null, null);
+        return new DocType(null, null);
     }
+
 
     public IDocType createDocType(final String publicId, final String systemId) {
         checkRestrictedEventForTextTemplateMode("DocType");
-        return new DocType(this.textRepository, publicId, systemId);
+        return new DocType(publicId, systemId);
     }
+
 
     public IDocType createDocType(
             final String keyword,
@@ -133,7 +155,7 @@ public class StandardModelFactory implements IModelFactory {
             final String internalSubset) {
 
         checkRestrictedEventForTextTemplateMode("DocType");
-        return new DocType(this.textRepository, keyword, elementName, type, publicId, systemId, internalSubset);
+        return new DocType(keyword, elementName, type, publicId, systemId, internalSubset);
     }
 
 
@@ -141,14 +163,14 @@ public class StandardModelFactory implements IModelFactory {
 
     public IProcessingInstruction createProcessingInstruction(final String target, final String content) {
         checkRestrictedEventForTextTemplateMode("ProcessingInstruction");
-        return new ProcessingInstruction(this.textRepository, target, content);
+        return new ProcessingInstruction(target, content);
     }
 
 
 
 
     public IText createText(final CharSequence text) {
-        return new Text(this.textRepository, text);
+        return new Text(text);
     }
 
 
@@ -156,43 +178,232 @@ public class StandardModelFactory implements IModelFactory {
 
     public IXMLDeclaration createXMLDeclaration(final String version, final String encoding, final String standalone) {
         checkRestrictedEventForTextTemplateMode("XMLDeclaration");
-        return new XMLDeclaration(this.textRepository, version, encoding, standalone);
+        return new XMLDeclaration(XMLDeclaration.DEFAULT_KEYWORD, version, encoding, standalone);
     }
 
 
 
 
-    public IStandaloneElementTag createStandaloneElementTag(final String elementName, final boolean minimized) {
-        return new StandaloneElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions, elementName, false, minimized);
-    }
-
-    public IStandaloneElementTag createSyntheticStandaloneElementTag(final String elementName, final boolean minimized) {
-        return new StandaloneElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions, elementName, true, minimized);
-    }
-
-
-    public IOpenElementTag createOpenElementTag(final String elementName) {
-        return new OpenElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions, elementName, false);
-    }
-
-    public IOpenElementTag createSyntheticOpenElementTag(final String elementName) {
-        checkRestrictedEventForTextTemplateMode("SyntheticOpenElementTag");
-        return new OpenElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions, elementName, true);
+    @Override
+    public IStandaloneElementTag createStandaloneElementTag(final String elementName, final boolean synthetic, final boolean minimized) {
+        final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementName);
+        return new StandaloneElementTag(this.templateMode, elementDefinition, elementName, null, synthetic, minimized);
     }
 
 
-    public ICloseElementTag createCloseElementTag(final String elementName) {
-        return new CloseElementTag(this.templateMode, this.elementDefinitions, elementName, false, false);
+    @Override
+    public IStandaloneElementTag createStandaloneElementTag(final String elementName, final String attributeName, final String attributeValue, final boolean synthetic, final boolean minimized) {
+        final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementName);
+        final Attributes attributes = buildAttributes(new Attribute[] { buildAttribute(attributeName, attributeValue, null) });
+        return new StandaloneElementTag(this.templateMode, elementDefinition, elementName, attributes, synthetic, minimized);
     }
 
-    public ICloseElementTag createSyntheticCloseElementTag(final String elementName) {
-        checkRestrictedEventForTextTemplateMode("SyntheticCloseElementTag");
-        return new CloseElementTag(this.templateMode, this.elementDefinitions, elementName, true, false);
+
+    @Override
+    public IStandaloneElementTag createStandaloneElementTag(final String elementName, final Map<String, String> attributes, final AttributeValueQuotes attributeValueQuotes, final boolean synthetic, final boolean minimized) {
+        final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementName);
+        final Attributes attributesObj = buildAttributes(buildAttributeArray(attributes, attributeValueQuotes));
+        return new StandaloneElementTag(this.templateMode, elementDefinition, elementName, attributesObj, synthetic, minimized);
     }
 
-    public ICloseElementTag createUnmatchedCloseElementTag(final String elementName) {
-        checkRestrictedEventForTextTemplateMode("UnmatchedCloseElementTag");
-        return new CloseElementTag(this.templateMode, this.elementDefinitions, elementName, false, true);
+
+
+
+    @Override
+    public IStandaloneElementTag setAttribute(final IStandaloneElementTag standaloneElementTag, final String attributeName, final String attributeValue) {
+        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
+            return setAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), attributeName, attributeValue);
+        }
+        return ((StandaloneElementTag) standaloneElementTag).setAttribute(this.attributeDefinitions, null, attributeName, attributeValue, null);
+    }
+
+
+    @Override
+    public IStandaloneElementTag setAttribute(final IStandaloneElementTag standaloneElementTag, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
+        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
+            return setAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), attributeName, attributeValue, attributeValueQuotes);
+        }
+        return ((StandaloneElementTag) standaloneElementTag).setAttribute(this.attributeDefinitions, null, attributeName, attributeValue, attributeValueQuotes);
+    }
+
+
+    @Override
+    public IStandaloneElementTag replaceAttribute(final IStandaloneElementTag standaloneElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue) {
+        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
+            return replaceAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), oldAttributeName, attributeName, attributeValue);
+        }
+        return ((StandaloneElementTag) standaloneElementTag).replaceAttribute(this.attributeDefinitions, oldAttributeName, null, attributeName, attributeValue, null);
+    }
+
+
+    @Override
+    public IStandaloneElementTag replaceAttribute(final IStandaloneElementTag standaloneElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
+        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
+            return replaceAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), oldAttributeName, attributeName, attributeValue, attributeValueQuotes);
+        }
+        return ((StandaloneElementTag) standaloneElementTag).replaceAttribute(this.attributeDefinitions, oldAttributeName, null, attributeName, attributeValue, attributeValueQuotes);
+    }
+
+
+    @Override
+    public IStandaloneElementTag removeAttribute(final IStandaloneElementTag standaloneElementTag, final String attributeName) {
+        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
+            return removeAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), attributeName);
+        }
+        return ((StandaloneElementTag) standaloneElementTag).removeAttribute(attributeName);
+    }
+
+
+    @Override
+    public IStandaloneElementTag removeAttribute(final IStandaloneElementTag standaloneElementTag, final String prefix, final String name) {
+        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
+            return removeAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), prefix, name);
+        }
+        return ((StandaloneElementTag) standaloneElementTag).removeAttribute(prefix, name);
+    }
+
+
+    @Override
+    public IStandaloneElementTag removeAttribute(final IStandaloneElementTag standaloneElementTag, final AttributeName attributeName) {
+        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
+            return removeAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), attributeName);
+        }
+        return ((StandaloneElementTag) standaloneElementTag).removeAttribute(attributeName);
+    }
+
+
+
+
+    @Override
+    public IOpenElementTag createOpenElementTag(final String elementName, final boolean synthetic) {
+        final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementName);
+        return new OpenElementTag(this.templateMode, elementDefinition, elementName, null, synthetic);
+    }
+
+
+    @Override
+    public IOpenElementTag createOpenElementTag(final String elementName, final String attributeName, final String attributeValue, final boolean synthetic) {
+        final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementName);
+        final Attributes attributes = buildAttributes(new Attribute[] { buildAttribute(attributeName, attributeValue, null) });
+        return new OpenElementTag(this.templateMode, elementDefinition, elementName, attributes, synthetic);
+    }
+
+
+    @Override
+    public IOpenElementTag createOpenElementTag(final String elementName, final Map<String, String> attributes, final AttributeValueQuotes attributeValueQuotes, final boolean synthetic) {
+        final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementName);
+        final Attributes attributesObj = buildAttributes(buildAttributeArray(attributes, attributeValueQuotes));
+        return new OpenElementTag(this.templateMode, elementDefinition, elementName, attributesObj, synthetic);
+    }
+
+
+
+
+    @Override
+    public IOpenElementTag setAttribute(final IOpenElementTag openElementTag, final String attributeName, final String attributeValue) {
+        if (!(openElementTag instanceof OpenElementTag)) {
+            return setAttribute(OpenElementTag.asEngineOpenElementTag(openElementTag), attributeName, attributeValue);
+        }
+        return ((OpenElementTag) openElementTag).setAttribute(this.attributeDefinitions, null, attributeName, attributeValue, null);
+    }
+
+
+    @Override
+    public IOpenElementTag setAttribute(final IOpenElementTag openElementTag, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
+        if (!(openElementTag instanceof OpenElementTag)) {
+            return setAttribute(OpenElementTag.asEngineOpenElementTag(openElementTag), attributeName, attributeValue, attributeValueQuotes);
+        }
+        return ((OpenElementTag) openElementTag).setAttribute(this.attributeDefinitions, null, attributeName, attributeValue, attributeValueQuotes);
+    }
+
+
+    @Override
+    public IOpenElementTag replaceAttribute(final IOpenElementTag openElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue) {
+        if (!(openElementTag instanceof OpenElementTag)) {
+            return replaceAttribute(OpenElementTag.asEngineOpenElementTag(openElementTag), oldAttributeName, attributeName, attributeValue);
+        }
+        return ((OpenElementTag) openElementTag).replaceAttribute(this.attributeDefinitions, oldAttributeName, null, attributeName, attributeValue, null);
+    }
+
+
+    @Override
+    public IOpenElementTag replaceAttribute(final IOpenElementTag openElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
+        if (!(openElementTag instanceof OpenElementTag)) {
+            return replaceAttribute(OpenElementTag.asEngineOpenElementTag(openElementTag), oldAttributeName, attributeName, attributeValue, attributeValueQuotes);
+        }
+        return ((OpenElementTag) openElementTag).replaceAttribute(this.attributeDefinitions, oldAttributeName, null, attributeName, attributeValue, attributeValueQuotes);
+    }
+
+
+    @Override
+    public IOpenElementTag removeAttribute(final IOpenElementTag openElementTag, final String attributeName) {
+        if (!(openElementTag instanceof OpenElementTag)) {
+            return removeAttribute(OpenElementTag.asEngineOpenElementTag(openElementTag), attributeName);
+        }
+        return ((OpenElementTag) openElementTag).removeAttribute(attributeName);
+    }
+
+
+    @Override
+    public IOpenElementTag removeAttribute(final IOpenElementTag openElementTag, final String prefix, final String name) {
+        if (!(openElementTag instanceof OpenElementTag)) {
+            return removeAttribute(OpenElementTag.asEngineOpenElementTag(openElementTag), prefix, name);
+        }
+        return ((OpenElementTag) openElementTag).removeAttribute(prefix, name);
+    }
+
+
+    @Override
+    public IOpenElementTag removeAttribute(final IOpenElementTag openElementTag, final AttributeName attributeName) {
+        if (!(openElementTag instanceof OpenElementTag)) {
+            return removeAttribute(OpenElementTag.asEngineOpenElementTag(openElementTag), attributeName);
+        }
+        return ((OpenElementTag) openElementTag).removeAttribute(attributeName);
+    }
+
+
+
+
+    @Override
+    public ICloseElementTag createCloseElementTag(final String elementName, final boolean synthetic, final boolean unmatched) {
+        final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementName);
+        return new CloseElementTag(this.templateMode, elementDefinition, elementName, null, synthetic, unmatched);
+    }
+
+
+
+
+    private Attribute buildAttribute(final String name, final String value, final AttributeValueQuotes quotes) {
+        final AttributeDefinition attributeDefinition = this.attributeDefinitions.forName(this.templateMode, name);
+        return new Attribute(attributeDefinition, name, Attribute.DEFAULT_OPERATOR, value, quotes, null, -1, -1);
+    }
+
+
+    private Attribute[] buildAttributeArray(final Map<String,String> attributes, final AttributeValueQuotes quotes) {
+        if (attributes == null || attributes.size() == 0) {
+            return Attributes.EMPTY_ATTRIBUTE_ARRAY;
+        }
+        int i = 0;
+        final Attribute[] newAttributes = new Attribute[attributes.size()];
+        for (final Map.Entry<String,String> attributesEntry : attributes.entrySet()) {
+            newAttributes[i++] = buildAttribute(attributesEntry.getKey(), attributesEntry.getValue(), quotes);
+        }
+        return newAttributes;
+    }
+
+
+    private Attributes buildAttributes(final Attribute[] attributeArray) {
+        if (attributeArray == null || attributeArray.length == 0) {
+            return Attributes.EMPTY_ATTRIBUTES;
+        }
+        final String[] innerWhiteSpaces;
+        if (attributeArray.length < SYNTHETIC_INNER_WHITESPACES.length) {
+            innerWhiteSpaces = SYNTHETIC_INNER_WHITESPACES[attributeArray.length];
+        } else {
+            innerWhiteSpaces = new String[attributeArray.length];
+            Arrays.fill(innerWhiteSpaces, Attributes.DEFAULT_WHITE_SPACE);
+        }
+        return new Attributes(attributeArray, innerWhiteSpaces);
     }
 
 
