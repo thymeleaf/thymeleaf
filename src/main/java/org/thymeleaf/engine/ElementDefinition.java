@@ -19,10 +19,12 @@
  */
 package org.thymeleaf.engine;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 
 import org.thymeleaf.processor.element.IElementProcessor;
+import org.thymeleaf.util.ProcessorComparators;
 
 /**
  *
@@ -56,6 +58,7 @@ public abstract class ElementDefinition {
         for (final IElementProcessor processor : this.associatedProcessorsSet) {
             this.associatedProcessors[i++] = processor;
         }
+        Arrays.sort(this.associatedProcessors, ProcessorComparators.PROCESSOR_COMPARATOR);
         this.hasAssociatedProcessors = this.associatedProcessors.length > 0;
 
     }
