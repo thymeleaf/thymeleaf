@@ -20,8 +20,10 @@
 package org.thymeleaf.processor.element;
 
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.model.AttributeValueQuotes;
 import org.thymeleaf.model.IModel;
 
 /**
@@ -66,6 +68,83 @@ public interface IElementTagStructureHandler {
      * @param name the name of the variable.
      */
     public void removeLocalVariable(final String name);
+
+    /**
+     * <p>
+     *   Instructs the engine to set an attribute (existing or not) in the current tag being
+     *   processed.
+     * </p>
+     *
+     * @param attributeName the name of the attribute.
+     * @param attributeValue the value of the attribute.
+     */
+    public void setAttribute(final String attributeName, final Object attributeValue);
+
+    /**
+     * <p>
+     *   Instructs the engine to set an attribute (existing or not) in the current tag being
+     *   processed.
+     * </p>
+     *
+     * @param attributeName the name of the attribute.
+     * @param attributeValue the value of the attribute.
+     * @param attributeValueQuotes the type of quotes to be set for the attribute.
+     */
+    public void setAttribute(final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
+
+    /**
+     * <p>
+     *   Instructs the engine to replace an existing attribute for a new one (which can also exist)
+     *   in the current tag being processed.
+     * </p>
+     *
+     * @param oldAttributeName the name of the attribute to be replaced.
+     * @param attributeName the name of the new attribute.
+     * @param attributeValue the value of the new attribute.
+     */
+    public void replaceAttribute(final AttributeName oldAttributeName, final String attributeName, final String attributeValue);
+
+    /**
+     * <p>
+     *   Instructs the engine to replace an existing attribute for a new one (which can also exist)
+     *   in the current tag being processed.
+     * </p>
+     *
+     * @param oldAttributeName the name of the attribute to be replaced.
+     * @param attributeName the name of the new attribute.
+     * @param attributeValue the value of the new attribute.
+     * @param attributeValueQuotes the type of quotes to be set for the attribute.
+     */
+    public void replaceAttribute(final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
+
+    /**
+     * <p>
+     *   Instructs the engine to remove an attribute from the tag being processed.
+     * </p>
+     *
+     * @param attributeName the complete name of the attribute to be removed.
+     */
+    public void removeAttribute(final String attributeName);
+
+    /**
+     * <p>
+     *   Instructs the engine to remove an attribute from the tag being processed.
+     * </p>
+     *
+     * @param prefix the prefix of the attribute to be removed.
+     * @param name the name of the attribute to be removed.
+     */
+    public void removeAttribute(final String prefix, final String name);
+
+    /**
+     * <p>
+     *   Instructs the engine to remove an attribute from the tag being processed.
+     * </p>
+     *
+     * @param attributeName the name of the attribute to be removed.
+     */
+    public void removeAttribute(final AttributeName attributeName);
+
 
     /**
      * <p>
