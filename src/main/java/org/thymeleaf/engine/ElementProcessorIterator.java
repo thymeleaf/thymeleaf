@@ -55,7 +55,7 @@ final class ElementProcessorIterator {
     private int auxSize = 0;
 
     // The version, used to keep track of the tag's attributes and knowing when we have to recompute
-    private int attributesVersion = Integer.MIN_VALUE;
+    private AbstractProcessableElementTag currentTag = null;
 
     // This flag will determine if we should return the last processor that we have already returned, or if we just did
     private boolean lastToBeRepeated = false;
@@ -72,7 +72,7 @@ final class ElementProcessorIterator {
     void reset() {
         this.size = 0;
         this.last = -1;
-        this.attributesVersion = Integer.MIN_VALUE;
+        this.currentTag = null;
         this.lastToBeRepeated = false;
         this.lastWasRepeated = false;
     }
@@ -91,9 +91,9 @@ final class ElementProcessorIterator {
 
         this.lastWasRepeated = false;
 
-        if (this.attributesVersion == Integer.MIN_VALUE || tag.elementAttributes.version != this.attributesVersion) {
+        if (this.currentTag != tag) { // tags are immutable, so we will use them as a marker of being updated
             recompute(tag);
-            this.attributesVersion = tag.elementAttributes.version;
+            this.currentTag = tag;
             this.last = -1;
         }
 
@@ -120,7 +120,7 @@ final class ElementProcessorIterator {
 
     private IElementProcessor computeRepeatedLast(final AbstractProcessableElementTag tag) {
 
-        if (this.attributesVersion == Integer.MIN_VALUE || tag.elementAttributes.version != this.attributesVersion) {
+        if (this.currentTag != tag) {
             throw new TemplateProcessingException("Cannot return last processor to be repeated: changes were made and processor recompute is needed!");
         }
 
@@ -141,7 +141,7 @@ final class ElementProcessorIterator {
 
     void setLastToBeRepeated(final AbstractProcessableElementTag tag) {
 
-        if (this.attributesVersion == Integer.MIN_VALUE || tag.elementAttributes.version != this.attributesVersion) {
+        if (this.currentTag != tag) {
             throw new TemplateProcessingException("Cannot set last processor to be repeated: processor recompute is needed!");
         }
 
@@ -157,13 +157,9 @@ final class ElementProcessorIterator {
     private void recompute(final AbstractProcessableElementTag tag) {
 
         // Before recomputing the iterator itself, we have to make sure that the associated processors are up-to-date
-        if (tag.associatedProcessorsAttributesVersion == Integer.MIN_VALUE || tag.elementAttributes.version != tag.associatedProcessorsAttributesVersion) {
-            tag.recomputeProcessors();
-            tag.associatedProcessorsAttributesVersion = tag.elementAttributes.version;
-        }
+        final IElementProcessor[] associatedProcessors = tag.getAssociatedProcessors();
 
-
-        if (tag.associatedProcessorsSize == 0) {
+        if (associatedProcessors.length == 0) {
             // After recompute, it seems we have no processors to be applied (we might have had before)
 
             if (this.processors != null) {
@@ -179,11 +175,11 @@ final class ElementProcessorIterator {
         if (this.processors == null) {
             // We had nothing precomputed, but there are associated processors now!
 
-            this.size = tag.associatedProcessorsSize;
+            this.size = associatedProcessors.length;
             this.processors = new IElementProcessor[Math.max(this.size, 4)]; // minimum size = 4
             this.visited = new boolean[Math.max(this.size, 4)]; // minimum size = 4
 
-            System.arraycopy(tag.associatedProcessors, 0, this.processors, 0, this.size);
+            System.arraycopy(associatedProcessors, 0, this.processors, 0, this.size);
             Arrays.fill(this.visited, false);
 
             return;
@@ -193,14 +189,14 @@ final class ElementProcessorIterator {
         // Processors have changed since the last time we used the iterator (attributes changed),
         // so we need to use the 'aux' structures in order to recompute processors and then swap.
 
-        this.auxSize = tag.associatedProcessorsSize;
+        this.auxSize = associatedProcessors.length;
         if (this.auxProcessors == null || this.auxSize > this.auxProcessors.length) {
             // We need new aux arrays (either don't exist, or they are too small)
             this.auxProcessors = new IElementProcessor[Math.max(this.auxSize, 4)];
             this.auxVisited = new boolean[Math.max(this.auxSize, 4)];
         }
 
-        System.arraycopy(tag.associatedProcessors, 0, this.auxProcessors, 0, this.auxSize);
+        System.arraycopy(associatedProcessors, 0, this.auxProcessors, 0, this.auxSize);
         // No pre-initialization for the visited array -- we will do it position by position
 
         // Now we should check the matches between the new and the old iterator processors - we will build
@@ -278,7 +274,7 @@ final class ElementProcessorIterator {
 
         this.size = original.size;
         this.last = original.last;
-        this.attributesVersion = original.attributesVersion;
+        this.currentTag = original.currentTag;
         this.lastToBeRepeated = original.lastToBeRepeated;
         this.lastWasRepeated = original.lastWasRepeated;
 
