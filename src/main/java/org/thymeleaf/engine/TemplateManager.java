@@ -291,15 +291,9 @@ public final class TemplateManager {
 
 
         /*
-         * Build the TemplateModel that we will end up returning
-         */
-        final TemplateModel templateModel = new TemplateModel(this.configuration, templateData);
-
-
-        /*
          *  Create the Template Handler that will be in charge of building the TemplateModel
          */
-        final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(templateModel.getInternalModel());
+        final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(this.configuration, templateData);
 
 
         /*
@@ -310,6 +304,8 @@ public final class TemplateManager {
                 this.configuration,
                 ownerTemplate, template, cleanTemplateSelectors, templateData.getTemplateResource(),
                 templateData.getTemplateMode(), templateResolution.getUseDecoupledLogic(), builderHandler);
+
+        final TemplateModel templateModel = builderHandler.getModel();
 
 
         /*
@@ -358,16 +354,15 @@ public final class TemplateManager {
         final IEngineContext engineContext =
                 EngineContextManager.prepareEngineContext(this.configuration, templateData, context.getTemplateResolutionAttributes(), context);
 
-        final TemplateModel preProcessedTemplateModel = new TemplateModel(this.configuration, templateData);
-        final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(preProcessedTemplateModel.getInternalModel());
+        final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(this.configuration, templateData);
         final ITemplateHandler processingHandlerChain =
                 createTemplateProcessingHandlerChain(engineContext, true, false, builderHandler, null);
 
-        templateModel.getInternalModel().process(processingHandlerChain);
+        processTemplateModel(templateModel, processingHandlerChain);
 
         EngineContextManager.disposeEngineContext(engineContext);
 
-        return preProcessedTemplateModel;
+        return builderHandler.getModel();
 
     }
 
@@ -441,19 +436,13 @@ public final class TemplateManager {
 
 
         /*
-         * Build the TemplateModel
+         * Create the Template Handler that will be in charge of building the TemplateModel
          *
          * NOTE how we are using the owner's TemplateData and not a new one created for this fragment, because
          * we want the elements inside the fragment to me reported as belonging to the container template,
          * not to the fragment String considered as a fragment in its own (which wouldn't make sense)
          */
-        final TemplateModel parsedTemplate = new TemplateModel(this.configuration, templateData);
-
-
-        /*
-         *  Create the Template Handler that will be in charge of building the TemplateModel
-         */
-        final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(parsedTemplate.getInternalModel());
+        final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(this.configuration, templateData);
 
 
         /*
@@ -462,6 +451,8 @@ public final class TemplateManager {
         final ITemplateParser parser = getParserForTemplateMode(templateData.getTemplateMode());
         // NO RESOURCE is sent to the parser, in this case. We simply pass the String template
         parser.parseString(this.configuration, ownerTemplate, template, lineOffset, colOffset, definitiveTemplateMode, builderHandler);
+
+        final TemplateModel parsedTemplate = builderHandler.getModel();
 
 
         /*
@@ -526,7 +517,7 @@ public final class TemplateManager {
         /*
          *  Process the template
          */
-        template.getInternalModel().process(processingHandlerChain);
+        processTemplateModel(template, processingHandlerChain);
 
 
         /*
@@ -599,7 +590,7 @@ public final class TemplateManager {
                 final ITemplateHandler processingHandlerChain =
                         createTemplateProcessingHandlerChain(engineContext, true, true, processorTemplateHandler, writer);
 
-                cached.getInternalModel().process(processingHandlerChain);
+                processTemplateModel(cached, processingHandlerChain);
 
                 EngineContextManager.disposeEngineContext(engineContext);
 
@@ -652,11 +643,8 @@ public final class TemplateManager {
          */
         if (templateResolution.getValidity().isCacheable() && this.templateCache != null) {
 
-            // Build the TemplateModel
-            final TemplateModel templateModel = new TemplateModel(this.configuration, templateData);
-
             // Create the handler chain to create the Template object
-            final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(templateModel.getInternalModel());
+            final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(this.configuration, templateData);
 
             // Process the cached template itself
             parser.parseStandalone(
@@ -664,11 +652,14 @@ public final class TemplateManager {
                     null, template, templateSelectors, templateData.getTemplateResource(),
                     engineContext.getTemplateMode(), templateResolution.getUseDecoupledLogic(), builderHandler);
 
+            // Obtain the TemplateModel
+            final TemplateModel templateModel = builderHandler.getModel();
+
             // Put the new template into cache
             this.templateCache.put(cacheKey, templateModel);
 
             // Process the read (+cached) template itself
-            templateModel.getInternalModel().process(processingHandlerChain);
+            processTemplateModel(templateModel, processingHandlerChain);
 
         } else {
 
@@ -887,6 +878,34 @@ public final class TemplateManager {
     }
 
 
+
+
+
+    static int processTemplateModel(final TemplateModel model, final ITemplateHandler handler) {
+        return processTemplateModel(model, handler, 0, Integer.MAX_VALUE);
+    }
+
+
+    static int processTemplateModel(final TemplateModel model, final ITemplateHandler handler, final int offset, final int len) {
+
+        final IEngineTemplateEvent[] queue = model.queue;
+
+        if (handler == null || queue.length == 0 || offset >= queue.length) {
+            return 0;
+        }
+
+        int processed = 0;
+
+        final int maxi = (len == Integer.MAX_VALUE? queue.length : Math.min(queue.length, offset + len));
+
+        for (int i = offset; i < maxi; i++) {
+            queue[i].beHandled(handler);
+            processed++;
+        }
+
+        return processed;
+
+    }
 
 
 }
