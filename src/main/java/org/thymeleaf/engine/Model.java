@@ -54,8 +54,8 @@ final class Model implements IModel {
 
     private static final int INITIAL_EVENT_QUEUE_SIZE = 50; // 50 events by default, will auto-grow
 
-    final IEngineConfiguration configuration;
-    final TemplateMode templateMode;
+    private IEngineConfiguration configuration;
+    private TemplateMode templateMode;
 
     IEngineTemplateEvent[] queue;
     int queueSize;
@@ -307,6 +307,18 @@ final class Model implements IModel {
 
     public IModel cloneModel() {
         return new Model(this);
+    }
+
+
+
+    void resetAsCloneOf(final Model model) {
+        this.configuration = model.configuration;
+        this.templateMode = model.templateMode;
+        if (this.queue.length < model.queueSize) {
+            this.queue = new IEngineTemplateEvent[model.queueSize];
+        }
+        System.arraycopy(model.queue, 0, this.queue, 0, model.queueSize);
+        this.queueSize = model.queueSize;
     }
 
 
