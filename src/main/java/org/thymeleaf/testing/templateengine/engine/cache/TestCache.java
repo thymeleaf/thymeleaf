@@ -61,7 +61,7 @@ public final class TestCache<K,V> implements ICache<K,V> {
         }
         if (key instanceof ExpressionCacheKey) {
             final ExpressionCacheKey cacheKey = (ExpressionCacheKey)key;
-            return new ExpressionCacheKey(testName + "_" + cacheKey.getType(), cacheKey.getExpression());
+            return new ExpressionCacheKey(testName + "_" + cacheKey.getType(), cacheKey.getExpression0(), cacheKey.getExpression1());
         }
         return key;
     }
