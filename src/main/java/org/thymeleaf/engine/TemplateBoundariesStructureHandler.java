@@ -30,12 +30,18 @@ import org.thymeleaf.processor.templateboundaries.ITemplateBoundariesStructureHa
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Structure handler implementation, internally used by the engine.
+ * </p>
+ * <p>
+ *   This class should not be directly used from outside the engine.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-final class TemplateBoundariesStructureHandler implements ITemplateBoundariesStructureHandler {
+public final class TemplateBoundariesStructureHandler implements ITemplateBoundariesStructureHandler {
 
 
     boolean insertText;

@@ -30,12 +30,18 @@ import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Structure handler implementation, internally used by the engine.
+ * </p>
+ * <p>
+ *   This class should not be directly used from outside the engine.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-final class ElementTagStructureHandler implements IElementTagStructureHandler {
+public final class ElementTagStructureHandler implements IElementTagStructureHandler {
 
 
     boolean setBodyText;

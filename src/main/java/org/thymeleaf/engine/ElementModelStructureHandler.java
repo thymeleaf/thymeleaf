@@ -28,12 +28,18 @@ import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.processor.element.IElementModelStructureHandler;
 
 /**
+ * <p>
+ *   Structure handler implementation, internally used by the engine.
+ * </p>
+ * <p>
+ *   This class should not be directly used from outside the engine.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-final class ElementModelStructureHandler implements IElementModelStructureHandler {
+public final class ElementModelStructureHandler implements IElementModelStructureHandler {
 
 
     boolean setLocalVariable;

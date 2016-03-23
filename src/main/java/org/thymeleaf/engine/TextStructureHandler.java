@@ -24,12 +24,18 @@ import org.thymeleaf.processor.text.ITextStructureHandler;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Structure handler implementation, internally used by the engine.
+ * </p>
+ * <p>
+ *   This class should not be directly used from outside the engine.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-final class TextStructureHandler implements ITextStructureHandler {
+public final class TextStructureHandler implements ITextStructureHandler {
 
 
     boolean replaceWithModel;
