@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.model;
 
-import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
 import org.thymeleaf.engine.AttributeName;
@@ -64,29 +63,20 @@ public interface IModelFactory {
     public IStandaloneElementTag createStandaloneElementTag(final String elementName, final String attributeName, final String attributeValue, final boolean synthetic, final boolean minimized);
     public IStandaloneElementTag createStandaloneElementTag(final String elementName, final Map<String,String> attributes, final AttributeValueQuotes attributeValueQuotes, final boolean synthetic, final boolean minimized);
 
-    public IStandaloneElementTag setAttribute(final IStandaloneElementTag standaloneElementTag, final String attributeName, final String attributeValue);
-    public IStandaloneElementTag setAttribute(final IStandaloneElementTag standaloneElementTag, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
-    public IStandaloneElementTag replaceAttribute(final IStandaloneElementTag standaloneElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue);
-    public IStandaloneElementTag replaceAttribute(final IStandaloneElementTag standaloneElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
-    public IStandaloneElementTag removeAttribute(final IStandaloneElementTag standaloneElementTag, final String attributeName);
-    public IStandaloneElementTag removeAttribute(final IStandaloneElementTag standaloneElementTag, final String prefix, final String name);
-    public IStandaloneElementTag removeAttribute(final IStandaloneElementTag standaloneElementTag, final AttributeName attributeName);
-
-
     public IOpenElementTag createOpenElementTag(final String elementName, final boolean synthetic);
     public IOpenElementTag createOpenElementTag(final String elementName, final String attributeName, final String attributeValue, final boolean synthetic);
     public IOpenElementTag createOpenElementTag(final String elementName, final Map<String,String> attributes, final AttributeValueQuotes attributeValueQuotes, final boolean synthetic);
 
-    public IOpenElementTag setAttribute(final IOpenElementTag openElementTag, final String attributeName, final String attributeValue);
-    public IOpenElementTag setAttribute(final IOpenElementTag openElementTag, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
-    public IOpenElementTag replaceAttribute(final IOpenElementTag openElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue);
-    public IOpenElementTag replaceAttribute(final IOpenElementTag openElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
-    public IOpenElementTag removeAttribute(final IOpenElementTag openElementTag, final String attributeName);
-    public IOpenElementTag removeAttribute(final IOpenElementTag openElementTag, final String prefix, final String name);
-    public IOpenElementTag removeAttribute(final IOpenElementTag openElementTag, final AttributeName attributeName);
-
-
     public ICloseElementTag createCloseElementTag(final String elementName, final boolean synthetic, final boolean unmatched);
+
+
+    public <T extends IProcessableElementTag> T setAttribute(final T tag, final String attributeName, final String attributeValue);
+    public <T extends IProcessableElementTag> T setAttribute(final T tag, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
+    public <T extends IProcessableElementTag> T replaceAttribute(final T tag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue);
+    public <T extends IProcessableElementTag> T replaceAttribute(final T tag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
+    public <T extends IProcessableElementTag> T removeAttribute(final T tag, final String attributeName);
+    public <T extends IProcessableElementTag> T removeAttribute(final T tag, final String prefix, final String name);
+    public <T extends IProcessableElementTag> T removeAttribute(final T tag, final AttributeName attributeName);
 
 
 }

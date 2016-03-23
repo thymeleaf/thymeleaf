@@ -32,6 +32,7 @@ import org.thymeleaf.model.IDocType;
 import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IOpenElementTag;
+import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.model.ITemplateEvent;
@@ -210,71 +211,6 @@ public class StandardModelFactory implements IModelFactory {
 
 
     @Override
-    public IStandaloneElementTag setAttribute(final IStandaloneElementTag standaloneElementTag, final String attributeName, final String attributeValue) {
-        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
-            return setAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), attributeName, attributeValue);
-        }
-        return ((StandaloneElementTag) standaloneElementTag).setAttribute(this.attributeDefinitions, null, attributeName, attributeValue, null);
-    }
-
-
-    @Override
-    public IStandaloneElementTag setAttribute(final IStandaloneElementTag standaloneElementTag, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
-        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
-            return setAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), attributeName, attributeValue, attributeValueQuotes);
-        }
-        return ((StandaloneElementTag) standaloneElementTag).setAttribute(this.attributeDefinitions, null, attributeName, attributeValue, attributeValueQuotes);
-    }
-
-
-    @Override
-    public IStandaloneElementTag replaceAttribute(final IStandaloneElementTag standaloneElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue) {
-        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
-            return replaceAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), oldAttributeName, attributeName, attributeValue);
-        }
-        return ((StandaloneElementTag) standaloneElementTag).replaceAttribute(this.attributeDefinitions, oldAttributeName, null, attributeName, attributeValue, null);
-    }
-
-
-    @Override
-    public IStandaloneElementTag replaceAttribute(final IStandaloneElementTag standaloneElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
-        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
-            return replaceAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), oldAttributeName, attributeName, attributeValue, attributeValueQuotes);
-        }
-        return ((StandaloneElementTag) standaloneElementTag).replaceAttribute(this.attributeDefinitions, oldAttributeName, null, attributeName, attributeValue, attributeValueQuotes);
-    }
-
-
-    @Override
-    public IStandaloneElementTag removeAttribute(final IStandaloneElementTag standaloneElementTag, final String attributeName) {
-        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
-            return removeAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), attributeName);
-        }
-        return ((StandaloneElementTag) standaloneElementTag).removeAttribute(attributeName);
-    }
-
-
-    @Override
-    public IStandaloneElementTag removeAttribute(final IStandaloneElementTag standaloneElementTag, final String prefix, final String name) {
-        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
-            return removeAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), prefix, name);
-        }
-        return ((StandaloneElementTag) standaloneElementTag).removeAttribute(prefix, name);
-    }
-
-
-    @Override
-    public IStandaloneElementTag removeAttribute(final IStandaloneElementTag standaloneElementTag, final AttributeName attributeName) {
-        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
-            return removeAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), attributeName);
-        }
-        return ((StandaloneElementTag) standaloneElementTag).removeAttribute(attributeName);
-    }
-
-
-
-
-    @Override
     public IOpenElementTag createOpenElementTag(final String elementName, final boolean synthetic) {
         final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementName);
         return new OpenElementTag(this.templateMode, elementDefinition, elementName, null, synthetic);
@@ -300,7 +236,171 @@ public class StandardModelFactory implements IModelFactory {
 
 
     @Override
-    public IOpenElementTag setAttribute(final IOpenElementTag openElementTag, final String attributeName, final String attributeValue) {
+    public <T extends IProcessableElementTag> T setAttribute(final T tag, final String attributeName, final String attributeValue) {
+        if (tag == null) {
+            return null;
+        }
+        if (tag instanceof IOpenElementTag) {
+            return (T) setAttribute((IOpenElementTag)tag, attributeName, attributeValue);
+        }
+        if (tag instanceof IStandaloneElementTag) {
+            return (T) setAttribute((IStandaloneElementTag)tag, attributeName, attributeValue);
+        }
+        throw new TemplateProcessingException("Unknown type of processable element tag: " + tag.getClass().getName());
+    }
+
+
+    @Override
+    public <T extends IProcessableElementTag> T setAttribute(final T tag, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
+        if (tag == null) {
+            return null;
+        }
+        if (tag instanceof IOpenElementTag) {
+            return (T) setAttribute((IOpenElementTag)tag, attributeName, attributeValue, attributeValueQuotes);
+        }
+        if (tag instanceof IStandaloneElementTag) {
+            return (T) setAttribute((IStandaloneElementTag)tag, attributeName, attributeValue, attributeValueQuotes);
+        }
+        throw new TemplateProcessingException("Unknown type of processable element tag: " + tag.getClass().getName());
+    }
+
+
+    @Override
+    public <T extends IProcessableElementTag> T replaceAttribute(final T tag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue) {
+        if (tag == null) {
+            return null;
+        }
+        if (tag instanceof IOpenElementTag) {
+            return (T) replaceAttribute((IOpenElementTag)tag, oldAttributeName, attributeName, attributeValue);
+        }
+        if (tag instanceof IStandaloneElementTag) {
+            return (T) replaceAttribute((IStandaloneElementTag)tag, oldAttributeName, attributeName, attributeValue);
+        }
+        throw new TemplateProcessingException("Unknown type of processable element tag: " + tag.getClass().getName());
+    }
+
+
+    @Override
+    public <T extends IProcessableElementTag> T replaceAttribute(final T tag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
+        if (tag == null) {
+            return null;
+        }
+        if (tag instanceof IOpenElementTag) {
+            return (T) replaceAttribute((IOpenElementTag)tag, oldAttributeName, attributeName, attributeValue, attributeValueQuotes);
+        }
+        if (tag instanceof IStandaloneElementTag) {
+            return (T) replaceAttribute((IStandaloneElementTag)tag, oldAttributeName, attributeName, attributeValue, attributeValueQuotes);
+        }
+        throw new TemplateProcessingException("Unknown type of processable element tag: " + tag.getClass().getName());
+    }
+
+
+    @Override
+    public <T extends IProcessableElementTag> T removeAttribute(final T tag, final String attributeName) {
+        if (tag == null) {
+            return null;
+        }
+        if (tag instanceof IOpenElementTag) {
+            return (T) removeAttribute((IOpenElementTag)tag, attributeName);
+        }
+        if (tag instanceof IStandaloneElementTag) {
+            return (T) removeAttribute((IStandaloneElementTag)tag, attributeName);
+        }
+        throw new TemplateProcessingException("Unknown type of processable element tag: " + tag.getClass().getName());
+    }
+
+
+    @Override
+    public <T extends IProcessableElementTag> T removeAttribute(final T tag, final String prefix, final String name) {
+        if (tag == null) {
+            return null;
+        }
+        if (tag instanceof IOpenElementTag) {
+            return (T) removeAttribute((IOpenElementTag)tag, prefix, name);
+        }
+        if (tag instanceof IStandaloneElementTag) {
+            return (T) removeAttribute((IStandaloneElementTag)tag, prefix, name);
+        }
+        throw new TemplateProcessingException("Unknown type of processable element tag: " + tag.getClass().getName());
+    }
+
+
+    @Override
+    public <T extends IProcessableElementTag> T removeAttribute(final T tag, final AttributeName attributeName) {
+        if (tag == null) {
+            return null;
+        }
+        if (tag instanceof IOpenElementTag) {
+            return (T) removeAttribute((IOpenElementTag)tag, attributeName);
+        }
+        if (tag instanceof IStandaloneElementTag) {
+            return (T) removeAttribute((IStandaloneElementTag)tag, attributeName);
+        }
+        throw new TemplateProcessingException("Unknown type of processable element tag: " + tag.getClass().getName());
+    }
+
+
+
+
+    private IStandaloneElementTag setAttribute(final IStandaloneElementTag standaloneElementTag, final String attributeName, final String attributeValue) {
+        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
+            return setAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), attributeName, attributeValue);
+        }
+        return ((StandaloneElementTag) standaloneElementTag).setAttribute(this.attributeDefinitions, null, attributeName, attributeValue, null);
+    }
+
+
+    private IStandaloneElementTag setAttribute(final IStandaloneElementTag standaloneElementTag, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
+        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
+            return setAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), attributeName, attributeValue, attributeValueQuotes);
+        }
+        return ((StandaloneElementTag) standaloneElementTag).setAttribute(this.attributeDefinitions, null, attributeName, attributeValue, attributeValueQuotes);
+    }
+
+
+    private IStandaloneElementTag replaceAttribute(final IStandaloneElementTag standaloneElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue) {
+        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
+            return replaceAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), oldAttributeName, attributeName, attributeValue);
+        }
+        return ((StandaloneElementTag) standaloneElementTag).replaceAttribute(this.attributeDefinitions, oldAttributeName, null, attributeName, attributeValue, null);
+    }
+
+
+    private IStandaloneElementTag replaceAttribute(final IStandaloneElementTag standaloneElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
+        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
+            return replaceAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), oldAttributeName, attributeName, attributeValue, attributeValueQuotes);
+        }
+        return ((StandaloneElementTag) standaloneElementTag).replaceAttribute(this.attributeDefinitions, oldAttributeName, null, attributeName, attributeValue, attributeValueQuotes);
+    }
+
+
+    private IStandaloneElementTag removeAttribute(final IStandaloneElementTag standaloneElementTag, final String attributeName) {
+        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
+            return removeAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), attributeName);
+        }
+        return ((StandaloneElementTag) standaloneElementTag).removeAttribute(attributeName);
+    }
+
+
+    private IStandaloneElementTag removeAttribute(final IStandaloneElementTag standaloneElementTag, final String prefix, final String name) {
+        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
+            return removeAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), prefix, name);
+        }
+        return ((StandaloneElementTag) standaloneElementTag).removeAttribute(prefix, name);
+    }
+
+
+    private IStandaloneElementTag removeAttribute(final IStandaloneElementTag standaloneElementTag, final AttributeName attributeName) {
+        if (!(standaloneElementTag instanceof StandaloneElementTag)) {
+            return removeAttribute(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag), attributeName);
+        }
+        return ((StandaloneElementTag) standaloneElementTag).removeAttribute(attributeName);
+    }
+
+
+
+
+    private IOpenElementTag setAttribute(final IOpenElementTag openElementTag, final String attributeName, final String attributeValue) {
         if (!(openElementTag instanceof OpenElementTag)) {
             return setAttribute(OpenElementTag.asEngineOpenElementTag(openElementTag), attributeName, attributeValue);
         }
@@ -308,8 +408,7 @@ public class StandardModelFactory implements IModelFactory {
     }
 
 
-    @Override
-    public IOpenElementTag setAttribute(final IOpenElementTag openElementTag, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
+    private IOpenElementTag setAttribute(final IOpenElementTag openElementTag, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
         if (!(openElementTag instanceof OpenElementTag)) {
             return setAttribute(OpenElementTag.asEngineOpenElementTag(openElementTag), attributeName, attributeValue, attributeValueQuotes);
         }
@@ -317,8 +416,7 @@ public class StandardModelFactory implements IModelFactory {
     }
 
 
-    @Override
-    public IOpenElementTag replaceAttribute(final IOpenElementTag openElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue) {
+    private IOpenElementTag replaceAttribute(final IOpenElementTag openElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue) {
         if (!(openElementTag instanceof OpenElementTag)) {
             return replaceAttribute(OpenElementTag.asEngineOpenElementTag(openElementTag), oldAttributeName, attributeName, attributeValue);
         }
@@ -326,8 +424,7 @@ public class StandardModelFactory implements IModelFactory {
     }
 
 
-    @Override
-    public IOpenElementTag replaceAttribute(final IOpenElementTag openElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
+    private IOpenElementTag replaceAttribute(final IOpenElementTag openElementTag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
         if (!(openElementTag instanceof OpenElementTag)) {
             return replaceAttribute(OpenElementTag.asEngineOpenElementTag(openElementTag), oldAttributeName, attributeName, attributeValue, attributeValueQuotes);
         }
@@ -335,8 +432,7 @@ public class StandardModelFactory implements IModelFactory {
     }
 
 
-    @Override
-    public IOpenElementTag removeAttribute(final IOpenElementTag openElementTag, final String attributeName) {
+    private IOpenElementTag removeAttribute(final IOpenElementTag openElementTag, final String attributeName) {
         if (!(openElementTag instanceof OpenElementTag)) {
             return removeAttribute(OpenElementTag.asEngineOpenElementTag(openElementTag), attributeName);
         }
@@ -344,8 +440,7 @@ public class StandardModelFactory implements IModelFactory {
     }
 
 
-    @Override
-    public IOpenElementTag removeAttribute(final IOpenElementTag openElementTag, final String prefix, final String name) {
+    private IOpenElementTag removeAttribute(final IOpenElementTag openElementTag, final String prefix, final String name) {
         if (!(openElementTag instanceof OpenElementTag)) {
             return removeAttribute(OpenElementTag.asEngineOpenElementTag(openElementTag), prefix, name);
         }
@@ -353,8 +448,7 @@ public class StandardModelFactory implements IModelFactory {
     }
 
 
-    @Override
-    public IOpenElementTag removeAttribute(final IOpenElementTag openElementTag, final AttributeName attributeName) {
+    private IOpenElementTag removeAttribute(final IOpenElementTag openElementTag, final AttributeName attributeName) {
         if (!(openElementTag instanceof OpenElementTag)) {
             return removeAttribute(OpenElementTag.asEngineOpenElementTag(openElementTag), attributeName);
         }
