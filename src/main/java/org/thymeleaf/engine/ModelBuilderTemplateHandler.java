@@ -19,6 +19,9 @@
  */
 package org.thymeleaf.engine;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
@@ -31,7 +34,6 @@ import org.thymeleaf.model.ITemplateEnd;
 import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.model.IXMLDeclaration;
-import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
 
@@ -43,28 +45,25 @@ import org.thymeleaf.util.Validate;
  */
 public final class ModelBuilderTemplateHandler extends AbstractTemplateHandler {
 
-    private final Model model;
-    private final EngineEventQueue modelQueue;
+    private final List<IEngineTemplateEvent> events;
     private final IEngineConfiguration configuration;
-    private final TemplateMode templateMode;
+    private final TemplateData templateData;
 
 
 
-    public ModelBuilderTemplateHandler(final Model model) {
+    public ModelBuilderTemplateHandler(final IEngineConfiguration configuration, final TemplateData templateData) {
         super();
-        Validate.notNull(model, "Model cannot be null");
-        Validate.notNull(model.getConfiguration(), "Engine Configuration returned by Model cannot be null");
-        Validate.notNull(model.getTemplateMode(), "Template Mode returned by Model cannot be null");
-        this.model = model;
-        this.modelQueue = this.model.getEventQueue();
-        this.configuration = model.getConfiguration();
-        this.templateMode = model.getTemplateMode();
+        Validate.notNull(configuration, "Configuration cannot be null");
+        Validate.notNull(templateData, "Template Data cannot be null");
+        this.configuration = configuration;
+        this.templateData = templateData;
+        this.events = new ArrayList<IEngineTemplateEvent>(100);
     }
 
 
 
-    public Model getModel() {
-        return this.model;
+    public TemplateModel getModel() {
+        return new TemplateModel(this.configuration, this.templateData, this.events.toArray(new IEngineTemplateEvent[this.events.size()]));
     }
 
 
@@ -75,16 +74,16 @@ public final class ModelBuilderTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleTemplateStart(final ITemplateStart templateStart) {
-        this.modelQueue.build(TemplateStart.asEngineTemplateStart(templateStart, true));
-        // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
+        this.events.add(TemplateStart.asEngineTemplateStart(templateStart));
+        // The engine event we might have created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleTemplateStart(templateStart);
     }
 
 
     @Override
     public void handleTemplateEnd(final ITemplateEnd templateEnd) {
-        this.modelQueue.build(TemplateEnd.asEngineTemplateEnd(templateEnd, true));
-        // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
+        this.events.add(TemplateEnd.asEngineTemplateEnd(templateEnd));
+        // The engine event we might have created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleTemplateEnd(templateEnd);
     }
 
@@ -94,8 +93,8 @@ public final class ModelBuilderTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleText(final IText text) {
-        this.modelQueue.build(Text.asEngineText(this.configuration, text, true));
-        // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
+        this.events.add(Text.asEngineText(text));
+        // The engine event we might have created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleText(text);
     }
 
@@ -103,16 +102,16 @@ public final class ModelBuilderTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleComment(final IComment comment) {
-        this.modelQueue.build(Comment.asEngineComment(this.configuration, comment, true));
-        // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
+        this.events.add(Comment.asEngineComment(comment));
+        // The engine event we might have created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleComment(comment);
     }
 
 
     @Override
     public void handleCDATASection(final ICDATASection cdataSection) {
-        this.modelQueue.build(CDATASection.asEngineCDATASection(this.configuration, cdataSection, true));
-        // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
+        this.events.add(CDATASection.asEngineCDATASection(cdataSection));
+        // The engine event we might have created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleCDATASection(cdataSection);
     }
 
@@ -121,24 +120,24 @@ public final class ModelBuilderTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleStandaloneElement(final IStandaloneElementTag standaloneElementTag) {
-        this.modelQueue.build(StandaloneElementTag.asEngineStandaloneElementTag(this.templateMode, this.configuration, standaloneElementTag, true));
-        // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
+        this.events.add(StandaloneElementTag.asEngineStandaloneElementTag(standaloneElementTag));
+        // The engine event we might have created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleStandaloneElement(standaloneElementTag);
     }
 
 
     @Override
     public void handleOpenElement(final IOpenElementTag openElementTag) {
-        this.modelQueue.build(OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, openElementTag, true));
-        // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
+        this.events.add(OpenElementTag.asEngineOpenElementTag(openElementTag));
+        // The engine event we might have created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleOpenElement(openElementTag);
     }
 
 
     @Override
     public void handleCloseElement(final ICloseElementTag closeElementTag) {
-        this.modelQueue.build(CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, closeElementTag, true));
-        // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
+        this.events.add(CloseElementTag.asEngineCloseElementTag(closeElementTag));
+        // The engine event we might have created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleCloseElement(closeElementTag);
     }
 
@@ -147,8 +146,8 @@ public final class ModelBuilderTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleDocType(final IDocType docType) {
-        this.modelQueue.build(DocType.asEngineDocType(this.configuration, docType, true));
-        // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
+        this.events.add(DocType.asEngineDocType(docType));
+        // The engine event we might have created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleDocType(docType);
     }
 
@@ -157,8 +156,8 @@ public final class ModelBuilderTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleXMLDeclaration(final IXMLDeclaration xmlDeclaration) {
-        this.modelQueue.build(XMLDeclaration.asEngineXMLDeclaration(this.configuration, xmlDeclaration, true));
-        // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
+        this.events.add(XMLDeclaration.asEngineXMLDeclaration(xmlDeclaration));
+        // The engine event we might have created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleXMLDeclaration(xmlDeclaration);
     }
 
@@ -167,8 +166,8 @@ public final class ModelBuilderTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleProcessingInstruction(final IProcessingInstruction processingInstruction) {
-        this.modelQueue.build(ProcessingInstruction.asEngineProcessingInstruction(this.configuration, processingInstruction, true));
-        // The clone we just created is not forwarded - this makes cache creating transparent to the handler chain
+        this.events.add(ProcessingInstruction.asEngineProcessingInstruction(processingInstruction));
+        // The engine event we might have created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleProcessingInstruction(processingInstruction);
     }
 
