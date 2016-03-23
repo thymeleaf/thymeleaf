@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.IDocType;
-import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.processor.doctype.AbstractDocTypeProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -141,15 +140,10 @@ public final class StandardTranslationDocTypeProcessor extends AbstractDocTypePr
 
                 final String translatedPublicId = PUBLIC_IDS_BY_SYSTEM_IDS.get(translatedSystemId);
 
-                final IModelFactory modelFactory = context.getConfiguration().getModelFactory(getTemplateMode());
-
-                final IDocType newDocType =
-                        modelFactory.createDocType(
+                structureHandler.setDocType(
                                 docType.getKeyword(), docType.getElementName(), docType.getType(),
                                 translatedPublicId, translatedSystemId,
                                 docType.getInternalSubset());
-
-                structureHandler.replaceWith(modelFactory.createModel(newDocType), false);
 
             }
 

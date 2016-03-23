@@ -52,8 +52,10 @@ public final class StandardInliningCommentProcessor extends AbstractCommentProce
             return;
         }
 
-        // Execute the inliner - inliners should actually change the event's content (if needed)
-        inliner.inline(context, comment);
+        final CharSequence inlined = inliner.inline(context, comment);
+        if (inlined != null && inlined != comment) {
+            structureHandler.setContent(inlined);
+        }
 
     }
 

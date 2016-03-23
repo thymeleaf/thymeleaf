@@ -31,7 +31,6 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.IComment;
-import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.postprocessor.IPostProcessor;
 import org.thymeleaf.processor.text.ITextProcessor;
@@ -102,7 +101,7 @@ public abstract class AbstractStandardInliner implements IInliner {
 
 
 
-    public final IText inline(final ITemplateContext context, final IText text) {
+    public final CharSequence inline(final ITemplateContext context, final IText text) {
 
         Validate.notNull(context, "Context cannot be null");
         Validate.notNull(text, "Text cannot be null");
@@ -114,7 +113,6 @@ public abstract class AbstractStandardInliner implements IInliner {
 
         if (context.getTemplateMode() != this.templateMode) {
 
-            final IModelFactory modelFactory = context.getConfiguration().getModelFactory(this.templateMode);
             final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
 
             final TemplateModel templateModel =
@@ -126,11 +124,11 @@ public abstract class AbstractStandardInliner implements IInliner {
             if (!this.writeTextsToOutput) {
                 final Writer stringWriter = new FastStringWriter(50);
                 templateManager.process(templateModel, context, stringWriter);
-                return modelFactory.createText(stringWriter.toString());
+                return stringWriter.toString();
             }
 
             // If we can directly write to output (and text is an IText), we will use a LazyProcessingCharSequence
-            return modelFactory.createText(new LazyProcessingCharSequence(context, templateModel));
+            return new LazyProcessingCharSequence(context, templateModel);
 
         }
 
@@ -140,7 +138,7 @@ public abstract class AbstractStandardInliner implements IInliner {
          */
 
         if (!EngineEventUtils.isInlineable(text)) {
-            return text;
+            return null;
         }
 
         /*
@@ -161,15 +159,14 @@ public abstract class AbstractStandardInliner implements IInliner {
 
         performInlining(context, text, 0, textLen, text.getTemplateName(), text.getLine(), text.getCol(), strBuilder);
 
-        final IModelFactory modelFactory = context.getConfiguration().getModelFactory(this.templateMode);
-        return modelFactory.createText(strBuilder.toString());
+        return strBuilder.toString();
 
     }
 
 
 
 
-    public final ICDATASection inline(final ITemplateContext context, final ICDATASection cdataSection) {
+    public final CharSequence inline(final ITemplateContext context, final ICDATASection cdataSection) {
 
         Validate.notNull(context, "Context cannot be null");
         Validate.notNull(cdataSection, "CDATA Section cannot be null");
@@ -181,7 +178,6 @@ public abstract class AbstractStandardInliner implements IInliner {
 
         if (context.getTemplateMode() != this.templateMode) {
 
-            final IModelFactory modelFactory = context.getConfiguration().getModelFactory(this.templateMode);
             final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
 
             /*
@@ -202,7 +198,7 @@ public abstract class AbstractStandardInliner implements IInliner {
             final Writer stringWriter = new FastStringWriter(50);
             templateManager.process(templateModel, context, stringWriter);
 
-            return modelFactory.createCDATASection(stringWriter.toString());
+            return stringWriter.toString();
 
         }
 
@@ -212,7 +208,7 @@ public abstract class AbstractStandardInliner implements IInliner {
          */
 
         if (!EngineEventUtils.isInlineable(cdataSection)) {
-            return cdataSection;
+            return null;
         }
 
         /*
@@ -233,15 +229,14 @@ public abstract class AbstractStandardInliner implements IInliner {
 
         performInlining(context, cdataSection, 9, cdataSectionLen - 12, cdataSection.getTemplateName(), cdataSection.getLine(), cdataSection.getCol(), strBuilder);
 
-        final IModelFactory modelFactory = context.getConfiguration().getModelFactory(this.templateMode);
-        return modelFactory.createCDATASection(strBuilder.toString());
+        return strBuilder.toString();
 
     }
 
 
 
 
-    public final IComment inline(final ITemplateContext context, final IComment comment) {
+    public final CharSequence inline(final ITemplateContext context, final IComment comment) {
 
         Validate.notNull(context, "Context cannot be null");
         Validate.notNull(comment, "Comment cannot be null");
@@ -253,7 +248,6 @@ public abstract class AbstractStandardInliner implements IInliner {
 
         if (context.getTemplateMode() != this.templateMode) {
 
-            final IModelFactory modelFactory = context.getConfiguration().getModelFactory(this.templateMode);
             final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
 
             /*
@@ -274,7 +268,7 @@ public abstract class AbstractStandardInliner implements IInliner {
             final Writer stringWriter = new FastStringWriter(50);
             templateManager.process(templateModel, context, stringWriter);
 
-            return modelFactory.createComment(stringWriter.toString());
+            return stringWriter.toString();
 
         }
 
@@ -284,7 +278,7 @@ public abstract class AbstractStandardInliner implements IInliner {
          */
 
         if (!EngineEventUtils.isInlineable(comment)) {
-            return comment;
+            return null;
         }
 
         /*
@@ -305,8 +299,7 @@ public abstract class AbstractStandardInliner implements IInliner {
 
         performInlining(context, comment, 4, commentLen - 7, comment.getTemplateName(), comment.getLine(), comment.getCol(), strBuilder);
 
-        final IModelFactory modelFactory = context.getConfiguration().getModelFactory(this.templateMode);
-        return modelFactory.createComment(strBuilder.toString());
+        return strBuilder.toString();
 
     }
 

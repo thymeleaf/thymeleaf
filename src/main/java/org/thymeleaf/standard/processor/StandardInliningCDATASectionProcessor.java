@@ -52,8 +52,10 @@ public final class StandardInliningCDATASectionProcessor extends AbstractCDATASe
             return;
         }
 
-        // Execute the inliner - inliners should actually change the event's content (if needed)
-        inliner.inline(context, cdataSection);
+        final CharSequence inlined = inliner.inline(context, cdataSection);
+        if (inlined != null && inlined != cdataSection) {
+            structureHandler.setContent(inlined);
+        }
 
     }
 

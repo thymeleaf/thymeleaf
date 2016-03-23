@@ -58,7 +58,7 @@ public interface IInliner {
      * @param text the event to be inlined.
      * @return the modified event (or the same event if no modifications were required)
      */
-    public IText inline(final ITemplateContext context, final IText text);
+    public CharSequence inline(final ITemplateContext context, final IText text);
 
     /**
      * <p>
@@ -69,7 +69,7 @@ public interface IInliner {
      * @param cdataSection the event to be inlined.
      * @return the modified event (or the same event if no modifications were required)
      */
-    public ICDATASection inline(final ITemplateContext context, final ICDATASection cdataSection);
+    public CharSequence inline(final ITemplateContext context, final ICDATASection cdataSection);
 
     /**
      * <p>
@@ -80,6 +80,6 @@ public interface IInliner {
      * @param comment the event to be inlined.
      * @return the modified event (or the same event if no modifications were required)
      */
-    public IComment inline(final ITemplateContext context, final IComment comment);
+    public CharSequence inline(final ITemplateContext context, final IComment comment);
 
 }

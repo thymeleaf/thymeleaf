@@ -52,8 +52,10 @@ public final class StandardInliningTextProcessor extends AbstractTextProcessor {
             return;
         }
 
-        // Execute the inliner - inliners should actually change the event's content (if needed)
-        inliner.inline(context, text);
+        final CharSequence inlined = inliner.inline(context, text);
+        if (inlined != null && inlined != text) {
+            structureHandler.setText(inlined);
+        }
 
     }
 
