@@ -19,13 +19,16 @@
  */
 package org.thymeleaf.spring4.processor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IElementAttributes;
+import org.thymeleaf.model.AttributeValueQuotes;
 import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -75,8 +78,6 @@ public final class SpringInputCheckboxFieldTagProcessor
         Object boundValue = bindStatus.getValue();
         final Class<?> valueType = bindStatus.getValueType();
 
-        final IElementAttributes attributes = tag.getAttributes();
-
         if (Boolean.class.equals(valueType) || boolean.class.equals(valueType)) {
 
             if (boundValue instanceof String) {
@@ -88,25 +89,25 @@ public final class SpringInputCheckboxFieldTagProcessor
 
         } else {
 
-            value = attributes.getValue(this.valueAttributeDefinition.getAttributeName());
+            value = tag.getAttributeValue(this.valueAttributeDefinition.getAttributeName());
             if (value == null) {
                 throw new TemplateProcessingException(
                         "Attribute \"value\" is required in \"input(checkbox)\" tags " +
-                                "when binding to non-boolean values");
+                        "when binding to non-boolean values");
             }
 
             checked = SelectedValueComparatorWrapper.isSelected(bindStatus, HtmlEscape.unescapeHtml(value));
 
         }
 
-        StandardProcessorUtils.setAttribute(attributes, this.idAttributeDefinition, ID_ATTR_NAME, id); // No need to escape: this comes from an existing 'id' or from a token
-        StandardProcessorUtils.setAttribute(attributes, this.nameAttributeDefinition, NAME_ATTR_NAME, name); // No need to escape: this is a java-valid token
+        StandardProcessorUtils.setAttribute(structureHandler, this.idAttributeDefinition, ID_ATTR_NAME, id); // No need to escape: this comes from an existing 'id' or from a token
+        StandardProcessorUtils.setAttribute(structureHandler, this.nameAttributeDefinition, NAME_ATTR_NAME, name); // No need to escape: this is a java-valid token
         StandardProcessorUtils.setAttribute(
-                attributes, this.valueAttributeDefinition, VALUE_ATTR_NAME, RequestDataValueProcessorUtils.processFormFieldValue(context, name, value, "checkbox"));
+                structureHandler, this.valueAttributeDefinition, VALUE_ATTR_NAME, RequestDataValueProcessorUtils.processFormFieldValue(context, name, value, "checkbox"));
         if (checked) {
-            StandardProcessorUtils.setAttribute(attributes, this.checkedAttributeDefinition, CHECKED_ATTR_NAME, CHECKED_ATTR_NAME);
+            StandardProcessorUtils.setAttribute(structureHandler, this.checkedAttributeDefinition, CHECKED_ATTR_NAME, CHECKED_ATTR_NAME);
         } else {
-            attributes.removeAttribute(this.checkedAttributeDefinition.getAttributeName());
+            structureHandler.removeAttribute(this.checkedAttributeDefinition.getAttributeName());
         }
 
 
@@ -126,14 +127,13 @@ public final class SpringInputCheckboxFieldTagProcessor
             final String hiddenName = WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name;
             final String hiddenValue = "on";
 
-            final IStandaloneElementTag hiddenTag =
-                    modelFactory.createStandaloneElementTag(INPUT_TAG_NAME, true);
-            final IElementAttributes hiddenTagAttributes = hiddenTag.getAttributes();
+            final Map<String,String> hiddenAttributes = new HashMap<String,String>(4,1.0f);
+            hiddenAttributes.put(TYPE_ATTR_NAME, "hidden");
+            hiddenAttributes.put(NAME_ATTR_NAME, hiddenName);
+            hiddenAttributes.put(VALUE_ATTR_NAME, RequestDataValueProcessorUtils.processFormFieldValue(context, hiddenName, hiddenValue, "hidden"));
 
-            StandardProcessorUtils.setAttribute(hiddenTagAttributes, this.typeAttributeDefinition, TYPE_ATTR_NAME, "hidden");
-            StandardProcessorUtils.setAttribute(hiddenTagAttributes, this.nameAttributeDefinition, NAME_ATTR_NAME, hiddenName);
-            StandardProcessorUtils.setAttribute(
-                    hiddenTagAttributes, this.valueAttributeDefinition, VALUE_ATTR_NAME, RequestDataValueProcessorUtils.processFormFieldValue(context, hiddenName, hiddenValue, "hidden"));
+            final IStandaloneElementTag hiddenTag =
+                    modelFactory.createStandaloneElementTag(INPUT_TAG_NAME, hiddenAttributes, AttributeValueQuotes.DOUBLE, false, true);
 
             hiddenTagModel.add(hiddenTag);
 
@@ -147,7 +147,7 @@ public final class SpringInputCheckboxFieldTagProcessor
 
     private final boolean isDisabled(final IProcessableElementTag tag) {
         // Disabled = attribute "disabled" exists
-        return tag.getAttributes().hasAttribute(this.disabledAttributeDefinition.getAttributeName());
+        return tag.hasAttribute(this.disabledAttributeDefinition.getAttributeName());
     }
 
 

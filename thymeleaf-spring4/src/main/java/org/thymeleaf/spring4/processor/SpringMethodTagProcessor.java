@@ -19,12 +19,15 @@
  */
 package org.thymeleaf.spring4.processor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeDefinition;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IAttributeDefinitionsAware;
-import org.thymeleaf.model.IElementAttributes;
+import org.thymeleaf.model.AttributeValueQuotes;
 import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -46,8 +49,8 @@ import org.unbescape.html.HtmlEscape;
  *
  */
 public final class SpringMethodTagProcessor
-        extends AbstractStandardExpressionAttributeTagProcessor
-        implements IAttributeDefinitionsAware {
+            extends AbstractStandardExpressionAttributeTagProcessor
+            implements IAttributeDefinitionsAware {
 
 
     public static final int ATTR_PRECEDENCE = 990;
@@ -60,9 +63,6 @@ public final class SpringMethodTagProcessor
     private static final String VALUE_ATTR_NAME = "value";
 
     private AttributeDefinition targetAttributeDefinition;
-    private AttributeDefinition typeAttributeDefinition;
-    private AttributeDefinition nameAttributeDefinition;
-    private AttributeDefinition valueAttributeDefinition;
 
 
 
@@ -79,9 +79,6 @@ public final class SpringMethodTagProcessor
         // We precompute the AttributeDefinitions in order to being able to use much
         // faster methods for setting/replacing attributes on the ElementAttributes implementation
         this.targetAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, TARGET_ATTR_NAME);
-        this.typeAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, TYPE_ATTR_NAME);
-        this.nameAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, NAME_ATTR_NAME);
-        this.valueAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, VALUE_ATTR_NAME);
     }
 
 
@@ -97,18 +94,16 @@ public final class SpringMethodTagProcessor
 
         final String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? null : expressionResult.toString());
 
-        final IElementAttributes attributes = tag.getAttributes();
-
         // Set the 'method' attribute, or remove it if evaluated to null
         if (newAttributeValue == null || newAttributeValue.length() == 0) {
-            attributes.removeAttribute(this.targetAttributeDefinition.getAttributeName());
-            attributes.removeAttribute(attributeName);
+            structureHandler.removeAttribute(this.targetAttributeDefinition.getAttributeName());
+            structureHandler.removeAttribute(attributeName);
         } else {
-            StandardProcessorUtils.replaceAttribute(attributes, attributeName, this.targetAttributeDefinition, TARGET_ATTR_NAME, newAttributeValue);
+            StandardProcessorUtils.replaceAttribute(structureHandler, attributeName, this.targetAttributeDefinition, TARGET_ATTR_NAME, newAttributeValue);
         }
 
         // If this th:action is in a <form> tag, we might need to add a hidden field for non-supported HTTP methods
-        if (newAttributeValue != null && "form".equalsIgnoreCase(tag.getElementName())) {
+        if (newAttributeValue != null && "form".equalsIgnoreCase(tag.getElementCompleteName())) {
 
             if (!isMethodBrowserSupported(newAttributeValue)) {
 
@@ -117,7 +112,7 @@ public final class SpringMethodTagProcessor
                 // using a hidden input with name '_method' and set 'post' for the
                 // <form> tag.
 
-                StandardProcessorUtils.setAttribute(attributes, this.targetAttributeDefinition, TARGET_ATTR_NAME, "post");
+                StandardProcessorUtils.setAttribute(structureHandler, this.targetAttributeDefinition, TARGET_ATTR_NAME, "post");
 
                 final IModelFactory modelFactory = context.getConfiguration().getModelFactory(context.getTemplateMode());
 
@@ -125,16 +120,15 @@ public final class SpringMethodTagProcessor
 
                 final String type = "hidden";
                 final String name = "_method";
-                final String value =
-                        RequestDataValueProcessorUtils.processFormFieldValue(context, name, newAttributeValue, type);
+                final String value = RequestDataValueProcessorUtils.processFormFieldValue(context, name, newAttributeValue, type);
+
+                final Map<String,String> hiddenAttributes = new HashMap<String,String>(4,1.0f);
+                hiddenAttributes.put(TYPE_ATTR_NAME, type);
+                hiddenAttributes.put(NAME_ATTR_NAME, name);
+                hiddenAttributes.put(VALUE_ATTR_NAME, value); // no need to escape
 
                 final IStandaloneElementTag hiddenMethodElementTag =
-                        modelFactory.createStandaloneElementTag("input", true);
-                final IElementAttributes hiddenMethodElementTagAttributes = hiddenMethodElementTag.getAttributes();
-
-                StandardProcessorUtils.setAttribute(hiddenMethodElementTagAttributes, this.typeAttributeDefinition, TYPE_ATTR_NAME, type);
-                StandardProcessorUtils.setAttribute(hiddenMethodElementTagAttributes, this.nameAttributeDefinition, NAME_ATTR_NAME, name);
-                StandardProcessorUtils.setAttribute(hiddenMethodElementTagAttributes, this.valueAttributeDefinition, VALUE_ATTR_NAME, value); // no need to escape
+                        modelFactory.createStandaloneElementTag("input", hiddenAttributes, AttributeValueQuotes.DOUBLE, false, true);
 
                 hiddenMethodModel.add(hiddenMethodElementTag);
 

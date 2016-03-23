@@ -24,7 +24,6 @@ import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
@@ -65,9 +64,7 @@ public final class SpringInputRadioFieldTagProcessor extends AbstractSpringField
 
         final String id = computeId(context, tag, name, true);
 
-        final IElementAttributes attributes = tag.getAttributes();
-
-        final String value = attributes.getValue(this.valueAttributeDefinition.getAttributeName());
+        final String value = tag.getAttributeValue(this.valueAttributeDefinition.getAttributeName());
         if (value == null) {
             throw new TemplateProcessingException(
                     "Attribute \"value\" is required in \"input(radio)\" tags");
@@ -77,15 +74,15 @@ public final class SpringInputRadioFieldTagProcessor extends AbstractSpringField
                 SelectedValueComparatorWrapper.isSelected(bindStatus, HtmlEscape.unescapeHtml(value));
 
 
-        StandardProcessorUtils.setAttribute(attributes, this.idAttributeDefinition, ID_ATTR_NAME, id); // No need to escape: this comes from an existing 'id' or from a token
-        StandardProcessorUtils.setAttribute(attributes, this.nameAttributeDefinition, NAME_ATTR_NAME, name); // No need to escape: this is a java-valid token
+        StandardProcessorUtils.setAttribute(structureHandler, this.idAttributeDefinition, ID_ATTR_NAME, id); // No need to escape: this comes from an existing 'id' or from a token
+        StandardProcessorUtils.setAttribute(structureHandler, this.nameAttributeDefinition, NAME_ATTR_NAME, name); // No need to escape: this is a java-valid token
         StandardProcessorUtils.setAttribute(
-                attributes, this.valueAttributeDefinition, VALUE_ATTR_NAME, RequestDataValueProcessorUtils.processFormFieldValue(context, name, value, "radio"));
+                structureHandler, this.valueAttributeDefinition, VALUE_ATTR_NAME, RequestDataValueProcessorUtils.processFormFieldValue(context, name, value, "radio"));
 
         if (checked) {
-            StandardProcessorUtils.setAttribute(attributes, this.checkedAttributeDefinition, CHECKED_ATTR_NAME, CHECKED_ATTR_NAME);
+            StandardProcessorUtils.setAttribute(structureHandler, this.checkedAttributeDefinition, CHECKED_ATTR_NAME, CHECKED_ATTR_NAME);
         } else {
-            attributes.removeAttribute(this.checkedAttributeDefinition.getAttributeName());
+            structureHandler.removeAttribute(this.checkedAttributeDefinition.getAttributeName());
         }
 
     }

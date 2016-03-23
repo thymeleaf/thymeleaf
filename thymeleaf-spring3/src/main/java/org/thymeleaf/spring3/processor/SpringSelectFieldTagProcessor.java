@@ -19,11 +19,14 @@
  */
 package org.thymeleaf.spring3.processor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.model.IElementAttributes;
+import org.thymeleaf.model.AttributeValueQuotes;
 import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -65,12 +68,10 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
 
         final String id = computeId(context, tag, name, false);
 
-        final IElementAttributes attributes = tag.getAttributes();
+        final boolean multiple = tag.hasAttribute(this.multipleAttributeDefinition.getAttributeName());
 
-        final boolean multiple = attributes.hasAttribute(this.multipleAttributeDefinition.getAttributeName());
-
-        StandardProcessorUtils.setAttribute(attributes, this.idAttributeDefinition, ID_ATTR_NAME, id); // No need to escape: this comes from an existing 'id' or from a token
-        StandardProcessorUtils.setAttribute(attributes, this.nameAttributeDefinition, NAME_ATTR_NAME, name); // No need to escape: this is a java-valid token
+        StandardProcessorUtils.setAttribute(structureHandler, this.idAttributeDefinition, ID_ATTR_NAME, id); // No need to escape: this comes from an existing 'id' or from a token
+        StandardProcessorUtils.setAttribute(structureHandler, this.nameAttributeDefinition, NAME_ATTR_NAME, name); // No need to escape: this is a java-valid token
 
         structureHandler.setLocalVariable(OPTION_IN_SELECT_ATTR_NAME, attributeName);
         structureHandler.setLocalVariable(OPTION_IN_SELECT_ATTR_VALUE, attributeValue);
@@ -86,15 +87,15 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
             final String value =
                     RequestDataValueProcessorUtils.processFormFieldValue(context, hiddenName, "1", type);
 
-            final IStandaloneElementTag hiddenMethodElementTag =
-                    modelFactory.createStandaloneElementTag("input", true);
-            final IElementAttributes hiddenMethodElementTagAttributes = hiddenMethodElementTag.getAttributes();
+            final Map<String,String> hiddenAttributes = new HashMap<String,String>(4,1.0f);
+            hiddenAttributes.put(TYPE_ATTR_NAME, type);
+            hiddenAttributes.put(NAME_ATTR_NAME, hiddenName);
+            hiddenAttributes.put(VALUE_ATTR_NAME, value);
 
-            StandardProcessorUtils.setAttribute(hiddenMethodElementTagAttributes, this.typeAttributeDefinition, TYPE_ATTR_NAME, type);
-            StandardProcessorUtils.setAttribute(hiddenMethodElementTagAttributes, this.nameAttributeDefinition, NAME_ATTR_NAME, hiddenName);
-            StandardProcessorUtils.setAttribute(hiddenMethodElementTagAttributes, this.valueAttributeDefinition, VALUE_ATTR_NAME, value);
+            final IStandaloneElementTag hiddenElementTag =
+                    modelFactory.createStandaloneElementTag("input", hiddenAttributes, AttributeValueQuotes.DOUBLE, false, true);
 
-            hiddenMethodElementModel.add(hiddenMethodElementTag);
+            hiddenMethodElementModel.add(hiddenElementTag);
 
             // We insert this hidden before because <select>'s are open element (with body), and if we insert it
             // after the element, we would be inserting the <input type="hidden"> inside the <select>, which would
@@ -109,7 +110,7 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
 
     private final boolean isDisabled(final IProcessableElementTag tag) {
         // Disabled = attribute "disabled" exists
-        return tag.getAttributes().hasAttribute(this.disabledAttributeDefinition.getAttributeName());
+        return tag.hasAttribute(this.disabledAttributeDefinition.getAttributeName());
     }
 
 

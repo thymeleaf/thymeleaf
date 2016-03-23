@@ -24,7 +24,6 @@ import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
@@ -59,9 +58,7 @@ public final class SpringOptionFieldTagProcessor extends AbstractSpringFieldTagP
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
 
-        final IElementAttributes attributes = tag.getAttributes();
-
-        final String value = attributes.getValue(this.valueAttributeDefinition.getAttributeName());
+        final String value = tag.getAttributeValue(this.valueAttributeDefinition.getAttributeName());
         if (value == null) {
             throw new TemplateProcessingException(
                     "Attribute \"value\" is required in \"option\" tags");
@@ -71,14 +68,14 @@ public final class SpringOptionFieldTagProcessor extends AbstractSpringFieldTagP
                 SelectedValueComparatorWrapper.isSelected(bindStatus, HtmlEscape.unescapeHtml(value));
 
         StandardProcessorUtils.setAttribute(
-                attributes,
+                structureHandler,
                 this.valueAttributeDefinition, VALUE_ATTR_NAME,
                 RequestDataValueProcessorUtils.processFormFieldValue(context, name, value, "option"));
 
         if (selected) {
-            StandardProcessorUtils.setAttribute(attributes, this.selectedAttributeDefinition, SELECTED_ATTR_NAME, SELECTED_ATTR_NAME);
+            StandardProcessorUtils.setAttribute(structureHandler, this.selectedAttributeDefinition, SELECTED_ATTR_NAME, SELECTED_ATTR_NAME);
         } else {
-            attributes.removeAttribute(this.selectedAttributeDefinition.getAttributeName());
+            structureHandler.removeAttribute(this.selectedAttributeDefinition.getAttributeName());
         }
 
     }

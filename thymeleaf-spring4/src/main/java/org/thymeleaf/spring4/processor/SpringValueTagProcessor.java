@@ -24,7 +24,6 @@ import org.thymeleaf.engine.AttributeDefinition;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IAttributeDefinitionsAware;
-import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
@@ -95,15 +94,13 @@ public final class SpringValueTagProcessor
 
         String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? "" : expressionResult.toString());
 
-        final IElementAttributes attributes = tag.getAttributes();
-
         // Let RequestDataValueProcessor modify the attribute value if needed, but only in the case we don't also have
         // a 'th:field' - in such case, we will let th:field do its job
-        if (!attributes.hasAttribute(this.fieldAttributeDefinition.getAttributeName())) {
+        if (!tag.hasAttribute(this.fieldAttributeDefinition.getAttributeName())) {
 
             // We will need to know the 'name' and 'type' attribute values in order to (potentially) modify the 'value'
-            final String nameValue = attributes.getValue(this.nameAttributeDefinition.getAttributeName());
-            final String typeValue = attributes.getValue(this.typeAttributeDefinition.getAttributeName());
+            final String nameValue = tag.getAttributeValue(this.nameAttributeDefinition.getAttributeName());
+            final String typeValue = tag.getAttributeValue(this.typeAttributeDefinition.getAttributeName());
 
             newAttributeValue =
                     RequestDataValueProcessorUtils.processFormFieldValue(context, nameValue, newAttributeValue, typeValue);
@@ -111,7 +108,7 @@ public final class SpringValueTagProcessor
         }
 
         // Set the 'value' attribute
-        StandardProcessorUtils.replaceAttribute(attributes, attributeName, this.targetAttributeDefinition, TARGET_ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
+        StandardProcessorUtils.replaceAttribute(structureHandler, attributeName, this.targetAttributeDefinition, TARGET_ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
 
     }
 

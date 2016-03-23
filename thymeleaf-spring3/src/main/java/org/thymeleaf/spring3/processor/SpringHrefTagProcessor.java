@@ -24,7 +24,6 @@ import org.thymeleaf.engine.AttributeDefinition;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IAttributeDefinitionsAware;
-import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
@@ -43,8 +42,8 @@ import org.unbescape.html.HtmlEscape;
  *
  */
 public final class SpringHrefTagProcessor
-        extends AbstractStandardExpressionAttributeTagProcessor
-        implements IAttributeDefinitionsAware {
+            extends AbstractStandardExpressionAttributeTagProcessor
+            implements IAttributeDefinitionsAware {
 
 
     public static final int ATTR_PRECEDENCE = 1000;
@@ -88,8 +87,7 @@ public final class SpringHrefTagProcessor
         newAttributeValue = RequestDataValueProcessorUtils.processUrl(context, newAttributeValue);
 
         // Set the real, non prefixed attribute
-        final IElementAttributes attributes = tag.getAttributes();
-        StandardProcessorUtils.replaceAttribute(attributes, attributeName, this.targetAttributeDefinition, ATTR_NAME, (newAttributeValue == null ? "" : newAttributeValue));
+        StandardProcessorUtils.replaceAttribute(structureHandler, attributeName, this.targetAttributeDefinition, ATTR_NAME, (newAttributeValue == null ? "" : newAttributeValue));
 
     }
 

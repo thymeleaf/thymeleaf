@@ -70,8 +70,8 @@ public final class SpringOptionInSelectFieldTagProcessor extends AbstractElement
         final String selectAttrValueToAdd =
                 (String) context.getVariable(SpringSelectFieldTagProcessor.OPTION_IN_SELECT_ATTR_VALUE);
 
-        if (tag.getAttributes().hasAttribute(selectAttrNameToAdd)) {
-            if (!selectAttrValueToAdd.equals(tag.getAttributes().getValue(selectAttrNameToAdd))) {
+        if (tag.hasAttribute(selectAttrNameToAdd)) {
+            if (!selectAttrValueToAdd.equals(tag.getAttributeValue(selectAttrNameToAdd))) {
                 throw new TemplateProcessingException(
                         "If specified (which is not required), attribute \"" + selectAttrNameToAdd + "\" in " +
                         "\"option\" tag must have exactly the same value as in its containing \"select\" tag");
@@ -81,7 +81,7 @@ public final class SpringOptionInSelectFieldTagProcessor extends AbstractElement
         // This attribute value does not need to be escaped, because we are just "transporting" the th:field in the
         // container <select> to its <option>'s, without any modifications. It will be executed (and its results
         // escaped) later...
-        tag.getAttributes().setAttribute(selectAttrNameToAdd.getCompleteAttributeNames()[0], selectAttrValueToAdd);
+        structureHandler.setAttribute(selectAttrNameToAdd.getCompleteAttributeNames()[0], selectAttrValueToAdd);
 
     }
 

@@ -24,7 +24,6 @@ import org.thymeleaf.engine.AttributeDefinition;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IAttributeDefinitionsAware;
-import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
@@ -82,8 +81,7 @@ public final class SpringSrcTagProcessor
         newAttributeValue = RequestDataValueProcessorUtils.processUrl(context, newAttributeValue);
 
         // Set the real, non prefixed attribute
-        final IElementAttributes attributes = tag.getAttributes();
-        StandardProcessorUtils.replaceAttribute(attributes, attributeName, this.targetAttributeDefinition, ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
+        StandardProcessorUtils.replaceAttribute(structureHandler, attributeName, this.targetAttributeDefinition, ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
 
     }
 

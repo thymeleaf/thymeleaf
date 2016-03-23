@@ -137,7 +137,10 @@ public final class SpringTranslationDocTypeProcessor extends AbstractDocTypeProc
             final String translatedSystemId = TRANSLATED_SYSTEM_IDS.get(docType.getSystemId());
             if (translatedSystemId != null) {
                 final String translatedPublicId = PUBLIC_IDS_BY_SYSTEM_IDS.get(translatedSystemId);
-                docType.setIDs(translatedPublicId, translatedSystemId);
+                structureHandler.setDocType(
+                        docType.getKeyword(), docType.getElementName(), docType.getType(),
+                        translatedPublicId, translatedSystemId,
+                        docType.getInternalSubset());
             }
 
         }

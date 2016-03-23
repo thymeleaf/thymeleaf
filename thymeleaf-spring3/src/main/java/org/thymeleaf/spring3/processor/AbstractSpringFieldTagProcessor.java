@@ -26,7 +26,6 @@ import org.thymeleaf.engine.AttributeDefinition;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IAttributeDefinitionsAware;
-import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -49,7 +48,7 @@ public abstract class AbstractSpringFieldTagProcessor
         extends AbstractAttributeTagProcessor
         implements IAttributeDefinitionsAware {
 
-    
+
     public static final int ATTR_PRECEDENCE = 1200;
     public static final String ATTR_NAME = "field";
 
@@ -125,12 +124,12 @@ public abstract class AbstractSpringFieldTagProcessor
         if (this.discriminatorAttrName == null) {
             return true;
         }
-        final IElementAttributes attributes = tag.getAttributes();
-        final boolean hasDiscriminatorAttr = attributes.hasAttribute(this.discriminatorAttributeDefinition.getAttributeName());
+        final boolean hasDiscriminatorAttr = tag.hasAttribute(this.discriminatorAttributeDefinition.getAttributeName());
         if (this.discriminatorAttrValues == null || this.discriminatorAttrValues.length == 0) {
             return hasDiscriminatorAttr;
         }
-        final String discriminatorTagValue = (hasDiscriminatorAttr? attributes.getValue(this.discriminatorAttributeDefinition.getAttributeName()) : null);
+        final String discriminatorTagValue =
+                (hasDiscriminatorAttr? tag.getAttributeValue(this.discriminatorAttributeDefinition.getAttributeName()) : null);
         for (int i = 0; i < this.discriminatorAttrValues.length; i++) {
             final String discriminatorAttrValue = this.discriminatorAttrValues[i];
             if (discriminatorAttrValue == null) {
@@ -168,7 +167,7 @@ public abstract class AbstractSpringFieldTagProcessor
         }
 
         if (this.removeAttribute) {
-            tag.getAttributes().removeAttribute(attributeName);
+            structureHandler.removeAttribute(attributeName);
         }
 
         final BindStatus bindStatus = FieldUtils.getBindStatus(context, attributeValue);
@@ -193,16 +192,16 @@ public abstract class AbstractSpringFieldTagProcessor
             final IElementTagStructureHandler structureHandler);
 
 
-    
-    
-    
+
+
+
     // This method is designed to be called from the diverse subclasses
     protected final String computeId(
             final ITemplateContext context,
             final IProcessableElementTag tag,
             final String name, final boolean sequence) {
-        
-        String id = tag.getAttributes().getValue(this.idAttributeDefinition.getAttributeName());
+
+        String id = tag.getAttributeValue(this.idAttributeDefinition.getAttributeName());
         if (!org.thymeleaf.util.StringUtils.isEmptyOrWhitespace(id)) {
             return (StringUtils.hasText(id) ? id : null);
         }
@@ -213,10 +212,10 @@ public abstract class AbstractSpringFieldTagProcessor
             return id + count.toString();
         }
         return id;
-        
-    }
-    
 
-    
+    }
+
+
+
 
 }

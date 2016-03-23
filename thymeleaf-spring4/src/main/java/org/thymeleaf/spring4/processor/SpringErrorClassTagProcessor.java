@@ -31,7 +31,6 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.AttributeNames;
 import org.thymeleaf.engine.IAttributeDefinitionsAware;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -100,8 +99,8 @@ public final class SpringErrorClassTagProcessor
                     AttributeNames.forHTMLName(attributeName.getPrefix(), AbstractSpringFieldTagProcessor.ATTR_NAME);
             throw new TemplateProcessingException(
                     "Cannot apply \"" + attributeName + "\": this attribute requires the existence of " +
-                            "a \"name\" (or " + Arrays.asList(fieldAttributeName.getCompleteAttributeNames()) + ") attribute " +
-                            "with non-empty value in the same host tag.");
+                    "a \"name\" (or " + Arrays.asList(fieldAttributeName.getCompleteAttributeNames()) + ") attribute " +
+                    "with non-empty value in the same host tag.");
         }
 
         if (bindStatus.isError()) {
@@ -117,17 +116,16 @@ public final class SpringErrorClassTagProcessor
             // If we are not adding anything, we'll just leave it untouched
             if (newAttributeValue != null && newAttributeValue.length() > 0) {
 
-                final IElementAttributes attributes = tag.getAttributes();
                 final AttributeName targetAttributeName = this.targetAttributeDefinition.getAttributeName();
 
-                if (attributes.hasAttribute(targetAttributeName)) {
-                    final String currentValue = attributes.getValue(targetAttributeName);
+                if (tag.hasAttribute(targetAttributeName)) {
+                    final String currentValue = tag.getAttributeValue(targetAttributeName);
                     if (currentValue.length() > 0) {
                         newAttributeValue = currentValue + ' ' + newAttributeValue;
                     }
                 }
 
-                StandardProcessorUtils.setAttribute(attributes, this.targetAttributeDefinition, TARGET_ATTR_NAME, newAttributeValue);
+                StandardProcessorUtils.setAttribute(structureHandler, this.targetAttributeDefinition, TARGET_ATTR_NAME, newAttributeValue);
 
             }
 
@@ -161,7 +159,7 @@ public final class SpringErrorClassTagProcessor
          * specified by hand or by a th:name). No th:field was executed, so no BindStatus available -- we'll have to
          * build it ourselves.
          */
-        final String fieldName = tag.getAttributes().getValue("name");
+        final String fieldName = tag.getAttributeValue("name");
         if (StringUtils.isEmptyOrWhitespace(fieldName)) {
             return null;
         }

@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.spring3.processor;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.context.ITemplateContext;
@@ -26,7 +27,7 @@ import org.thymeleaf.engine.AttributeDefinition;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IAttributeDefinitionsAware;
-import org.thymeleaf.model.IElementAttributes;
+import org.thymeleaf.model.AttributeValueQuotes;
 import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -64,9 +65,6 @@ public final class  SpringActionTagProcessor
 
     private AttributeDefinition targetAttributeDefinition;
     private AttributeDefinition methodAttributeDefinition;
-    private AttributeDefinition typeAttributeDefinition;
-    private AttributeDefinition nameAttributeDefinition;
-    private AttributeDefinition valueAttributeDefinition;
 
 
 
@@ -85,9 +83,6 @@ public final class  SpringActionTagProcessor
         // faster methods for setting/replacing attributes on the ElementAttributes implementation
         this.targetAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, TARGET_ATTR_NAME);
         this.methodAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, METHOD_ATTR_NAME);
-        this.typeAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, TYPE_ATTR_NAME);
-        this.nameAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, NAME_ATTR_NAME);
-        this.valueAttributeDefinition = attributeDefinitions.forName(TEMPLATE_MODE, VALUE_ATTR_NAME);
     }
 
 
@@ -103,21 +98,19 @@ public final class  SpringActionTagProcessor
 
         String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? "" : expressionResult.toString());
 
-        final IElementAttributes attributes = tag.getAttributes();
-
         // But before setting the 'action' attribute, we need to verify the 'method' attribute and let the
         // RequestDataValueProcessor act on it.
-        final String httpMethod = attributes.getValue(this.methodAttributeDefinition.getAttributeName());
+        final String httpMethod = tag.getAttributeValue(this.methodAttributeDefinition.getAttributeName());
 
         // Let RequestDataValueProcessor modify the attribute value if needed
         newAttributeValue = RequestDataValueProcessorUtils.processAction(context, newAttributeValue, httpMethod);
 
         // Set the 'action' attribute
         StandardProcessorUtils.replaceAttribute(
-                attributes, attributeName, this.targetAttributeDefinition, TARGET_ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
+                structureHandler, attributeName, this.targetAttributeDefinition, TARGET_ATTR_NAME, (newAttributeValue == null? "" : newAttributeValue));
 
         // If this th:action is in a <form> tag, we might need to add a hidden field (depending on Spring configuration)
-        if ("form".equalsIgnoreCase(tag.getElementName())) {
+        if ("form".equalsIgnoreCase(tag.getElementCompleteName())) {
 
             final Map<String,String> extraHiddenFields =
                     RequestDataValueProcessorUtils.getExtraHiddenFields(context);
@@ -130,14 +123,13 @@ public final class  SpringActionTagProcessor
 
                 for (final Map.Entry<String,String> extraHiddenField : extraHiddenFields.entrySet()) {
 
+                    final Map<String,String> extraHiddenAttributes = new HashMap<String,String>(4,1.0f);
+                    extraHiddenAttributes.put(TYPE_ATTR_NAME, "hidden");
+                    extraHiddenAttributes.put(NAME_ATTR_NAME, extraHiddenField.getKey());
+                    extraHiddenAttributes.put(VALUE_ATTR_NAME, extraHiddenField.getValue()); // no need to re-apply the processor here
+
                     final IStandaloneElementTag extraHiddenElementTag =
-                            modelFactory.createStandaloneElementTag("input", true);
-
-                    final IElementAttributes extraHiddenElementTagAttributes = extraHiddenElementTag.getAttributes();
-
-                    StandardProcessorUtils.setAttribute(extraHiddenElementTagAttributes, this.typeAttributeDefinition, TYPE_ATTR_NAME, "hidden");
-                    StandardProcessorUtils.setAttribute(extraHiddenElementTagAttributes, this.nameAttributeDefinition, NAME_ATTR_NAME, extraHiddenField.getKey());
-                    StandardProcessorUtils.setAttribute(extraHiddenElementTagAttributes, this.valueAttributeDefinition, VALUE_ATTR_NAME, extraHiddenField.getValue()); // no need to re-apply the processor here
+                            modelFactory.createStandaloneElementTag("input", extraHiddenAttributes, AttributeValueQuotes.DOUBLE, false, true);
 
                     extraHiddenElementTags.add(extraHiddenElementTag);
 
