@@ -23,10 +23,10 @@ import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeDefinition;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.ElementTagStructureHandler;
 import org.thymeleaf.engine.IAttributeDefinitionsAware;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
+import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 import org.unbescape.html.HtmlEscape;
@@ -106,12 +106,8 @@ public abstract class AbstractStandardAttributeModifierTagProcessor
         } else {
 
             // We are setting the equivalent attribute name, without the prefix...
-            if (structureHandler instanceof ElementTagStructureHandler) {
-                // This is a small optimization that will make things sleeker most of the times
-                ((ElementTagStructureHandler) structureHandler).replaceAttribute(attributeName, this.targetAttributeDefinition, this.targetAttrCompleteName, (newAttributeValue == null ? "" : newAttributeValue), null);
-            } else {
-                structureHandler.replaceAttribute(attributeName, this.targetAttrCompleteName, (newAttributeValue == null ? "" : newAttributeValue), null);
-            }
+            StandardProcessorUtils.replaceAttribute(
+                    structureHandler, attributeName, this.targetAttributeDefinition, this.targetAttrCompleteName, (newAttributeValue == null ? "" : newAttributeValue));
 
         }
 

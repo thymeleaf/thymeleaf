@@ -23,10 +23,10 @@ import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeDefinition;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.ElementTagStructureHandler;
 import org.thymeleaf.engine.IAttributeDefinitionsAware;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
+import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EvaluationUtils;
 import org.thymeleaf.util.Validate;
@@ -94,11 +94,7 @@ public final class StandardConditionalFixedValueTagProcessor
             final IElementTagStructureHandler structureHandler) {
 
         if (EvaluationUtils.evaluateAsBoolean(expressionResult)) {
-            if (structureHandler instanceof ElementTagStructureHandler) {
-                ((ElementTagStructureHandler) structureHandler).setAttribute(this.targetAttributeDefinition, this.targetAttributeCompleteName, this.targetAttributeCompleteName, null);
-            } else {
-                structureHandler.setAttribute(this.targetAttributeCompleteName, this.targetAttributeCompleteName, null);
-            }
+            StandardProcessorUtils.setAttribute(structureHandler, this.targetAttributeDefinition, this.targetAttributeCompleteName, this.targetAttributeCompleteName);
         } else {
             structureHandler.removeAttribute(this.targetAttributeDefinition.getAttributeName());
         }

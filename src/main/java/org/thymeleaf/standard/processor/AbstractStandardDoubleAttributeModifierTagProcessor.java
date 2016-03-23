@@ -23,10 +23,10 @@ import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeDefinition;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.engine.ElementTagStructureHandler;
 import org.thymeleaf.engine.IAttributeDefinitionsAware;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
+import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 import org.unbescape.html.HtmlEscape;
@@ -102,13 +102,8 @@ public abstract class AbstractStandardDoubleAttributeModifierTagProcessor
             structureHandler.removeAttribute(this.attributeTwoDefinition.getAttributeName());
         } else {
             // We are setting the equivalent attribute name, without the prefix...
-            if (structureHandler instanceof ElementTagStructureHandler) {
-                ((ElementTagStructureHandler) structureHandler).setAttribute(this.attributeOneDefinition, this.attributeOneCompleteName, newAttributeValue, null);
-                ((ElementTagStructureHandler) structureHandler).setAttribute(this.attributeTwoDefinition, this.attributeTwoCompleteName, newAttributeValue, null);
-            } else {
-                structureHandler.setAttribute(this.attributeOneCompleteName, newAttributeValue);
-                structureHandler.setAttribute(this.attributeTwoCompleteName, newAttributeValue);
-            }
+            StandardProcessorUtils.setAttribute(structureHandler, this.attributeOneDefinition, this.attributeOneCompleteName, newAttributeValue);
+            StandardProcessorUtils.setAttribute(structureHandler, this.attributeTwoDefinition, this.attributeTwoCompleteName, newAttributeValue);
         }
 
     }
