@@ -42,4 +42,8 @@ public interface IProcessableElementTag extends IElementTag {
     public IAttribute getAttribute(final String prefix, final String name);
     public IAttribute getAttribute(final AttributeName attributeName);
 
+    public String getAttributeValue(final String completeName);
+    public String getAttributeValue(final String prefix, final String name);
+    public String getAttributeValue(final AttributeName attributeName);
+
 }

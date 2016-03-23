@@ -133,11 +133,11 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
 
                     if (this.modificationType == ModificationType.SUBSTITUTION ||
                             !tag.hasAttribute(newAttributeName) ||
-                            tag.getAttribute(newAttributeName).getValue().length() == 0) {
+                            tag.getAttributeValue(newAttributeName).length() == 0) {
                         // Normal value replace
                         structureHandler.setAttribute(newAttributeName, newAttributeValue);
                     } else {
-                        String currentValue = tag.getAttribute(newAttributeName).getValue();
+                        String currentValue = tag.getAttributeValue(newAttributeName);
                         if (this.modificationType == ModificationType.APPEND) {
                             structureHandler.setAttribute(newAttributeName, currentValue + newAttributeValue);
                         } else if (this.modificationType == ModificationType.APPEND_WITH_SPACE) {

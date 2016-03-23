@@ -66,9 +66,8 @@ public abstract class AbstractAttributeTagProcessor extends AbstractElementTagPr
 
             attributeName = getMatchingAttributeName().getMatchingAttributeName();
 
-            final IAttribute attribute = tag.getAttribute(attributeName);
             final String attributeValue =
-                    EscapedAttributeUtils.unescapeAttribute(context.getTemplateMode(), (attribute != null? attribute.getValue() : null));
+                    EscapedAttributeUtils.unescapeAttribute(context.getTemplateMode(), tag.getAttributeValue(attributeName));
 
             doProcess(
                     context, tag,

@@ -87,7 +87,7 @@ public final class StandardStyleappendTagProcessor
             final AttributeName targetAttributeName = this.targetAttributeDefinition.getAttributeName();
 
             if (tag.hasAttribute(targetAttributeName)) {
-                final String currentValue = tag.getAttribute(targetAttributeName).getValue();
+                final String currentValue = tag.getAttributeValue(targetAttributeName);
                 if (currentValue.length() > 0) {
                     newAttributeValue = currentValue + ' ' + newAttributeValue;
                 }

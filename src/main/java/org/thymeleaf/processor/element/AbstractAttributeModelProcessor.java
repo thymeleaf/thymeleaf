@@ -70,9 +70,8 @@ public abstract class AbstractAttributeModelProcessor extends AbstractElementMod
             attributeName = getMatchingAttributeName().getMatchingAttributeName();
             firstEvent = (IProcessableElementTag) model.get(0);
 
-            final IAttribute attribute = firstEvent.getAttribute(attributeName);
             final String attributeValue =
-                    EscapedAttributeUtils.unescapeAttribute(context.getTemplateMode(), (attribute != null? attribute.getValue() : null));
+                    EscapedAttributeUtils.unescapeAttribute(context.getTemplateMode(), firstEvent.getAttributeValue(attributeName));
 
             doProcess(context, model, attributeName, attributeValue, structureHandler);
 

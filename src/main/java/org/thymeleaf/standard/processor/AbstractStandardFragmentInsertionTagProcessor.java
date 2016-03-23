@@ -163,7 +163,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                 // The selected fragment actually has a "th:fragment" attribute, so we should process its signature
 
                 final String fragmentSignatureSpec =
-                        EscapedAttributeUtils.unescapeAttribute(fragmentModel.getTemplateMode(), fragmentHolderEvent.getAttribute(dialectPrefix, FRAGMENT_ATTR_NAME).getValue());
+                        EscapedAttributeUtils.unescapeAttribute(fragmentModel.getTemplateMode(), fragmentHolderEvent.getAttributeValue(dialectPrefix, FRAGMENT_ATTR_NAME));
                 if (!StringUtils.isEmptyOrWhitespace(fragmentSignatureSpec)) {
 
                     final FragmentSignature fragmentSignature =

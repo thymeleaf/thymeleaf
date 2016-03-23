@@ -133,6 +133,36 @@ abstract class AbstractProcessableElementTag
     }
 
 
+    public final String getAttributeValue(final String completeName) {
+        Validate.notNull(completeName, "Attribute name cannot be null");
+        if (this.attributes == null) {
+            return null;
+        }
+        final Attribute attribute = this.attributes.getAttribute(this.templateMode, completeName);
+        return attribute != null? attribute.getValue() : null;
+    }
+
+
+    public final String getAttributeValue(final String prefix, final String name) {
+        Validate.notNull(name, "Attribute name cannot be null");
+        if (this.attributes == null) {
+            return null;
+        }
+        final Attribute attribute = this.attributes.getAttribute(this.templateMode, prefix, name);
+        return attribute != null? attribute.getValue() : null;
+    }
+
+
+    public final String getAttributeValue(final AttributeName attributeName) {
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        if (this.attributes == null) {
+            return null;
+        }
+        final Attribute attribute = this.attributes.getAttribute(attributeName);
+        return attribute != null? attribute.getValue() : null;
+    }
+
+
 
 
     public IAttribute[] getAllAttributes() {
