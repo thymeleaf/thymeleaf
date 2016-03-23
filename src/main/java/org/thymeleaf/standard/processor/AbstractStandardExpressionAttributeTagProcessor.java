@@ -93,7 +93,7 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
         // If the result of this expression is NO-OP, there is nothing to execute
         if (expressionResult == NoOpToken.VALUE) {
             if (this.removeIfNoop) {
-                tag.getAttributes().removeAttribute(attributeName);
+                structureHandler.removeAttribute(attributeName);
             }
             return;
         }

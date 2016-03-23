@@ -24,6 +24,7 @@ import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.engine.TemplateModel;
 import org.thymeleaf.model.IComment;
+import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.processor.comment.AbstractCommentProcessor;
 import org.thymeleaf.processor.comment.ICommentStructureHandler;
 import org.thymeleaf.standard.util.StandardConditionalCommentUtils;
@@ -111,7 +112,8 @@ public final class StandardConditionalCommentProcessor extends AbstractCommentPr
         /*
          * Re-set the comment content, once processed
          */
-        comment.setContent(writer.toString());
+        final IModelFactory modelFactory = context.getConfiguration().getModelFactory(getTemplateMode());
+        structureHandler.replaceWith(modelFactory.createModel(modelFactory.createComment(writer.toString())), false);
 
     }
 

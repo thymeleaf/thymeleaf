@@ -112,9 +112,9 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
                 // appear as selected="selected" or not appear at all.
 
                 if (EvaluationUtils.evaluateAsBoolean(rightValue)) {
-                    tag.getAttributes().setAttribute(newAttributeName, newAttributeName);
+                    structureHandler.setAttribute(newAttributeName, newAttributeName);
                 } else {
-                    tag.getAttributes().removeAttribute(newAttributeName);
+                    structureHandler.removeAttribute(newAttributeName);
                 }
 
             } else {
@@ -125,27 +125,27 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
 
                     if (this.modificationType == ModificationType.SUBSTITUTION) {
                         // Substituting by a no-value will be equivalent to simply removing
-                        tag.getAttributes().removeAttribute(newAttributeName);
+                        structureHandler.removeAttribute(newAttributeName);
                     }
                     // Prepend and append simply ignored in this case
 
                 } else {
 
                     if (this.modificationType == ModificationType.SUBSTITUTION ||
-                            !tag.getAttributes().hasAttribute(newAttributeName) ||
-                            tag.getAttributes().getValue(newAttributeName).length() == 0) {
+                            !tag.hasAttribute(newAttributeName) ||
+                            tag.getAttribute(newAttributeName).getValue().length() == 0) {
                         // Normal value replace
-                        tag.getAttributes().setAttribute(newAttributeName, newAttributeValue);
+                        structureHandler.setAttribute(newAttributeName, newAttributeValue);
                     } else {
-                        String currentValue = tag.getAttributes().getValue(newAttributeName);
+                        String currentValue = tag.getAttribute(newAttributeName).getValue();
                         if (this.modificationType == ModificationType.APPEND) {
-                            tag.getAttributes().setAttribute(newAttributeName, currentValue + newAttributeValue);
+                            structureHandler.setAttribute(newAttributeName, currentValue + newAttributeValue);
                         } else if (this.modificationType == ModificationType.APPEND_WITH_SPACE) {
-                            tag.getAttributes().setAttribute(newAttributeName, currentValue + ' ' + newAttributeValue);
+                            structureHandler.setAttribute(newAttributeName, currentValue + ' ' + newAttributeValue);
                         } else if (this.modificationType == ModificationType.PREPEND) {
-                            tag.getAttributes().setAttribute(newAttributeName, newAttributeValue + currentValue);
+                            structureHandler.setAttribute(newAttributeName, newAttributeValue + currentValue);
                         } else { // modification type is PREPEND_WITH_SPACE
-                            tag.getAttributes().setAttribute(newAttributeName, newAttributeValue + ' ' + currentValue);
+                            structureHandler.setAttribute(newAttributeName, newAttributeValue + ' ' + currentValue);
                         }
                     }
 

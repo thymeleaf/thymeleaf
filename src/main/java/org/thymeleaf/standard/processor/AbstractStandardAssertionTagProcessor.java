@@ -74,7 +74,7 @@ public abstract class AbstractStandardAssertionTagProcessor extends AbstractAttr
             if (!expressionBooleanResult) {
                 throw new TemplateAssertionException(
                         expression.getStringRepresentation(), tag.getTemplateName(),
-                        tag.getAttributes().getLine(attributeName), tag.getAttributes().getCol(attributeName));
+                        tag.getAttribute(attributeName).getLine(), tag.getAttribute(attributeName).getCol());
             }
         }
 

@@ -67,7 +67,7 @@ public final class StandardSubstituteByTagProcessor extends AbstractStandardFrag
                     new Object[]{
                             TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(context.getTemplateData().getTemplate()),
                             attributeName, tag.getTemplateName(),
-                            Integer.valueOf(tag.getAttributes().getLine(attributeName)), Integer.valueOf(tag.getAttributes().getCol(attributeName)),
+                            Integer.valueOf(tag.getAttribute(attributeName).getLine()), Integer.valueOf(tag.getAttribute(attributeName).getCol()),
                             AttributeNames.forHTMLName(attributeName.getPrefix(), StandardReplaceTagProcessor.ATTR_NAME)});
         }
 

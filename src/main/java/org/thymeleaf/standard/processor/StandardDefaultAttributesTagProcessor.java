@@ -19,13 +19,11 @@
  */
 package org.thymeleaf.standard.processor;
 
-import java.util.List;
-
 import org.attoparser.util.TextUtil;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.IElementAttributes;
+import org.thymeleaf.model.IAttribute;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.processor.element.IElementTagProcessor;
@@ -87,18 +85,18 @@ public final class StandardDefaultAttributesTagProcessor
             final IElementTagStructureHandler structureHandler) {
 
         final TemplateMode templateMode = getTemplateMode();
-        final IElementAttributes attributes = tag.getAttributes();
-        final List<AttributeName> attributeNames = attributes.getAllAttributeNames();
+        final IAttribute[] attributes = tag.getAllAttributes();
 
         // Should be no problem in performing modifications during iteration, as the attributeNames list
         // should not be affected by modifications on the original tag attribute set
-        for (final AttributeName attributeName : attributeNames) {
+        for (final IAttribute attribute : attributes) {
 
+            final AttributeName attributeName = attribute.getDefinition().getAttributeName();
             if (attributeName.isPrefixed()) {
                 if (TextUtil.equals(templateMode.isCaseSensitive(), attributeName.getPrefix(), this.dialectPrefix)) {
 
                     // We will process each 'default' attribute separately
-                    processDefaultAttribute(context, tag, attributeName);
+                    processDefaultAttribute(context, tag, attribute, structureHandler);
 
                 }
             }
@@ -111,19 +109,20 @@ public final class StandardDefaultAttributesTagProcessor
 
     private static void processDefaultAttribute(
             final ITemplateContext context,
-            final IProcessableElementTag tag, final AttributeName attributeName) {
+            final IProcessableElementTag tag, final IAttribute attribute,
+            final IElementTagStructureHandler structureHandler) {
 
         try {
 
+            final AttributeName attributeName = attribute.getDefinition().getAttributeName();
             final String attributeValue =
-                    EscapedAttributeUtils.unescapeAttribute(
-                            context.getTemplateMode(), tag.getAttributes().getValue(attributeName));
+                    EscapedAttributeUtils.unescapeAttribute(context.getTemplateMode(), attribute.getValue());
 
 
             /*
              * Compute the new attribute name (i.e. the same, without the prefix)
              */
-            final String originalCompleteAttributeName = tag.getAttributes().getCompleteName(attributeName);
+            final String originalCompleteAttributeName = attribute.getCompleteName();
             final String canonicalAttributeName = attributeName.getAttributeName();
 
             final String newAttributeName;
@@ -173,7 +172,7 @@ public final class StandardDefaultAttributesTagProcessor
              * If the result of this expression is NO-OP, there is nothing to execute
              */
             if (expressionResult == NoOpToken.VALUE) {
-                tag.getAttributes().removeAttribute(attributeName);
+                structureHandler.removeAttribute(attributeName);
                 return;
             }
 
@@ -187,11 +186,11 @@ public final class StandardDefaultAttributesTagProcessor
              */
             if (newAttributeValue == null || newAttributeValue.length() == 0) {
                 // We are removing the equivalent attribute name, without the prefix...
-                tag.getAttributes().removeAttribute(newAttributeName);
-                tag.getAttributes().removeAttribute(attributeName);
+                structureHandler.removeAttribute(newAttributeName);
+                structureHandler.removeAttribute(attributeName);
             } else {
                 // We are setting the equivalent attribute name, without the prefix...
-                tag.getAttributes().replaceAttribute(attributeName, newAttributeName, (newAttributeValue == null? "" : newAttributeValue));
+                structureHandler.replaceAttribute(attributeName, newAttributeName, (newAttributeValue == null? "" : newAttributeValue));
             }
 
         } catch (final TemplateProcessingException e) {
@@ -202,13 +201,13 @@ public final class StandardDefaultAttributesTagProcessor
                 e.setTemplateName(tag.getTemplateName());
             }
             if (!e.hasLineAndCol()) {
-                e.setLineAndCol(tag.getAttributes().getLine(attributeName), tag.getAttributes().getCol(attributeName));
+                e.setLineAndCol(attribute.getLine(), attribute.getCol());
             }
             throw e;
         } catch (final Exception e) {
             throw new TemplateProcessingException(
                     "Error during execution of processor '" + StandardDefaultAttributesTagProcessor.class.getName() + "'",
-                    tag.getTemplateName(), tag.getAttributes().getLine(attributeName), tag.getAttributes().getCol(attributeName), e);
+                    tag.getTemplateName(), attribute.getLine(), attribute.getCol(), e);
         }
 
     }

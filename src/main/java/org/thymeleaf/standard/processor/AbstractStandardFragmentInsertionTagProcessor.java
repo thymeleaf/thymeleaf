@@ -31,7 +31,6 @@ import org.thymeleaf.engine.TemplateModel;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICloseElementTag;
-import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -153,22 +152,18 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
         // We will check types first instead of events in order to (many times) avoid creating an immutably-wrapped
         // event object when calling "model.get(pos)"
-        final Class<? extends ITemplateEvent> fragmentHolderEventType =
-                fragment.isWrappedInStartEndEvents()? fragmentModel.getEventType(1) : fragmentModel.getEventType(0);
 
-        if (IProcessableElementTag.class.isAssignableFrom(fragmentHolderEventType)) {
+        final ITemplateEvent firstEvent = (fragmentModel.size() > 2 ? fragmentModel.get(1) : null);
+        if (firstEvent != null && IProcessableElementTag.class.isAssignableFrom(firstEvent.getClass())) {
 
             final String dialectPrefix = attributeName.getPrefix();
+            final IProcessableElementTag fragmentHolderEvent = (IProcessableElementTag) firstEvent;
 
-            final ITemplateEvent fragmentHolderEvent =
-                    fragment.isWrappedInStartEndEvents()? fragmentModel.get(1) : fragmentModel.get(0);
-
-            final IElementAttributes elementAttributes = ((IProcessableElementTag)fragmentHolderEvent).getAttributes();
-            if (elementAttributes.hasAttribute(dialectPrefix, FRAGMENT_ATTR_NAME)) {
+            if (fragmentHolderEvent.hasAttribute(dialectPrefix, FRAGMENT_ATTR_NAME)) {
                 // The selected fragment actually has a "th:fragment" attribute, so we should process its signature
 
                 final String fragmentSignatureSpec =
-                        EscapedAttributeUtils.unescapeAttribute(fragmentModel.getTemplateMode(), elementAttributes.getValue(dialectPrefix, FRAGMENT_ATTR_NAME));
+                        EscapedAttributeUtils.unescapeAttribute(fragmentModel.getTemplateMode(), fragmentHolderEvent.getAttribute(dialectPrefix, FRAGMENT_ATTR_NAME).getValue());
                 if (!StringUtils.isEmptyOrWhitespace(fragmentSignatureSpec)) {
 
                     final FragmentSignature fragmentSignature =

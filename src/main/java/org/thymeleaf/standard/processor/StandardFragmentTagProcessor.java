@@ -55,7 +55,7 @@ public final class StandardFragmentTagProcessor extends AbstractElementTagProces
 
         // Nothing to do, this processor is just a marker. Simply remove the attribute
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
-        tag.getAttributes().removeAttribute(attributeName);
+        structureHandler.removeAttribute(attributeName);
 
     }
 

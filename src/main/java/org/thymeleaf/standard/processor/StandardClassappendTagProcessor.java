@@ -23,11 +23,10 @@ import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeDefinition;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.ElementTagStructureHandler;
 import org.thymeleaf.engine.IAttributeDefinitionsAware;
-import org.thymeleaf.model.IElementAttributes;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
-import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 import org.unbescape.html.HtmlEscape;
@@ -84,17 +83,20 @@ public final class StandardClassappendTagProcessor
         // If we are not adding anything, we'll just leave it untouched
         if (newAttributeValue != null && newAttributeValue.length() > 0) {
 
-            final IElementAttributes attributes = tag.getAttributes();
             final AttributeName targetAttributeName = this.targetAttributeDefinition.getAttributeName();
 
-            if (attributes.hasAttribute(targetAttributeName)) {
-                final String currentValue = attributes.getValue(targetAttributeName);
+            if (tag.hasAttribute(targetAttributeName)) {
+                final String currentValue = tag.getAttribute(targetAttributeName).getValue();
                 if (currentValue.length() > 0) {
                     newAttributeValue = currentValue + ' ' + newAttributeValue;
                 }
             }
 
-            StandardProcessorUtils.setAttribute(attributes, this.targetAttributeDefinition, TARGET_ATTR_NAME, newAttributeValue);
+            if (structureHandler instanceof ElementTagStructureHandler) {
+                ((ElementTagStructureHandler) structureHandler).setAttribute(this.targetAttributeDefinition, TARGET_ATTR_NAME, newAttributeValue, null);
+            } else {
+                structureHandler.setAttribute(TARGET_ATTR_NAME, newAttributeValue, null);
+            }
 
         }
 
