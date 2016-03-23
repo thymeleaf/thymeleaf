@@ -159,14 +159,13 @@ final class Model implements IModel {
 
         // Check there is room for a new event, or grow the queue if not
         if (this.queue.length == this.queueSize) {
-            final IEngineTemplateEvent[] newQueue = new IEngineTemplateEvent[this.queue.length + INITIAL_EVENT_QUEUE_SIZE/2];
-            Arrays.fill(newQueue, null);
-            System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
-            this.queue = newQueue;
+            this.queue = Arrays.copyOf(this.queue, this.queue.length + INITIAL_EVENT_QUEUE_SIZE/2);
         }
 
         // Make room for the new event
-        System.arraycopy(this.queue, pos, this.queue, pos + 1, this.queueSize - pos);
+        if (pos != this.queueSize) {
+            System.arraycopy(this.queue, pos, this.queue, pos + 1, this.queueSize - pos);
+        }
 
         // Set the new event in its new position
         this.queue[pos] = engineEvent;
@@ -223,10 +222,7 @@ final class Model implements IModel {
 
         if (this.queue.length <= (this.queueSize + model.size())) {
             // We need to grow the queue!
-            final IEngineTemplateEvent[] newQueue = new IEngineTemplateEvent[Math.max(this.queueSize + model.size(), this.queue.length + INITIAL_EVENT_QUEUE_SIZE/2)];
-            Arrays.fill(newQueue, null);
-            System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
-            this.queue = newQueue;
+            this.queue = Arrays.copyOf(this.queue, Math.max(this.queueSize + model.size(), this.queue.length + INITIAL_EVENT_QUEUE_SIZE/2));
         }
 
         if (model instanceof TemplateModel) {

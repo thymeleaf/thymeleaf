@@ -369,26 +369,12 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
             this.index++; // This new index will be the one for our level
 
             if (this.levels.length == this.index) {
-                final int[] newLevels = new int[this.levels.length + DEFAULT_LEVELS_SIZE];
-                final HashMap<String,Object>[] newMaps = (HashMap<String, Object>[]) new HashMap<?,?>[this.maps.length + DEFAULT_LEVELS_SIZE];
-                final SelectionTarget[] newSelectionTargets = new SelectionTarget[this.selectionTargets.length + DEFAULT_LEVELS_SIZE];
-                final IInliner[] newInliners = new IInliner[this.inliners.length + DEFAULT_LEVELS_SIZE];
-                final TemplateData[] newTemplateDatas = new TemplateData[this.templateDatas.length + DEFAULT_LEVELS_SIZE];
-                Arrays.fill(newLevels, Integer.MAX_VALUE);
-                Arrays.fill(newMaps, null);
-                Arrays.fill(newSelectionTargets, null);
-                Arrays.fill(newInliners, null);
-                Arrays.fill(newTemplateDatas, null);
-                System.arraycopy(this.levels, 0, newLevels, 0, this.levels.length);
-                System.arraycopy(this.maps, 0, newMaps, 0, this.maps.length);
-                System.arraycopy(this.selectionTargets, 0, newSelectionTargets, 0, this.selectionTargets.length);
-                System.arraycopy(this.inliners, 0, newInliners, 0, this.inliners.length);
-                System.arraycopy(this.templateDatas, 0, newTemplateDatas, 0, this.templateDatas.length);
-                this.levels = newLevels;
-                this.maps = newMaps;
-                this.selectionTargets = newSelectionTargets;
-                this.inliners = newInliners;
-                this.templateDatas = newTemplateDatas;
+                this.levels = Arrays.copyOf(this.levels, this.levels.length + DEFAULT_LEVELS_SIZE);
+                Arrays.fill(this.levels, this.index, this.levels.length, Integer.MAX_VALUE); // We fill the new places with MAX_VALUE
+                this.maps = Arrays.copyOf(this.maps, this.maps.length + DEFAULT_LEVELS_SIZE);
+                this.selectionTargets = Arrays.copyOf(this.selectionTargets, this.selectionTargets.length + DEFAULT_LEVELS_SIZE);
+                this.inliners = Arrays.copyOf(this.inliners, this.inliners.length + DEFAULT_LEVELS_SIZE);
+                this.templateDatas = Arrays.copyOf(this.templateDatas, this.templateDatas.length + DEFAULT_LEVELS_SIZE);
             }
 
             this.levels[this.index] = this.level;

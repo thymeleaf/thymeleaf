@@ -303,14 +303,10 @@ public final class OutputExpressionInlinePreProcessorHandler implements IInlineP
         }
 
         if (this.inlineIndex >= this.inlineTemplateModes.length) {
-            final TemplateMode[] newInlineTemplateModes = new TemplateMode[this.inlineTemplateModes.length + 2];
-            final int[] newInlineLevels = new int[this.inlineExecLevels.length + 2];
-            Arrays.fill(newInlineTemplateModes, null);
-            Arrays.fill(newInlineLevels, -1);
-            System.arraycopy(this.inlineTemplateModes, 0, newInlineTemplateModes, 0, this.inlineTemplateModes.length);
-            System.arraycopy(this.inlineExecLevels, 0, newInlineLevels, 0, this.inlineExecLevels.length);
-            this.inlineTemplateModes = newInlineTemplateModes;
-            this.inlineExecLevels = newInlineLevels;
+            this.inlineTemplateModes = Arrays.copyOf(this.inlineTemplateModes, this.inlineTemplateModes.length + 2);
+            final int oldInlineExecLevelsLen = this.inlineExecLevels.length;
+            this.inlineExecLevels = Arrays.copyOf(this.inlineExecLevels, this.inlineExecLevels.length + 2);
+            Arrays.fill(this.inlineExecLevels, oldInlineExecLevelsLen, this.inlineExecLevels.length, -1); // Initialize the new positions in the array to -1
         }
 
         this.inlineTemplateModes[this.inlineIndex] = templateMode;

@@ -726,20 +726,9 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
                     if (this.names[this.index].length == this.levelSizes[this.index]) {
                         // We need to grow the arrays for this level
-
-                        final String[] newNames = new String[this.names[this.index].length + DEFAULT_LEVELARRAYS_SIZE];
-                        final Object[] newNewValues = new Object[this.newValues[this.index].length + DEFAULT_LEVELARRAYS_SIZE];
-                        final Object[] newOldValues = new Object[this.oldValues[this.index].length + DEFAULT_LEVELARRAYS_SIZE];
-                        Arrays.fill(newNames, null);
-                        Arrays.fill(newNewValues, null);
-                        Arrays.fill(newOldValues, null);
-                        System.arraycopy(this.names[this.index], 0, newNames, 0, this.names[this.index].length);
-                        System.arraycopy(this.newValues[this.index], 0, newNewValues, 0, this.newValues[this.index].length);
-                        System.arraycopy(this.oldValues[this.index], 0, newOldValues, 0, this.oldValues[this.index].length);
-                        this.names[this.index] = newNames;
-                        this.newValues[this.index] = newNewValues;
-                        this.oldValues[this.index] = newOldValues;
-
+                        this.names[this.index] = Arrays.copyOf(this.names[this.index], this.names[this.index].length + DEFAULT_LEVELARRAYS_SIZE);
+                        this.newValues[this.index] = Arrays.copyOf(this.newValues[this.index], this.newValues[this.index].length + DEFAULT_LEVELARRAYS_SIZE);
+                        this.oldValues[this.index] = Arrays.copyOf(this.oldValues[this.index], this.oldValues[this.index].length + DEFAULT_LEVELARRAYS_SIZE);
                     }
 
                     levelIndex = this.levelSizes[this.index]; // We will add at the end
@@ -931,38 +920,16 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
                 this.index++; // This new index will be the one for our level
 
                 if (this.levels.length == this.index) {
-                    final int[] newLevels = new int[this.levels.length + DEFAULT_LEVELS_SIZE];
-                    final String[][] newNames = new String[this.names.length + DEFAULT_LEVELS_SIZE][];
-                    final Object[][] newNewValues = new Object[this.newValues.length + DEFAULT_LEVELS_SIZE][];
-                    final Object[][] newOldValues = new Object[this.oldValues.length + DEFAULT_LEVELS_SIZE][];
-                    final int[] newLevelSizes = new int[this.levelSizes.length + DEFAULT_LEVELS_SIZE];
-                    final SelectionTarget[] newSelectionTargets = new SelectionTarget[this.selectionTargets.length + DEFAULT_LEVELS_SIZE];
-                    final IInliner[] newInliners = new IInliner[this.inliners.length + DEFAULT_LEVELS_SIZE];
-                    final TemplateData[] newTemplateDatas = new TemplateData[this.templateDatas.length + DEFAULT_LEVELS_SIZE];
-                    Arrays.fill(newLevels, Integer.MAX_VALUE);
-                    Arrays.fill(newNames, null);
-                    Arrays.fill(newNewValues, null);
-                    Arrays.fill(newOldValues, null);
-                    Arrays.fill(newLevelSizes, 0);
-                    Arrays.fill(newSelectionTargets, null);
-                    Arrays.fill(newInliners, null);
-                    Arrays.fill(newTemplateDatas, null);
-                    System.arraycopy(this.levels, 0, newLevels, 0, this.levels.length);
-                    System.arraycopy(this.names, 0, newNames, 0, this.names.length);
-                    System.arraycopy(this.newValues, 0, newNewValues, 0, this.newValues.length);
-                    System.arraycopy(this.oldValues, 0, newOldValues, 0, this.oldValues.length);
-                    System.arraycopy(this.levelSizes, 0, newLevelSizes, 0, this.levelSizes.length);
-                    System.arraycopy(this.selectionTargets, 0, newSelectionTargets, 0, this.selectionTargets.length);
-                    System.arraycopy(this.inliners, 0, newInliners, 0, this.inliners.length);
-                    System.arraycopy(this.templateDatas, 0, newTemplateDatas, 0, this.templateDatas.length);
-                    this.levels = newLevels;
-                    this.names = newNames;
-                    this.newValues = newNewValues;
-                    this.oldValues = newOldValues;
-                    this.levelSizes = newLevelSizes;
-                    this.selectionTargets = newSelectionTargets;
-                    this.inliners = newInliners;
-                    this.templateDatas = newTemplateDatas;
+                    this.levels = Arrays.copyOf(this.levels, this.levels.length + DEFAULT_LEVELS_SIZE);
+                    Arrays.fill(this.levels, this.index, this.levels.length, Integer.MAX_VALUE); // We fill the new places with MAX_VALUE
+                    this.names = Arrays.copyOf(this.names, this.names.length + DEFAULT_LEVELS_SIZE);
+                    this.newValues = Arrays.copyOf(this.newValues, this.newValues.length + DEFAULT_LEVELS_SIZE);
+                    this.oldValues = Arrays.copyOf(this.oldValues, this.oldValues.length + DEFAULT_LEVELS_SIZE);
+                    this.levelSizes = Arrays.copyOf(this.levelSizes, this.levelSizes.length + DEFAULT_LEVELS_SIZE);
+                    // No need to initialize new places in this.levelSizes as copyOf already fills with zeroes
+                    this.selectionTargets = Arrays.copyOf(this.selectionTargets, this.selectionTargets.length + DEFAULT_LEVELS_SIZE);
+                    this.inliners = Arrays.copyOf(this.inliners, this.inliners.length + DEFAULT_LEVELS_SIZE);
+                    this.templateDatas = Arrays.copyOf(this.templateDatas, this.templateDatas.length + DEFAULT_LEVELS_SIZE);
                 }
 
                 this.levels[this.index] = this.level;

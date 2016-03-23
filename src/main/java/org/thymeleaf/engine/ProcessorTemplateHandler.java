@@ -280,10 +280,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         this.modelLevel++;
 
         if (this.modelLevel == this.modelLevelData.length) {
-            final ModelLevelData[] newModelLevelData = new ModelLevelData[this.modelLevelData.length + 10];
-            Arrays.fill(newModelLevelData, null);
-            System.arraycopy(this.modelLevelData, 0, newModelLevelData, 0, this.modelLevelData.length);
-            this.modelLevelData = newModelLevelData;
+            this.modelLevelData = Arrays.copyOf(this.modelLevelData, this.modelLevelData.length + 10);
         }
 
         if (this.modelLevelData[this.modelLevel] == null) {
@@ -310,10 +307,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         this.execLevel++;
 
         if (this.execLevel == this.execLevelData.length) {
-            final ExecLevelData[] newExecLevelData = new ExecLevelData[this.execLevelData.length + 3];
-            Arrays.fill(newExecLevelData, null);
-            System.arraycopy(this.execLevelData, 0, newExecLevelData, 0, this.execLevelData.length);
-            this.execLevelData = newExecLevelData;
+            this.execLevelData = Arrays.copyOf(this.execLevelData, this.execLevelData.length + 3);
         }
 
         if (this.execLevelData[this.execLevel] == null) {
