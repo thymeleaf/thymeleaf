@@ -45,7 +45,6 @@ import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.markup.decoupled.IDecoupledTemplateLogicResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
-import org.thymeleaf.text.ITextRepository;
 
 /**
  * <p>
@@ -79,8 +78,6 @@ public interface IEngineConfiguration {
     public Set<IDialect> getDialects();
     public boolean isStandardDialectPresent();
     public String getStandardDialectPrefix();
-
-    public ITextRepository getTextRepository();
 
     public ElementDefinitions getElementDefinitions();
     public AttributeDefinitions getAttributeDefinitions();

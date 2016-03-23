@@ -49,8 +49,6 @@ import org.thymeleaf.templateparser.markup.decoupled.IDecoupledTemplateLogicReso
 import org.thymeleaf.templateparser.markup.decoupled.StandardDecoupledTemplateLogicResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
-import org.thymeleaf.text.ITextRepository;
-import org.thymeleaf.text.TextRepositories;
 import org.thymeleaf.util.FastStringWriter;
 import org.thymeleaf.util.LoggingUtils;
 import org.thymeleaf.util.Validate;
@@ -252,9 +250,6 @@ public class TemplateEngine implements ITemplateEngine {
     private IEngineContextFactory engineContextFactory = null;
     private IDecoupledTemplateLogicResolver decoupledTemplateLogicResolver = null;
 
-    // TODO Make this configurable!
-    private final ITextRepository textRepository = TextRepositories.createLimitedSizeCacheRepository();
-
 
     private IEngineConfiguration configuration = null;
 
@@ -336,7 +331,7 @@ public class TemplateEngine implements ITemplateEngine {
                             new EngineConfiguration(
                                     this.templateResolvers, this.messageResolvers, this.linkBuilders,
                                     this.dialectConfigurations, this.cacheManager, this.engineContextFactory,
-                                    this.decoupledTemplateLogicResolver, this.textRepository);
+                                    this.decoupledTemplateLogicResolver);
                     ((EngineConfiguration)this.configuration).initialize();
 
                     initializeSpecific();

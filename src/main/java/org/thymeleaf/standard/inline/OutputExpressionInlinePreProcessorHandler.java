@@ -29,7 +29,6 @@ import org.thymeleaf.standard.processor.StandardInlineHTMLTagProcessor;
 import org.thymeleaf.standard.processor.StandardTextTagProcessor;
 import org.thymeleaf.standard.processor.StandardUtextTagProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.EscapedAttributeUtils;
 import org.thymeleaf.util.TextUtils;
 
@@ -64,7 +63,6 @@ public final class OutputExpressionInlinePreProcessorHandler implements IInlineP
 
     private static final int DEFAULT_LEVELS_SIZE = 2;
 
-    private final ITextRepository textRepository;
     private final IInlinePreProcessorHandler next;
 
     private final String standardDialectPrefix;
@@ -92,7 +90,6 @@ public final class OutputExpressionInlinePreProcessorHandler implements IInlineP
         super();
 
         this.next = handler;
-        this.textRepository = configuration.getTextRepository();
 
         this.standardDialectPrefix = standardDialectPrefix;
 
@@ -255,7 +252,7 @@ public final class OutputExpressionInlinePreProcessorHandler implements IInlineP
         if (isInlineAttribute(buffer, nameOffset, nameLen)) {
             final String inlineModeAttributeValue =
                     EscapedAttributeUtils.unescapeAttribute(
-                            this.inlineTemplateModes[0], this.textRepository.getText(buffer, valueContentOffset, valueContentLen));
+                            this.inlineTemplateModes[0], new String(buffer, valueContentOffset, valueContentLen));
             final TemplateMode inlineTemplateMode = computeAssociatedTemplateMode(inlineModeAttributeValue);
             setInlineTemplateMode(inlineTemplateMode);
         }

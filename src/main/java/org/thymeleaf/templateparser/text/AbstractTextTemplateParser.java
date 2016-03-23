@@ -135,7 +135,6 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
                         new TemplateHandlerAdapterTextHandler(
                                 templateName,
                                 templateHandler,
-                                configuration.getTextRepository(),
                                 configuration.getElementDefinitions(),
                                 configuration.getAttributeDefinitions(),
                                 templateMode,

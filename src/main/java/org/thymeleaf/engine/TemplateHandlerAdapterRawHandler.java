@@ -21,7 +21,6 @@ package org.thymeleaf.engine;
 
 import org.thymeleaf.templateparser.raw.IRawHandler;
 import org.thymeleaf.templateparser.raw.RawParseException;
-import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -34,26 +33,20 @@ public final class TemplateHandlerAdapterRawHandler implements IRawHandler {
 
     private final String templateName;
     private final ITemplateHandler templateHandler;
-    private final ITextRepository textRepository;
     private final int lineOffset;
     private final int colOffset;
 
 
     public TemplateHandlerAdapterRawHandler(final String templateName,
                                             final ITemplateHandler templateHandler,
-                                            final ITextRepository textRepository,
                                             final int lineOffset, final int colOffset) {
         super();
 
         Validate.notNull(templateHandler, "Template handler cannot be null");
-        Validate.notNull(textRepository, "Text Repository cannot be null");
 
         this.templateName = templateName;
 
         this.templateHandler = templateHandler;
-
-        // We will default the text repository to a no-cache implementation
-        this.textRepository = textRepository;
 
         // These cannot be null
         this.lineOffset = (lineOffset > 0 ? lineOffset - 1 : lineOffset); // line n for offset will be line 1 for the newly parsed template
@@ -86,7 +79,7 @@ public final class TemplateHandlerAdapterRawHandler implements IRawHandler {
             final int line, final int col)
             throws RawParseException {
         this.templateHandler.handleText(
-                new Text(this.textRepository.getText(buffer, offset, len), this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
+                new Text(new String(buffer, offset, len), this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
     }
 
 

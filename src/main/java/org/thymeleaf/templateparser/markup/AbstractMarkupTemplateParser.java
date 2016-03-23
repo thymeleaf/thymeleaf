@@ -161,7 +161,6 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                         new TemplateHandlerAdapterMarkupHandler(
                                 templateName,
                                 templateHandler,
-                                configuration.getTextRepository(),
                                 configuration.getElementDefinitions(),
                                 configuration.getAttributeDefinitions(),
                                 templateMode,

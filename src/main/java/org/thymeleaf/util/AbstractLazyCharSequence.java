@@ -22,8 +22,6 @@ package org.thymeleaf.util;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.thymeleaf.text.IWritableCharSequence;
-
 
 /**
  * <p>

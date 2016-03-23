@@ -97,7 +97,7 @@ public final class DecoupledTemplateLogicUtils {
          */
 
         final DecoupledTemplateLogicBuilderMarkupHandler decoupledMarkupHandler =
-                new DecoupledTemplateLogicBuilderMarkupHandler(template, configuration.getTextRepository(), templateMode);
+                new DecoupledTemplateLogicBuilderMarkupHandler(template, templateMode);
 
         parser.parse(decoupledResource.reader(), decoupledMarkupHandler);
 

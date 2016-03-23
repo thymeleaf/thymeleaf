@@ -24,8 +24,6 @@ import java.io.Serializable;
 import java.io.Writer;
 import java.util.List;
 
-import org.thymeleaf.text.IWritableCharSequence;
-
 
 /**
  * <p>

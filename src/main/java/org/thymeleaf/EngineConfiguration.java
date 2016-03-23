@@ -52,7 +52,6 @@ import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.markup.decoupled.IDecoupledTemplateLogicResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
-import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -70,7 +69,6 @@ import org.thymeleaf.util.Validate;
 public class EngineConfiguration implements IEngineConfiguration {
 
     private final DialectSetConfiguration dialectSetConfiguration;
-    private final ITextRepository textRepository;
     private final Set<ITemplateResolver> templateResolvers;
     private final Set<IMessageResolver> messageResolvers;
     private final Set<ILinkBuilder> linkBuilders;
@@ -91,8 +89,7 @@ public class EngineConfiguration implements IEngineConfiguration {
             final Set<DialectConfiguration> dialectConfigurations,
             final ICacheManager cacheManager,
             final IEngineContextFactory engineContextFactory,
-            final IDecoupledTemplateLogicResolver decoupledTemplateLogicResolver,
-            final ITextRepository textRepository) {
+            final IDecoupledTemplateLogicResolver decoupledTemplateLogicResolver) {
 
         super();
 
@@ -104,7 +101,6 @@ public class EngineConfiguration implements IEngineConfiguration {
         // Cache Manager CAN be null
         Validate.notNull(engineContextFactory, "Engine Context Factory cannot be null");
         Validate.notNull(decoupledTemplateLogicResolver, "Decoupled Template Logic Resolver cannot be null");
-        Validate.notNull(textRepository, "Text Repository cannot be null");
 
         final List<ITemplateResolver> templateResolversList = new ArrayList<ITemplateResolver>(templateResolvers);
         Collections.sort(templateResolversList, TemplateResolverComparator.INSTANCE);
@@ -125,7 +121,6 @@ public class EngineConfiguration implements IEngineConfiguration {
         this.decoupledTemplateLogicResolver = decoupledTemplateLogicResolver;
 
         this.dialectSetConfiguration = DialectSetConfiguration.build(dialectConfigurations);
-        this.textRepository = textRepository;
 
         // NOTE we are NOT initializing the templateManager here, but in #initialize()
 
@@ -191,10 +186,6 @@ public class EngineConfiguration implements IEngineConfiguration {
 
     public String getStandardDialectPrefix() {
         return this.dialectSetConfiguration.getStandardDialectPrefix();
-    }
-
-    public ITextRepository getTextRepository() {
-        return this.textRepository;
     }
 
 

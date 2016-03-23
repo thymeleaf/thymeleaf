@@ -26,7 +26,6 @@ import org.attoparser.AbstractMarkupHandler;
 import org.attoparser.ParseException;
 import org.thymeleaf.model.AttributeValueQuotes;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -37,16 +36,9 @@ import org.thymeleaf.util.Validate;
  */
 public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHandler {
 
-    // TODO
-    // TODO    REMOVE TEXT REPOSITORY AT ALL -> TO A NEW PROJECT
-    // TODO
-    // TODO
-    // TODO
-
 
     private final String templateName;
     private final ITemplateHandler templateHandler;
-    private final ITextRepository textRepository;
     private final ElementDefinitions elementDefinitions;
     private final AttributeDefinitions attributeDefinitions;
     private final TemplateMode templateMode;
@@ -59,7 +51,6 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
     
     public TemplateHandlerAdapterMarkupHandler(final String templateName,
                                                final ITemplateHandler templateHandler,
-                                               final ITextRepository textRepository,
                                                final ElementDefinitions elementDefinitions,
                                                final AttributeDefinitions attributeDefinitions,
                                                final TemplateMode templateMode,
@@ -67,7 +58,6 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         super();
 
         Validate.notNull(templateHandler, "Template handler cannot be null");
-        Validate.notNull(textRepository, "Text Repository cannot be null");
         Validate.notNull(elementDefinitions, "Element Definitions repository cannot be null");
         Validate.notNull(attributeDefinitions, "Attribute Definitions repository cannot be null");
         Validate.notNull(templateMode, "Template mode cannot be null");
@@ -75,9 +65,6 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.templateName = templateName;
 
         this.templateHandler = templateHandler;
-
-        // We will default the text repository to a no-cache implementation
-        this.textRepository = textRepository;
 
         // These cannot be null
         this.elementDefinitions = elementDefinitions;
@@ -128,14 +115,14 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        final String fullXmlDeclaration = this.textRepository.getText(buffer, outerOffset, outerLen);
-        final String keyword = this.textRepository.getText(buffer, keywordOffset, keywordLen);
+        final String fullXmlDeclaration = new String(buffer, outerOffset, outerLen);
+        final String keyword = new String(buffer, keywordOffset, keywordLen);
         final String version =
-                (versionLen == 0? null : this.textRepository.getText(buffer, versionOffset, versionLen));
+                (versionLen == 0? null : new String(buffer, versionOffset, versionLen));
         final String encoding =
-                (encodingLen == 0? null : this.textRepository.getText(buffer, encodingOffset, encodingLen));
+                (encodingLen == 0? null : new String(buffer, encodingOffset, encodingLen));
         final String standalone =
-                (standaloneLen == 0? null : this.textRepository.getText(buffer, standaloneOffset, standaloneLen));
+                (standaloneLen == 0? null : new String(buffer, standaloneOffset, standaloneLen));
 
         this.templateHandler.handleXMLDeclaration(
                 new XMLDeclaration(
@@ -165,17 +152,13 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int outerLine, final int outerCol)
             throws ParseException {
 
-        final String fullDocType = this.textRepository.getText(buffer, outerOffset, outerLen);
-        final String keyword = this.textRepository.getText(buffer, keywordOffset, keywordLen);
-        final String rootElementName = this.textRepository.getText(buffer, elementNameOffset, elementNameLen);
-        final String type =
-                (typeLen == 0? null : this.textRepository.getText(buffer, typeOffset, typeLen));
-        final String publicId =
-                (publicIdLen == 0? null : this.textRepository.getText(buffer, publicIdOffset, publicIdLen));
-        final String systemId =
-                (systemIdLen == 0? null : this.textRepository.getText(buffer, systemIdOffset, systemIdLen));
-        final String internalSubset =
-                (internalSubsetLen == 0? null : this.textRepository.getText(buffer, internalSubsetOffset, internalSubsetLen));
+        final String fullDocType = new String(buffer, outerOffset, outerLen);
+        final String keyword = new String(buffer, keywordOffset, keywordLen);
+        final String rootElementName = new String(buffer, elementNameOffset, elementNameLen);
+        final String type = (typeLen == 0? null : new String(buffer, typeOffset, typeLen));
+        final String publicId = (publicIdLen == 0? null : new String(buffer, publicIdOffset, publicIdLen));
+        final String systemId = (systemIdLen == 0? null : new String(buffer, systemIdOffset, systemIdLen));
+        final String internalSubset = (internalSubsetLen == 0? null : new String(buffer, internalSubsetOffset, internalSubsetLen));
 
         this.templateHandler.handleDocType(
                 new DocType(
@@ -194,9 +177,9 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        final String prefix = this.textRepository.getText(buffer, outerOffset, (contentOffset - outerOffset));
-        final String content = this.textRepository.getText(buffer, contentOffset, contentLen);
-        final String suffix = this.textRepository.getText(buffer, contentOffset + contentLen, (outerOffset + outerLen) - (contentOffset + contentLen));
+        final String prefix = new String(buffer, outerOffset, (contentOffset - outerOffset));
+        final String content = new String(buffer, contentOffset, contentLen);
+        final String suffix = new String(buffer, contentOffset + contentLen, (outerOffset + outerLen) - (contentOffset + contentLen));
 
         this.templateHandler.handleCDATASection(
                 new CDATASection(prefix, content, suffix, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
@@ -213,9 +196,9 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        final String prefix = this.textRepository.getText(buffer, outerOffset, (contentOffset - outerOffset));
-        final String content = this.textRepository.getText(buffer, contentOffset, contentLen);
-        final String suffix = this.textRepository.getText(buffer, contentOffset + contentLen, (outerOffset + outerLen) - (contentOffset + contentLen));
+        final String prefix = new String(buffer, outerOffset, (contentOffset - outerOffset));
+        final String content = new String(buffer, contentOffset, contentLen);
+        final String suffix = new String(buffer, contentOffset + contentLen, (outerOffset + outerLen) - (contentOffset + contentLen));
 
         this.templateHandler.handleComment(
                 new Comment(prefix, content, suffix, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
@@ -231,7 +214,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
         this.templateHandler.handleText(
-                new Text(this.textRepository.getText(buffer, offset, len), this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
+                new Text(new String(buffer, offset, len), this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
     }
 
 
@@ -256,7 +239,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final boolean minimized, final int line, final int col)
             throws ParseException {
 
-        final String elementCompleteName = this.textRepository.getText(buffer, nameOffset, nameLen);
+        final String elementCompleteName = new String(buffer, nameOffset, nameLen);
         final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementCompleteName);
 
         final Attributes attributes;
@@ -298,7 +281,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        final String elementCompleteName = this.textRepository.getText(buffer, nameOffset, nameLen);
+        final String elementCompleteName = new String(buffer, nameOffset, nameLen);
         final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementCompleteName);
 
         final Attributes attributes;
@@ -340,7 +323,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        final String elementCompleteName = this.textRepository.getText(buffer, nameOffset, nameLen);
+        final String elementCompleteName = new String(buffer, nameOffset, nameLen);
         final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementCompleteName);
 
         final Attributes attributes;
@@ -382,7 +365,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        final String elementCompleteName = this.textRepository.getText(buffer, nameOffset, nameLen);
+        final String elementCompleteName = new String(buffer, nameOffset, nameLen);
         final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementCompleteName);
 
         final String trailingWhiteSpace;
@@ -420,7 +403,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        final String elementCompleteName = this.textRepository.getText(buffer, nameOffset, nameLen);
+        final String elementCompleteName = new String(buffer, nameOffset, nameLen);
         final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementCompleteName);
 
         final String trailingWhiteSpace;
@@ -459,7 +442,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        final String elementCompleteName = this.textRepository.getText(buffer, nameOffset, nameLen);
+        final String elementCompleteName = new String(buffer, nameOffset, nameLen);
         final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementCompleteName);
 
         final String trailingWhiteSpace;
@@ -490,7 +473,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int valueLine, final int valueCol)
             throws ParseException {
 
-        final String attributeName = this.textRepository.getText(buffer, nameOffset, nameLen);
+        final String attributeName = new String(buffer, nameOffset, nameLen);
 
         final AttributeDefinition attributeDefinition = this.attributeDefinitions.forName(this.templateMode, attributeName);
 
@@ -498,13 +481,11 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
                 (operatorLen > 0 ?
                         (operatorLen == 1 && buffer[operatorOffset] == '=' ?
                                 Attribute.DEFAULT_OPERATOR : // Shortcut for the most common case
-                                this.textRepository.getText(buffer, operatorOffset, operatorLen)) :
+                                new String(buffer, operatorOffset, operatorLen)) :
                         null);
 
         final String value =
-                (attributeOperator != null ?
-                        this.textRepository.getText(buffer, valueContentOffset, valueContentLen) :
-                        null);
+                (attributeOperator != null ? new String(buffer, valueContentOffset, valueContentLen) : null);
 
         final AttributeValueQuotes valueQuotes;
         if (value == null) {
@@ -542,7 +523,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             // Quicker than asking the text repository
             elementWhiteSpace = Attributes.DEFAULT_WHITE_SPACE;
         } else {
-            elementWhiteSpace = this.textRepository.getText(buffer, offset, len);
+            elementWhiteSpace = new String(buffer, offset, len);
         }
 
         this.currentElementInnerWhiteSpaces.add(elementWhiteSpace);
@@ -562,10 +543,9 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        final String fullProcessingInstruction = this.textRepository.getText(buffer, outerOffset, outerLen);
-        final String target = this.textRepository.getText(buffer, targetOffset, targetLen);
-        final String content =
-                (contentLen == 0? null : this.textRepository.getText(buffer, contentOffset, contentLen));
+        final String fullProcessingInstruction = new String(buffer, outerOffset, outerLen);
+        final String target = new String(buffer, targetOffset, targetLen);
+        final String content = (contentLen == 0? null : new String(buffer, contentOffset, contentLen));
 
         this.templateHandler.handleProcessingInstruction(
                 new ProcessingInstruction(fullProcessingInstruction, target, content, this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));

@@ -71,7 +71,6 @@ public class StandardModelFactory implements IModelFactory {
         super();
 
         Validate.notNull(configuration, "Configuration cannot be null");
-        Validate.notNull(configuration.getTextRepository(), "Text Repository returned by Engine Configuration cannot be null");
         Validate.notNull(configuration.getAttributeDefinitions(), "Attribute Definitions returned by Engine Configuration cannot be null");
         Validate.notNull(configuration.getElementDefinitions(), "Element Definitions returned by Engine Configuration cannot be null");
         Validate.notNull(templateMode, "Template Mode cannot be null");

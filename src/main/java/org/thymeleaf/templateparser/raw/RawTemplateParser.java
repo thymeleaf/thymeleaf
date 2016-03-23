@@ -130,7 +130,6 @@ public final class RawTemplateParser implements ITemplateParser {
                         new TemplateHandlerAdapterRawHandler(
                                 templateName,
                                 templateHandler,
-                                configuration.getTextRepository(),
                                 lineOffset, colOffset);
 
             // Obtain the resource reader

@@ -26,7 +26,6 @@ import org.attoparser.AbstractMarkupHandler;
 import org.attoparser.ParseException;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.TextUtils;
 import org.thymeleaf.util.Validate;
@@ -59,7 +58,6 @@ public final class DecoupledTemplateLogicBuilderMarkupHandler extends AbstractMa
     private static final char[] ATTRIBUTE_NAME_SEL_CHARS = ATTRIBUTE_NAME_SEL.toCharArray();
 
     private final String templateName;
-    private final ITextRepository textRepository;
     private final TemplateMode templateMode;
     private final DecoupledTemplateLogic decoupledTemplateLogic;
 
@@ -72,16 +70,13 @@ public final class DecoupledTemplateLogicBuilderMarkupHandler extends AbstractMa
 
 
     public DecoupledTemplateLogicBuilderMarkupHandler(final String templateName,
-                                                      final ITextRepository textRepository,
                                                       final TemplateMode templateMode) {
         super();
 
         Validate.notEmpty(templateName, "Template name cannot be null or empty");
-        Validate.notNull(textRepository, "Text Repository cannot be null");
         Validate.notNull(templateMode, "Template mode cannot be null");
 
         this.templateName = templateName;
-        this.textRepository = textRepository;
         this.templateMode = templateMode;
         this.decoupledTemplateLogic = new DecoupledTemplateLogic();
 
@@ -290,7 +285,7 @@ public final class DecoupledTemplateLogicBuilderMarkupHandler extends AbstractMa
                         "once in attr injection tag", this.templateName, nameLine, nameCol);
             }
 
-            this.selector.setSelector(this.textRepository.getText(buffer, valueContentOffset, valueContentLen));
+            this.selector.setSelector(new String(buffer, valueContentOffset, valueContentLen));
             return;
 
         }

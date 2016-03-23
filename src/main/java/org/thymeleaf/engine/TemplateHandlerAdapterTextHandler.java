@@ -27,7 +27,6 @@ import org.thymeleaf.model.AttributeValueQuotes;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.text.AbstractTextHandler;
 import org.thymeleaf.templateparser.text.TextParseException;
-import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -49,7 +48,6 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
 
     private final String templateName;
     private final ITemplateHandler templateHandler;
-    private final ITextRepository textRepository;
     private final ElementDefinitions elementDefinitions;
     private final AttributeDefinitions attributeDefinitions;
     private final TemplateMode templateMode;
@@ -61,7 +59,6 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
 
     public TemplateHandlerAdapterTextHandler(final String templateName,
                                              final ITemplateHandler templateHandler,
-                                             final ITextRepository textRepository,
                                              final ElementDefinitions elementDefinitions,
                                              final AttributeDefinitions attributeDefinitions,
                                              final TemplateMode templateMode,
@@ -69,7 +66,6 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
         super();
 
         Validate.notNull(templateHandler, "Template handler cannot be null");
-        Validate.notNull(textRepository, "Text Repository cannot be null");
         Validate.notNull(elementDefinitions, "Element Definitions repository cannot be null");
         Validate.notNull(attributeDefinitions, "Attribute Definitions repository cannot be null");
         Validate.notNull(templateMode, "Template mode cannot be null");
@@ -77,9 +73,6 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
         this.templateName = templateName;
 
         this.templateHandler = templateHandler;
-
-        // We will default the text repository to a no-cache implementation
-        this.textRepository = textRepository;
 
         // These cannot be null
         this.elementDefinitions = elementDefinitions;
@@ -121,7 +114,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             final int line, final int col)
             throws TextParseException {
         this.templateHandler.handleText(
-                new Text(this.textRepository.getText(buffer, offset, len), this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
+                new Text(new String(buffer, offset, len), this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
     }
 
 
@@ -145,7 +138,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             final boolean minimized, final int line, final int col)
             throws TextParseException {
 
-        final String elementCompleteName = this.textRepository.getText(buffer, nameOffset, nameLen);
+        final String elementCompleteName = new String(buffer, nameOffset, nameLen);
         final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementCompleteName);
 
         final Attributes attributes;
@@ -192,7 +185,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             final int line, final int col)
             throws TextParseException {
 
-        final String elementCompleteName = this.textRepository.getText(buffer, nameOffset, nameLen);
+        final String elementCompleteName = new String(buffer, nameOffset, nameLen);
         final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementCompleteName);
 
         final Attributes attributes;
@@ -239,7 +232,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             final int line, final int col)
             throws TextParseException {
 
-        final String elementCompleteName = this.textRepository.getText(buffer, nameOffset, nameLen);
+        final String elementCompleteName = new String(buffer, nameOffset, nameLen);
         final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementCompleteName);
 
         this.templateHandler.handleCloseElement(
@@ -263,7 +256,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             final int valueLine, final int valueCol)
             throws TextParseException {
 
-        final String attributeName = this.textRepository.getText(buffer, nameOffset, nameLen);
+        final String attributeName = new String(buffer, nameOffset, nameLen);
 
         final AttributeDefinition attributeDefinition = this.attributeDefinitions.forName(this.templateMode, attributeName);
 
@@ -271,12 +264,12 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
                 (operatorLen > 0 ?
                         (operatorLen == 1 && buffer[operatorOffset] == '=' ?
                                 Attribute.DEFAULT_OPERATOR : // Shortcut for the most common case
-                                this.textRepository.getText(buffer, operatorOffset, operatorLen)) :
+                                new String(buffer, operatorOffset, operatorLen)) :
                         null);
 
         final String value =
                 (attributeOperator != null ?
-                        this.textRepository.getText(buffer, valueContentOffset, valueContentLen) :
+                        new String(buffer, valueContentOffset, valueContentLen) :
                         null);
 
         final AttributeValueQuotes valueQuotes;
