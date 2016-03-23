@@ -78,7 +78,7 @@ public interface IElementTagStructureHandler {
      * @param attributeName the name of the attribute.
      * @param attributeValue the value of the attribute.
      */
-    public void setAttribute(final String attributeName, final Object attributeValue);
+    public void setAttribute(final String attributeName, final String attributeValue);
 
     /**
      * <p>
