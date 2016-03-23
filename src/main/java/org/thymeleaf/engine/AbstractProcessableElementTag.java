@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
+import org.thymeleaf.model.AttributeValueQuotes;
 import org.thymeleaf.model.IAttribute;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementProcessor;
@@ -218,6 +219,25 @@ abstract class AbstractProcessableElementTag
         return processors;
 
     }
+
+
+
+
+    abstract AbstractProcessableElementTag setAttribute(
+            final AttributeDefinitions attributeDefinitions,
+            final AttributeDefinition attributeDefinition, final String completeName,
+            final String value, final AttributeValueQuotes valueQuotes);
+
+
+    abstract AbstractProcessableElementTag replaceAttribute(
+            final AttributeDefinitions attributeDefinitions,
+            final AttributeName oldName, final AttributeDefinition newAttributeDefinition, final String completeNewName,
+            final String value, final AttributeValueQuotes valueQuotes);
+
+
+    abstract AbstractProcessableElementTag removeAttribute(final String prefix, final String name);
+    abstract AbstractProcessableElementTag removeAttribute(final String completeName);
+    abstract AbstractProcessableElementTag removeAttribute(final AttributeName attributeName);
 
 
 
