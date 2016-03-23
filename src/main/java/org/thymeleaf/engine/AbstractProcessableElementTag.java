@@ -47,7 +47,7 @@ abstract class AbstractProcessableElementTag
     final Attributes attributes;
     // Dialect constraints ensure anyway that we will never have duplicates here, because the same processor can
     // never be applied to more than one attribute.
-    final IElementProcessor[] associatedProcessors;
+    private volatile IElementProcessor[] associatedProcessors = null;
 
 
 
@@ -60,7 +60,6 @@ abstract class AbstractProcessableElementTag
             final boolean synthetic) {
         super(templateMode, elementDefinition, elementCompleteName, synthetic);
         this.attributes = attributes;
-        this.associatedProcessors = computeProcessors();
     }
 
 
@@ -75,7 +74,6 @@ abstract class AbstractProcessableElementTag
             final int col) {
         super(templateMode, elementDefinition, elementCompleteName, synthetic, templateName, line, col);
         this.attributes = attributes;
-        this.associatedProcessors = computeProcessors();
     }
 
 
@@ -154,10 +152,20 @@ abstract class AbstractProcessableElementTag
 
 
 
+    IElementProcessor[] getAssociatedProcessors() {
 
-    // -----------------
-    // NO GETTER for the array of associated processors: will only be used internally
-    // -----------------
+        IElementProcessor[] p = this.associatedProcessors;
+        if (p == null) {
+            this.associatedProcessors = p = computeProcessors();
+        }
+        return p;
+
+    }
+
+
+    boolean hasAssociatedProcessors() {
+        return getAssociatedProcessors().length > 0;
+    }
 
 
 
@@ -214,7 +222,9 @@ abstract class AbstractProcessableElementTag
             processors = Arrays.copyOf(processors, idx);
         }
 
-        Arrays.sort(processors, ProcessorComparators.PROCESSOR_COMPARATOR);
+        if (processors.length > 1) {
+            Arrays.sort(processors, ProcessorComparators.PROCESSOR_COMPARATOR);
+        }
 
         return processors;
 
