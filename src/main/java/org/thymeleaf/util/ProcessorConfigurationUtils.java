@@ -547,6 +547,8 @@ public final class ProcessorConfigurationUtils {
      */
     static abstract class AbstractProcessorWrapper implements IProcessor, IAttributeDefinitionsAware, IElementDefinitionsAware {
 
+        private final int dialectPrecedence;
+        private final int processorPrecedence;
         private final IProcessorDialect dialect;
         protected final IProcessor processor;
 
@@ -554,14 +556,20 @@ public final class ProcessorConfigurationUtils {
             super();
             this.dialect = dialect;
             this.processor = processor;
+            this.dialectPrecedence = this.dialect.getDialectProcessorPrecedence();
+            this.processorPrecedence = this.processor.getPrecedence();
         }
 
         public final TemplateMode getTemplateMode() {
             return this.processor.getTemplateMode();
         }
 
+        public final int getDialectPrecedence() {
+            return this.dialectPrecedence;
+        }
+
         public final int getPrecedence() {
-            return this.processor.getPrecedence();
+            return this.processorPrecedence;
         }
 
         public final IProcessorDialect getDialect() {

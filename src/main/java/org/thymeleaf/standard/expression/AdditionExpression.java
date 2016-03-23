@@ -106,10 +106,12 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
         }
 
         final BigDecimal leftNumberValue = EvaluationUtils.evaluateAsNumber(leftValue);
-        final BigDecimal rightNumberValue = EvaluationUtils.evaluateAsNumber(rightValue);
-        if (leftNumberValue != null && rightNumberValue != null) {
-            // Addition will act as a mathematical 'plus'
-            return leftNumberValue.add(rightNumberValue);
+        if (leftNumberValue != null) {
+            final BigDecimal rightNumberValue = EvaluationUtils.evaluateAsNumber(rightValue);
+            if (rightNumberValue != null) {
+                // Addition will act as a mathematical 'plus'
+                return leftNumberValue.add(rightNumberValue);
+            }
         }
 
         return new LiteralValue(LiteralValue.unwrap(leftValue).toString() + (LiteralValue.unwrap(rightValue).toString()));

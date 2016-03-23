@@ -80,7 +80,7 @@ public final class ProcessorComparators {
          */
         private int compareWrapped(final ProcessorConfigurationUtils.AbstractProcessorWrapper o1w, final ProcessorConfigurationUtils.AbstractProcessorWrapper o2w) {
 
-            final int dialectPrecedenceComp = compareInts(o1w.getDialect().getDialectProcessorPrecedence(), o2w.getDialect().getDialectProcessorPrecedence());
+            final int dialectPrecedenceComp = compareInts(o1w.getDialectPrecedence(), o2w.getDialectPrecedence());
             if (dialectPrecedenceComp != 0) {
                 return dialectPrecedenceComp;
             }
