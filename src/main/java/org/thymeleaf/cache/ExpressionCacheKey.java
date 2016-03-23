@@ -41,19 +41,25 @@ public final class ExpressionCacheKey implements Serializable {
     private static final long serialVersionUID = 872451230923L;
 
     private final String type;
-    private final String expression;
+    private final String expression0;
+    private final String expression1;
     private final int h;
 
 
-    public ExpressionCacheKey(final String type, final String expression) {
+    public ExpressionCacheKey(final String type, final String expression0) {
+        this(type, expression0, null);
+    }
+
+    public ExpressionCacheKey(final String type, final String expression0, final String expression1) {
 
         super();
 
         Validate.notNull(type, "Type cannot be null");
-        Validate.notNull(expression, "Expression cannot be null");
+        Validate.notNull(expression0, "Expression cannot be null");
 
         this.type = type;
-        this.expression = expression;
+        this.expression0 = expression0;
+        this.expression1 = expression1;
 
         // This being a cache key, its equals and hashCode methods will potentially execute many
         // times, so this could help performance
@@ -65,8 +71,12 @@ public final class ExpressionCacheKey implements Serializable {
         return this.type;
     }
 
-    public String getExpression() {
-        return this.expression;
+    public String getExpression0() {
+        return this.expression0;
+    }
+
+    public String getExpression1() {
+        return this.expression1;
     }
 
 
@@ -90,7 +100,10 @@ public final class ExpressionCacheKey implements Serializable {
         if (!this.type.equals(that.type)) {
             return false;
         }
-        return this.expression.equals(that.expression);
+        if (!this.expression0.equals(that.expression0)) {
+            return false;
+        }
+        return this.expression1 != null ? this.expression1.equals(that.expression1) : that.expression1 == null;
 
     }
 
@@ -103,11 +116,10 @@ public final class ExpressionCacheKey implements Serializable {
 
     private int computeHashCode() {
         int result = this.type.hashCode();
-        result = 31 * result + this.expression.hashCode();
+        result = 31 * result + this.expression0.hashCode();
+        result = 31 * result + (this.expression1 != null ? this.expression1.hashCode() : 0);
         return result;
     }
-
-
 
 
     @Override
@@ -115,7 +127,11 @@ public final class ExpressionCacheKey implements Serializable {
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append(this.type);
         strBuilder.append('|');
-        strBuilder.append(this.expression);
+        strBuilder.append(this.expression0);
+        if (this.expression1 != null) {
+            strBuilder.append('|');
+            strBuilder.append(this.expression1);
+        }
         return strBuilder.toString();
     }
 

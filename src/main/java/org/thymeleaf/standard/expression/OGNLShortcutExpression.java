@@ -483,7 +483,7 @@ final class OGNLShortcutExpression {
 
 
     private static ExpressionCacheKey computeMethodCacheKey(final Class<?> targetClass, final String propertyName) {
-        return new ExpressionCacheKey(EXPRESSION_CACHE_TYPE_OGNL_SHORTCUT, targetClass.getName() + propertyName);
+        return new ExpressionCacheKey(EXPRESSION_CACHE_TYPE_OGNL_SHORTCUT, targetClass.getName(), propertyName);
     }
 
 
