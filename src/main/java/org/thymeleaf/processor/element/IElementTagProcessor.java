@@ -32,31 +32,10 @@ import org.thymeleaf.model.IProcessableElementTag;
  *   (see {@link IElementProcessor}.
  * </p>
  * <p>
- *   <b>Reading and modifying attributes</b>
- * </p>
- * <p>
- *   The way an element tag processor should read or modify the attributes of the tag (the event) it is
- *   being executed on is by directly acting on the {@link org.thymeleaf.model.IElementAttributes} object
- *   it contains, which can be obtained by simply calling {@link IProcessableElementTag#getAttributes()}.
- *   A quick example:
- * </p>
- * <code>
- *   // First obtain the attribute value, then unescape it (attributes will come escaped!),<br>
- *   // then remove the attribute<br>
- *   final String attributeValue =<br>
- *           EscapedAttributeUtils.unescapeAttribute(<br>
- *               context.getTemplateMode(),<br>
- *               tag.getAttributes().getValue(attributeName));<br>
- *   <br>
- *   tag.getAttributes().removeAttribute(attributeName);<br>
- *   <br>
- *    ... // do something with that attributeValue<br>
- * </code>
- * <p>
  *   <b>Using the <tt>structureHandler</tt></b>
  * </p>
  * <p>
- *   For any other action involving more than mere attribute access and/or modification, processors will
+ *   For any actions involving modifications to the tag being processed or the markup structure, processors will
  *   use the {@link IElementTagStructureHandler} objects passed as argument to the
  *   {@link #process(ITemplateContext, IProcessableElementTag, IElementTagStructureHandler)} method.
  * </p>
