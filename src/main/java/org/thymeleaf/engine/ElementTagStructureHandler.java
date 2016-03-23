@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.engine;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -26,7 +27,9 @@ import java.util.Set;
 
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.model.AttributeValueQuotes;
 import org.thymeleaf.model.IModel;
+import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.util.Validate;
 
@@ -83,6 +86,18 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
     boolean removeLocalVariable;
     Set<String> removedLocalVariableNames;
 
+    boolean setAttribute;
+    Object[][] setAttributeValues;
+    int setAttributeValuesSize;
+
+    boolean replaceAttribute;
+    Object[][] replaceAttributeValues;
+    int replaceAttributeValuesSize;
+
+    boolean removeAttribute;
+    Object[][] removeAttributeValues;
+    int removeAttributeValuesSize;
+
     boolean setSelectionTarget;
     Object selectionTargetObject;
 
@@ -108,7 +123,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
 
     public void setBody(final CharSequence text, final boolean processable) {
-        resetAllButLocalVariables();
+        resetAllButVariablesOrAttributes();
         Validate.notNull(text, "Text cannot be null");
         this.setBodyText = true;
         this.setBodyTextValue = text;
@@ -117,7 +132,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
 
     public void setBody(final IModel model, final boolean processable) {
-        resetAllButLocalVariables();
+        resetAllButVariablesOrAttributes();
         Validate.notNull(model, "Model cannot be null");
         this.setBodyModel = true;
         this.setBodyModelValue = model;
@@ -126,7 +141,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
 
     public void insertBefore(final IModel model) {
-        resetAllButLocalVariables();
+        resetAllButVariablesOrAttributes();
         Validate.notNull(model, "Model cannot be null");
         this.insertBeforeModel = true;
         this.insertBeforeModelValue = model;
@@ -135,7 +150,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
 
     public void insertImmediatelyAfter(final IModel model, final boolean processable) {
-        resetAllButLocalVariables();
+        resetAllButVariablesOrAttributes();
         Validate.notNull(model, "Model cannot be null");
         this.insertImmediatelyAfterModel = true;
         this.insertImmediatelyAfterModelValue = model;
@@ -144,7 +159,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
 
     public void replaceWith(final CharSequence text, final boolean processable) {
-        resetAllButLocalVariables();
+        resetAllButVariablesOrAttributes();
         Validate.notNull(text, "Text cannot be null");
         this.replaceWithText = true;
         this.replaceWithTextValue = text;
@@ -153,7 +168,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
 
     public void replaceWith(final IModel model, final boolean processable) {
-        resetAllButLocalVariables();
+        resetAllButVariablesOrAttributes();
         Validate.notNull(model, "Model cannot be null");
         this.replaceWithModel = true;
         this.replaceWithModelValue = model;
@@ -162,31 +177,32 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
 
     public void removeElement() {
-        resetAllButLocalVariables();
+        resetAllButVariablesOrAttributes();
         this.removeElement = true;
     }
 
 
     public void removeTags() {
-        resetAllButLocalVariables();
+        resetAllButVariablesOrAttributes();
         this.removeTags = true;
     }
 
 
     public void removeBody() {
-        resetAllButLocalVariables();
+        resetAllButVariablesOrAttributes();
         this.removeBody = true;
     }
 
 
     public void removeAllButFirstChild() {
-        resetAllButLocalVariables();
+        resetAllButVariablesOrAttributes();
         this.removeAllButFirstChild = true;
     }
 
 
     public void removeLocalVariable(final String name) {
         // Can be combined with others, no need to reset
+        Validate.notNull(name, "Variable name cannot be null");
         this.removeLocalVariable = true;
         if (this.removedLocalVariableNames == null) {
             this.removedLocalVariableNames = new HashSet<String>(3);
@@ -197,11 +213,183 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
     public void setLocalVariable(final String name, final Object value) {
         // Can be combined with others, no need to reset
+        Validate.notNull(name, "Variable name cannot be null");
         this.setLocalVariable = true;
         if (this.addedLocalVariables == null) {
             this.addedLocalVariables = new HashMap<String, Object>(3);
         }
         this.addedLocalVariables.put(name, value);
+    }
+
+
+    public void setAttribute(final String attributeName, final String attributeValue) {
+        // Can be combined with others, no need to reset
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        ensureSetAttributeSize();
+        this.setAttribute = true;
+        final Object[] values = this.setAttributeValues[this.setAttributeValues.length];
+        values[0] = null;
+        values[1] = attributeName;
+        values[2] = attributeValue;
+        values[3] = null;
+        this.setAttributeValuesSize++;
+    }
+
+
+    public void setAttribute(final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
+        // Can be combined with others, no need to reset
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        ensureSetAttributeSize();
+        this.setAttribute = true;
+        final Object[] values = this.setAttributeValues[this.setAttributeValues.length];
+        values[0] = null;
+        values[1] = attributeName;
+        values[2] = attributeValue;
+        values[3] = attributeValueQuotes;
+        this.setAttributeValuesSize++;
+    }
+
+
+    // NOTE this method is not part of the structure handler interface, as it uses the attributeDefinition.
+    // The idea is that it can be used as an additional optimization by processors in Standard Dialects, after casting.
+    public void setAttribute(final AttributeDefinition attributeDefinition, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
+        // Can be combined with others, no need to reset
+        Validate.notNull(attributeDefinition, "Attribute definition cannot be null");
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        ensureSetAttributeSize();
+        this.setAttribute = true;
+        final Object[] values = this.setAttributeValues[this.setAttributeValues.length];
+        values[0] = attributeDefinition;
+        values[1] = attributeName;
+        values[2] = attributeValue;
+        values[3] = attributeValueQuotes;
+        this.setAttributeValuesSize++;
+    }
+
+
+    private void ensureSetAttributeSize() {
+        if (this.setAttributeValues == null) {
+            this.setAttributeValues = new Object[3][];
+        }
+        if (this.setAttributeValues.length == this.setAttributeValuesSize) {
+            this.setAttributeValues = Arrays.copyOf(this.setAttributeValues, this.setAttributeValues.length + 3);
+        }
+        if (this.setAttributeValues[this.setAttributeValues.length] == null) {
+            this.setAttributeValues[this.setAttributeValues.length] = new Object[4];
+        }
+    }
+
+
+    public void replaceAttribute(final AttributeName oldAttributeName, final String attributeName, final String attributeValue) {
+        // Can be combined with others, no need to reset
+        Validate.notNull(oldAttributeName, "Old attribute name cannot be null");
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        ensureReplaceAttributeSize();
+        this.replaceAttribute = true;
+        final Object[] values = this.replaceAttributeValues[this.replaceAttributeValues.length];
+        values[0] = oldAttributeName;
+        values[1] = null;
+        values[2] = attributeName;
+        values[3] = attributeValue;
+        values[4] = null;
+        this.replaceAttributeValuesSize++;
+    }
+
+
+    public void replaceAttribute(final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
+        // Can be combined with others, no need to reset
+        Validate.notNull(oldAttributeName, "Old attribute name cannot be null");
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        ensureReplaceAttributeSize();
+        this.replaceAttribute = true;
+        final Object[] values = this.replaceAttributeValues[this.replaceAttributeValues.length];
+        values[0] = oldAttributeName;
+        values[1] = null;
+        values[2] = attributeName;
+        values[3] = attributeValue;
+        values[4] = attributeValueQuotes;
+        this.replaceAttributeValuesSize++;
+    }
+
+
+    // NOTE this method is not part of the structure handler interface, as it uses the attributeDefinition.
+    // The idea is that it can be used as an additional optimization by processors in Standard Dialects, after casting.
+    public void replaceAttribute(final AttributeName oldAttributeName, final AttributeDefinition attributeDefinition, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
+        // Can be combined with others, no need to reset
+        Validate.notNull(oldAttributeName, "Old attribute name cannot be null");
+        Validate.notNull(attributeDefinition, "Attribute definition cannot be null");
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        ensureReplaceAttributeSize();
+        this.replaceAttribute = true;
+        final Object[] values = this.replaceAttributeValues[this.replaceAttributeValues.length];
+        values[0] = oldAttributeName;
+        values[1] = attributeDefinition;
+        values[2] = attributeName;
+        values[3] = attributeValue;
+        values[4] = attributeValueQuotes;
+        this.replaceAttributeValuesSize++;
+    }
+
+
+    private void ensureReplaceAttributeSize() {
+        if (this.replaceAttributeValues == null) {
+            this.replaceAttributeValues = new Object[3][];
+        }
+        if (this.replaceAttributeValues.length == this.replaceAttributeValuesSize) {
+            this.replaceAttributeValues = Arrays.copyOf(this.replaceAttributeValues, this.replaceAttributeValues.length + 3);
+        }
+        if (this.replaceAttributeValues[this.replaceAttributeValues.length] == null) {
+            this.replaceAttributeValues[this.replaceAttributeValues.length] = new Object[5];
+        }
+    }
+
+
+    public void removeAttribute(final String attributeName) {
+        // Can be combined with others, no need to reset
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        ensureRemoveAttributeSize();
+        this.removeAttribute = true;
+        final Object[] values = this.removeAttributeValues[this.removeAttributeValues.length];
+        values[0] = attributeName;
+        values[1] = null;
+        this.removeAttributeValuesSize++;
+    }
+
+
+    public void removeAttribute(final String prefix, final String name) {
+        // Can be combined with others, no need to reset
+        Validate.notNull(name, "Attribute name cannot be null");
+        ensureRemoveAttributeSize();
+        this.removeAttribute = true;
+        final Object[] values = this.removeAttributeValues[this.removeAttributeValues.length];
+        values[0] = prefix;
+        values[1] = name;
+        this.removeAttributeValuesSize++;
+    }
+
+
+    public void removeAttribute(final AttributeName attributeName) {
+        // Can be combined with others, no need to reset
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        ensureRemoveAttributeSize();
+        this.removeAttribute = true;
+        final Object[] values = this.removeAttributeValues[this.removeAttributeValues.length];
+        values[0] = attributeName;
+        values[1] = null;
+        this.removeAttributeValuesSize++;
+    }
+
+
+    private void ensureRemoveAttributeSize() {
+        if (this.removeAttributeValues == null) {
+            this.removeAttributeValues = new Object[3][];
+        }
+        if (this.removeAttributeValues.length == this.removeAttributeValuesSize) {
+            this.removeAttributeValues = Arrays.copyOf(this.removeAttributeValues, this.removeAttributeValues.length + 3);
+        }
+        if (this.removeAttributeValues[this.removeAttributeValues.length] == null) {
+            this.removeAttributeValues[this.removeAttributeValues.length] = new Object[2];
+        }
     }
 
 
@@ -228,7 +416,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
         Validate.notEmpty(iterVariableName, "Iteration variable name cannot be null");
         // Iteration status variable name CAN be null
         // IteratedObject CAN be null
-        resetAllButLocalVariables();
+        resetAllButVariablesOrAttributes();
         this.iterateElement = true;
         this.iterVariableName = iterVariableName;
         this.iterStatusVariableName = iterStatusVariableName;
@@ -240,7 +428,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
     public void reset() {
 
-        resetAllButLocalVariables();
+        resetAllButVariablesOrAttributes();
 
         this.setLocalVariable = false;
         if (this.addedLocalVariables != null && this.addedLocalVariables.size() > 0) {
@@ -261,10 +449,19 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
         this.setTemplateData = false;
         this.setTemplateDataValue = null;
 
+        this.setAttribute = false;
+        this.setAttributeValuesSize = 0;
+
+        this.replaceAttribute = false;
+        this.replaceAttributeValuesSize = 0;
+
+        this.removeAttribute = false;
+        this.removeAttributeValuesSize = 0;
+
     }
 
 
-    private void resetAllButLocalVariables() {
+    private void resetAllButVariablesOrAttributes() {
 
         this.setBodyText = false;
         this.setBodyTextValue = null;
@@ -333,5 +530,45 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
         }
 
     }
+
+
+    AbstractProcessableElementTag applyAttributes(final AttributeDefinitions attributeDefinitions, final AbstractProcessableElementTag tag) {
+
+        AbstractProcessableElementTag ttag = tag;
+
+        if (this.removeAttribute) {
+            for (int i = 0; i < this.removeAttributeValuesSize; i++) {
+                final Object[] values = this.removeAttributeValues[i];
+                if (values[1] != null) {
+                    // (String prefix, String suffix)
+                    ttag = ttag.removeAttribute((String)values[0], (String)values[1]);
+                } else if (values[0] instanceof AttributeName) {
+                    // (AttributeName attributeName)
+                    ttag = ttag.removeAttribute((AttributeName)values[0]);
+                } else {
+                    // (String attributeName)
+                    ttag = ttag.removeAttribute((String)values[0]);
+                }
+            }
+        }
+
+        if (this.replaceAttribute) {
+            for (int i = 0; i < this.replaceAttributeValuesSize; i++) {
+                final Object[] values = this.replaceAttributeValues[i];
+                ttag = ttag.replaceAttribute(attributeDefinitions, (AttributeName)values[0], (AttributeDefinition)values[1], (String)values[2], (String)values[3], (AttributeValueQuotes)values[4]);
+            }
+        }
+
+        if (this.setAttribute) {
+            for (int i = 0; i < this.setAttributeValuesSize; i++) {
+                final Object[] values = this.setAttributeValues[i];
+                ttag = ttag.setAttribute(attributeDefinitions, (AttributeDefinition)values[0], (String)values[1], (String)values[2], (AttributeValueQuotes)values[3]);
+            }
+        }
+
+        return ttag;
+
+    }
+
 
 }
