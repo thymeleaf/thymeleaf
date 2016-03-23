@@ -38,8 +38,8 @@ final class Comment extends AbstractTextualTemplateEvent implements IComment {
     private static final String COMMENT_SUFFIX = "-->";
 
 
-    private final String prefix;
-    private final String suffix;
+    final String prefix;
+    final String suffix;
 
     private volatile String computedCommentStr = null;
 
@@ -76,12 +76,7 @@ final class Comment extends AbstractTextualTemplateEvent implements IComment {
     public String getComment() {
         String c = this.computedCommentStr;
         if (c == null) {
-            synchronized (this) {
-                c = this.computedCommentStr;
-                if (c == null) {
-                    this.computedCommentStr = c = this.prefix + getContentText() + this.suffix;
-                }
-            }
+            this.computedCommentStr = c = this.prefix + getContentText() + this.suffix;
         }
         return c;
     }

@@ -38,8 +38,8 @@ final class CDATASection extends AbstractTextualTemplateEvent implements ICDATAS
     static final String CDATA_SUFFIX = "]]>";
 
 
-    private final String prefix;
-    private final String suffix;
+    final String prefix;
+    final String suffix;
 
     private volatile String computedCDATASectionStr = null;
 
@@ -76,12 +76,7 @@ final class CDATASection extends AbstractTextualTemplateEvent implements ICDATAS
     public String getCDATASection() {
         String c = this.computedCDATASectionStr;
         if (c == null) {
-            synchronized (this) {
-                c = this.computedCDATASectionStr;
-                if (c == null) {
-                    this.computedCDATASectionStr = c = this.prefix + getContentText() + this.suffix;
-                }
-            }
+            this.computedCDATASectionStr = c = this.prefix + getContentText() + this.suffix;
         }
         return c;
     }

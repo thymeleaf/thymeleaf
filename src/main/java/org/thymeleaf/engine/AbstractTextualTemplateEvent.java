@@ -22,7 +22,7 @@ package org.thymeleaf.engine;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.thymeleaf.text.IWritableCharSequence;
+import org.thymeleaf.util.IWritableCharSequence;
 
 /**
  *
@@ -79,12 +79,7 @@ abstract class AbstractTextualTemplateEvent extends AbstractTemplateEvent implem
 
         String t = this.computedContentStr;
         if (t == null) {
-            synchronized (this) {
-                t = this.computedContentStr;
-                if (t == null) {
-                    this.computedContentStr = t = this.contentCharSeq.toString();
-                }
-            }
+            this.computedContentStr = t = this.contentCharSeq.toString();
         }
         return t;
 
@@ -99,12 +94,7 @@ abstract class AbstractTextualTemplateEvent extends AbstractTemplateEvent implem
 
         int l = this.computedContentLength;
         if (l < 0) {
-            synchronized (this) {
-                l = this.computedContentLength;
-                if (l < 0) {
-                    this.computedContentLength = l = this.contentCharSeq.length();
-                }
-            }
+            this.computedContentLength = l = this.contentCharSeq.length();
         }
         return l;
 
@@ -147,12 +137,7 @@ abstract class AbstractTextualTemplateEvent extends AbstractTemplateEvent implem
     final boolean isWhitespace() {
         Boolean w = this.computedContentIsWhitespace;
         if (w == null) {
-            synchronized (this) {
-                w = this.computedContentIsWhitespace;
-                if (w == null) {
-                    this.computedContentIsWhitespace = w = computeWhitespace();
-                }
-            }
+            this.computedContentIsWhitespace = w = computeWhitespace();
         }
         return w.booleanValue();
     }
@@ -161,12 +146,7 @@ abstract class AbstractTextualTemplateEvent extends AbstractTemplateEvent implem
     final boolean isInlineable() {
         Boolean i = this.computedContentIsInlineable;
         if (i == null) {
-            synchronized (this) {
-                i = this.computedContentIsInlineable;
-                if (i == null) {
-                    this.computedContentIsInlineable = i = computeInlineable();
-                }
-            }
+            this.computedContentIsInlineable = i = computeInlineable();
         }
         return i.booleanValue();
     }
