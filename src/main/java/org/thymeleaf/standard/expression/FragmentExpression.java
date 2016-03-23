@@ -37,9 +37,6 @@ import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.TemplateModel;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.model.ITemplateEnd;
-import org.thymeleaf.model.ITemplateEvent;
-import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -586,32 +583,7 @@ public final class FragmentExpression extends SimpleExpression {
          * did the fragment actually return anything at all?
          */
 
-        final int parsedFragmentLen = fragmentModel.size();
-
-        final boolean fragmentIsEmpty;
-        final boolean wrappedInStartEndEvents;
-        if (parsedFragmentLen == 0) {
-
-            fragmentIsEmpty = true;
-            wrappedInStartEndEvents = false;
-
-        } else if (parsedFragmentLen < 2) {
-
-            fragmentIsEmpty = false;
-            wrappedInStartEndEvents = false;
-
-        } else {
-
-            // Using this getEventType() calls we save the creation of immutable wrappers if they are not needed (calls
-            // to get(pos) would create temporary immutable wrapper objects).
-            final Class<? extends ITemplateEvent> firstEventType = fragmentModel.getEventType(0);
-            final Class<? extends ITemplateEvent> lastEventType = fragmentModel.getEventType(parsedFragmentLen - 1);
-
-            wrappedInStartEndEvents =
-                (ITemplateStart.class.isAssignableFrom(firstEventType) && ITemplateEnd.class.isAssignableFrom(lastEventType));
-            fragmentIsEmpty = (parsedFragmentLen == 2 && wrappedInStartEndEvents);
-
-        }
+        final boolean fragmentIsEmpty = (fragmentModel.size() == 2); //only templatestart/end
 
         if (fragmentIsEmpty) {
             // Fragment is empty, so we should take action: depending on whether we are allowing this or not, we should
@@ -628,7 +600,7 @@ public final class FragmentExpression extends SimpleExpression {
         /*
          * RETURN the expected Fragment object
          */
-        return new Fragment(fragmentModel, executedFragmentExpression.fragmentParameters, executedFragmentExpression.syntheticParameters, wrappedInStartEndEvents);
+        return new Fragment(fragmentModel, executedFragmentExpression.fragmentParameters, executedFragmentExpression.syntheticParameters);
 
     }
 

@@ -48,18 +48,16 @@ public final class Fragment {
     private final TemplateModel templateModel;
     private final Map<String,Object> parameters;
     private final boolean syntheticParameters;
-    private final boolean wrappedInStartEndEvents;
 
 
     public Fragment(
             final TemplateModel templateModel, final Map<String, Object> parameters,
-            final boolean syntheticParameters, final boolean wrappedInStartEndEvents) {
+            final boolean syntheticParameters) {
         super();
         Validate.notNull(templateModel, "Template model cannot be null");
         this.templateModel = templateModel;
         this.parameters = parameters != null ? Collections.unmodifiableMap(parameters) : null;
         this.syntheticParameters = (this.parameters != null && this.parameters.size() > 0 && syntheticParameters);
-        this.wrappedInStartEndEvents = wrappedInStartEndEvents;
     }
 
 
@@ -69,7 +67,6 @@ public final class Fragment {
         this.templateModel = null;
         this.parameters = null;
         this.syntheticParameters = false;
-        this.wrappedInStartEndEvents  = false;
     }
 
 
@@ -83,10 +80,6 @@ public final class Fragment {
 
     public boolean hasSyntheticParameters() {
         return this.syntheticParameters;
-    }
-
-    public boolean isWrappedInStartEndEvents() {
-        return this.wrappedInStartEndEvents;
     }
 
 
