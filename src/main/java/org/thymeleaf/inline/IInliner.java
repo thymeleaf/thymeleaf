@@ -56,8 +56,9 @@ public interface IInliner {
      *
      * @param context the template context.
      * @param text the event to be inlined.
+     * @return the modified event (or the same event if no modifications were required)
      */
-    public void inline(final ITemplateContext context, final IText text);
+    public IText inline(final ITemplateContext context, final IText text);
 
     /**
      * <p>
@@ -66,8 +67,9 @@ public interface IInliner {
      *
      * @param context the template context.
      * @param cdataSection the event to be inlined.
+     * @return the modified event (or the same event if no modifications were required)
      */
-    public void inline(final ITemplateContext context, final ICDATASection cdataSection);
+    public ICDATASection inline(final ITemplateContext context, final ICDATASection cdataSection);
 
     /**
      * <p>
@@ -76,7 +78,8 @@ public interface IInliner {
      *
      * @param context the template context.
      * @param comment the event to be inlined.
+     * @return the modified event (or the same event if no modifications were required)
      */
-    public void inline(final ITemplateContext context, final IComment comment);
+    public IComment inline(final ITemplateContext context, final IComment comment);
 
 }

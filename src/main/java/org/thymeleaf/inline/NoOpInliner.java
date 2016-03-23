@@ -43,16 +43,19 @@ public final class NoOpInliner implements IInliner {
         return "NOOP";
     }
 
-    public void inline(final ITemplateContext context, final IText text) {
+    public IText inline(final ITemplateContext context, final IText text) {
         // Nothing to do. Anyway, this should never end up being executed...
+        return text;
     }
 
-    public void inline(final ITemplateContext context, final ICDATASection cdataSection) {
+    public ICDATASection inline(final ITemplateContext context, final ICDATASection cdataSection) {
         // Nothing to do. Anyway, this should never end up being executed...
+        return cdataSection;
     }
 
-    public void inline(final ITemplateContext context, final IComment comment) {
+    public IComment inline(final ITemplateContext context, final IComment comment) {
         // Nothing to do. Anyway, this should never end up being executed...
+        return comment;
     }
 
 

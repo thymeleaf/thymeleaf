@@ -31,6 +31,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.IComment;
+import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.postprocessor.IPostProcessor;
 import org.thymeleaf.processor.text.ITextProcessor;
@@ -101,7 +102,7 @@ public abstract class AbstractStandardInliner implements IInliner {
 
 
 
-    public final void inline(final ITemplateContext context, final IText text) {
+    public final IText inline(final ITemplateContext context, final IText text) {
 
         Validate.notNull(context, "Context cannot be null");
         Validate.notNull(text, "Text cannot be null");
@@ -113,6 +114,7 @@ public abstract class AbstractStandardInliner implements IInliner {
 
         if (context.getTemplateMode() != this.templateMode) {
 
+            final IModelFactory modelFactory = context.getConfiguration().getModelFactory(this.templateMode);
             final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
 
             final TemplateModel templateModel =
@@ -124,23 +126,21 @@ public abstract class AbstractStandardInliner implements IInliner {
             if (!this.writeTextsToOutput) {
                 final Writer stringWriter = new FastStringWriter(50);
                 templateManager.process(templateModel, context, stringWriter);
-                text.setText(stringWriter.toString());
-                return;
+                return modelFactory.createText(stringWriter.toString());
             }
 
             // If we can directly write to output (and text is an IText), we will use a LazyProcessingCharSequence
-            text.setText(new LazyProcessingCharSequence(context, templateModel));
-            return;
+            return modelFactory.createText(new LazyProcessingCharSequence(context, templateModel));
 
         }
 
         /*
-         * Template modes match, first we check if we actually need to apply inline at all, and if we do, we just
+         * Template modes match, first we check if we actually need to apply inlining at all, and if we do, we just
          * execute the inlining mechanisms.
          */
 
         if (!EngineEventUtils.isInlineable(text)) {
-            return;
+            return text;
         }
 
         /*
@@ -161,14 +161,15 @@ public abstract class AbstractStandardInliner implements IInliner {
 
         performInlining(context, text, 0, textLen, text.getTemplateName(), text.getLine(), text.getCol(), strBuilder);
 
-        text.setText(strBuilder.toString());
+        final IModelFactory modelFactory = context.getConfiguration().getModelFactory(this.templateMode);
+        return modelFactory.createText(strBuilder.toString());
 
     }
 
 
 
 
-    public final void inline(final ITemplateContext context, final ICDATASection cdataSection) {
+    public final ICDATASection inline(final ITemplateContext context, final ICDATASection cdataSection) {
 
         Validate.notNull(context, "Context cannot be null");
         Validate.notNull(cdataSection, "CDATA Section cannot be null");
@@ -180,6 +181,7 @@ public abstract class AbstractStandardInliner implements IInliner {
 
         if (context.getTemplateMode() != this.templateMode) {
 
+            final IModelFactory modelFactory = context.getConfiguration().getModelFactory(this.templateMode);
             final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
 
             /*
@@ -200,18 +202,17 @@ public abstract class AbstractStandardInliner implements IInliner {
             final Writer stringWriter = new FastStringWriter(50);
             templateManager.process(templateModel, context, stringWriter);
 
-            cdataSection.setContent(stringWriter.toString());
-            return;
+            return modelFactory.createCDATASection(stringWriter.toString());
 
         }
 
         /*
-         * Template modes match, first we check if we actually need to apply inline at all, and if we do, we just
+         * Template modes match, first we check if we actually need to apply inlining at all, and if we do, we just
          * execute the inlining mechanisms.
          */
 
         if (!EngineEventUtils.isInlineable(cdataSection)) {
-            return;
+            return cdataSection;
         }
 
         /*
@@ -232,14 +233,15 @@ public abstract class AbstractStandardInliner implements IInliner {
 
         performInlining(context, cdataSection, 9, cdataSectionLen - 12, cdataSection.getTemplateName(), cdataSection.getLine(), cdataSection.getCol(), strBuilder);
 
-        cdataSection.setContent(strBuilder.toString());
+        final IModelFactory modelFactory = context.getConfiguration().getModelFactory(this.templateMode);
+        return modelFactory.createCDATASection(strBuilder.toString());
 
     }
 
 
 
 
-    public final void inline(final ITemplateContext context, final IComment comment) {
+    public final IComment inline(final ITemplateContext context, final IComment comment) {
 
         Validate.notNull(context, "Context cannot be null");
         Validate.notNull(comment, "Comment cannot be null");
@@ -251,6 +253,7 @@ public abstract class AbstractStandardInliner implements IInliner {
 
         if (context.getTemplateMode() != this.templateMode) {
 
+            final IModelFactory modelFactory = context.getConfiguration().getModelFactory(this.templateMode);
             final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
 
             /*
@@ -271,18 +274,17 @@ public abstract class AbstractStandardInliner implements IInliner {
             final Writer stringWriter = new FastStringWriter(50);
             templateManager.process(templateModel, context, stringWriter);
 
-            comment.setContent(stringWriter.toString());
-            return;
+            return modelFactory.createComment(stringWriter.toString());
 
         }
 
         /*
-         * Template modes match, first we check if we actually need to apply inline at all, and if we do, we just
+         * Template modes match, first we check if we actually need to apply inlining at all, and if we do, we just
          * execute the inlining mechanisms.
          */
 
         if (!EngineEventUtils.isInlineable(comment)) {
-            return;
+            return comment;
         }
 
         /*
@@ -303,7 +305,8 @@ public abstract class AbstractStandardInliner implements IInliner {
 
         performInlining(context, comment, 4, commentLen - 7, comment.getTemplateName(), comment.getLine(), comment.getCol(), strBuilder);
 
-        comment.setContent(strBuilder.toString());
+        final IModelFactory modelFactory = context.getConfiguration().getModelFactory(this.templateMode);
+        return modelFactory.createComment(strBuilder.toString());
 
     }
 
