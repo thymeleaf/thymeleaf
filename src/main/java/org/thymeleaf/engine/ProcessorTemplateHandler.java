@@ -32,7 +32,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.EngineContext;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -68,7 +67,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
+public final class ProcessorTemplateHandler implements ITemplateHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessorTemplateHandler.class);
 
@@ -121,7 +120,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private final TextStructureHandler textStructureHandler;
     private final XMLDeclarationStructureHandler xmlDeclarationStructureHandler;
 
+    private ITemplateHandler next = null;
+
     private IEngineConfiguration configuration = null;
+    private AttributeDefinitions attributeDefinitions = null;
     private TemplateMode templateMode = null;
 
     private ITemplateContext context = null;
@@ -154,9 +156,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private ExecLevelData[] execLevelData;
     private int execLevel;
 
-
-    // Putting a text node to the queue for immediate execution is so common we will have a common buffer object for that
-    private Text textBuffer = null;
 
     // In order to execute IElementModelProcessor processors we will use a buffer so that we don't create so many Model objects
     private Model modelBuffer = null;
@@ -208,9 +207,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void setContext(final ITemplateContext context) {
+    public void setNext(final ITemplateHandler next) {
+        this.next = next;
+    }
 
-        super.setContext(context);
+
+
+
+    @Override
+    public void setContext(final ITemplateContext context) {
 
         this.context = context;
         Validate.notNull(this.context, "Context cannot be null");
@@ -218,7 +223,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         this.configuration = context.getConfiguration();
         Validate.notNull(this.configuration, "Engine Configuration returned by context cannot be null");
-        Validate.notNull(this.configuration.getTextRepository(), "Text Repository returned by the Engine Configuration cannot be null");
         Validate.notNull(this.configuration.getElementDefinitions(), "Element Definitions returned by the Engine Configuration cannot be null");
         Validate.notNull(this.configuration.getAttributeDefinitions(), "Attribute Definitions returned by the Engine Configuration cannot be null");
 
@@ -234,9 +238,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                         " interface.");
             this.engineContext = null;
         }
-
-        // Buffer used for text-shaped body replacement in tags (very common operation)
-        this.textBuffer = new Text(this.configuration.getTextRepository());
 
         // Buffer used for executing IElementModelProcessor processors
         this.modelBuffer = new Model(this.configuration, this.templateMode);
@@ -364,7 +365,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * FAIL FAST in case this structure has no associated processors.
          */
         if (this.templateBoundariesProcessors.length == 0) {
-            super.handleTemplateStart(itemplateStart);
+            this.next.handleTemplateStart(itemplateStart);
             return;
         }
 
@@ -417,8 +418,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.templateStructureHandler.insertTextProcessable;
 
-                this.textBuffer.setText(this.templateStructureHandler.insertTextValue);
-                execLevelData.queue.build(this.textBuffer);
+                execLevelData.model.add(new Text(this.templateStructureHandler.insertTextValue));
 
             } else if (this.templateStructureHandler.insertModel) {
 
@@ -426,7 +426,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 execLevelData.queueProcessable = this.templateStructureHandler.insertModelProcessable;
 
                 // Model will be automatically cloned if mutable
-                execLevelData.queue.addModel(this.templateStructureHandler.insertModelValue);
+                execLevelData.model.addModel(this.templateStructureHandler.insertModelValue);
 
             }
 
@@ -436,13 +436,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE REST OF THE HANDLER CHAIN
          */
-        super.handleTemplateStart(itemplateStart);
+        this.next.handleTemplateStart(itemplateStart);
 
 
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+        execLevelData.model.process(execLevelData.queueProcessable ? this : this.next);
 
 
         /*
@@ -467,7 +467,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          */
         if (this.templateBoundariesProcessors.length == 0) {
             decreaseModelLevel(); // Decrease the model level increased during template start (should be now: -1)
-            super.handleTemplateEnd(itemplateEnd);
+            this.next.handleTemplateEnd(itemplateEnd);
             return;
         }
 
@@ -520,8 +520,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.templateStructureHandler.insertTextProcessable;
 
-                this.textBuffer.setText(this.templateStructureHandler.insertTextValue);
-                execLevelData.queue.build(this.textBuffer);
+                execLevelData.model.add(new Text(this.templateStructureHandler.insertTextValue));
 
             } else if (this.templateStructureHandler.insertModel) {
 
@@ -529,7 +528,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 execLevelData.queueProcessable = this.templateStructureHandler.insertModelProcessable;
 
                 // Model will be automatically cloned if mutable
-                execLevelData.queue.addModel(this.templateStructureHandler.insertModelValue);
+                execLevelData.model.addModel(this.templateStructureHandler.insertModelValue);
 
             }
 
@@ -539,7 +538,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events (BEFORE DELEGATING)
          */
-        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+        execLevelData.model.process(execLevelData.queueProcessable ? this : this.next);
 
 
         /*
@@ -551,7 +550,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE REST OF THE HANDLER CHAIN.
          */
-        super.handleTemplateEnd(itemplateEnd);
+        this.next.handleTemplateEnd(itemplateEnd);
 
 
         /*
@@ -609,7 +608,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.execLevel >= 0 &&
                 this.execLevelData[this.execLevel].gatheringType != ExecLevelData.GatheringType.NONE &&
                 this.modelLevel >= this.execLevelData[this.execLevel].gatheringModelLevel) {
-            this.execLevelData[this.execLevel].gatheringQueue.build(Text.asEngineText(this.configuration, itext, true));
+            this.execLevelData[this.execLevel].gatheringModel.add(itext);
             return;
         }
 
@@ -624,9 +623,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * FAIL FAST in case this structure has no associated processors.
          */
         if (this.textProcessors.length == 0) {
-            super.handleText(itext);
+            this.next.handleText(itext);
             return;
         }
+
+
+        /*
+         * CAST EVENT TO ENGINE-SPECIFIC IMPLEMENTATION
+         */
+        Text text = Text.asEngineText(itext);
 
 
         /*
@@ -643,15 +648,19 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.textStructureHandler.reset();
 
-            this.textProcessors[i].process(this.context, itext, this.textStructureHandler);
+            this.textProcessors[i].process(this.context, text, this.textStructureHandler);
 
-            if (this.textStructureHandler.replaceWithModel) {
+            if (this.textStructureHandler.setText) {
+
+                text = new Text(this.textStructureHandler.setTextValue);
+
+            } else if (this.textStructureHandler.replaceWithModel) {
 
                 execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.textStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
-                execLevelData.queue.addModel(this.textStructureHandler.replaceWithModelValue);
+                execLevelData.model.addModel(this.textStructureHandler.replaceWithModelValue);
 
                 execLevelData.discardEvent = true;
 
@@ -670,14 +679,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * PROCESS THE REST OF THE HANDLER CHAIN
          */
         if (!execLevelData.discardEvent) {
-            super.handleText(itext);
+            this.next.handleText(text);
         }
 
 
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+        execLevelData.model.process(execLevelData.queueProcessable ? this : this.next);
 
 
         /*
@@ -711,7 +720,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.execLevel >= 0 &&
                 this.execLevelData[this.execLevel].gatheringType != ExecLevelData.GatheringType.NONE &&
                 this.modelLevel >= this.execLevelData[this.execLevel].gatheringModelLevel) {
-            this.execLevelData[this.execLevel].gatheringQueue.build(Comment.asEngineComment(this.configuration, icomment, true));
+            this.execLevelData[this.execLevel].gatheringModel.add(icomment);
             return;
         }
 
@@ -726,9 +735,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * FAIL FAST in case this structure has no associated processors.
          */
         if (this.commentProcessors.length == 0) {
-            super.handleComment(icomment);
+            this.next.handleComment(icomment);
             return;
         }
+
+
+        /*
+         * CAST EVENT TO ENGINE-SPECIFIC IMPLEMENTATION
+         */
+        Comment comment = Comment.asEngineComment(icomment);
 
 
         /*
@@ -745,15 +760,19 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.commentStructureHandler.reset();
 
-            this.commentProcessors[i].process(this.context, icomment, this.commentStructureHandler);
+            this.commentProcessors[i].process(this.context, comment, this.commentStructureHandler);
 
-            if (this.commentStructureHandler.replaceWithModel) {
+            if (this.commentStructureHandler.setContent) {
+
+                comment = new Comment(comment.prefix, this.commentStructureHandler.setContentValue, comment.suffix);
+
+            } else if (this.commentStructureHandler.replaceWithModel) {
 
                 execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.commentStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
-                execLevelData.queue.addModel(this.commentStructureHandler.replaceWithModelValue);
+                execLevelData.model.addModel(this.commentStructureHandler.replaceWithModelValue);
 
                 execLevelData.discardEvent = true;
 
@@ -772,14 +791,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * PROCESS THE REST OF THE HANDLER CHAIN
          */
         if (!execLevelData.discardEvent) {
-            super.handleComment(icomment);
+            this.next.handleComment(comment);
         }
 
 
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+        execLevelData.model.process(execLevelData.queueProcessable ? this : this.next);
 
 
         /*
@@ -813,7 +832,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.execLevel >= 0 &&
                 this.execLevelData[this.execLevel].gatheringType != ExecLevelData.GatheringType.NONE &&
                 this.modelLevel >= this.execLevelData[this.execLevel].gatheringModelLevel) {
-            this.execLevelData[this.execLevel].gatheringQueue.build(CDATASection.asEngineCDATASection(this.configuration, icdataSection, true));
+            this.execLevelData[this.execLevel].gatheringModel.add(icdataSection);
             return;
         }
 
@@ -828,9 +847,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * FAIL FAST in case this structure has no associated processors.
          */
         if (this.cdataSectionProcessors.length == 0) {
-            super.handleCDATASection(icdataSection);
+            this.next.handleCDATASection(icdataSection);
             return;
         }
+
+
+        /*
+         * CAST EVENT TO ENGINE-SPECIFIC IMPLEMENTATION
+         */
+        CDATASection cdataSection = CDATASection.asEngineCDATASection(icdataSection);
 
 
         /*
@@ -847,15 +872,19 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.cdataSectionStructureHandler.reset();
 
-            this.cdataSectionProcessors[i].process(this.context, icdataSection, this.cdataSectionStructureHandler);
+            this.cdataSectionProcessors[i].process(this.context, cdataSection, this.cdataSectionStructureHandler);
 
-            if (this.cdataSectionStructureHandler.replaceWithModel) {
+            if (this.cdataSectionStructureHandler.setContent) {
+
+                cdataSection = new CDATASection(cdataSection.prefix, this.cdataSectionStructureHandler.setContentValue, cdataSection.suffix);
+
+            } else if (this.cdataSectionStructureHandler.replaceWithModel) {
 
                 execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.cdataSectionStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
-                execLevelData.queue.addModel(this.cdataSectionStructureHandler.replaceWithModelValue);
+                execLevelData.model.addModel(this.cdataSectionStructureHandler.replaceWithModelValue);
 
                 execLevelData.discardEvent = true;
 
@@ -874,14 +903,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * PROCESS THE REST OF THE HANDLER CHAIN
          */
         if (!execLevelData.discardEvent) {
-            super.handleCDATASection(icdataSection);
+            this.next.handleCDATASection(cdataSection);
         }
 
 
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+        execLevelData.model.process(execLevelData.queueProcessable ? this : this.next);
 
 
         /*
@@ -918,8 +947,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.execLevel >= 0 &&
                 this.execLevelData[this.execLevel].gatheringType != ExecLevelData.GatheringType.NONE &&
                 this.modelLevel >= this.execLevelData[this.execLevel].gatheringModelLevel) {
-            this.execLevelData[this.execLevel].gatheringQueue.build(
-                    StandaloneElementTag.asEngineStandaloneElementTag(this.templateMode, this.configuration, istandaloneElementTag, true));
+            this.execLevelData[this.execLevel].gatheringModel.add(istandaloneElementTag);
             return;
         }
 
@@ -946,26 +974,25 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
+         * CAST (WITHOUT CLONING) TO ENGINE-SPECIFIC IMPLEMENTATION, which will ease the handling of the structure during processing
+         */
+        StandaloneElementTag standaloneElementTag = StandaloneElementTag.asEngineStandaloneElementTag(istandaloneElementTag);
+
+
+        /*
          * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
          * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
          */
-        if (!wasSuspended && !istandaloneElementTag.hasAssociatedProcessors()) {
+        if (!wasSuspended && !standaloneElementTag.hasAssociatedProcessors()) {
             if (this.engineContext != null) {
                 this.engineContext.increaseLevel();
             }
-            super.handleStandaloneElement(istandaloneElementTag);
+            this.next.handleStandaloneElement(standaloneElementTag);
             if (this.engineContext != null) {
                 this.engineContext.decreaseLevel();
             }
             return;
         }
-
-
-        /*
-         * CAST (WITHOUT CLONING) TO ENGINE-SPECIFIC IMPLEMENTATION, which will ease the handling of the structure during processing
-         */
-        final StandaloneElementTag standaloneElementTag =
-                StandaloneElementTag.asEngineStandaloneElementTag(this.templateMode, this.configuration, istandaloneElementTag, false);
 
 
         /*
@@ -1006,6 +1033,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.elementTagStructureHandler.applyContextModifications(this.engineContext);
                 }
 
+                standaloneElementTag =
+                        this.elementTagStructureHandler.applyAttributes(this.attributeDefinitions, standaloneElementTag);
+
                 if (this.elementTagStructureHandler.iterateElement) {
 
                     // Initialize gathering at the current execution level (if not initialized before)
@@ -1014,14 +1044,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Set the iteration info in order to start gathering all iterated events
                     execLevelData.gatheringType = ExecLevelData.GatheringType.ITERATION;
                     execLevelData.gatheringModelLevel = this.modelLevel + 1;
-                    execLevelData.gatheringQueue.reset();
+                    execLevelData.gatheringModel.reset();
 
                     // Suspend execution - execution will be restarted by the handleOpenElement event at the
                     // processIteration() call performed after gathering all the iterated markup
                     execLevelData.suspended = true;
 
                     // Add this standalone tag to the iteration queue
-                    execLevelData.gatheringQueue.build(standaloneElementTag.cloneEvent());
+                    execLevelData.gatheringModel.add(standaloneElementTag);
 
                     // Set the rest of the metadata needed for iteration
                     execLevelData.iterationArtifacts.iterVariableName = this.elementTagStructureHandler.iterVariableName;
@@ -1032,7 +1062,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     if (lastText != null &&
                             ((this.templateMode == TemplateMode.XML) ||
                              (this.templateMode == TemplateMode.HTML && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(standaloneElementTag.elementDefinition.elementName)))) {
-                        final Text lastEngineText = Text.asEngineText(this.configuration, lastText, true);
+                        final Text lastEngineText = Text.asEngineText(lastText);
                         if (lastEngineText.isWhitespace()) {
                             execLevelData.iterationArtifacts.precedingWhitespace = lastEngineText;
                         }
@@ -1058,16 +1088,19 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // Prepare the now-equivalent open and close tags
                     final OpenElementTag openTag =
-                            new OpenElementTag(this.templateMode, this.configuration.getElementDefinitions(), this.configuration.getAttributeDefinitions());
-                    openTag.resetAsCloneOf(standaloneElementTag);
+                            new OpenElementTag(
+                                    standaloneElementTag.templateMode, standaloneElementTag.elementDefinition,
+                                    standaloneElementTag.elementCompleteName, standaloneElementTag.attributes, standaloneElementTag.synthetic,
+                                    standaloneElementTag.templateName, standaloneElementTag.line, standaloneElementTag.col);
                     final CloseElementTag closeTag =
-                            new CloseElementTag(this.templateMode, this.configuration.getElementDefinitions());
-                    closeTag.resetAsCloneOf(standaloneElementTag);
+                            new CloseElementTag(
+                                    standaloneElementTag.templateMode, standaloneElementTag.elementDefinition,
+                                    standaloneElementTag.elementCompleteName, null, standaloneElementTag.synthetic, false,
+                                    standaloneElementTag.templateName, standaloneElementTag.line, standaloneElementTag.col);
 
                     // Prepare the text node that will be added to the queue (which will be suspended)
-                    final Text text = new Text(this.configuration.getTextRepository());
-                    text.setText(this.elementTagStructureHandler.setBodyTextValue);
-                    execLevelData.queue.build(text);
+                    final Text text = new Text(this.elementTagStructureHandler.setBodyTextValue);
+                    execLevelData.model.add(text);
                     execLevelData.queueProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
 
                     // Suspend execution - execution will be restarted by the handleOpenElement event
@@ -1077,9 +1110,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // to this standalone element we want to substitute
                     execLevelData.enableGathering();
                     execLevelData.gatheringType = ExecLevelData.GatheringType.MODEL;
-                    execLevelData.gatheringQueue.reset();
-                    execLevelData.gatheringQueue.build(openTag);
-                    execLevelData.gatheringQueue.build(closeTag);
+                    execLevelData.gatheringModel.reset();
+                    execLevelData.gatheringModel.add(openTag);
+                    execLevelData.gatheringModel.add(closeTag);
 
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be the responsibility of handleOpenElement
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
@@ -1101,15 +1134,19 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // Prepare the now-equivalent open and close tags
                     final OpenElementTag openTag =
-                            new OpenElementTag(this.templateMode, this.configuration.getElementDefinitions(), this.configuration.getAttributeDefinitions());
-                    openTag.resetAsCloneOf(standaloneElementTag);
+                            new OpenElementTag(
+                                    standaloneElementTag.templateMode, standaloneElementTag.elementDefinition,
+                                    standaloneElementTag.elementCompleteName, standaloneElementTag.attributes, standaloneElementTag.synthetic,
+                                    standaloneElementTag.templateName, standaloneElementTag.line, standaloneElementTag.col);
                     final CloseElementTag closeTag =
-                            new CloseElementTag(this.templateMode, this.configuration.getElementDefinitions());
-                    closeTag.resetAsCloneOf(standaloneElementTag);
+                            new CloseElementTag(
+                                    standaloneElementTag.templateMode, standaloneElementTag.elementDefinition,
+                                    standaloneElementTag.elementCompleteName, null, standaloneElementTag.synthetic, false,
+                                    standaloneElementTag.templateName, standaloneElementTag.line, standaloneElementTag.col);
 
                     // Prepare the queue (that we will suspend)
                     // Model will be automatically cloned if mutable
-                    execLevelData.queue.addModel(this.elementTagStructureHandler.setBodyModelValue);
+                    execLevelData.model.addModel(this.elementTagStructureHandler.setBodyModelValue);
                     execLevelData.queueProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
 
                     // Suspend execution - execution will be restarted by the handleOpenElement event
@@ -1119,9 +1156,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // to this standalone element we want to substitute
                     execLevelData.enableGathering();
                     execLevelData.gatheringType = ExecLevelData.GatheringType.MODEL;
-                    execLevelData.gatheringQueue.reset();
-                    execLevelData.gatheringQueue.build(openTag);
-                    execLevelData.gatheringQueue.build(closeTag);
+                    execLevelData.gatheringModel.reset();
+                    execLevelData.gatheringModel.add(openTag);
+                    execLevelData.gatheringModel.add(closeTag);
 
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be the responsibility of handleOpenElement
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
@@ -1141,8 +1178,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     execLevelData.resetQueue(); // Remove any previous results on the queue
 
-                    execLevelData.queue.addModel(this.elementTagStructureHandler.insertBeforeModelValue);
-                    // Model inserted BEFORE is never processable, so we will always use getNext() here
+                    execLevelData.model.addModel(this.elementTagStructureHandler.insertBeforeModelValue);
+                    // Model inserted BEFORE is never processable, so we will always use this.next here
                     execLevelData.queueProcessable = false;
                     // This queue should be processed BEFORE delegating the event
                     execLevelData.queueProcessBeforeDelegate = true;
@@ -1160,7 +1197,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     execLevelData.queueProcessable = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    execLevelData.queue.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
+                    execLevelData.model.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
 
                     // No intervention on the body flags - we will not be removing the body, just inserting before it
 
@@ -1171,8 +1208,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
-                    this.textBuffer.setText(this.elementTagStructureHandler.replaceWithTextValue);
-                    execLevelData.queue.build(this.textBuffer);
+                    execLevelData.model.add(new Text(this.elementTagStructureHandler.replaceWithTextValue));
 
                     execLevelData.discardEvent = true;
 
@@ -1182,7 +1218,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     execLevelData.queueProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    execLevelData.queue.addModel(this.elementTagStructureHandler.replaceWithModelValue);
+                    execLevelData.model.addModel(this.elementTagStructureHandler.replaceWithModelValue);
 
                     execLevelData.discardEvent = true;
 
@@ -1216,7 +1252,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 if (!execLevelData.processorIterator.lastWasRepeated()){
 
-                    if (execLevelData.queue.size() > 0) {
+                    if (execLevelData.model.size() > 0) {
                         throw new TemplateProcessingException(
                                 "Cannot execute model processor " + processor.getClass().getName() + " as the body " +
                                         "of the target element has already been modified by a previously executed processor " +
@@ -1231,7 +1267,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Set the element model info in order to start gathering all the element model's events
                     execLevelData.gatheringType = ExecLevelData.GatheringType.MODEL;
                     execLevelData.gatheringModelLevel = this.modelLevel + 1;
-                    execLevelData.gatheringQueue.reset();
+                    execLevelData.gatheringModel.reset();
 
                     // Set the processor to be executed again, because this time we will just set the "model gathering" mechanism
                     execLevelData.processorIterator.setLastToBeRepeated(standaloneElementTag);
@@ -1241,7 +1277,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     execLevelData.suspended = true;
 
                     // Add this standalone tag to the element model queue
-                    execLevelData.gatheringQueue.build(standaloneElementTag.cloneEvent());
+                    execLevelData.gatheringModel.add(standaloneElementTag);
 
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be done when we re-execute this after gathering model
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
@@ -1271,7 +1307,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 // NOTE we are not cloning the events themselves here. There should be no need, as we are going to
                 //      re-locate these events into a new queue, and their old position (which will be executed
                 //      anyway) will be ignored.
-                this.modelBuffer.getEventQueue().resetAsCloneOf(this.execLevelData[this.execLevel - 2].gatheringQueue, false);
+                this.modelBuffer.resetAsCloneOf(this.execLevelData[this.execLevel - 2].gatheringModel);
 
                 ((IElementModelProcessor) processor).process(this.context, this.modelBuffer, this.elementModelStructureHandler);
 
@@ -1316,7 +1352,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 execLevelData.queueProcessable = true; // We actually NEED TO process this queue
 
                 // Model will be automatically cloned if mutable
-                execLevelData.queue.addModel(this.modelBuffer);
+                execLevelData.model.addModel(this.modelBuffer);
 
                 execLevelData.discardEvent = true;
 
@@ -1334,7 +1370,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * PROCESS THE QUEUE BEFORE DELEGATING, if specified to do so
          */
         if (execLevelData.queueProcessBeforeDelegate) {
-            execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+            execLevelData.model.process(execLevelData.queueProcessable ? this : this.next);
         }
 
 
@@ -1342,7 +1378,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * PROCESS THE REST OF THE HANDLER CHAIN
          */
         if (!execLevelData.discardEvent) {
-            super.handleStandaloneElement(standaloneElementTag);
+            this.next.handleStandaloneElement(standaloneElementTag);
         }
 
 
@@ -1350,7 +1386,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * PROCESS THE QUEUE, launching all the queued events
          */
         if (!execLevelData.queueProcessBeforeDelegate) {
-            execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+            execLevelData.model.process(execLevelData.queueProcessable ? this : this.next);
         }
 
 
@@ -1400,8 +1436,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.execLevel >= 0 &&
                 this.execLevelData[this.execLevel].gatheringType != ExecLevelData.GatheringType.NONE &&
                 this.modelLevel >= this.execLevelData[this.execLevel].gatheringModelLevel) {
-            this.execLevelData[this.execLevel].gatheringQueue.build(
-                    OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, iopenElementTag, true));
+            this.execLevelData[this.execLevel].gatheringModel.add(iopenElementTag);
             increaseModelLevel();
             return;
         }
@@ -1429,24 +1464,23 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
-         * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
+         * CAST (WITHOUT CLONING) TO ENGINE-SPECIFIC IMPLEMENTATION, which will ease the handling of the structure during processing
          */
-        if (!wasSuspended && !iopenElementTag.hasAssociatedProcessors()) {
-            if (this.engineContext != null) {
-                this.engineContext.increaseLevel();
-            }
-            super.handleOpenElement(iopenElementTag);
-            increaseModelLevel();
-            return;
-        }
+        OpenElementTag openElementTag = OpenElementTag.asEngineOpenElementTag(iopenElementTag);
 
 
         /*
-         * CAST (WITHOUT CLONING) TO ENGINE-SPECIFIC IMPLEMENTATION, which will ease the handling of the structure during processing
+         * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
+         * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
          */
-        final OpenElementTag openElementTag =
-                OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, iopenElementTag, false);
+        if (!wasSuspended && !openElementTag.hasAssociatedProcessors()) {
+            if (this.engineContext != null) {
+                this.engineContext.increaseLevel();
+            }
+            this.next.handleOpenElement(openElementTag);
+            increaseModelLevel();
+            return;
+        }
 
 
         /*
@@ -1487,6 +1521,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.elementTagStructureHandler.applyContextModifications(this.engineContext);
                 }
 
+                openElementTag =
+                        this.elementTagStructureHandler.applyAttributes(this.attributeDefinitions, openElementTag);
+
                 if (this.elementTagStructureHandler.iterateElement) {
 
                     // Initialize gathering at the current execution level (if not initialized before)
@@ -1495,23 +1532,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Set the iteration info in order to start gathering all iterated events
                     execLevelData.gatheringType = ExecLevelData.GatheringType.ITERATION;
                     execLevelData.gatheringModelLevel = this.modelLevel + 1;
-                    execLevelData.gatheringQueue.reset();
-
-                    // Before suspending the queue, we have to check if it is the result of a "setBodyText", in
-                    // which case it will contain only one non-cloned node: the text buffer. And we will need
-                    // to clone that buffer before suspending the queue to avoid nasty interactions during iteration
-                    if (execLevelData.queue.size() == 1 && execLevelData.queue.get(0) == this.textBuffer) {
-                        // Replace the text buffer with a clone
-                        execLevelData.queue.reset();
-                        execLevelData.queue.build(this.textBuffer.cloneEvent());
-                    }
+                    execLevelData.gatheringModel.reset();
 
                     // Suspend execution - execution will be restarted by the handleOpenElement event at the
                     // processIteration() call performed after gathering all the iterated markup
                     execLevelData.suspended = true;
 
                     // Add this standalone tag to the iteration queue
-                    execLevelData.gatheringQueue.build(openElementTag.cloneEvent());
+                    execLevelData.gatheringModel.add(openElementTag);
 
                     // Set the rest of the metadata needed for iteration
                     execLevelData.iterationArtifacts.iterVariableName = this.elementTagStructureHandler.iterVariableName;
@@ -1522,7 +1550,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     if (lastText != null &&
                             ((this.templateMode == TemplateMode.XML) ||
                                     (this.templateMode == TemplateMode.HTML && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(openElementTag.elementDefinition.elementName)))) {
-                        final Text lastEngineText = Text.asEngineText(this.configuration, lastText, true);
+                        final Text lastEngineText = Text.asEngineText(lastText);
                         if (lastEngineText.isWhitespace()) {
                             execLevelData.iterationArtifacts.precedingWhitespace = lastEngineText;
                         }
@@ -1543,12 +1571,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     execLevelData.resetQueue(); // Remove any previous results on the queue
                     execLevelData.queueProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
 
-                    // For now we will not be cloning the buffer and just hoping it will be executed as is. This is
-                    // the most common case (th:text) and this will save us a good number of Text nodes. But note that
-                    // if this element is iterated AFTER we set this, we will need to clone this node before suspending
-                    // the queue, or we might have nasty interactions with each of the subsequent iterations
-                    this.textBuffer.setText(this.elementTagStructureHandler.setBodyTextValue);
-                    execLevelData.queue.build(this.textBuffer);
+                    // Add the new Text to the queue
+                    execLevelData.model.add(new Text(this.elementTagStructureHandler.setBodyTextValue));
 
                     execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
 
@@ -1558,7 +1582,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     execLevelData.queueProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    execLevelData.queue.addModel(this.elementTagStructureHandler.setBodyModelValue);
+                    execLevelData.model.addModel(this.elementTagStructureHandler.setBodyModelValue);
 
                     execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
 
@@ -1566,8 +1590,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     execLevelData.resetQueue(); // Remove any previous results on the queue
 
-                    execLevelData.queue.addModel(this.elementTagStructureHandler.insertBeforeModelValue);
-                    // Model inserted BEFORE is never processable, so we will always use getNext() here
+                    execLevelData.model.addModel(this.elementTagStructureHandler.insertBeforeModelValue);
+                    // Model inserted BEFORE is never processable, so we will always use this.next here
                     execLevelData.queueProcessable = false;
                     // This queue should be processed BEFORE delegating the event
                     execLevelData.queueProcessBeforeDelegate = true;
@@ -1585,7 +1609,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     execLevelData.queueProcessable = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    execLevelData.queue.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
+                    execLevelData.model.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
 
                     // No intervention on the body flags - we will not be removing the body, just inserting before it
 
@@ -1596,8 +1620,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
-                    this.textBuffer.setText(this.elementTagStructureHandler.replaceWithTextValue);
-                    execLevelData.queue.build(this.textBuffer);
+                    execLevelData.model.add(new Text(this.elementTagStructureHandler.replaceWithTextValue));
 
                     execLevelData.discardEvent = true;
                     execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
@@ -1608,7 +1631,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     execLevelData.queueProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    execLevelData.queue.addModel(this.elementTagStructureHandler.replaceWithModelValue);
+                    execLevelData.model.addModel(this.elementTagStructureHandler.replaceWithModelValue);
 
                     execLevelData.discardEvent = true;
                     execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
@@ -1655,7 +1678,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 if (!execLevelData.processorIterator.lastWasRepeated()){
 
-                    if (execLevelData.queue.size() > 0) {
+                    if (execLevelData.model.size() > 0) {
                         throw new TemplateProcessingException(
                                 "Cannot execute model processor " + processor.getClass().getName() + " as the body " +
                                 "of the target element has already been modified by a previously executed processor " +
@@ -1670,7 +1693,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Set the element model info in order to start gathering all the element model's events
                     execLevelData.gatheringType = ExecLevelData.GatheringType.MODEL;
                     execLevelData.gatheringModelLevel = this.modelLevel + 1;
-                    execLevelData.gatheringQueue.reset();
+                    execLevelData.gatheringModel.reset();
 
                     // Set the processor to be executed again, because this time we will just set the "model gathering" mechanism
                     execLevelData.processorIterator.setLastToBeRepeated(openElementTag);
@@ -1680,7 +1703,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     execLevelData.suspended = true;
 
                     // Add the tag itself to the element model queue
-                    execLevelData.gatheringQueue.build(openElementTag.cloneEvent());
+                    execLevelData.gatheringModel.add(openElementTag);
 
                     // Increase model level, as normal with open tags
                     increaseModelLevel();
@@ -1705,7 +1728,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 // NOTE we are not cloning the events themselves here. There should be no need, as we are going to
                 //      re-locate these events into a new queue, and their old position (which will be executed
                 //      anyway) will be ignored.
-                this.modelBuffer.getEventQueue().resetAsCloneOf(this.execLevelData[this.execLevel - 2].gatheringQueue, false);
+                this.modelBuffer.resetAsCloneOf(this.execLevelData[this.execLevel - 2].gatheringModel);
 
                 ((IElementModelProcessor) processor).process(this.context, this.modelBuffer, this.elementModelStructureHandler);
 
@@ -1750,7 +1773,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 execLevelData.queueProcessable = true; // We actually NEED TO process this queue
 
                 // Model will be automatically cloned if mutable
-                execLevelData.queue.addModel(this.modelBuffer);
+                execLevelData.model.addModel(this.modelBuffer);
 
                 execLevelData.discardEvent = true;
                 execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
@@ -1769,7 +1792,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * PROCESS THE QUEUE BEFORE DELEGATING, if specified to do so
          */
         if (execLevelData.queueProcessBeforeDelegate) {
-            execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+            execLevelData.model.process(execLevelData.queueProcessable ? this : this.next);
         }
 
 
@@ -1777,7 +1800,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * PROCESS THE REST OF THE HANDLER CHAIN and INCREASE THE MODEL LEVEL RIGHT AFTERWARDS
          */
         if (!execLevelData.discardEvent) {
-            super.handleOpenElement(openElementTag);
+            this.next.handleOpenElement(openElementTag);
         }
 
 
@@ -1796,7 +1819,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * and its internal open/close tags should not affect the correct delimitation of this block.
          */
         if (!execLevelData.queueProcessBeforeDelegate) {
-            execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+            execLevelData.model.process(execLevelData.queueProcessable ? this : this.next);
         }
 
 
@@ -1862,8 +1885,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.execLevel >= 0 &&
                 this.execLevelData[this.execLevel].gatheringType != ExecLevelData.GatheringType.NONE &&
                 this.modelLevel >= this.execLevelData[this.execLevel].gatheringModelLevel) {
-            this.execLevelData[this.execLevel].gatheringQueue.build(
-                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true));
+            this.execLevelData[this.execLevel].gatheringModel.add(icloseElementTag);
             return;
         }
 
@@ -1880,8 +1902,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 this.modelLevel + 1 == this.execLevelData[this.execLevel].gatheringModelLevel) {
 
             // Add the last tag: the closing one
-            this.execLevelData[this.execLevel].gatheringQueue.build(
-                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true));
+            this.execLevelData[this.execLevel].gatheringModel.add(CloseElementTag.asEngineCloseElementTag(icloseElementTag));
 
             // Process the queue
             switch (this.execLevelData[this.execLevel].gatheringType) {
@@ -1917,7 +1938,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CALL THE NEXT HANDLER in the chain
          */
-        super.handleCloseElement(icloseElementTag);
+        this.next.handleCloseElement(icloseElementTag);
 
     }
 
@@ -1944,8 +1965,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.execLevel >= 0 &&
                 this.execLevelData[this.execLevel].gatheringType != ExecLevelData.GatheringType.NONE &&
                 this.modelLevel >= this.execLevelData[this.execLevel].gatheringModelLevel) {
-            this.execLevelData[this.execLevel].gatheringQueue.build(
-                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true));
+            this.execLevelData[this.execLevel].gatheringModel.add(icloseElementTag);
             return;
         }
 
@@ -1966,7 +1986,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CALL THE NEXT HANDLER in the chain
          */
-        super.handleCloseElement(icloseElementTag);
+        this.next.handleCloseElement(icloseElementTag);
 
     }
 
@@ -1994,7 +2014,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.execLevel >= 0 &&
                 this.execLevelData[this.execLevel].gatheringType != ExecLevelData.GatheringType.NONE &&
                 this.modelLevel >= this.execLevelData[this.execLevel].gatheringModelLevel) {
-            this.execLevelData[this.execLevel].gatheringQueue.build(DocType.asEngineDocType(this.configuration, idocType, true));
+            this.execLevelData[this.execLevel].gatheringModel.add(idocType);
             return;
         }
 
@@ -2009,9 +2029,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * FAIL FAST in case this structure has no associated processors.
          */
         if (this.docTypeProcessors.length == 0) {
-            super.handleDocType(idocType);
+            this.next.handleDocType(idocType);
             return;
         }
+
+
+        /*
+         * CAST EVENT TO ENGINE-SPECIFIC IMPLEMENTATION
+         */
+        DocType docType = DocType.asEngineDocType(idocType);
 
 
         /*
@@ -2028,15 +2054,26 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.docTypeStructureHandler.reset();
 
-            this.docTypeProcessors[i].process(this.context, idocType, this.docTypeStructureHandler);
+            this.docTypeProcessors[i].process(this.context, docType, this.docTypeStructureHandler);
 
-            if (this.docTypeStructureHandler.replaceWithModel) {
+            if (this.docTypeStructureHandler.setDocType) {
+
+                docType =
+                        new DocType(
+                            this.docTypeStructureHandler.setDocTypeKeyword,
+                            this.docTypeStructureHandler.setDocTypeElementName,
+                            this.docTypeStructureHandler.setDocTypeType,
+                            this.docTypeStructureHandler.setDocTypePublicId,
+                            this.docTypeStructureHandler.setDocTypeSystemId,
+                            this.docTypeStructureHandler.setDocTypeInternalSubset);
+
+            } else if (this.docTypeStructureHandler.replaceWithModel) {
 
                 execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.docTypeStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
-                execLevelData.queue.addModel(this.docTypeStructureHandler.replaceWithModelValue);
+                execLevelData.model.addModel(this.docTypeStructureHandler.replaceWithModelValue);
 
                 execLevelData.discardEvent = true;
 
@@ -2055,14 +2092,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * PROCESS THE REST OF THE HANDLER CHAIN
          */
         if (!execLevelData.discardEvent) {
-            super.handleDocType(idocType);
+            this.next.handleDocType(docType);
         }
 
 
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+        execLevelData.model.process(execLevelData.queueProcessable ? this : this.next);
 
 
         /*
@@ -2096,7 +2133,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.execLevel >= 0 &&
                 this.execLevelData[this.execLevel].gatheringType != ExecLevelData.GatheringType.NONE &&
                 this.modelLevel >= this.execLevelData[this.execLevel].gatheringModelLevel) {
-            this.execLevelData[this.execLevel].gatheringQueue.build(XMLDeclaration.asEngineXMLDeclaration(this.configuration, ixmlDeclaration, true));
+            this.execLevelData[this.execLevel].gatheringModel.add(ixmlDeclaration);
             return;
         }
 
@@ -2111,9 +2148,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * FAIL FAST in case this structure has no associated processors.
          */
         if (this.xmlDeclarationProcessors.length == 0) {
-            super.handleXMLDeclaration(ixmlDeclaration);
+            this.next.handleXMLDeclaration(ixmlDeclaration);
             return;
         }
+
+
+        /*
+         * CAST EVENT TO ENGINE-SPECIFIC IMPLEMENTATION
+         */
+        XMLDeclaration xmlDeclaration = XMLDeclaration.asEngineXMLDeclaration(ixmlDeclaration);
 
 
         /*
@@ -2130,15 +2173,24 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.xmlDeclarationStructureHandler.reset();
 
-            this.xmlDeclarationProcessors[i].process(this.context, ixmlDeclaration, this.xmlDeclarationStructureHandler);
+            this.xmlDeclarationProcessors[i].process(this.context, xmlDeclaration, this.xmlDeclarationStructureHandler);
 
-            if (this.xmlDeclarationStructureHandler.replaceWithModel) {
+            if (this.xmlDeclarationStructureHandler.setXMLDeclaration) {
+
+                xmlDeclaration =
+                        new XMLDeclaration(
+                                this.xmlDeclarationStructureHandler.setXMLDeclarationKeyword,
+                                this.xmlDeclarationStructureHandler.setXMLDeclarationVersion,
+                                this.xmlDeclarationStructureHandler.setXMLDeclarationEncoding,
+                                this.xmlDeclarationStructureHandler.setXMLDeclarationStandalone);
+
+            } else if (this.xmlDeclarationStructureHandler.replaceWithModel) {
 
                 execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.xmlDeclarationStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
-                execLevelData.queue.addModel(this.xmlDeclarationStructureHandler.replaceWithModelValue);
+                execLevelData.model.addModel(this.xmlDeclarationStructureHandler.replaceWithModelValue);
 
                 execLevelData.discardEvent = true;
 
@@ -2157,14 +2209,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * PROCESS THE REST OF THE HANDLER CHAIN
          */
         if (!execLevelData.discardEvent) {
-            super.handleXMLDeclaration(ixmlDeclaration);
+            this.next.handleXMLDeclaration(xmlDeclaration);
         }
 
 
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+        execLevelData.model.process(execLevelData.queueProcessable ? this : this.next);
 
 
         /*
@@ -2198,7 +2250,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.execLevel >= 0 &&
                 this.execLevelData[this.execLevel].gatheringType != ExecLevelData.GatheringType.NONE &&
                 this.modelLevel >= this.execLevelData[this.execLevel].gatheringModelLevel) {
-            this.execLevelData[this.execLevel].gatheringQueue.build(ProcessingInstruction.asEngineProcessingInstruction(this.configuration, iprocessingInstruction, true));
+            this.execLevelData[this.execLevel].gatheringModel.add(iprocessingInstruction);
             return;
         }
 
@@ -2213,9 +2265,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * FAIL FAST in case this structure has no associated processors.
          */
         if (this.processingInstructionProcessors.length == 0) {
-            super.handleProcessingInstruction(iprocessingInstruction);
+            this.next.handleProcessingInstruction(iprocessingInstruction);
             return;
         }
+
+
+        /*
+         * CAST EVENT TO ENGINE-SPECIFIC IMPLEMENTATION
+         */
+        ProcessingInstruction processingInstruction = ProcessingInstruction.asEngineProcessingInstruction(iprocessingInstruction);
 
 
         /*
@@ -2232,15 +2290,22 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
             this.processingInstructionStructureHandler.reset();
 
-            this.processingInstructionProcessors[i].process(this.context, iprocessingInstruction, this.processingInstructionStructureHandler);
+            this.processingInstructionProcessors[i].process(this.context, processingInstruction, this.processingInstructionStructureHandler);
 
-            if (this.processingInstructionStructureHandler.replaceWithModel) {
+            if (this.processingInstructionStructureHandler.setProcessingInstruction) {
+
+                processingInstruction =
+                        new ProcessingInstruction(
+                                this.processingInstructionStructureHandler.setProcessingInstructionTarget,
+                                this.processingInstructionStructureHandler.setProcessingInstructionContent);
+
+            } else if (this.processingInstructionStructureHandler.replaceWithModel) {
 
                 execLevelData.resetQueue(); // Remove any previous results on the queue
                 execLevelData.queueProcessable = this.processingInstructionStructureHandler.replaceWithModelProcessable;
 
                 // Model will be automatically cloned if mutable
-                execLevelData.queue.addModel(this.processingInstructionStructureHandler.replaceWithModelValue);
+                execLevelData.model.addModel(this.processingInstructionStructureHandler.replaceWithModelValue);
 
                 execLevelData.discardEvent = true;
 
@@ -2259,14 +2324,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * PROCESS THE REST OF THE HANDLER CHAIN
          */
         if (!execLevelData.discardEvent) {
-            super.handleProcessingInstruction(iprocessingInstruction);
+            this.next.handleProcessingInstruction(processingInstruction);
         }
 
 
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        execLevelData.queue.process(execLevelData.queueProcessable ? this : getNext());
+        execLevelData.model.process(execLevelData.queueProcessable ? this : this.next);
 
 
         /*
@@ -2328,7 +2393,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          */
         if (this.templateMode.isText()) {
             preparePrettificationOfTextIteration(
-                    this.configuration, outerExecLevelData.gatheringQueue, outerExecLevelData.iterationArtifacts);
+                    this.configuration, outerExecLevelData.gatheringModel, outerExecLevelData.iterationArtifacts);
         }
 
 
@@ -2416,14 +2481,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
              * contents once the whole iteration process finishes
              */
             prepareIterationQueueForIteration(
-                    outerExecLevelData.gatheringQueue, outerExecLevelData.iterationArtifacts, status.index, !iterHasNext);
+                    outerExecLevelData.gatheringModel, outerExecLevelData.iterationArtifacts, status.index, !iterHasNext);
 
 
             /*
              * PERFORM THE EXECUTION on the gathered queue, which now does not live at the current exec level, but
              * at the previous one (we protected it by increasing execution level before)
              */
-            outerExecLevelData.gatheringQueue.process(this);
+            outerExecLevelData.gatheringModel.process(this);
 
 
             /*
@@ -2505,7 +2570,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * PERFORM THE EXECUTION on the gathered queue, which now does not live at the current exec level, but
          * at the previous one (we protected it by increasing execution level before).
          */
-        outerExecLevelData.gatheringQueue.process(this);
+        outerExecLevelData.gatheringModel.process(this);
 
         /*
          * Decrease the execution level, twice. Note these decreases do not exactly correspond to the two increases
@@ -2616,7 +2681,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     private static void preparePrettificationOfTextIteration(
-            final IEngineConfiguration configuration, final EngineEventQueue gatheredQueue, final IterationArtifacts iterArtifacts) {
+            final IEngineConfiguration configuration, final Model gatheredModel, final IterationArtifacts iterArtifacts) {
 
         /*
          * We are in a textual template mode, and it might be possible to fiddle a bit with whitespaces at the beginning
@@ -2657,7 +2722,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          *     the 'close element'.
          */
 
-        if (gatheredQueue.size() <= 2) {
+        if (gatheredModel.size() <= 2) {
             // This does only contain the template start + end events -- nothing to be done
             iterArtifacts.performBodyFirstLastSwitch = false;
             return;
@@ -2666,11 +2731,11 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         int firstBodyEventCutPoint = -1;
         int lastBodyEventCutPoint = -1;
 
-        final ITemplateEvent firstBodyEvent = gatheredQueue.get(1); // we know there is at least one body event
+        final ITemplateEvent firstBodyEvent = gatheredModel.get(1); // we know there is at least one body event
         Text firstTextBodyEvent = null;
-        if (gatheredQueue.get(0) instanceof OpenElementTag && firstBodyEvent instanceof IText) {
+        if (gatheredModel.get(0) instanceof OpenElementTag && firstBodyEvent instanceof IText) {
 
-            firstTextBodyEvent = Text.asEngineText(configuration, (Text)firstBodyEvent, false);
+            firstTextBodyEvent = Text.asEngineText((IText)firstBodyEvent);
 
             final int firstTextEventLen = firstTextBodyEvent.length();
             int i = 0;
@@ -2691,12 +2756,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         }
 
-        final ITemplateEvent lastBodyEvent = gatheredQueue.get(gatheredQueue.size() - 2);
+        final ITemplateEvent lastBodyEvent = gatheredModel.get(gatheredModel.size() - 2);
         Text lastTextBodyEvent = null;
         if (firstBodyEventCutPoint >= 0 &&
-                gatheredQueue.get(gatheredQueue.size() - 1) instanceof CloseElementTag && lastBodyEvent instanceof IText) {
+                gatheredModel.get(gatheredModel.size() - 1) instanceof CloseElementTag && lastBodyEvent instanceof IText) {
 
-            lastTextBodyEvent = Text.asEngineText(configuration, (IText)lastBodyEvent, false);
+            lastTextBodyEvent = Text.asEngineText((IText)lastBodyEvent);
 
             final int lastTextEventLen = lastTextBodyEvent.length();
             int i = lastTextEventLen - 1;
@@ -2732,30 +2797,29 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             final CharSequence textForMax = firstTextBodyEvent.subSequence(firstBodyEventCutPoint, firstTextBodyEvent.length());
             final CharSequence textForN = firstTextBodyEvent.subSequence(firstBodyEventCutPoint, lastBodyEventCutPoint);
 
-            iterArtifacts.iterationFirstBodyEventIter0 = new Text(configuration.getTextRepository(), textFor0);
-            iterArtifacts.iterationFirstBodyEventIterN = new Text(configuration.getTextRepository(), textForN);
-            iterArtifacts.iterationLastBodyEventIterMax = new Text(configuration.getTextRepository(), textForMax);
-            iterArtifacts.iterationLastBodyEventIterN = new Text(configuration.getTextRepository(), textForN);
+            iterArtifacts.iterationFirstBodyEventIter0 = new Text(textFor0);
+            iterArtifacts.iterationFirstBodyEventIterN = new Text(textForN);
+            iterArtifacts.iterationLastBodyEventIterMax = new Text(textForMax);
+            iterArtifacts.iterationLastBodyEventIterN = new Text(textForN);
             return;
         }
 
         // At this point, we know the first and last body events are different objects
 
-        iterArtifacts.iterationFirstBodyEventIter0 = firstTextBodyEvent.cloneEvent();
-        iterArtifacts.iterationLastBodyEventIterMax = lastTextBodyEvent.cloneEvent();
+        iterArtifacts.iterationFirstBodyEventIter0 = firstTextBodyEvent;
+        iterArtifacts.iterationLastBodyEventIterMax = lastTextBodyEvent;
 
         if (firstBodyEventCutPoint == 0) {
-            iterArtifacts.iterationFirstBodyEventIterN = firstTextBodyEvent.cloneEvent();
+            iterArtifacts.iterationFirstBodyEventIterN = firstTextBodyEvent;
         } else {
             iterArtifacts.iterationFirstBodyEventIterN =
-                    new Text(configuration.getTextRepository(), firstTextBodyEvent.subSequence(firstBodyEventCutPoint, firstTextBodyEvent.length()));
+                    new Text(firstTextBodyEvent.subSequence(firstBodyEventCutPoint, firstTextBodyEvent.length()));
         }
 
         if (lastBodyEventCutPoint == lastTextBodyEvent.length()) {
-            iterArtifacts.iterationLastBodyEventIterN = lastTextBodyEvent.cloneEvent();
+            iterArtifacts.iterationLastBodyEventIterN = lastTextBodyEvent;
         } else {
-            iterArtifacts.iterationLastBodyEventIterN =
-                    new Text(configuration.getTextRepository(), lastTextBodyEvent.subSequence(0, lastBodyEventCutPoint));
+            iterArtifacts.iterationLastBodyEventIterN = new Text(lastTextBodyEvent.subSequence(0, lastBodyEventCutPoint));
         }
 
 
@@ -2770,13 +2834,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
      * more pretty.
      */
     private static void prepareIterationQueueForIteration(
-            final EngineEventQueue iterQueue, final IterationArtifacts iterArtifacts, final int iterationIndex, final boolean last) {
+            final Model iterModel, final IterationArtifacts iterArtifacts, final int iterationIndex, final boolean last) {
 
         /*
          * FOR MARKUP TEMPLATE MODES: check if we have to add the initial whitespace (to iter > 0)
          */
         if (iterArtifacts.precedingWhitespace != null && iterationIndex == 1) {
-            iterQueue.insert(0, iterArtifacts.precedingWhitespace, false);
+            iterModel.insert(0, iterArtifacts.precedingWhitespace);
             return;
         }
 
@@ -2791,16 +2855,16 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         if (iterationIndex == 0) {
-            ((Text)iterQueue.get(1)).resetAsCloneOf(iterArtifacts.iterationFirstBodyEventIter0);
-            ((Text)iterQueue.get(iterQueue.size() - 2)).resetAsCloneOf(iterArtifacts.iterationLastBodyEventIterN);
+            iterModel.replace(1, iterArtifacts.iterationFirstBodyEventIter0);
+            iterModel.replace(iterModel.size() - 2, iterArtifacts.iterationLastBodyEventIterN);
         }
 
         if (iterationIndex == 1) {
-            ((Text)iterQueue.get(1)).resetAsCloneOf(iterArtifacts.iterationFirstBodyEventIterN);
+            iterModel.replace(1, iterArtifacts.iterationFirstBodyEventIterN);
         }
 
         if (last) {
-            ((Text)iterQueue.get(iterQueue.size() - 2)).resetAsCloneOf(iterArtifacts.iterationLastBodyEventIterMax);
+            iterModel.replace(iterModel.size() - 2, iterArtifacts.iterationLastBodyEventIterMax);
         }
 
 
@@ -2841,7 +2905,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final TemplateMode templateMode;
 
         boolean suspended;
-        final EngineEventQueue queue;
+        final Model model;
         final ElementProcessorIterator processorIterator;
         boolean queueProcessable;
         boolean queueProcessBeforeDelegate;
@@ -2850,7 +2914,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         boolean gatheringEnabled;
         GatheringType gatheringType;
-        EngineEventQueue gatheringQueue;
+        Model gatheringModel;
         int gatheringModelLevel;
         IterationArtifacts iterationArtifacts;
 
@@ -2859,14 +2923,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             super();
             this.configuration = configuration;
             this.templateMode = templateMode;
-            this.queue = new EngineEventQueue(configuration, templateMode);
+            this.model = new Model(configuration, templateMode);
             this.processorIterator = new ElementProcessorIterator();
             this.gatheringEnabled = false;
             reset();
         }
 
         void resetQueue() {
-            this.queue.reset();
+            this.model.reset();
             this.queueProcessable = false;
             this.queueProcessBeforeDelegate = false;
         }
@@ -2874,7 +2938,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         void enableGathering() {
             if (!this.gatheringEnabled) {
-                this.gatheringQueue = new EngineEventQueue(this.configuration, this.templateMode);
+                this.gatheringModel = new Model(this.configuration, this.templateMode);
                 this.iterationArtifacts = new IterationArtifacts();
                 this.gatheringEnabled = true;
             }
@@ -2888,12 +2952,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.bodyBehaviour = BodyBehaviour.PROCESS;
             if (this.gatheringEnabled) { // Note this flag is itself not reset. It's just a way to perform lazy init
                 this.gatheringType = GatheringType.NONE;
-                this.gatheringQueue.reset();
+                this.gatheringModel.reset();
                 this.gatheringModelLevel = Integer.MAX_VALUE;
                 this.iterationArtifacts.reset();
             } else {
                 this.gatheringType = GatheringType.NONE; // null would be a bad idea here, as this is checked in handlers
-                this.gatheringQueue = null;
+                this.gatheringModel = null;
                 this.gatheringModelLevel = Integer.MAX_VALUE;
                 this.iterationArtifacts = null;
             }
@@ -2902,7 +2966,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         void resetAsCloneOf(final ExecLevelData execLevelData, final boolean cloneGathering) {
             reset();
             this.suspended = execLevelData.suspended;
-            this.queue.resetAsCloneOf(execLevelData.queue, false);
+            this.model.resetAsCloneOf(execLevelData.model);
             this.processorIterator.resetAsCloneOf(execLevelData.processorIterator);
             this.queueProcessable = execLevelData.queueProcessable;
             this.queueProcessBeforeDelegate = execLevelData.queueProcessBeforeDelegate;
@@ -2913,7 +2977,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     enableGathering();
                 }
                 this.gatheringType = execLevelData.gatheringType;
-                this.gatheringQueue.resetAsCloneOf(execLevelData.gatheringQueue, false);
+                this.gatheringModel.resetAsCloneOf(execLevelData.gatheringModel);
                 this.gatheringModelLevel = execLevelData.gatheringModelLevel;
                 this.iterationArtifacts.resetAsCloneOf(execLevelData.iterationArtifacts);
             }
@@ -2960,14 +3024,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.iterStatusVariableName = iterationArtifacts.iterStatusVariableName;
             this.iteratedObject = iterationArtifacts.iteratedObject;
             this.performBodyFirstLastSwitch = iterationArtifacts.performBodyFirstLastSwitch;
-            this.iterationFirstBodyEventIter0 =
-                    (iterationArtifacts.iterationFirstBodyEventIter0 == null? null : iterationArtifacts.iterationFirstBodyEventIter0.cloneEvent());
-            this.iterationFirstBodyEventIterN =
-                    (iterationArtifacts.iterationFirstBodyEventIterN == null? null : iterationArtifacts.iterationFirstBodyEventIterN.cloneEvent());
-            this.iterationLastBodyEventIterN =
-                    (iterationArtifacts.iterationLastBodyEventIterN == null? null : iterationArtifacts.iterationLastBodyEventIterN.cloneEvent());
-            this.iterationLastBodyEventIterMax =
-                    (iterationArtifacts.iterationLastBodyEventIterMax == null? null : iterationArtifacts.iterationLastBodyEventIterMax.cloneEvent());
+            this.iterationFirstBodyEventIter0 = iterationArtifacts.iterationFirstBodyEventIter0;
+            this.iterationFirstBodyEventIterN = iterationArtifacts.iterationFirstBodyEventIterN;
+            this.iterationLastBodyEventIterN = iterationArtifacts.iterationLastBodyEventIterN;
+            this.iterationLastBodyEventIterMax = iterationArtifacts.iterationLastBodyEventIterMax;
         }
 
     }
