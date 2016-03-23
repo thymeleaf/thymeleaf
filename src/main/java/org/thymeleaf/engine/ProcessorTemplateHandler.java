@@ -1002,36 +1002,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 final IElementTagProcessor elementProcessor = ((IElementTagProcessor)processor);
                 elementProcessor.process(this.context, standaloneElementTag, this.elementTagStructureHandler);
 
-                if (this.elementTagStructureHandler.setLocalVariable) {
-                    if (this.engineContext != null) {
-                        this.engineContext.setVariables(this.elementTagStructureHandler.addedLocalVariables);
-                    }
-                }
-
-                if (this.elementTagStructureHandler.removeLocalVariable) {
-                    if (this.engineContext != null) {
-                        for (final String variableName : this.elementTagStructureHandler.removedLocalVariableNames) {
-                            this.engineContext.removeVariable(variableName);
-                        }
-                    }
-                }
-
-                if (this.elementTagStructureHandler.setSelectionTarget) {
-                    if (this.engineContext != null) {
-                        this.engineContext.setSelectionTarget(this.elementTagStructureHandler.selectionTargetObject);
-                    }
-                }
-
-                if (this.elementTagStructureHandler.setInliner) {
-                    if (this.engineContext != null) {
-                        this.engineContext.setInliner(this.elementTagStructureHandler.setInlinerValue);
-                    }
-                }
-
-                if (this.elementTagStructureHandler.setTemplateData) {
-                    if (this.engineContext != null) {
-                        this.engineContext.setTemplateData(this.elementTagStructureHandler.setTemplateDataValue);
-                    }
+                if (this.engineContext != null) {
+                    this.elementTagStructureHandler.applyContextModifications(this.engineContext);
                 }
 
                 if (this.elementTagStructureHandler.iterateElement) {
@@ -1511,36 +1483,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 final IElementTagProcessor elementProcessor = ((IElementTagProcessor)processor);
                 elementProcessor.process(this.context, openElementTag, this.elementTagStructureHandler);
 
-                if (this.elementTagStructureHandler.setLocalVariable) {
-                    if (this.engineContext != null) {
-                        this.engineContext.setVariables(this.elementTagStructureHandler.addedLocalVariables);
-                    }
-                }
-
-                if (this.elementTagStructureHandler.removeLocalVariable) {
-                    if (this.engineContext != null) {
-                        for (final String variableName : this.elementTagStructureHandler.removedLocalVariableNames) {
-                            this.engineContext.removeVariable(variableName);
-                        }
-                    }
-                }
-
-                if (this.elementTagStructureHandler.setSelectionTarget) {
-                    if (this.engineContext != null) {
-                        this.engineContext.setSelectionTarget(this.elementTagStructureHandler.selectionTargetObject);
-                    }
-                }
-
-                if (this.elementTagStructureHandler.setInliner) {
-                    if (this.engineContext != null) {
-                        this.engineContext.setInliner(this.elementTagStructureHandler.setInlinerValue);
-                    }
-                }
-
-                if (this.elementTagStructureHandler.setTemplateData) {
-                    if (this.engineContext != null) {
-                        this.engineContext.setTemplateData(this.elementTagStructureHandler.setTemplateDataValue);
-                    }
+                if (this.engineContext != null) {
+                    this.elementTagStructureHandler.applyContextModifications(this.engineContext);
                 }
 
                 if (this.elementTagStructureHandler.iterateElement) {
