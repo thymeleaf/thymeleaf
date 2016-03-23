@@ -109,6 +109,17 @@ public interface IModel {
 
     /**
      * <p>
+     *   Replaces the event at the specified position with the one passed
+     *   as argument.
+     * </p>
+     *
+     * @param pos the position of the event to be replaced (zero-based).
+     * @param event the event to serve as replacement.
+     */
+    public void replace(final int pos, final ITemplateEvent event);
+
+    /**
+     * <p>
      *   Add an entire model at the end of the sequence. This effectively appends the
      *   <tt>model</tt> argument's sequence to this one.
      * </p>

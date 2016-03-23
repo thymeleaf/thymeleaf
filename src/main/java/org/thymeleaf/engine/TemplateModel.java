@@ -104,6 +104,11 @@ public final class TemplateModel implements IModel {
     }
 
 
+    public final void replace(final int pos, final ITemplateEvent event) {
+        immutableModelException();
+    }
+
+
     public final void addModel(final IModel model) {
         immutableModelException();
     }

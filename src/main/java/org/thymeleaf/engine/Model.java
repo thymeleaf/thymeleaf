@@ -176,6 +176,27 @@ final class Model implements IModel {
     }
 
 
+    public void replace(final int pos, final ITemplateEvent event) {
+
+        if (event == null) {
+            return;
+        }
+
+        final IEngineTemplateEvent engineEvent = asEngineEvent(event);
+
+        // Check that the event that is going to be inserted is not a template start/end
+        if (engineEvent == TemplateStart.TEMPLATE_START_INSTANCE || engineEvent == TemplateEnd.TEMPLATE_END_INSTANCE) {
+            throw new TemplateProcessingException(
+                    "Cannot insert event of type TemplateStart/TemplateEnd. These " +
+                    "events can only be added to models internally during template parsing.");
+        }
+
+        // Set the new event in its new position
+        this.queue[pos] = engineEvent;
+
+    }
+
+
     public void addModel(final IModel model) {
         insertModel(this.queueSize, model);
     }
