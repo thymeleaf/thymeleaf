@@ -48,6 +48,14 @@ public interface ICommentStructureHandler {
 
     /**
      * <p>
+     *   Instructs the engine to set a new content for this Comment.
+     * </p>
+     * @param content the new content
+     */
+    public void setContent(final CharSequence content);
+
+    /**
+     * <p>
      *   Instructs the engine to replace the current event with the specified model (a {@link IModel}).
      * </p>
      *

@@ -48,6 +48,14 @@ public interface ITextStructureHandler {
 
     /**
      * <p>
+     *   Instructs the engine to set a new text for this Text event.
+     * </p>
+     * @param text the new text
+     */
+    public void setText(final CharSequence text);
+
+    /**
+     * <p>
      *   Instructs the engine to replace the current event with the specified model (a {@link IModel}).
      * </p>
      *

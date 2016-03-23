@@ -37,6 +37,13 @@ import org.thymeleaf.util.Validate;
  */
 public final class DocTypeStructureHandler implements IDocTypeStructureHandler {
 
+    boolean setDocType;
+    String setDocTypeKeyword;
+    String setDocTypeElementName;
+    String setDocTypeType;
+    String setDocTypePublicId;
+    String setDocTypeSystemId;
+    String setDocTypeInternalSubset;
 
     boolean replaceWithModel;
     IModel replaceWithModelValue;
@@ -52,6 +59,23 @@ public final class DocTypeStructureHandler implements IDocTypeStructureHandler {
         reset();
     }
 
+
+
+
+    public void setDocType(
+            final String keyword, final String elementName, final String type,
+            final String publicId, final String systemId, final String internalSubset) {
+        reset();
+        Validate.notNull(keyword, "Keyword cannot be null");
+        Validate.notNull(elementName, "Element name cannot be null");
+        this.setDocType = true;
+        this.setDocTypeKeyword = keyword;
+        this.setDocTypeElementName = elementName;
+        this.setDocTypeType = type;
+        this.setDocTypePublicId = publicId;
+        this.setDocTypeSystemId = systemId;
+        this.setDocTypeInternalSubset = internalSubset;
+    }
 
 
     public void replaceWith(final IModel model, final boolean processable) {
@@ -72,6 +96,14 @@ public final class DocTypeStructureHandler implements IDocTypeStructureHandler {
 
 
     public void reset() {
+
+        this.setDocType = false;
+        this.setDocTypeKeyword = null;
+        this.setDocTypeElementName = null;
+        this.setDocTypeType = null;
+        this.setDocTypePublicId = null;
+        this.setDocTypeSystemId = null;
+        this.setDocTypeInternalSubset = null;
 
         this.replaceWithModel = false;
         this.replaceWithModelValue = null;

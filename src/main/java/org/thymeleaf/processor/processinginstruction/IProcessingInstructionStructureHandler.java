@@ -48,6 +48,16 @@ public interface IProcessingInstructionStructureHandler {
 
     /**
      * <p>
+     *   Instructs the engine to set new values into the properties of the ProcessingInstruction event being processed.
+     * </p>
+     *
+     * @param target the new target value
+     * @param content the new content value
+     */
+    public void setProcessingInstruction(final String target, final String content);
+
+    /**
+     * <p>
      *   Instructs the engine to replace the current event with the specified model (a {@link IModel}).
      * </p>
      *

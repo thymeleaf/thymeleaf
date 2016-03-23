@@ -29,7 +29,6 @@ import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.AttributeValueQuotes;
 import org.thymeleaf.model.IModel;
-import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.util.Validate;
 
@@ -227,7 +226,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
         Validate.notNull(attributeName, "Attribute name cannot be null");
         ensureSetAttributeSize();
         this.setAttribute = true;
-        final Object[] values = this.setAttributeValues[this.setAttributeValues.length];
+        final Object[] values = this.setAttributeValues[this.setAttributeValuesSize];
         values[0] = null;
         values[1] = attributeName;
         values[2] = attributeValue;
@@ -241,7 +240,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
         Validate.notNull(attributeName, "Attribute name cannot be null");
         ensureSetAttributeSize();
         this.setAttribute = true;
-        final Object[] values = this.setAttributeValues[this.setAttributeValues.length];
+        final Object[] values = this.setAttributeValues[this.setAttributeValuesSize];
         values[0] = null;
         values[1] = attributeName;
         values[2] = attributeValue;
@@ -258,7 +257,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
         Validate.notNull(attributeName, "Attribute name cannot be null");
         ensureSetAttributeSize();
         this.setAttribute = true;
-        final Object[] values = this.setAttributeValues[this.setAttributeValues.length];
+        final Object[] values = this.setAttributeValues[this.setAttributeValuesSize];
         values[0] = attributeDefinition;
         values[1] = attributeName;
         values[2] = attributeValue;
@@ -274,8 +273,8 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
         if (this.setAttributeValues.length == this.setAttributeValuesSize) {
             this.setAttributeValues = Arrays.copyOf(this.setAttributeValues, this.setAttributeValues.length + 3);
         }
-        if (this.setAttributeValues[this.setAttributeValues.length] == null) {
-            this.setAttributeValues[this.setAttributeValues.length] = new Object[4];
+        if (this.setAttributeValues[this.setAttributeValuesSize] == null) {
+            this.setAttributeValues[this.setAttributeValuesSize] = new Object[4];
         }
     }
 
@@ -286,7 +285,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
         Validate.notNull(attributeName, "Attribute name cannot be null");
         ensureReplaceAttributeSize();
         this.replaceAttribute = true;
-        final Object[] values = this.replaceAttributeValues[this.replaceAttributeValues.length];
+        final Object[] values = this.replaceAttributeValues[this.replaceAttributeValuesSize];
         values[0] = oldAttributeName;
         values[1] = null;
         values[2] = attributeName;
@@ -302,7 +301,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
         Validate.notNull(attributeName, "Attribute name cannot be null");
         ensureReplaceAttributeSize();
         this.replaceAttribute = true;
-        final Object[] values = this.replaceAttributeValues[this.replaceAttributeValues.length];
+        final Object[] values = this.replaceAttributeValues[this.replaceAttributeValuesSize];
         values[0] = oldAttributeName;
         values[1] = null;
         values[2] = attributeName;
@@ -321,7 +320,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
         Validate.notNull(attributeName, "Attribute name cannot be null");
         ensureReplaceAttributeSize();
         this.replaceAttribute = true;
-        final Object[] values = this.replaceAttributeValues[this.replaceAttributeValues.length];
+        final Object[] values = this.replaceAttributeValues[this.replaceAttributeValuesSize];
         values[0] = oldAttributeName;
         values[1] = attributeDefinition;
         values[2] = attributeName;
@@ -338,8 +337,8 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
         if (this.replaceAttributeValues.length == this.replaceAttributeValuesSize) {
             this.replaceAttributeValues = Arrays.copyOf(this.replaceAttributeValues, this.replaceAttributeValues.length + 3);
         }
-        if (this.replaceAttributeValues[this.replaceAttributeValues.length] == null) {
-            this.replaceAttributeValues[this.replaceAttributeValues.length] = new Object[5];
+        if (this.replaceAttributeValues[this.replaceAttributeValuesSize] == null) {
+            this.replaceAttributeValues[this.replaceAttributeValuesSize] = new Object[5];
         }
     }
 
@@ -349,7 +348,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
         Validate.notNull(attributeName, "Attribute name cannot be null");
         ensureRemoveAttributeSize();
         this.removeAttribute = true;
-        final Object[] values = this.removeAttributeValues[this.removeAttributeValues.length];
+        final Object[] values = this.removeAttributeValues[this.removeAttributeValuesSize];
         values[0] = attributeName;
         values[1] = null;
         this.removeAttributeValuesSize++;
@@ -361,7 +360,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
         Validate.notNull(name, "Attribute name cannot be null");
         ensureRemoveAttributeSize();
         this.removeAttribute = true;
-        final Object[] values = this.removeAttributeValues[this.removeAttributeValues.length];
+        final Object[] values = this.removeAttributeValues[this.removeAttributeValuesSize];
         values[0] = prefix;
         values[1] = name;
         this.removeAttributeValuesSize++;
@@ -373,7 +372,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
         Validate.notNull(attributeName, "Attribute name cannot be null");
         ensureRemoveAttributeSize();
         this.removeAttribute = true;
-        final Object[] values = this.removeAttributeValues[this.removeAttributeValues.length];
+        final Object[] values = this.removeAttributeValues[this.removeAttributeValuesSize];
         values[0] = attributeName;
         values[1] = null;
         this.removeAttributeValuesSize++;
@@ -387,8 +386,8 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
         if (this.removeAttributeValues.length == this.removeAttributeValuesSize) {
             this.removeAttributeValues = Arrays.copyOf(this.removeAttributeValues, this.removeAttributeValues.length + 3);
         }
-        if (this.removeAttributeValues[this.removeAttributeValues.length] == null) {
-            this.removeAttributeValues[this.removeAttributeValues.length] = new Object[2];
+        if (this.removeAttributeValues[this.removeAttributeValuesSize] == null) {
+            this.removeAttributeValues[this.removeAttributeValuesSize] = new Object[2];
         }
     }
 
@@ -532,22 +531,22 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
     }
 
 
-    AbstractProcessableElementTag applyAttributes(final AttributeDefinitions attributeDefinitions, final AbstractProcessableElementTag tag) {
+    <T extends AbstractProcessableElementTag> T applyAttributes(final AttributeDefinitions attributeDefinitions, final T tag) {
 
-        AbstractProcessableElementTag ttag = tag;
+        T ttag = tag;
 
         if (this.removeAttribute) {
             for (int i = 0; i < this.removeAttributeValuesSize; i++) {
                 final Object[] values = this.removeAttributeValues[i];
                 if (values[1] != null) {
                     // (String prefix, String suffix)
-                    ttag = ttag.removeAttribute((String)values[0], (String)values[1]);
+                    ttag = (T) ttag.removeAttribute((String)values[0], (String)values[1]);
                 } else if (values[0] instanceof AttributeName) {
                     // (AttributeName attributeName)
-                    ttag = ttag.removeAttribute((AttributeName)values[0]);
+                    ttag = (T) ttag.removeAttribute((AttributeName)values[0]);
                 } else {
                     // (String attributeName)
-                    ttag = ttag.removeAttribute((String)values[0]);
+                    ttag = (T) ttag.removeAttribute((String)values[0]);
                 }
             }
         }
@@ -555,14 +554,14 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
         if (this.replaceAttribute) {
             for (int i = 0; i < this.replaceAttributeValuesSize; i++) {
                 final Object[] values = this.replaceAttributeValues[i];
-                ttag = ttag.replaceAttribute(attributeDefinitions, (AttributeName)values[0], (AttributeDefinition)values[1], (String)values[2], (String)values[3], (AttributeValueQuotes)values[4]);
+                ttag = (T) ttag.replaceAttribute(attributeDefinitions, (AttributeName)values[0], (AttributeDefinition)values[1], (String)values[2], (String)values[3], (AttributeValueQuotes)values[4]);
             }
         }
 
         if (this.setAttribute) {
             for (int i = 0; i < this.setAttributeValuesSize; i++) {
                 final Object[] values = this.setAttributeValues[i];
-                ttag = ttag.setAttribute(attributeDefinitions, (AttributeDefinition)values[0], (String)values[1], (String)values[2], (AttributeValueQuotes)values[3]);
+                ttag = (T) ttag.setAttribute(attributeDefinitions, (AttributeDefinition)values[0], (String)values[1], (String)values[2], (AttributeValueQuotes)values[3]);
             }
         }
 

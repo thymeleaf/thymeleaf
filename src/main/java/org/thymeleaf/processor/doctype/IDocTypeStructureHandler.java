@@ -48,6 +48,22 @@ public interface IDocTypeStructureHandler {
 
     /**
      * <p>
+     *   Instructs the engine to set new values into the properties of the DocType event being processed.
+     * </p>
+     *
+     * @param keyword the new keyword value
+     * @param elementName the new elementName value
+     * @param type the new type (PUBLIC, SYSTEM or null)
+     * @param publicId the new PUBLIC ID (might be null)
+     * @param systemId the new SYSTEM ID (might be null)
+     * @param internalSubset the new internal subset (might be null)
+     */
+    public void setDocType(
+            final String keyword, final String elementName, final String type,
+            final String publicId, final String systemId, final String internalSubset);
+
+    /**
+     * <p>
      *   Instructs the engine to replace the current event with the specified model (a {@link IModel}).
      * </p>
      *

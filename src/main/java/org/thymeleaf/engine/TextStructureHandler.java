@@ -38,6 +38,9 @@ import org.thymeleaf.util.Validate;
 public final class TextStructureHandler implements ITextStructureHandler {
 
 
+    boolean setText;
+    CharSequence setTextValue;
+
     boolean replaceWithModel;
     IModel replaceWithModelValue;
     boolean replaceWithModelProcessable;
@@ -52,6 +55,14 @@ public final class TextStructureHandler implements ITextStructureHandler {
         reset();
     }
 
+
+
+    public void setText(final CharSequence text) {
+        reset();
+        Validate.notNull(text, "Text cannot be null");
+        this.setText = true;
+        this.setTextValue = text;
+    }
 
 
     public void replaceWith(final IModel model, final boolean processable) {
@@ -72,6 +83,9 @@ public final class TextStructureHandler implements ITextStructureHandler {
 
 
     public void reset() {
+
+        this.setText = false;
+        this.setTextValue = null;
 
         this.replaceWithModel = false;
         this.replaceWithModelValue = null;

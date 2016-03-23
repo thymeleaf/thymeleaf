@@ -38,6 +38,10 @@ import org.thymeleaf.util.Validate;
 public final class ProcessingInstructionStructureHandler implements IProcessingInstructionStructureHandler {
 
 
+    boolean setProcessingInstruction;
+    String setProcessingInstructionTarget;
+    String setProcessingInstructionContent;
+
     boolean replaceWithModel;
     IModel replaceWithModelValue;
     boolean replaceWithModelProcessable;
@@ -52,6 +56,17 @@ public final class ProcessingInstructionStructureHandler implements IProcessingI
         reset();
     }
 
+
+
+
+    public void setProcessingInstruction(final String target, final String content) {
+        reset();
+        Validate.notNull(target, "Target cannot be null");
+        Validate.notNull(content, "Content cannot be null");
+        this.setProcessingInstruction = true;
+        this.setProcessingInstructionTarget = target;
+        this.setProcessingInstructionContent = content;
+    }
 
 
     public void replaceWith(final IModel model, final boolean processable) {
@@ -72,6 +87,10 @@ public final class ProcessingInstructionStructureHandler implements IProcessingI
 
 
     public void reset() {
+
+        this.setProcessingInstruction = false;
+        this.setProcessingInstructionTarget = null;
+        this.setProcessingInstructionContent = null;
 
         this.replaceWithModel = false;
         this.replaceWithModelValue = null;

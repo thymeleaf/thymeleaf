@@ -38,6 +38,9 @@ import org.thymeleaf.util.Validate;
 public final class CommentStructureHandler implements ICommentStructureHandler {
 
 
+    boolean setContent;
+    CharSequence setContentValue;
+
     boolean replaceWithModel;
     IModel replaceWithModelValue;
     boolean replaceWithModelProcessable;
@@ -52,6 +55,14 @@ public final class CommentStructureHandler implements ICommentStructureHandler {
         reset();
     }
 
+
+
+    public void setContent(final CharSequence content) {
+        reset();
+        Validate.notNull(content, "Content cannot be null");
+        this.setContent = true;
+        this.setContentValue = content;
+    }
 
 
     public void replaceWith(final IModel model, final boolean processable) {
@@ -72,6 +83,9 @@ public final class CommentStructureHandler implements ICommentStructureHandler {
 
 
     public void reset() {
+
+        this.setContent = false;
+        this.setContentValue = null;
 
         this.replaceWithModel = false;
         this.replaceWithModelValue = null;

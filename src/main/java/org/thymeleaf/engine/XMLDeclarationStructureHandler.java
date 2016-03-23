@@ -38,6 +38,12 @@ import org.thymeleaf.util.Validate;
 public final class XMLDeclarationStructureHandler implements IXMLDeclarationStructureHandler {
 
 
+    boolean setXMLDeclaration;
+    String setXMLDeclarationKeyword;
+    String setXMLDeclarationVersion;
+    String setXMLDeclarationEncoding;
+    String setXMLDeclarationStandalone;
+
     boolean replaceWithModel;
     IModel replaceWithModelValue;
     boolean replaceWithModelProcessable;
@@ -52,6 +58,19 @@ public final class XMLDeclarationStructureHandler implements IXMLDeclarationStru
         reset();
     }
 
+
+
+
+    public void setXMLDeclaration(
+            final String keyword, final String version, final String encoding, final String standalone) {
+        reset();
+        Validate.notNull(keyword, "Keyword cannot be null");
+        this.setXMLDeclaration = true;
+        this.setXMLDeclarationKeyword = keyword;
+        this.setXMLDeclarationVersion = version;
+        this.setXMLDeclarationEncoding = encoding;
+        this.setXMLDeclarationStandalone = standalone;
+    }
 
 
     public void replaceWith(final IModel model, final boolean processable) {
@@ -72,6 +91,12 @@ public final class XMLDeclarationStructureHandler implements IXMLDeclarationStru
 
 
     public void reset() {
+
+        this.setXMLDeclaration = false;
+        this.setXMLDeclarationKeyword = null;
+        this.setXMLDeclarationVersion = null;
+        this.setXMLDeclarationEncoding = null;
+        this.setXMLDeclarationStandalone = null;
 
         this.replaceWithModel = false;
         this.replaceWithModelValue = null;

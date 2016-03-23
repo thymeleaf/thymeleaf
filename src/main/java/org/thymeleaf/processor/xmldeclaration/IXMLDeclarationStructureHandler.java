@@ -48,6 +48,19 @@ public interface IXMLDeclarationStructureHandler {
 
     /**
      * <p>
+     *   Instructs the engine to set new values into the properties of the XMLDeclaration event being processed.
+     * </p>
+     *
+     * @param keyword the new keyword value
+     * @param version the new version value (might be null)
+     * @param encoding the new encoding value (might be null)
+     * @param standalone the new standalone value (might be null)
+     */
+    public void setXMLDeclaration(
+            final String keyword, final String version, final String encoding, final String standalone);
+
+    /**
+     * <p>
      *   Instructs the engine to replace the current event with the specified model (a {@link IModel}).
      * </p>
      *
