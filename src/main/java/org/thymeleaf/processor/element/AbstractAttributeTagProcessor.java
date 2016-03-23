@@ -22,6 +22,7 @@ package org.thymeleaf.processor.element;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.IAttribute;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EscapedAttributeUtils;
@@ -65,8 +66,9 @@ public abstract class AbstractAttributeTagProcessor extends AbstractElementTagPr
 
             attributeName = getMatchingAttributeName().getMatchingAttributeName();
 
+            final IAttribute attribute = tag.getAttribute(attributeName);
             final String attributeValue =
-                    EscapedAttributeUtils.unescapeAttribute(context.getTemplateMode(), tag.getAttributes().getValue(attributeName));
+                    EscapedAttributeUtils.unescapeAttribute(context.getTemplateMode(), (attribute != null? attribute.getValue() : null));
 
             doProcess(
                     context, tag,
@@ -74,7 +76,7 @@ public abstract class AbstractAttributeTagProcessor extends AbstractElementTagPr
                     structureHandler);
 
             if (this.removeAttribute) {
-                tag.getAttributes().removeAttribute(attributeName);
+                structureHandler.removeAttribute(attributeName);
             }
 
         } catch (final TemplateProcessingException e) {
@@ -90,7 +92,10 @@ public abstract class AbstractAttributeTagProcessor extends AbstractElementTagPr
                         // We don't have info about the specific attribute provoking the error
                         e.setLineAndCol(tag.getLine(), tag.getCol());
                     } else {
-                        e.setLineAndCol(tag.getAttributes().getLine(attributeName), tag.getAttributes().getCol(attributeName));
+                        final IAttribute attribute = tag.getAttribute(attributeName);
+                        if (attribute != null) {
+                            e.setLineAndCol(attribute.getLine(), attribute.getCol());
+                        }
                     }
                 }
             }
@@ -100,8 +105,11 @@ public abstract class AbstractAttributeTagProcessor extends AbstractElementTagPr
             int col = tag.getCol();
             if (attributeName != null) {
                 // We don't have info about the specific attribute provoking the error
-                line = tag.getAttributes().getLine(attributeName);
-                col = tag.getAttributes().getCol(attributeName);
+                final IAttribute attribute = tag.getAttribute(attributeName);
+                if (attribute != null) {
+                    line = attribute.getLine();
+                    col = attribute.getCol();
+                }
             }
             throw new TemplateProcessingException(
                     "Error during execution of processor '" + this.getClass().getName() + "'",

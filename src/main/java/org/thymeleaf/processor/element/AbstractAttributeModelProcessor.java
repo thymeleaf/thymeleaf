@@ -22,7 +22,9 @@ package org.thymeleaf.processor.element;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.IAttribute;
 import org.thymeleaf.model.IModel;
+import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EscapedAttributeUtils;
@@ -68,13 +70,19 @@ public abstract class AbstractAttributeModelProcessor extends AbstractElementMod
             attributeName = getMatchingAttributeName().getMatchingAttributeName();
             firstEvent = (IProcessableElementTag) model.get(0);
 
+            final IAttribute attribute = firstEvent.getAttribute(attributeName);
             final String attributeValue =
-                    EscapedAttributeUtils.unescapeAttribute(context.getTemplateMode(), firstEvent.getAttributes().getValue(attributeName));
+                    EscapedAttributeUtils.unescapeAttribute(context.getTemplateMode(), (attribute != null? attribute.getValue() : null));
 
             doProcess(context, model, attributeName, attributeValue, structureHandler);
 
             if (this.removeAttribute) {
-                firstEvent.getAttributes().removeAttribute(attributeName);
+                if (model.size() > 0 && model.get(0) == firstEvent) {
+                    // The first event is still in place
+                    final IModelFactory modelFactory = context.getConfiguration().getModelFactory(model.getTemplateMode());
+                    final IProcessableElementTag newFirstEvent = modelFactory.removeAttribute(firstEvent,attributeName);
+                    model.replace(0, newFirstEvent);
+                }
             }
 
         } catch (final TemplateProcessingException e) {
@@ -84,8 +92,9 @@ public abstract class AbstractAttributeModelProcessor extends AbstractElementMod
             if (firstEvent != null) {
 
                 String attributeTemplateName = firstEvent.getTemplateName();
-                int attributeLine = firstEvent.getAttributes().getLine(attributeName);
-                int attributeCol = firstEvent.getAttributes().getCol(attributeName);
+                final IAttribute attribute = firstEvent.getAttribute(attributeName);
+                int attributeLine = (attribute != null? attribute.getLine() : -1);
+                int attributeCol = (attribute != null? attribute.getCol() : -1);
 
                 if (attributeTemplateName != null) {
                     if (!e.hasTemplateName()) {
@@ -113,8 +122,9 @@ public abstract class AbstractAttributeModelProcessor extends AbstractElementMod
             if (firstEvent != null) {
 
                 attributeTemplateName = firstEvent.getTemplateName();
-                attributeLine = firstEvent.getAttributes().getLine(attributeName);
-                attributeCol = firstEvent.getAttributes().getLine(attributeName);
+                final IAttribute attribute = firstEvent.getAttribute(attributeName);
+                attributeLine = (attribute != null? attribute.getLine() : -1);
+                attributeCol = (attribute != null? attribute.getCol() : -1);
             }
 
             throw new TemplateProcessingException(
