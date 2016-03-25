@@ -507,6 +507,11 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         this.currentElementAttributes.add(newAttribute);
 
+        // Just in case we are adding attributes without an inner whitespace in between, we will synthetically add it here
+        if (this.currentElementInnerWhiteSpaces.size() < this.currentElementAttributes.size()) {
+            this.currentElementInnerWhiteSpaces.add("");
+        }
+
     }
 
 
@@ -520,7 +525,6 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         final String elementWhiteSpace;
         if (len == 1 && buffer[offset] == ' ') {
-            // Quicker than asking the text repository
             elementWhiteSpace = Attributes.DEFAULT_WHITE_SPACE;
         } else {
             elementWhiteSpace = new String(buffer, offset, len);
