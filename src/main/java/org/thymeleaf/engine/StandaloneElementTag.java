@@ -28,6 +28,7 @@ import org.thymeleaf.model.IAttribute;
 import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -51,6 +52,7 @@ final class StandaloneElementTag
             final boolean synthetic,
             final boolean minimized) {
         super(templateMode, elementDefinition, elementCompleteName, attributes, synthetic);
+        Validate.isTrue(minimized || templateMode == TemplateMode.HTML, "Not-minimized standalone elements are only allowed in HTML template mode (is " + templateMode + ")");
         this.minimized = minimized;
     }
 
@@ -66,6 +68,7 @@ final class StandaloneElementTag
             final int line,
             final int col) {
         super(templateMode, elementDefinition, elementCompleteName, attributes, synthetic, templateName, line, col);
+        Validate.isTrue(minimized || templateMode == TemplateMode.HTML, "Not-minimized standalone elements are only allowed in HTML template mode (is " + templateMode + ")");
         this.minimized = minimized;
     }
 

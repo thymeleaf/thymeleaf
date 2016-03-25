@@ -203,6 +203,7 @@ final class Attributes {
         // (including it is basically an optimization for classes that can work against engine implementations)
 
         Validate.isTrue(value != null || templateMode != TemplateMode.XML, "Cannot set null-value attributes in XML template mode");
+        Validate.isTrue(valueQuotes != AttributeValueQuotes.NONE || templateMode != TemplateMode.XML, "Cannot set unquoted attributes in XML template mode");
 
         final int existingIdx =
                 (attributeDefinition != null? searchAttribute(attributeDefinition.attributeName) : searchAttribute(templateMode, completeName));
@@ -268,6 +269,7 @@ final class Attributes {
         // (including it is basically an optimization for classes that can work against engine implementations)
 
         Validate.isTrue(value != null || templateMode != TemplateMode.XML, "Cannot set null-value attributes in XML template mode");
+        Validate.isTrue(valueQuotes != AttributeValueQuotes.NONE || templateMode != TemplateMode.XML, "Cannot set unquoted attributes in XML template mode");
 
 
         if (this.attributes == null || oldName == newAttributeDefinition.attributeName) {
