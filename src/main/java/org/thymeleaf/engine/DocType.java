@@ -69,7 +69,7 @@ final class DocType extends AbstractTemplateEvent implements IDocType, IEngineTe
         super();
         this.keyword = keyword;
         this.elementName = elementName;
-        this.type = type;
+        this.type = (type != null? type : computeType(publicId, systemId));
         this.publicId = publicId;
         this.systemId = systemId;
         this.internalSubset = internalSubset;
@@ -89,7 +89,7 @@ final class DocType extends AbstractTemplateEvent implements IDocType, IEngineTe
         super(templateName, line, col);
         this.keyword = keyword;
         this.elementName = elementName;
-        this.type = type;
+        this.type = (type != null? type : computeType(publicId, systemId));
         this.publicId = publicId;
         this.systemId = systemId;
         this.internalSubset = internalSubset;
