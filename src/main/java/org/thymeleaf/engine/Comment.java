@@ -102,7 +102,7 @@ final class Comment extends AbstractTextualTemplateEvent implements IComment {
         if (index >= prefixedContentLen) {
             return this.suffix.charAt(index - prefixedContentLen);
         }
-        return charAtContent(index + this.prefix.length());
+        return charAtContent(index - this.prefix.length());
     }
 
 
