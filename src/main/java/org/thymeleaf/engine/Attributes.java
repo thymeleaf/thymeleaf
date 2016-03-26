@@ -272,7 +272,7 @@ final class Attributes {
         Validate.isTrue(valueQuotes != AttributeValueQuotes.NONE || templateMode != TemplateMode.XML, "Cannot set unquoted attributes in XML template mode");
 
 
-        if (this.attributes == null || oldName == newAttributeDefinition.attributeName) {
+        if (this.attributes == null) {
             return setAttribute(attributeDefinitions, templateMode, newAttributeDefinition, newCompleteName, value, valueQuotes);
         }
 
@@ -288,6 +288,11 @@ final class Attributes {
         int existingIdx =
                 (newAttributeDefinition != null? searchAttribute(newAttributeDefinition.attributeName) : searchAttribute(templateMode, newCompleteName));
         if (existingIdx >= 0) {
+
+            if (oldIdx == existingIdx) {
+                // Old and new are the same -- this is a setAttribute
+                return setAttribute(attributeDefinitions, templateMode, newAttributeDefinition, newCompleteName, value, valueQuotes);
+            }
 
             final Attribute[] newAttributes = new Attribute[this.attributes.length - 1];
 
