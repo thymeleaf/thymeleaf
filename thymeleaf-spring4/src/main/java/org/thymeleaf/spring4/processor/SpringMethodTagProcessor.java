@@ -114,7 +114,7 @@ public final class SpringMethodTagProcessor
 
                 StandardProcessorUtils.setAttribute(structureHandler, this.targetAttributeDefinition, TARGET_ATTR_NAME, "post");
 
-                final IModelFactory modelFactory = context.getConfiguration().getModelFactory(context.getTemplateMode());
+                final IModelFactory modelFactory = context.getModelFactory();
 
                 final IModel hiddenMethodModel = modelFactory.createModel();
 

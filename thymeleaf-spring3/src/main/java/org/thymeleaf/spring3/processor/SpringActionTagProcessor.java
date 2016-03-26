@@ -117,7 +117,7 @@ public final class  SpringActionTagProcessor
 
             if (extraHiddenFields != null && extraHiddenFields.size() > 0) {
 
-                final IModelFactory modelFactory = context.getConfiguration().getModelFactory(context.getTemplateMode());
+                final IModelFactory modelFactory = context.getModelFactory();
 
                 final IModel extraHiddenElementTags = modelFactory.createModel();
 

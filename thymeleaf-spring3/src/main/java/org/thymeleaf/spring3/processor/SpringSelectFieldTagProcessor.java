@@ -78,7 +78,7 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
 
         if (multiple && !isDisabled(tag)) {
 
-            final IModelFactory modelFactory = context.getConfiguration().getModelFactory(context.getTemplateMode());
+            final IModelFactory modelFactory = context.getModelFactory();
 
             final IModel hiddenMethodElementModel = modelFactory.createModel();
 

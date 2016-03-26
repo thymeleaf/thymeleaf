@@ -120,7 +120,7 @@ public final class SpringInputCheckboxFieldTagProcessor
              * never displayed or is disabled.
              */
 
-            final IModelFactory modelFactory = context.getConfiguration().getModelFactory(context.getTemplateMode());
+            final IModelFactory modelFactory = context.getModelFactory();
 
             final IModel hiddenTagModel = modelFactory.createModel();
 
