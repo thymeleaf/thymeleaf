@@ -71,8 +71,9 @@ final class OpenElementTag
             final AttributeDefinitions attributeDefinitions,
             final AttributeDefinition attributeDefinition, final String completeName,
             final String value, final AttributeValueQuotes valueQuotes) {
+        final Attributes oldAttributes = (this.attributes != null? this.attributes : Attributes.EMPTY_ATTRIBUTES);
         final Attributes newAttributes =
-                this.attributes.setAttribute(attributeDefinitions, this.templateMode, attributeDefinition, completeName, value, valueQuotes);
+                oldAttributes.setAttribute(attributeDefinitions, this.templateMode, attributeDefinition, completeName, value, valueQuotes);
         return new OpenElementTag(this.templateMode, this.elementDefinition, this.elementCompleteName, newAttributes, this.synthetic, this.templateName, this.line, this.col);
     }
 
@@ -83,8 +84,9 @@ final class OpenElementTag
             final AttributeDefinitions attributeDefinitions,
             final AttributeName oldName, final AttributeDefinition newAttributeDefinition, final String completeNewName,
             final String value, final AttributeValueQuotes valueQuotes) {
+        final Attributes oldAttributes = (this.attributes != null? this.attributes : Attributes.EMPTY_ATTRIBUTES);
         final Attributes newAttributes =
-                this.attributes.replaceAttribute(attributeDefinitions, this.templateMode, oldName, newAttributeDefinition, completeNewName, value, valueQuotes);
+                oldAttributes.replaceAttribute(attributeDefinitions, this.templateMode, oldName, newAttributeDefinition, completeNewName, value, valueQuotes);
         return new OpenElementTag(this.templateMode, this.elementDefinition, this.elementCompleteName, newAttributes, this.synthetic, this.templateName, this.line, this.col);
     }
 
@@ -92,19 +94,22 @@ final class OpenElementTag
 
 
     OpenElementTag removeAttribute(final String prefix, final String name) {
-        final Attributes newAttributes = this.attributes.removeAttribute(this.templateMode, prefix, name);
+        final Attributes oldAttributes = (this.attributes != null? this.attributes : Attributes.EMPTY_ATTRIBUTES);
+        final Attributes newAttributes = oldAttributes.removeAttribute(this.templateMode, prefix, name);
         return new OpenElementTag(this.templateMode, this.elementDefinition, this.elementCompleteName, newAttributes, this.synthetic, this.templateName, this.line, this.col);
     }
 
 
     OpenElementTag removeAttribute(final String completeName) {
-        final Attributes newAttributes = this.attributes.removeAttribute(this.templateMode, completeName);
+        final Attributes oldAttributes = (this.attributes != null? this.attributes : Attributes.EMPTY_ATTRIBUTES);
+        final Attributes newAttributes = oldAttributes.removeAttribute(this.templateMode, completeName);
         return new OpenElementTag(this.templateMode, this.elementDefinition, this.elementCompleteName, newAttributes, this.synthetic, this.templateName, this.line, this.col);
     }
 
 
     OpenElementTag removeAttribute(final AttributeName attributeName) {
-        final Attributes newAttributes = this.attributes.removeAttribute(attributeName);
+        final Attributes oldAttributes = (this.attributes != null? this.attributes : Attributes.EMPTY_ATTRIBUTES);
+        final Attributes newAttributes = oldAttributes.removeAttribute(attributeName);
         return new OpenElementTag(this.templateMode, this.elementDefinition, this.elementCompleteName, newAttributes, this.synthetic, this.templateName, this.line, this.col);
     }
 
