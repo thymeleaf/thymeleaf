@@ -202,15 +202,17 @@ abstract class AbstractProcessableElementTag
 
     private IElementProcessor[] computeProcessors() {
 
+        final int associatedProcessorCount = this.attributes.getAssociatedProcessorCount();
+
         // If there are no processors associated with attributes, this is much easier
-        if (this.attributes == null || this.attributes.associatedProcessorCount == 0) {
+        if (this.attributes == null || associatedProcessorCount == 0) {
             return (this.elementDefinition.hasAssociatedProcessors? this.elementDefinition.associatedProcessors : EMPTY_ASSOCIATED_PROCESSORS);
         }
 
         // At this point we know for sure there are processors associated with attributes
         final int elementProcessorCount =
                 (this.elementDefinition.hasAssociatedProcessors? this.elementDefinition.associatedProcessors.length : 0);
-        IElementProcessor[] processors = new IElementProcessor[elementProcessorCount + this.attributes.associatedProcessorCount];
+        IElementProcessor[] processors = new IElementProcessor[elementProcessorCount + associatedProcessorCount];
 
         if (elementProcessorCount > 0) {
             System.arraycopy(this.elementDefinition.associatedProcessors, 0, processors, 0, elementProcessorCount);

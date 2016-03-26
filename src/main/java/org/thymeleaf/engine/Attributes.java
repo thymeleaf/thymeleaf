@@ -48,7 +48,8 @@ final class Attributes {
 
     final Attribute[] attributes; // might be null if there are no attributes
     final String[] innerWhiteSpaces; // might be null if there are no attributes and no whitespaces
-    final int associatedProcessorCount;
+
+    private volatile int associatedProcessorCount = -1;
 
 
 
@@ -56,10 +57,19 @@ final class Attributes {
         super();
         this.attributes = attributes;
         this.innerWhiteSpaces = innerWhiteSpaces;
-        this.associatedProcessorCount = computeAssociatedProcessorCount();
     }
 
 
+
+    int getAssociatedProcessorCount() {
+
+        int c = this.associatedProcessorCount;
+        if (c < 0) {
+            this.associatedProcessorCount = c = computeAssociatedProcessorCount();
+        }
+        return c;
+
+    }
 
 
     private int computeAssociatedProcessorCount() {
