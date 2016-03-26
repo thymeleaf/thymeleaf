@@ -55,21 +55,20 @@ final class DocType extends AbstractTemplateEvent implements IDocType, IEngineTe
 
 
     DocType(final String publicId, final String systemId) {
-        this(DEFAULT_KEYWORD, DEFAULT_ELEMENT_NAME, computeType(publicId, systemId), publicId, systemId, null);
+        this(DEFAULT_KEYWORD, DEFAULT_ELEMENT_NAME, publicId, systemId, null);
     }
 
 
     DocType(
             final String keyword,
             final String elementName,
-            final String type,
             final String publicId,
             final String systemId,
             final String internalSubset) {
         super();
         this.keyword = keyword;
         this.elementName = elementName;
-        this.type = (type != null? type : computeType(publicId, systemId));
+        this.type = computeType(publicId, systemId);
         this.publicId = publicId;
         this.systemId = systemId;
         this.internalSubset = internalSubset;
@@ -81,7 +80,6 @@ final class DocType extends AbstractTemplateEvent implements IDocType, IEngineTe
             final String docType,
             final String keyword,
             final String elementName,
-            final String type,
             final String publicId,
             final String systemId,
             final String internalSubset,
@@ -89,7 +87,7 @@ final class DocType extends AbstractTemplateEvent implements IDocType, IEngineTe
         super(templateName, line, col);
         this.keyword = keyword;
         this.elementName = elementName;
-        this.type = (type != null? type : computeType(publicId, systemId));
+        this.type = computeType(publicId, systemId);
         this.publicId = publicId;
         this.systemId = systemId;
         this.internalSubset = internalSubset;
@@ -208,7 +206,6 @@ final class DocType extends AbstractTemplateEvent implements IDocType, IEngineTe
                 null,
                 docType.getKeyword(),
                 docType.getElementName(),
-                docType.getType(),
                 docType.getPublicId(),
                 docType.getSystemId(),
                 docType.getInternalSubset(),

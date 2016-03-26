@@ -53,13 +53,12 @@ public interface IDocTypeStructureHandler {
      *
      * @param keyword the new keyword value
      * @param elementName the new elementName value
-     * @param type the new type (PUBLIC, SYSTEM or null)
      * @param publicId the new PUBLIC ID (might be null)
      * @param systemId the new SYSTEM ID (might be null)
      * @param internalSubset the new internal subset (might be null)
      */
     public void setDocType(
-            final String keyword, final String elementName, final String type,
+            final String keyword, final String elementName,
             final String publicId, final String systemId, final String internalSubset);
 
     /**

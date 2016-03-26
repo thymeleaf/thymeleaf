@@ -149,13 +149,12 @@ public class StandardModelFactory implements IModelFactory {
     public IDocType createDocType(
             final String keyword,
             final String elementName,
-            final String type,
             final String publicId,
             final String systemId,
             final String internalSubset) {
 
         checkRestrictedEventForTextTemplateMode("DocType");
-        return new DocType(keyword, elementName, type, publicId, systemId, internalSubset);
+        return new DocType(keyword, elementName, publicId, systemId, internalSubset);
     }
 
 

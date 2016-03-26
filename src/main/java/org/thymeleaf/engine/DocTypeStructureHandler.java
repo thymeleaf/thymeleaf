@@ -40,7 +40,6 @@ public final class DocTypeStructureHandler implements IDocTypeStructureHandler {
     boolean setDocType;
     String setDocTypeKeyword;
     String setDocTypeElementName;
-    String setDocTypeType;
     String setDocTypePublicId;
     String setDocTypeSystemId;
     String setDocTypeInternalSubset;
@@ -63,7 +62,7 @@ public final class DocTypeStructureHandler implements IDocTypeStructureHandler {
 
 
     public void setDocType(
-            final String keyword, final String elementName, final String type,
+            final String keyword, final String elementName,
             final String publicId, final String systemId, final String internalSubset) {
         reset();
         Validate.notNull(keyword, "Keyword cannot be null");
@@ -71,7 +70,6 @@ public final class DocTypeStructureHandler implements IDocTypeStructureHandler {
         this.setDocType = true;
         this.setDocTypeKeyword = keyword;
         this.setDocTypeElementName = elementName;
-        this.setDocTypeType = type;
         this.setDocTypePublicId = publicId;
         this.setDocTypeSystemId = systemId;
         this.setDocTypeInternalSubset = internalSubset;
@@ -100,7 +98,6 @@ public final class DocTypeStructureHandler implements IDocTypeStructureHandler {
         this.setDocType = false;
         this.setDocTypeKeyword = null;
         this.setDocTypeElementName = null;
-        this.setDocTypeType = null;
         this.setDocTypePublicId = null;
         this.setDocTypeSystemId = null;
         this.setDocTypeInternalSubset = null;

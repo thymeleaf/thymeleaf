@@ -2058,7 +2058,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                         new DocType(
                             this.docTypeStructureHandler.setDocTypeKeyword,
                             this.docTypeStructureHandler.setDocTypeElementName,
-                            this.docTypeStructureHandler.setDocTypeType,
                             this.docTypeStructureHandler.setDocTypePublicId,
                             this.docTypeStructureHandler.setDocTypeSystemId,
                             this.docTypeStructureHandler.setDocTypeInternalSubset);

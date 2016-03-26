@@ -155,14 +155,13 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         final String fullDocType = new String(buffer, outerOffset, outerLen);
         final String keyword = new String(buffer, keywordOffset, keywordLen);
         final String rootElementName = new String(buffer, elementNameOffset, elementNameLen);
-        final String type = (typeLen == 0? null : new String(buffer, typeOffset, typeLen));
         final String publicId = (publicIdLen == 0? null : new String(buffer, publicIdOffset, publicIdLen));
         final String systemId = (systemIdLen == 0? null : new String(buffer, systemIdOffset, systemIdLen));
         final String internalSubset = (internalSubsetLen == 0? null : new String(buffer, internalSubsetOffset, internalSubsetLen));
 
         this.templateHandler.handleDocType(
                 new DocType(
-                        fullDocType, keyword, rootElementName, type, publicId, systemId, internalSubset,
+                        fullDocType, keyword, rootElementName, publicId, systemId, internalSubset,
                         this.templateName, this.lineOffset + outerLine, (outerLine == 1? this.colOffset : 0) + outerCol));
 
     }

@@ -47,7 +47,6 @@ public interface IModelFactory {
     public IDocType createDocType(
             final String keyword,
             final String elementName,
-            final String type,
             final String publicId,
             final String systemId,
             final String internalSubset);
