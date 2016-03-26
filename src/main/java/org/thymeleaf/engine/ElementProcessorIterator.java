@@ -230,9 +230,9 @@ final class ElementProcessorIterator {
 
                 throw new IllegalStateException(
                         "Two different registered processors have returned zero as a result of their " +
-                                "comparison, which is forbidden. Offending processors are " +
-                                this.auxProcessors[i].getClass().getName() + " and " +
-                                this.processors[j].getClass().getName());
+                        "comparison, which is forbidden. Offending processors are " +
+                        this.auxProcessors[i].getClass().getName() + " and " +
+                        this.processors[j].getClass().getName());
 
             } else if (comp < 0) {
                 // The new one has higher precedence (lower value), so it's new
@@ -261,13 +261,6 @@ final class ElementProcessorIterator {
 
     }
 
-
-
-    ElementProcessorIterator cloneIterator() {
-        final ElementProcessorIterator clone = new ElementProcessorIterator();
-        clone.resetAsCloneOf(this);
-        return clone;
-    }
 
 
     void resetAsCloneOf(final ElementProcessorIterator original) {
