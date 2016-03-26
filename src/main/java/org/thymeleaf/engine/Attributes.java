@@ -239,7 +239,7 @@ final class Attributes {
         if (this.innerWhiteSpaces != null) {
             newInnerWhiteSpaces = new String[this.innerWhiteSpaces.length + 1];
             System.arraycopy(this.innerWhiteSpaces, 0, newInnerWhiteSpaces, 0, this.innerWhiteSpaces.length);
-            if (this.innerWhiteSpaces.length == this.attributes.length) {
+            if (this.innerWhiteSpaces.length == (this.attributes != null? this.attributes.length : 0)) {
                 // As many inner white spaces as attributes: no white space is being left after the last attribute
                 newInnerWhiteSpaces[this.innerWhiteSpaces.length] = DEFAULT_WHITE_SPACE;
             } else {
