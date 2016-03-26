@@ -76,11 +76,13 @@ public abstract class AbstractAttributeModelProcessor extends AbstractElementMod
             doProcess(context, model, attributeName, attributeValue, structureHandler);
 
             if (this.removeAttribute) {
-                if (model.size() > 0 && model.get(0) == firstEvent) {
-                    // The first event is still in place
+                if (model.size() > 0 && model.get(0) instanceof IProcessableElementTag) {
+                    firstEvent = (IProcessableElementTag) model.get(0);
                     final IModelFactory modelFactory = context.getConfiguration().getModelFactory(model.getTemplateMode());
                     final IProcessableElementTag newFirstEvent = modelFactory.removeAttribute(firstEvent,attributeName);
-                    model.replace(0, newFirstEvent);
+                    if (newFirstEvent != firstEvent) {
+                        model.replace(0, newFirstEvent);
+                    }
                 }
             }
 
