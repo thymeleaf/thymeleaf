@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -75,7 +76,7 @@ public interface ITemplateContext extends IExpressionContext {
      * <p>
      *   Note that the {@link TemplateMode} returned here corresponds with origin of the elements or nodes being
      *   currently processed. This is, if a processor is being executed for an element inserted from an external
-     *   templaet (via a <tt>th:insert</tt>, for example), then this method will return the template mode
+     *   template (via a <tt>th:insert</tt>, for example), then this method will return the template mode
      *   for the template in which the inserted fragment lives, not the one it was inserted into.
      * </p>
      *
@@ -111,6 +112,20 @@ public interface ITemplateContext extends IExpressionContext {
      * @return the template resolution attributes map
      */
     public Map<String, Object> getTemplateResolutionAttributes();
+
+    /**
+     * <p>
+     *   Returns the <em>model factory</em> that can be used for creating or modifying events.
+     * </p>
+     * <p>
+     *   This is actually a convenience method completely equivalent to calling
+     *   {@link #getConfiguration()} and then {@link org.thymeleaf.IEngineConfiguration#getModelFactory(TemplateMode)}
+     *   using as template mode the result of {@link #getTemplateMode()}.
+     * </p>
+     *
+     * @return the model factory
+     */
+    public IModelFactory getModelFactory();
 
     /**
      * <p>

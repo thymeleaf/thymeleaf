@@ -29,6 +29,7 @@ import org.thymeleaf.expression.ExpressionObjects;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.linkbuilder.ILinkBuilder;
 import org.thymeleaf.messageresolver.IMessageResolver;
+import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
@@ -110,6 +111,11 @@ public abstract class AbstractEngineContext implements IEngineContext {
 
     public final TemplateMode getTemplateMode() {
         return getTemplateData().getTemplateMode();
+    }
+
+
+    public final IModelFactory getModelFactory() {
+        return this.configuration.getModelFactory(getTemplateMode());
     }
 
 
