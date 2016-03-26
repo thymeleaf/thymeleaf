@@ -226,6 +226,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         Validate.notNull(this.configuration.getElementDefinitions(), "Element Definitions returned by the Engine Configuration cannot be null");
         Validate.notNull(this.configuration.getAttributeDefinitions(), "Attribute Definitions returned by the Engine Configuration cannot be null");
 
+        this.attributeDefinitions = this.configuration.getAttributeDefinitions();
+
         this.templateMode = this.context.getTemplateMode(); // Just a way to avoid doing the call each time
 
         if (this.context instanceof IEngineContext) {
