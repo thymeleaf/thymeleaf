@@ -110,33 +110,14 @@ public abstract class AbstractStandardInliner implements IInliner {
          * First, check whether the current template is being processed using the template mode we are applying
          * inlining for. If not, we must just process the entire text as a template in the desired template mode.
          */
-
         if (context.getTemplateMode() != this.templateMode) {
-
-            final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
-
-            final TemplateModel templateModel =
-                    templateManager.parseString(
-                            context.getTemplateData(), text.getText(),
-                            text.getLine(), text.getCol(),
-                            this.templateMode, true);
-
-            if (!this.writeTextsToOutput) {
-                final Writer stringWriter = new FastStringWriter(50);
-                templateManager.process(templateModel, context, stringWriter);
-                return stringWriter.toString();
-            }
-
-            // If we can directly write to output (and text is an IText), we will use a LazyProcessingCharSequence
-            return new LazyProcessingCharSequence(context, templateModel);
-
+            return inlineSwitchTemplateMode(context, text);
         }
 
         /*
          * Template modes match, first we check if we actually need to apply inlining at all, and if we do, we just
          * execute the inlining mechanisms.
          */
-
         if (!EngineEventUtils.isInlineable(text)) {
             return null;
         }
@@ -164,6 +145,29 @@ public abstract class AbstractStandardInliner implements IInliner {
     }
 
 
+    private CharSequence inlineSwitchTemplateMode(final ITemplateContext context, final IText text) {
+
+        final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
+
+        final TemplateModel templateModel =
+                templateManager.parseString(
+                        context.getTemplateData(), text.getText(),
+                        text.getLine(), text.getCol(),
+                        this.templateMode, true);
+
+        if (!this.writeTextsToOutput) {
+            final Writer stringWriter = new FastStringWriter(50);
+            templateManager.process(templateModel, context, stringWriter);
+            return stringWriter.toString();
+        }
+
+        // If we can directly write to output (and text is an IText), we will use a LazyProcessingCharSequence
+        return new LazyProcessingCharSequence(context, templateModel);
+
+    }
+
+
+
 
 
     public final CharSequence inline(final ITemplateContext context, final ICDATASection cdataSection) {
@@ -175,38 +179,14 @@ public abstract class AbstractStandardInliner implements IInliner {
          * First, check whether the current template is being processed using the template mode we are applying
          * inlining for. If not, we must just process the entire text as a template in the desired template mode.
          */
-
         if (context.getTemplateMode() != this.templateMode) {
-
-            final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
-
-            /*
-             * Notice we are ONLY processing the contents of the CDATA, because we know the target inlining
-             * mode will not understand the CDATA (it will be textual) and we don't want it to mess around with
-             * the CDATA's prefix and suffix.
-             *
-             * Note this will only be executed in markup modes (textual modes never fire "handleCDATASection" events),
-             * so we are safe assuming the sizes of CDATA prefixes and suffixes in HTML/XML.
-             */
-
-            final TemplateModel templateModel =
-                    templateManager.parseString(
-                            context.getTemplateData(), cdataSection.getContent(),
-                            cdataSection.getLine(), cdataSection.getCol() + 9, // +9 because of the prefix
-                            this.templateMode, true);
-
-            final Writer stringWriter = new FastStringWriter(50);
-            templateManager.process(templateModel, context, stringWriter);
-
-            return stringWriter.toString();
-
+            return inlineSwitchTemplateMode(context, cdataSection);
         }
 
         /*
          * Template modes match, first we check if we actually need to apply inlining at all, and if we do, we just
          * execute the inlining mechanisms.
          */
-
         if (!EngineEventUtils.isInlineable(cdataSection)) {
             return null;
         }
@@ -234,6 +214,33 @@ public abstract class AbstractStandardInliner implements IInliner {
     }
 
 
+    private CharSequence inlineSwitchTemplateMode(final ITemplateContext context, final ICDATASection cdataSection) {
+
+        final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
+
+        /*
+         * Notice we are ONLY processing the contents of the CDATA, because we know the target inlining
+         * mode will not understand the CDATA (it will be textual) and we don't want it to mess around with
+         * the CDATA's prefix and suffix.
+         *
+         * Note this will only be executed in markup modes (textual modes never fire "handleCDATASection" events),
+         * so we are safe assuming the sizes of CDATA prefixes and suffixes in HTML/XML.
+         */
+
+        final TemplateModel templateModel =
+                templateManager.parseString(
+                        context.getTemplateData(), cdataSection.getContent(),
+                        cdataSection.getLine(), cdataSection.getCol() + 9, // +9 because of the prefix
+                        this.templateMode, true);
+
+        final Writer stringWriter = new FastStringWriter(50);
+        templateManager.process(templateModel, context, stringWriter);
+
+        return stringWriter.toString();
+
+    }
+
+
 
 
     public final CharSequence inline(final ITemplateContext context, final IComment comment) {
@@ -245,38 +252,14 @@ public abstract class AbstractStandardInliner implements IInliner {
          * First, check whether the current template is being processed using the template mode we are applying
          * inlining for. If not, we must just process the entire text as a template in the desired template mode.
          */
-
         if (context.getTemplateMode() != this.templateMode) {
-
-            final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
-
-            /*
-             * Notice we are ONLY processing the contents of the Comment, because we know the target inlining
-             * mode will not understand the Comment (it will be textual) and we don't want it to mess around with
-             * the Comment's prefix and suffix.
-             *
-             * Note this will only be executed in markup modes (textual modes never fire "handleComment" events),
-             * so we are safe assuming the sizes of Comment prefixes and suffixes in HTML/XML.
-             */
-
-            final TemplateModel templateModel =
-                    templateManager.parseString(
-                            context.getTemplateData(), comment.getContent(),
-                            comment.getLine(), comment.getCol() + 4, // +4 because of the prefix
-                            this.templateMode, true);
-
-            final Writer stringWriter = new FastStringWriter(50);
-            templateManager.process(templateModel, context, stringWriter);
-
-            return stringWriter.toString();
-
+            return inlineSwitchTemplateMode(context, comment);
         }
 
         /*
          * Template modes match, first we check if we actually need to apply inlining at all, and if we do, we just
          * execute the inlining mechanisms.
          */
-
         if (!EngineEventUtils.isInlineable(comment)) {
             return null;
         }
@@ -300,6 +283,33 @@ public abstract class AbstractStandardInliner implements IInliner {
         performInlining(context, comment, 4, commentLen - 7, comment.getTemplateName(), comment.getLine(), comment.getCol(), strBuilder);
 
         return strBuilder.toString();
+
+    }
+
+
+    private CharSequence inlineSwitchTemplateMode(final ITemplateContext context, final IComment comment) {
+
+        final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
+
+        /*
+         * Notice we are ONLY processing the contents of the Comment, because we know the target inlining
+         * mode will not understand the Comment (it will be textual) and we don't want it to mess around with
+         * the Comment's prefix and suffix.
+         *
+         * Note this will only be executed in markup modes (textual modes never fire "handleComment" events),
+         * so we are safe assuming the sizes of Comment prefixes and suffixes in HTML/XML.
+         */
+
+        final TemplateModel templateModel =
+                templateManager.parseString(
+                        context.getTemplateData(), comment.getContent(),
+                        comment.getLine(), comment.getCol() + 4, // +4 because of the prefix
+                        this.templateMode, true);
+
+        final Writer stringWriter = new FastStringWriter(50);
+        templateManager.process(templateModel, context, stringWriter);
+
+        return stringWriter.toString();
 
     }
 
