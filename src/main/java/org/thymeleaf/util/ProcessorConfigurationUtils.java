@@ -550,7 +550,7 @@ public final class ProcessorConfigurationUtils {
         private final int dialectPrecedence;
         private final int processorPrecedence;
         private final IProcessorDialect dialect;
-        protected final IProcessor processor;
+        private final IProcessor processor;
 
         AbstractProcessorWrapper(final IProcessor processor, final IProcessorDialect dialect) {
             super();
@@ -602,16 +602,19 @@ public final class ProcessorConfigurationUtils {
 
     static abstract class AbstractElementProcessorWrapper extends AbstractProcessorWrapper implements IElementProcessor {
 
+        private final IElementProcessor processor;
+
         AbstractElementProcessorWrapper(final IElementProcessor processor, final IProcessorDialect dialect) {
             super(processor, dialect);
+            this.processor = processor;
         }
 
         public final MatchingElementName getMatchingElementName() {
-            return ((IElementProcessor)this.processor).getMatchingElementName();
+            return this.processor.getMatchingElementName();
         }
 
         public final MatchingAttributeName getMatchingAttributeName() {
-            return ((IElementProcessor)this.processor).getMatchingAttributeName();
+            return this.processor.getMatchingAttributeName();
         }
 
     }
@@ -619,12 +622,15 @@ public final class ProcessorConfigurationUtils {
 
     static final class ElementTagProcessorWrapper extends AbstractElementProcessorWrapper implements IElementTagProcessor {
 
+        private final IElementTagProcessor processor;
+
         ElementTagProcessorWrapper(final IElementTagProcessor processor, final IProcessorDialect dialect) {
             super(processor, dialect);
+            this.processor = processor;
         }
 
         public void process(final ITemplateContext context, final IProcessableElementTag tag, final IElementTagStructureHandler structureHandler) {
-            ((IElementTagProcessor)this.processor).process(context, tag, structureHandler);
+            this.processor.process(context, tag, structureHandler);
         }
 
     }
@@ -632,12 +638,15 @@ public final class ProcessorConfigurationUtils {
 
     static final class ElementModelProcessorWrapper extends AbstractElementProcessorWrapper implements IElementModelProcessor {
 
+        private final IElementModelProcessor processor;
+
         ElementModelProcessorWrapper(final IElementModelProcessor processor, final IProcessorDialect dialect) {
             super(processor, dialect);
+            this.processor = processor;
         }
 
         public void process(final ITemplateContext context, final IModel model, final IElementModelStructureHandler structureHandler) {
-            ((IElementModelProcessor)this.processor).process(context, model, structureHandler);
+            this.processor.process(context, model, structureHandler);
         }
 
     }
@@ -645,12 +654,15 @@ public final class ProcessorConfigurationUtils {
 
     static final class CDATASectionProcessorWrapper extends AbstractProcessorWrapper implements ICDATASectionProcessor {
 
+        private final ICDATASectionProcessor processor;
+
         CDATASectionProcessorWrapper(final ICDATASectionProcessor processor, final IProcessorDialect dialect) {
             super(processor, dialect);
+            this.processor = processor;
         }
 
         public void process(final ITemplateContext context, final ICDATASection cdataSection, final ICDATASectionStructureHandler structureHandler) {
-            ((ICDATASectionProcessor)this.processor).process(context, cdataSection, structureHandler);
+            this.processor.process(context, cdataSection, structureHandler);
         }
 
     }
@@ -658,12 +670,15 @@ public final class ProcessorConfigurationUtils {
 
     static final class CommentProcessorWrapper extends AbstractProcessorWrapper implements ICommentProcessor {
 
+        private final ICommentProcessor processor;
+
         CommentProcessorWrapper(final ICommentProcessor processor, final IProcessorDialect dialect) {
             super(processor, dialect);
+            this.processor = processor;
         }
 
         public void process(final ITemplateContext context, final IComment comment, final ICommentStructureHandler structureHandler) {
-            ((ICommentProcessor)this.processor).process(context, comment, structureHandler);
+            this.processor.process(context, comment, structureHandler);
         }
 
     }
@@ -671,12 +686,15 @@ public final class ProcessorConfigurationUtils {
 
     static final class DocTypeProcessorWrapper extends AbstractProcessorWrapper implements IDocTypeProcessor {
 
+        private final IDocTypeProcessor processor;
+
         DocTypeProcessorWrapper(final IDocTypeProcessor processor, final IProcessorDialect dialect) {
             super(processor, dialect);
+            this.processor = processor;
         }
 
         public void process(final ITemplateContext context, final IDocType docType, final IDocTypeStructureHandler structureHandler) {
-            ((IDocTypeProcessor)this.processor).process(context, docType, structureHandler);
+            this.processor.process(context, docType, structureHandler);
         }
 
     }
@@ -684,12 +702,15 @@ public final class ProcessorConfigurationUtils {
 
     static final class ProcessingInstructionProcessorWrapper extends AbstractProcessorWrapper implements IProcessingInstructionProcessor {
 
+        private final IProcessingInstructionProcessor processor;
+
         ProcessingInstructionProcessorWrapper(final IProcessingInstructionProcessor processor, final IProcessorDialect dialect) {
             super(processor, dialect);
+            this.processor = processor;
         }
 
         public void process(final ITemplateContext context, final IProcessingInstruction processingInstruction, final IProcessingInstructionStructureHandler structureHandler) {
-            ((IProcessingInstructionProcessor)this.processor).process(context, processingInstruction, structureHandler);
+            this.processor.process(context, processingInstruction, structureHandler);
         }
 
     }
@@ -697,16 +718,19 @@ public final class ProcessorConfigurationUtils {
 
     static final class TemplateBoundariesProcessorWrapper extends AbstractProcessorWrapper implements ITemplateBoundariesProcessor {
 
+        private final ITemplateBoundariesProcessor processor;
+
         TemplateBoundariesProcessorWrapper(final ITemplateBoundariesProcessor processor, final IProcessorDialect dialect) {
             super(processor, dialect);
+            this.processor = processor;
         }
 
         public void processTemplateStart(final ITemplateContext context, final ITemplateStart templateStart, final ITemplateBoundariesStructureHandler structureHandler) {
-            ((ITemplateBoundariesProcessor)this.processor).processTemplateStart(context, templateStart, structureHandler);
+            this.processor.processTemplateStart(context, templateStart, structureHandler);
         }
 
         public void processTemplateEnd(final ITemplateContext context, final ITemplateEnd templateEnd, final ITemplateBoundariesStructureHandler structureHandler) {
-            ((ITemplateBoundariesProcessor)this.processor).processTemplateEnd(context, templateEnd, structureHandler);
+            this.processor.processTemplateEnd(context, templateEnd, structureHandler);
         }
 
     }
@@ -714,12 +738,15 @@ public final class ProcessorConfigurationUtils {
 
     static final class TextProcessorWrapper extends AbstractProcessorWrapper implements ITextProcessor {
 
+        private final ITextProcessor processor;
+
         TextProcessorWrapper(final ITextProcessor processor, final IProcessorDialect dialect) {
             super(processor, dialect);
+            this.processor = processor;
         }
 
         public void process(final ITemplateContext context, final IText text, final ITextStructureHandler structureHandler) {
-            ((ITextProcessor)this.processor).process(context, text, structureHandler);
+            this.processor.process(context, text, structureHandler);
         }
 
     }
@@ -727,12 +754,15 @@ public final class ProcessorConfigurationUtils {
 
     static final class XMLDeclarationProcessorWrapper extends AbstractProcessorWrapper implements IXMLDeclarationProcessor {
 
+        private final IXMLDeclarationProcessor processor;
+
         XMLDeclarationProcessorWrapper(final IXMLDeclarationProcessor processor, final IProcessorDialect dialect) {
             super(processor, dialect);
+            this.processor = processor;
         }
 
         public void process(final ITemplateContext context, final IXMLDeclaration xmlDeclaration, final IXMLDeclarationStructureHandler structureHandler) {
-            ((IXMLDeclarationProcessor)this.processor).process(context, xmlDeclaration, structureHandler);
+            this.processor.process(context, xmlDeclaration, structureHandler);
         }
 
     }
