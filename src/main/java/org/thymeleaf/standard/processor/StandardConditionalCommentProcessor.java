@@ -73,8 +73,6 @@ public final class StandardConditionalCommentProcessor extends AbstractCommentPr
          */
         final TemplateManager templateManager = context.getConfiguration().getTemplateManager();
 
-        final IEngineConfiguration configuration = context.getConfiguration();
-
         final String parsableContent =
                 commentStr.substring(parsingResult.getContentOffset(), parsingResult.getContentOffset() + parsingResult.getContentLen());
 
