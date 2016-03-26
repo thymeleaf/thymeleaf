@@ -20,6 +20,7 @@
 package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.EngineEventUtils;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
 import org.thymeleaf.model.IText;
@@ -45,6 +46,12 @@ public final class StandardInliningTextProcessor extends AbstractTextProcessor {
             final ITemplateContext context,
             final IText text, final ITextStructureHandler structureHandler) {
 
+        if (EngineEventUtils.isWhitespace(text)) {
+            // Fail fast - a whitespace text is never inlineable. And templates tend to have a lot of white space blocks
+            // NOTE we are not using isInlineable() here because before doing so the template mode would have to be
+            // checked (so that th:inline works alright). But white spaces are a safe bet.
+            return;
+        }
 
         final IInliner inliner = context.getInliner();
 
