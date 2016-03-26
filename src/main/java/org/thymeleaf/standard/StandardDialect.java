@@ -638,16 +638,6 @@ public class StandardDialect
         processors.add(new StandardInliningTextProcessor(TemplateMode.TEXT));
 
         /*
-         * TEXT: CDATASection PROCESSORS
-         */
-        processors.add(new StandardInliningCDATASectionProcessor(TemplateMode.TEXT));
-
-        /*
-         * TEXT: COMMENT PROCESSORS
-         */
-        processors.add(new StandardInliningCommentProcessor(TemplateMode.TEXT));
-
-        /*
          * TEXT: TEMPLATE BOUNDARIES PROCESSORS
          */
         processors.add(new StandardInlineEnablementTemplateBoundariesProcessor(TemplateMode.TEXT));
@@ -701,16 +691,6 @@ public class StandardDialect
         processors.add(new StandardInliningTextProcessor(TemplateMode.JAVASCRIPT));
 
         /*
-         * JAVASCRIPT: CDATASection PROCESSORS
-         */
-        processors.add(new StandardInliningCDATASectionProcessor(TemplateMode.JAVASCRIPT));
-
-        /*
-         * JAVASCRIPT: COMMENT PROCESSORS
-         */
-        processors.add(new StandardInliningCommentProcessor(TemplateMode.JAVASCRIPT));
-
-        /*
          * JAVASCRIPT: TEMPLATE BOUNDARIES PROCESSORS
          */
         processors.add(new StandardInlineEnablementTemplateBoundariesProcessor(TemplateMode.JAVASCRIPT));
@@ -762,16 +742,6 @@ public class StandardDialect
          * it should be for a really compelling reason.
          */
         processors.add(new StandardInliningTextProcessor(TemplateMode.CSS));
-
-        /*
-         * CSS: CDATASection PROCESSORS
-         */
-        processors.add(new StandardInliningCDATASectionProcessor(TemplateMode.CSS));
-
-        /*
-         * CSS: COMMENT PROCESSORS
-         */
-        processors.add(new StandardInliningCommentProcessor(TemplateMode.CSS));
 
         /*
          * CSS: TEMPLATE BOUNDARIES PROCESSORS
