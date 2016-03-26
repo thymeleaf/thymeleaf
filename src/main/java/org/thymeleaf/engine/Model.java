@@ -325,7 +325,7 @@ final class Model implements IModel {
 
 
     public final void write(final Writer writer) throws IOException {
-        for (int i = 0; i < this.queue.length; i++) {
+        for (int i = 0; i < this.queueSize; i++) {
             this.queue[i].write(writer);
         }
     }
@@ -334,7 +334,7 @@ final class Model implements IModel {
 
 
     public void accept(final IModelVisitor visitor) {
-        for (int i = 0; i < this.queue.length; i++) {
+        for (int i = 0; i < this.queueSize; i++) {
             // We will execute the visitor on the Immutable events, that we need to create during the visit
             this.queue[i].accept(visitor);
         }
