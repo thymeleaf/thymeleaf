@@ -59,13 +59,13 @@ public final class EscapedAttributeUtils {
             case TEXT:
                 // fall-through
             case HTML:
-                return (input != null && input.indexOf('&',0) < 0? input : HtmlEscape.unescapeHtml(input));
+                return HtmlEscape.unescapeHtml(input);
             case XML:
-                return (input != null && input.indexOf('&',0) < 0? input : XmlEscape.unescapeXml(input));
+                return XmlEscape.unescapeXml(input);
             case JAVASCRIPT:
-                return (input != null && input.indexOf('\\',0) < 0? input : JavaScriptEscape.unescapeJavaScript(input));
+                return JavaScriptEscape.unescapeJavaScript(input);
             case CSS:
-                return (input != null && input.indexOf('\\',0) < 0? input : CssEscape.unescapeCss(input));
+                return CssEscape.unescapeCss(input);
             case RAW:
                 return input;
             default:
