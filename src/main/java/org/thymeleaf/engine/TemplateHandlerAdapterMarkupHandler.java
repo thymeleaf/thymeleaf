@@ -45,8 +45,11 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
     private final int lineOffset;
     private final int colOffset;
 
+    private int currentElementLine = -1;
+    private int currentElementCol = -1;
     private final List<Attribute> currentElementAttributes;
     private final List<String> currentElementInnerWhiteSpaces;
+
 
     
     public TemplateHandlerAdapterMarkupHandler(final String templateName,
@@ -226,6 +229,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final boolean minimized, final int line, final int col)
             throws ParseException {
 
+        this.currentElementLine = line;
+        this.currentElementCol = col;
         this.currentElementAttributes.clear();
         this.currentElementInnerWhiteSpaces.clear();
 
@@ -255,7 +260,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.templateHandler.handleStandaloneElement(
                 new StandaloneElementTag(
                         this.templateMode, elementDefinition, elementCompleteName, attributes, false, minimized,
-                        this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
+                        this.templateName, this.lineOffset + this.currentElementLine, (this.currentElementLine == 1? this.colOffset : 0) + this.currentElementCol));
 
     }
 
@@ -268,6 +273,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
+        this.currentElementLine = line;
+        this.currentElementCol = col;
         this.currentElementAttributes.clear();
         this.currentElementInnerWhiteSpaces.clear();
 
@@ -297,7 +304,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.templateHandler.handleOpenElement(
                 new OpenElementTag(
                         this.templateMode, elementDefinition, elementCompleteName, attributes, false,
-                        this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
+                        this.templateName, this.lineOffset + this.currentElementLine, (this.currentElementLine == 1? this.colOffset : 0) + this.currentElementCol));
 
     }
 
@@ -310,6 +317,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
+        this.currentElementLine = line;
+        this.currentElementCol = col;
         this.currentElementAttributes.clear();
         this.currentElementInnerWhiteSpaces.clear();
 
@@ -339,7 +348,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.templateHandler.handleOpenElement(
                 new OpenElementTag(
                         this.templateMode, elementDefinition, elementCompleteName, attributes, true, // synthetic = true
-                        this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
+                        this.templateName, this.lineOffset + this.currentElementLine, (this.currentElementLine == 1? this.colOffset : 0) + this.currentElementCol));
 
     }
 
@@ -352,6 +361,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
+        this.currentElementLine = line;
+        this.currentElementCol = col;
         this.currentElementAttributes.clear();
         this.currentElementInnerWhiteSpaces.clear();
 
@@ -377,7 +388,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.templateHandler.handleCloseElement(
                 new CloseElementTag(
                         this.templateMode, elementDefinition, elementCompleteName, trailingWhiteSpace, false, false,
-                        this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
+                        this.templateName, this.lineOffset + this.currentElementLine, (this.currentElementLine == 1? this.colOffset : 0) + this.currentElementCol));
 
     }
 
@@ -390,6 +401,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
+        this.currentElementLine = line;
+        this.currentElementCol = col;
         this.currentElementAttributes.clear();
         this.currentElementInnerWhiteSpaces.clear();
 
@@ -415,7 +428,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.templateHandler.handleCloseElement(
                 new CloseElementTag(
                         this.templateMode, elementDefinition, elementCompleteName, trailingWhiteSpace, true, false,
-                        this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
+                        this.templateName, this.lineOffset + this.currentElementLine, (this.currentElementLine == 1? this.colOffset : 0) + this.currentElementCol));
 
     }
 
@@ -428,6 +441,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
+        this.currentElementLine = line;
+        this.currentElementCol = col;
         this.currentElementAttributes.clear();
         this.currentElementInnerWhiteSpaces.clear();
 
@@ -454,7 +469,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.templateHandler.handleCloseElement(
                 new CloseElementTag(
                         this.templateMode, elementDefinition, elementCompleteName, trailingWhiteSpace, false, true,
-                        this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
+                        this.templateName, this.lineOffset + this.currentElementLine, (this.currentElementLine == 1? this.colOffset : 0) + this.currentElementCol));
 
     }
 

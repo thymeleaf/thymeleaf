@@ -54,6 +54,8 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
     private final int lineOffset;
     private final int colOffset;
 
+    private int currentElementLine = -1;
+    private int currentElementCol = -1;
     private final List<Attribute> currentElementAttributes;
 
 
@@ -127,6 +129,8 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             final boolean minimized, final int line, final int col)
             throws TextParseException {
 
+        this.currentElementLine = line;
+        this.currentElementCol = col;
         this.currentElementAttributes.clear();
 
     }
@@ -161,7 +165,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
         this.templateHandler.handleStandaloneElement(
                 new StandaloneElementTag(
                         this.templateMode, elementDefinition, elementCompleteName, attributes, false, minimized,
-                        this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
+                        this.templateName, this.lineOffset + this.currentElementLine, (this.currentElementLine == 1? this.colOffset : 0) + this.currentElementCol));
 
     }
 
@@ -174,6 +178,8 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             final int line, final int col)
             throws TextParseException {
 
+        this.currentElementLine = line;
+        this.currentElementCol = col;
         this.currentElementAttributes.clear();
 
     }
@@ -208,7 +214,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
         this.templateHandler.handleOpenElement(
                 new OpenElementTag(
                         this.templateMode, elementDefinition, elementCompleteName, attributes, false,
-                        this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
+                        this.templateName, this.lineOffset + this.currentElementLine, (this.currentElementLine == 1? this.colOffset : 0) + this.currentElementCol));
 
     }
 
@@ -221,6 +227,8 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
             final int line, final int col)
             throws TextParseException {
 
+        this.currentElementLine = line;
+        this.currentElementCol = col;
         this.currentElementAttributes.clear();
 
     }
@@ -238,7 +246,7 @@ public final class TemplateHandlerAdapterTextHandler extends AbstractTextHandler
         this.templateHandler.handleCloseElement(
                 new CloseElementTag(
                         this.templateMode, elementDefinition, elementCompleteName, null, false, false,
-                        this.templateName, this.lineOffset + line, (line == 1? this.colOffset : 0) + col));
+                        this.templateName, this.lineOffset + this.currentElementLine, (this.currentElementLine == 1? this.colOffset : 0) + this.currentElementCol));
 
     }
 
