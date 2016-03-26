@@ -96,6 +96,9 @@ final class OpenElementTag
     OpenElementTag removeAttribute(final String prefix, final String name) {
         final Attributes oldAttributes = (this.attributes != null? this.attributes : Attributes.EMPTY_ATTRIBUTES);
         final Attributes newAttributes = oldAttributes.removeAttribute(this.templateMode, prefix, name);
+        if (oldAttributes == newAttributes) {
+            return this;
+        }
         return new OpenElementTag(this.templateMode, this.elementDefinition, this.elementCompleteName, newAttributes, this.synthetic, this.templateName, this.line, this.col);
     }
 
@@ -103,6 +106,9 @@ final class OpenElementTag
     OpenElementTag removeAttribute(final String completeName) {
         final Attributes oldAttributes = (this.attributes != null? this.attributes : Attributes.EMPTY_ATTRIBUTES);
         final Attributes newAttributes = oldAttributes.removeAttribute(this.templateMode, completeName);
+        if (oldAttributes == newAttributes) {
+            return this;
+        }
         return new OpenElementTag(this.templateMode, this.elementDefinition, this.elementCompleteName, newAttributes, this.synthetic, this.templateName, this.line, this.col);
     }
 
@@ -110,6 +116,9 @@ final class OpenElementTag
     OpenElementTag removeAttribute(final AttributeName attributeName) {
         final Attributes oldAttributes = (this.attributes != null? this.attributes : Attributes.EMPTY_ATTRIBUTES);
         final Attributes newAttributes = oldAttributes.removeAttribute(attributeName);
+        if (oldAttributes == newAttributes) {
+            return this;
+        }
         return new OpenElementTag(this.templateMode, this.elementDefinition, this.elementCompleteName, newAttributes, this.synthetic, this.templateName, this.line, this.col);
     }
 

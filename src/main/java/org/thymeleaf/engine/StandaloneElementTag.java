@@ -111,6 +111,9 @@ final class StandaloneElementTag
     StandaloneElementTag removeAttribute(final String prefix, final String name) {
         final Attributes oldAttributes = (this.attributes != null? this.attributes : Attributes.EMPTY_ATTRIBUTES);
         final Attributes newAttributes = oldAttributes.removeAttribute(this.templateMode, prefix, name);
+        if (oldAttributes == newAttributes) {
+            return this;
+        }
         return new StandaloneElementTag(this.templateMode, this.elementDefinition, this.elementCompleteName, newAttributes, this.synthetic, this.minimized, this.templateName, this.line, this.col);
     }
 
@@ -118,6 +121,9 @@ final class StandaloneElementTag
     StandaloneElementTag removeAttribute(final String completeName) {
         final Attributes oldAttributes = (this.attributes != null? this.attributes : Attributes.EMPTY_ATTRIBUTES);
         final Attributes newAttributes = oldAttributes.removeAttribute(this.templateMode, completeName);
+        if (oldAttributes == newAttributes) {
+            return this;
+        }
         return new StandaloneElementTag(this.templateMode, this.elementDefinition, this.elementCompleteName, newAttributes, this.synthetic, this.minimized, this.templateName, this.line, this.col);
     }
 
@@ -125,6 +131,9 @@ final class StandaloneElementTag
     StandaloneElementTag removeAttribute(final AttributeName attributeName) {
         final Attributes oldAttributes = (this.attributes != null? this.attributes : Attributes.EMPTY_ATTRIBUTES);
         final Attributes newAttributes = oldAttributes.removeAttribute(attributeName);
+        if (oldAttributes == newAttributes) {
+            return this;
+        }
         return new StandaloneElementTag(this.templateMode, this.elementDefinition, this.elementCompleteName, newAttributes, this.synthetic, this.minimized, this.templateName, this.line, this.col);
     }
 
