@@ -327,12 +327,11 @@ final class Attributes {
         final AttributeDefinition computedNewAttributeDefinition =
                 (newAttributeDefinition != null ? newAttributeDefinition : attributeDefinitions.forName(templateMode, newCompleteName));
 
-        // We will not 'modify' the old one, but create a new object. We specifically don't want to save the operator,
-        // template name, line or col because it is a new attribute with a different name (and which did not exist at
-        // the original markup).
+        // We will 'modify' the old one, even if we are going to change the name, so that transition from the old name
+        // to the new one is smoother by keeping (if allowed) operator, value quotes, etc.
         final Attribute[] newAttributes = this.attributes.clone();
         newAttributes[oldIdx] =
-                new Attribute(computedNewAttributeDefinition, newCompleteName, null, value, valueQuotes, null, -1, -1);
+                newAttributes[oldIdx].modify(computedNewAttributeDefinition, newCompleteName, value, valueQuotes);
 
 
         return new Attributes(newAttributes, this.innerWhiteSpaces);
