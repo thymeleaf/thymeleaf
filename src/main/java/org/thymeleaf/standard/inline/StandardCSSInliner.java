@@ -45,8 +45,8 @@ public final class StandardCSSInliner extends AbstractStandardInliner {
 
 
     @Override
-    protected String produceEscapedOutput(final String input) {
-        final Writer cssWriter = new FastStringWriter(input.length() * 2);
+    protected String produceEscapedOutput(final Object input) {
+        final Writer cssWriter = new FastStringWriter(input instanceof String? ((String)input).length() * 2 : 20);
         this.serializer.serializeValue(input, cssWriter);
         return cssWriter.toString();
     }

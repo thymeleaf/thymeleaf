@@ -45,10 +45,10 @@ public final class StandardJavaScriptInliner extends AbstractStandardInliner {
 
 
     @Override
-    protected String produceEscapedOutput(final String input) {
-        final Writer cssWriter = new FastStringWriter(input.length() * 2);
-        this.serializer.serializeValue(input, cssWriter);
-        return cssWriter.toString();
+    protected String produceEscapedOutput(final Object input) {
+        final Writer jsWriter = new FastStringWriter(input instanceof String? ((String)input).length() * 2 : 20);
+        this.serializer.serializeValue(input, jsWriter);
+        return jsWriter.toString();
     }
 
 }

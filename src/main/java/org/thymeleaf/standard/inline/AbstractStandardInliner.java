@@ -531,7 +531,7 @@ public abstract class AbstractStandardInliner implements IInliner {
             }
 
             if (escape) {
-                return produceEscapedOutput(expressionResult == null ? null : expressionResult.toString());
+                return produceEscapedOutput(expressionResult);
             } else {
                 return (expressionResult == null? "": expressionResult.toString());
             }
@@ -554,6 +554,6 @@ public abstract class AbstractStandardInliner implements IInliner {
     }
 
 
-    protected abstract String produceEscapedOutput(final String input);
+    protected abstract String produceEscapedOutput(final Object input);
 
 }

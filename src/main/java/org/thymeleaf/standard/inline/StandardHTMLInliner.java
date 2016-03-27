@@ -38,11 +38,11 @@ public final class StandardHTMLInliner extends AbstractStandardInliner {
 
 
     @Override
-    protected String produceEscapedOutput(final String input) {
+    protected String produceEscapedOutput(final Object input) {
         if (input == null) {
             return "";
         }
-        return HtmlEscape.escapeHtml4Xml(input);
+        return HtmlEscape.escapeHtml4Xml(input.toString());
     }
 
 }

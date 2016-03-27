@@ -38,11 +38,11 @@ public final class StandardXMLInliner extends AbstractStandardInliner {
 
 
     @Override
-    protected String produceEscapedOutput(final String input) {
+    protected String produceEscapedOutput(final Object input) {
         if (input == null) {
             return "";
         }
-        return XmlEscape.escapeXml10(input);
+        return XmlEscape.escapeXml10(input.toString());
     }
 
 }
