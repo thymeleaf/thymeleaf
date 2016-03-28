@@ -2851,7 +2851,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
         if (iterationIndex == 0) {
             iterModel.replace(1, iterArtifacts.iterationFirstBodyEventIter0);
-            iterModel.replace(iterModel.size() - 2, iterArtifacts.iterationLastBodyEventIterN);
+            if (iterModel.size() > 3) {
+                iterModel.replace(iterModel.size() - 2, iterArtifacts.iterationLastBodyEventIterN);
+            }
         }
 
         if (iterationIndex == 1) {
