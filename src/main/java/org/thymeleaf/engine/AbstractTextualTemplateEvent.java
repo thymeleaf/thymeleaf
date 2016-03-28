@@ -190,10 +190,14 @@ abstract class AbstractTextualTemplateEvent extends AbstractTemplateEvent implem
         int inline = 0;
         while (n-- != 0) {
             c1 = charAtContent(n);
-            if (c1 == ']' && c0 == ']') {
+            if (n > 0 && c1 == ']' && c0 == ']') {
                 inline = 1;
-            } else if (c1 == ')' && c0 == ']') {
+                n--;
+                c1 = charAtContent(n);
+            } else if (n > 0 && c1 == ')' && c0 == ']') {
                 inline = 2;
+                n--;
+                c1 = charAtContent(n);
             } else if (inline == 1 && c1 == '[' && c0 == '[') {
                 return Boolean.TRUE;
             } else if (inline == 2 && c1 == '[' && c0 == '(') {
