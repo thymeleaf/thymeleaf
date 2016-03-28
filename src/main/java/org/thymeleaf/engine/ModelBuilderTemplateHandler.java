@@ -48,16 +48,27 @@ public final class ModelBuilderTemplateHandler extends AbstractTemplateHandler {
     private final List<IEngineTemplateEvent> events;
     private final IEngineConfiguration configuration;
     private final TemplateData templateData;
+    private final boolean condenseEvents;
+
+
+    private final StringBuilder condensation;
+    private String condensationTemplateName = null;
+    private int condensationLine = -1;
+    private int condensationCol = -1;
+    private int condensationLevel = -1;
 
 
 
-    public ModelBuilderTemplateHandler(final IEngineConfiguration configuration, final TemplateData templateData) {
+    public ModelBuilderTemplateHandler(
+            final IEngineConfiguration configuration, final TemplateData templateData, final boolean condenseEvents) {
         super();
         Validate.notNull(configuration, "Configuration cannot be null");
         Validate.notNull(templateData, "Template Data cannot be null");
         this.configuration = configuration;
         this.templateData = templateData;
         this.events = new ArrayList<IEngineTemplateEvent>(100);
+        this.condenseEvents = condenseEvents;
+        this.condensation = this.condenseEvents ? new StringBuilder(100) : null;
     }
 
 
@@ -102,6 +113,11 @@ public final class ModelBuilderTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleComment(final IComment comment) {
+        if (this.condenseEvents && this.condensation.length() > 0) {
+            final Text condensed = new Text(this.condensation.toString(), this.condensationTemplateName, this.condensationLine, this.condensationCol);
+            resetCondensation();
+            handleText(condensed);
+        }
         this.events.add(Comment.asEngineComment(comment));
         // The engine event we might have created is not forwarded - this makes cache creating transparent to the handler chain
         super.handleComment(comment);
@@ -171,6 +187,14 @@ public final class ModelBuilderTemplateHandler extends AbstractTemplateHandler {
         super.handleProcessingInstruction(processingInstruction);
     }
 
+
+
+    private void resetCondensation() {
+        this.condensation.setLength(0);
+        this.condensationLine = -1;
+        this.condensationCol = -1;
+        this.condensationLevel = -1;
+    }
 
     
 }
