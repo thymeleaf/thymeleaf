@@ -293,7 +293,7 @@ public final class TemplateManager {
         /*
          *  Create the Template Handler that will be in charge of building the TemplateModel
          */
-        final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(this.configuration, templateData, true);
+        final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(this.configuration, templateData);
 
 
         /*
@@ -354,7 +354,7 @@ public final class TemplateManager {
         final IEngineContext engineContext =
                 EngineContextManager.prepareEngineContext(this.configuration, templateData, context.getTemplateResolutionAttributes(), context);
 
-        final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(this.configuration, templateData, false);
+        final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(this.configuration, templateData);
         final ITemplateHandler processingHandlerChain =
                 createTemplateProcessingHandlerChain(engineContext, true, false, builderHandler, null);
 
@@ -442,7 +442,7 @@ public final class TemplateManager {
          * we want the elements inside the fragment to me reported as belonging to the container template,
          * not to the fragment String considered as a fragment in its own (which wouldn't make sense)
          */
-        final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(this.configuration, templateData, true);
+        final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(this.configuration, templateData);
 
 
         /*
@@ -644,7 +644,7 @@ public final class TemplateManager {
         if (templateResolution.getValidity().isCacheable() && this.templateCache != null) {
 
             // Create the handler chain to create the Template object
-            final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(this.configuration, templateData, true);
+            final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(this.configuration, templateData);
 
             // Process the cached template itself
             parser.parseStandalone(
