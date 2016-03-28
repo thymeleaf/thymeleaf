@@ -1,0 +1,715 @@
+@charset "UTF-8";
+
+/* 
+ * Copyright 2011-2016, The Thymeleaf Project (http://www.thymeleaf.org/)
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+/* ELEMENT SELECTORS */
+/* ========================================================================== */
+
+* {
+	box-sizing: inherit;
+}
+
+html {
+	box-sizing: border-box;
+}
+
+body {
+	background-color: white;
+	border-left: 0.25em solid #005f0f;
+	color: #333333;
+	font: 1em/1.5em 'Ubuntu', sans-serif
+}
+
+@media (min-width: 62.5rem) {
+	body {
+		border-left-width: 0.5em;
+	}
+}
+
+a {
+	border-bottom: 1px dotted;
+	color: #005f0f;
+	text-decoration: none;
+	word-wrap: break-word;
+}
+a:visited {
+	color: #005f0f;
+}
+a:hover,
+a:focus {
+	border-bottom-style: solid;
+}
+a.anchor {
+	border-bottom: none;
+	display: block;
+	position: relative;
+	top: -4em;
+}
+
+blockquote {
+	background-color: #ececec;
+	margin: 0;
+	padding: 0.5em 1.5em;
+}
+
+button {
+	background-color: transparent;
+	border: none;
+	cursor: pointer;
+	padding: 1em;
+}
+button:hover,
+button:focus {
+	background-color: #005f0f;
+	color: white;
+}
+
+figure {
+	margin: 1em;
+}
+
+figcaption {
+	font-size: 0.85em;
+	font-style: italic;
+	text-align: center;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-style: italic;
+	font-weight: normal;
+	line-height: 1.5em;
+	margin: 0.5em 0;
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+}
+
+h2 {
+	background-color: #005f0f;
+	color: white;
+	margin-top: 1.5em;
+	margin-left: -1em;
+	padding-left: 1em;
+	padding-right: 0.5em;
+}
+
+h3 {
+	border-bottom: 1px solid #005f0f;
+}
+
+h5, h6 {
+	font-size: 1em;
+}
+
+img {
+	display: block;
+	margin: 0 auto;
+	max-width: 100%;
+}
+
+p {
+	margin: 1em 0;
+}
+
+ol, ul {
+	margin: 1em 0 1em 1em;
+	padding: 0;
+}
+
+@media (min-width: 31.25rem) {
+	ol, ul {
+		margin-left: 2em;
+	}
+}
+
+section {
+	margin-bottom: 2em;
+}
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+thead {
+	border-bottom: 1px dotted black;
+}
+
+th {
+	text-align: left;
+}
+
+th, td {
+	padding: 0.25em;
+	vertical-align: top;
+	white-space: nowrap;
+}
+
+
+/* COMMON COMPONENTS */
+/* ========================================================================== */
+
+.fluid-container {
+	padding-left: 0.75em;
+	padding-right: 1em;
+}
+
+@media (min-width: 62.5rem) {
+	.fluid-container {
+		padding-left: 0.5em;
+	}
+}
+
+.fluid-block {
+	margin: 0 auto;
+	max-width: 56.25rem;
+}
+
+.subsection {
+	margin: 1em 0 1.5em;
+}
+
+/* Toolbar component */
+/* -------------------------------------------------------------------------- */
+
+.toolbar-container {
+	background-color: white;
+	position: fixed;
+	width: calc(100% - 0.25em);
+	z-index: 5;
+}
+
+.toolbar-menu {
+	border-bottom: 1px solid #005f0f;
+	display: flex;
+	justify-content: space-between;
+}
+
+.toolbar-menu-location {
+	padding: 1em;
+}
+
+.toolbar-menu-items {
+	height: 0;
+	overflow: hidden;
+	transition: 200ms height;
+}
+
+.toolbar-menu-items.show-menu {
+	box-shadow: 0 0.5rem 0.5rem 0 rgba(0, 0, 0, 0.6);
+	height: 28.125rem;
+	max-height: calc(95vh - 5.5rem);
+	overflow: auto;
+}
+
+.toolbar a {
+	border-bottom: none;
+	color: inherit;
+}
+.toolbar a:hover,
+.toolbar a:focus,
+.toolbar a:active,
+.toolbar .selected a {
+	background-color: #005f0f;
+	color: white;
+	text-decoration: none;
+}
+
+.toolbar-links {
+	list-style: none;
+	margin: 0;
+}
+
+.toolbar-link {
+	display: block;
+	padding: 1em;
+}
+
+@media (max-width: 43.75rem) {
+	.toolbar-container {
+		padding: 0;
+	}
+}
+
+@media (min-width: 43.75rem) {
+	.toolbar-container {
+		border-bottom: 1px solid #005f0f;
+	}
+
+	.toolbar-menu {
+		display: none;
+	}
+
+	.toolbar-menu-items {
+		display: flex;
+		height: auto;
+		justify-content: space-between;
+		overflow: auto;
+	}
+
+	.toolbar-links {
+		display: flex;
+	}
+}
+
+@media (min-width: 62.5rem) {
+	.toolbar-container {
+		width: calc(100% - 0.5em);
+	}
+}
+
+/* Hero image/title */
+/* -------------------------------------------------------------------------- */
+
+.hero-container {
+	background-color: #ececec;
+	border-bottom: 1px solid #005f0f;
+	margin-bottom: 2em;
+	padding-top: 3em;
+}
+
+.hero-header {
+	padding: 1.5em 0em 1em;
+}
+
+.hero-header-text {
+	color: #333333;
+	margin-bottom: 1em;
+	text-align: center;
+}
+
+.hero-header-title {
+	font-size: 2em;
+	margin: 0;
+	padding: 0;
+}
+
+.hero-header-image {
+	text-align: center;
+}
+
+.hero-header-logo {
+	width: 2.5rem;
+}
+
+@media (min-width: 27.5rem) {
+	.hero-header-title {
+		font-size: 2em;
+	}
+}
+
+@media (min-width: 37.5rem) {
+	.hero-header {
+		align-items: center;
+		display: flex;
+		flex-direction: row-reverse;
+		justify-content: center;
+	}
+	.hero-header-text {
+		align-items: center;
+		display: flex;
+		margin-bottom: 0;
+	}
+	.hero-header-title {
+		font-size: 2em;
+		margin-right: 0.5em;
+	}
+	.hero-header-image {
+		margin-right: 1em;
+	}
+}
+
+/* Footer component */
+/* -------------------------------------------------------------------------- */
+
+.footer-container {
+	background-color: #ececec;
+	border-top: 1px solid #005f0f;
+	margin-top: 4em;
+	padding: 1em 1em 2em;
+}
+
+.footer {
+	display: flex;
+	font-size: 0.85rem;
+}
+
+.footer-sections:nth-last-child(n+2) {
+	margin-right: 12.5%;
+}
+
+.footer-sections-links {
+	list-style: none;
+	margin: 0;
+}
+
+.footer-sections-separator {
+	margin: 1em 0;
+}
+
+.license {
+	font-size: 0.75em;
+	text-align: right;
+}
+
+.copyright {
+	font-size: 0.75em;
+	margin-top: 3em;
+	text-align: right;
+}
+
+@media (min-width: 30rem) {
+	.license {
+		margin-top: 0;
+	}
+	.copyright {
+		margin-top: 0;
+	}
+}
+
+
+/* PAGE-SPECIFIC COMPONENTS */
+/* ========================================================================== */
+
+/* News items */
+/* -------------------------------------------------------------------------- */
+
+.news {
+	font-size: 0.85em;
+	font-style: italic;
+	margin-bottom: 2em;
+	max-width: 45rem;
+	text-align: center;
+}
+
+/* Table scroller */
+/* -------------------------------------------------------------------------- */
+/* TODO: I'm not really happy with this solution for squeezing a table down to
+         a mobile device.  I should change how the information is presented
+         instead to be better responsive. */
+
+.table-scroller {
+	overflow-x: auto;
+}
+
+/* Our tools component */
+/* -------------------------------------------------------------------------- */
+
+.our-tools {
+	list-style: none;
+	margin: 0;
+}
+
+.our-tool {
+	margin-bottom: 2em;
+}
+
+.our-tool-logo {
+	padding: 1em;
+}
+
+@media (min-width: 31.25rem) {
+	.our-tool {
+		display: flex;
+	}
+	.our-tool-logo {
+		width: 40%;
+	}
+	.our-tool-blurb {
+		width: 60%;
+	}
+}
+
+@media (min-width: 56.25rem) {
+	.our-tool-logo {
+		width: 30%;
+	}
+	.our-tool-blurb {
+		width: 70%;
+	}
+}
+
+/* Who is using Thymeleaf component */
+/* -------------------------------------------------------------------------- */
+
+.thymeleaf-users,
+.thymeleaf-users-preview {
+	list-style: none;
+	margin: 1em 0;
+}
+
+.thymeleaf-users-preview {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+}
+
+.thymeleaf-user-preview {
+	width: 12.5rem;
+}
+
+.thymeleaf-user-preview img {
+	-webkit-filter: grayscale(100%);
+	        filter: grayscale(100%);
+}
+.thymeleaf-user-preview img:hover {
+	-webkit-filter: none;
+	        filter: none;
+}
+
+.thymeleaf-user-logo {
+	align-items: center;
+	display: flex;
+	height: 100%;
+	justify-content: center;
+	padding: 1em;
+}
+
+.thymeleaf-user-logo a {
+	border-bottom: none;
+}
+
+.thymeleaf-user-logo img {
+	display: block;
+	margin: 0 auto;
+	max-width: 10.5rem;
+}
+
+.thymeleaf-user-blurb {
+	font-style: italic;
+}
+.thymeleaf-user-blurb p:first-child:before {
+	content: "“"
+}
+.thymeleaf-user-blurb p:last-child:after {
+	content: "”";
+}
+
+@media (min-width: 37.5rem) {
+	.thymeleaf-users .thymeleaf-user {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		margin-bottom: 2em;
+	}
+	.thymeleaf-users .thymeleaf-user-logo {
+		order: 1;
+		width: 40%;
+	}
+	.thymeleaf-users .thymeleaf-user-url {
+		order: 3;
+	}
+	.thymeleaf-users .thymeleaf-user-blurb {
+		order: 2;
+		width: 60%;
+	}
+}
+
+@media (min-width: 43.75rem) {
+	.thymeleaf-users .thymeleaf-user-logo {
+		width: 35%;
+	}
+	.thymeleaf-users .thymeleaf-user-blurb {
+		width: 65%;
+	}
+}
+
+
+/* ID SELECTORS */
+/* ========================================================================== */
+
+#site-nav-links {
+	border-top: 1px solid #aea99f;
+}
+
+@media (min-width: 43.75rem) {
+	#site-nav-links {
+		border-top: none;
+	}
+}
+
+#thymeleaf-home .hero-header-title {
+	font-size: 3em;
+}
+#thymeleaf-home .hero-header-logo {
+	width: 4rem;
+}
+
+@media (min-width: 45rem) {
+	#thymeleaf-home .hero-header-title {
+		font-size: 6em;
+	}
+	#thymeleaf-home .hero-header-logo {
+		width: 8rem;
+	}
+}
+
+@media (min-width: 50rem) {
+	#thymeleaf-home .hero-header-title {
+		font-size: 7em;
+	}
+	#thymeleaf-home .hero-header-logo {
+		width: 9rem;
+	}
+}
+
+#footer-issue-tracking {
+	margin-top: 1em;
+}
+
+
+/* CODE SECTIONS */
+/* ========================================================================== */
+
+p > code,
+li > code {
+	padding: 0.25em;
+	word-wrap: break-word;
+}
+
+pre,
+code {
+	font-family: "Ubuntu Mono", monospace;
+}
+
+pre {
+	background-color: #333333;
+	line-height: 1.25em;
+	overflow: auto;
+	padding: 1em;
+}
+
+pre.line-numbers {
+	counter-reset: linenumber;
+	padding-left: 4em;
+	position: relative;
+}
+
+pre.line-numbers > code {
+	position: relative;
+}
+
+.line-numbers .line-numbers-rows {
+	border-right: 1px solid #b9bdb6;
+	left: -4em;
+	pointer-events: none;
+	position: absolute;
+	top: 0;
+	width: 3em;
+
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.line-numbers-rows > span {
+	counter-increment: linenumber;
+	display: block;
+	pointer-events: none;
+}
+
+.line-numbers-rows > span:before {
+	color: #b9bdb6;
+	content: counter(linenumber);
+	display: block;
+	padding-right: 0.75em;
+	text-align: right;
+}
+
+pre code {
+	color: #b9bdb6;
+	font-weight: normal;
+}
+
+table code {
+	font-weight: normal;
+}
+
+code {
+	color: #707070;
+	font-weight: bold;
+}
+code::selection,
+code *::selection {
+	background: #690;
+}
+code::-moz-selection,
+code *::-moz-selection {
+	background: #690;
+}
+
+/*.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+}*/
+
+.token.punctuation {
+	color: #b9bdb6;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #8bd1ff;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #e0e8ff;
+}
+
+/*.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+}*/
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #99cc33;
+}
+
+/*.token.function {
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+}
+
+.token.important,
+.token.bold {
+}
+
+.token.italic {
+}
+
+.token.entity {
+	cursor: help;
+}*/

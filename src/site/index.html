@@ -1,207 +1,221 @@
 <!DOCTYPE html>
-<html>
 
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Thymeleaf: java XML/XHTML/HTML5 template engine</title>
-    <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
-    <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
-    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
-      {lang:'en', parsetags:'explicit'}
-    </script>
-    <script type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-1276954-9']);
-      _gaq.push(['_trackPageview']);
+<html lang="en">
 
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-    </script>
-    <script type="text/javascript" src="sh/scripts/shCore.js"></script>
-    <script type="text/javascript" src="sh/scripts/shBrushXml.js"></script>
-    <script type="text/javascript" src="sh/scripts/shBrushJava.js"></script>
-    <link href="sh/styles/shCore.css" rel="stylesheet" type="text/css" />
-    <link href="sh/styles/shThemeThymeleaf.css" rel="stylesheet" type="text/css" />
-  </head>
+<head>
+	<title>Thymeleaf</title>
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
+	<link rel="icon" href="images/favicon.ico"/>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,400italic,700,700italic"/>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic,700italic"/>
+	<link rel="stylesheet" href="styles/normalize.css" media="screen"/>
+	<link rel="stylesheet" href="styles/thymeleaf.css" media="screen"/>
 
-  <body lang="en" dir="ltr">
+	<script src="scripts/dumbqueryselector.js" defer></script>
+	<script src="scripts/prism.js" defer data-manual></script>
+	<script src="scripts/thymeleaf.js" defer></script>
+</head>
 
-  <div id="page">
-  
-   <div id="menu">
-     <ul>
-       <li><a href="index.html" title="Home">Home</a></li>
-       <li><a href="features.html" title="Features">Features</a></li>
-       <li><a href="download.html" title="Download">Download</a></li>
-       <li><a href="documentation.html" title="Documentation">Documentation</a></li>
-       <li><a href="ecosystem.html" title="Ecosystem">Ecosystem</a></li>
-       <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
-       <li><a href="issuetracking.html" title="Issue Tracking">Issue Tracking</a></li>
-     </ul>
-   </div>
+<body id="thymeleaf-home">
 
-   <div id="header">
-     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
-   </div>
+	<div class="fluid-container toolbar-container">
+		<nav class="fluid-block toolbar">
+			<div class="toolbar-menu">
+				<div class="toolbar-menu-location">Home</div>
+				<button id="site-menu-button" type="button" class="toolbar-menu-button">Site Menu</button>
+			</div>
+			<div id="site-menu" class="toolbar-menu-items">
+				<ul class="toolbar-links">
+					<li class="selected"><a href="index.html" class="toolbar-link">Home</a></li>
+					<li><a href="download.html" class="toolbar-link">Download</a></li>
+					<li><a href="documentation.html" class="toolbar-link">Docs</a></li>
+					<li><a href="ecosystem.html" class="toolbar-link">Ecosystem</a></li>
+					<li><a href="faq.html" class="toolbar-link">FAQ</a></li>
+				</ul>
+				<ul id="site-nav-links" class="toolbar-links">
+					<li><a href="http://forum.thymeleaf.org/" class="toolbar-link">Forum</a></li>
+					<li><a href="https://twitter.com/thymeleaf" class="toolbar-link">Twitter</a></li>
+					<li><a href="https://github.com/thymeleaf" class="toolbar-link">GitHub</a></li>
+				</ul>
+			</div>
+		</nav>
+	</div>
 
-   <div id="breadcrumb">
-      <a href="index.html">thymeleaf</a>
-      ::
-      <span class="current">home</span>
-   </div>
+	<div class="hero-container fluid-container">
+		<header class="hero-header fluid-block">
+			<div class="hero-header-text">
+				<h1 class="hero-header-title">Thymeleaf</h1>
+			</div>
+			<div class="hero-header-image">
+				<img src="images/thymeleaf.png" alt="Thymeleaf logo" class="hero-header-logo"/>
+			</div>
+		</header>
 
+		<!-- News block -->
+		<div class="news fluid-block">
+			<i>23 February 2016</i>: <strong>Thymeleaf 3.0.0.BETA02</strong> is here! The second BETA of the long awaited
+			Thymeleaf 3.0 release has been released, and it is now feature-complete!.
+			Learn more at the <a href="http://forum.thymeleaf.org/Thymeleaf-3-0-0-BETA02-just-published-td4029538.html">announcement</a> or
+			the <a href="doc/articles/thymeleaf3migration.html">migration guide</a>.
+		</div>
 
-   <div id="content">
+	</div>
 
-    <p class="notice">
-        Do you want to know <a href="whoisusingthymeleaf.html"><strong>Who is using Thymeleaf</strong></a>? have a look if you
-        want to learn about cool people using the coolest template engine!<br />
-        And if your company or public project uses Thymeleaf and would like to be listed there, just <a href="team.html">drop us a line</a>!
-    </p>
+	<div class="fluid-container">
+		<main class="fluid-block">
+			<section class="description">
+				<p><strong>Thymeleaf</strong> is a modern server-side Java template engine for both web and standalone 
+				environments.</p>
 
-    <!-- Sample news block -->
-    <p>
-        <i>23 February 2016</i>: <strong>Thymeleaf 3.0.0.BETA02</strong> is here! The second BETA of the long awaited
-        Thymeleaf 3.0 release has been released, and it is now feature-complete!.
-        Learn more at the <a href="http://forum.thymeleaf.org/Thymeleaf-3-0-0-BETA02-just-published-td4029538.html">announcement</a> or
-        the <a href="doc/articles/thymeleaf3migration.html">migration guide</a>.
-    </p>
+				<p>Thymeleaf's main goal is to bring elegant <em>natural templates</em> to
+				your development workflow &mdash; HTML that can be correctly displayed in browsers
+				and also work as static prototypes, allowing for stronger collaboration
+				in development teams.</p>
 
+				<p>With modules for Spring Framework, a host of integrations with
+				your favourite tools, and the ability to plug in your own functionality,
+				Thymeleaf is ideal for modern-day HTML5 JVM web development &mdash; although there
+				is much more it can do.</p>
+			</section>
 
-    <h2>What is Thymeleaf?</h2>
-    
-    <p>
-      Thymeleaf is a Java library. It is a <b>template engine</b> capable of processing and generating HTML, XML, JavaScript, CSS and text,
-      and can work both in web and non-web environments. It is better suited for serving the <i>view layer</i> of
-      web applications, but it can process files in many formats, even in offline environments.
-    </p>
-    <p>
-      It provides an optional module for integration with <b>Spring MVC</b>, so that you 
-      can use it as a complete substitute of JSP in your applications made with this technology, even with HTML5.
-    </p>
-    <p>
-      The main goal of Thymeleaf is to provide an elegant and well-formed way of creating 
-      templates. Its <i>Standard</i> and <i>SpringStandard</i> dialects allow you to create powerful 
-      <i>natural templates</i>, that can be correctly displayed by browsers
-      and therefore work also as static prototypes. You can also extend Thymeleaf by 
-      developing your own dialects. 
-    </p>
-    <p>
-      For more detail, have a look at the <a href="features.html"><b>complete list of features</b></a>.
-    </p>
+			<section>
+				<header>
+					<h2 id="natural-templates">Natural templates</h2>
+				</header>
+				<p>HTML templates written in Thymeleaf still look and work like HTML, letting the
+				actual templates that are run in your application keep working 
+				as useful design artifacts.</p>
 
+				<pre class="line-numbers"><code class="language-html" data-src="template-example"></code></pre>
+			</section>
 
-    <h2>What does it look like?</h2>
-    <p>
-      It looks like this:
-    </p>
+			<section>
+				<header>
+					<h2 id="integrations">Integrations galore</h2>
+				</header>
+				<p>Eclipse, IntelliJ IDEA, Spring, Play, even the up-and-coming
+				Model-View-Controller API for Java EE 8.  Write Thymeleaf in your
+				favourite tools, using your favourite web-development framework.</p>
 
-    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
-       <table>
-         <thead>
-           <tr>
-             <th th:text="#{msgs.headers.name}">Name</th>
-             <th th:text="#{msgs.headers.price}">Price</th>
-           </tr>
-         </thead>
-         <tbody>
-           <tr th:each="prod : ${allProducts}">
-             <td th:text="${prod.name}">Oranges</td>
-             <td th:text="${#numbers.formatDecimal(prod.price,1,2)}">0.99</td>
-           </tr>
-         </tbody>
-       </table>
-    ]]></script>
-    
-    <p>
-      A quick look at this piece of code reveals internationalization expressions (<kbd>#{...}</kbd>),
-      variable/model-attribute evaluation expressions (<kbd>${...}</kbd>) and even utility functions
-      (<kbd>#numbers.formatDecimal(...)</kbd>). It also shows that this fragment of (X)HTML code
-      can be perfectly displayed by a browser as a prototype, without being executed at all &mdash;something
-      called a <i>natural template</i>. 
-    </p>
-    <p>
-      But there's so much more: full (optional) Spring MVC integration - including form binding, property
-      editors and validation messages -, text/javascript inlining and an intelligent template cache system.
-    </p>
-    <p>
-      Again, for more detail have a look at the <a href="features.html">complete list of features</a>.
-    </p>
+				<p>Check out our <a href="ecosystem.html">Ecosystem</a> to see more
+				integrations, including community-written plugins to speed-up your
+				development with Thymeleaf.</p>
+			</section>
 
+			<section>
+				<header>
+					<h2>Let's go!</h2>
+				</header>
+				<p>Looking to get started?  Check out our <a href="download.html">Download</a>
+				section for getting Thymeleaf, then go to our <a href="documentation.html">Docs</a>
+				pages for several tutorials to slowly ease you into using Thymeleaf.</p>
 
-    <h2>How is it distributed?</h2>
-    <p>
-      Thymeleaf is Open Source Software, and it is distributed under the terms of the <a href="license.html">Apache License 2.0</a>.
-    </p>
+				<p>Found a bug, or itching to contribute?  Then find the GitHub repo for
+				it on our <a href="issuetracking.html">issue tracking</a> page.</p>
 
-    <h2>Where can I start learning about it?</h2>
+				<p>Stuck?  Got a question?  Then find us on our <a href="http://forum.thymeleaf.org/">Forums</a>
+				and ask away.</p>
+			</section>
 
-    <p>
-      You should start by reading the <b>tutorials</b> at the <a href="documentation.html">documentation page</a>.
-    </p>
+			<section id="thymeleaf-users">
+				<header>
+					<h2>Who's using Thymeleaf?</h2>
+				</header>
+				<p><a href="whoisusingthymeleaf.html">Lots of people are</a> :)  But here are a few who have been kind enough
+				to provide us with testimonials on how they came to Thymeleaf and the
+				ways they are using it.  Click through to read what they have to say.</p>
 
-    <h2>How can I keep updated about Thymeleaf?</h2>
-    
-    <p>
-      One of the best ways to do it is to <a href="http://www.twitter.com/thymeleaf">follow us on twitter</a>, but
-      you can also subscribe to our 
-      <a href="http://forum.thymeleaf.org/Thymeleaf-News-and-Announcements-f2234422.html">News and Announcements Forum</a>.
-    </p>
+				<ul id="thymeleaf-users-list-preview" class="thymeleaf-users-preview">
+					<li class="thymeleaf-user-preview">
+						<div class="thymeleaf-user-logo">
+							<a href="whoisusingthymeleaf.html#broadleaf" title="Broadleaf Commerce"><img src="images/thirdparty/broadleafcommerce_logo.png"/></a>
+						</div>
+					</li>
+					<li class="thymeleaf-user-preview">
+						<div class="thymeleaf-user-logo">
+							<a href="whoisusingthymeleaf.html#connectgroup" title="Connect Group"><img src="images/thirdparty/connectgroup_logo.png"/></a>
+						</div>
+					</li>
+					<li class="thymeleaf-user-preview">
+						<div class="thymeleaf-user-logo">
+							<a href="whoisusingthymeleaf.html#here2shop" title="Here2Shop"><img src="images/thirdparty/here2shop_logo.png"/></a>
+						</div>
+					</li>
+					<li class="thymeleaf-user-preview">
+						<div class="thymeleaf-user-logo">
+							<a href="whoisusingthymeleaf.html#karmathome" title="KarmatHome"><img src="images/thirdparty/karmathome_logo.png"/></a>
+						</div>
+					</li>
+					<li class="thymeleaf-user-preview">
+						<div class="thymeleaf-user-logo">
+							<a href="whoisusingthymeleaf.html#lagerwey" title="Lagerwey"><img src="images/thirdparty/lagerwey_logo.png"/></a>
+						</div>
+					</li>
+					<li class="thymeleaf-user-preview">
+						<div class="thymeleaf-user-logo">
+							<a href="whoisusingthymeleaf.html#onegini" title="Onegini"><img src="images/thirdparty/onegini_logo.png"/></a>
+						</div>
+					</li>
+					<li class="thymeleaf-user-preview">
+						<div class="thymeleaf-user-logo">
+							<a href="whoisusingthymeleaf.html#ppi" title="PPI AG"><img src="images/thirdparty/ppiag_logo.png"/></a>
+						</div>
+					</li>
+					<li class="thymeleaf-user-preview">
+						<div class="thymeleaf-user-logo">
+							<a href="whoisusingthymeleaf.html#sahibinden" title="Sahibinden.com"><img src="images/thirdparty/sahibinden_logo.png"/></a>
+						</div>
+					</li>
+					<li class="thymeleaf-user-preview">
+						<div class="thymeleaf-user-logo">
+							<a href="whoisusingthymeleaf.html#trabesoluciones" title="Trabe Soluciones"><img src="images/thirdparty/trabesoluciones_logo.png"/></a>
+						</div>
+					</li>
+					<li class="thymeleaf-user-preview">
+						<div class="thymeleaf-user-logo">
+							<a href="whoisusingthymeleaf.html#yobidrive" title="YobiDrive"><img src="images/thirdparty/yobidrive_logo.png"/></a>
+						</div>
+					</li>
+				</ul>
+			</section>
 
+		</main>
+	</div>
 
-    <h2>Who is using this thing?</h2>
-    <p>
-      Have a look at our '<a href="whoisusingthymeleaf.html">Who is using Thymeleaf?</a>' page for some
-      download figures and interesting user experiences.
-    </p>
+	<div class="fluid-container footer-container">
+		<footer class="footer fluid-block">
+			<div class="footer-sections">
+				<h5>On this site</h5>
+				<ul class="footer-sections-links">
+					<li><a href="index.html">Home</a></li>
+					<li><a href="download.html">Download</a></li>
+					<li><a href="documentation.html">Docs</a></li>
+					<li><a href="ecosystem.html">Ecosystem</a></li>
+					<li><a href="faq.html">FAQ</a></li>
+					<li id="footer-issue-tracking"><a href="issuetracking.html">Issue Tracking</a></li>
+					<li><a href="team.html">The Thymeleaf Team</a></li>
+					<li><a href="whoisusingthymeleaf.html">Who's using Thymeleaf?</a></li>
+				</ul>
+			</div>
+			<div>
+				<h5>External links</h5>
+				<ul class="footer-sections-links">
+					<li><a href="http://forum.thymeleaf.org/">Forum</a></li>
+					<li><a href="https://twitter.com/thymeleaf">Follow us on Twitter</a></li>
+					<li><a href="https://github.com/thymeleaf">Fork us on GitHub</a></li>
+				</ul>
+			</div>
+		</footer>
+		<div class="copyright fluid-block">Copyright &copy; The Thymeleaf Team</div>
+		<div class="license fluid-block">
+			Thymeleaf is <strong>open source</strong> software distributed under the
+			<a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache License 2.0</a><br/>
+			This website (excluding the names and logos of Thymeleaf users) is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0 License</a>
+		</div>
+	</div>
 
-    <h2>Project Status</h2>
+</body>
 
-    <p>
-      Thymeleaf is production-ready. Current stable version is <b>2.1.4.RELEASE</b>.<br/>
-        But we are also preparing the awesome Thymeleaf 3.0,
-      so you might want to try our newest <b>3.0.0.BETA02</b> (<a href="http://forum.thymeleaf.org/Thymeleaf-3-0-0-BETA02-just-published-td4029538.html">more info</a> |
-        <a href="doc/articles/thymeleaf3migration.html">migration guide</a>).
-    </p>
-
-    <h2>Have a question?</h2>
-
-    <p>
-     Post it at our <a href="http://forum.thymeleaf.org">User Forum</a>.
-    </p>
-
-
-
-   </div>
-
-
-   <div id="footer">
-     <div id="googleplus">
-       <div id="plusone-div" class="plusone"></div>
-       <script type="text/javascript">
-           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
-       </script>
-     </div>
-     <div id="twitter">
-       <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>
-       <script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
-     </div>
-     <div id="copy">
-       Copyright &copy; The <a href="team.html">THYMELEAF Team</a>. See <a href="documentation.html">applicable licenses</a>.
-     </div>
-   </div>
-
-   
-  </div>
-
-  <script type="text/javascript">
-      SyntaxHighlighter.all();
-  </script>
-
-  </body>
 </html>

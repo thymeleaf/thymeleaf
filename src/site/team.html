@@ -1,328 +1,319 @@
 <!DOCTYPE html>
-<html>
 
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Team - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
-    <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
-    <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
-    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
-      {lang:'en', parsetags:'explicit'}
-    </script>
-    <script type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-1276954-9']);
-      _gaq.push(['_trackPageview']);
+<html lang="en">
 
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-    </script>
-    <script type="text/javascript" src="sh/scripts/shCore.js"></script>
-    <script type="text/javascript" src="sh/scripts/shBrushXml.js"></script>
-    <script type="text/javascript" src="sh/scripts/shBrushJava.js"></script>
-    <link href="sh/styles/shCore.css" rel="stylesheet" type="text/css" />
-    <link href="sh/styles/shThemeThymeleaf.css" rel="stylesheet" type="text/css" />
-  </head>
+<head>
+	<title>The Thymeleaf Team - Thymeleaf</title>
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
+	<link rel="icon" href="images/favicon.ico"/>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,400italic,700,700italic"/>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic,700italic"/>
+	<link rel="stylesheet" href="styles/normalize.css" media="screen"/>
+	<link rel="stylesheet" href="styles/thymeleaf.css" media="screen"/>
 
-  <body lang="en" dir="ltr">
+	<script src="scripts/dumbqueryselector.js" defer></script>
+	<script src="scripts/prism.js" defer data-manual></script>
+	<script src="scripts/thymeleaf.js" defer></script>
+</head>
 
-  <div id="page">
+<body id="thymeleaf-team">
 
-  
-   <div id="menu">
-     <ul>
-       <li><a href="index.html" title="Home">Home</a></li>
-       <li><a href="features.html" title="Features">Features</a></li>
-       <li><a href="download.html" title="Download">Download</a></li>
-       <li><a href="documentation.html" title="Documentation">Documentation</a></li>
-       <li><a href="ecosystem.html" title="Ecosystem">Ecosystem</a></li>
-       <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
-       <li><a href="issuetracking.html" title="Issue Tracking">Issue Tracking</a></li>
-     </ul>
-   </div>
+	<div class="fluid-container toolbar-container">
+		<nav class="fluid-block toolbar">
+			<div class="toolbar-menu">
+				<div class="toolbar-menu-location">Team</div>
+				<button id="site-menu-button" type="button" class="toolbar-menu-button">Site Menu</button>
+			</div>
+			<div id="site-menu" class="toolbar-menu-items">
+				<ul class="toolbar-links">
+					<li><a href="index.html" class="toolbar-link">Home</a></li>
+					<li><a href="download.html" class="toolbar-link">Download</a></li>
+					<li><a href="documentation.html" class="toolbar-link">Docs</a></li>
+					<li><a href="ecosystem.html" class="toolbar-link">Ecosystem</a></li>
+					<li><a href="faq.html" class="toolbar-link">FAQ</a></li>
+				</ul>
+				<ul id="site-nav-links" class="toolbar-links">
+					<li><a href="http://forum.thymeleaf.org/" class="toolbar-link">Forum</a></li>
+					<li><a href="https://twitter.com/thymeleaf" class="toolbar-link">Twitter</a></li>
+					<li><a href="https://github.com/thymeleaf" class="toolbar-link">GitHub</a></li>
+				</ul>
+			</div>
+		</nav>
+	</div>
 
-   <div id="header">
-     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
-   </div>
+	<div class="hero-container fluid-container">
+		<header class="hero-header fluid-block">
+			<div class="hero-header-text">
+				<h1 class="hero-header-title">Thymeleaf</h1>
+			</div>
+			<div class="hero-header-image">
+				<img src="images/thymeleaf.png" alt="Thymeleaf logo" class="hero-header-logo"/>
+			</div>
+		</header>
+	</div>
 
-   <div id="breadcrumb">
-      <a href="index.html">thymeleaf</a>
-      ::
-      <span class="current">team</span>
-   </div>
+	<div class="fluid-container">
+		<main class="fluid-block">
+			<section class="description">
+				<header>
+					<h2>Team</h2>
+				</header>
+				<p>The team is comprised of Members and Contributors. Members have
+				direct access to the source of a project and actively evolve the
+				code-base. Contributors improve the project through submission of
+				patches and suggestions to the Members. The number of Contributors to
+				the project is unbounded. Get involved today. All contributions to the
+				project are greatly appreciated!</p>
 
+				<p>Don't email the authors directly on the usage of Thymeleaf &mdash; use the
+				forums instead. Direct emails with usage-related questions will not be
+				answered.</p>
+			</section>
 
-   <div id="content">
+			<section>
+				<header>
+					<h2>Members</h2>
+				</header>
+				<!-- TODO: Figure out a better, responsive way, to present this
+				           information so that it's better for mobile -->
+				<div class="table-scroller">
+					<table>
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Role</th>
+								<th>Email</th>
+								<th>GitHub</th>
+								<th>Location</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td><strong>Daniel Fern&aacute;ndez</strong></td>
+								<td>Founder, Lead Developer</td>
+								<td>daniel.fernandez AT 11thlabs.org</td>
+								<td><a href="https://github.com/danielfernandez">danielfernandez</a></td>
+								<td>Spain</td>
+							</tr>
+							<tr>
+								<td><strong>Jos&eacute; Miguel Samper</strong></td>
+								<td>Developer</td>
+								<td>jmiguelsamper AT users.sourceforge.net</td>
+								<td><a href="https://github.com/jmiguelsamper">jmiguelsamper</a></td>
+								<td>Ireland</td>
+							</tr>
+							<tr>
+								<td><strong>Emanuel Rabina</strong></td>
+								<td>Developer</td>
+								<td>emanuelrabina AT gmail.com</td>
+								<td><a href="https://github.com/ultraq">ultraq</a></td>
+								<td>New Zealand</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</section>
 
-    <p>
-      The team is comprised of Members and Contributors. Members have direct access to the 
-      source of a project and actively evolve the code-base. Contributors improve the 
-      project through submission of patches and suggestions to the Members. The number of 
-      Contributors to the project is unbounded. Get involved today. All contributions to 
-      the project are greatly appreciated!
-    </p>
-    
-    <p>
-      Do never email the authors directly on the usage of Thymeleaf, use the forums instead. 
-      Direct emails with usage-related questions will not be answered.
-    </p>
+			<section>
+				<header>
+					<h2>Contributors</h2>
+				</header>
+				<!-- TODO: Figure out a better, responsive way, to present this
+				           information so that it's better for mobile -->
+				<div class="table-scroller">
+					<table>
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>GitHub</th>
+								<th>Location</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Bernard Le Roux</td>
+								<td></td>
+								<td>France</td>
+							</tr>
+							<tr>
+								<td>Josh Long</td>
+								<td><a href="https://github.com/joshlong">joshlong</a></td>
+								<td>U.S.A.</td>
+							</tr>
+							<tr>
+								<td>Guven Demir</td>
+								<td><a href="https://github.com/guven">guven</a></td>
+								<td>Turkey</td>
+							</tr>
+							<tr>
+								<td>Tsuyoshi Yoshizawa</td>
+								<td><a href="https://github.com/tsuyoshizawa">tsuyoshizawa</a></td>
+								<td>Japan</td>
+							</tr>
+							<tr>
+								<td>Soraya S&aacute;nchez</td>
+								<td><a href="https://github.com/sorayasl">sorayasl</a></td>
+								<td>Spain</td>
+							</tr>
+							<tr>
+								<td>Thibault Duchateau</td>
+								<td><a href="https://github.com/tduchateau">tduchateau</a></td>
+								<td>France</td>
+							</tr>
+							<tr>
+								<td>Michal Kreuzman</td>
+								<td><a href="https://github.com/kreuzman">kreuzman</a></td>
+								<td>Czech Republic</td>
+							</tr>
+							<tr>
+								<td>Sunil Kumar Anjanappa</td>
+								<td><a href="https://github.com/sunil0791">sunil0791</a></td>
+								<td>India</td>
+							</tr>
+							<tr>
+								<td>As&iacute;s Garc&iacute;a</td>
+								<td><a href="https://github.com/asis">asis</a></td>
+								<td>Spain</td>
+							</tr>
+							<tr>
+								<td>Tobias Gafner</td>
+								<td><a href="https://github.com/lightszentip">lightszentip</a></td>
+								<td>Germany</td>
+							</tr>
+							<tr>
+								<td>Niels</td>
+								<td><a href="https://github.com/opensource21">opensource21</a></td>
+								<td>Germany</td>
+							</tr>
+							<tr>
+								<td>Rustam Miftakhutdinov</td>
+								<td><a href="https://github.com/rustamm">rustamm</a></td>
+								<td>Russia</td>
+							</tr>
+							<tr>
+								<td>Rafa&#322; Borowiec</td>
+								<td><a href="https://github.com/kolorobot">kolorobot</a></td>
+								<td>Poland</td>
+							</tr>
+							<tr>
+								<td>Nicolas Labrot</td>
+								<td><a href="https://github.com/nithril">nithril</a></td>
+								<td>France</td>
+							</tr>
+							<tr>
+								<td>Joris Kuipers</td>
+								<td><a href="https://github.com/jkuipers">jkuipers</a></td>
+								<td>The Netherlands</td>
+							</tr>
+							<tr>
+								<td>Takeshi Ogawa</td>
+								<td><a href="https://github.com/ogatakex">ogatakex</a></td>
+								<td>Japan</td>
+							</tr>
+							<tr>
+								<td>Peter Jentsch</td>
+								<td><a href="https://github.com/pjentsch">pjentsch</a></td>
+								<td>Germany</td>
+							</tr>
+							<tr>
+								<td>Mitsuyuki Shiiba</td>
+								<td><a href="https://github.com/bufferings">bufferings</a></td>
+								<td>Japan</td>
+							</tr>
+							<tr>
+								<td>Sean Hinkley</td>
+								<td><a href="https://github.com/seanhinkley">seanhinkley</a></td>
+								<td>U.S.A.</td>
+							</tr>
+							<tr>
+								<td>Gr&eacute;gory Fouquet</td>
+								<td><a href="https://github.com/gfouquet">gfouquet</a></td>
+								<td>France</td>
+							</tr>
+							<tr>
+								<td>Michael Scharhag</td>
+								<td><a href="https://github.com/mscharhag">mscharhag</a></td>
+								<td>Germany</td>
+							</tr>
+							<tr>
+								<td>Ivan Martinez-Ortiz</td>
+								<td><a href="https://github.com/imartinezortiz">imartinezortiz</a></td>
+								<td>Spain</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</section>
 
+			<section>
+				<header>
+					<h2>Our Tools</h2>
+				</header>
+				<p>Some companies have graciously provided us with licenses of their
+				products in order to develop, test and maintain Thymeleaf. Thanks to all
+				of them for supporting our project!</p>
 
-    <h2>Members</h2>
+				<ul class="our-tools">
+					<li class="our-tool">
+						<div class="our-tool-logo">
+							<a href="http://www.jetbrains.com/idea/"><img src="images/thirdparty/intellij_logo.png" alt="IntelliJ IDEA logo"/></a>
+						</div>
+						<div class="our-tool-blurb">
+							<p>JetBrains s.r.o. provided us with a license of their
+							<a href="http://www.jetbrains.com/idea/"><strong>IntelliJ IDEA</strong></a>
+							integrated development environment.</p>
+						</div>
+					</li>
+					<li class="our-tool">
+						<div class="our-tool-logo">
+							<a href="http://www.yourkit.com/java/profiler/index.jsp"><img src="images/thirdparty/yourkit_logo.png" alt="YourKit logo"/></a>
+						</div>
+						<div class="our-tool-blurb">
+							<p>YourKit, LLC provided us with a license of their
+							<a href="http://www.yourkit.com/java/profiler/index.jsp"><strong>YourKit Java Profiler</strong></a>
+							software.</p>
+						</div>
+					</li>
+				</ul>
+			</section>
 
-    <div class="widetable" id="teamTable">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Forum ID</th>
-              <th>Location</th>
-              <th>Contact</th>
-              <th>Role</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Daniel Fern&aacute;ndez</td>
-              <td>danielfernandez</td>
-              <td>Spain</td>
-              <td>daniel.fernandez AT 11thlabs.org</td>
-              <td>Founder, Lead Developer</td>
-            </tr>
-            <tr>
-              <td>Jos&eacute; Miguel Samper</td>
-              <td>Zemi</td>
-              <td>Ireland</td>
-              <td>jmiguelsamper AT users.sourceforge.net</td>
-              <td>Developer</td>
-            </tr>
-            <tr>
-              <td>Emanuel Rabina</td>
-              <td>Emanuel</td>
-              <td>New Zealand</td>
-              <td>emanuelrabina AT gmail.com</td>
-              <td>Developer</td>
-            </tr>
-          </tbody>
-        </table>
-    </div>
+		 </main>
+	</div>
 
+	<div class="fluid-container footer-container">
+		<footer class="footer fluid-block">
+			<div class="footer-sections">
+				<h5>On this site</h5>
+				<ul class="footer-sections-links">
+					<li><a href="index.html">Home</a></li>
+					<li><a href="download.html">Download</a></li>
+					<li><a href="documentation.html">Docs</a></li>
+					<li><a href="ecosystem.html">Ecosystem</a></li>
+					<li><a href="faq.html">FAQ</a></li>
+					<li id="footer-issue-tracking"><a href="issuetracking.html">Issue Tracking</a></li>
+					<li><a href="team.html">The Thymeleaf Team</a></li>
+					<li><a href="whoisusingthymeleaf.html">Who's using Thymeleaf?</a></li>
+				</ul>
+			</div>
+			<div>
+				<h5>External links</h5>
+				<ul class="footer-sections-links">
+					<li><a href="http://forum.thymeleaf.org/">Forum</a></li>
+					<li><a href="https://twitter.com/thymeleaf">Follow us on Twitter</a></li>
+					<li><a href="https://github.com/thymeleaf">Fork us on GitHub</a></li>
+				</ul>
+			</div>
+		</footer>
+		<div class="copyright fluid-block">Copyright &copy; The Thymeleaf Team</div>
+		<div class="license fluid-block">
+			Thymeleaf is <strong>open source</strong> software distributed under the
+			<a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache License 2.0</a><br/>
+			This website (excluding the names and logos of Thymeleaf users) is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0 License</a>
+		</div>
+	</div>
 
-    <h2>Contributors</h2>
+</body>
 
-    <div class="widetable" id="contributorTable">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Forum ID</th>
-              <th>Location</th>
-              <th>Contact</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Bernard Le Roux</td>
-              <td>blr</td>
-              <td>France</td>
-              <td>blr AT franceserv.com</td>
-            </tr>
-            <tr>
-              <td>Josh Long</td>
-              <td>joshlong</td>
-              <td>U.S.A.</td>
-              <td>josh AT joshlong.com</td>
-            </tr>
-            <tr>
-              <td>Guven Demir</td>
-              <td></td>
-              <td>Turkey</td>
-              <td>guvendemir AT users.sourceforge.net</td>
-            </tr>
-            <tr>
-              <td>Tsuyoshi Yoshizawa</td>
-              <td>tsuyoshi</td>
-              <td>Japan</td>
-              <td>ussy00 AT gmail.com</td>
-            </tr>
-            <tr>
-              <td>Soraya S&aacute;nchez</td>
-              <td>sschz</td>
-              <td>Spain</td>
-              <td>sschz AT users.sourceforge.net</td>
-            </tr>
-            <tr>
-              <td>Thibault Duchateau</td>
-              <td>tduchateau</td>
-              <td>France</td>
-              <td>thibault.duchateau AT gmail.com</td>
-            </tr>
-            <tr>
-              <td>Michal Kreuzman</td>
-              <td>Michal Kreuzman</td>
-              <td>Czech Republic</td>
-              <td>michal.kreuzman AT gmail.com</td>
-            </tr>
-            <tr>
-              <td>Sunil Kumar Anjanappa</td>
-              <td>sunil0791</td>
-              <td>India</td>
-              <td>sunilkumar.anjanappa AT gmail.com</td>
-            </tr>
-            <tr>
-              <td>As&iacute;s Garc&iacute;a</td>
-              <td>asis.garcia</td>
-              <td>Spain</td>
-              <td>asis.garcia AT gmail.com</td>
-            </tr>
-            <tr>
-              <td>Tobias Gafner</td>
-              <td></td>
-              <td>Germany</td>
-              <td>lightszentip AT gmail.com</td>
-            </tr>
-            <tr>
-              <td>Niels</td>
-              <td>niels</td>
-              <td>Germany</td>
-              <td>opensource21 AT gmail.com</td>
-            </tr>
-            <tr>
-              <td>Rustam Miftakhutdinov</td>
-              <td>rustamm</td>
-              <td>Russia</td>
-              <td>rustam2890 AT gmail.com</td>
-            </tr>
-            <tr>
-              <td>Rafa&#322; Borowiec</td>
-              <td>kolorobot</td>
-              <td>Poland</td>
-              <td>rafal.borowiec AT gmail.com</td>
-            </tr>
-            <tr>
-              <td>Nicolas Labrot</td>
-              <td></td>
-              <td>France</td>
-              <td>nicolas.labrot AT gmail.com</td>
-            </tr>
-            <tr>
-              <td>Joris Kuipers</td>
-              <td></td>
-              <td>The Netherlands</td>
-              <td>joris AT kuipe.rs</td>
-            </tr>
-            <tr>
-              <td>Takeshi Ogawa</td>
-              <td>ogatakex</td>
-              <td>Japan</td>
-              <td>ogatake AT gmail.com</td>
-            </tr>
-            <tr>
-              <td>Peter Jentsch</td>
-              <td>peterj</td>
-              <td>Germany</td>
-              <td>peter.jentsch AT gmail.com</td>
-            </tr>
-            <tr>
-              <td>Mitsuyuki Shiiba</td>
-              <td>Mitz</td>
-              <td>Japan</td>
-              <td><a href="https://twitter.com/bufferings">@bufferings</a></td>
-            </tr>
-            <tr>
-              <td>Sean Hinkley</td>
-              <td>seanhinkley</td>
-              <td>U.S.A.</td>
-              <td>seanhinkley AT gmail.com</td>
-            </tr>
-            <tr>
-              <td>Gr&eacute;gory Fouquet</td>
-              <td>gregfqt</td>
-              <td>France</td>
-              <td>gfouquet AT armida.fr</td>
-            </tr>
-            <tr>
-              <td>Michael Scharhag</td>
-              <td>mscharhag</td>
-              <td>Germany</td>
-              <td>m.scharhag AT gmail.com</td>
-            </tr>
-            <tr>
-              <td>Ivan Martinez-Ortiz</td>
-              <td>imartinezortiz</td>
-              <td>Spain</td>
-              <td>imartinezortiz AT gmail.com</td>
-            </tr>
-          </tbody>
-        </table>
-    </div>
-
-
-    <h2>Our Tools</h2>
-
-    <p>
-      Some cool companies have graciously provided us with licenses of their products in order to
-      develop, test and maintain Thymeleaf. Thanks to all of them for supporting our project!
-    </p>
-
-    <div class="widetable" class="ourtools">
-        <table>
-          <tbody>
-              <tr>
-                  <td class="ourtools_logo">
-                      <a href="http://www.jetbrains.com/idea/"><img src="images/thirdparty/intellij_logo.png" /></a>
-                  </td>
-                  <td class="ourtools_text">
-                      JetBrains s.r.o. provided us with a license of their
-                      <a href="http://www.jetbrains.com/idea/"><strong>IntelliJ IDEA</strong></a>
-                      integrated development environment.
-                  </td>
-              </tr>
-              <tr>
-                  <td class="ourtools_logo">
-                      <a href="http://www.yourkit.com/java/profiler/index.jsp"><img src="images/thirdparty/yourkit_logo.png" /></a>
-                  </td>
-                  <td class="ourtools_text">
-                      YourKit, LLC provided us with a license of their
-                      <a href="http://www.yourkit.com/java/profiler/index.jsp"><strong>YourKit Java Profiler</strong></a>
-                      software.
-                  </td>
-              </tr>
-          </tbody>
-        </table>
-    </div>
-    <p class="ourtools_note">
-        NOTE: All logos and trademarks are property of their respective owners.
-    </p>
-
-   </div>
-   
-   <div id="footer">
-     <div id="googleplus">
-       <div id="plusone-div" class="plusone"></div>
-       <script type="text/javascript">
-           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
-       </script>
-     </div>
-     <div id="twitter">
-       <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>
-       <script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
-     </div>
-     <div id="copy">
-       Copyright &copy; The <a href="team.html">THYMELEAF Team</a>. See <a href="documentation.html">applicable licenses</a>.
-     </div>
-   </div>
-   
-  </div>
-
-  <script type="text/javascript">
-      SyntaxHighlighter.all();
-  </script>
-
-  </body>
 </html>

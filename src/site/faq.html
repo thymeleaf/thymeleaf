@@ -1,441 +1,501 @@
 <!DOCTYPE html>
-<html>
 
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FAQ - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
-    <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
-    <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
-    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
-      {lang:'en', parsetags:'explicit'}
-    </script>
-    <script type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-1276954-9']);
-      _gaq.push(['_trackPageview']);
+<html lang="en">
 
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-    </script>
-    <script type="text/javascript" src="sh/scripts/shCore.js"></script>
-    <script type="text/javascript" src="sh/scripts/shBrushXml.js"></script>
-    <script type="text/javascript" src="sh/scripts/shBrushJava.js"></script>
-    <link href="sh/styles/shCore.css" rel="stylesheet" type="text/css" />
-    <link href="sh/styles/shThemeThymeleaf.css" rel="stylesheet" type="text/css" />
-  </head>
+<head>
+	<title>FAQ - Thymeleaf</title>
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
+	<link rel="icon" href="images/favicon.ico"/>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,400italic,700,700italic"/>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic,700italic"/>
+	<link rel="stylesheet" href="styles/normalize.css" media="screen"/>
+	<link rel="stylesheet" href="styles/thymeleaf.css" media="screen"/>
 
-  <body lang="en" dir="ltr">
+	<script src="scripts/dumbqueryselector.js" defer></script>
+	<script src="scripts/prism.js" defer data-manual></script>
+	<script src="scripts/thymeleaf.js" defer></script>
+</head>
 
-  <div id="page">
+<body id="thymeleaf-faq">
 
-  
-   <div id="menu">
-     <ul>
-       <li><a href="index.html" title="Home">Home</a></li>
-       <li><a href="features.html" title="Features">Features</a></li>
-       <li><a href="download.html" title="Download">Download</a></li>
-       <li><a href="documentation.html" title="Documentation">Documentation</a></li>
-       <li><a href="ecosystem.html" title="Ecosystem">Ecosystem</a></li>
-       <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
-       <li><a href="issuetracking.html" title="Issue Tracking">Issue Tracking</a></li>
-     </ul>
-   </div>
+	<div class="fluid-container toolbar-container">
+		<nav class="fluid-block toolbar">
+			<div class="toolbar-menu">
+				<div class="toolbar-menu-location">FAQ</div>
+				<button id="site-menu-button" type="button" class="toolbar-menu-button">Site Menu</button>
+			</div>
+			<div id="site-menu" class="toolbar-menu-items">
+				<ul class="toolbar-links">
+					<li><a href="index.html" class="toolbar-link">Home</a></li>
+					<li><a href="download.html" class="toolbar-link">Download</a></li>
+					<li><a href="documentation.html" class="toolbar-link">Docs</a></li>
+					<li><a href="ecosystem.html" class="toolbar-link">Ecosystem</a></li>
+					<li class="selected"><a href="faq.html" class="toolbar-link">FAQ</a></li>
+				</ul>
+				<ul id="site-nav-links" class="toolbar-links">
+					<li><a href="http://forum.thymeleaf.org/" class="toolbar-link">Forum</a></li>
+					<li><a href="https://twitter.com/thymeleaf" class="toolbar-link">Twitter</a></li>
+					<li><a href="https://github.com/thymeleaf" class="toolbar-link">GitHub</a></li>
+				</ul>
+			</div>
+		</nav>
+	</div>
 
-   <div id="header">
-     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
-   </div>
+	<div class="hero-container fluid-container">
+		<header class="hero-header fluid-block">
+			<div class="hero-header-text">
+				<h1 class="hero-header-title">Thymeleaf</h1>
+			</div>
+			<div class="hero-header-image">
+				<img src="images/thymeleaf.png" alt="Thymeleaf logo" class="hero-header-logo"/>
+			</div>
+		</header>
+	</div>
 
-   <div id="breadcrumb">
-      <a href="index.html">thymeleaf</a>
-      ::
-      <a href="documentation.html">documentation</a> 
-      :: 
-      <span class="current">frequently asked questions</span>
-   </div>
+	<div class="fluid-container">
+		<main class="fluid-block">
+			<section class="description">
+				<p>About Thymeleaf</p>
+				<ul>
+					<li><a href="#where-come-from">Where does Thymeleaf come from? Is it made or backed by any software company?</a>.</li>
+					<li><a href="#is-it-stable">Is it stable? Can it be considered production-ready?</a></li>
+					<li><a href="#does-offer-support">Does Thymeleaf offer any type of commercial support?</a></li>
+					<li><a href="#who-is-using-thymeleaf">Who is using Thymeleaf?</a></li>
+					<li><a href="#versioning-policy">What is the project's versioning policy?</a></li>
+					<li><a href="#how-can-i-contribute">How can I contribute to Thymeleaf?</a></li>
+					<li><a href="#pronunciation">How do you pronounce 'thymeleaf'?</a>.</li>
+				</ul>
 
+				<p>General</p>
+				<ul>
+					<li><a href="#is-web-framework">Is Thymeleaf a web framework?</a></li>
+					<li><a href="#what-types-of-templates">What types of templates can Thymeleaf process?</a></li>
+					<li><a href="#substitute-jsp">Can Thymeleaf be used as a complete substitute for JSP and JSTL?</a></li>
+					<li><a href="#compare-other-engines">How does Thymeleaf compare with other template engines like Velocity or FreeMarker?</a></li>
+					<li><a href="#can-it-non-web">Can it be used outside web applications in non-web environments?</a></li>
+					<li><a href="#no-spring-can-I-use">I don't use Spring at all. Can I still use Thymeleaf?</a></li>
+					<li><a href="#can-use-HTML5-XML">How can I use Thymeleaf for HTML5 if it is an XML-based technology?</a></li>
+					<li><a href="#DOM-parsing-memory">Thymeleaf uses DOM-style parsing of XML. How does that affect memory usage?</a></li>
+					<li><a href="#use-snapshot">How can I use a SNAPSHOT release of Thymeleaf?</a></li>
+					<li><a href="#testing">How is thymeleaf tested?</a></li>
+				</ul>
+			</section>
 
-   <div id="content">
+			<section>
+				<header>
+					<h2>About Thymeleaf</h2>
+				</header>
 
-    <h2>Question index</h2>
-   
-    <ul>
-      <li><b>About Thymeleaf</b>
-        <ul>
-          <li><a href="#where-come-from">Where does Thymeleaf come from? Is it made or backed by any software company?</a>.</li>
-          <li><a href="#is-it-stable">Is it stable? Can it be considered production-ready?</a></li>
-          <li><a href="#does-offer-support">Does Thymeleaf offer any type of commercial support?</a></li>
-          <li><a href="#who-is-using-thymeleaf">Who is using Thymeleaf?</a></li>
-          <li><a href="#versioning-policy">What is the project's versioning policy?</a></li>
-          <li><a href="#how-can-i-contribute">How can I contribute to Thymeleaf?</a></li>
-          <li><a href="#pronunciation">How do you pronounce 'thymeleaf'?</a>.</li>
-        </ul>
-      </li>
-      <li><b>General</b>
-        <ul>
-          <li><a href="#is-web-framework">Is Thymeleaf a web framework?</a></li>
-          <li><a href="#what-types-of-templates">What types of templates can Thymeleaf process?</a></li>
-          <li><a href="#substitute-jsp">Can Thymeleaf be used as a complete substitute for JSP and JSTL?</a></li>
-          <li><a href="#compare-other-engines">How does Thymeleaf compare with other template engines like Velocity or FreeMarker?</a></li>
-          <li><a href="#can-it-non-web">Can it be used outside web applications in non-web environments?</a></li>
-          <li><a href="#no-spring-can-I-use">I don't use Spring at all. Can I still use Thymeleaf?</a></li>
-          <li><a href="#can-use-HTML5-XML">How can I use Thymeleaf for HTML5 if it is an XML-based technology?</a></li>
-          <li><a href="#DOM-parsing-memory">Thymeleaf uses DOM-style parsing of XML. How does that affect memory usage?</a></li>
-          <li><a href="#use-snapshot">How can I use a SNAPSHOT release of Thymeleaf?</a></li>
-          <li><a href="#testing">How is thymeleaf tested?</a></li>
-        </ul>
-      </li>
-    </ul>
-    
+				<section class="subsection">
+					<header>
+						<a id="where-come-from" class="anchor"></a>
+						<h3>Where does Thymeleaf come from? Is it made or backed by any software company?</h3>
+					</header>
+					<p>Thymeleaf is Open Source Software originally created by a Spanish Software Engineer 
+						called Daniel Fernández and now developed and maintained
+						by a great <a href="team.html">team of awesome people</a>.</p>
 
+					<p>It is neither made nor backed by any software (or any other type of)
+						company, and it is offered to the public totally free of charge, both in
+						binary and in source code forms, under the <b>Apache License 2.0</b>.</p>
+				</section>
 
+				<section class="subsection">
+					<header>
+						<a id="is-it-stable" class="anchor"></a>
+						<h3>Is it stable? Can it be considered production-ready?</h3>
+					</header>
+					<p>Yes, all stable (non-beta) releases can be considered
+					production-ready.</p>
+				</section>
 
+				<section class="subsection">
+					<header>
+						<a id="does-offer-support" class="anchor"></a>
+						<h3>Does Thymeleaf offer any type of commercial support?</h3>
+					</header>
+					<p>No, it does not. Official commercial support is not offered at the
+					moment, but there is a <a href="http://forum.thymeleaf.org">User
+					Forum</a> at your disposal.</p>
+				</section>
 
+				<section class="subsection">
+					<header>
+						<a id="who-is-using-thymeleaf"></a>
+						<h3>Who is using Thymeleaf?</h3>
+					</header>
+					<p>Our '<a href="whoisusingthymeleaf.html">Who is using Thymeleaf?</a>'
+					page contains a list of companies using Thymeleaf in their products,
+					projects, websites, or even offering it as a part of their
+					Professional Services portfolio. You will find some download figures
+					there, too.</p>
+				</section>
 
+				<section class="subsection">
+					<header>
+						<a id="versioning-policy"></a>
+						<h3>What is the project's versioning policy?</h3>
 
+						<!-- TODO: Just refer to semver.org?  We basically follow the
+						           semantic versioning scheme -->
 
-    <h2>About Thymeleaf</h2>
+					</header>
+					<p>Thymeleaf version numbers have three components: <code>x.y.z</code>
+					(like: <code>2.0.1</code>).</p>
+					<ul>
+						<li>
+							<code>x</code> is the <b>major version number</b>. A change in
+							this number means a rewrite of the core or architecture, or an
+							important amount of changes in the library's APIs which might
+							break backwards compatibility and/or legacy support.
+						</li>
+						<li>
+							<code>y</code> is the <b>minor version number</b>. A change in
+							this number means a moderate set of changes has been applied,
+							offering new features and improvements without changing APIs
+							significantly and providing <i>deprecation</i> periods for all
+							changed features in order to allow for a period of adaptation to
+							the new interfaces.
+						</li>
+						<li>
+							<code>z</code> is the <b>build/bugfix version number</b>. A change
+							in this number means the fix of some bugs or the addition of a
+							series of performance or documentation improvements. <i>Bugfix
+							versions</i> should modify no APIs and be therefore <i>drop-in</i>
+							replacements for any previous version within the same major+minor
+							version.
+						</li>
+					</ul>
+				</section>
 
-    <h3><a id="where-come-from">Where does Thymeleaf come from? Is it made or backed by any software company?</a></h3>
-    
-    <p>
-      Thymeleaf is Open Source Software created in his spare time by a Spanish Software Engineer
-      called <a href="team.html">Daniel Fernández</a>, who's also the author
-      of other popular java libraries like <a href="http://www.jasypt.org">jasypt</a> or
-      <a href="http://www.op4j.org">op4j</a>.
-    </p>
-    <p>
-      It is neither made nor backed
-      by any software (or any other type of) company, and it is offered to the public
-      totally free of charge, both in binary and in source code forms, under the <b>Apache License 2.0</b>.
-    </p>
+				<section class="subsection">
+					<header>
+						<a id="how-can-i-contribute" class="anchor"></a>
+						<h3>How can I contribute to Thymeleaf?</h3>
+					</header>
+					<p>The first and most useful way to contribute to the project is by
+					helping other users at the <a href="http://forum.thymeleaf.org">forum</a>
+					(or at other popular places like <a href="http://stackoverflow.com/questions/tagged/thymeleaf">StackOverflow</a>,
+					for instance). Building a better community is always priority number
+					one.</p>
 
+					<p>You can also help Thymeleaf by promoting it: write on your blog,
+					tweet, talk about it at your local JUG, or even simply discuss its
+					advantages at your company/work and among your colleague developers.
+					Help spread the word. Do you think your grandma might be interested?
+					Tell her! :-)</p>
 
-    <h3><a id="is-it-stable">Is it stable? Can it be considered production-ready?</a></h3>
+					<p>If you are already doing your best at helping users and promoting,
+					and still you feel that you could do more, there are a couple of
+					things that are always useful:</p>
 
-    <p>
-        Yes, all stable (non-beta) releases can be considered production-ready.
-    </p>
+					<ul>
+						<li>
+							Help testing. No amount of testing is enough testing, and your
+							experience as a user is extremely valuable for building useful
+							tests that Thymeleaf's developers might never think of.  Thymeleaf
+							has its own <a href="http://github.com/thymeleaf/thymeleaf-testing">testing
+							library</a> and its own <a href="http://github.com/thymeleaf/thymeleaf-tests">repository
+							for tests</a>, and there's always room for contributions there. If
+							you want suggestions about what to test, we can guide you towards
+							the areas that might better benefit from your help.
+						</li>
+						<li>
+							Help documenting. There's an "Articles" section at the <a href="documentation.html">documentation
+							page</a> that always welcomes new articles, especially if they
+							include a nice example application. Your name will be displayed as
+							author at the article, so that you can add it to your resume ;),
+							but of course we will ask you for a high level of quality and a
+							good knowledge of the English language. We keep a list of topic
+							suggestions <a href="http://github.com/thymeleaf/thymeleaf.github.com/issues">here</a>,
+							but you can always propose your own to the Team.
+						</li>
+					</ul>
 
+					<p>What else? Well, of course you can bring your own ideas! You can
+					write in the <a href="http://forum.thymeleaf.org">User Forum</a>,
+					create a <a href="http://github.com/thymeleaf/thymeleaf.github.com/issues">GitHub
+					issue</a> or just send an email directly to the <a href="team.html">Team</a>.
+					We will be happy to review and discuss your ideas with you.  Please
+					don't just upload a Pull Request with your favourite feature without
+					previous discussion with the team &mdash; Thymeleaf is a complex
+					project and requires a certain level of organization, and we might not
+					be able to accept your code even if you put a lot of effort on it (or
+					even if your idea is good!).</p>
 
+					<p>Finally, please note that <b>all artifact contributions to
+					Thymeleaf (code, documentation...) are regulated by certain
+					<a href="https://github.com/thymeleaf/thymeleaf-dist/blob/master/CONTRIBUTING.markdown">Terms
+					and Conditions</a></b>. Before accepting any patches, articles, etc.
+					from you we will require you to explicitly agree on this terms (an
+					email or a github comment will do).</p>
+				</section>
 
-    <h3><a id="does-offer-support">Does Thymeleaf offer any type of commercial support?</a></h3>
-    
-    <p>
-      No, it does not. Official commercial support is not offered at the moment, but
-      there is a <a href="http://forum.thymeleaf.org">User Forum</a> at your disposal.
-    </p>
+				<section class="subsection">
+					<header>
+						<a id="pronunciation" class="anchor"></a>
+						<h3>How do you pronounce 'thymeleaf'?</h3>
+					</header>
+					<p>In case you are unsure, 'Thymeleaf' is pronounced like this:
+					<strong>/&#x02c8;ta&#x026a;m&#x02cc;l&#x026a;&#x02d0;f/</strong></p>
+				</section>
 
+			</section>
 
+			<section>
+				<header>
+					<h2>General</h2>
+				</header>
 
-    <h3><a id="who-is-using-thymeleaf">Who is using Thymeleaf?</a></h3>
+				<section class="subsection">
+					<header>
+						<a id="is-web-framework" class="anchor"></a>
+						<h3>Is Thymeleaf a web framework?</h3>
+					</header>
+					<p>No, it isn't. It is a template engine.</p>
 
-    <p>
-      Our '<a href="whoisusingthymeleaf.html">Who is using Thymeleaf?</a>' page
-      contains a list of companies using Thymeleaf in their products, projects, websites, or even offering it as a part
-      of their Professional Services portfolio. You will find some download figures there, too.
-    </p>
+					<p>Template engines play a key role in web frameworks, though, and are
+					one of its most important components as they are in charge of
+					producing the user interface or <i>view layer</i> (usually in XHTML or
+					HTML form).</p>
 
+					<p><i>Spring MVC</i>, <i>Struts</i> or <i>Apache Wicket</i> are
+					examples of web frameworks, whereas <i>JSP</i>, <i>Velocity</i> or
+					<i>FreeMarker</i> are examples of template engines.</p>
+				</section>
 
-    <h3><a id="versioning-policy">What is the project's versioning policy?</a></h3>
-    
-    <p>
-      Thymeleaf version numbers have three components: <kbd>x.y.z</kbd> (like: <kbd>2.0.1</kbd>). 
-    </p>
-    <ul>
-      <li><kbd>x</kbd> is the <b>major version number</b>. A change in this number means a rewrite
-          of the core or architecture, or an important amount of changes in the library's APIs which
-          might break backwards compatibility and/or legacy support.</li>
-      <li><kbd>y</kbd> is the <b>minor version number</b>. A change in this number means a moderate
-          set of changes has been applied, offering new features and improvements without changing
-          APIs significantly and providing <i>deprecation</i> periods for all changed features in
-          order to allow for a period of adaptation to the new interfaces.</li>
-      <li><kbd>z</kbd> is the <b>build/bugfix version number</b>. A change in this number means
-          the fix of some bugs or the addition of a series of performance or documentation
-          improvements. <i>Bugfix versions</i> should modify no APIs and be therefore
-          <i>drop-in</i> replacements for any previous version within the same major+minor version.</li>
-    </ul>
+				<section class="subsection">
+					<header>
+						<a id="what-types-of-templates" class="anchor"></a>
+						<h3>What types of templates can Thymeleaf process?</h3>
+					</header>
+					<p>Thymeleaf templates can be:</p>
+					<ul>
+						<li>
+							XML: validating against a DTD or not.
+						</li>
+						<li>
+							XHTML 1.0 and 1.1: validating against standard DTDs or not.
+						</li>
+						<li>
+							HTML5: both XML-formed code and <i>legacy-based HTML5</i>. Legacy
+							non-XML code will be automatically cleaned and converted to XML
+							form.
+						</li>
+					</ul>
+				</section>
 
+				<section class="subsection">
+					<header>
+						<a id="substitute-jsp" class="anchor"></a>
+						<h3>Can Thymeleaf be used as a complete substitute for JSP and JSTL?</h3>
+					</header>
+					<p><b>Absolutely</b>. Not only it can, but we strongly encourage you
+					to do so. Have a look at our <a href="/doc/articles/thvsjsp.html">Thymeleaf vs.
+					JSP</a> article if you want to learn how these two technologies
+					compare.</p>
+				</section>
 
-    <h3><a id="how-can-i-contribute">How can I contribute to Thymeleaf?</a></h3>
+				<section class="subsection">
+					<header>
+						<a id="compare-other-engines" class="anchor"></a>
+						<h3>How does Thymeleaf compare with other template engines like
+							Velocity or FreeMarker?</h3>
+					</header>
+					<p>Both <i>Velocity</i> and <i>FreeMarker</i> are terrific pieces of
+					software, but they approach the templating problem with a philosophy
+					quite different to that of Thymeleaf.</p>
 
-    <p>
-        The first and most useful way to contribute to the project is by helping other users
-        at the <a href="http://forum.thymeleaf.org">forum</a> (or at other popular places like
-        <a href="http://stackoverflow.com/questions/tagged/thymeleaf">StackOverflow</a>,
-        for instance). Building a better community is always priority number one.
-    </p>
-    <p>
-        You can also help Thymeleaf by promoting it: write on your blog, tweet, talk about it
-        at your local JUG, or even simply discuss its advantages at your company/work and among your colleague
-        developers. Help spread the word. Do you think your grandma might be interested? Tell her! :-)
-    </p>
-    <p>
-        If you are already doing your best at helping users and promoting, and still you feel that you could do more,
-        there are a couple of things that are always useful:
-    </p>
-    <ul>
-        <li>
-            Help testing. No amount of testing is enough testing, and your experience as a user is extremely
-            valuable for building useful tests that Thymeleaf's developers might never think of.
-            Thymeleaf has its own <a href="http://github.com/thymeleaf/thymeleaf-testing">testing library</a> and
-            its own <a href="http://github.com/thymeleaf/thymeleaf-tests">repository for
-            tests</a>, and there's always room for contributions there. If you want suggestions about
-            what to test, we can guide you towards the areas that might better benefit from your help.
-        </li>
-        <li>
-            Help documenting. There's an "Articles" section at the <a href="documentation.html">documentation page</a>
-            that always welcomes new articles, especially if they include a nice example application. Your name will
-            be displayed as author at the article, so that you can add it to your resume ;), but of course
-            we will ask you for a high level of quality and a good knowledge of the English language. We keep a list
-            of topic suggestions <a href="http://github.com/thymeleaf/thymeleaf.github.com/issues">here</a>, but you
-            can always propose your own to the Team.
-        </li>
-    </ul>
-    <p>
-        What else? Well, of course you can bring your own ideas! You can write in the <a href="http://forum.thymeleaf.org">User
-        Forum</a>, create a <a href="http://github.com/thymeleaf/thymeleaf.github.com/issues">GitHub issue</a> or
-        just send an email directly to the <a href="team.html">Team</a>. We will be happy to review and discuss your
-        ideas with you.
-        Please don't just upload a Pull Request with your favourite feature without previous discussion with the team
-        &mdash; Thymeleaf is a complex project and requires a certain level of organization, and we might not be able
-        to accept your code even if you put a lot of effort on it (or even if your idea is good!).
-    </p>
-    <p>
-        Finally, please note that <b>all artifact contributions to Thymelef (code, documentation...) are regulated
-        by certain <a href="https://github.com/thymeleaf/thymeleaf-dist/blob/master/CONTRIBUTING.markdown">Terms
-        and Conditions</a></b>. Before accepting any patches, articles, etc. from you we will require you to
-        explicitly agree on this terms (an email or a github comment will do).
-    </p>
+					<p>Thymeleaf makes a strong stress on <i>natural templating</i>
+					&mdash;allowing templates to be working prototypes, which the other
+					two do not allow&mdash;, and its syntax tries to be (arguably) cleaner
+					and more in tune with the current trends in web development. Also,
+					from an architectural standpoint, both <i>Velocity</i> and <i>FreeMarker</i>
+					work as sequential text processors &mdash;which allows them to process
+					many types of content&mdash; whereas Thymeleaf is based on XML parsing
+					techniques &mdash;which limits it to XML-based formats. This makes
+					<i>Velocity</i> and <i>FreeMarker</i> much more versatile, but on the
+					other side allows Thymeleaf to take advantage of interesting features
+					specific to XML-based environments, especially the web.</p>
 
+					<p>Anyway, the best way to compare these technologies is to use them
+					yourself and feel which one suits you best.</p>
+				</section>
 
-    <h3><a id="pronunciation">How do you pronounce 'thymeleaf'?</a></h3>
+				<section class="subsection">
+					<header>
+						<a id="can-it-non-web" class="anchor"></a>
+						<h3>Can it be used outside web applications in non-web environments?</h3>
+					</header>
+					<p>Yes it can. Although Thymeleaf (especially its <i>Standard</i>
+					dialects) offers many features that are especially useful in web
+					environments, it can be used for processing non-web XML documents
+					(data XML, for example) or XHTML/HTML5 documents that are not meant
+					for being sent via HTTP (for example, rich email content).</p>
+				</section>
 
-    <p>
-        In case you are unsure, 'Thymeleaf' is pronounced like this:
-        <strong>/&#x02c8;ta&#x026a;m&#x02cc;l&#x026a;&#x02d0;f/</strong>
-    </p>
+				<section class="subsection">
+					<header>
+						<a id="no-spring-can-I-use" class="anchor"></a>
+						<h3>I don't use Spring at all. Can I still use Thymeleaf?</h3>
+					</header>
+					<p>Absolutely. Thymeleaf offers nice integration with Spring MVC
+					through its <i>SpringStandard</i> dialect (included in the
+					<code>thymeleaf-spring3</code> and <code>thymeleaf-spring4</code>
+					packages), but Spring integration is completely optional and the
+					<i>Standard</i> dialect is in fact meant to be used without Spring.</p>
+				</section>
 
+				<section class="subsection">
+					<header>
+						<a id="can-use-HTML5-XML" class="anchor"></a>
+						<h3>How can I use Thymeleaf for HTML5 if it is an XML-based technology?</h3>
+					</header>
+					<p>You can because HTML5 allows non-XML-formed code only for legacy
+					compatibility reasons, and HTML5 code can be (in fact, <i>should be</i>)
+					well-formed XML.</p>
 
-    <h2>General</h2>
+					<p>Developers are encouraged to write new HTML5 code as well-formed
+					XML because this produces cleaner code, allows easy processing and
+					parsing of code, and removes the need to rely on browsers' algorithms
+					for automatically closing tags and converting code into fully
+					hierarchical structures &mdash;something called <i>error handling</i>
+					that browsers need to apply for representing web pages as DOM object
+					trees.</p>
 
-    <h3><a id="is-web-framework">Is Thymeleaf a web framework?</a></h3>
-    
-    <p>
-      No, it isn't. It is a template engine.
-    </p>
-    <p>
-      Template engines play a key role in web frameworks, though, and are one of its most
-      important components as they are in charge of producing the user interface or <i>view layer</i>
-      (usually in XHTML or HTML form).
-    </p>
-    <p>
-      <i>Spring MVC</i>, <i>Struts</i> or <i>Apache Wicket</i> are examples of web frameworks, whereas
-      <i>JSP</i>, <i>Velocity</i> or <i>FreeMarker</i> are examples of template engines.
-    </p>
+					<p>And don't be fooled by the existence of a standard called <i>XHTML5</i>:
+					that is exactly the same as HTML5, but served with the <code>application/xhtml+xml</code>
+					HTTP Content-Type. There are no syntax differences like those ones
+					existing between <i>HTML 4</i> and <i>XHTML 1.0</i>.</p>
 
-    <h3><a id="what-types-of-templates">What types of templates can Thymeleaf process?</a></h3>
-    
-    <p>
-      Thymeleaf templates can be:
-    </p>
-    <ul>
-      <li>XML: validating against a DTD or not.</li>
-      <li>XHTML 1.0 and 1.1: validating against standard DTDs or not.</li>
-      <li>HTML5: both XML-formed code and <i>legacy-based HTML5</i>. Legacy non-XML code will be automatically
-          cleaned and converted to XML form.</li>
-    </ul>
-    
-    <h3><a id="substitute-jsp">Can Thymeleaf be used as a complete substitute for JSP and JSTL?</a></h3>
-    
-    <p>
-      <b>Absolutely</b>. Not only it can, but we strongly encourage you to do so. Have a look 
-      at our <a href="/doc/thvsjsp.html">Thymeleaf vs. JSP</a> article if you want to learn
-      how these two technologies compare.
-    </p>
-    
-    <h3><a id="compare-other-engines">How does Thymeleaf compare with other template engines like Velocity or FreeMarker?</a></h3>
-    
-    <p>
-      Both <i>Velocity</i> and <i>FreeMarker</i> are terrific pieces of software, but they approach the templating problem
-      with a philosophy quite different to that of Thymeleaf.
-    </p>
-    <p> 
-      Thymeleaf makes a strong stress on <i>natural templating</i> &mdash;allowing templates to be working 
-      prototypes, which the other two do not allow&mdash;, and its syntax tries to be (arguably) cleaner and more in
-      tune with the current trends in web development. Also, from an architectural standpoint, both <i>Velocity</i> and <i>FreeMarker</i> work as sequential text processors
-      &mdash;which allows them to process many types of content&mdash; whereas Thymeleaf is based on XML parsing
-      techniques &mdash;which limits it to XML-based formats. This makes <i>Velocity</i> and <i>FreeMarker</i>
-      much more versatile, but on the other side allows Thymeleaf to take advantage of interesting features specific
-      to XML-based environments, especially the web.
-    </p>
-    <p>
-      Anyway, the best way to compare these technologies is 
-      to use them yourself and feel which one suits you best.
-    </p>
+					<p>If you want to know more about this topic, read our article
+					<a href="/doc/articles/fromhtmltohtmlviahtml.html">From HTML to HTML (via HTML)</a>.</p>
+				</section>
 
-    <h3><a id="can-it-non-web">Can it be used outside web applications in non-web environments?</a></h3>
-    
-    <p>
-      Yes it can. Although Thymeleaf (especially its <i>Standard</i> dialects) offers many features
-      that are especially useful in web environments, it can be used for processing non-web XML
-      documents (data XML, for example) or XHTML/HTML5 documents that are not meant for being
-      sent via HTTP (for example, rich email content).
-    </p>
+				<section class="subsection">
+					<header>
+						<a id="DOM-parsing-memory" class="anchor"></a>
+						<h3>Thymeleaf uses DOM-style parsing of XML. How does that affect memory usage?</h3>
+					</header>
+					<p>The use of DOM parsing makes Thymeleaf very well suited for web
+					applications because web documents are very often represented as
+					object trees (in fact DOM trees are the way browsers represent web
+					pages in memory). Also, building on the idea that <i>most web
+					applications use only a few dozen templates</i>, that these are not
+					big files and that they don't normally change while the application is
+					running, Thymeleaf's usage of an in-memory LRU cache of parsed
+					template DOMs allows it to be fast in production environments, because
+					very little I/O is needed (if any) for most template processing
+					operations.</p>
 
-    <h3><a id="no-spring-can-I-use">I don't use Spring at all. Can I still use Thymeleaf?</a></h3>
-    
-    <p>
-      Absolutely. Thymeleaf offers nice integration with Spring MVC through its <i>SpringStandard</i>
-      dialect (included in the <kbd>thymeleaf-spring3</kbd> and <kbd>thymeleaf-spring4</kbd> packages), but
-      Spring integration is completely optional and the <i>Standard</i> dialect is in fact meant to be used
-      without Spring.
-    </p>
+					<p>Of course, this architecture also requires the use of bigger
+					amounts of memory space for each template execution than other XML
+					parsing/processing approaches (like for example SAX), which means that
+					you should not use the library for creating big <i>data XML documents</i>
+					(as opposed to <i>web documents</i>). As a general rule of thumb (and
+					always depending on the memory size of your JVM), if you are
+					generating XML files with sizes around the tens of megabytes in a
+					single template execution, you should not be using Thymeleaf.</p>
 
-    <h3><a id="can-use-HTML5-XML">How can I use Thymeleaf for HTML5 if it is an XML-based technology?</a></h3>
-    
-    <p>
-      You can because HTML5 allows non-XML-formed code only for legacy compatibility reasons, and HTML5 code
-      can be (in fact, <i>should be</i>) well-formed XML.
-    </p> 
-    <p>
-      Developers are encouraged to write new 
-      HTML5 code as well-formed XML because this produces cleaner code, allows easy processing and
-      parsing of code, and removes the need to rely on browsers' algorithms for automatically closing tags and
-      converting code into fully hierarchical structures &mdash;something called <i>error handling</i> that
-      browsers need to apply for representing web pages as DOM object trees. 
-    </p>
-    <p>
-      And don't be fooled by the existence of a standard called <i>XHTML5</i>: that is exactly the same
-      as HTML5, but served with the <kbd>application/xhtml+xml</kbd> HTTP Content-Type. There are no
-      syntax differences like those ones existing between <i>HTML 4</i> and <i>XHTML 1.0</i>.
-    </p>
-    <p>
-      If you want to know more about this topic, read our article 
-      <a href="/doc/fromhtmltohtmlviahtml.html">From HTML to HTML (via HTML)</a>.
-    </p>
+					<p>The reason <i>we consider this restriction only applies to data XML
+					files and not web XHTML/HTML5</i> is that you should never generate
+					web documents so big that your users' browsers set ablaze and/or
+					explode – remember that these browsers will also have to create DOM
+					trees for your pages!</p>
+				</section>
 
+				<section class="subsection">
+					<header>
+						<a id="use-snapshot" class="anchor"></a>
+						<h3>How can I use a SNAPSHOT release of Thymeleaf?</h3>
+					</header>
+					<p>From time to time, Thymeleaf will produce a <i>snapshot</i> release
+					that will allow you to test new or being-developed features. These are
+					<b>non production ready</b> releases, but will be stable enough for
+					most testing purposes, and will enable you to try new features before
+					they are generally available.</p>
 
-    <h3><a id="DOM-parsing-memory">Thymeleaf uses DOM-style parsing of XML. How does that affect memory usage?</a></h3>
-    
-    <p>    
-      The use of DOM parsing makes Thymeleaf very well suited for web applications because web documents 
-      are very often represented as object trees (in fact DOM trees are the way browsers represent 
-      web pages in memory). Also, building on the idea that <i>most web applications use only a few 
-      dozen templates</i>, that these are not big files and that they don't normally change while 
-      the application is running, Thymeleaf's usage of an in-memory LRU cache of parsed template 
-      DOMs allows it to be fast in production environments, because very little I/O is needed 
-      (if any) for most template processing operations.
-    </p> 
-    <p>
-      Of course, this architecture also requires the use of bigger amounts of memory space for 
-      each template execution than other XML parsing/processing approaches (like for example SAX), 
-      which means that you should not use the library for creating big <i>data XML documents</i> (as opposed 
-      to <i>web documents</i>). As a general rule of thumb (and always depending on the memory size of your 
-      JVM), if you are generating XML files with sizes around the tens of megabytes in a single 
-      template execution, you should not be using Thymeleaf.
-    </p>
-    <p>
-      The reason <i>we consider this restriction only applies to data XML files and not web XHTML/HTML5</i> 
-      is that you should never generate web documents so big that your users' browsers set ablaze and/or 
-      explode – remember that these browsers will also have to create DOM trees for your pages!
-    </p>    
+					<p>In order to use snapshot releases, you need to add the Sonatype OSS
+					Snapshots repository in your Maven <code>pom.xml</code> file, like
+					this:</p>
 
+					<pre><code class="language-xml" data-src="snapshot-example-1"></code></pre>
 
-    <h3><a id="use-snapshot">How can I use a SNAPSHOT release of Thymeleaf?</a></h3>
-    
-    <p>    
-      From time to time, Thymeleaf will produce a <i>snapshot</i> release that will allow
-      you to test new or being-developed features. These are <b>non production ready</b>
-      releases, but will be stable enough for most testing purposes, and will enable you
-      to try new features before they are generally available.
-    </p> 
-    <p>
-      In order to use snapshot releases, you need to add the Sonatype OSS Snapshots
-      repository in your Maven <kbd>pom.xml</kbd> file, like this:
-    </p>
-    
-    <script type="syntaxhighlighter" class="brush:xml;gutter:false"><![CDATA[
-        <repositories>
-            <repository>
-                <id>sonatype-nexus-snapshots</id>
-                <name>Sonatype Nexus Snapshots</name>
-                <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                <snapshots>
-                    <enabled>true</enabled>
-                </snapshots>
-            </repository>
-        </repositories>
-    ]]></script>
-    
-    <p>
-      Also, you will have to modify your Thymeleaf dependency/ies to use a 
-      <i>snapshot version</i>, which usually consists of the version number of the
-      <b>next</b> release (not the current one), followed by <kbd>-SNAPSHOT</kbd>.
-      For example, while <kbd>1.1.3</kbd> is the latest published stable release,
-      snapshots will probably appear under the <kbd>1.1.4-SNAPSHOT</kbd> or
-      maybe <kbd>1.2.0-SNAPSHOT</kbd> version numbers:
-    </p>
+					<p>Also, you will have to modify your Thymeleaf dependency/ies to use
+					a <i>snapshot version</i>, which usually consists of the version
+					number of the <b>next</b> release (not the current one), followed by
+					<code>-SNAPSHOT</code>. For example, if <code>2.1.4</code> is the
+					latest published stable release, snapshots will probably appear under
+					the <code>2.1.5-SNAPSHOT</code>, <code>2.2.0-SNAPSHOT</code>, or even
+					<code>3.0.0-SNAPSHOT</code> version numbers:</p>
 
-    <script type="syntaxhighlighter" class="brush:xml;gutter:false"><![CDATA[
-        <dependency>
-            <groupId>org.thymeleaf</groupId>
-            <artifactId>thymeleaf</artifactId>
-            <version>1.1.3-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-    ]]></script>
+					<pre><code class="language-xml" data-src="snapshot-example-2"></code></pre>
+				</section>
 
+				<section class="subsection">
+					<header>
+						<a id="testing" class="anchor"></a>
+						<h3>How is thymeleaf tested?</h3>
+					</header>
+					<p>Thymeleaf has its own testing framework, called <code>thymeleaf-testing</code>.
+					This testing framework not only allows the Thymeleaf Team to easily
+					test the library, but also allows users to test the view layer of
+					their applications. You can explore it at
+					<a href="http://github.com/thymeleaf/thymeleaf-testing">GitHub</a>.</p>
 
-    <h3><a id="testing">How is thymeleaf tested?</a></h3>
+					<p>Making use of this testing framework, Thymeleaf maintains another
+					GitHub repository completely devoted to tests. Tests, tests, and more
+					tests. It's the <code>thymeleaf-tests</code> repository that you can
+					find <a href="http://github.com/thymeleaf/thymeleaf-tests">here</a>.
+					Want some figures? As of June 2014 the <code>thymeleaf-tests</code>
+					repository contained more than 1,300 test files, adding up to more
+					than 37,000 lines of testing code.</p>
 
-    <p>
-        Thymeleaf has its own testing framework, called <kbd>thymeleaf-testing</kbd>. This testing
-        framework not only allows the Thymeleaf Team to easily test the library, but also allows users
-        to test the view layer of their applications. You can explore it at
-        <a href="http://github.com/thymeleaf/thymeleaf-testing">GitHub</a>.
-    </p>
-    <p>
-        Making use of this testing framework, Thymeleaf maintains another GitHub repository completely devoted
-        to tests. Tests, tests, and more tests. It's the <kbd>thymeleaf-tests</kbd> repository that you can find
-        <a href="http://github.com/thymeleaf/thymeleaf-tests">here</a>. Want some figures? As of June 2014
-        the <kbd>thymeleaf-tests</kbd> repository contained more than 1,300 test files, adding up to more than
-        37,000 lines of testing code.
-    </p>
-    <p>
-        Besides, we use
-        <a href="https://travis-ci.org/">Travis CI</a> for continuous integration, thanks to what every release
-        is published after being tested in no-Spring, Spring 3.0, Spring 3.1, Spring 3.2 and Spring 4.0 environments, with
-        Java 6, 7 and 8 (unfortunately Travis does not support Java 5, so we test that manually).
-    </p>
-    
-   </div>
-   
-   <div id="footer">
-     <div id="googleplus">
-       <div id="plusone-div" class="plusone"></div>
-       <script type="text/javascript">
-           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
-       </script>
-     </div>
-     <div id="twitter">
-       <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>
-       <script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
-     </div>
-     <div id="copy">
-       Copyright &copy; The <a href="team.html">THYMELEAF Team</a>. See <a href="documentation.html">applicable licenses</a>.
-     </div>
-   </div>
-   
-  </div>
+					<p>Besides, we use <a href="https://travis-ci.org/">Travis CI</a> for
+					continuous integration, thanks to what every release is published
+					after being tested in no-Spring, Spring 3.0, Spring 3.1, Spring 3.2
+					and Spring 4.0 environments, with Java 6, 7 and 8 (unfortunately
+					Travis does not support Java 5, so we test that manually).</p>
+				</section>
 
-  <script type="text/javascript">
-      SyntaxHighlighter.all();
-  </script>
+			</section>
+		</main>
+	</div>
 
-  </body>
+	<div class="fluid-container footer-container">
+		<footer class="footer fluid-block">
+			<div class="footer-sections">
+				<h5>On this site</h5>
+				<ul class="footer-sections-links">
+					<li><a href="index.html">Home</a></li>
+					<li><a href="download.html">Download</a></li>
+					<li><a href="documentation.html">Docs</a></li>
+					<li><a href="ecosystem.html">Ecosystem</a></li>
+					<li><a href="faq.html">FAQ</a></li>
+					<li id="footer-issue-tracking"><a href="issuetracking.html">Issue Tracking</a></li>
+					<li><a href="team.html">The Thymeleaf Team</a></li>
+					<li><a href="whoisusingthymeleaf.html">Who's using Thymeleaf?</a></li>
+				</ul>
+			</div>
+			<div>
+				<h5>External links</h5>
+				<ul class="footer-sections-links">
+					<li><a href="http://forum.thymeleaf.org/">Forum</a></li>
+					<li><a href="https://twitter.com/thymeleaf">Follow us on Twitter</a></li>
+					<li><a href="https://github.com/thymeleaf">Fork us on GitHub</a></li>
+				</ul>
+			</div>
+		</footer>
+		<div class="copyright fluid-block">Copyright &copy; The Thymeleaf Team</div>
+		<div class="license fluid-block">
+			Thymeleaf is <strong>open source</strong> software distributed under the
+			<a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache License 2.0</a><br/>
+			This website (excluding the names and logos of Thymeleaf users) is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0 License</a>
+		</div>
+	</div>
+
+</body>
+
 </html>
