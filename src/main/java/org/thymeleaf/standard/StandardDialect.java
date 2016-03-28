@@ -497,11 +497,15 @@ public class StandardDialect
          * internal Strings relies on the fact that there is only ONE ITextProcessor instance for each
          * template mode in the StandardDialect (see AbstractStandardInliner for details). So if new processors
          * are added here, it should be for a really compelling reason.
+         * See EngineConfiguration#isModelReshapable()
          */
         processors.add(new StandardInliningTextProcessor(TemplateMode.HTML));
 
         /*
          * HTML: CDATASection PROCESSORS
+         *
+         * NOTE as happens with text processors, adding a processor here would convert models in non-reshapable.
+         * See EngineConfiguration#isModelReshapable()
          */
         processors.add(new StandardInliningCDATASectionProcessor(TemplateMode.HTML));
 
@@ -512,6 +516,9 @@ public class StandardDialect
 
         /*
          * HTML: COMMENT PROCESSORS
+         *
+         * NOTE as happens with text processors, adding a processor here would convert models in non-reshapable.
+         * See EngineConfiguration#isModelReshapable()
          */
         processors.add(new StandardInliningCommentProcessor(TemplateMode.HTML));
         processors.add(new StandardConditionalCommentProcessor());
@@ -571,16 +578,23 @@ public class StandardDialect
          * internal Strings relies on the fact that there is only ONE ITextProcessor instance for each template mode
          * in the StandardDialect (see AbstractStandardInliner for details). So if new processors are added here,
          * it should be for a really compelling reason.
+         * See EngineConfiguration#isModelReshapable()
          */
         processors.add(new StandardInliningTextProcessor(TemplateMode.XML));
 
         /*
          * XML: CDATASection PROCESSORS
+         *
+         * NOTE as happens with text processors, adding a processor here would convert models in non-reshapable.
+         * See EngineConfiguration#isModelReshapable()
          */
         processors.add(new StandardInliningCDATASectionProcessor(TemplateMode.XML));
 
         /*
          * XML: COMMENT PROCESSORS
+         *
+         * NOTE as happens with text processors, adding a processor here would convert models in non-reshapable.
+         * See EngineConfiguration#isModelReshapable()
          */
         processors.add(new StandardInliningCommentProcessor(TemplateMode.XML));
 

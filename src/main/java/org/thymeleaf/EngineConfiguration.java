@@ -268,6 +268,58 @@ public class EngineConfiguration implements IEngineConfiguration {
     }
 
 
+
+    /*
+     * This method is NOT a part of the IEngineConfiguration interface. It is only meant for internal usage. It's
+     * aim is to determine if the template engine has been configured any processing structures that might be harmed
+     * if the model parsed for a template is reshaped in order to improve efficiency during processing (e.g. turn
+     * inlined texts into th:block's or condense non-processable template events into Texts)
+     */
+    public boolean isModelReshapeable(final TemplateMode templateMode) {
+
+        if (!this.dialectSetConfiguration.isStandardDialectPresent()) {
+            // If we haven't configured the standard dialect, preprocessing inlined expressions makes no sense and
+            // in any case we would be in risk of not knowing what we are doing...
+            return false;
+        }
+
+        final Set<ITextProcessor> textProcessors = this.dialectSetConfiguration.getTextProcessors(templateMode);
+        // If the Standard Dialect is present, the inlining text processor will be there. If there are
+        // more than that, then it is not the standard dialect the only one wanting to process texts, which means
+        // we should not disturb the text event structure by applying inlining preprocessing here.
+        if (textProcessors.size() > 1) {
+            return false;
+        }
+
+        if (templateMode.isMarkup()) {
+
+            final Set<ICommentProcessor> commentProcessors = this.dialectSetConfiguration.getCommentProcessors(templateMode);
+            // If the Standard Dialect is present, the inlining text processor will be there. But there will be an additional
+            // comment processor: the conditional comments one. So everytime we reshape a comment, not only we must check it
+            // is not inlineable, but also that it is not a conditional comment
+            if (commentProcessors.size() > (templateMode == TemplateMode.HTML ? 2 : 1)) {
+                return false;
+            }
+
+            final Set<ICDATASectionProcessor> cdataSectionProcessors = this.dialectSetConfiguration.getCDATASectionProcessors(templateMode);
+            // If the Standard Dialect is present, the inlining text processor will be there.
+            if (cdataSectionProcessors.size() > 1) {
+                return false;
+            }
+
+        }
+
+        // Last, we need no preprocessors and also no post-processors present. Any reshaping of the model would
+        // affect them in unexpected ways, so better not do anything if they exist
+        if (!this.dialectSetConfiguration.getPreProcessors(templateMode).isEmpty()) {
+            return false;
+        }
+        return this.dialectSetConfiguration.getPostProcessors(templateMode).isEmpty();
+
+    }
+
+
+
     /**
      * Compares <tt>Integer</tt> types, taking into account possible <tt>null</tt>
      * values.  When <tt>null</tt>, then the return value will be such that the

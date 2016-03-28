@@ -24,11 +24,11 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Set;
 
+import org.thymeleaf.EngineConfiguration;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.engine.TemplateHandlerAdapterTextHandler;
 import org.thymeleaf.exceptions.TemplateInputException;
-import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.templateparser.reader.ParserLevelCommentTextReader;
@@ -143,10 +143,8 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
 
             // Just before the adapter markup handler, we will insert the processing of inlined output expressions
             // but only if we are not going to disturb the execution of text processors coming from other dialects
-            // (which might see text blocks coming as several blocks instead of just one). We will not really worry
-            // about pre-processors and post-processors because they are single classes that can always merge
-            // consecutive text events.
-            if (canPreProcessInlinedOutputExpresssions(configuration, templateMode)) {
+            // (which might see text blocks coming as several blocks instead of just one).
+            if (configuration instanceof EngineConfiguration && ((EngineConfiguration) configuration).isModelReshapeable(templateMode)) {
                 handler = new InlinedOutputExpressionTextHandler(
                                 configuration,
                                 templateMode,
@@ -181,25 +179,6 @@ public abstract class AbstractTextTemplateParser implements ITemplateParser {
             }
             throw new TemplateInputException(message, (resource != null? resource.getDescription() : template), e);
         }
-
-    }
-
-
-
-
-    private static boolean canPreProcessInlinedOutputExpresssions(
-            final IEngineConfiguration configuration, final TemplateMode templateMode) {
-
-        if (!configuration.isStandardDialectPresent()) {
-            // If we haven't configured the standard dialect, preprocessing inlined expressions makes no sense
-            return false;
-        }
-
-        final Set<ITextProcessor> textProcessors = configuration.getTextProcessors(templateMode);
-        // If the Standard Dialect is present, the inlining text processor will be there. If there are
-        // more than that, then it is not the standard dialect the only one wanting to process texts, which means
-        // we should not disturb the text event structure by applying inlining preprocessing here.
-        return textProcessors.size() <= 1;
 
     }
 
