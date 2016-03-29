@@ -207,7 +207,7 @@ final class Model implements IModel {
             return;
         }
 
-        if (!this.configuration.equals(model.getConfiguration())) {
+        if (this.configuration != model.getConfiguration()) {
             throw new TemplateProcessingException(
                     "Cannot add model of class " + model.getClass().getName() + " to the current template, as " +
                     "it was created using a different Template Engine Configuration.");
