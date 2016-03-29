@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.spring4.processor;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.thymeleaf.context.ITemplateContext;
@@ -122,7 +122,7 @@ public final class SpringMethodTagProcessor
                 final String name = "_method";
                 final String value = RequestDataValueProcessorUtils.processFormFieldValue(context, name, newAttributeValue, type);
 
-                final Map<String,String> hiddenAttributes = new HashMap<String,String>(4,1.0f);
+                final Map<String,String> hiddenAttributes = new LinkedHashMap<String,String>(4,1.0f);
                 hiddenAttributes.put(TYPE_ATTR_NAME, type);
                 hiddenAttributes.put(NAME_ATTR_NAME, name);
                 hiddenAttributes.put(VALUE_ATTR_NAME, value); // no need to escape

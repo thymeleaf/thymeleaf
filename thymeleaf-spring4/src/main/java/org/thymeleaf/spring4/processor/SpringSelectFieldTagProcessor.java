@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.spring4.processor;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.web.bind.WebDataBinder;
@@ -87,7 +87,7 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
             final String value =
                     RequestDataValueProcessorUtils.processFormFieldValue(context, hiddenName, "1", type);
 
-            final Map<String,String> hiddenAttributes = new HashMap<String,String>(4,1.0f);
+            final Map<String,String> hiddenAttributes = new LinkedHashMap<String, String>(4,1.0f);
             hiddenAttributes.put(TYPE_ATTR_NAME, type);
             hiddenAttributes.put(NAME_ATTR_NAME, hiddenName);
             hiddenAttributes.put(VALUE_ATTR_NAME, value);

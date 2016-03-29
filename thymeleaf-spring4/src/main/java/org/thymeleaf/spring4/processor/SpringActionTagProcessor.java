@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.spring4.processor;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.thymeleaf.context.ITemplateContext;
@@ -123,7 +123,7 @@ public final class  SpringActionTagProcessor
 
                 for (final Map.Entry<String,String> extraHiddenField : extraHiddenFields.entrySet()) {
 
-                    final Map<String,String> extraHiddenAttributes = new HashMap<String,String>(4,1.0f);
+                    final Map<String,String> extraHiddenAttributes = new LinkedHashMap<String,String>(4,1.0f);
                     extraHiddenAttributes.put(TYPE_ATTR_NAME, "hidden");
                     extraHiddenAttributes.put(NAME_ATTR_NAME, extraHiddenField.getKey());
                     extraHiddenAttributes.put(VALUE_ATTR_NAME, extraHiddenField.getValue()); // no need to re-apply the processor here
