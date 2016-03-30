@@ -207,7 +207,7 @@ final class ElementProcessorIterator {
 
             if (i >= this.size || j >= this.size) {
                 // We know everything in the new array from here on has to be new. Might also be that we
-                // just did a reset (this.size == 0), and we are going to consider every new processor
+                // just did a resetGathering (this.size == 0), and we are going to consider every new processor
                 // as "not visited"
                 Arrays.fill(this.auxVisited, i, this.auxSize, false);
                 break;

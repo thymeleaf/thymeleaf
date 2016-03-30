@@ -93,7 +93,7 @@ public final class TemplateBoundariesStructureHandler implements ITemplateBounda
 
 
     public void removeLocalVariable(final String name) {
-        // Can be combined with others, no need to reset
+        // Can be combined with others, no need to resetGathering
         this.removeLocalVariable = true;
         if (this.removedLocalVariableNames == null) {
             this.removedLocalVariableNames = new HashSet<String>(3);
@@ -103,7 +103,7 @@ public final class TemplateBoundariesStructureHandler implements ITemplateBounda
 
 
     public void setLocalVariable(final String name, final Object value) {
-        // Can be combined with others, no need to reset
+        // Can be combined with others, no need to resetGathering
         this.setLocalVariable = true;
         if (this.addedLocalVariables == null) {
             this.addedLocalVariables = new HashMap<String, Object>(3);
@@ -113,7 +113,7 @@ public final class TemplateBoundariesStructureHandler implements ITemplateBounda
 
 
     public void setSelectionTarget(final Object selectionTarget) {
-        // Can be combined with others, no need to reset
+        // Can be combined with others, no need to resetGathering
         this.setSelectionTarget = true;
         this.selectionTargetObject = selectionTarget;
     }

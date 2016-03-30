@@ -200,7 +200,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
 
     public void removeLocalVariable(final String name) {
-        // Can be combined with others, no need to reset
+        // Can be combined with others, no need to resetGathering
         Validate.notNull(name, "Variable name cannot be null");
         this.removeLocalVariable = true;
         if (this.removedLocalVariableNames == null) {
@@ -211,7 +211,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
 
     public void setLocalVariable(final String name, final Object value) {
-        // Can be combined with others, no need to reset
+        // Can be combined with others, no need to resetGathering
         Validate.notNull(name, "Variable name cannot be null");
         this.setLocalVariable = true;
         if (this.addedLocalVariables == null) {
@@ -222,7 +222,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
 
     public void setAttribute(final String attributeName, final String attributeValue) {
-        // Can be combined with others, no need to reset
+        // Can be combined with others, no need to resetGathering
         Validate.notNull(attributeName, "Attribute name cannot be null");
         ensureSetAttributeSize();
         this.setAttribute = true;
@@ -236,7 +236,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
 
     public void setAttribute(final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
-        // Can be combined with others, no need to reset
+        // Can be combined with others, no need to resetGathering
         Validate.notNull(attributeName, "Attribute name cannot be null");
         ensureSetAttributeSize();
         this.setAttribute = true;
@@ -252,7 +252,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
     // NOTE this method is not part of the structure handler interface, as it uses the attributeDefinition.
     // The idea is that it can be used as an additional optimization by processors in Standard Dialects, after casting.
     public void setAttribute(final AttributeDefinition attributeDefinition, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
-        // Can be combined with others, no need to reset
+        // Can be combined with others, no need to resetGathering
         Validate.notNull(attributeDefinition, "Attribute definition cannot be null");
         Validate.notNull(attributeName, "Attribute name cannot be null");
         ensureSetAttributeSize();
@@ -280,7 +280,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
 
     public void replaceAttribute(final AttributeName oldAttributeName, final String attributeName, final String attributeValue) {
-        // Can be combined with others, no need to reset
+        // Can be combined with others, no need to resetGathering
         Validate.notNull(oldAttributeName, "Old attribute name cannot be null");
         Validate.notNull(attributeName, "Attribute name cannot be null");
         ensureReplaceAttributeSize();
@@ -296,7 +296,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
 
     public void replaceAttribute(final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
-        // Can be combined with others, no need to reset
+        // Can be combined with others, no need to resetGathering
         Validate.notNull(oldAttributeName, "Old attribute name cannot be null");
         Validate.notNull(attributeName, "Attribute name cannot be null");
         ensureReplaceAttributeSize();
@@ -314,7 +314,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
     // NOTE this method is not part of the structure handler interface, as it uses the attributeDefinition.
     // The idea is that it can be used as an additional optimization by processors in Standard Dialects, after casting.
     public void replaceAttribute(final AttributeName oldAttributeName, final AttributeDefinition attributeDefinition, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes) {
-        // Can be combined with others, no need to reset
+        // Can be combined with others, no need to resetGathering
         Validate.notNull(oldAttributeName, "Old attribute name cannot be null");
         Validate.notNull(attributeDefinition, "Attribute definition cannot be null");
         Validate.notNull(attributeName, "Attribute name cannot be null");
@@ -344,7 +344,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
 
     public void removeAttribute(final String attributeName) {
-        // Can be combined with others, no need to reset
+        // Can be combined with others, no need to resetGathering
         Validate.notNull(attributeName, "Attribute name cannot be null");
         ensureRemoveAttributeSize();
         this.removeAttribute = true;
@@ -356,7 +356,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
 
     public void removeAttribute(final String prefix, final String name) {
-        // Can be combined with others, no need to reset
+        // Can be combined with others, no need to resetGathering
         Validate.notNull(name, "Attribute name cannot be null");
         ensureRemoveAttributeSize();
         this.removeAttribute = true;
@@ -368,7 +368,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
 
     public void removeAttribute(final AttributeName attributeName) {
-        // Can be combined with others, no need to reset
+        // Can be combined with others, no need to resetGathering
         Validate.notNull(attributeName, "Attribute name cannot be null");
         ensureRemoveAttributeSize();
         this.removeAttribute = true;
@@ -393,7 +393,7 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
 
     public void setSelectionTarget(final Object selectionTarget) {
-        // Can be combined with others, no need to reset
+        // Can be combined with others, no need to resetGathering
         this.setSelectionTarget = true;
         this.selectionTargetObject = selectionTarget;
     }

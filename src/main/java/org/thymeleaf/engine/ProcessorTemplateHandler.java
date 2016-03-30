@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.ProcessorTemplateHandlerModelFilter.SkipBody;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
@@ -104,9 +105,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     private static final IXMLDeclarationProcessor[] EMPTY_XML_DECLARATION_PROCESSORS = new IXMLDeclarationProcessor[0];
 
 
-    private static enum BodyBehaviour { PROCESS, SKIP_ELEMENTS, SKIP_ELEMENTS_BUT_FIRST, SKIP_ALL}
-
-
     // Structure handlers are reusable objects that will be used by processors in order to instruct the engine to
     // do things with the processed structures themselves (things that cannot be directly done from the processors like
     // removing structures or iterating elements)
@@ -145,11 +143,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
     private Integer initialContextLevel = null;
 
-    // Declare the structure that will hold the processing data/flags needed to be indexed by the
-    // model level (the hierarchy of the markup)
-    private ModelLevelData[] modelLevelData;
-    private int modelLevel;
-
 
     // Declare the structure that will hold the processing data/flags needed to be indexed by the
     // handler execution level (i.e. levels of nesting in handler method execution)
@@ -164,8 +157,10 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     // template mode disregarding the name of the element.
     private IText lastTextEvent = null;
 
-    // The gatherer will be in charge of determining when an event should be gathered (into a Model) instead of processed
-    private ProcessorTemplateHandlerModelGatherer gatherer = null;
+    // The filter will be in charge of deciding if we have to skip the processing of an event, because it has to be
+    // discarded or maybe because events are being gathered for future processing as a whole (e.g. iteration or
+    // element model processors).
+    private ProcessorTemplateHandlerModelFilter filter = null;
 
 
 
@@ -179,11 +174,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     public ProcessorTemplateHandler() {
 
         super();
-
-
-        this.modelLevelData = new ModelLevelData[10];
-        Arrays.fill(this.modelLevelData, null);
-        this.modelLevel = -1;
 
         this.execLevelData = new ExecLevelData[5];
         Arrays.fill(this.execLevelData, null);
@@ -240,7 +230,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         }
 
         // Instance the gatherer
-        this.gatherer = new ProcessorTemplateHandlerModelGatherer(this.configuration, this.templateMode);
+        this.filter = new ProcessorTemplateHandlerModelFilter(this.configuration, this.templateMode, this.engineContext);
 
         // Obtain all processor sets and compute sizes
         final Set<ITemplateBoundariesProcessor> templateBoundariesProcessorSet = this.configuration.getTemplateBoundariesProcessors(this.templateMode);
@@ -267,33 +257,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         this.xmlDeclarationProcessors =
                 xmlDeclarationProcessorSet.size() == 0? EMPTY_XML_DECLARATION_PROCESSORS : xmlDeclarationProcessorSet.toArray(new IXMLDeclarationProcessor[xmlDeclarationProcessorSet.size()]);
 
-    }
-
-
-
-
-
-
-
-    private void increaseModelLevel() {
-
-        this.modelLevel++;
-
-        if (this.modelLevel == this.modelLevelData.length) {
-            this.modelLevelData = Arrays.copyOf(this.modelLevelData, this.modelLevelData.length + 10);
-        }
-
-        if (this.modelLevelData[this.modelLevel] == null) {
-            this.modelLevelData[this.modelLevel] = new ModelLevelData();
-        } else {
-            this.modelLevelData[this.modelLevel].reset();
-        }
-
-    }
-
-
-    private void decreaseModelLevel() {
-        this.modelLevel--;
     }
 
 
@@ -353,13 +316,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
             this.initialContextLevel = Integer.valueOf(this.engineContext.level());
         }
 
-        /*
-         *  INCREASE THE MODEL LEVEL. Markup parsing is starting, and we need to set it to 0.
-         *  Doing this here instead of, for example, at the ProcessorTemplateHandler constructor is a need
-         *  because the structures created here might need things like the IEngineConfiguration object, which
-         *  we do not have at constructor time.
-         */
-        increaseModelLevel();
 
         /*
          * FAIL FAST in case this structure has no associated processors.
@@ -459,7 +415,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * FAIL FAST in case this structure has no associated processors.
          */
         if (this.templateBoundariesProcessors.length == 0) {
-            decreaseModelLevel(); // Decrease the model level increased during template start (should be now: -1)
             this.next.handleTemplateEnd(itemplateEnd);
             return;
         }
@@ -540,12 +495,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * DECREASE THE MODEL LEVEL
-         */
-        decreaseModelLevel();
-
-
-        /*
          * LAST ROUND OF CHECKS. If we have not returned our indexes to -1, something has gone wrong during processing
          */
         if (this.execLevel >= 0) {
@@ -553,9 +502,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     "Bad markup or template processing sequence. Execution level is >= 0 (" + this.execLevel + ") " +
                     "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
         }
-        if (this.modelLevel >= 0) {
+        if (this.filter.getModelLevel() != 0) {
             throw new TemplateProcessingException(
-                    "Bad markup or template processing sequence. Model level is >= 0 (" + this.modelLevel + ") " +
+                    "Bad markup or template processing sequence. Model level is >= 0 (" + this.filter.getModelLevel() + ") " +
                     "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
         }
         if (this.engineContext != null) {
@@ -583,15 +532,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (this.gatherer.gatherText(itext)) {
-            return;
-        }
-
-
-        /*
-         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
-         */
-        if (this.modelLevelData[this.modelLevel].bodyBehaviour == BodyBehaviour.SKIP_ALL) {
+        if (!this.filter.shouldProcessText(itext)) {
             return;
         }
 
@@ -685,15 +626,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (this.gatherer.gatherComment(icomment)) {
-            return;
-        }
-
-
-        /*
-         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
-         */
-        if (this.modelLevelData[this.modelLevel].bodyBehaviour == BodyBehaviour.SKIP_ALL) {
+        if (!this.filter.shouldProcessComment(icomment)) {
             return;
         }
 
@@ -787,15 +720,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (this.gatherer.gatherCDATASection(icdataSection)) {
-            return;
-        }
-
-
-        /*
-         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
-         */
-        if (this.modelLevelData[this.modelLevel].bodyBehaviour == BodyBehaviour.SKIP_ALL) {
+        if (!this.filter.shouldProcessCDATASection(icdataSection)) {
             return;
         }
 
@@ -889,19 +814,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (this.gatherer.gatherStandaloneElement(istandaloneElementTag)) {
+        if (!this.filter.shouldProcessStandaloneElement(istandaloneElementTag)) {
             return;
-        }
-
-
-        /*
-         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
-         */
-        if (this.modelLevelData[this.modelLevel].bodyBehaviour == BodyBehaviour.SKIP_ALL ||
-                this.modelLevelData[this.modelLevel].bodyBehaviour == BodyBehaviour.SKIP_ELEMENTS) {
-            return;
-        } else if (this.modelLevelData[this.modelLevel].bodyBehaviour == BodyBehaviour.SKIP_ELEMENTS_BUT_FIRST) {
-            this.modelLevelData[this.modelLevel].bodyBehaviour = BodyBehaviour.SKIP_ELEMENTS;
         }
 
 
@@ -1264,7 +1178,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * PROCESS THE QUEUE BEFORE DELEGATING, if specified to do so
          */
         if (execLevelData.queueProcessBeforeDelegate) {
-            execLevelData.model.process(execLevelData.queueProcessable ? this : this.next);
+            execLevelData.model.process(this.next); // This is never processable
         }
 
 
@@ -1314,22 +1228,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (this.gatherer.gatherOpenElement(iopenElementTag)) {
+        if (!this.filter.shouldProcessOpenElement(iopenElementTag)) {
             return;
         }
-
-
-        /*
-         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
-         */
-        if (this.modelLevelData[this.modelLevel].bodyBehaviour == BodyBehaviour.SKIP_ALL ||
-                this.modelLevelData[this.modelLevel].bodyBehaviour == BodyBehaviour.SKIP_ELEMENTS) {
-            increaseModelLevel();
-            this.modelLevelData[this.modelLevel].bodyBehaviour = BodyBehaviour.SKIP_ALL; // Skip everything inside
-            return;
-        }
-        // Note the structure doesn't end here, so even if bodyBehaviour is set to ONLY_FIRST_ELEMENT we won't
-        // set it to SKIP_ALL at this model level until the close tag.
 
 
         /*
@@ -1364,11 +1265,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
          */
         if (!wasSuspended && !openElementTag.hasAssociatedProcessors()) {
-            if (this.engineContext != null) {
-                this.engineContext.increaseLevel();
-            }
             this.next.handleOpenElement(openElementTag);
-            increaseModelLevel();
             return;
         }
 
@@ -1382,15 +1279,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
             increaseExecLevel();
         }
         final ExecLevelData execLevelData = this.execLevelData[this.execLevel];
-
-
-        /*
-         * INCREASE THE CONTEXT LEVEL so that all local variables created during the execution of processors
-         * are available for the rest of the processors as well as the body of the tag
-         */
-        if (this.engineContext != null) {
-            this.engineContext.increaseLevel();
-        }
 
 
         /*
@@ -1416,9 +1304,11 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                 if (this.elementTagStructureHandler.iterateElement) {
 
+                    // TODO there is a problem here: if any local variables are set before an iteration or an element
+                    // model start gathering, those vars will NOT be accessible to the gathered model when it executes!!!!
+
                     // Initialize the gatherer object
-                    this.gatherer.init(ProcessorTemplateHandlerModelGatherer.GatheringType.ITERATION);
-                    this.gatherer.gatherOpenElement(openElementTag);
+                    this.filter.startGathering(ProcessorTemplateHandlerModelFilter.GatheringType.ITERATION, openElementTag);
 
                     // Suspend execution - execution will be restarted by the handleOpenElement event at the
                     // processIteration() call performed after gathering all the iterated markup
@@ -1453,7 +1343,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Add the new Text to the queue
                     execLevelData.model.add(new Text(this.elementTagStructureHandler.setBodyTextValue));
 
-                    execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
+                    execLevelData.skipBody = SkipBody.SKIP_ALL;
 
                 } else if (this.elementTagStructureHandler.setBodyModel) {
 
@@ -1463,7 +1353,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Model will be automatically cloned if mutable
                     execLevelData.model.addModel(this.elementTagStructureHandler.setBodyModelValue);
 
-                    execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
+                    execLevelData.skipBody = SkipBody.SKIP_ALL;
 
                 } else if (this.elementTagStructureHandler.insertBeforeModel) {
 
@@ -1502,7 +1392,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     execLevelData.model.add(new Text(this.elementTagStructureHandler.replaceWithTextValue));
 
                     execLevelData.discardEvent = true;
-                    execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
+                    execLevelData.skipBody = SkipBody.SKIP_ALL;
+                    execLevelData.skipCloseTag = true;
 
                 } else if (this.elementTagStructureHandler.replaceWithModel) {
 
@@ -1513,32 +1404,35 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     execLevelData.model.addModel(this.elementTagStructureHandler.replaceWithModelValue);
 
                     execLevelData.discardEvent = true;
-                    execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
+                    execLevelData.skipBody = SkipBody.SKIP_ALL;
+                    execLevelData.skipCloseTag = true;
 
                 } else if (this.elementTagStructureHandler.removeElement) {
 
                     execLevelData.resetQueue(); // Remove any previous results on the queue
 
                     execLevelData.discardEvent = true;
-                    execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
+                    execLevelData.skipBody = SkipBody.SKIP_ALL;
+                    execLevelData.skipCloseTag = true;
 
                 } else if (this.elementTagStructureHandler.removeTags) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
 
                     execLevelData.discardEvent = true;
+                    execLevelData.skipCloseTag = true;
 
                 } else if (this.elementTagStructureHandler.removeBody) {
 
                     execLevelData.resetQueue(); // Remove any previous results on the queue
 
-                    execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
+                    execLevelData.skipBody = SkipBody.SKIP_ALL;
 
                 } else if (this.elementTagStructureHandler.removeAllButFirstChild) {
 
                     execLevelData.resetQueue(); // Remove any previous results on the queue
 
-                    execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ELEMENTS_BUT_FIRST;
+                    execLevelData.skipBody = SkipBody.PROCESS_ONE_ELEMENT;
 
                 }
 
@@ -1567,8 +1461,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     }
 
                     // Initialize the gatherer object
-                    this.gatherer.init(ProcessorTemplateHandlerModelGatherer.GatheringType.MODEL);
-                    this.gatherer.gatherOpenElement(openElementTag);
+                    this.filter.startGathering(ProcessorTemplateHandlerModelFilter.GatheringType.MODEL, openElementTag);
 
                     // Set the processor to be executed again, because this time we will just set the "model gathering" mechanism
                     execLevelData.processorIterator.setLastToBeRepeated(openElementTag);
@@ -1598,7 +1491,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 // NOTE we are not cloning the events themselves here. There should be no need, as we are going to
                 //      re-locate these events into a new queue, and their old position (which will be executed
                 //      anyway) will be ignored.
-                final Model processedModel = new Model(this.gatherer.getModel());
+                final Model processedModel = new Model(this.filter.getGatheredModel());
 
                 ((IElementModelProcessor) processor).process(this.context, processedModel, this.elementModelStructureHandler);
 
@@ -1646,7 +1539,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 execLevelData.model.addModel(processedModel);
 
                 execLevelData.discardEvent = true;
-                execLevelData.bodyBehaviour = BodyBehaviour.SKIP_ALL;
+                execLevelData.skipBody = SkipBody.SKIP_ALL;
+                execLevelData.skipCloseTag = true;
 
 
             } else {
@@ -1662,7 +1556,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * PROCESS THE QUEUE BEFORE DELEGATING, if specified to do so
          */
         if (execLevelData.queueProcessBeforeDelegate) {
-            execLevelData.model.process(execLevelData.queueProcessable ? this : this.next);
+            execLevelData.model.process(this.next); // This is never processable
         }
 
 
@@ -1672,14 +1566,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         if (!execLevelData.discardEvent) {
             this.next.handleOpenElement(openElementTag);
         }
-
-
-        /*
-         * INCREASE THE MODEL LEVEL to the value that will be applied to the tag's bodies. Note we will do even
-         * if during the execution of processors this open tag has been replaced by something else, because
-         * we will still be processing the body of the open tag when it still was an open tag.
-         */
-        increaseModelLevel();
 
 
         /*
@@ -1696,17 +1582,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * SET BODY TO BE SKIPPED, if required. Importantly, this has to be done AFTER executing the queue
          */
-        this.modelLevelData[this.modelLevel].bodyBehaviour = execLevelData.bodyBehaviour;
-
-
-        /*
-         * MAKE SURE WE SKIP_ALL THE CORRESPONDING CLOSE TAG, if required
-         */
-        if (execLevelData.discardEvent) {
-            this.modelLevelData[this.modelLevel - 1].skipCloseTag = true;
-            // We cannot decrease here the context level because we aren't actually decreasing the model
-            // level until we find the corresponding close tag
-        }
+        this.filter.skip(execLevelData.skipBody, execLevelData.skipCloseTag);
 
 
         /*
@@ -1738,69 +1614,35 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (this.gatherer.gatherCloseElement(icloseElementTag)) {
+        if (!this.filter.shouldProcessCloseElement(icloseElementTag)) {
 
             // We will only return if this close element tag didn't actually end the gathering operation
-            if (!this.gatherer.isFinished()) {
-                return;
-            }
+            if (this.filter.isGatheringFinished()) {
 
-            // Obtain the gathered model and discard the gatherer (a nested processing might set a new one)
-            final Model gatheredModel = this.gatherer.getModel();
-            final ProcessorTemplateHandlerModelGatherer.GatheringType gatheringType = this.gatherer.getGatheringType();
-            this.gatherer.reset();
+                // Obtain the gathered model and discard the gatherer (a nested processing might set a new one)
+                final Model gatheredModel = this.filter.getGatheredModel();
+                final ProcessorTemplateHandlerModelFilter.GatheringType gatheringType = this.filter.getGatheringType();
+                this.filter.resetGathering();
 
-            // Process the queue
-            switch (gatheringType) {
-                case ITERATION: processIteration(gatheredModel); break;
-                case MODEL: gatheredModel.process(this); break;
-                default: throw new TemplateProcessingException("Unknown gathering type: " + gatheringType);
-            }
+                // Process the queue
+                switch (gatheringType) {
+                    case ITERATION: processIteration(gatheredModel); break;
+                    case MODEL: gatheredModel.process(this); break;
+                    default: throw new TemplateProcessingException("Unknown gathering type: " + gatheringType);
+                }
 
-            // Decrease the context level
-            if (this.engineContext != null) {
-                this.engineContext.decreaseLevel();
             }
 
             return;
 
         }
 
-
-        /*
-         * DECREASE THE MODEL LEVEL, as only the body of elements should be considered in a higher level
-         */
-        decreaseModelLevel();
-
-        /*
-         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
-         */
-        if (this.modelLevelData[this.modelLevel].bodyBehaviour == BodyBehaviour.SKIP_ALL ||
-                this.modelLevelData[this.modelLevel].bodyBehaviour == BodyBehaviour.SKIP_ELEMENTS) {
-            return;
-        } else if (this.modelLevelData[this.modelLevel].bodyBehaviour == BodyBehaviour.SKIP_ELEMENTS_BUT_FIRST) {
-            this.modelLevelData[this.modelLevel].bodyBehaviour = BodyBehaviour.SKIP_ELEMENTS;
-        }
 
         /*
          * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
          */
         this.lastTextEvent = null;
 
-        /*
-         * DECREASE THE CONTEXT LEVEL, once we know this tag was not part of a block of discarded model
-         */
-        if (this.engineContext != null) {
-            this.engineContext.decreaseLevel();
-        }
-
-        /*
-         * CHECK WHETHER THIS CLOSE TAG ITSELF MUST BE DISCARDED because we also discarded the open one (even if not necessarily the body)
-         */
-        if (this.modelLevelData[this.modelLevel].skipCloseTag) {
-            this.modelLevelData[this.modelLevel].skipCloseTag = false;
-            return;
-        }
 
         /*
          * CALL THE NEXT HANDLER in the chain
@@ -1821,15 +1663,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (this.gatherer.gatherUnmatchedCloseElement(icloseElementTag)) {
-            return;
-        }
-
-
-        /*
-         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
-         */
-        if (this.modelLevelData[this.modelLevel].bodyBehaviour == BodyBehaviour.SKIP_ALL) { // an unmatched is not really an element
+        if (!this.filter.shouldProcessUnmatchedCloseElement(icloseElementTag)) {
             return;
         }
 
@@ -1867,15 +1701,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (this.gatherer.gatherDocType(idocType)) {
-            return;
-        }
-
-
-        /*
-         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
-         */
-        if (this.modelLevelData[this.modelLevel].bodyBehaviour == BodyBehaviour.SKIP_ALL) {
+        if (!this.filter.shouldProcessDocType(idocType)) {
             return;
         }
 
@@ -1975,15 +1801,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (this.gatherer.gatherXMLDeclaration(ixmlDeclaration)) {
-            return;
-        }
-
-
-        /*
-         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
-         */
-        if (this.modelLevelData[this.modelLevel].bodyBehaviour == BodyBehaviour.SKIP_ALL) {
+        if (!this.filter.shouldProcessXMLDeclaration(ixmlDeclaration)) {
             return;
         }
 
@@ -2082,15 +1900,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (this.gatherer.gatherProcessingInstruction(iprocessingInstruction)) {
-            return;
-        }
-
-
-        /*
-         * CHECK WHETHER THIS MODEL REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
-         */
-        if (this.modelLevelData[this.modelLevel].bodyBehaviour == BodyBehaviour.SKIP_ALL) {
+        if (!this.filter.shouldProcessProcessingInstruction(iprocessingInstruction)) {
             return;
         }
 
@@ -2192,7 +2002,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * We will use to execution levels here: an "outer" one containing the original artifacts (esp. the
+         * We will use two execution levels here: an "outer" one containing the original artifacts (esp. the
          * originally gathered queue) and an "inner" one which will be the one on which the real gathered
          * events will execute when their execution is resumed.
          */
@@ -2278,21 +2088,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
              */
             this.engineContext.setVariable(outerExecLevelData.iterationArtifacts.iterVariableName, status.current);
             this.engineContext.setVariable(outerExecLevelData.iterationArtifacts.iterStatusVariableName, status);
-
-
-            /*
-             * Adjust body behaviour for this model level
-             *
-             * If this iterator (e.g. th:each) lived in a tag with a "remove all but first" instruction,
-             * we need to reinitialize SKIP_ELEMENTS -> SKIP_ELEMENTS_BUT_FIRST
-             * The reason this is done on modelLevel and not on execLevel is because execLevel is for things
-             * that have been changed by the iterated element itself before processing the iteration, and in this case
-             * we are talking about an element-skipping operation performed by a higher-level tag that was
-             * executed previously
-             */
-            if (this.modelLevelData[this.modelLevel].bodyBehaviour == BodyBehaviour.SKIP_ELEMENTS) {
-                this.modelLevelData[this.modelLevel].bodyBehaviour = BodyBehaviour.SKIP_ELEMENTS_BUT_FIRST;
-            }
 
 
             /*
@@ -2645,27 +2440,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
 
-    private static final class ModelLevelData {
-
-        BodyBehaviour bodyBehaviour;
-        boolean skipCloseTag;
-
-
-        ModelLevelData() {
-            super();
-            reset();
-        }
-
-        void reset() {
-            this.bodyBehaviour = BodyBehaviour.PROCESS;
-            this.skipCloseTag = false;
-        }
-
-    }
-
-
-
-
     private static final class ExecLevelData {
 
         final IEngineConfiguration configuration;
@@ -2677,7 +2451,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         boolean queueProcessable;
         boolean queueProcessBeforeDelegate;
         boolean discardEvent;
-        BodyBehaviour bodyBehaviour;
+
+        SkipBody skipBody;
+        boolean skipCloseTag;
 
         IterationArtifacts iterationArtifacts;
 
@@ -2703,8 +2479,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
             this.suspended = false;
             this.processorIterator.reset();
             this.discardEvent = false;
-            this.bodyBehaviour = BodyBehaviour.PROCESS;
             this.iterationArtifacts.reset();
+            this.skipBody = SkipBody.PROCESS;
+            this.skipCloseTag = false;
         }
 
         void resetAsCloneOf(final ExecLevelData execLevelData, final boolean cloneGathering) {
@@ -2715,8 +2492,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
             this.queueProcessable = execLevelData.queueProcessable;
             this.queueProcessBeforeDelegate = execLevelData.queueProcessBeforeDelegate;
             this.discardEvent = execLevelData.discardEvent;
-            this.bodyBehaviour = execLevelData.bodyBehaviour;
             this.iterationArtifacts.resetAsCloneOf(execLevelData.iterationArtifacts);
+            this.skipBody = execLevelData.skipBody;
+            this.skipCloseTag = execLevelData.skipCloseTag;
         }
 
     }
