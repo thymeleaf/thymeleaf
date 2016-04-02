@@ -19,14 +19,8 @@
  */
 package org.thymeleaf.engine;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -34,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.engine.ProcessorTemplateHandlerModelFilter.SkipBody;
+import org.thymeleaf.engine.EventModelController.SkipBody;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
@@ -44,7 +38,6 @@ import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.model.ITemplateEnd;
-import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.model.IXMLDeclaration;
@@ -59,7 +52,6 @@ import org.thymeleaf.processor.templateboundaries.ITemplateBoundariesProcessor;
 import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -71,8 +63,6 @@ import org.thymeleaf.util.Validate;
 public final class ProcessorTemplateHandler implements ITemplateHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessorTemplateHandler.class);
-
-    private static final String DEFAULT_STATUS_VAR_SUFFIX = "Stat";
 
     // This is a set containing all the names of the elements for which, when iterated, we should preserve
     // the preceding whitespace if it exists so that resulting markup is more readable. Note they are all block
@@ -157,10 +147,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     // template mode disregarding the name of the element.
     private IText lastTextEvent = null;
 
-    // The filter will be in charge of deciding if we have to skip the processing of an event, because it has to be
+    // The eventModelController will be in charge of deciding if we have to skip the processing of an event, because it has to be
     // discarded or maybe because events are being gathered for future processing as a whole (e.g. iteration or
     // element model processors).
-    private ProcessorTemplateHandlerModelFilter filter = null;
+    private EventModelController eventModelController = null;
+
+
+    // This variable will be used only to allow the gathered model to be passed from the point in which its execution
+    // is started to the first event being handled (so that, e.g. model processors can use it)
+    private Model gatheredModel = null;
 
 
 
@@ -230,7 +225,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         }
 
         // Instance the gatherer
-        this.filter = new ProcessorTemplateHandlerModelFilter(this.configuration, this.templateMode, this.engineContext);
+        this.eventModelController = new EventModelController(this.configuration, this.templateMode, this.engineContext);
 
         // Obtain all processor sets and compute sizes
         final Set<ITemplateBoundariesProcessor> templateBoundariesProcessorSet = this.configuration.getTemplateBoundariesProcessors(this.templateMode);
@@ -502,9 +497,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     "Bad markup or template processing sequence. Execution level is >= 0 (" + this.execLevel + ") " +
                     "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
         }
-        if (this.filter.getModelLevel() != 0) {
+        if (this.eventModelController.getModelLevel() != 0) {
             throw new TemplateProcessingException(
-                    "Bad markup or template processing sequence. Model level is >= 0 (" + this.filter.getModelLevel() + ") " +
+                    "Bad markup or template processing sequence. Model level is != 0 (" + this.eventModelController.getModelLevel() + ") " +
                     "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
         }
         if (this.engineContext != null) {
@@ -532,7 +527,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (!this.filter.shouldProcessText(itext)) {
+        if (!this.eventModelController.shouldProcessText(itext)) {
             return;
         }
 
@@ -626,7 +621,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (!this.filter.shouldProcessComment(icomment)) {
+        if (!this.eventModelController.shouldProcessComment(icomment)) {
             return;
         }
 
@@ -720,7 +715,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (!this.filter.shouldProcessCDATASection(icdataSection)) {
+        if (!this.eventModelController.shouldProcessCDATASection(icdataSection)) {
             return;
         }
 
@@ -814,7 +809,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (!this.filter.shouldProcessStandaloneElement(istandaloneElementTag)) {
+        if (!this.eventModelController.shouldProcessStandaloneElement(istandaloneElementTag)) {
             return;
         }
 
@@ -905,39 +900,36 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                 if (this.elementTagStructureHandler.iterateElement) {
 
-                    // Initialize the iterated model object
-                    final Model iteratedModel = new Model(this.configuration, this.templateMode);
-                    iteratedModel.add(standaloneElementTag);
+                    // If there is a preceding whitespace, add it to the iteration spec
+                    Text precedingWhitespace = null;
+                    if (lastText != null &&
+                            ((this.templateMode == TemplateMode.XML) ||
+                                    (this.templateMode == TemplateMode.HTML && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(standaloneElementTag.elementDefinition.elementName)))) {
+                        final Text lastEngineText = Text.asEngineText(lastText);
+                        if (lastEngineText.isWhitespace()) {
+                            precedingWhitespace = lastEngineText;
+                        }
+                    }
+
+                    // Initialize the gatherer object
+                    this.eventModelController.startGatheringIteratedModel(
+                            standaloneElementTag,
+                            this.elementTagStructureHandler.iterVariableName,
+                            this.elementTagStructureHandler.iterStatusVariableName,
+                            this.elementTagStructureHandler.iteratedObject,
+                            precedingWhitespace);
 
                     // Suspend execution - execution will be restarted by the handleOpenElement event at the
                     // processIteration() call performed after gathering all the iterated markup
                     execLevelData.suspended = true;
 
-                    // Set the rest of the metadata needed for iteration
-                    execLevelData.iterationArtifacts.iterVariableName = this.elementTagStructureHandler.iterVariableName;
-                    execLevelData.iterationArtifacts.iterStatusVariableName = this.elementTagStructureHandler.iterStatusVariableName;
-                    execLevelData.iterationArtifacts.iteratedObject = this.elementTagStructureHandler.iteratedObject;
-
-                    // If there is a preceding whitespace, add it to the iteration spec
-                    if (lastText != null &&
-                            ((this.templateMode == TemplateMode.XML) ||
-                             (this.templateMode == TemplateMode.HTML && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(standaloneElementTag.elementDefinition.elementName)))) {
-                        final Text lastEngineText = Text.asEngineText(lastText);
-                        if (lastEngineText.isWhitespace()) {
-                            execLevelData.iterationArtifacts.precedingWhitespace = lastEngineText;
-                        }
-                    }
-
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- we need processIteration() to read our data
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
-                    // Process the queue by iterating it
-                    processIteration(iteratedModel);
-
-                    // Decrease the context level
-                    if (this.engineContext != null) {
-                        this.engineContext.decreaseLevel();
-                    }
+                    // Process the gathered model
+                    final IGatheredModel gatheredModel = this.eventModelController.getGatheredModel();
+                    this.eventModelController.resetGathering();
+                    gatheredModel.process(this);
 
                     // Complete exit of the handler method: no more processing to do from here
                     return;
@@ -1228,7 +1220,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (!this.filter.shouldProcessOpenElement(iopenElementTag)) {
+        if (!this.eventModelController.shouldProcessOpenElement(iopenElementTag)) {
             return;
         }
 
@@ -1307,27 +1299,28 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // TODO there is a problem here: if any local variables are set before an iteration or an element
                     // model start gathering, those vars will NOT be accessible to the gathered model when it executes!!!!
 
-                    // Initialize the gatherer object
-                    this.filter.startGathering(ProcessorTemplateHandlerModelFilter.GatheringType.ITERATION, openElementTag);
-
-                    // Suspend execution - execution will be restarted by the handleOpenElement event at the
-                    // processIteration() call performed after gathering all the iterated markup
-                    execLevelData.suspended = true;
-
-                    // Set the rest of the metadata needed for iteration
-                    execLevelData.iterationArtifacts.iterVariableName = this.elementTagStructureHandler.iterVariableName;
-                    execLevelData.iterationArtifacts.iterStatusVariableName = this.elementTagStructureHandler.iterStatusVariableName;
-                    execLevelData.iterationArtifacts.iteratedObject = this.elementTagStructureHandler.iteratedObject;
-
                     // If there is a preceding whitespace, add it to the iteration spec
+                    Text precedingWhitespace = null;
                     if (lastText != null &&
                             ((this.templateMode == TemplateMode.XML) ||
                                     (this.templateMode == TemplateMode.HTML && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(openElementTag.elementDefinition.elementName)))) {
                         final Text lastEngineText = Text.asEngineText(lastText);
                         if (lastEngineText.isWhitespace()) {
-                            execLevelData.iterationArtifacts.precedingWhitespace = lastEngineText;
+                            precedingWhitespace = lastEngineText;
                         }
                     }
+
+                    // Initialize the gatherer object
+                    this.eventModelController.startGatheringIteratedModel(
+                            openElementTag,
+                            this.elementTagStructureHandler.iterVariableName,
+                            this.elementTagStructureHandler.iterStatusVariableName,
+                            this.elementTagStructureHandler.iteratedObject,
+                            precedingWhitespace);
+
+                    // Suspend execution - execution will be restarted by the handleOpenElement event at the
+                    // processIteration() call performed after gathering all the iterated markup
+                    execLevelData.suspended = true;
 
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- we need processIteration() to read our data
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
@@ -1461,7 +1454,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     }
 
                     // Initialize the gatherer object
-                    this.filter.startGathering(ProcessorTemplateHandlerModelFilter.GatheringType.MODEL, openElementTag);
+                    this.eventModelController.startGatheringDelayedModel(openElementTag);
 
                     // Set the processor to be executed again, because this time we will just set the "model gathering" mechanism
                     execLevelData.processorIterator.setLastToBeRepeated(openElementTag);
@@ -1491,7 +1484,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 // NOTE we are not cloning the events themselves here. There should be no need, as we are going to
                 //      re-locate these events into a new queue, and their old position (which will be executed
                 //      anyway) will be ignored.
-                final Model processedModel = new Model(this.filter.getGatheredModel());
+                final Model processedModel = new Model(this.gatheredModel);
 
                 ((IElementModelProcessor) processor).process(this.context, processedModel, this.elementModelStructureHandler);
 
@@ -1582,7 +1575,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * SET BODY TO BE SKIPPED, if required. Importantly, this has to be done AFTER executing the queue
          */
-        this.filter.skip(execLevelData.skipBody, execLevelData.skipCloseTag);
+        this.eventModelController.skip(execLevelData.skipBody, execLevelData.skipCloseTag);
 
 
         /*
@@ -1614,23 +1607,16 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (!this.filter.shouldProcessCloseElement(icloseElementTag)) {
+        if (!this.eventModelController.shouldProcessCloseElement(icloseElementTag)) {
 
-            // We will only return if this close element tag didn't actually end the gathering operation
-            if (this.filter.isGatheringFinished()) {
-
-                // Obtain the gathered model and discard the gatherer (a nested processing might set a new one)
-                final Model gatheredModel = this.filter.getGatheredModel();
-                final ProcessorTemplateHandlerModelFilter.GatheringType gatheringType = this.filter.getGatheringType();
-                this.filter.resetGathering();
-
-                // Process the queue
-                switch (gatheringType) {
-                    case ITERATION: processIteration(gatheredModel); break;
-                    case MODEL: gatheredModel.process(this); break;
-                    default: throw new TemplateProcessingException("Unknown gathering type: " + gatheringType);
-                }
-
+            /*
+             * IF WE JUST ENDED GATHERING, PROCESS
+             */
+            if (this.eventModelController.isGatheringFinished()) {
+                final IGatheredModel gatheredModel = this.eventModelController.getGatheredModel();
+                this.gatheredModel = gatheredModel.getInnerModel();
+                this.eventModelController.resetGathering();
+                gatheredModel.process(this);
             }
 
             return;
@@ -1663,7 +1649,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (!this.filter.shouldProcessUnmatchedCloseElement(icloseElementTag)) {
+        if (!this.eventModelController.shouldProcessUnmatchedCloseElement(icloseElementTag)) {
             return;
         }
 
@@ -1701,7 +1687,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (!this.filter.shouldProcessDocType(idocType)) {
+        if (!this.eventModelController.shouldProcessDocType(idocType)) {
             return;
         }
 
@@ -1801,7 +1787,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (!this.filter.shouldProcessXMLDeclaration(ixmlDeclaration)) {
+        if (!this.eventModelController.shouldProcessXMLDeclaration(ixmlDeclaration)) {
             return;
         }
 
@@ -1900,7 +1886,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
-        if (!this.filter.shouldProcessProcessingInstruction(iprocessingInstruction)) {
+        if (!this.eventModelController.shouldProcessProcessingInstruction(iprocessingInstruction)) {
             return;
         }
 
@@ -1989,453 +1975,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
 
-    private void processIteration(final Model model) {
-
-        if (this.engineContext == null) {
-            throw new TemplateProcessingException(
-                    "Iteration is not supported because local variable support is DISABLED. This is due to " +
-                    "the use of an implementation of the " + ITemplateContext.class.getName() + " interface that does " +
-                    "not provide local-variable support. In order to have local-variable support, the context " +
-                    "implementation should also implement the " + IEngineContext.class.getName() +
-                    " interface");
-        }
-
-
-        /*
-         * We will use two execution levels here: an "outer" one containing the original artifacts (esp. the
-         * originally gathered queue) and an "inner" one which will be the one on which the real gathered
-         * events will execute when their execution is resumed.
-         */
-        final ExecLevelData outerExecLevelData = this.execLevelData[this.execLevel];
-
-
-        /*
-         * Make sure there is a name for the ITERATION STATUS VARIABLE
-         */
-        if (StringUtils.isEmptyOrWhitespace(outerExecLevelData.iterationArtifacts.iterStatusVariableName)) {
-            // If no name has been specified for the status variable, we will use the same as the iter var + "Stat"
-            outerExecLevelData.iterationArtifacts.iterStatusVariableName =
-                    outerExecLevelData.iterationArtifacts.iterVariableName + DEFAULT_STATUS_VAR_SUFFIX;
-        }
-
-
-        /*
-         * This will compute whether transformations on the first/last body events need to be performed in TEXT mode
-         * (e.g. if we need to remove some whitespace for the results to look nice)
-         *
-         * Note the gathered queue will not be modified here.
-         */
-        if (this.templateMode.isText()) {
-            preparePrettificationOfTextIteration(this.configuration, model, outerExecLevelData.iterationArtifacts);
-        }
-
-
-        /*
-         * Depending on the class of the iterated object, we will iterate it in one way or another. And also we
-         * might have a "size" value for the stat variable or not.
-         */
-        final Iterator<?> iterator = computeIteratedObjectIterator(outerExecLevelData.iterationArtifacts.iteratedObject);
-
-        final IterationStatusVar status = new IterationStatusVar();
-        status.index = 0;
-        status.size = computeIteratedObjectSize(outerExecLevelData.iterationArtifacts.iteratedObject);
-
-
-        /*
-         * ---------------------------------
-         * START OF ITERATION
-         * ---------------------------------
-         */
-        boolean iterHasNext = iterator.hasNext();
-        while (iterHasNext) {
-
-            /*
-             * Extract and precompute flags for the object being processed in this iteration
-             */
-            status.current = iterator.next();
-            iterHasNext = iterator.hasNext(); // precomputed in order to know when we are at the last element
-
-
-            /*
-             * We will increase the execution level as a way of "protecting" the gathered queue we are about to
-             * execute. We increase the exec level twice because we will leave the current level as a "base
-             * repository" of the state of things before suspending, current + 1 will be left empty in order to be
-             * used as a "clean base of execution" for all the events contained in the gathered queue, and current + 2
-             * will be initialized as a clone of the current level, so that it can be read by the first event in
-             * the gathered queue as the frozen state of things when execution was suspended.
-             */
-            increaseExecLevel();
-            increaseExecLevel();
-            final ExecLevelData innerExecLevelData = this.execLevelData[this.execLevel];
-
-
-            /*
-             * We need to clone the execution level. We protected the previous one by increasing the level, but now we
-             * need to provide to the suspended event exactly the same environment (execLevelData) as when it was
-             * suspended, except of course for the event-gathering structures, which we will not need at the new level
-             */
-            innerExecLevelData.resetAsCloneOf(outerExecLevelData, false);
-
-
-            /*
-             * Increase the engine context level, so that we can store the needed local variables there
-             */
-            this.engineContext.increaseLevel();
-
-
-            /*
-             * Set the iteration local variables (iteration variable and iteration status variable)
-             */
-            this.engineContext.setVariable(outerExecLevelData.iterationArtifacts.iterVariableName, status.current);
-            this.engineContext.setVariable(outerExecLevelData.iterationArtifacts.iterStatusVariableName, status);
-
-
-            /*
-             * We might need to perform some modifications to the iteration queue for this iteration
-             * For example, in text modes we might modify the first whitespaces in the body of the iterated element
-             *
-             * IMPORTANT: This will actually modify the queue at outerExecLevelData, but it should be no problem
-             * because the changes will be overwritten by the next iteration. And we will be discarding the queues
-             * contents once the whole iteration process finishes
-             */
-            prepareIterationQueueForIteration(model, outerExecLevelData.iterationArtifacts, status.index, !iterHasNext);
-
-
-            /*
-             * PERFORM THE EXECUTION on the gathered queue, which now does not live at the current exec level, but
-             * at the previous one (we protected it by increasing execution level before)
-             */
-            model.process(this);
-
-
-            /*
-             * Decrease the engine context level, now that this iteration has been executed and we can dispose of
-             * the local variables
-             */
-            this.engineContext.decreaseLevel();
-
-
-            /*
-             * Decrease one of the execution levels. We had increased it twice before. The +2 level was decreased
-             * by the first event in the queue (the originally suspended one) after execution and now we are decreasing
-             * again level +1, so that we clean the level we used as a "clean execution base". We will create it
-             * again for the next iteration so that we make sure there are no interactions between iterations.
-             */
-            decreaseExecLevel();
-
-
-            /*
-             * Increase the iteration counter
-             */
-            status.index++;
-
-        }
-
-
-        /*
-         * Decrease the execution level. Note this decrease does not correspond to the increases we did some lines above
-         * inside the iteration (those have already been decreased at this point). Instead, we are here decreasing
-         * the execution level created for the event that started the model gathering the first time, the first to
-         * suspend execution, which has been never decreased until now.
-         */
-        decreaseExecLevel();
-
-    }
-
-
-
-
-    /*
-     * Whenever possible, compute the total size of the iterated object. Note sometimes we will not be able
-     * to compute this size without traversing the entire collection/iterator (which we want to avoid), so
-     * null will be returned.
-     */
-    private static Integer computeIteratedObjectSize(final Object iteratedObject) {
-        if (iteratedObject == null) {
-            return Integer.valueOf(0);
-        }
-        if (iteratedObject instanceof Collection<?>) {
-            return Integer.valueOf(((Collection<?>) iteratedObject).size());
-        }
-        if (iteratedObject instanceof Map<?,?>) {
-            return Integer.valueOf(((Map<?, ?>) iteratedObject).size());
-        }
-        if (iteratedObject.getClass().isArray()) {
-            return Integer.valueOf(Array.getLength(iteratedObject));
-        }
-        if (iteratedObject instanceof Iterable<?>) {
-            return null; // Cannot determine before actually iterating
-        }
-        if (iteratedObject instanceof Iterator<?>) {
-            return null; // Cannot determine before actually iterating
-        }
-        return Integer.valueOf(1); // In this case, we will iterate the object as a collection of size 1
-    }
-
-
-    /*
-     * Creates, from the iterated object (e.g. right part of a th:each expression), the iterator that will be used.
-     */
-    private static Iterator<?> computeIteratedObjectIterator(final Object iteratedObject) {
-        if (iteratedObject == null) {
-            return Collections.EMPTY_LIST.iterator();
-        }
-        if (iteratedObject instanceof Collection<?>) {
-            return ((Collection<?>)iteratedObject).iterator();
-        }
-        if (iteratedObject instanceof Map<?,?>) {
-            return ((Map<?,?>)iteratedObject).entrySet().iterator();
-        }
-        if (iteratedObject.getClass().isArray()) {
-            return new Iterator<Object>() {
-
-                protected final Object array = iteratedObject;
-                protected final int length = Array.getLength(this.array);
-                private int i = 0;
-
-                public boolean hasNext() {
-                    return this.i < this.length;
-                }
-
-                public Object next() {
-                    return Array.get(this.array, i++);
-                }
-
-                public void remove() {
-                    throw new UnsupportedOperationException("Cannot remove from an array iterator");
-                }
-
-            };
-        }
-        if (iteratedObject instanceof Iterable<?>) {
-            return ((Iterable<?>)iteratedObject).iterator();
-        }
-        if (iteratedObject instanceof Iterator<?>) {
-            return (Iterator<?>)iteratedObject;
-        }
-        if (iteratedObject instanceof Enumeration<?>) {
-            return new Iterator<Object>() {
-
-                protected final Enumeration<?> enumeration = (Enumeration<?>)iteratedObject;
-
-
-                public boolean hasNext() {
-                    return this.enumeration.hasMoreElements();
-                }
-
-                public Object next() {
-                    return this.enumeration.nextElement();
-                }
-
-                public void remove() {
-                    throw new UnsupportedOperationException("Cannot remove from an Enumeration iterator");
-                }
-
-            };
-        }
-        return Collections.singletonList(iteratedObject).iterator();
-    }
-
-
-
-
-    private static void preparePrettificationOfTextIteration(
-            final IEngineConfiguration configuration, final Model gatheredModel, final IterationArtifacts iterArtifacts) {
-
-        /*
-         * We are in a textual template mode, and it might be possible to fiddle a bit with whitespaces at the beginning
-         * and end of the body, so that iterations look better.
-         *
-         * The goal is that this:
-         * ---------------------
-         * List:
-         * [# th:each="i : ${items}"]
-         *   - [[${i}]]
-         * [/]
-         * ---------------------
-         * ...doesn't look like:
-         * ---------------------
-         * List:
-         *
-         *   - [[${i}]]
-         *
-         *   - [[${i}]]
-         *
-         *   - [[${i}]]
-         * ---------------------
-         * ...but instead like:
-         * ---------------------
-         * List:
-         *
-         *   - [[${i}]]
-         *   - [[${i}]]
-         *   - [[${i}]]
-         * ---------------------
-         * And in order to do this, the steps to be taken will be:
-         *
-         *   - Check that the iterated block starts with an 'open element' and ends with a 'close element'. If not,
-         *     don't apply any of this.
-         *   - Except for the first iteration, remove all whitespace after the 'open element', until the
-         *     first '\n' (and remove that too).
-         *   - Except for the last iteration, remove all whitespace after the last '\n' (not including it) and before
-         *     the 'close element'.
-         */
-
-        if (gatheredModel.size() <= 2) {
-            // This does only contain the template start + end events -- nothing to be done
-            iterArtifacts.performBodyFirstLastSwitch = false;
-            return;
-        }
-
-        int firstBodyEventCutPoint = -1;
-        int lastBodyEventCutPoint = -1;
-
-        final ITemplateEvent firstBodyEvent = gatheredModel.get(1); // we know there is at least one body event
-        Text firstTextBodyEvent = null;
-        if (gatheredModel.get(0) instanceof OpenElementTag && firstBodyEvent instanceof IText) {
-
-            firstTextBodyEvent = Text.asEngineText((IText)firstBodyEvent);
-
-            final int firstTextEventLen = firstTextBodyEvent.length();
-            int i = 0;
-            char c;
-            while (i < firstTextEventLen && firstBodyEventCutPoint < 0) {
-                c = firstTextBodyEvent.charAt(i);
-                if (c == '\n') {
-                    firstBodyEventCutPoint = i + 1;
-                    break; // we've already assigned the value we were looking for
-                } else if (Character.isWhitespace(c)) {
-                    i++;
-                    continue;
-                } else {
-                    // We will not be able to perform any whitespace reduction here
-                    break;
-                }
-            }
-
-        }
-
-        final ITemplateEvent lastBodyEvent = gatheredModel.get(gatheredModel.size() - 2);
-        Text lastTextBodyEvent = null;
-        if (firstBodyEventCutPoint >= 0 &&
-                gatheredModel.get(gatheredModel.size() - 1) instanceof CloseElementTag && lastBodyEvent instanceof IText) {
-
-            lastTextBodyEvent = Text.asEngineText((IText)lastBodyEvent);
-
-            final int lastTextEventLen = lastTextBodyEvent.length();
-            int i = lastTextEventLen - 1;
-            char c;
-            while (i >= 0 && lastBodyEventCutPoint < 0) {
-                c = lastTextBodyEvent.charAt(i);
-                if (c == '\n') {
-                    lastBodyEventCutPoint = i + 1;
-                    break; // we've already assigned the value we were looking for
-                } else if (Character.isWhitespace(c)) {
-                    i--;
-                    continue;
-                } else {
-                    // We will not be able to perform any whitespace reduction here
-                    break;
-                }
-            }
-
-        }
-
-        if (firstBodyEventCutPoint < 0 || lastBodyEventCutPoint < 0) {
-            // We don't have the scenario required for performing the needed whitespace collapsing operation
-            iterArtifacts.performBodyFirstLastSwitch = false;
-            return;
-        }
-
-        // At this point, we are sure that we will want to perform modifications on the first/last whitespaces
-        iterArtifacts.performBodyFirstLastSwitch = true;
-
-        if (firstBodyEvent == lastBodyEvent) {
-            // If the first and the last event are actually the same, we need to take better care of how we manage whitespace
-            final CharSequence textFor0 = lastTextBodyEvent.subSequence(0, lastBodyEventCutPoint);
-            final CharSequence textForMax = firstTextBodyEvent.subSequence(firstBodyEventCutPoint, firstTextBodyEvent.length());
-            final CharSequence textForN = firstTextBodyEvent.subSequence(firstBodyEventCutPoint, lastBodyEventCutPoint);
-
-            iterArtifacts.iterationFirstBodyEventIter0 = new Text(textFor0);
-            iterArtifacts.iterationFirstBodyEventIterN = new Text(textForN);
-            iterArtifacts.iterationLastBodyEventIterMax = new Text(textForMax);
-            iterArtifacts.iterationLastBodyEventIterN = new Text(textForN);
-            return;
-        }
-
-        // At this point, we know the first and last body events are different objects
-
-        iterArtifacts.iterationFirstBodyEventIter0 = firstTextBodyEvent;
-        iterArtifacts.iterationLastBodyEventIterMax = lastTextBodyEvent;
-
-        if (firstBodyEventCutPoint == 0) {
-            iterArtifacts.iterationFirstBodyEventIterN = firstTextBodyEvent;
-        } else {
-            iterArtifacts.iterationFirstBodyEventIterN =
-                    new Text(firstTextBodyEvent.subSequence(firstBodyEventCutPoint, firstTextBodyEvent.length()));
-        }
-
-        if (lastBodyEventCutPoint == lastTextBodyEvent.length()) {
-            iterArtifacts.iterationLastBodyEventIterN = lastTextBodyEvent;
-        } else {
-            iterArtifacts.iterationLastBodyEventIterN = new Text(lastTextBodyEvent.subSequence(0, lastBodyEventCutPoint));
-        }
-
-
-    }
-
-
-
-
-    /*
-     * This will prepare the iteration queue, before executing it for each iteration. Basically, this will manage
-     * the whitespaces that need to be applied before or after the queue in order to make the results of iteration
-     * more pretty.
-     */
-    private static void prepareIterationQueueForIteration(
-            final Model iterModel, final IterationArtifacts iterArtifacts, final int iterationIndex, final boolean last) {
-
-        /*
-         * FOR MARKUP TEMPLATE MODES: check if we have to add the initial whitespace (to iter > 0)
-         */
-        if (iterArtifacts.precedingWhitespace != null && iterationIndex == 1) {
-            iterModel.insert(0, iterArtifacts.precedingWhitespace);
-            return;
-        }
-
-
-        /*
-         * FOR TEXT TEMPLATE MODES: fiddle with the initial and finidhing whitespaces
-         */
-
-        if (!iterArtifacts.performBodyFirstLastSwitch || (iterationIndex > 1 && !last)) {
-            // No modifications to be done to the iteration queue here
-            return;
-        }
-
-        if (iterationIndex == 0) {
-            if (!last) {
-                iterModel.replace(1, iterArtifacts.iterationFirstBodyEventIter0);
-                if (iterModel.size() > 3) {
-                    iterModel.replace(iterModel.size() - 2, iterArtifacts.iterationLastBodyEventIterN);
-                }
-            }
-            return;
-        }
-
-        if (iterationIndex == 1) {
-            iterModel.replace(1, iterArtifacts.iterationFirstBodyEventIterN);
-        }
-
-        if (last) {
-            iterModel.replace(iterModel.size() - 2, iterArtifacts.iterationLastBodyEventIterMax);
-        }
-
-
-    }
-
-
-
 
 
 
@@ -2455,8 +1994,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         SkipBody skipBody;
         boolean skipCloseTag;
 
-        IterationArtifacts iterationArtifacts;
-
 
         ExecLevelData(final IEngineConfiguration configuration, final TemplateMode templateMode) {
             super();
@@ -2464,7 +2001,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
             this.templateMode = templateMode;
             this.model = new Model(configuration, templateMode);
             this.processorIterator = new ElementProcessorIterator();
-            this.iterationArtifacts = new IterationArtifacts();
             reset();
         }
 
@@ -2479,7 +2015,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
             this.suspended = false;
             this.processorIterator.reset();
             this.discardEvent = false;
-            this.iterationArtifacts.reset();
             this.skipBody = SkipBody.PROCESS;
             this.skipCloseTag = false;
         }
@@ -2492,56 +2027,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
             this.queueProcessable = execLevelData.queueProcessable;
             this.queueProcessBeforeDelegate = execLevelData.queueProcessBeforeDelegate;
             this.discardEvent = execLevelData.discardEvent;
-            this.iterationArtifacts.resetAsCloneOf(execLevelData.iterationArtifacts);
             this.skipBody = execLevelData.skipBody;
             this.skipCloseTag = execLevelData.skipCloseTag;
-        }
-
-    }
-
-
-
-
-    private static final class IterationArtifacts {
-
-        Text precedingWhitespace;
-        String iterVariableName;
-        String iterStatusVariableName;
-        Object iteratedObject;
-
-        boolean performBodyFirstLastSwitch;
-        Text iterationFirstBodyEventIter0;
-        Text iterationFirstBodyEventIterN;
-        Text iterationLastBodyEventIterN;
-        Text iterationLastBodyEventIterMax;
-
-        IterationArtifacts() {
-            super();
-            reset();
-        }
-
-        void reset() {
-            this.precedingWhitespace = null;
-            this.iterVariableName = null;
-            this.iterStatusVariableName = null;
-            this.iteratedObject = null;
-            this.performBodyFirstLastSwitch = false;
-            this.iterationFirstBodyEventIter0 = null;
-            this.iterationFirstBodyEventIterN = null;
-            this.iterationLastBodyEventIterN = null;
-            this.iterationLastBodyEventIterMax = null;
-        }
-
-        void resetAsCloneOf(final IterationArtifacts iterationArtifacts) {
-            this.precedingWhitespace = iterationArtifacts.precedingWhitespace;
-            this.iterVariableName = iterationArtifacts.iterVariableName;
-            this.iterStatusVariableName = iterationArtifacts.iterStatusVariableName;
-            this.iteratedObject = iterationArtifacts.iteratedObject;
-            this.performBodyFirstLastSwitch = iterationArtifacts.performBodyFirstLastSwitch;
-            this.iterationFirstBodyEventIter0 = iterationArtifacts.iterationFirstBodyEventIter0;
-            this.iterationFirstBodyEventIterN = iterationArtifacts.iterationFirstBodyEventIterN;
-            this.iterationLastBodyEventIterN = iterationArtifacts.iterationLastBodyEventIterN;
-            this.iterationLastBodyEventIterMax = iterationArtifacts.iterationLastBodyEventIterMax;
         }
 
     }

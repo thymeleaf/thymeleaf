@@ -48,11 +48,9 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-final class ProcessorTemplateHandlerModelFilter {
+final class EventModelController {
 
     static final int DEFAULT_MODEL_LEVELS = 25;
-
-    enum GatheringType { ITERATION, MODEL, NONE }
 
     enum SkipBody {
 
@@ -78,11 +76,7 @@ final class ProcessorTemplateHandlerModelFilter {
     private final TemplateMode templateMode;
     private final IEngineContext context;
 
-    private boolean gather;
-    private boolean gatheringFinished;
-    private GatheringType gatheringType;
-    private Model gatheredModel;
-    private int gatherLevel;
+    private AbstractGatheredModel gatheredModel;
 
     private SkipBody skipBody;
     private SkipBody[] skipBodyByLevel;
@@ -92,7 +86,7 @@ final class ProcessorTemplateHandlerModelFilter {
     private int modelLevel;
 
 
-    ProcessorTemplateHandlerModelFilter(
+    EventModelController(
             final IEngineConfiguration configuration, final TemplateMode templateMode,
             final IEngineContext context) {
 
@@ -102,11 +96,7 @@ final class ProcessorTemplateHandlerModelFilter {
         this.templateMode = templateMode;
         this.context = context;
 
-        this.gather = false;
-        this.gatheringFinished = false;
-        this.gatheringType = null;
         this.gatheredModel = null;
-        this.gatherLevel = -1;
 
         this.skipBodyByLevel = new SkipBody[DEFAULT_MODEL_LEVELS];
         this.skipBodyByLevel[this.modelLevel] = SkipBody.PROCESS;
@@ -128,49 +118,53 @@ final class ProcessorTemplateHandlerModelFilter {
     }
 
 
-    void startGathering(final GatheringType gatheringType, final OpenElementTag firstTag) {
+    void startGatheringDelayedModel(final IProcessableElementTag firstTag) {
 
-        this.gatheringType = gatheringType;
+        this.gatheredModel = new DelayedGatheredModel(this.configuration, this.context);
 
-        // We create a new model for each gathering operation, so that this filter can be used for nested executions
-        // If not, we would risk resetting a model object which sequence of events we are actually processing
-        this.gatheredModel = new Model(this.configuration, this.templateMode);
-
-        this.gather = true;
-        this.gatheringFinished = false;
-
-        // We will add this tag directly, without increasing the level, because before initializing gathering
-        // we have already checked if we had to skip the open tag (and we obviously said "no"), and at that moment
-        // the model level was already increased
-        this.gatheredModel.add(firstTag);
-
-        // The gathering level will have to be checked after the close tag decreases the level open by the open tag
-        this.gatherLevel = this.modelLevel - 1;
+        if (firstTag instanceof IOpenElementTag) {
+            this.gatheredModel.gatherOpenElement((IOpenElementTag)firstTag);
+            this.modelLevel--;
+        } else if (firstTag instanceof IStandaloneElementTag) {
+            this.gatheredModel.gatherStandaloneElement((IStandaloneElementTag)firstTag);
+        } else {
+            throw new TemplateProcessingException("Unknown type of first gathering tag: " + firstTag.getClass().getName());
+        }
 
     }
 
 
-    void resetGathering() {
-        this.gather = false;
-        this.gatheringFinished = false;
-        this.gatheringType = null;
-        // TODO Once gathering of model for openelement->modelprocessor is refactored, we should probably be able to set model to null here
-        this.gatherLevel = -1;
+    void startGatheringIteratedModel(
+            final IProcessableElementTag firstTag, final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject,
+            final Text precedingWhitespace) {
+
+        this.gatheredModel =
+                new IteratedGatheredModel(this.configuration, this.context, iterVariableName, iterStatusVariableName, iteratedObject, precedingWhitespace);
+
+        if (firstTag instanceof IOpenElementTag) {
+            this.gatheredModel.gatherOpenElement((IOpenElementTag)firstTag);
+            this.modelLevel--;
+        } else if (firstTag instanceof IStandaloneElementTag) {
+            this.gatheredModel.gatherStandaloneElement((IStandaloneElementTag)firstTag);
+        } else {
+            throw new TemplateProcessingException("Unknown type of first gathering tag: " + firstTag.getClass().getName());
+        }
+
     }
 
 
     boolean isGatheringFinished() {
-        return this.gatheringFinished;
+        return this.gatheredModel != null && this.gatheredModel.isGathered();
     }
 
 
-    GatheringType getGatheringType() {
-        return this.gatheringType;
-    }
-
-
-    Model getGatheredModel() {
+    IGatheredModel getGatheredModel() {
         return this.gatheredModel;
+    }
+
+
+    void resetGathering() {
+        this.gatheredModel = null;
     }
 
 
@@ -198,7 +192,7 @@ final class ProcessorTemplateHandlerModelFilter {
 
 
 
-    private void increaseLevel() {
+    private void increaseModelLevel() {
         this.modelLevel++;
         if (this.skipBodyByLevel.length == this.modelLevel) {
             this.skipBodyByLevel = Arrays.copyOf(this.skipBodyByLevel, this.skipBodyByLevel.length + DEFAULT_MODEL_LEVELS/2);
@@ -214,7 +208,7 @@ final class ProcessorTemplateHandlerModelFilter {
     }
 
 
-    private void decreaseLevel() {
+    private void decreaseModelLevel() {
         this.modelLevel--;
         this.skipBody = this.skipBodyByLevel[this.modelLevel];
         if (this.context != null) {
@@ -225,9 +219,12 @@ final class ProcessorTemplateHandlerModelFilter {
 
 
 
+
+
+
     boolean shouldProcessText(final IText text) {
-        if (this.gather) {
-            this.gatheredModel.add(text);
+        if (this.gatheredModel != null) {
+            this.gatheredModel.gatherText(text);
             return false;
         }
         return this.skipBody.processNonElements;
@@ -235,8 +232,8 @@ final class ProcessorTemplateHandlerModelFilter {
 
 
     boolean shouldProcessComment(final IComment comment) {
-        if (this.gather) {
-            this.gatheredModel.add(comment);
+        if (this.gatheredModel != null) {
+            this.gatheredModel.gatherComment(comment);
             return false;
         }
         return this.skipBody.processNonElements;
@@ -244,8 +241,8 @@ final class ProcessorTemplateHandlerModelFilter {
 
 
     boolean shouldProcessCDATASection(final ICDATASection cdataSection) {
-        if (this.gather) {
-            this.gatheredModel.add(cdataSection);
+        if (this.gatheredModel != null) {
+            this.gatheredModel.gatherCDATASection(cdataSection);
             return false;
         }
         return this.skipBody.processNonElements;
@@ -253,8 +250,8 @@ final class ProcessorTemplateHandlerModelFilter {
 
 
     boolean shouldProcessStandaloneElement(final IStandaloneElementTag standaloneElementTag) {
-        if (this.gather) {
-            this.gatheredModel.add(standaloneElementTag);
+        if (this.gatheredModel != null) {
+            this.gatheredModel.gatherStandaloneElement(standaloneElementTag);
             return false;
         }
         if (this.skipBody == SkipBody.PROCESS_ONE_ELEMENT) {
@@ -268,6 +265,10 @@ final class ProcessorTemplateHandlerModelFilter {
 
 
     boolean shouldProcessOpenElement(final IOpenElementTag openElementTag) {
+        if (this.gatheredModel != null) {
+            this.gatheredModel.gatherOpenElement(openElementTag);
+            return false;
+        }
         boolean process = this.skipBody.processElements;
         if (this.skipBody == SkipBody.PROCESS_ONE_ELEMENT) {
             // This is the first (still unclosed) element, let's save it in case it is iterated
@@ -277,25 +278,17 @@ final class ProcessorTemplateHandlerModelFilter {
             skipBody(SkipBody.PROCESS_ONE_ELEMENT);
             process = true;
         }
-        increaseLevel();
-        if (this.gather) {
-            this.gatheredModel.add(openElementTag);
-            return false;
-        }
+        increaseModelLevel();
         return process;
     }
 
 
     boolean shouldProcessCloseElement(final ICloseElementTag closeElementTag) {
-        decreaseLevel();
-        if (this.gather) {
-            this.gatheredModel.add(closeElementTag);
-            if (this.modelLevel == this.gatherLevel) {
-                // OK, we are finished gathering, this close tag ends the process
-                this.gatheringFinished = true;
-            }
+        if (this.gatheredModel != null) {
+            this.gatheredModel.gatherCloseElement(closeElementTag);
             return false;
         }
+        decreaseModelLevel();
         if (this.skipBody == SkipBody.PROCESS_ONE_ELEMENT) {
             // This was the first element, the others will be skipped
             skipBody(SkipBody.SKIP_ELEMENTS);
@@ -310,8 +303,8 @@ final class ProcessorTemplateHandlerModelFilter {
 
 
     boolean shouldProcessUnmatchedCloseElement(final ICloseElementTag closeElementTag) {
-        if (this.gather) {
-            this.gatheredModel.add(closeElementTag);
+        if (this.gatheredModel != null) {
+            this.gatheredModel.gatherUnmatchedCloseElement(closeElementTag);
             return false;
         }
         return this.skipBody.processNonElements; // We will treat this as a non-element
@@ -319,8 +312,8 @@ final class ProcessorTemplateHandlerModelFilter {
 
 
     boolean shouldProcessDocType(final IDocType docType) {
-        if (this.gather) {
-            this.gatheredModel.add(docType);
+        if (this.gatheredModel != null) {
+            this.gatheredModel.gatherDocType(docType);
             return false;
         }
         return this.skipBody.processNonElements;
@@ -328,8 +321,8 @@ final class ProcessorTemplateHandlerModelFilter {
 
 
     boolean shouldProcessXMLDeclaration(final IXMLDeclaration xmlDeclaration) {
-        if (this.gather) {
-            this.gatheredModel.add(xmlDeclaration);
+        if (this.gatheredModel != null) {
+            this.gatheredModel.gatherXMLDeclaration(xmlDeclaration);
             return false;
         }
         return this.skipBody.processNonElements;
@@ -337,8 +330,8 @@ final class ProcessorTemplateHandlerModelFilter {
 
 
     boolean shouldProcessProcessingInstruction(final IProcessingInstruction processingInstruction) {
-        if (this.gather) {
-            this.gatheredModel.add(processingInstruction);
+        if (this.gatheredModel != null) {
+            this.gatheredModel.gatherProcessingInstruction(processingInstruction);
             return false;
         }
         return this.skipBody.processNonElements;
