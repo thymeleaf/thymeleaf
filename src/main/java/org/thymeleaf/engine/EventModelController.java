@@ -149,10 +149,14 @@ final class EventModelController {
             final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean skipCloseTag,
             final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject, final Text precedingWhitespace) {
 
+        final int containerLevel = (firstTag instanceof IOpenElementTag ? this.modelLevel - 1 : this.modelLevel);
+
         this.gatheredModel =
                 new IteratedGatheredModel(
                         this.configuration, this.context, this,
-                        suspendedProcessorIterator, suspendedModel, suspendedModelProcessable, suspendedModelProcessBeforeDelegate, suspendedDiscardEvent, suspendedSkipBody, skipCloseTag,
+                        suspendedProcessorIterator, suspendedModel, suspendedModelProcessable, suspendedModelProcessBeforeDelegate,
+                        suspendedDiscardEvent, suspendedSkipBody, skipCloseTag,
+                        this.skipBodyByLevel[containerLevel], this.skipCloseTagByLevel[containerLevel],
                         iterVariableName, iterStatusVariableName, iteratedObject, precedingWhitespace);
 
         if (firstTag instanceof IOpenElementTag) {

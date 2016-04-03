@@ -55,6 +55,9 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
     private final TemplateMode templateMode;
     private final EventModelController eventModelController;
 
+    private final SkipBody containerSkipBody;
+    private final boolean containerSkipCloseTag;
+
     private final String iterVariableName;
     private final String iterStatusVariableName;
     private final IterationStatusVar iterStatusVariable;
@@ -69,14 +72,18 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
             final ElementProcessorIterator suspendedProcessorIterator,
             final Model suspendedModel, final boolean suspendedModelProcessable,
             final boolean suspendedModelProcessBeforeDelegate,
-            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean skipCloseTag,
+            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean suspendedSkipCloseTag,
+            final SkipBody containerSkipBody, final boolean containerSkipCloseTag,
             final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject, final Text precedingWhitespace) {
 
-        super(configuration, context, suspendedProcessorIterator, suspendedModel, suspendedModelProcessable, suspendedModelProcessBeforeDelegate, suspendedDiscardEvent, suspendedSkipBody, skipCloseTag);
+        super(configuration, context, suspendedProcessorIterator, suspendedModel, suspendedModelProcessable, suspendedModelProcessBeforeDelegate, suspendedDiscardEvent, suspendedSkipBody, suspendedSkipCloseTag);
 
         this.context = context;
         this.templateMode = context.getTemplateMode();
         this.eventModelController = eventModelController;
+
+        this.containerSkipBody = containerSkipBody;
+        this.containerSkipCloseTag = containerSkipCloseTag;
 
         this.iterator = computeIteratedObjectIterator(iteratedObject);
 
@@ -149,12 +156,6 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
         final ElementProcessorIterator suspendedIterator = new ElementProcessorIterator();
         suspendedIterator.resetAsCloneOf(getSuspendedProcessorIterator());
 
-        /*
-         * Save the original state of skip variable at the event model controller
-         */
-        final SkipBody suspendedSkipBody = this.eventModelController.getSkipBody();
-        final boolean suspendedSkipClosetag = this.eventModelController.getSkipCloseTag();
-
 
         /*
          * Perform the first iteration, if there is at least one elment (we already obtained the object)
@@ -192,7 +193,7 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
             /*
              * Reset the "skipBody" and "skipCloseTag" values at the event model controller
              */
-            this.eventModelController.skip(suspendedSkipBody, suspendedSkipClosetag);
+            this.eventModelController.skip(this.containerSkipBody, this.containerSkipCloseTag);
 
 
             /*
