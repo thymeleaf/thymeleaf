@@ -85,6 +85,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     ElementNames.forHTMLName("tr"), ElementNames.forHTMLName("ul"), ElementNames.forHTMLName("video")
             }));
 
+    static final String GATHERED_MODEL_CONTEXT_VARIABLE_NAME = IGatheredModel.class.getName();
+
 
     private static final ITemplateBoundariesProcessor[] EMPTY_TEMPLATE_BOUNDARIES_PROCESSORS = new ITemplateBoundariesProcessor[0];
     private static final ICDATASectionProcessor[] EMPTY_CDATA_SECTION_PROCESSORS = new ICDATASectionProcessor[0];
@@ -134,12 +136,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     private Integer initialContextLevel = null;
 
 
-    // Declare the structure that will hold the processing data/flags needed to be indexed by the
-    // handler execution level (i.e. levels of nesting in handler method execution)
-    private ExecLevelData[] execLevelData;
-    private int execLevel;
-
-
     // This variable will contain the last event that has been processed, if this last event was an IText. Its aim
     // is to allow the inclusion of preceding whitespace in the iteration of block elements (such as <tr>, <li>, etc.)
     // so that resulting markup is more readable than the alternative "</tr><tr ...>"
@@ -153,11 +149,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     private EventModelController eventModelController = null;
 
 
-    // This variable will be used only to allow the gathered model to be passed from the point in which its execution
-    // is started to the first event being handled (so that, e.g. model processors can use it)
-    private Model gatheredModel = null;
-
-
 
 
     /**
@@ -169,10 +160,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     public ProcessorTemplateHandler() {
 
         super();
-
-        this.execLevelData = new ExecLevelData[5];
-        Arrays.fill(this.execLevelData, null);
-        this.execLevel = -1;
 
         this.elementTagStructureHandler = new ElementTagStructureHandler();
         this.elementModelStructureHandler = new ElementModelStructureHandler();
@@ -252,33 +239,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         this.xmlDeclarationProcessors =
                 xmlDeclarationProcessorSet.size() == 0? EMPTY_XML_DECLARATION_PROCESSORS : xmlDeclarationProcessorSet.toArray(new IXMLDeclarationProcessor[xmlDeclarationProcessorSet.size()]);
 
-    }
-
-
-
-
-
-
-
-    private void increaseExecLevel() {
-
-        this.execLevel++;
-
-        if (this.execLevel == this.execLevelData.length) {
-            this.execLevelData = Arrays.copyOf(this.execLevelData, this.execLevelData.length + 3);
-        }
-
-        if (this.execLevelData[this.execLevel] == null) {
-            this.execLevelData[this.execLevel] = new ExecLevelData(this.configuration, this.templateMode);
-        } else {
-            this.execLevelData[this.execLevel].reset();
-        }
-
-    }
-
-
-    private void decreaseExecLevel() {
-        this.execLevel--;
     }
 
 
@@ -492,11 +452,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * LAST ROUND OF CHECKS. If we have not returned our indexes to -1, something has gone wrong during processing
          */
-        if (this.execLevel >= 0) {
-            throw new TemplateProcessingException(
-                    "Bad markup or template processing sequence. Execution level is >= 0 (" + this.execLevel + ") " +
-                    "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
-        }
         if (this.eventModelController.getModelLevel() != 0) {
             throw new TemplateProcessingException(
                     "Bad markup or template processing sequence. Model level is != 0 (" + this.eventModelController.getModelLevel() + ") " +
@@ -815,6 +770,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
+         * CAST (WITHOUT CLONING) TO ENGINE-SPECIFIC IMPLEMENTATION, which will ease the handling of the structure during processing
+         */
+        StandaloneElementTag standaloneElementTag = StandaloneElementTag.asEngineStandaloneElementTag(istandaloneElementTag);
+
+
+        /*
          * SAVE AND RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
          * Note we will only be interested on it if it is whitespace, in order to add it to iteration queues, so
          * that iterated model looks better (by including the last whitespace before the iterated element)
@@ -827,25 +788,22 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * COMPUTE WHETHER WE SHOULD CONTINUE WHERE WE SUSPENDED THE EXECUTION OF A HANDLER (and re-init flag)
+         * OBTAIN THE GATHERED MODEL
          */
-        final boolean wasSuspended = this.execLevel >= 0 && this.execLevelData[this.execLevel].suspended;
-        if (wasSuspended) {
-            this.execLevelData[this.execLevel].suspended = false;
+        final IGatheredModel gatheredModel;
+        if (this.engineContext != null) {
+            gatheredModel = (IGatheredModel) this.engineContext.getVariable(GATHERED_MODEL_CONTEXT_VARIABLE_NAME);
+            this.engineContext.removeVariable(GATHERED_MODEL_CONTEXT_VARIABLE_NAME);
+        } else {
+            gatheredModel = null;
         }
-
-
-        /*
-         * CAST (WITHOUT CLONING) TO ENGINE-SPECIFIC IMPLEMENTATION, which will ease the handling of the structure during processing
-         */
-        StandaloneElementTag standaloneElementTag = StandaloneElementTag.asEngineStandaloneElementTag(istandaloneElementTag);
 
 
         /*
          * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
          * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
          */
-        if (!wasSuspended && !standaloneElementTag.hasAssociatedProcessors()) {
+        if (gatheredModel == null && !standaloneElementTag.hasAssociatedProcessors()) {
             if (this.engineContext != null) {
                 this.engineContext.increaseLevel();
             }
@@ -858,20 +816,38 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
-         * Note this is not done if execution was suspended, as in that case what we want to do is actually continue
-         * were we left.
+         * DECLARE THE FLAGS AND STATE VARS NEEDED FOR PROCESSOR EXECUTION
          */
-        if (!wasSuspended) {
-            increaseExecLevel();
+        ElementProcessorIterator processorIterator = null;
+        Model model = null;
+        boolean modelProcessable = false;
+        boolean modelProcessBeforeDelegate = false;
+        boolean discardEvent = false;
+        SkipBody skipBody = SkipBody.PROCESS;
+        boolean skipCloseTag = false;
+
+
+        /*
+         * INITIALIZE THE FLAGS IN CASE THE EXECUTION WAS SUSPENDED (while a gathering took place)
+         */
+        if (gatheredModel == null) {
+            processorIterator = new ElementProcessorIterator();
+        } else {
+            processorIterator = gatheredModel.getSuspendedProcessorIterator();
+            model = gatheredModel.getSuspendedModel();
+            modelProcessable = gatheredModel.isSuspendedModelProcessable();
+            modelProcessBeforeDelegate = gatheredModel.isSuspendedModelProcessBeforeDelegate();
+            discardEvent = gatheredModel.isSuspendedDiscardEvent();
+            skipBody = gatheredModel.getSuspendedSkipBody();
+            skipCloseTag = gatheredModel.isSuspendedSkipCloseTag();
         }
-        final ExecLevelData execLevelData = this.execLevelData[this.execLevel];
 
 
         /*
          * INCREASE THE CONTEXT LEVEL so that all local variables created during the execution of processors
          * are available for the rest of the processors as well as the body of the tag
          */
+        // TODO Isn't this wrong?
         if (this.engineContext != null) {
             this.engineContext.increaseLevel();
         }
@@ -881,7 +857,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * EXECUTE PROCESSORS
          */
         IElementProcessor processor;
-        while (!execLevelData.discardEvent && (processor = execLevelData.processorIterator.next(standaloneElementTag)) != null) {
+        while (!discardEvent && (processor = processorIterator.next(standaloneElementTag)) != null) {
 
             this.elementTagStructureHandler.reset();
             this.elementModelStructureHandler.reset();
@@ -914,29 +890,33 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Initialize the gatherer object
                     this.eventModelController.startGatheringIteratedModel(
                             standaloneElementTag,
+                            processorIterator,
+                            model, modelProcessable, modelProcessBeforeDelegate,
+                            discardEvent, skipBody, skipCloseTag,
                             this.elementTagStructureHandler.iterVariableName,
                             this.elementTagStructureHandler.iterStatusVariableName,
                             this.elementTagStructureHandler.iteratedObject,
                             precedingWhitespace);
 
-                    // Suspend execution - execution will be restarted by the handleOpenElement event at the
-                    // processIteration() call performed after gathering all the iterated markup
-                    execLevelData.suspended = true;
-
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- we need processIteration() to read our data
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Process the gathered model
-                    final IGatheredModel gatheredModel = this.eventModelController.getGatheredModel();
+                    final IGatheredModel newGatheredModel = this.eventModelController.getGatheredModel();
                     this.eventModelController.resetGathering();
-                    gatheredModel.process(this);
+                    newGatheredModel.process(this);
 
                     // Complete exit of the handler method: no more processing to do from here
                     return;
 
                 } else if (this.elementTagStructureHandler.setBodyText) {
 
-                    execLevelData.resetQueue(); // Remove any previous results on the queue
+                    // Initialize model
+                    if (model == null) {
+                        model = new Model(this.configuration, this.templateMode);
+                    } else {
+                        model.reset();
+                    }
 
                     // Prepare the now-equivalent open and close tags
                     final OpenElementTag openTag =
@@ -952,34 +932,36 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                     // Prepare the text node that will be added to the queue (which will be suspended)
                     final Text text = new Text(this.elementTagStructureHandler.setBodyTextValue);
-                    execLevelData.model.add(text);
-                    execLevelData.queueProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
-
-                    // Suspend execution - execution will be restarted by the handleOpenElement event
-                    execLevelData.suspended = true;
+                    model.add(text);
+                    modelProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
 
                     // Initialize the iterated model object
-                    final Model processedModel = new Model(this.configuration, this.templateMode);
-                    processedModel.add(openTag);
-                    processedModel.add(closeTag);
+                    final IGatheredModel newGatheredModel =
+                            new DelayedGatheredModel(
+                                    this.configuration, this.engineContext,
+                                    processorIterator,
+                                    model, modelProcessable, modelProcessBeforeDelegate,
+                                    discardEvent, skipBody, skipCloseTag);
+                    newGatheredModel.gatherOpenElement(openTag);
+                    newGatheredModel.gatherCloseElement(closeTag);
 
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be the responsibility of handleOpenElement
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Fire the now-equivalent events. Note the handleOpenElement event will take care of the suspended queue
-                    processedModel.process(this);
-
-                    // Decrease the context level
-                    if (this.engineContext != null) {
-                        this.engineContext.decreaseLevel();
-                    }
+                    newGatheredModel.process(this);
 
                     // Complete exit of the handler method: no more processing to do from here
                     return;
 
                 } else if (this.elementTagStructureHandler.setBodyModel) {
 
-                    execLevelData.resetQueue(); // Remove any previous results on the queue
+                    // Initialize model
+                    if (model == null) {
+                        model = new Model(this.configuration, this.templateMode);
+                    } else {
+                        model.reset();
+                    }
 
                     // Prepare the now-equivalent open and close tags
                     final OpenElementTag openTag =
@@ -995,90 +977,112 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                     // Prepare the queue (that we will suspend)
                     // Model will be automatically cloned if mutable
-                    execLevelData.model.addModel(this.elementTagStructureHandler.setBodyModelValue);
-                    execLevelData.queueProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
-
-                    // Suspend execution - execution will be restarted by the handleOpenElement event
-                    execLevelData.suspended = true;
+                    model.addModel(this.elementTagStructureHandler.setBodyModelValue);
+                    modelProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
 
                     // Initialize the iterated model object
-                    final Model processedModel = new Model(this.configuration, this.templateMode);
-                    processedModel.add(openTag);
-                    processedModel.add(closeTag);
+                    final IGatheredModel newGatheredModel =
+                            new DelayedGatheredModel(
+                                    this.configuration, this.engineContext,
+                                    processorIterator,
+                                    model, modelProcessable, modelProcessBeforeDelegate,
+                                    discardEvent, skipBody, skipCloseTag);
+                    newGatheredModel.gatherOpenElement(openTag);
+                    newGatheredModel.gatherCloseElement(closeTag);
 
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be the responsibility of handleOpenElement
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Fire the now-equivalent events. Note the handleOpenElement event will take care of the suspended queue
-                    processedModel.process(this);
-
-                    // Decrease the context level
-                    if (this.engineContext != null) {
-                        this.engineContext.decreaseLevel();
-                    }
+                    newGatheredModel.process(this);
 
                     // Complete exit of the handler method: no more processing to do from here
                     return;
 
                 } else if (this.elementTagStructureHandler.insertBeforeModel) {
 
-                    execLevelData.resetQueue(); // Remove any previous results on the queue
+                    // Initialize model
+                    if (model == null) {
+                        model = new Model(this.configuration, this.templateMode);
+                    } else {
+                        model.reset();
+                    }
 
-                    execLevelData.model.addModel(this.elementTagStructureHandler.insertBeforeModelValue);
+                    model.addModel(this.elementTagStructureHandler.insertBeforeModelValue);
                     // Model inserted BEFORE is never processable, so we will always use this.next here
-                    execLevelData.queueProcessable = false;
+                    modelProcessable = false;
                     // This queue should be processed BEFORE delegating the event
-                    execLevelData.queueProcessBeforeDelegate = true;
+                    modelProcessBeforeDelegate = true;
 
                 } else if (this.elementTagStructureHandler.insertImmediatelyAfterModel) {
 
                     // We will only be resetting the queue if we had set it to be executed before delegating, as in that
                     // case adding our new model to the beginning of what already is in the queue would make no sense
-                    if (execLevelData.queueProcessBeforeDelegate) {
-                        execLevelData.resetQueue(); // Remove any previous results on the queue
+                    // Initialize model
+                    if (model == null) {
+                        model = new Model(this.configuration, this.templateMode);
+                    } else {
+                        if (modelProcessBeforeDelegate) {
+                            model.reset();
+                        }
                     }
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    execLevelData.queueProcessable = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
+                    modelProcessable = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    execLevelData.model.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
+                    model.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
 
                     // No intervention on the body flags - we will not be removing the body, just inserting before it
 
                 } else if (this.elementTagStructureHandler.replaceWithText) {
 
-                    execLevelData.resetQueue(); // Remove any previous results on the queue
-                    execLevelData.queueProcessable = this.elementTagStructureHandler.replaceWithTextProcessable;
+                    // Initialize model
+                    if (model == null) {
+                        model = new Model(this.configuration, this.templateMode);
+                    } else {
+                        model.reset();
+                    }
+
+                    modelProcessable = this.elementTagStructureHandler.replaceWithTextProcessable;
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
-                    execLevelData.model.add(new Text(this.elementTagStructureHandler.replaceWithTextValue));
+                    model.add(new Text(this.elementTagStructureHandler.replaceWithTextValue));
 
-                    execLevelData.discardEvent = true;
+                    discardEvent = true;
 
                 } else if (this.elementTagStructureHandler.replaceWithModel) {
 
-                    execLevelData.resetQueue(); // Remove any previous results on the queue
-                    execLevelData.queueProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
+                    // Initialize model
+                    if (model == null) {
+                        model = new Model(this.configuration, this.templateMode);
+                    } else {
+                        model.reset();
+                    }
+
+                    modelProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    execLevelData.model.addModel(this.elementTagStructureHandler.replaceWithModelValue);
+                    model.addModel(this.elementTagStructureHandler.replaceWithModelValue);
 
-                    execLevelData.discardEvent = true;
+                    discardEvent = true;
 
                 } else if (this.elementTagStructureHandler.removeElement) {
 
-                    execLevelData.resetQueue(); // Remove any previous results on the queue
+                    // Initialize model (if it already exists)
+                    if (model != null) {
+                        model.reset();
+                    }
 
-                    execLevelData.discardEvent = true;
+                    discardEvent = true;
 
                 } else if (this.elementTagStructureHandler.removeTags) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
 
-                    execLevelData.discardEvent = true;
+                    discardEvent = true;
 
                 }
                 // No way to process 'removeBody' or 'removeAllButFirstChild' on a standalone tag
@@ -1096,7 +1100,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                  * if this is the first or the second time we execute this processor.
                  */
 
-                if (execLevelData.model.size() > 0) {
+                if (model != null && model.size() > 0) {
                     throw new TemplateProcessingException(
                             "Cannot execute model processor " + processor.getClass().getName() + " as the body " +
                                     "of the target element has already been modified by a previously executed processor " +
@@ -1148,13 +1152,19 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                  * returns a result of type "replaceWithModel".
                  */
 
-                execLevelData.resetQueue(); // Remove any previous results on the queue
-                execLevelData.queueProcessable = true; // We actually NEED TO process this queue
+                // Initialize model
+                if (model == null) {
+                    model = new Model(this.configuration, this.templateMode);
+                } else {
+                    model.reset();
+                }
+
+                modelProcessable = true; // We actually NEED TO process this queue
 
                 // Set the model to be executed
-                execLevelData.model.addModel(processedModel);
+                model.addModel(processedModel);
 
-                execLevelData.discardEvent = true;
+                discardEvent = true;
 
 
             } else {
@@ -1169,15 +1179,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * PROCESS THE QUEUE BEFORE DELEGATING, if specified to do so
          */
-        if (execLevelData.queueProcessBeforeDelegate) {
-            execLevelData.model.process(this.next); // This is never processable
+        if (model != null && modelProcessBeforeDelegate) {
+            model.process(this.next); // This is never processable
         }
 
 
         /*
          * PROCESS THE REST OF THE HANDLER CHAIN
          */
-        if (!execLevelData.discardEvent) {
+        if (!discardEvent) {
             this.next.handleStandaloneElement(standaloneElementTag);
         }
 
@@ -1185,8 +1195,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        if (!execLevelData.queueProcessBeforeDelegate) {
-            execLevelData.model.process(execLevelData.queueProcessable ? this : this.next);
+        if (model != null && !modelProcessBeforeDelegate) {
+            model.process(modelProcessable ? this : this.next);
         }
 
 
@@ -1198,12 +1208,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         if (this.engineContext != null) {
             this.engineContext.decreaseLevel();
         }
-
-
-        /*
-         * DECREASE THE EXEC LEVEL, so that the structures can be reused
-         */
-        decreaseExecLevel();
 
     }
 
@@ -1226,6 +1230,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
+         * CAST (WITHOUT CLONING) TO ENGINE-SPECIFIC IMPLEMENTATION, which will ease the handling of the structure during processing
+         */
+        OpenElementTag openElementTag = OpenElementTag.asEngineOpenElementTag(iopenElementTag);
+
+
+        /*
          * SAVE AND RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
          * Note we will only be interested on it if it is whitespace, in order to add it to iteration queues, so
          * that iterated model looks better (by including the last whitespace before the iterated element)
@@ -1238,46 +1248,60 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * COMPUTE WHETHER WE SHOULD CONTINUE WHERE WE SUSPENDED THE EXECUTION OF A HANDLER (and re-init flag)
+         * OBTAIN THE GATHERED MODEL
          */
-        final boolean wasSuspended = this.execLevel >= 0 && this.execLevelData[this.execLevel].suspended;
-        if (wasSuspended) {
-            this.execLevelData[this.execLevel].suspended = false;
+        final IGatheredModel gatheredModel;
+        if (this.engineContext != null) {
+            gatheredModel = (IGatheredModel) this.engineContext.getVariable(GATHERED_MODEL_CONTEXT_VARIABLE_NAME);
+            this.engineContext.removeVariable(GATHERED_MODEL_CONTEXT_VARIABLE_NAME);
+        } else {
+            gatheredModel = null;
         }
-
-
-        /*
-         * CAST (WITHOUT CLONING) TO ENGINE-SPECIFIC IMPLEMENTATION, which will ease the handling of the structure during processing
-         */
-        OpenElementTag openElementTag = OpenElementTag.asEngineOpenElementTag(iopenElementTag);
 
 
         /*
          * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
          * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
          */
-        if (!wasSuspended && !openElementTag.hasAssociatedProcessors()) {
+        if (gatheredModel == null && !openElementTag.hasAssociatedProcessors()) {
             this.next.handleOpenElement(openElementTag);
             return;
         }
 
 
         /*
-         * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
-         * Note this is not done if execution was suspended, as in that case what we want to do is actually continue
-         * were we left.
+         * DECLARE THE FLAGS AND STATE VARS NEEDED FOR PROCESSOR EXECUTION
          */
-        if (!wasSuspended) {
-            increaseExecLevel();
+        ElementProcessorIterator processorIterator = null;
+        Model model = null;
+        boolean modelProcessable = false;
+        boolean modelProcessBeforeDelegate = false;
+        boolean discardEvent = false;
+        SkipBody skipBody = SkipBody.PROCESS;
+        boolean skipCloseTag = false;
+
+
+        /*
+         * INITIALIZE THE FLAGS IN CASE THE EXECUTION WAS SUSPENDED (while a gathering took place)
+         */
+        if (gatheredModel == null) {
+            processorIterator = new ElementProcessorIterator();
+        } else {
+            processorIterator = gatheredModel.getSuspendedProcessorIterator();
+            model = gatheredModel.getSuspendedModel();
+            modelProcessable = gatheredModel.isSuspendedModelProcessable();
+            modelProcessBeforeDelegate = gatheredModel.isSuspendedModelProcessBeforeDelegate();
+            discardEvent = gatheredModel.isSuspendedDiscardEvent();
+            skipBody = gatheredModel.getSuspendedSkipBody();
+            skipCloseTag = gatheredModel.isSuspendedSkipCloseTag();
         }
-        final ExecLevelData execLevelData = this.execLevelData[this.execLevel];
 
 
         /*
          * EXECUTE PROCESSORS
          */
         IElementProcessor processor;
-        while (!execLevelData.discardEvent && (processor = execLevelData.processorIterator.next(openElementTag)) != null) {
+        while (!discardEvent && (processor = processorIterator.next(openElementTag)) != null) {
 
             this.elementTagStructureHandler.reset();
             this.elementModelStructureHandler.reset();
@@ -1313,14 +1337,13 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Initialize the gatherer object
                     this.eventModelController.startGatheringIteratedModel(
                             openElementTag,
+                            processorIterator,
+                            model, modelProcessable, modelProcessBeforeDelegate,
+                            discardEvent, skipBody, skipCloseTag,
                             this.elementTagStructureHandler.iterVariableName,
                             this.elementTagStructureHandler.iterStatusVariableName,
                             this.elementTagStructureHandler.iteratedObject,
                             precedingWhitespace);
-
-                    // Suspend execution - execution will be restarted by the handleOpenElement event at the
-                    // processIteration() call performed after gathering all the iterated markup
-                    execLevelData.suspended = true;
 
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- we need processIteration() to read our data
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
@@ -1330,102 +1353,145 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                 } else if (this.elementTagStructureHandler.setBodyText) {
 
-                    execLevelData.resetQueue(); // Remove any previous results on the queue
-                    execLevelData.queueProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
+                    // Initialize model
+                    if (model == null) {
+                        model = new Model(this.configuration, this.templateMode);
+                    } else {
+                        model.reset();
+                    }
+
+                    modelProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
 
                     // Add the new Text to the queue
-                    execLevelData.model.add(new Text(this.elementTagStructureHandler.setBodyTextValue));
+                    model.add(new Text(this.elementTagStructureHandler.setBodyTextValue));
 
-                    execLevelData.skipBody = SkipBody.SKIP_ALL;
+                    skipBody = SkipBody.SKIP_ALL;
 
                 } else if (this.elementTagStructureHandler.setBodyModel) {
 
-                    execLevelData.resetQueue(); // Remove any previous results on the queue
-                    execLevelData.queueProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
+                    // Initialize model
+                    if (model == null) {
+                        model = new Model(this.configuration, this.templateMode);
+                    } else {
+                        model.reset();
+                    }
+
+                    modelProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    execLevelData.model.addModel(this.elementTagStructureHandler.setBodyModelValue);
+                    model.addModel(this.elementTagStructureHandler.setBodyModelValue);
 
-                    execLevelData.skipBody = SkipBody.SKIP_ALL;
+                    skipBody = SkipBody.SKIP_ALL;
 
                 } else if (this.elementTagStructureHandler.insertBeforeModel) {
 
-                    execLevelData.resetQueue(); // Remove any previous results on the queue
+                    // Initialize model
+                    if (model == null) {
+                        model = new Model(this.configuration, this.templateMode);
+                    } else {
+                        model.reset();
+                    }
 
-                    execLevelData.model.addModel(this.elementTagStructureHandler.insertBeforeModelValue);
+                    model.addModel(this.elementTagStructureHandler.insertBeforeModelValue);
                     // Model inserted BEFORE is never processable, so we will always use this.next here
-                    execLevelData.queueProcessable = false;
+                    modelProcessable = false;
                     // This queue should be processed BEFORE delegating the event
-                    execLevelData.queueProcessBeforeDelegate = true;
+                    modelProcessBeforeDelegate = true;
 
                 } else if (this.elementTagStructureHandler.insertImmediatelyAfterModel) {
 
                     // We will only be resetting the queue if we had set it to be executed before delegating, as in that
                     // case adding our new model to the beginning of what already is in the queue would make no sense
-                    if (execLevelData.queueProcessBeforeDelegate) {
-                        execLevelData.resetQueue(); // Remove any previous results on the queue
+                    // Initialize model
+                    if (model == null) {
+                        model = new Model(this.configuration, this.templateMode);
+                    } else {
+                        if (modelProcessBeforeDelegate) {
+                            model.reset();
+                        }
                     }
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    execLevelData.queueProcessable = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
+                    modelProcessable = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    execLevelData.model.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
+                    model.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
 
                     // No intervention on the body flags - we will not be removing the body, just inserting before it
 
                 } else if (this.elementTagStructureHandler.replaceWithText) {
 
-                    execLevelData.resetQueue(); // Remove any previous results on the queue
-                    execLevelData.queueProcessable = this.elementTagStructureHandler.replaceWithTextProcessable;
+                    // Initialize model
+                    if (model == null) {
+                        model = new Model(this.configuration, this.templateMode);
+                    } else {
+                        model.reset();
+                    }
+
+                    modelProcessable = this.elementTagStructureHandler.replaceWithTextProcessable;
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
-                    execLevelData.model.add(new Text(this.elementTagStructureHandler.replaceWithTextValue));
+                    model.add(new Text(this.elementTagStructureHandler.replaceWithTextValue));
 
-                    execLevelData.discardEvent = true;
-                    execLevelData.skipBody = SkipBody.SKIP_ALL;
-                    execLevelData.skipCloseTag = true;
+                    discardEvent = true;
+                    skipBody = SkipBody.SKIP_ALL;
+                    skipCloseTag = true;
 
                 } else if (this.elementTagStructureHandler.replaceWithModel) {
 
-                    execLevelData.resetQueue(); // Remove any previous results on the queue
-                    execLevelData.queueProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
+                    // Initialize model
+                    if (model == null) {
+                        model = new Model(this.configuration, this.templateMode);
+                    } else {
+                        model.reset();
+                    }
+
+                    modelProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    execLevelData.model.addModel(this.elementTagStructureHandler.replaceWithModelValue);
+                    model.addModel(this.elementTagStructureHandler.replaceWithModelValue);
 
-                    execLevelData.discardEvent = true;
-                    execLevelData.skipBody = SkipBody.SKIP_ALL;
-                    execLevelData.skipCloseTag = true;
+                    discardEvent = true;
+                    skipBody = SkipBody.SKIP_ALL;
+                    skipCloseTag = true;
 
                 } else if (this.elementTagStructureHandler.removeElement) {
 
-                    execLevelData.resetQueue(); // Remove any previous results on the queue
+                    // Initialize model (if it already exists)
+                    if (model != null) {
+                        model.reset();
+                    }
 
-                    execLevelData.discardEvent = true;
-                    execLevelData.skipBody = SkipBody.SKIP_ALL;
-                    execLevelData.skipCloseTag = true;
+                    discardEvent = true;
+                    skipBody = SkipBody.SKIP_ALL;
+                    skipCloseTag = true;
 
                 } else if (this.elementTagStructureHandler.removeTags) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
 
-                    execLevelData.discardEvent = true;
-                    execLevelData.skipCloseTag = true;
+                    discardEvent = true;
+                    skipCloseTag = true;
 
                 } else if (this.elementTagStructureHandler.removeBody) {
 
-                    execLevelData.resetQueue(); // Remove any previous results on the queue
+                    // Initialize model (if it already exists)
+                    if (model != null) {
+                        model.reset();
+                    }
 
-                    execLevelData.skipBody = SkipBody.SKIP_ALL;
+                    skipBody = SkipBody.SKIP_ALL;
 
                 } else if (this.elementTagStructureHandler.removeAllButFirstChild) {
 
-                    execLevelData.resetQueue(); // Remove any previous results on the queue
+                    // Initialize model (if it already exists)
+                    if (model != null) {
+                        model.reset();
+                    }
 
-                    execLevelData.skipBody = SkipBody.PROCESS_ONE_ELEMENT;
+                    skipBody = SkipBody.PROCESS_ONE_ELEMENT;
 
                 }
 
@@ -1442,9 +1508,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                  * if this is the first or the second time we execute this processor.
                  */
 
-                if (!execLevelData.processorIterator.lastWasRepeated()){
+                if (!processorIterator.lastWasRepeated()){
 
-                    if (execLevelData.model.size() > 0) {
+                    if (model != null && model.size() > 0) {
                         throw new TemplateProcessingException(
                                 "Cannot execute model processor " + processor.getClass().getName() + " as the body " +
                                 "of the target element has already been modified by a previously executed processor " +
@@ -1453,15 +1519,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                                 openElementTag.getTemplateName(), openElementTag.getLine(), openElementTag.getCol());
                     }
 
-                    // Initialize the gatherer object
-                    this.eventModelController.startGatheringDelayedModel(openElementTag);
-
                     // Set the processor to be executed again, because this time we will just set the "model gathering" mechanism
-                    execLevelData.processorIterator.setLastToBeRepeated(openElementTag);
+                    processorIterator.setLastToBeRepeated(openElementTag);
 
-                    // Suspend the queue - execution will be restarted by the handleOpenElement event
-                    // Note there is no queue to be suspended --we've made sure of that before, so we are only suspending the iterator
-                    execLevelData.suspended = true;
+                    // Initialize the gatherer object
+                    this.eventModelController.startGatheringDelayedModel(
+                            openElementTag,
+                            processorIterator,
+                            model, modelProcessable, modelProcessBeforeDelegate,
+                            discardEvent, skipBody, skipCloseTag);
 
                     // Note we DO NOT DECREASE THE MODEL LEVEL -- that will be done when we re-execute this after gathering model
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be done when we re-execute this after gathering model
@@ -1484,7 +1550,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 // NOTE we are not cloning the events themselves here. There should be no need, as we are going to
                 //      re-locate these events into a new queue, and their old position (which will be executed
                 //      anyway) will be ignored.
-                final Model processedModel = new Model(this.gatheredModel);
+                final Model processedModel = new Model(gatheredModel.getInnerModel());
 
                 ((IElementModelProcessor) processor).process(this.context, processedModel, this.elementModelStructureHandler);
 
@@ -1525,15 +1591,21 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                  * returns a result of type "replaceWithModel".
                  */
 
-                execLevelData.resetQueue(); // Remove any previous results on the queue
-                execLevelData.queueProcessable = true; // We actually NEED TO process this queue
+                // Initialize model
+                if (model == null) {
+                    model = new Model(this.configuration, this.templateMode);
+                } else {
+                    model.reset();
+                }
+
+                modelProcessable = true; // We actually NEED TO process this queue
 
                 // Model will be automatically cloned if mutable
-                execLevelData.model.addModel(processedModel);
+                model.addModel(processedModel);
 
-                execLevelData.discardEvent = true;
-                execLevelData.skipBody = SkipBody.SKIP_ALL;
-                execLevelData.skipCloseTag = true;
+                discardEvent = true;
+                skipBody = SkipBody.SKIP_ALL;
+                skipCloseTag = true;
 
 
             } else {
@@ -1548,15 +1620,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * PROCESS THE QUEUE BEFORE DELEGATING, if specified to do so
          */
-        if (execLevelData.queueProcessBeforeDelegate) {
-            execLevelData.model.process(this.next); // This is never processable
+        if (model != null && modelProcessBeforeDelegate) {
+            model.process(this.next); // This is never processable
         }
 
 
         /*
          * PROCESS THE REST OF THE HANDLER CHAIN and INCREASE THE MODEL LEVEL RIGHT AFTERWARDS
          */
-        if (!execLevelData.discardEvent) {
+        if (!discardEvent) {
             this.next.handleOpenElement(openElementTag);
         }
 
@@ -1567,21 +1639,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * and close tags), because that way whatever comes in the queue will be encapsulated in a different model level
          * and its internal open/close tags should not affect the correct delimitation of this block.
          */
-        if (!execLevelData.queueProcessBeforeDelegate) {
-            execLevelData.model.process(execLevelData.queueProcessable ? this : this.next);
+        if (model != null && !modelProcessBeforeDelegate) {
+            model.process(modelProcessable ? this : this.next);
         }
 
 
         /*
          * SET BODY TO BE SKIPPED, if required. Importantly, this has to be done AFTER executing the queue
          */
-        this.eventModelController.skip(execLevelData.skipBody, execLevelData.skipCloseTag);
-
-
-        /*
-         * DECREASE THE EXEC LEVEL, so that the structures can be reused
-         */
-        decreaseExecLevel();
+        this.eventModelController.skip(skipBody, skipCloseTag);
 
     }
 
@@ -1614,7 +1680,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
              */
             if (this.eventModelController.isGatheringFinished()) {
                 final IGatheredModel gatheredModel = this.eventModelController.getGatheredModel();
-                this.gatheredModel = gatheredModel.getInnerModel();
                 this.eventModelController.resetGathering();
                 gatheredModel.process(this);
             }
@@ -1973,65 +2038,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
 
-
-
-
-
-
-
-    private static final class ExecLevelData {
-
-        final IEngineConfiguration configuration;
-        final TemplateMode templateMode;
-
-        boolean suspended;
-        final Model model;
-        final ElementProcessorIterator processorIterator;
-        boolean queueProcessable;
-        boolean queueProcessBeforeDelegate;
-        boolean discardEvent;
-
-        SkipBody skipBody;
-        boolean skipCloseTag;
-
-
-        ExecLevelData(final IEngineConfiguration configuration, final TemplateMode templateMode) {
-            super();
-            this.configuration = configuration;
-            this.templateMode = templateMode;
-            this.model = new Model(configuration, templateMode);
-            this.processorIterator = new ElementProcessorIterator();
-            reset();
-        }
-
-        void resetQueue() {
-            this.model.reset();
-            this.queueProcessable = false;
-            this.queueProcessBeforeDelegate = false;
-        }
-
-        void reset() {
-            resetQueue();
-            this.suspended = false;
-            this.processorIterator.reset();
-            this.discardEvent = false;
-            this.skipBody = SkipBody.PROCESS;
-            this.skipCloseTag = false;
-        }
-
-        void resetAsCloneOf(final ExecLevelData execLevelData, final boolean cloneGathering) {
-            reset();
-            this.suspended = execLevelData.suspended;
-            this.model.resetAsCloneOf(execLevelData.model);
-            this.processorIterator.resetAsCloneOf(execLevelData.processorIterator);
-            this.queueProcessable = execLevelData.queueProcessable;
-            this.queueProcessBeforeDelegate = execLevelData.queueProcessBeforeDelegate;
-            this.discardEvent = execLevelData.discardEvent;
-            this.skipBody = execLevelData.skipBody;
-            this.skipCloseTag = execLevelData.skipCloseTag;
-        }
-
-    }
 
 
 }

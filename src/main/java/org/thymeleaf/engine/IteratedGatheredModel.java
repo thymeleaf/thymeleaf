@@ -28,11 +28,14 @@ import java.util.Map;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
+import org.thymeleaf.engine.EventModelController.SkipBody;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.StringUtils;
+
+import static org.thymeleaf.engine.ProcessorTemplateHandler.GATHERED_MODEL_CONTEXT_VARIABLE_NAME;
 
 
 /*
@@ -50,6 +53,7 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
 
     private final IEngineContext context;
     private final TemplateMode templateMode;
+    private final EventModelController eventModelController;
 
     private final String iterVariableName;
     private final String iterStatusVariableName;
@@ -61,14 +65,18 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
 
 
     IteratedGatheredModel(
-            final IEngineConfiguration configuration, final IEngineContext context,
-            final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject,
-            final Text precedingWhitespace) {
+            final IEngineConfiguration configuration, final IEngineContext context, final EventModelController eventModelController,
+            final ElementProcessorIterator suspendedProcessorIterator,
+            final Model suspendedModel, final boolean suspendedModelProcessable,
+            final boolean suspendedModelProcessBeforeDelegate,
+            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean skipCloseTag,
+            final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject, final Text precedingWhitespace) {
 
-        super(configuration, context);
+        super(configuration, context, suspendedProcessorIterator, suspendedModel, suspendedModelProcessable, suspendedModelProcessBeforeDelegate, suspendedDiscardEvent, suspendedSkipBody, skipCloseTag);
 
         this.context = context;
         this.templateMode = context.getTemplateMode();
+        this.eventModelController = eventModelController;
 
         this.iterator = computeIteratedObjectIterator(iteratedObject);
 
@@ -76,7 +84,7 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
 
         if (StringUtils.isEmptyOrWhitespace(iterStatusVariableName)) {
             // If no name has been specified for the status variable, we will use the same as the iter var + "Stat"
-            this.iterStatusVariableName = iterStatusVariableName + DEFAULT_STATUS_VAR_SUFFIX;
+            this.iterStatusVariableName = iterVariableName + DEFAULT_STATUS_VAR_SUFFIX;
         } else {
             this.iterStatusVariableName = iterStatusVariableName;
         }
@@ -134,19 +142,26 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
          */
         final IterationModels iterationModel = computeIterationModels(iterationType);
 
+        /*
+         * Save the original state of the element processor iterator, so that we can set it again
+         * for each iteration
+         */
+        final ElementProcessorIterator suspendedIterator = new ElementProcessorIterator();
+        suspendedIterator.resetAsCloneOf(getSuspendedProcessorIterator());
 
         /*
-         * If there are no iterations, there is nothing to process
+         * Save the original state of skip variable at the event model controller
          */
-        if (iterationModel == null) {
-            return;
+        final SkipBody suspendedSkipBody = this.eventModelController.getSkipBody();
+        final boolean suspendedSkipClosetag = this.eventModelController.getSkipCloseTag();
+
+
+        /*
+         * Perform the first iteration, if there is at least one elment (we already obtained the object)
+         */
+        if (iterationModel != null) {
+            processIteration(iterationModel.modelFirst, handler);
         }
-
-
-        /*
-         * Perform the first iteration (we already obtained the object)
-         */
-        processIteration(iterationModel.modelFirst, handler);
 
 
         /*
@@ -155,20 +170,40 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
         while (iterHasNext) {
 
             /*
+             * Increase the iteration counter
+             */
+            this.iterStatusVariable.index++;
+
+            /*
              * Obtain the new iterated objects
              */
             this.iterStatusVariable.current = this.iterator.next();
+
+            /*
+             * Recompute hasNext
+             */
             iterHasNext = this.iterator.hasNext(); // precomputed in order to know when we are at the last element
+
+            /*
+             * Reset the element processor iterator to its original state (for each iteration)
+             */
+            getSuspendedProcessorIterator().resetAsCloneOf(suspendedIterator);
+
+            /*
+             * Reset the "skipBody" and "skipCloseTag" values at the event model controller
+             */
+            this.eventModelController.skip(suspendedSkipBody, suspendedSkipClosetag);
+
+
+            /*
+             * Select the model to be processed
+             */
+            final Model model = (iterHasNext? iterationModel.modelMiddle : iterationModel.modelLast);
 
             /*
              * Perform the iteration
              */
-            processIteration(iterHasNext? iterationModel.modelMiddle : iterationModel.modelLast, handler);
-
-            /*
-             * Increase the iteration counter
-             */
-            this.iterStatusVariable.index++;
+            processIteration(model, handler);
 
         }
 
@@ -194,6 +229,11 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
          * Increase the engine context level, so that we can store the needed local variables there
          */
         this.context.increaseLevel();
+
+        /*
+         * Set the gathered model into the context
+         */
+        this.context.setVariable(GATHERED_MODEL_CONTEXT_VARIABLE_NAME, this);
 
         /*
          * Set the iteration local variables (iteration variable and iteration status variable)
@@ -339,15 +379,15 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
         /*
          * Get the originally gathered model. This will serve as a base for any needed modifications
          */
-        final Model gatheredModel = getGatheredModel();
-        final int gatheredModelSize = gatheredModel.size();
+        final Model innerModel = getInnerModel();
+        final int gatheredModelSize = innerModel.size();
 
 
         /*
          * If there is only one iteration, we need to perform no modifications at all, whichever the template mode
          */
         if (iterationType == IterationType.ONE) {
-            return new IterationModels(gatheredModel, gatheredModel, gatheredModel);
+            return new IterationModels(innerModel, innerModel, innerModel);
         }
 
 
@@ -356,11 +396,11 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
          */
         if (!this.templateMode.isText()) {
             if (this.precedingWhitespace != null) {
-                final Model modelWithWhiteSpace = new Model(gatheredModel);
+                final Model modelWithWhiteSpace = new Model(innerModel);
                 modelWithWhiteSpace.insert(0, this.precedingWhitespace);
-                return new IterationModels(gatheredModel, modelWithWhiteSpace, modelWithWhiteSpace);
+                return new IterationModels(innerModel, modelWithWhiteSpace, modelWithWhiteSpace);
             }
-            return new IterationModels(gatheredModel, gatheredModel, gatheredModel);
+            return new IterationModels(innerModel, innerModel, innerModel);
         }
 
 
@@ -403,17 +443,17 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
          *     the 'close element'.
          */
 
-        if (gatheredModel.size() <= 2) {
+        if (innerModel.size() <= 2) {
             // This does only contain the template open + close events -- nothing to be done
-            return new IterationModels(gatheredModel, gatheredModel, gatheredModel);
+            return new IterationModels(innerModel, innerModel, innerModel);
         }
 
         int firstBodyEventCutPoint = -1;
         int lastBodyEventCutPoint = -1;
 
-        final ITemplateEvent firstBodyEvent = gatheredModel.get(1); // we know there is at least one body event
+        final ITemplateEvent firstBodyEvent = innerModel.get(1); // we know there is at least one body event
         Text firstTextBodyEvent = null;
-        if (gatheredModel.get(0) instanceof OpenElementTag && firstBodyEvent instanceof IText) {
+        if (innerModel.get(0) instanceof OpenElementTag && firstBodyEvent instanceof IText) {
 
             firstTextBodyEvent = Text.asEngineText((IText)firstBodyEvent);
 
@@ -436,10 +476,10 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
 
         }
 
-        final ITemplateEvent lastBodyEvent = gatheredModel.get(gatheredModelSize - 2);
+        final ITemplateEvent lastBodyEvent = innerModel.get(gatheredModelSize - 2);
         Text lastTextBodyEvent = null;
         if (firstBodyEventCutPoint >= 0 &&
-                gatheredModel.get(gatheredModelSize - 1) instanceof CloseElementTag && lastBodyEvent instanceof IText) {
+                innerModel.get(gatheredModelSize - 1) instanceof CloseElementTag && lastBodyEvent instanceof IText) {
 
             lastTextBodyEvent = Text.asEngineText((IText)lastBodyEvent);
 
@@ -468,7 +508,7 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
          */
         if (firstBodyEventCutPoint < 0 || lastBodyEventCutPoint < 0) {
             // We don't have the scenario required for performing the needed whitespace collapsing operation
-            return new IterationModels(gatheredModel, gatheredModel, gatheredModel);
+            return new IterationModels(innerModel, innerModel, innerModel);
         }
 
 
@@ -483,13 +523,13 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
             final Text textForMiddle = new Text(firstTextBodyEvent.subSequence(firstBodyEventCutPoint, lastBodyEventCutPoint));
             final Text textForLast = new Text(firstTextBodyEvent.subSequence(firstBodyEventCutPoint, firstTextBodyEvent.length()));
 
-            final Model modelFirst = new Model(gatheredModel);
+            final Model modelFirst = new Model(innerModel);
             modelFirst.replace(1, textForFirst);
 
-            final Model modelMiddle = new Model(gatheredModel);
+            final Model modelMiddle = new Model(innerModel);
             modelMiddle.replace(1, textForMiddle);
 
-            final Model modelLast = new Model(gatheredModel);
+            final Model modelLast = new Model(innerModel);
             modelLast.replace(1, textForLast);
 
             return new IterationModels(modelFirst, modelMiddle, modelLast);
@@ -498,9 +538,9 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
 
         // At this point, we know the first and last body events are different objects
 
-        final Model modelFirst = new Model(gatheredModel);
-        final Model modelMiddle = new Model(gatheredModel);
-        final Model modelLast = new Model(gatheredModel);
+        final Model modelFirst = new Model(innerModel);
+        final Model modelMiddle = new Model(innerModel);
+        final Model modelLast = new Model(innerModel);
 
         if (firstBodyEventCutPoint > 0) {
             final Text headTextForMiddleAndMax = new Text(firstTextBodyEvent.subSequence(firstBodyEventCutPoint, firstTextBodyEvent.length()));

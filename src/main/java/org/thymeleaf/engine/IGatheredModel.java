@@ -46,6 +46,13 @@ interface IGatheredModel {
 
     Model getInnerModel();
 
+    ElementProcessorIterator getSuspendedProcessorIterator();
+    Model getSuspendedModel();
+    boolean isSuspendedModelProcessable();
+    boolean isSuspendedModelProcessBeforeDelegate();
+    boolean isSuspendedDiscardEvent();
+    EventModelController.SkipBody getSuspendedSkipBody();
+    boolean isSuspendedSkipCloseTag();
 
     void gatherText(final IText text);
     void gatherComment(final IComment comment);

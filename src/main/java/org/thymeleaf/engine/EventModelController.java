@@ -118,9 +118,16 @@ final class EventModelController {
     }
 
 
-    void startGatheringDelayedModel(final IProcessableElementTag firstTag) {
+    void startGatheringDelayedModel(
+            final IProcessableElementTag firstTag,
+            final ElementProcessorIterator suspendedProcessorIterator,
+            final Model suspendedModel, final boolean suspendedModelProcessable,
+            final boolean suspendedModelProcessBeforeDelegate,
+            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean skipCloseTag) {
 
-        this.gatheredModel = new DelayedGatheredModel(this.configuration, this.context);
+        this.gatheredModel =
+                new DelayedGatheredModel(
+                        this.configuration, this.context, suspendedProcessorIterator, suspendedModel, suspendedModelProcessable, suspendedModelProcessBeforeDelegate, suspendedDiscardEvent, suspendedSkipBody, skipCloseTag);
 
         if (firstTag instanceof IOpenElementTag) {
             this.gatheredModel.gatherOpenElement((IOpenElementTag)firstTag);
@@ -135,11 +142,18 @@ final class EventModelController {
 
 
     void startGatheringIteratedModel(
-            final IProcessableElementTag firstTag, final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject,
-            final Text precedingWhitespace) {
+            final IProcessableElementTag firstTag,
+            final ElementProcessorIterator suspendedProcessorIterator,
+            final Model suspendedModel, final boolean suspendedModelProcessable,
+            final boolean suspendedModelProcessBeforeDelegate,
+            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean skipCloseTag,
+            final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject, final Text precedingWhitespace) {
 
         this.gatheredModel =
-                new IteratedGatheredModel(this.configuration, this.context, iterVariableName, iterStatusVariableName, iteratedObject, precedingWhitespace);
+                new IteratedGatheredModel(
+                        this.configuration, this.context, this,
+                        suspendedProcessorIterator, suspendedModel, suspendedModelProcessable, suspendedModelProcessBeforeDelegate, suspendedDiscardEvent, suspendedSkipBody, skipCloseTag,
+                        iterVariableName, iterStatusVariableName, iteratedObject, precedingWhitespace);
 
         if (firstTag instanceof IOpenElementTag) {
             this.gatheredModel.gatherOpenElement((IOpenElementTag)firstTag);
@@ -160,6 +174,15 @@ final class EventModelController {
 
     IGatheredModel getGatheredModel() {
         return this.gatheredModel;
+    }
+
+
+    SkipBody getSkipBody() {
+        return this.skipBody;
+    }
+
+    boolean getSkipCloseTag() {
+        return this.modelLevel == 0? false : this.skipCloseTagByLevel[this.modelLevel - 1];
     }
 
 

@@ -22,6 +22,7 @@ package org.thymeleaf.engine;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.EventModelController.SkipBody;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
@@ -46,17 +47,38 @@ abstract class AbstractGatheredModel implements IGatheredModel {
     private final IEngineContext context;
     private final Model gatheredModel;
 
+    private final ElementProcessorIterator suspendedProcessorIterator;
+    private final Model suspendedModel;
+    private final boolean suspendedModelProcessable;
+    private final boolean suspendedModelProcessBeforeDelegate;
+    private final boolean suspendedDiscardEvent;
+    private final SkipBody suspendedSkipBody;
+    private final boolean suspendedSkipCloseTag;
+
     private boolean gathered = false;
 
     private int modelLevel;
 
 
-    AbstractGatheredModel(final IEngineConfiguration configuration, final IEngineContext context) {
+    AbstractGatheredModel(
+            final IEngineConfiguration configuration, final IEngineContext context,
+            final ElementProcessorIterator suspendedProcessorIterator,
+            final Model suspendedModel, final boolean suspendedModelProcessable,
+            final boolean suspendedModelProcessBeforeDelegate,
+            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody,
+            final boolean suspendedSkipCloseTag) {
 
         super();
 
         this.context = context;
         this.gatheredModel = new Model(configuration, context.getTemplateMode());
+        this.suspendedProcessorIterator = suspendedProcessorIterator;
+        this.suspendedModel = suspendedModel;
+        this.suspendedModelProcessable = suspendedModelProcessable;
+        this.suspendedModelProcessBeforeDelegate = suspendedModelProcessBeforeDelegate;
+        this.suspendedDiscardEvent = suspendedDiscardEvent;
+        this.suspendedSkipBody = suspendedSkipBody;
+        this.suspendedSkipCloseTag = suspendedSkipCloseTag;
 
         this.gathered = false;
 
@@ -81,14 +103,46 @@ abstract class AbstractGatheredModel implements IGatheredModel {
     }
 
 
-    protected final Model getGatheredModel() {
-        return this.gatheredModel;
-    }
-
-
     protected final IEngineContext getContext() {
         return this.context;
     }
+
+
+    public final ElementProcessorIterator getSuspendedProcessorIterator() {
+        return this.suspendedProcessorIterator;
+    }
+
+
+    public final Model getSuspendedModel() {
+        return this.suspendedModel;
+    }
+
+
+    public final boolean isSuspendedModelProcessable() {
+        return this.suspendedModelProcessable;
+    }
+
+
+    public final boolean isSuspendedModelProcessBeforeDelegate() {
+        return this.suspendedModelProcessBeforeDelegate;
+    }
+
+
+    public final boolean isSuspendedDiscardEvent() {
+        return this.suspendedDiscardEvent;
+    }
+
+
+    public final SkipBody getSuspendedSkipBody() {
+        return this.suspendedSkipBody;
+    }
+
+
+    public final boolean isSuspendedSkipCloseTag() {
+        return this.suspendedSkipCloseTag;
+    }
+
+
 
 
     public final Model getInnerModel() {

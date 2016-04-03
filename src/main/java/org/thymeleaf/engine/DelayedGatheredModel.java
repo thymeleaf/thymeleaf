@@ -21,7 +21,10 @@ package org.thymeleaf.engine;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
+import org.thymeleaf.engine.EventModelController.SkipBody;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+
+import static org.thymeleaf.engine.ProcessorTemplateHandler.GATHERED_MODEL_CONTEXT_VARIABLE_NAME;
 
 
 /*
@@ -40,8 +43,13 @@ final class DelayedGatheredModel extends AbstractGatheredModel {
 
 
 
-    DelayedGatheredModel(final IEngineConfiguration configuration, final IEngineContext context) {
-        super(configuration, context);
+    DelayedGatheredModel(
+            final IEngineConfiguration configuration, final IEngineContext context,
+            final ElementProcessorIterator suspendedProcessorIterator,
+            final Model suspendedModel, final boolean suspendedModelProcessable,
+            final boolean suspendedModelProcessBeforeDelegate,
+            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean suspendedSkipCloseTag) {
+        super(configuration, context, suspendedProcessorIterator, suspendedModel, suspendedModelProcessable, suspendedModelProcessBeforeDelegate, suspendedDiscardEvent, suspendedSkipBody, suspendedSkipCloseTag);
         this.context = context;
         this.processed = false;
     }
@@ -65,19 +73,21 @@ final class DelayedGatheredModel extends AbstractGatheredModel {
                     "This delayed model has already been processed. Execution can only take place once");
         }
 
+        /*
+         * Set the gathered model into the context
+         */
+        this.context.setVariable(GATHERED_MODEL_CONTEXT_VARIABLE_NAME, this);
 
         /*
          * PROCESS THE MODEL
          */
-        getGatheredModel().process(handler);
-
+        getInnerModel().process(handler);
 
         /*
          * DECREASE THE CONTEXT LEVEL
          * This was increased before starting gathering, when the handling of the first gathered event started.
          */
         this.context.decreaseLevel();
-
 
         /*
          * SET THE EXECUTION FLAG TO TRUE
