@@ -24,7 +24,7 @@ import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.engine.EventModelController.SkipBody;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
-import static org.thymeleaf.engine.ProcessorTemplateHandler.GATHERED_MODEL_CONTEXT_VARIABLE_NAME;
+import static org.thymeleaf.engine.ProcessorTemplateHandler.SYNTHETIC_MODEL_CONTEXT_VARIABLE_NAME;
 
 
 /*
@@ -33,7 +33,7 @@ import static org.thymeleaf.engine.ProcessorTemplateHandler.GATHERED_MODEL_CONTE
  * @since 3.0.0
  *
  */
-final class DelayedGatheredModel extends AbstractGatheredModel {
+final class DelayedSyntheticModel extends AbstractSyntheticModel {
 
 
     private final IEngineContext context;
@@ -43,13 +43,15 @@ final class DelayedGatheredModel extends AbstractGatheredModel {
 
 
 
-    DelayedGatheredModel(
+    DelayedSyntheticModel(
             final IEngineConfiguration configuration, final IEngineContext context,
+            final EventModelController eventModelController, final SkipBody gatheredSkipBody, final boolean gatheredSkipCloseTag,
             final ElementProcessorIterator suspendedProcessorIterator,
-            final Model suspendedModel, final boolean suspendedModelProcessable,
-            final boolean suspendedModelProcessBeforeDelegate,
+            final Model suspendedModelBefore, final Model suspendedModelAfter, final boolean suspendedModelAfterProcessable,
             final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean suspendedSkipCloseTag) {
-        super(configuration, context, suspendedProcessorIterator, suspendedModel, suspendedModelProcessable, suspendedModelProcessBeforeDelegate, suspendedDiscardEvent, suspendedSkipBody, suspendedSkipCloseTag);
+        super(configuration, context, eventModelController, gatheredSkipBody, gatheredSkipCloseTag,
+                suspendedProcessorIterator, suspendedModelBefore, suspendedModelAfter, suspendedModelAfterProcessable,
+                suspendedDiscardEvent, suspendedSkipBody, suspendedSkipCloseTag);
         this.context = context;
         this.processed = false;
     }
@@ -58,8 +60,6 @@ final class DelayedGatheredModel extends AbstractGatheredModel {
     public boolean isProcessed() {
         return this.processed;
     }
-
-
 
 
 
@@ -76,12 +76,18 @@ final class DelayedGatheredModel extends AbstractGatheredModel {
         /*
          * Set the gathered model into the context
          */
-        this.context.setVariable(GATHERED_MODEL_CONTEXT_VARIABLE_NAME, this);
+        this.context.setVariable(SYNTHETIC_MODEL_CONTEXT_VARIABLE_NAME, this);
+
+        /*
+         * Reset the "skipBody" and "skipCloseTag" values at the event model controller
+         */
+        resetGatheredSkipFlags();
 
         /*
          * PROCESS THE MODEL
          */
-        getInnerModel().process(handler);
+        final Model model = getInnerModel();
+        model.process(handler);
 
         /*
          * DECREASE THE CONTEXT LEVEL

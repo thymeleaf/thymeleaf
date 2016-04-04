@@ -76,7 +76,7 @@ final class EventModelController {
     private final TemplateMode templateMode;
     private final IEngineContext context;
 
-    private AbstractGatheredModel gatheredModel;
+    private AbstractSyntheticModel gatheredModel;
 
     private SkipBody skipBody;
     private SkipBody[] skipBodyByLevel;
@@ -119,74 +119,123 @@ final class EventModelController {
 
 
     void startGatheringDelayedModel(
-            final IProcessableElementTag firstTag,
+            final IOpenElementTag firstTag,
             final ElementProcessorIterator suspendedProcessorIterator,
-            final Model suspendedModel, final boolean suspendedModelProcessable,
-            final boolean suspendedModelProcessBeforeDelegate,
+            final Model suspendedModelBefore, final Model suspendedModelAfter, final boolean suspendedModelAfterProcessable,
             final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean skipCloseTag) {
 
-        this.gatheredModel =
-                new DelayedGatheredModel(
-                        this.configuration, this.context, suspendedProcessorIterator, suspendedModel, suspendedModelProcessable, suspendedModelProcessBeforeDelegate, suspendedDiscardEvent, suspendedSkipBody, skipCloseTag);
+        this.modelLevel--;
 
-        if (firstTag instanceof IOpenElementTag) {
-            this.gatheredModel.gatherOpenElement((IOpenElementTag)firstTag);
-            this.modelLevel--;
-        } else if (firstTag instanceof IStandaloneElementTag) {
-            this.gatheredModel.gatherStandaloneElement((IStandaloneElementTag)firstTag);
-        } else {
-            throw new TemplateProcessingException("Unknown type of first gathering tag: " + firstTag.getClass().getName());
-        }
+        final SkipBody gatheredSkipBody = this.skipBodyByLevel[this.modelLevel];
+        final boolean gatheredSkipCloseTagByLevel = this.skipCloseTagByLevel[this.modelLevel];
+
+        this.gatheredModel =
+                new DelayedSyntheticModel(
+                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel,
+                        suspendedProcessorIterator, suspendedModelBefore, suspendedModelAfter, suspendedModelAfterProcessable,
+                        suspendedDiscardEvent, suspendedSkipBody, skipCloseTag);
+
+        this.gatheredModel.gatherOpenElement(firstTag);
+
+    }
+
+
+    void startGatheringDelayedModel(
+            final IStandaloneElementTag firstTag,
+            final ElementProcessorIterator suspendedProcessorIterator,
+            final Model suspendedModelBefore, final Model suspendedModelAfter, final boolean suspendedModelAfterProcessable,
+            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean skipCloseTag) {
+
+        SkipBody gatheredSkipBody = this.skipBodyByLevel[this.modelLevel];
+        gatheredSkipBody = (gatheredSkipBody == SkipBody.SKIP_ELEMENTS ? SkipBody.PROCESS_ONE_ELEMENT : gatheredSkipBody);
+        final boolean gatheredSkipCloseTagByLevel = this.skipCloseTagByLevel[this.modelLevel];
+
+        this.gatheredModel =
+                new DelayedSyntheticModel(
+                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel,
+                        suspendedProcessorIterator, suspendedModelBefore, suspendedModelAfter, suspendedModelAfterProcessable,
+                        suspendedDiscardEvent, suspendedSkipBody, skipCloseTag);
+
+        this.gatheredModel.gatherStandaloneElement(firstTag);
 
     }
 
 
     void startGatheringIteratedModel(
-            final IProcessableElementTag firstTag,
+            final IOpenElementTag firstTag,
             final ElementProcessorIterator suspendedProcessorIterator,
-            final Model suspendedModel, final boolean suspendedModelProcessable,
-            final boolean suspendedModelProcessBeforeDelegate,
+            final Model suspendedModelBefore, final Model suspendedModelAfter, final boolean suspendedModelAfterProcessable,
             final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean skipCloseTag,
             final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject, final Text precedingWhitespace) {
 
-        final int containerLevel = (firstTag instanceof IOpenElementTag ? this.modelLevel - 1 : this.modelLevel);
+        this.modelLevel--;
+
+        final SkipBody gatheredSkipBody = this.skipBodyByLevel[this.modelLevel];
+        final boolean gatheredSkipCloseTagByLevel = this.skipCloseTagByLevel[this.modelLevel];
 
         this.gatheredModel =
-                new IteratedGatheredModel(
-                        this.configuration, this.context, this,
-                        suspendedProcessorIterator, suspendedModel, suspendedModelProcessable, suspendedModelProcessBeforeDelegate,
+                new IteratedSyntheticModel(
+                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel,
+                        suspendedProcessorIterator, suspendedModelBefore, suspendedModelAfter, suspendedModelAfterProcessable,
                         suspendedDiscardEvent, suspendedSkipBody, skipCloseTag,
-                        this.skipBodyByLevel[containerLevel], this.skipCloseTagByLevel[containerLevel],
                         iterVariableName, iterStatusVariableName, iteratedObject, precedingWhitespace);
 
-        if (firstTag instanceof IOpenElementTag) {
-            this.gatheredModel.gatherOpenElement((IOpenElementTag)firstTag);
-            this.modelLevel--;
-        } else if (firstTag instanceof IStandaloneElementTag) {
-            this.gatheredModel.gatherStandaloneElement((IStandaloneElementTag)firstTag);
-        } else {
-            throw new TemplateProcessingException("Unknown type of first gathering tag: " + firstTag.getClass().getName());
-        }
+        this.gatheredModel.gatherOpenElement(firstTag);
+
+    }
+
+
+    void startGatheringIteratedModel(
+            final IStandaloneElementTag firstTag,
+            final ElementProcessorIterator suspendedProcessorIterator,
+            final Model suspendedModelBefore, final Model suspendedModelAfter, final boolean suspendedModelAfterProcessable,
+            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean skipCloseTag,
+            final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject, final Text precedingWhitespace) {
+
+        SkipBody gatheredSkipBody = this.skipBodyByLevel[this.modelLevel];
+        gatheredSkipBody = (gatheredSkipBody == SkipBody.SKIP_ELEMENTS ? SkipBody.PROCESS_ONE_ELEMENT : gatheredSkipBody);
+        final boolean gatheredSkipCloseTagByLevel = this.skipCloseTagByLevel[this.modelLevel];
+
+        this.gatheredModel =
+                new IteratedSyntheticModel(
+                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel,
+                        suspendedProcessorIterator, suspendedModelBefore, suspendedModelAfter, suspendedModelAfterProcessable,
+                        suspendedDiscardEvent, suspendedSkipBody, skipCloseTag,
+                        iterVariableName, iterStatusVariableName, iteratedObject, precedingWhitespace);
+
+        this.gatheredModel.gatherStandaloneElement(firstTag);
+
+    }
+
+
+    void startGatheringStandaloneEquivalentModel(
+            final IOpenElementTag firstTag,
+            final ElementProcessorIterator suspendedProcessorIterator,
+            final Model suspendedModelBefore, final Model suspendedModelAfter, final boolean suspendedModelAfterProcessable,
+            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean skipCloseTag) {
+
+        SkipBody gatheredSkipBody = this.skipBodyByLevel[this.modelLevel];
+        gatheredSkipBody = (gatheredSkipBody == SkipBody.SKIP_ELEMENTS ? SkipBody.PROCESS_ONE_ELEMENT : gatheredSkipBody);
+        final boolean gatheredSkipCloseTagByLevel = this.skipCloseTagByLevel[this.modelLevel];
+
+        this.gatheredModel =
+                new StandaloneEquivalentSyntheticModel(
+                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel,
+                        suspendedProcessorIterator, suspendedModelBefore, suspendedModelAfter, suspendedModelAfterProcessable,
+                        suspendedDiscardEvent, suspendedSkipBody, skipCloseTag);
+
+        this.gatheredModel.gatherOpenElement(firstTag);
 
     }
 
 
     boolean isGatheringFinished() {
-        return this.gatheredModel != null && this.gatheredModel.isGathered();
+        return this.gatheredModel != null && this.gatheredModel.isGatheringFinished();
     }
 
 
-    IGatheredModel getGatheredModel() {
+    ISyntheticModel getGatheredModel() {
         return this.gatheredModel;
-    }
-
-
-    SkipBody getSkipBody() {
-        return this.skipBody;
-    }
-
-    boolean getSkipCloseTag() {
-        return this.modelLevel == 0? false : this.skipCloseTagByLevel[this.modelLevel - 1];
     }
 
 
@@ -319,7 +368,12 @@ final class EventModelController {
         if (this.skipBody == SkipBody.PROCESS_ONE_ELEMENT) {
             // This was the first element, the others will be skipped
             skipBody(SkipBody.SKIP_ELEMENTS);
-            return true;
+            if (this.skipCloseTagByLevel[this.modelLevel]) {
+                this.skipCloseTagByLevel[this.modelLevel] = false;
+                return false;
+            } else {
+                return true;
+            }
         }
         if (this.skipCloseTagByLevel[this.modelLevel]) {
             this.skipCloseTagByLevel[this.modelLevel] = false;

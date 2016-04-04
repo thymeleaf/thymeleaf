@@ -35,7 +35,7 @@ import org.thymeleaf.model.IText;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.StringUtils;
 
-import static org.thymeleaf.engine.ProcessorTemplateHandler.GATHERED_MODEL_CONTEXT_VARIABLE_NAME;
+import static org.thymeleaf.engine.ProcessorTemplateHandler.SYNTHETIC_MODEL_CONTEXT_VARIABLE_NAME;
 
 
 /*
@@ -44,7 +44,7 @@ import static org.thymeleaf.engine.ProcessorTemplateHandler.GATHERED_MODEL_CONTE
  * @since 3.0.0
  *
  */
-final class IteratedGatheredModel extends AbstractGatheredModel {
+final class IteratedSyntheticModel extends AbstractSyntheticModel {
 
     private static final String DEFAULT_STATUS_VAR_SUFFIX = "Stat";
 
@@ -53,10 +53,6 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
 
     private final IEngineContext context;
     private final TemplateMode templateMode;
-    private final EventModelController eventModelController;
-
-    private final SkipBody containerSkipBody;
-    private final boolean containerSkipCloseTag;
 
     private final String iterVariableName;
     private final String iterStatusVariableName;
@@ -67,23 +63,20 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
     private boolean processed;
 
 
-    IteratedGatheredModel(
-            final IEngineConfiguration configuration, final IEngineContext context, final EventModelController eventModelController,
+    IteratedSyntheticModel(
+            final IEngineConfiguration configuration, final IEngineContext context,
+            final EventModelController eventModelController, final SkipBody gatheredSkipBody, final boolean gatheredSkipCloseTag,
             final ElementProcessorIterator suspendedProcessorIterator,
-            final Model suspendedModel, final boolean suspendedModelProcessable,
-            final boolean suspendedModelProcessBeforeDelegate,
+            final Model suspendedModelBefore, final Model suspendedModelAfter, final boolean suspendedModelAfterProcessable,
             final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean suspendedSkipCloseTag,
-            final SkipBody containerSkipBody, final boolean containerSkipCloseTag,
             final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject, final Text precedingWhitespace) {
 
-        super(configuration, context, suspendedProcessorIterator, suspendedModel, suspendedModelProcessable, suspendedModelProcessBeforeDelegate, suspendedDiscardEvent, suspendedSkipBody, suspendedSkipCloseTag);
+        super(configuration, context, eventModelController, gatheredSkipBody, gatheredSkipCloseTag,
+                suspendedProcessorIterator, suspendedModelBefore, suspendedModelAfter, suspendedModelAfterProcessable,
+                suspendedDiscardEvent, suspendedSkipBody, suspendedSkipCloseTag);
 
         this.context = context;
         this.templateMode = context.getTemplateMode();
-        this.eventModelController = eventModelController;
-
-        this.containerSkipBody = containerSkipBody;
-        this.containerSkipCloseTag = containerSkipCloseTag;
 
         this.iterator = computeIteratedObjectIterator(iteratedObject);
 
@@ -190,11 +183,6 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
              */
             getSuspendedProcessorIterator().resetAsCloneOf(suspendedIterator);
 
-            /*
-             * Reset the "skipBody" and "skipCloseTag" values at the event model controller
-             */
-            this.eventModelController.skip(this.containerSkipBody, this.containerSkipCloseTag);
-
 
             /*
              * Select the model to be processed
@@ -234,13 +222,18 @@ final class IteratedGatheredModel extends AbstractGatheredModel {
         /*
          * Set the gathered model into the context
          */
-        this.context.setVariable(GATHERED_MODEL_CONTEXT_VARIABLE_NAME, this);
+        this.context.setVariable(SYNTHETIC_MODEL_CONTEXT_VARIABLE_NAME, this);
 
         /*
          * Set the iteration local variables (iteration variable and iteration status variable)
          */
         this.context.setVariable(this.iterVariableName, this.iterStatusVariable.current);
         this.context.setVariable(this.iterStatusVariableName, this.iterStatusVariable);
+
+        /*
+         * Reset the "skipBody" and "skipCloseTag" values at the event model controller
+         */
+        resetGatheredSkipFlags();
 
         /*
          * PERFORM THE EXECUTION on the gathered queue, which now does not live at the current exec level, but

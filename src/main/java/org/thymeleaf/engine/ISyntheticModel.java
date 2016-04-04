@@ -36,20 +36,24 @@ import org.thymeleaf.model.IXMLDeclaration;
  * @since 3.0.0
  *
  */
-interface IGatheredModel {
+interface ISyntheticModel {
 
 
     void process(final ITemplateHandler handler);
 
-    boolean isGathered();
+    boolean isGatheringFinished();
     boolean isProcessed();
 
     Model getInnerModel();
 
+    void resetGatheredSkipFlags();
+
     ElementProcessorIterator getSuspendedProcessorIterator();
-    Model getSuspendedModel();
-    boolean isSuspendedModelProcessable();
-    boolean isSuspendedModelProcessBeforeDelegate();
+
+    Model getSuspendedModelBefore();
+    Model getSuspendedModelAfter();
+    boolean isSuspendedModelAfterProcessable();
+
     boolean isSuspendedDiscardEvent();
     EventModelController.SkipBody getSuspendedSkipBody();
     boolean isSuspendedSkipCloseTag();

@@ -41,46 +41,53 @@ import org.thymeleaf.model.IXMLDeclaration;
  * @since 3.0.0
  *
  */
-abstract class AbstractGatheredModel implements IGatheredModel {
+abstract class AbstractSyntheticModel implements ISyntheticModel {
 
 
     private final IEngineContext context;
-    private final Model gatheredModel;
+    private final Model syntheticModel;
+    private final EventModelController eventModelController;
+
+    private final SkipBody buildTimeSkipBody;
+    private final boolean buildTimeSkipCloseTag;
 
     private final ElementProcessorIterator suspendedProcessorIterator;
-    private final Model suspendedModel;
-    private final boolean suspendedModelProcessable;
-    private final boolean suspendedModelProcessBeforeDelegate;
+    private final Model suspendedModelBefore;
+    private final Model suspendedModelAfter;
+    private final boolean suspendedModelAfterProcessable;
     private final boolean suspendedDiscardEvent;
     private final SkipBody suspendedSkipBody;
     private final boolean suspendedSkipCloseTag;
 
-    private boolean gathered = false;
+    private boolean gatheringFinished = false;
 
     private int modelLevel;
 
 
-    AbstractGatheredModel(
+    AbstractSyntheticModel(
             final IEngineConfiguration configuration, final IEngineContext context,
+            final EventModelController eventModelController, final SkipBody buildTimeSkipBody, final boolean buildTimeSkipCloseTag,
             final ElementProcessorIterator suspendedProcessorIterator,
-            final Model suspendedModel, final boolean suspendedModelProcessable,
-            final boolean suspendedModelProcessBeforeDelegate,
+            final Model suspendedModelBefore, final Model suspendedModelAfter, final boolean suspendedModelAfterProcessable,
             final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody,
             final boolean suspendedSkipCloseTag) {
 
         super();
 
         this.context = context;
-        this.gatheredModel = new Model(configuration, context.getTemplateMode());
+        this.eventModelController = eventModelController;
+        this.buildTimeSkipBody = buildTimeSkipBody;
+        this.buildTimeSkipCloseTag = buildTimeSkipCloseTag;
+        this.syntheticModel = new Model(configuration, context.getTemplateMode());
         this.suspendedProcessorIterator = suspendedProcessorIterator;
-        this.suspendedModel = suspendedModel;
-        this.suspendedModelProcessable = suspendedModelProcessable;
-        this.suspendedModelProcessBeforeDelegate = suspendedModelProcessBeforeDelegate;
+        this.suspendedModelBefore = suspendedModelBefore;
+        this.suspendedModelAfter = suspendedModelAfter;
+        this.suspendedModelAfterProcessable = suspendedModelAfterProcessable;
         this.suspendedDiscardEvent = suspendedDiscardEvent;
         this.suspendedSkipBody = suspendedSkipBody;
         this.suspendedSkipCloseTag = suspendedSkipCloseTag;
 
-        this.gathered = false;
+        this.gatheringFinished = false;
 
         this.modelLevel = 0;
 
@@ -97,9 +104,14 @@ abstract class AbstractGatheredModel implements IGatheredModel {
     }
 
 
+    public final void resetGatheredSkipFlags() {
+        this.eventModelController.skip(this.buildTimeSkipBody, this.buildTimeSkipCloseTag);
+    }
 
-    public final boolean isGathered() {
-        return this.gathered;
+
+
+    public final boolean isGatheringFinished() {
+        return this.gatheringFinished;
     }
 
 
@@ -108,23 +120,24 @@ abstract class AbstractGatheredModel implements IGatheredModel {
     }
 
 
+
     public final ElementProcessorIterator getSuspendedProcessorIterator() {
         return this.suspendedProcessorIterator;
     }
 
 
-    public final Model getSuspendedModel() {
-        return this.suspendedModel;
+    public final Model getSuspendedModelBefore() {
+        return this.suspendedModelBefore;
     }
 
 
-    public final boolean isSuspendedModelProcessable() {
-        return this.suspendedModelProcessable;
+    public final Model getSuspendedModelAfter() {
+        return this.suspendedModelAfter;
     }
 
 
-    public final boolean isSuspendedModelProcessBeforeDelegate() {
-        return this.suspendedModelProcessBeforeDelegate;
+    public final boolean isSuspendedModelAfterProcessable() {
+        return this.suspendedModelAfterProcessable;
     }
 
 
@@ -146,7 +159,7 @@ abstract class AbstractGatheredModel implements IGatheredModel {
 
 
     public final Model getInnerModel() {
-        return this.gatheredModel;
+        return this.syntheticModel;
     }
 
 
@@ -157,45 +170,45 @@ abstract class AbstractGatheredModel implements IGatheredModel {
 
 
     public final void gatherText(final IText text) {
-        if (this.gathered) {
+        if (this.gatheringFinished) {
             throw new TemplateProcessingException("Gathering is finished already! We cannot gather more events");
         }
-        this.gatheredModel.add(text);
+        this.syntheticModel.add(text);
     }
 
 
     public final void gatherComment(final IComment comment) {
-        if (this.gathered) {
+        if (this.gatheringFinished) {
             throw new TemplateProcessingException("Gathering is finished already! We cannot gather more events");
         }
-        this.gatheredModel.add(comment);
+        this.syntheticModel.add(comment);
     }
 
 
     public final void gatherCDATASection(final ICDATASection cdataSection) {
-        if (this.gathered) {
+        if (this.gatheringFinished) {
             throw new TemplateProcessingException("Gathering is finished already! We cannot gather more events");
         }
-        this.gatheredModel.add(cdataSection);
+        this.syntheticModel.add(cdataSection);
     }
 
 
     public final void gatherStandaloneElement(final IStandaloneElementTag standaloneElementTag) {
-        if (this.gathered) {
+        if (this.gatheringFinished) {
             throw new TemplateProcessingException("Gathering is finished already! We cannot gather more events");
         }
-        this.gatheredModel.add(standaloneElementTag);
+        this.syntheticModel.add(standaloneElementTag);
         if (this.modelLevel == 0) {
-            this.gathered = true;
+            this.gatheringFinished = true;
         }
     }
 
 
     public final void gatherOpenElement(final IOpenElementTag openElementTag) {
-        if (this.gathered) {
+        if (this.gatheringFinished) {
             throw new TemplateProcessingException("Gathering is finished already! We cannot gather more events");
         }
-        this.gatheredModel.add(openElementTag);
+        this.syntheticModel.add(openElementTag);
         this.modelLevel++;
     }
 
@@ -205,47 +218,47 @@ abstract class AbstractGatheredModel implements IGatheredModel {
             gatherUnmatchedCloseElement(closeElementTag);
             return;
         }
-        if (this.gathered) {
+        if (this.gatheringFinished) {
             throw new TemplateProcessingException("Gathering is finished already! We cannot gather more events");
         }
         this.modelLevel--;
-        this.gatheredModel.add(closeElementTag);
+        this.syntheticModel.add(closeElementTag);
         if (this.modelLevel == 0) {
             // OK, we are finished gathering, this close tag ends the process
-            this.gathered = true;
+            this.gatheringFinished = true;
         }
     }
 
 
     public final void gatherUnmatchedCloseElement(final ICloseElementTag closeElementTag) {
-        if (this.gathered) {
+        if (this.gatheringFinished) {
             throw new TemplateProcessingException("Gathering is finished already! We cannot gather more events");
         }
-        this.gatheredModel.add(closeElementTag);
+        this.syntheticModel.add(closeElementTag);
     }
 
 
     public final void gatherDocType(final IDocType docType) {
-        if (this.gathered) {
+        if (this.gatheringFinished) {
             throw new TemplateProcessingException("Gathering is finished already! We cannot gather more events");
         }
-        this.gatheredModel.add(docType);
+        this.syntheticModel.add(docType);
     }
 
 
     public final void gatherXMLDeclaration(final IXMLDeclaration xmlDeclaration) {
-        if (this.gathered) {
+        if (this.gatheringFinished) {
             throw new TemplateProcessingException("Gathering is finished already! We cannot gather more events");
         }
-        this.gatheredModel.add(xmlDeclaration);
+        this.syntheticModel.add(xmlDeclaration);
     }
 
 
     public final void gatherProcessingInstruction(final IProcessingInstruction processingInstruction) {
-        if (this.gathered) {
+        if (this.gatheringFinished) {
             throw new TemplateProcessingException("Gathering is finished already! We cannot gather more events");
         }
-        this.gatheredModel.add(processingInstruction);
+        this.syntheticModel.add(processingInstruction);
     }
 
     
