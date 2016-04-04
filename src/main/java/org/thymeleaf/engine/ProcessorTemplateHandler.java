@@ -816,31 +816,10 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * DECLARE THE FLAGS AND STATE VARS NEEDED FOR PROCESSOR EXECUTION
+         * DECLARE THE STATE VARS NEEDED FOR PROCESSOR EXECUTION
          */
-        final ElementProcessorIterator processorIterator;
-        Model modelBefore = null;
-        Model modelAfter = null;
-        boolean modelAfterProcessable = false;
-        boolean discardEvent = false;
-        SkipBody skipBody = SkipBody.PROCESS;
-        boolean skipCloseTag = false;
-
-
-        /*
-         * INITIALIZE THE FLAGS IN CASE THE EXECUTION WAS SUSPENDED (while a gathering took place)
-         */
-        if (executedSyntheticModel == null) {
-            processorIterator = new ElementProcessorIterator();
-        } else {
-            processorIterator = executedSyntheticModel.getSuspendedProcessorIterator();
-            modelBefore = executedSyntheticModel.getSuspendedModelBefore();
-            modelAfter = executedSyntheticModel.getSuspendedModelAfter();
-            modelAfterProcessable = executedSyntheticModel.isSuspendedModelAfterProcessable();
-            discardEvent = executedSyntheticModel.isSuspendedDiscardEvent();
-            skipBody = executedSyntheticModel.getSuspendedSkipBody();
-            skipCloseTag = executedSyntheticModel.isSuspendedSkipCloseTag();
-        }
+        final ProcessorExecutionVars vars =
+                (executedSyntheticModel == null? new ProcessorExecutionVars() : executedSyntheticModel.initializeProcessorExecutionVars());
 
 
         /*
@@ -857,7 +836,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * EXECUTE PROCESSORS
          */
         IElementProcessor processor;
-        while (!discardEvent && (processor = processorIterator.next(standaloneElementTag)) != null) {
+        while (!vars.discardEvent && (processor = vars.processorIterator.next(standaloneElementTag)) != null) {
 
             this.elementTagStructureHandler.reset();
             this.elementModelStructureHandler.reset();
@@ -889,10 +868,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                     // Initialize a synthetic model
                     this.eventModelController.startGatheringIteratedModel(
-                            standaloneElementTag,
-                            processorIterator,
-                            modelBefore, modelAfter, modelAfterProcessable,
-                            discardEvent, skipBody, skipCloseTag,
+                            standaloneElementTag, vars,
                             this.elementTagStructureHandler.iterVariableName,
                             this.elementTagStructureHandler.iterStatusVariableName,
                             this.elementTagStructureHandler.iteratedObject,
@@ -912,7 +888,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 } else if (this.elementTagStructureHandler.setBodyText) {
 
                     // Initialize model
-                    modelAfter = resetModel(modelAfter, true);
+                    vars.modelAfter = resetModel(vars.modelAfter, true);
 
                     // Prepare the now-equivalent open and close tags
                     final OpenElementTag openTag =
@@ -928,15 +904,11 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                     // Prepare the text node that will be added to the queue (which will be suspended)
                     final Text text = new Text(this.elementTagStructureHandler.setBodyTextValue);
-                    modelAfter.add(text);
-                    modelAfterProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
+                    vars.modelAfter.add(text);
+                    vars.modelAfterProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
 
                     // Initialize the iterated model object
-                    this.eventModelController.startGatheringStandaloneEquivalentModel(
-                                    openTag,
-                                    processorIterator,
-                                    modelBefore, modelAfter, modelAfterProcessable,
-                                    discardEvent, skipBody, skipCloseTag);
+                    this.eventModelController.startGatheringStandaloneEquivalentModel(openTag, vars);
                     final ISyntheticModel newGatheredModel = this.eventModelController.getGatheredModel();
                     this.eventModelController.resetGathering();
                     newGatheredModel.gatherCloseElement(closeTag);
@@ -953,7 +925,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 } else if (this.elementTagStructureHandler.setBodyModel) {
 
                     // Initialize model
-                    modelAfter = resetModel(modelAfter, true);
+                    vars.modelAfter = resetModel(vars.modelAfter, true);
 
                     // Prepare the now-equivalent open and close tags
                     final OpenElementTag openTag =
@@ -969,15 +941,11 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                     // Prepare the queue (that we will suspend)
                     // Model will be automatically cloned if mutable
-                    modelAfter.addModel(this.elementTagStructureHandler.setBodyModelValue);
-                    modelAfterProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
+                    vars.modelAfter.addModel(this.elementTagStructureHandler.setBodyModelValue);
+                    vars.modelAfterProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
 
                     // Initialize the iterated model object
-                    this.eventModelController.startGatheringStandaloneEquivalentModel(
-                            openTag,
-                            processorIterator,
-                            modelBefore, modelAfter, modelAfterProcessable,
-                            discardEvent, skipBody, skipCloseTag);
+                    this.eventModelController.startGatheringStandaloneEquivalentModel(openTag, vars);
                     final ISyntheticModel newGatheredModel = this.eventModelController.getGatheredModel();
                     this.eventModelController.resetGathering();
                     newGatheredModel.gatherCloseElement(closeTag);
@@ -994,65 +962,65 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 } else if (this.elementTagStructureHandler.insertBeforeModel) {
 
                     // Initialize model
-                    modelBefore = resetModel(modelBefore, true);
+                    vars.modelBefore = resetModel(vars.modelBefore, true);
 
-                    modelBefore.addModel(this.elementTagStructureHandler.insertBeforeModelValue);
+                    vars.modelBefore.addModel(this.elementTagStructureHandler.insertBeforeModelValue);
 
                 } else if (this.elementTagStructureHandler.insertImmediatelyAfterModel) {
 
                     // We will only be resetting the queue if we had set it to be executed before delegating, as in that
                     // case adding our new model to the beginning of what already is in the queue would make no sense
                     // Initialize model
-                    if (modelAfter == null) {
-                        modelAfter = resetModel(modelAfter, true);
+                    if (vars.modelAfter == null) {
+                        vars.modelAfter = resetModel(vars.modelAfter, true);
                     }
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    modelAfterProcessable = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
+                    vars.modelAfterProcessable = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    modelAfter.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
+                    vars.modelAfter.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
 
                     // No intervention on the body flags - we will not be removing the body, just inserting before it
 
                 } else if (this.elementTagStructureHandler.replaceWithText) {
 
                     // Initialize model
-                    modelAfter = resetModel(modelAfter, true);
+                    vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                    modelAfterProcessable = this.elementTagStructureHandler.replaceWithTextProcessable;
+                    vars.modelAfterProcessable = this.elementTagStructureHandler.replaceWithTextProcessable;
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
-                    modelAfter.add(new Text(this.elementTagStructureHandler.replaceWithTextValue));
+                    vars.modelAfter.add(new Text(this.elementTagStructureHandler.replaceWithTextValue));
 
-                    discardEvent = true;
+                    vars.discardEvent = true;
 
                 } else if (this.elementTagStructureHandler.replaceWithModel) {
 
                     // Initialize model
-                    modelAfter = resetModel(modelAfter, true);
+                    vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                    modelAfterProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
+                    vars.modelAfterProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    modelAfter.addModel(this.elementTagStructureHandler.replaceWithModelValue);
+                    vars.modelAfter.addModel(this.elementTagStructureHandler.replaceWithModelValue);
 
-                    discardEvent = true;
+                    vars.discardEvent = true;
 
                 } else if (this.elementTagStructureHandler.removeElement) {
 
                     // Initialize model (if it already exists)
-                    modelAfter = resetModel(modelAfter, false);
+                    vars.modelAfter = resetModel(vars.modelAfter, false);
 
-                    discardEvent = true;
+                    vars.discardEvent = true;
 
                 } else if (this.elementTagStructureHandler.removeTags) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
 
-                    discardEvent = true;
+                    vars.discardEvent = true;
 
                 }
                 // No way to process 'removeBody' or 'removeAllButFirstChild' on a standalone tag
@@ -1070,9 +1038,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                  * if this is the first or the second time we execute this processor.
                  */
 
-                if (!processorIterator.lastWasRepeated()){
+                if (!vars.processorIterator.lastWasRepeated()){
 
-                    if ((modelBefore != null && modelBefore.size() > 0) || (modelAfter != null && modelAfter.size() > 0)) {
+                    if ((vars.modelBefore != null && vars.modelBefore.size() > 0) || (vars.modelAfter != null && vars.modelAfter.size() > 0)) {
                         throw new TemplateProcessingException(
                                 "Cannot execute model processor " + processor.getClass().getName() + " as the body " +
                                 "of the target element has already been modified by a previously executed processor " +
@@ -1082,14 +1050,10 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     }
 
                     // Set the processor to be executed again, because this time we will just set the "model gathering" mechanism
-                    processorIterator.setLastToBeRepeated(standaloneElementTag);
+                    vars.processorIterator.setLastToBeRepeated(standaloneElementTag);
 
                     // Initialize the synthetic model
-                    this.eventModelController.startGatheringDelayedModel(
-                            standaloneElementTag,
-                            processorIterator,
-                            modelBefore, modelAfter, modelAfterProcessable,
-                            discardEvent, skipBody, skipCloseTag);
+                    this.eventModelController.startGatheringDelayedModel(standaloneElementTag, vars);
                     final ISyntheticModel newSyntheticModel = this.eventModelController.getGatheredModel();
                     this.eventModelController.resetGathering();
 
@@ -1157,14 +1121,14 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 executedSyntheticModel.resetGatheredSkipFlags();
 
                 // Initialize model
-                modelAfter = resetModel(modelAfter, true);
+                vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                modelAfterProcessable = true; // We actually NEED TO process this queue
+                vars.modelAfterProcessable = true; // We actually NEED TO process this queue
 
                 // Set the model to be executed
-                modelAfter.addModel(processedModel);
+                vars.modelAfter.addModel(processedModel);
 
-                discardEvent = true;
+                vars.discardEvent = true;
 
             } else {
                 throw new IllegalStateException(
@@ -1178,15 +1142,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * PROCESS THE QUEUE BEFORE DELEGATING, if specified to do so
          */
-        if (modelBefore != null) {
-            modelBefore.process(this.next); // This is never processable
+        if (vars.modelBefore != null) {
+            vars.modelBefore.process(this.next); // This is never processable
         }
 
 
         /*
          * PROCESS THE REST OF THE HANDLER CHAIN
          */
-        if (!discardEvent) {
+        if (!vars.discardEvent) {
             this.next.handleStandaloneElement(standaloneElementTag);
         }
 
@@ -1194,8 +1158,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        if (modelAfter != null) {
-            modelAfter.process(modelAfterProcessable ? this : this.next);
+        if (vars.modelAfter != null) {
+            vars.modelAfter.process(vars.modelAfterProcessable ? this : this.next);
         }
 
 
@@ -1269,38 +1233,17 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * DECLARE THE FLAGS AND STATE VARS NEEDED FOR PROCESSOR EXECUTION
+         * DECLARE THE STATE VARS NEEDED FOR PROCESSOR EXECUTION
          */
-        final ElementProcessorIterator processorIterator;
-        Model modelBefore = null;
-        Model modelAfter = null;
-        boolean modelAfterProcessable = false;
-        boolean discardEvent = false;
-        SkipBody skipBody = SkipBody.PROCESS;
-        boolean skipCloseTag = false;
-
-
-        /*
-         * INITIALIZE THE FLAGS IN CASE THE EXECUTION WAS SUSPENDED (while a gathering took place)
-         */
-        if (executedSyntheticModel == null) {
-            processorIterator = new ElementProcessorIterator();
-        } else {
-            processorIterator = executedSyntheticModel.getSuspendedProcessorIterator();
-            modelBefore = executedSyntheticModel.getSuspendedModelBefore();
-            modelAfter = executedSyntheticModel.getSuspendedModelAfter();
-            modelAfterProcessable = executedSyntheticModel.isSuspendedModelAfterProcessable();
-            discardEvent = executedSyntheticModel.isSuspendedDiscardEvent();
-            skipBody = executedSyntheticModel.getSuspendedSkipBody();
-            skipCloseTag = executedSyntheticModel.isSuspendedSkipCloseTag();
-        }
+        final ProcessorExecutionVars vars =
+                (executedSyntheticModel == null? new ProcessorExecutionVars() : executedSyntheticModel.initializeProcessorExecutionVars());
 
 
         /*
          * EXECUTE PROCESSORS
          */
         IElementProcessor processor;
-        while (!discardEvent && (processor = processorIterator.next(openElementTag)) != null) {
+        while (!vars.discardEvent && (processor = vars.processorIterator.next(openElementTag)) != null) {
 
             this.elementTagStructureHandler.reset();
             this.elementModelStructureHandler.reset();
@@ -1332,10 +1275,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                     // Initialize the synthetic model
                     this.eventModelController.startGatheringIteratedModel(
-                            openElementTag,
-                            processorIterator,
-                            modelBefore, modelAfter, modelAfterProcessable,
-                            discardEvent, skipBody, skipCloseTag,
+                            openElementTag, vars,
                             this.elementTagStructureHandler.iterVariableName,
                             this.elementTagStructureHandler.iterStatusVariableName,
                             this.elementTagStructureHandler.iteratedObject,
@@ -1350,110 +1290,110 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 } else if (this.elementTagStructureHandler.setBodyText) {
 
                     // Initialize model
-                    modelAfter = resetModel(modelAfter, true);
+                    vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                    modelAfterProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
+                    vars.modelAfterProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
 
                     // Add the new Text to the queue
-                    modelAfter.add(new Text(this.elementTagStructureHandler.setBodyTextValue));
+                    vars.modelAfter.add(new Text(this.elementTagStructureHandler.setBodyTextValue));
 
-                    skipBody = SkipBody.SKIP_ALL;
+                    vars.skipBody = SkipBody.SKIP_ALL;
 
                 } else if (this.elementTagStructureHandler.setBodyModel) {
 
                     // Initialize model
-                    modelAfter = resetModel(modelAfter, true);
+                    vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                    modelAfterProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
+                    vars.modelAfterProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    modelAfter.addModel(this.elementTagStructureHandler.setBodyModelValue);
+                    vars.modelAfter.addModel(this.elementTagStructureHandler.setBodyModelValue);
 
-                    skipBody = SkipBody.SKIP_ALL;
+                    vars.skipBody = SkipBody.SKIP_ALL;
 
                 } else if (this.elementTagStructureHandler.insertBeforeModel) {
 
                     // Initialize model
-                    modelBefore = resetModel(modelBefore, true);
+                    vars.modelBefore = resetModel(vars.modelBefore, true);
 
-                    modelBefore.addModel(this.elementTagStructureHandler.insertBeforeModelValue);
+                    vars.modelBefore.addModel(this.elementTagStructureHandler.insertBeforeModelValue);
 
                 } else if (this.elementTagStructureHandler.insertImmediatelyAfterModel) {
 
                     // We will only be resetting the queue if we had set it to be executed before delegating, as in that
                     // case adding our new model to the beginning of what already is in the queue would make no sense
                     // Initialize model
-                    if (modelAfter == null) {
-                        modelAfter = resetModel(modelAfter, true);
+                    if (vars.modelAfter == null) {
+                        vars.modelAfter = resetModel(vars.modelAfter, true);
                     }
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    modelAfterProcessable = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
+                    vars.modelAfterProcessable = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    modelAfter.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
+                    vars.modelAfter.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
 
                     // No intervention on the body flags - we will not be removing the body, just inserting before it
 
                 } else if (this.elementTagStructureHandler.replaceWithText) {
 
                     // Initialize model
-                    modelAfter = resetModel(modelAfter, true);
+                    vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                    modelAfterProcessable = this.elementTagStructureHandler.replaceWithTextProcessable;
+                    vars.modelAfterProcessable = this.elementTagStructureHandler.replaceWithTextProcessable;
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
-                    modelAfter.add(new Text(this.elementTagStructureHandler.replaceWithTextValue));
+                    vars.modelAfter.add(new Text(this.elementTagStructureHandler.replaceWithTextValue));
 
-                    discardEvent = true;
-                    skipBody = SkipBody.SKIP_ALL;
-                    skipCloseTag = true;
+                    vars.discardEvent = true;
+                    vars.skipBody = SkipBody.SKIP_ALL;
+                    vars.skipCloseTag = true;
 
                 } else if (this.elementTagStructureHandler.replaceWithModel) {
 
                     // Initialize model
-                    modelAfter = resetModel(modelAfter, true);
+                    vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                    modelAfterProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
+                    vars.modelAfterProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    modelAfter.addModel(this.elementTagStructureHandler.replaceWithModelValue);
+                    vars.modelAfter.addModel(this.elementTagStructureHandler.replaceWithModelValue);
 
-                    discardEvent = true;
-                    skipBody = SkipBody.SKIP_ALL;
-                    skipCloseTag = true;
+                    vars.discardEvent = true;
+                    vars.skipBody = SkipBody.SKIP_ALL;
+                    vars.skipCloseTag = true;
 
                 } else if (this.elementTagStructureHandler.removeElement) {
 
                     // Initialize model (if it already exists)
-                    modelAfter = resetModel(modelAfter, false);
+                    vars.modelAfter = resetModel(vars.modelAfter, false);
 
-                    discardEvent = true;
-                    skipBody = SkipBody.SKIP_ALL;
-                    skipCloseTag = true;
+                    vars.discardEvent = true;
+                    vars.skipBody = SkipBody.SKIP_ALL;
+                    vars.skipCloseTag = true;
 
                 } else if (this.elementTagStructureHandler.removeTags) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
 
-                    discardEvent = true;
-                    skipCloseTag = true;
+                    vars.discardEvent = true;
+                    vars.skipCloseTag = true;
 
                 } else if (this.elementTagStructureHandler.removeBody) {
 
                     // Initialize model (if it already exists)
-                    modelAfter = resetModel(modelAfter, false);
+                    vars.modelAfter = resetModel(vars.modelAfter, false);
 
-                    skipBody = SkipBody.SKIP_ALL;
+                    vars.skipBody = SkipBody.SKIP_ALL;
 
                 } else if (this.elementTagStructureHandler.removeAllButFirstChild) {
 
                     // Initialize model (if it already exists)
-                    modelAfter = resetModel(modelAfter, false);
+                    vars.modelAfter = resetModel(vars.modelAfter, false);
 
-                    skipBody = SkipBody.PROCESS_ONE_ELEMENT;
+                    vars.skipBody = SkipBody.PROCESS_ONE_ELEMENT;
 
                 }
 
@@ -1470,9 +1410,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                  * if this is the first or the second time we execute this processor.
                  */
 
-                if (!processorIterator.lastWasRepeated()){
+                if (!vars.processorIterator.lastWasRepeated()){
 
-                    if ((modelBefore != null && modelBefore.size() > 0) || (modelAfter != null && modelAfter.size() > 0)) {
+                    if ((vars.modelBefore != null && vars.modelBefore.size() > 0) || (vars.modelAfter != null && vars.modelAfter.size() > 0)) {
                         throw new TemplateProcessingException(
                                 "Cannot execute model processor " + processor.getClass().getName() + " as the body " +
                                 "of the target element has already been modified by a previously executed processor " +
@@ -1482,14 +1422,10 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     }
 
                     // Set the processor to be executed again, because this time we will just set the "model gathering" mechanism
-                    processorIterator.setLastToBeRepeated(openElementTag);
+                    vars.processorIterator.setLastToBeRepeated(openElementTag);
 
                     // Initialize the synthetic model
-                    this.eventModelController.startGatheringDelayedModel(
-                            openElementTag,
-                            processorIterator,
-                            modelBefore, modelAfter, modelAfterProcessable,
-                            discardEvent, skipBody, skipCloseTag);
+                    this.eventModelController.startGatheringDelayedModel(openElementTag, vars);
 
                     // Note we DO NOT DECREASE THE MODEL LEVEL -- that will be done when we re-execute this after gathering model
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be done when we re-execute this after gathering model
@@ -1557,15 +1493,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 executedSyntheticModel.resetGatheredSkipFlags();
 
                 // Initialize model
-                modelAfter = resetModel(modelAfter, true);
+                vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                modelAfterProcessable = true; // We actually NEED TO process this queue
+                vars.modelAfterProcessable = true; // We actually NEED TO process this queue
 
-                modelAfter.addModel(processedModel);
+                vars.modelAfter.addModel(processedModel);
 
-                discardEvent = true;
-                skipBody = SkipBody.SKIP_ALL;
-                skipCloseTag = true;
+                vars.discardEvent = true;
+                vars.skipBody = SkipBody.SKIP_ALL;
+                vars.skipCloseTag = true;
 
             } else {
                 throw new IllegalStateException(
@@ -1579,15 +1515,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * PROCESS THE QUEUE BEFORE DELEGATING, if specified to do so
          */
-        if (modelBefore != null) {
-            modelBefore.process(this.next); // This is never processable
+        if (vars.modelBefore != null) {
+            vars.modelBefore.process(this.next); // This is never processable
         }
 
 
         /*
          * PROCESS THE REST OF THE HANDLER CHAIN and INCREASE THE MODEL LEVEL RIGHT AFTERWARDS
          */
-        if (!discardEvent) {
+        if (!vars.discardEvent) {
             this.next.handleOpenElement(openElementTag);
         }
 
@@ -1598,15 +1534,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * and close tags), because that way whatever comes in the queue will be encapsulated in a different model level
          * and its internal open/close tags should not affect the correct delimitation of this block.
          */
-        if (modelAfter != null) {
-            modelAfter.process(modelAfterProcessable ? this : this.next);
+        if (vars.modelAfter != null) {
+            vars.modelAfter.process(vars.modelAfterProcessable ? this : this.next);
         }
 
 
         /*
          * SET BODY TO BE SKIPPED, if required. Importantly, this has to be done AFTER executing the queue
          */
-        this.eventModelController.skip(skipBody, skipCloseTag);
+        this.eventModelController.skip(vars.skipBody, vars.skipCloseTag);
 
     }
 
@@ -2007,6 +1943,45 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         }
         model.reset();
         return model;
+    }
+
+
+
+
+
+    static final class ProcessorExecutionVars {
+
+        final ElementProcessorIterator processorIterator;
+        Model modelBefore = null;
+        Model modelAfter = null;
+        boolean modelAfterProcessable = false;
+        boolean discardEvent = false;
+        SkipBody skipBody = SkipBody.PROCESS;
+        boolean skipCloseTag = false;
+
+
+        ProcessorExecutionVars() {
+            super();
+            this.processorIterator = new ElementProcessorIterator();
+        }
+
+
+        ProcessorExecutionVars cloneVars() {
+            final ProcessorExecutionVars clone = new ProcessorExecutionVars();
+            clone.processorIterator.resetAsCloneOf(this.processorIterator);
+            if (this.modelBefore != null) {
+                clone.modelBefore = (Model)this.modelBefore.cloneModel();
+            }
+            if (this.modelAfter != null) {
+                clone.modelAfter = (Model)this.modelAfter.cloneModel();
+            }
+            clone.modelAfterProcessable = this.modelAfterProcessable;
+            clone.discardEvent = this.discardEvent;
+            clone.skipBody = this.skipBody;
+            clone.skipCloseTag = this.skipCloseTag;
+            return clone;
+        }
+
     }
 
 

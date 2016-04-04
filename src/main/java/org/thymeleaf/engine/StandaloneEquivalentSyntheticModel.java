@@ -22,6 +22,7 @@ package org.thymeleaf.engine;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.engine.EventModelController.SkipBody;
+import org.thymeleaf.engine.ProcessorTemplateHandler.ProcessorExecutionVars;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
 import static org.thymeleaf.engine.ProcessorTemplateHandler.SYNTHETIC_MODEL_CONTEXT_VARIABLE_NAME;
@@ -46,12 +47,8 @@ final class StandaloneEquivalentSyntheticModel extends AbstractSyntheticModel {
     StandaloneEquivalentSyntheticModel(
             final IEngineConfiguration configuration, final IEngineContext context,
             final EventModelController eventModelController, final SkipBody gatheredSkipBody, final boolean gatheredSkipCloseTag,
-            final ElementProcessorIterator suspendedProcessorIterator,
-            final Model suspendedModelBefore, final Model suspendedModelAfter, final boolean suspendedModelAfterProcessable,
-            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean suspendedSkipCloseTag) {
-        super(configuration, context, eventModelController, gatheredSkipBody, gatheredSkipCloseTag,
-                suspendedProcessorIterator, suspendedModelBefore, suspendedModelAfter, suspendedModelAfterProcessable,
-                suspendedDiscardEvent, suspendedSkipBody, suspendedSkipCloseTag);
+            final ProcessorExecutionVars processorExecutionVars) {
+        super(configuration, context, eventModelController, gatheredSkipBody, gatheredSkipCloseTag, processorExecutionVars);
         this.context = context;
         this.processed = false;
     }

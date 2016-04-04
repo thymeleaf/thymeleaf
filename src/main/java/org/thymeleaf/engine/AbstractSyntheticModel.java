@@ -23,6 +23,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.EventModelController.SkipBody;
+import org.thymeleaf.engine.ProcessorTemplateHandler.ProcessorExecutionVars;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
@@ -51,13 +52,7 @@ abstract class AbstractSyntheticModel implements ISyntheticModel {
     private final SkipBody buildTimeSkipBody;
     private final boolean buildTimeSkipCloseTag;
 
-    private final ElementProcessorIterator suspendedProcessorIterator;
-    private final Model suspendedModelBefore;
-    private final Model suspendedModelAfter;
-    private final boolean suspendedModelAfterProcessable;
-    private final boolean suspendedDiscardEvent;
-    private final SkipBody suspendedSkipBody;
-    private final boolean suspendedSkipCloseTag;
+    private final ProcessorExecutionVars processorExecutionVars;
 
     private boolean gatheringFinished = false;
 
@@ -67,10 +62,7 @@ abstract class AbstractSyntheticModel implements ISyntheticModel {
     AbstractSyntheticModel(
             final IEngineConfiguration configuration, final IEngineContext context,
             final EventModelController eventModelController, final SkipBody buildTimeSkipBody, final boolean buildTimeSkipCloseTag,
-            final ElementProcessorIterator suspendedProcessorIterator,
-            final Model suspendedModelBefore, final Model suspendedModelAfter, final boolean suspendedModelAfterProcessable,
-            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody,
-            final boolean suspendedSkipCloseTag) {
+            final ProcessorExecutionVars processorExecutionVars) {
 
         super();
 
@@ -79,13 +71,7 @@ abstract class AbstractSyntheticModel implements ISyntheticModel {
         this.buildTimeSkipBody = buildTimeSkipBody;
         this.buildTimeSkipCloseTag = buildTimeSkipCloseTag;
         this.syntheticModel = new Model(configuration, context.getTemplateMode());
-        this.suspendedProcessorIterator = suspendedProcessorIterator;
-        this.suspendedModelBefore = suspendedModelBefore;
-        this.suspendedModelAfter = suspendedModelAfter;
-        this.suspendedModelAfterProcessable = suspendedModelAfterProcessable;
-        this.suspendedDiscardEvent = suspendedDiscardEvent;
-        this.suspendedSkipBody = suspendedSkipBody;
-        this.suspendedSkipCloseTag = suspendedSkipCloseTag;
+        this.processorExecutionVars = processorExecutionVars.cloneVars();
 
         this.gatheringFinished = false;
 
@@ -121,38 +107,9 @@ abstract class AbstractSyntheticModel implements ISyntheticModel {
 
 
 
-    public final ElementProcessorIterator getSuspendedProcessorIterator() {
-        return this.suspendedProcessorIterator;
-    }
-
-
-    public final Model getSuspendedModelBefore() {
-        return this.suspendedModelBefore;
-    }
-
-
-    public final Model getSuspendedModelAfter() {
-        return this.suspendedModelAfter;
-    }
-
-
-    public final boolean isSuspendedModelAfterProcessable() {
-        return this.suspendedModelAfterProcessable;
-    }
-
-
-    public final boolean isSuspendedDiscardEvent() {
-        return this.suspendedDiscardEvent;
-    }
-
-
-    public final SkipBody getSuspendedSkipBody() {
-        return this.suspendedSkipBody;
-    }
-
-
-    public final boolean isSuspendedSkipCloseTag() {
-        return this.suspendedSkipCloseTag;
+    public ProcessorExecutionVars initializeProcessorExecutionVars() {
+        // This was cloned during construction
+        return this.processorExecutionVars;
     }
 
 

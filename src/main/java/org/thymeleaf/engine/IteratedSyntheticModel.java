@@ -29,6 +29,7 @@ import java.util.Map;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.engine.EventModelController.SkipBody;
+import org.thymeleaf.engine.ProcessorTemplateHandler.ProcessorExecutionVars;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.model.IText;
@@ -66,14 +67,10 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
     IteratedSyntheticModel(
             final IEngineConfiguration configuration, final IEngineContext context,
             final EventModelController eventModelController, final SkipBody gatheredSkipBody, final boolean gatheredSkipCloseTag,
-            final ElementProcessorIterator suspendedProcessorIterator,
-            final Model suspendedModelBefore, final Model suspendedModelAfter, final boolean suspendedModelAfterProcessable,
-            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean suspendedSkipCloseTag,
+            final ProcessorExecutionVars processorExecutionVars,
             final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject, final Text precedingWhitespace) {
 
-        super(configuration, context, eventModelController, gatheredSkipBody, gatheredSkipCloseTag,
-                suspendedProcessorIterator, suspendedModelBefore, suspendedModelAfter, suspendedModelAfterProcessable,
-                suspendedDiscardEvent, suspendedSkipBody, suspendedSkipCloseTag);
+        super(configuration, context, eventModelController, gatheredSkipBody, gatheredSkipCloseTag, processorExecutionVars);
 
         this.context = context;
         this.templateMode = context.getTemplateMode();
@@ -102,6 +99,13 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
 
     public boolean isProcessed() {
         return this.processed;
+    }
+
+
+    @Override
+    public ProcessorExecutionVars initializeProcessorExecutionVars() {
+        // This will be called once per iteration, so we need to clone it every time it is requested
+        return super.initializeProcessorExecutionVars().cloneVars();
     }
 
 
@@ -142,13 +146,6 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
          */
         final IterationModels iterationModel = computeIterationModels(iterationType);
 
-        /*
-         * Save the original state of the element processor iterator, so that we can set it again
-         * for each iteration
-         */
-        final ElementProcessorIterator suspendedIterator = new ElementProcessorIterator();
-        suspendedIterator.resetAsCloneOf(getSuspendedProcessorIterator());
-
 
         /*
          * Perform the first iteration, if there is at least one elment (we already obtained the object)
@@ -177,11 +174,6 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
              * Recompute hasNext
              */
             iterHasNext = this.iterator.hasNext(); // precomputed in order to know when we are at the last element
-
-            /*
-             * Reset the element processor iterator to its original state (for each iteration)
-             */
-            getSuspendedProcessorIterator().resetAsCloneOf(suspendedIterator);
 
 
             /*

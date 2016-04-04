@@ -23,6 +23,7 @@ import java.util.Arrays;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
+import org.thymeleaf.engine.ProcessorTemplateHandler.ProcessorExecutionVars;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
@@ -119,10 +120,7 @@ final class EventModelController {
 
 
     void startGatheringDelayedModel(
-            final IOpenElementTag firstTag,
-            final ElementProcessorIterator suspendedProcessorIterator,
-            final Model suspendedModelBefore, final Model suspendedModelAfter, final boolean suspendedModelAfterProcessable,
-            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean skipCloseTag) {
+            final IOpenElementTag firstTag, final ProcessorExecutionVars processorExecutionVars) {
 
         this.modelLevel--;
 
@@ -131,9 +129,7 @@ final class EventModelController {
 
         this.gatheredModel =
                 new DelayedSyntheticModel(
-                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel,
-                        suspendedProcessorIterator, suspendedModelBefore, suspendedModelAfter, suspendedModelAfterProcessable,
-                        suspendedDiscardEvent, suspendedSkipBody, skipCloseTag);
+                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
 
         this.gatheredModel.gatherOpenElement(firstTag);
 
@@ -141,10 +137,7 @@ final class EventModelController {
 
 
     void startGatheringDelayedModel(
-            final IStandaloneElementTag firstTag,
-            final ElementProcessorIterator suspendedProcessorIterator,
-            final Model suspendedModelBefore, final Model suspendedModelAfter, final boolean suspendedModelAfterProcessable,
-            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean skipCloseTag) {
+            final IStandaloneElementTag firstTag, final ProcessorExecutionVars processorExecutionVars) {
 
         SkipBody gatheredSkipBody = this.skipBodyByLevel[this.modelLevel];
         gatheredSkipBody = (gatheredSkipBody == SkipBody.SKIP_ELEMENTS ? SkipBody.PROCESS_ONE_ELEMENT : gatheredSkipBody);
@@ -152,9 +145,7 @@ final class EventModelController {
 
         this.gatheredModel =
                 new DelayedSyntheticModel(
-                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel,
-                        suspendedProcessorIterator, suspendedModelBefore, suspendedModelAfter, suspendedModelAfterProcessable,
-                        suspendedDiscardEvent, suspendedSkipBody, skipCloseTag);
+                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
 
         this.gatheredModel.gatherStandaloneElement(firstTag);
 
@@ -162,10 +153,7 @@ final class EventModelController {
 
 
     void startGatheringIteratedModel(
-            final IOpenElementTag firstTag,
-            final ElementProcessorIterator suspendedProcessorIterator,
-            final Model suspendedModelBefore, final Model suspendedModelAfter, final boolean suspendedModelAfterProcessable,
-            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean skipCloseTag,
+            final IOpenElementTag firstTag, final ProcessorExecutionVars processorExecutionVars,
             final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject, final Text precedingWhitespace) {
 
         this.modelLevel--;
@@ -175,9 +163,7 @@ final class EventModelController {
 
         this.gatheredModel =
                 new IteratedSyntheticModel(
-                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel,
-                        suspendedProcessorIterator, suspendedModelBefore, suspendedModelAfter, suspendedModelAfterProcessable,
-                        suspendedDiscardEvent, suspendedSkipBody, skipCloseTag,
+                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars,
                         iterVariableName, iterStatusVariableName, iteratedObject, precedingWhitespace);
 
         this.gatheredModel.gatherOpenElement(firstTag);
@@ -186,10 +172,7 @@ final class EventModelController {
 
 
     void startGatheringIteratedModel(
-            final IStandaloneElementTag firstTag,
-            final ElementProcessorIterator suspendedProcessorIterator,
-            final Model suspendedModelBefore, final Model suspendedModelAfter, final boolean suspendedModelAfterProcessable,
-            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean skipCloseTag,
+            final IStandaloneElementTag firstTag, final ProcessorExecutionVars processorExecutionVars,
             final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject, final Text precedingWhitespace) {
 
         SkipBody gatheredSkipBody = this.skipBodyByLevel[this.modelLevel];
@@ -198,9 +181,7 @@ final class EventModelController {
 
         this.gatheredModel =
                 new IteratedSyntheticModel(
-                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel,
-                        suspendedProcessorIterator, suspendedModelBefore, suspendedModelAfter, suspendedModelAfterProcessable,
-                        suspendedDiscardEvent, suspendedSkipBody, skipCloseTag,
+                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars,
                         iterVariableName, iterStatusVariableName, iteratedObject, precedingWhitespace);
 
         this.gatheredModel.gatherStandaloneElement(firstTag);
@@ -209,10 +190,7 @@ final class EventModelController {
 
 
     void startGatheringStandaloneEquivalentModel(
-            final IOpenElementTag firstTag,
-            final ElementProcessorIterator suspendedProcessorIterator,
-            final Model suspendedModelBefore, final Model suspendedModelAfter, final boolean suspendedModelAfterProcessable,
-            final boolean suspendedDiscardEvent, final SkipBody suspendedSkipBody, final boolean skipCloseTag) {
+            final IOpenElementTag firstTag, final ProcessorExecutionVars processorExecutionVars) {
 
         SkipBody gatheredSkipBody = this.skipBodyByLevel[this.modelLevel];
         gatheredSkipBody = (gatheredSkipBody == SkipBody.SKIP_ELEMENTS ? SkipBody.PROCESS_ONE_ELEMENT : gatheredSkipBody);
@@ -220,9 +198,7 @@ final class EventModelController {
 
         this.gatheredModel =
                 new StandaloneEquivalentSyntheticModel(
-                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel,
-                        suspendedProcessorIterator, suspendedModelBefore, suspendedModelAfter, suspendedModelAfterProcessable,
-                        suspendedDiscardEvent, suspendedSkipBody, skipCloseTag);
+                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
 
         this.gatheredModel.gatherOpenElement(firstTag);
 

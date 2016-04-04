@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.engine;
 
+import org.thymeleaf.engine.ProcessorTemplateHandler.ProcessorExecutionVars;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
@@ -48,15 +49,7 @@ interface ISyntheticModel {
 
     void resetGatheredSkipFlags();
 
-    ElementProcessorIterator getSuspendedProcessorIterator();
-
-    Model getSuspendedModelBefore();
-    Model getSuspendedModelAfter();
-    boolean isSuspendedModelAfterProcessable();
-
-    boolean isSuspendedDiscardEvent();
-    EventModelController.SkipBody getSuspendedSkipBody();
-    boolean isSuspendedSkipCloseTag();
+    ProcessorExecutionVars initializeProcessorExecutionVars();
 
     void gatherText(final IText text);
     void gatherComment(final IComment comment);
