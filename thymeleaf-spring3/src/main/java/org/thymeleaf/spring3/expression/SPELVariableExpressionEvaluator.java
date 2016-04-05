@@ -39,9 +39,12 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.spring3.util.FieldUtils;
 import org.thymeleaf.standard.expression.IStandardConversionService;
+import org.thymeleaf.standard.expression.IStandardVariableExpression;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
+import org.thymeleaf.standard.expression.SelectionVariableExpression;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.standard.expression.VariableExpression;
 import org.thymeleaf.standard.util.StandardExpressionUtils;
 
 /**
@@ -82,14 +85,22 @@ public class SPELVariableExpressionEvaluator
     
     
     public final Object evaluate(
-            final IExpressionContext context, final String spelExpression,
-            final StandardExpressionExecutionContext expContext, final boolean useSelectionAsRoot) {
+            final IExpressionContext context,
+            final IStandardVariableExpression expression,
+            final StandardExpressionExecutionContext expContext) {
         
         if (logger.isTraceEnabled()) {
-            logger.trace("[THYMELEAF][{}] SpringEL expression: evaluating expression \"{}\" on target", TemplateEngine.threadIndex(), spelExpression);
+            logger.trace("[THYMELEAF][{}] SpringEL expression: evaluating expression \"{}\" on target", TemplateEngine.threadIndex(), expression.getExpression());
         }
 
         try {
+
+            final String spelExpression = expression.getExpression();
+            final boolean useSelectionAsRoot = expression.getUseSelectionAsRoot();
+
+            if (spelExpression == null) {
+                throw new TemplateProcessingException("Expression content is null, which is not allowed");
+            }
 
             /*
              * TRY TO DELEGATE EVALUATION TO SPRING IF EXPRESSION IS ON A BOUND OBJECT
@@ -121,7 +132,7 @@ public class SPELVariableExpressionEvaluator
             /*
              * OBTAIN THE EXPRESSION (SpelExpression OBJECT) FROM THE CACHE, OR PARSE IT
              */
-            final ComputedSpelExpression exp = getExpression(configuration, PARSER, spelExpression);
+            final ComputedSpelExpression exp = obtainComputedSpelExpression(configuration, expression, spelExpression);
 
 
             /*
@@ -231,14 +242,57 @@ public class SPELVariableExpressionEvaluator
             throw e;
         } catch(final Exception e) {
             throw new TemplateProcessingException(
-                    "Exception evaluating SpringEL expression: \"" + spelExpression + "\"", e);
+                    "Exception evaluating SpringEL expression: \"" + expression.getExpression() + "\"", e);
         }
         
     }
 
 
-    private static ComputedSpelExpression getExpression(
-            final IEngineConfiguration configuration, final SpelExpressionParser spelParser, final String spelExpression) {
+
+
+
+
+    private static ComputedSpelExpression obtainComputedSpelExpression(
+            final IEngineConfiguration configuration, final IStandardVariableExpression expression, final String spelExpression) {
+
+        if (expression instanceof VariableExpression) {
+
+            final VariableExpression vexpression = (VariableExpression) expression;
+
+            Object cachedExpression = vexpression.getCachedExpression();
+            if (cachedExpression != null && cachedExpression instanceof ComputedSpelExpression) {
+                return (ComputedSpelExpression) cachedExpression;
+            }
+            cachedExpression = getExpression(configuration, spelExpression);
+            if (cachedExpression != null) {
+                vexpression.setCachedExpression(cachedExpression);
+            }
+            return (ComputedSpelExpression) cachedExpression;
+
+        }
+
+        if (expression instanceof SelectionVariableExpression) {
+
+            final SelectionVariableExpression vexpression = (SelectionVariableExpression) expression;
+
+            Object cachedExpression = vexpression.getCachedExpression();
+            if (cachedExpression != null && cachedExpression instanceof ComputedSpelExpression) {
+                return (ComputedSpelExpression) cachedExpression;
+            }
+            cachedExpression = getExpression(configuration, spelExpression);
+            if (cachedExpression != null) {
+                vexpression.setCachedExpression(cachedExpression);
+            }
+            return (ComputedSpelExpression) cachedExpression;
+
+        }
+
+        return getExpression(configuration, spelExpression);
+
+    }
+
+
+    private static ComputedSpelExpression getExpression(final IEngineConfiguration configuration, final String spelExpression) {
 
         ComputedSpelExpression exp = null;
         ICache<ExpressionCacheKey, Object> cache = null;
@@ -253,7 +307,7 @@ public class SPELVariableExpressionEvaluator
 
         if (exp == null) {
 
-            final SpelExpression spelExpressionObject = (SpelExpression) spelParser.parseExpression(spelExpression);
+            final SpelExpression spelExpressionObject = (SpelExpression) PARSER.parseExpression(spelExpression);
             final boolean mightNeedExpressionObjects = StandardExpressionUtils.mightNeedExpressionObjects(spelExpression);
 
             exp = new ComputedSpelExpression(spelExpressionObject, mightNeedExpressionObjects);
