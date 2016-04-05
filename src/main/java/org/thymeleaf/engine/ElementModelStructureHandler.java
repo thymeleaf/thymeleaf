@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.processor.element.IElementModelStructureHandler;
 
@@ -130,6 +131,37 @@ public final class ElementModelStructureHandler implements IElementModelStructur
         this.setTemplateDataValue = null;
 
     }
+
+
+
+
+    void applyContextModifications(final IEngineContext engineContext) {
+
+        if (this.setLocalVariable) {
+            engineContext.setVariables(this.addedLocalVariables);
+        }
+
+        if (this.removeLocalVariable) {
+            for (final String variableName : this.removedLocalVariableNames) {
+                engineContext.removeVariable(variableName);
+            }
+        }
+
+        if (this.setSelectionTarget) {
+            engineContext.setSelectionTarget(this.selectionTargetObject);
+        }
+
+        if (this.setInliner) {
+            engineContext.setInliner(this.setInlinerValue);
+        }
+
+        if (this.setTemplateData) {
+            engineContext.setTemplateData(this.setTemplateDataValue);
+        }
+
+    }
+
+
 
 
 }

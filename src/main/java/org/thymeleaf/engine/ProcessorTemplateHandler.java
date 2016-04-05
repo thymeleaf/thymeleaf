@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.engine;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -64,29 +62,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessorTemplateHandler.class);
 
-    // This is a set containing all the names of the elements for which, when iterated, we should preserve
-    // the preceding whitespace if it exists so that resulting markup is more readable. Note they are all block
-    // elements or, at least, elements for which preceding whitespace should not matter
-    private static final Set<HTMLElementName> ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES =
-            new HashSet<HTMLElementName>(Arrays.asList(new HTMLElementName[] {
-                    ElementNames.forHTMLName("address"), ElementNames.forHTMLName("article"), ElementNames.forHTMLName("aside"),
-                    ElementNames.forHTMLName("audio"), ElementNames.forHTMLName("blockquote"), ElementNames.forHTMLName("canvas"),
-                    ElementNames.forHTMLName("dd"), ElementNames.forHTMLName("div"), ElementNames.forHTMLName("dl"),
-                    ElementNames.forHTMLName("dt"), ElementNames.forHTMLName("fieldset"), ElementNames.forHTMLName("figcaption"),
-                    ElementNames.forHTMLName("figure"), ElementNames.forHTMLName("footer"),ElementNames.forHTMLName("form"),
-                    ElementNames.forHTMLName("h1"), ElementNames.forHTMLName("h2"), ElementNames.forHTMLName("h3"),
-                    ElementNames.forHTMLName("h4"), ElementNames.forHTMLName("h5"), ElementNames.forHTMLName("h6"),
-                    ElementNames.forHTMLName("header"), ElementNames.forHTMLName("hgroup"), ElementNames.forHTMLName("hr"),
-                    ElementNames.forHTMLName("li"), ElementNames.forHTMLName("main"), ElementNames.forHTMLName("nav"),
-                    ElementNames.forHTMLName("noscript"), ElementNames.forHTMLName("ol"), ElementNames.forHTMLName("option"),
-                    ElementNames.forHTMLName("output"), ElementNames.forHTMLName("p"), ElementNames.forHTMLName("pre"),
-                    ElementNames.forHTMLName("section"), ElementNames.forHTMLName("table"), ElementNames.forHTMLName("tbody"),
-                    ElementNames.forHTMLName("td"), ElementNames.forHTMLName("tfoot"), ElementNames.forHTMLName("th"),
-                    ElementNames.forHTMLName("tr"), ElementNames.forHTMLName("ul"), ElementNames.forHTMLName("video")
-            }));
-
-    static final String SYNTHETIC_MODEL_CONTEXT_VARIABLE_NAME = ISyntheticModel.class.getName();
-
 
     private static final ITemplateBoundariesProcessor[] EMPTY_TEMPLATE_BOUNDARIES_PROCESSORS = new ITemplateBoundariesProcessor[0];
     private static final ICDATASectionProcessor[] EMPTY_CDATA_SECTION_PROCESSORS = new ICDATASectionProcessor[0];
@@ -102,7 +77,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     // removing structures or iterating elements)
     private final ElementTagStructureHandler elementTagStructureHandler;
     private final ElementModelStructureHandler elementModelStructureHandler;
-    private final TemplateBoundariesStructureHandler templateStructureHandler;
+    private final TemplateBoundariesStructureHandler templateBoundariesStructureHandler;
     private final CDATASectionStructureHandler cdataSectionStructureHandler;
     private final CommentStructureHandler commentStructureHandler;
     private final DocTypeStructureHandler docTypeStructureHandler;
@@ -136,17 +111,13 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     private Integer initialContextLevel = null;
 
 
-    // This variable will contain the last event that has been processed, if this last event was an IText. Its aim
-    // is to allow the inclusion of preceding whitespace in the iteration of block elements (such as <tr>, <li>, etc.)
-    // so that resulting markup is more readable than the alternative "</tr><tr ...>"
-    // Note also that, given whitespace between tags is not significative in XML, this mechanism will be applied in XML
-    // template mode disregarding the name of the element.
-    private IText lastTextEvent = null;
-
     // The eventModelController will be in charge of deciding if we have to skip the processing of an event, because it has to be
     // discarded or maybe because events are being gathered for future processing as a whole (e.g. iteration or
     // element model processors).
     private EventModelController eventModelController = null;
+
+
+    private ISyntheticModel currentSyntheticModel = null;
 
 
 
@@ -163,7 +134,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
         this.elementTagStructureHandler = new ElementTagStructureHandler();
         this.elementModelStructureHandler = new ElementModelStructureHandler();
-        this.templateStructureHandler = new TemplateBoundariesStructureHandler();
+        this.templateBoundariesStructureHandler = new TemplateBoundariesStructureHandler();
         this.cdataSectionStructureHandler = new CDATASectionStructureHandler();
         this.commentStructureHandler = new CommentStructureHandler();
         this.docTypeStructureHandler = new DocTypeStructureHandler();
@@ -212,7 +183,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         }
 
         // Instance the gatherer
-        this.eventModelController = new EventModelController(this.configuration, this.templateMode, this.engineContext);
+        this.eventModelController = new EventModelController(this.configuration, this.templateMode, this, this.engineContext);
 
         // Obtain all processor sets and compute sizes
         final Set<ITemplateBoundariesProcessor> templateBoundariesProcessorSet = this.configuration.getTemplateBoundariesProcessors(this.templateMode);
@@ -250,16 +221,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
 
-    private Model initializeModel(final Model model) {
-        if (model != null) {
-            model.reset();
-            return model;
-        }
-        return new Model(this.configuration, this.templateMode);
-    }
-
-
-
 
     @Override
     public void handleTemplateStart(final ITemplateStart itemplateStart) {
@@ -293,48 +254,26 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          */
         for (int i = 0; i < this.templateBoundariesProcessors.length; i++) {
 
-            this.templateStructureHandler.reset();
+            this.templateBoundariesStructureHandler.reset();
 
             this.templateBoundariesProcessors[i].processTemplateStart(
-                    this.context, itemplateStart, this.templateStructureHandler);
+                    this.context, itemplateStart, this.templateBoundariesStructureHandler);
 
-            if (this.templateStructureHandler.setLocalVariable) {
-                if (this.engineContext != null) {
-                    this.engineContext.setVariables(this.templateStructureHandler.addedLocalVariables);
-                }
+            if (this.engineContext != null) {
+                this.templateBoundariesStructureHandler.applyContextModifications(this.engineContext);
             }
 
-            if (this.templateStructureHandler.removeLocalVariable) {
-                if (this.engineContext != null) {
-                    for (final String variableName : this.templateStructureHandler.removedLocalVariableNames) {
-                        this.engineContext.removeVariable(variableName);
-                    }
-                }
-            }
+            if (this.templateBoundariesStructureHandler.insertText) {
 
-            if (this.templateStructureHandler.setSelectionTarget) {
-                if (this.engineContext != null) {
-                    this.engineContext.setSelectionTarget(this.templateStructureHandler.selectionTargetObject);
-                }
-            }
+                model = resetModel(model, true);
+                model.add(new Text(this.templateBoundariesStructureHandler.insertTextValue));
+                modelHandler = this.templateBoundariesStructureHandler.insertTextProcessable? this : this.next;
 
-            if (this.templateStructureHandler.setInliner) {
-                if (this.engineContext != null) {
-                    this.engineContext.setInliner(this.templateStructureHandler.setInlinerValue);
-                }
-            }
+            } else if (this.templateBoundariesStructureHandler.insertModel) {
 
-            if (this.templateStructureHandler.insertText) {
-
-                model = initializeModel(model);
-                model.add(new Text(this.templateStructureHandler.insertTextValue));
-                modelHandler = this.templateStructureHandler.insertTextProcessable? this : this.next;
-
-            } else if (this.templateStructureHandler.insertModel) {
-
-                model = initializeModel(model);
-                model.addModel(this.templateStructureHandler.insertModelValue);
-                modelHandler = this.templateStructureHandler.insertModelProcessable? this : this.next;
+                model = resetModel(model, true);
+                model.addModel(this.templateBoundariesStructureHandler.insertModelValue);
+                modelHandler = this.templateBoundariesStructureHandler.insertModelProcessable? this : this.next;
 
             }
 
@@ -387,48 +326,26 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          */
         for (int i = 0; i < this.templateBoundariesProcessors.length; i++) {
 
-            this.templateStructureHandler.reset();
+            this.templateBoundariesStructureHandler.reset();
 
             this.templateBoundariesProcessors[i].processTemplateEnd(
-                    this.context, itemplateEnd, this.templateStructureHandler);
+                    this.context, itemplateEnd, this.templateBoundariesStructureHandler);
 
-            if (this.templateStructureHandler.setLocalVariable) {
-                if (this.engineContext != null) {
-                    this.engineContext.setVariables(this.templateStructureHandler.addedLocalVariables);
-                }
+            if (this.engineContext != null) {
+                this.templateBoundariesStructureHandler.applyContextModifications(this.engineContext);
             }
 
-            if (this.templateStructureHandler.removeLocalVariable) {
-                if (this.engineContext != null) {
-                    for (final String variableName : this.templateStructureHandler.removedLocalVariableNames) {
-                        this.engineContext.removeVariable(variableName);
-                    }
-                }
-            }
+            if (this.templateBoundariesStructureHandler.insertText) {
 
-            if (this.templateStructureHandler.setSelectionTarget) {
-                if (this.engineContext != null) {
-                    this.engineContext.setSelectionTarget(this.templateStructureHandler.selectionTargetObject);
-                }
-            }
+                model = resetModel(model, true);
+                model.add(new Text(this.templateBoundariesStructureHandler.insertTextValue));
+                modelHandler = this.templateBoundariesStructureHandler.insertTextProcessable? this : this.next;
 
-            if (this.templateStructureHandler.setInliner) {
-                if (this.engineContext != null) {
-                    this.engineContext.setInliner(this.templateStructureHandler.setInlinerValue);
-                }
-            }
+            } else if (this.templateBoundariesStructureHandler.insertModel) {
 
-            if (this.templateStructureHandler.insertText) {
-
-                model = initializeModel(model);
-                model.add(new Text(this.templateStructureHandler.insertTextValue));
-                modelHandler = this.templateStructureHandler.insertTextProcessable? this : this.next;
-
-            } else if (this.templateStructureHandler.insertModel) {
-
-                model = initializeModel(model);
-                model.addModel(this.templateStructureHandler.insertModelValue);
-                modelHandler = this.templateStructureHandler.insertModelProcessable? this : this.next;
+                model = resetModel(model, true);
+                model.addModel(this.templateBoundariesStructureHandler.insertModelValue);
+                modelHandler = this.templateBoundariesStructureHandler.insertModelProcessable? this : this.next;
 
             }
 
@@ -488,12 +405,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * KEEP THE POINTER to this event, now we know it will be processed somehow
-         */
-        this.lastTextEvent = itext;
-
-
-        /*
          * FAIL FAST in case this structure has no associated processors.
          */
         if (this.textProcessors.length == 0) {
@@ -531,7 +442,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
             } else if (this.textStructureHandler.replaceWithModel) {
 
-                model = initializeModel(model);
+                model = resetModel(model, true);
                 model.addModel(this.textStructureHandler.replaceWithModelValue);
                 modelHandler = this.textStructureHandler.replaceWithModelProcessable? this : this.next;
                 discardEvent = true;
@@ -582,12 +493,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
-         */
-        this.lastTextEvent = null;
-
-
-        /*
          * FAIL FAST in case this structure has no associated processors.
          */
         if (this.commentProcessors.length == 0) {
@@ -625,7 +530,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
             } else if (this.commentStructureHandler.replaceWithModel) {
 
-                model = initializeModel(model);
+                model = resetModel(model, true);
                 model.addModel(this.commentStructureHandler.replaceWithModelValue);
                 modelHandler = this.commentStructureHandler.replaceWithModelProcessable? this : this.next;
                 discardEvent = true;
@@ -676,12 +581,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
-         */
-        this.lastTextEvent = null;
-
-
-        /*
          * FAIL FAST in case this structure has no associated processors.
          */
         if (this.cdataSectionProcessors.length == 0) {
@@ -719,7 +618,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
             } else if (this.cdataSectionStructureHandler.replaceWithModel) {
 
-                model = initializeModel(model);
+                model = resetModel(model, true);
                 model.addModel(this.cdataSectionStructureHandler.replaceWithModelValue);
                 modelHandler = this.cdataSectionStructureHandler.replaceWithModelProcessable? this : this.next;
                 discardEvent = true;
@@ -776,34 +675,16 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * SAVE AND RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
-         * Note we will only be interested on it if it is whitespace, in order to add it to iteration queues, so
-         * that iterated model looks better (by including the last whitespace before the iterated element)
-         * Also, note we do not mind the fact that IText events are reusable buffers and might have changed, because
-         * if there is a this.lastTextEvent != null, it means it was the last event and therefore cannot have been
-         * reused so far
+         * OBTAIN THE CURRENT SYNTHETIC MODEL (if any)
          */
-        final IText lastText = this.lastTextEvent;
-        this.lastTextEvent = null;
-
-
-        /*
-         * OBTAIN THE PENDING SYNTHETIC MODEL (if any)
-         */
-        final ISyntheticModel executedSyntheticModel;
-        if (this.engineContext != null && this.engineContext.containsVariable(SYNTHETIC_MODEL_CONTEXT_VARIABLE_NAME)) {
-            executedSyntheticModel = (ISyntheticModel) this.engineContext.getVariable(SYNTHETIC_MODEL_CONTEXT_VARIABLE_NAME);
-            this.engineContext.removeVariable(SYNTHETIC_MODEL_CONTEXT_VARIABLE_NAME);
-        } else {
-            executedSyntheticModel = null;
-        }
+        final ISyntheticModel currentSyntheticModel = obtainCurrentSyntheticModel();
 
 
         /*
          * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
          * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
          */
-        if (executedSyntheticModel == null && !standaloneElementTag.hasAssociatedProcessors()) {
+        if (currentSyntheticModel == null && !standaloneElementTag.hasAssociatedProcessors()) {
             if (this.engineContext != null) {
                 this.engineContext.increaseLevel();
             }
@@ -819,7 +700,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * DECLARE THE STATE VARS NEEDED FOR PROCESSOR EXECUTION
          */
         final ProcessorExecutionVars vars =
-                (executedSyntheticModel == null? new ProcessorExecutionVars() : executedSyntheticModel.initializeProcessorExecutionVars());
+                (currentSyntheticModel == null? new ProcessorExecutionVars() : currentSyntheticModel.initializeProcessorExecutionVars());
 
 
         /*
@@ -855,24 +736,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                 if (this.elementTagStructureHandler.iterateElement) {
 
-                    // If there is a preceding whitespace, add it to the iteration spec
-                    Text precedingWhitespace = null;
-                    if (lastText != null &&
-                            ((this.templateMode == TemplateMode.XML) ||
-                                    (this.templateMode == TemplateMode.HTML && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(standaloneElementTag.elementDefinition.elementName)))) {
-                        final Text lastEngineText = Text.asEngineText(lastText);
-                        if (lastEngineText.isWhitespace()) {
-                            precedingWhitespace = lastEngineText;
-                        }
-                    }
-
                     // Initialize a synthetic model
                     this.eventModelController.startGatheringIteratedModel(
                             standaloneElementTag, vars,
                             this.elementTagStructureHandler.iterVariableName,
                             this.elementTagStructureHandler.iterStatusVariableName,
-                            this.elementTagStructureHandler.iteratedObject,
-                            precedingWhitespace);
+                            this.elementTagStructureHandler.iteratedObject);
 
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- we need processIteration() to read our data
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
@@ -890,34 +759,20 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Initialize model
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                    // Prepare the now-equivalent open and close tags
-                    final OpenElementTag openTag =
-                            new OpenElementTag(
-                                    standaloneElementTag.templateMode, standaloneElementTag.elementDefinition,
-                                    standaloneElementTag.elementCompleteName, standaloneElementTag.attributes, standaloneElementTag.synthetic,
-                                    standaloneElementTag.templateName, standaloneElementTag.line, standaloneElementTag.col);
-                    final CloseElementTag closeTag =
-                            new CloseElementTag(
-                                    standaloneElementTag.templateMode, standaloneElementTag.elementDefinition,
-                                    standaloneElementTag.elementCompleteName, null, standaloneElementTag.synthetic, false,
-                                    standaloneElementTag.templateName, standaloneElementTag.line, standaloneElementTag.col);
-
                     // Prepare the text node that will be added to the queue (which will be suspended)
                     final Text text = new Text(this.elementTagStructureHandler.setBodyTextValue);
                     vars.modelAfter.add(text);
                     vars.modelAfterProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
 
                     // Initialize the iterated model object
-                    this.eventModelController.startGatheringStandaloneEquivalentModel(openTag, vars);
-                    final ISyntheticModel newGatheredModel = this.eventModelController.getGatheredModel();
-                    this.eventModelController.resetGathering();
-                    newGatheredModel.gatherCloseElement(closeTag);
+                    final StandaloneEquivalentSyntheticModel equivalentSyntheticModel =
+                            this.eventModelController.createStandaloneEquivalentModel(standaloneElementTag, vars);
 
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be the responsibility of handleOpenElement
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Fire the now-equivalent events. Note the handleOpenElement event will take care of the suspended queue
-                    newGatheredModel.process(this);
+                    equivalentSyntheticModel.process(this);
 
                     // Complete exit of the handler method: no more processing to do from here
                     return;
@@ -927,34 +782,20 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Initialize model
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                    // Prepare the now-equivalent open and close tags
-                    final OpenElementTag openTag =
-                            new OpenElementTag(
-                                    standaloneElementTag.templateMode, standaloneElementTag.elementDefinition,
-                                    standaloneElementTag.elementCompleteName, standaloneElementTag.attributes, standaloneElementTag.synthetic,
-                                    standaloneElementTag.templateName, standaloneElementTag.line, standaloneElementTag.col);
-                    final CloseElementTag closeTag =
-                            new CloseElementTag(
-                                    standaloneElementTag.templateMode, standaloneElementTag.elementDefinition,
-                                    standaloneElementTag.elementCompleteName, null, standaloneElementTag.synthetic, false,
-                                    standaloneElementTag.templateName, standaloneElementTag.line, standaloneElementTag.col);
-
                     // Prepare the queue (that we will suspend)
                     // Model will be automatically cloned if mutable
                     vars.modelAfter.addModel(this.elementTagStructureHandler.setBodyModelValue);
                     vars.modelAfterProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
 
                     // Initialize the iterated model object
-                    this.eventModelController.startGatheringStandaloneEquivalentModel(openTag, vars);
-                    final ISyntheticModel newGatheredModel = this.eventModelController.getGatheredModel();
-                    this.eventModelController.resetGathering();
-                    newGatheredModel.gatherCloseElement(closeTag);
+                    final StandaloneEquivalentSyntheticModel equivalentSyntheticModel =
+                            this.eventModelController.createStandaloneEquivalentModel(standaloneElementTag, vars);
 
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be the responsibility of handleOpenElement
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Fire the now-equivalent events. Note the handleOpenElement event will take care of the suspended queue
-                    newGatheredModel.process(this);
+                    equivalentSyntheticModel.process(this);
 
                     // Complete exit of the handler method: no more processing to do from here
                     return;
@@ -1081,44 +922,17 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 // NOTE we are not cloning the events themselves here. There should be no need, as we are going to
                 //      re-locate these events into a new queue, and their old position (which will be executed
                 //      anyway) will be ignored.
-                final Model processedModel = new Model(executedSyntheticModel.getInnerModel());
+                final Model processedModel = new Model(currentSyntheticModel.getInnerModel());
 
                 ((IElementModelProcessor) processor).process(this.context, processedModel, this.elementModelStructureHandler);
 
-                if (this.elementModelStructureHandler.setLocalVariable) {
-                    if (this.engineContext != null) {
-                        this.engineContext.setVariables(this.elementModelStructureHandler.addedLocalVariables);
-                    }
+                if (this.engineContext != null) {
+                    this.elementModelStructureHandler.applyContextModifications(this.engineContext);
                 }
 
-                if (this.elementModelStructureHandler.removeLocalVariable) {
-                    if (this.engineContext != null) {
-                        for (final String variableName : this.elementModelStructureHandler.removedLocalVariableNames) {
-                            this.engineContext.removeVariable(variableName);
-                        }
-                    }
-                }
-
-                if (this.elementModelStructureHandler.setSelectionTarget) {
-                    if (this.engineContext != null) {
-                        this.engineContext.setSelectionTarget(this.elementModelStructureHandler.selectionTargetObject);
-                    }
-                }
-
-                if (this.elementModelStructureHandler.setInliner) {
-                    if (this.engineContext != null) {
-                        this.engineContext.setInliner(this.elementModelStructureHandler.setInlinerValue);
-                    }
-                }
-
-                if (this.elementModelStructureHandler.setTemplateData) {
-                    if (this.engineContext != null) {
-                        this.engineContext.setTemplateData(this.elementModelStructureHandler.setTemplateDataValue);
-                    }
-                }
 
                 // Reset the skipbody flags so that this model can be executed in the same conditions as the original
-                executedSyntheticModel.resetGatheredSkipFlags();
+                currentSyntheticModel.resetGatheredSkipFlags();
 
                 // Initialize model
                 vars.modelAfter = resetModel(vars.modelAfter, true);
@@ -1163,7 +977,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         }
 
 
-
         /*
          * DECREASE THE CONTEXT LEVEL once we have executed all the processors (and maybe a body if we added
          * one to the tag converting it into an open tag)
@@ -1199,34 +1012,16 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * SAVE AND RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
-         * Note we will only be interested on it if it is whitespace, in order to add it to iteration queues, so
-         * that iterated model looks better (by including the last whitespace before the iterated element)
-         * Also, note we do not mind the fact that IText events are reusable buffers and might have changed, because
-         * if there is a this.lastTextEvent != null, it means it was the last event and therefore cannot have been
-         * reused so far
+         * OBTAIN THE CURRENT SYNTHETIC MODEL
          */
-        final IText lastText = this.lastTextEvent;
-        this.lastTextEvent = null;
-
-
-        /*
-         * OBTAIN THE GATHERED MODEL
-         */
-        final ISyntheticModel executedSyntheticModel;
-        if (this.engineContext != null && this.engineContext.containsVariable(SYNTHETIC_MODEL_CONTEXT_VARIABLE_NAME)) {
-            executedSyntheticModel = (ISyntheticModel) this.engineContext.getVariable(SYNTHETIC_MODEL_CONTEXT_VARIABLE_NAME);
-            this.engineContext.removeVariable(SYNTHETIC_MODEL_CONTEXT_VARIABLE_NAME);
-        } else {
-            executedSyntheticModel = null;
-        }
+        final ISyntheticModel currentSyntheticModel = obtainCurrentSyntheticModel();
 
 
         /*
          * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
          * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
          */
-        if (executedSyntheticModel == null && !openElementTag.hasAssociatedProcessors()) {
+        if (currentSyntheticModel == null && !openElementTag.hasAssociatedProcessors()) {
             this.next.handleOpenElement(openElementTag);
             return;
         }
@@ -1236,7 +1031,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * DECLARE THE STATE VARS NEEDED FOR PROCESSOR EXECUTION
          */
         final ProcessorExecutionVars vars =
-                (executedSyntheticModel == null? new ProcessorExecutionVars() : executedSyntheticModel.initializeProcessorExecutionVars());
+                (currentSyntheticModel == null? new ProcessorExecutionVars() : currentSyntheticModel.initializeProcessorExecutionVars());
 
 
         /*
@@ -1262,24 +1057,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                 if (this.elementTagStructureHandler.iterateElement) {
 
-                    // If there is a preceding whitespace, add it to the iteration spec
-                    Text precedingWhitespace = null;
-                    if (lastText != null &&
-                            ((this.templateMode == TemplateMode.XML) ||
-                                    (this.templateMode == TemplateMode.HTML && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(openElementTag.elementDefinition.elementName)))) {
-                        final Text lastEngineText = Text.asEngineText(lastText);
-                        if (lastEngineText.isWhitespace()) {
-                            precedingWhitespace = lastEngineText;
-                        }
-                    }
-
                     // Initialize the synthetic model
                     this.eventModelController.startGatheringIteratedModel(
                             openElementTag, vars,
                             this.elementTagStructureHandler.iterVariableName,
                             this.elementTagStructureHandler.iterStatusVariableName,
-                            this.elementTagStructureHandler.iteratedObject,
-                            precedingWhitespace);
+                            this.elementTagStructureHandler.iteratedObject);
 
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- we need processIteration() to read our data
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
@@ -1448,41 +1231,14 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 // NOTE we are not cloning the events themselves here. There should be no need, as we are going to
                 //      re-locate these events into a new queue, and their old position (which will be executed
                 //      anyway) will be ignored.
-                final Model processedModel = new Model(executedSyntheticModel.getInnerModel());
+                final Model processedModel = new Model(currentSyntheticModel.getInnerModel());
 
                 ((IElementModelProcessor) processor).process(this.context, processedModel, this.elementModelStructureHandler);
 
-                if (this.elementModelStructureHandler.setLocalVariable) {
-                    if (this.engineContext != null) {
-                        this.engineContext.setVariables(this.elementModelStructureHandler.addedLocalVariables);
-                    }
+                if (this.engineContext != null) {
+                    this.elementModelStructureHandler.applyContextModifications(this.engineContext);
                 }
 
-                if (this.elementModelStructureHandler.removeLocalVariable) {
-                    if (this.engineContext != null) {
-                        for (final String variableName : this.elementModelStructureHandler.removedLocalVariableNames) {
-                            this.engineContext.removeVariable(variableName);
-                        }
-                    }
-                }
-
-                if (this.elementModelStructureHandler.setSelectionTarget) {
-                    if (this.engineContext != null) {
-                        this.engineContext.setSelectionTarget(this.elementModelStructureHandler.selectionTargetObject);
-                    }
-                }
-
-                if (this.elementModelStructureHandler.setInliner) {
-                    if (this.engineContext != null) {
-                        this.engineContext.setInliner(this.elementModelStructureHandler.setInlinerValue);
-                    }
-                }
-
-                if (this.elementModelStructureHandler.setTemplateData) {
-                    if (this.engineContext != null) {
-                        this.engineContext.setTemplateData(this.elementModelStructureHandler.setTemplateDataValue);
-                    }
-                }
 
                 /*
                  * Now we will do the exact equivalent to what is performed for an Element Tag processor, when this
@@ -1490,7 +1246,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                  */
 
                 // Reset the skipbody flags so that this model can be executed in the same conditions as the original
-                executedSyntheticModel.resetGatheredSkipFlags();
+                currentSyntheticModel.resetGatheredSkipFlags();
 
                 // Initialize model
                 vars.modelAfter = resetModel(vars.modelAfter, true);
@@ -1585,12 +1341,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
-         */
-        this.lastTextEvent = null;
-
-
-        /*
          * CALL THE NEXT HANDLER in the chain
          */
         this.next.handleCloseElement(icloseElementTag);
@@ -1613,19 +1363,11 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
             return;
         }
 
-        
-        /*
-         * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
-         */
-        this.lastTextEvent = null;
-
-
         /*
          * -------------------------------------------------------------------------------------------------
          * THERE IS NOTHING ELSE THAT SHOULD BE DONE WITH AN UNMATCHED CLOSE ELEMENT. No processors apply...
          * -------------------------------------------------------------------------------------------------
          */
-
 
         /*
          * CALL THE NEXT HANDLER in the chain
@@ -1650,12 +1392,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         if (!this.eventModelController.shouldProcessDocType(idocType)) {
             return;
         }
-
-        
-        /*
-         * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
-         */
-        this.lastTextEvent = null;
 
 
         /*
@@ -1702,7 +1438,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
             } else if (this.docTypeStructureHandler.replaceWithModel) {
 
-                model = initializeModel(model);
+                model = resetModel(model, true);
                 model.addModel(this.docTypeStructureHandler.replaceWithModelValue);
                 modelHandler = this.docTypeStructureHandler.replaceWithModelProcessable? this : this.next;
                 discardEvent = true;
@@ -1751,12 +1487,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
             return;
         }
 
-        
-        /*
-         * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
-         */
-        this.lastTextEvent = null;
-
 
         /*
          * FAIL FAST in case this structure has no associated processors.
@@ -1801,7 +1531,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
             } else if (this.xmlDeclarationStructureHandler.replaceWithModel) {
 
-                model = initializeModel(model);
+                model = resetModel(model, true);
                 model.addModel(this.xmlDeclarationStructureHandler.replaceWithModelValue);
                 modelHandler = this.xmlDeclarationStructureHandler.replaceWithModelProcessable? this : this.next;
                 discardEvent = true;
@@ -1850,12 +1580,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
             return;
         }
 
-        
-        /*
-         * RESET THE LAST-TEXT POINTER, now we know this event will be processed somehow
-         */
-        this.lastTextEvent = null;
-
 
         /*
          * FAIL FAST in case this structure has no associated processors.
@@ -1898,7 +1622,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
             } else if (this.processingInstructionStructureHandler.replaceWithModel) {
 
-                model = initializeModel(model);
+                model = resetModel(model, true);
                 model.addModel(this.processingInstructionStructureHandler.replaceWithModelValue);
                 modelHandler = this.processingInstructionStructureHandler.replaceWithModelProcessable? this : this.next;
                 discardEvent = true;
@@ -1934,6 +1658,20 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
 
+    private ISyntheticModel obtainCurrentSyntheticModel() {
+        final ISyntheticModel syntheticModel = this.currentSyntheticModel;
+        this.currentSyntheticModel = null;
+        return syntheticModel;
+    }
+
+
+    void setCurrentSyntheticModel(final ISyntheticModel syntheticModel) {
+        this.currentSyntheticModel = syntheticModel;
+    }
+
+
+
+
     private Model resetModel(final Model model, final boolean createIfNull) {
         if (model == null) {
             if (createIfNull) {
@@ -1944,6 +1682,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         model.reset();
         return model;
     }
+
 
 
 

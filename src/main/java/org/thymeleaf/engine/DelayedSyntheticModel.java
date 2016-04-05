@@ -25,8 +25,6 @@ import org.thymeleaf.engine.EventModelController.SkipBody;
 import org.thymeleaf.engine.ProcessorTemplateHandler.ProcessorExecutionVars;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
-import static org.thymeleaf.engine.ProcessorTemplateHandler.SYNTHETIC_MODEL_CONTEXT_VARIABLE_NAME;
-
 
 /*
  *
@@ -45,10 +43,10 @@ final class DelayedSyntheticModel extends AbstractSyntheticModel {
 
 
     DelayedSyntheticModel(
-            final IEngineConfiguration configuration, final IEngineContext context,
+            final IEngineConfiguration configuration, ProcessorTemplateHandler processorTemplateHandler, final IEngineContext context,
             final EventModelController eventModelController, final SkipBody gatheredSkipBody, final boolean gatheredSkipCloseTag,
             final ProcessorExecutionVars processorExecutionVars) {
-        super(configuration, context, eventModelController, gatheredSkipBody, gatheredSkipCloseTag, processorExecutionVars);
+        super(configuration, processorTemplateHandler, context, eventModelController, gatheredSkipBody, gatheredSkipCloseTag, processorExecutionVars);
         this.context = context;
         this.processed = false;
     }
@@ -71,14 +69,10 @@ final class DelayedSyntheticModel extends AbstractSyntheticModel {
         }
 
         /*
-         * Set the gathered model into the context
+         * Reset the "skipBody" and "skipCloseTag" values at the event model controller, and also set this
+         * synthetic model into the processor handler so that it can be used by the executed events
          */
-        this.context.setVariable(SYNTHETIC_MODEL_CONTEXT_VARIABLE_NAME, this);
-
-        /*
-         * Reset the "skipBody" and "skipCloseTag" values at the event model controller
-         */
-        resetGatheredSkipFlags();
+        prepareProcessing();
 
         /*
          * PROCESS THE MODEL

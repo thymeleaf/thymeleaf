@@ -36,8 +36,6 @@ import org.thymeleaf.model.IText;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.StringUtils;
 
-import static org.thymeleaf.engine.ProcessorTemplateHandler.SYNTHETIC_MODEL_CONTEXT_VARIABLE_NAME;
-
 
 /*
  *
@@ -65,12 +63,12 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
 
 
     IteratedSyntheticModel(
-            final IEngineConfiguration configuration, final IEngineContext context,
+            final IEngineConfiguration configuration, ProcessorTemplateHandler processorTemplateHandler, final IEngineContext context,
             final EventModelController eventModelController, final SkipBody gatheredSkipBody, final boolean gatheredSkipCloseTag,
             final ProcessorExecutionVars processorExecutionVars,
             final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject, final Text precedingWhitespace) {
 
-        super(configuration, context, eventModelController, gatheredSkipBody, gatheredSkipCloseTag, processorExecutionVars);
+        super(configuration, processorTemplateHandler, context, eventModelController, gatheredSkipBody, gatheredSkipCloseTag, processorExecutionVars);
 
         this.context = context;
         this.templateMode = context.getTemplateMode();
@@ -212,20 +210,16 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
         this.context.increaseLevel();
 
         /*
-         * Set the gathered model into the context
-         */
-        this.context.setVariable(SYNTHETIC_MODEL_CONTEXT_VARIABLE_NAME, this);
-
-        /*
          * Set the iteration local variables (iteration variable and iteration status variable)
          */
         this.context.setVariable(this.iterVariableName, this.iterStatusVariable.current);
         this.context.setVariable(this.iterStatusVariableName, this.iterStatusVariable);
 
         /*
-         * Reset the "skipBody" and "skipCloseTag" values at the event model controller
+         * Reset the "skipBody" and "skipCloseTag" values at the event model controller, and also set this
+         * synthetic model into the processor handler so that it can be used by the executed events
          */
-        resetGatheredSkipFlags();
+        prepareProcessing();
 
         /*
          * PERFORM THE EXECUTION on the gathered queue, which now does not live at the current exec level, but

@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.IModel;
 import org.thymeleaf.processor.templateboundaries.ITemplateBoundariesStructureHandler;
@@ -159,6 +160,31 @@ public final class TemplateBoundariesStructureHandler implements ITemplateBounda
         this.insertModel = false;
         this.insertModelValue = null;
         this.insertModelProcessable = false;
+
+    }
+
+
+
+
+    void applyContextModifications(final IEngineContext engineContext) {
+
+        if (this.setLocalVariable) {
+            engineContext.setVariables(this.addedLocalVariables);
+        }
+
+        if (this.removeLocalVariable) {
+            for (final String variableName : this.removedLocalVariableNames) {
+                engineContext.removeVariable(variableName);
+            }
+        }
+
+        if (this.setSelectionTarget) {
+            engineContext.setSelectionTarget(this.selectionTargetObject);
+        }
+
+        if (this.setInliner) {
+            engineContext.setInliner(this.setInlinerValue);
+        }
 
     }
 

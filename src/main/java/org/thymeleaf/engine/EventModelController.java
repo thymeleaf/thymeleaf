@@ -20,6 +20,8 @@
 package org.thymeleaf.engine;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
@@ -33,6 +35,7 @@ import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
+import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -72,9 +75,33 @@ final class EventModelController {
 
     }
 
+    // This is a set containing all the names of the elements for which, when iterated, we should preserve
+    // the preceding whitespace if it exists so that resulting markup is more readable. Note they are all block
+    // elements or, at least, elements for which preceding whitespace should not matter
+    private static final Set<HTMLElementName> ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES =
+            new HashSet<HTMLElementName>(Arrays.asList(new HTMLElementName[] {
+                    ElementNames.forHTMLName("address"), ElementNames.forHTMLName("article"), ElementNames.forHTMLName("aside"),
+                    ElementNames.forHTMLName("audio"), ElementNames.forHTMLName("blockquote"), ElementNames.forHTMLName("canvas"),
+                    ElementNames.forHTMLName("dd"), ElementNames.forHTMLName("div"), ElementNames.forHTMLName("dl"),
+                    ElementNames.forHTMLName("dt"), ElementNames.forHTMLName("fieldset"), ElementNames.forHTMLName("figcaption"),
+                    ElementNames.forHTMLName("figure"), ElementNames.forHTMLName("footer"),ElementNames.forHTMLName("form"),
+                    ElementNames.forHTMLName("h1"), ElementNames.forHTMLName("h2"), ElementNames.forHTMLName("h3"),
+                    ElementNames.forHTMLName("h4"), ElementNames.forHTMLName("h5"), ElementNames.forHTMLName("h6"),
+                    ElementNames.forHTMLName("header"), ElementNames.forHTMLName("hgroup"), ElementNames.forHTMLName("hr"),
+                    ElementNames.forHTMLName("li"), ElementNames.forHTMLName("main"), ElementNames.forHTMLName("nav"),
+                    ElementNames.forHTMLName("noscript"), ElementNames.forHTMLName("ol"), ElementNames.forHTMLName("option"),
+                    ElementNames.forHTMLName("output"), ElementNames.forHTMLName("p"), ElementNames.forHTMLName("pre"),
+                    ElementNames.forHTMLName("section"), ElementNames.forHTMLName("table"), ElementNames.forHTMLName("tbody"),
+                    ElementNames.forHTMLName("td"), ElementNames.forHTMLName("tfoot"), ElementNames.forHTMLName("th"),
+                    ElementNames.forHTMLName("tr"), ElementNames.forHTMLName("ul"), ElementNames.forHTMLName("video")
+            }));
+
+
+
 
     private final IEngineConfiguration configuration;
     private final TemplateMode templateMode;
+    private final ProcessorTemplateHandler processorTemplateHandler;
     private final IEngineContext context;
 
     private AbstractSyntheticModel gatheredModel;
@@ -84,17 +111,23 @@ final class EventModelController {
     private boolean[] skipCloseTagByLevel;
     private IProcessableElementTag[] unskippedFirstElementByLevel;
 
+    // These two variables will help us keep account of what events have been triggered before an iteration, in
+    // case we want to apply prettifying to the surrounding white spaces of an iterated piece of markup
+    private ITemplateEvent lastEvent = null;
+    private ITemplateEvent secondToLastEvent = null;
+
     private int modelLevel;
 
 
     EventModelController(
             final IEngineConfiguration configuration, final TemplateMode templateMode,
-            final IEngineContext context) {
+            final ProcessorTemplateHandler processorTemplateHandler, final IEngineContext context) {
 
         super();
 
         this.configuration = configuration;
         this.templateMode = templateMode;
+        this.processorTemplateHandler = processorTemplateHandler;
         this.context = context;
 
         this.gatheredModel = null;
@@ -129,7 +162,7 @@ final class EventModelController {
 
         this.gatheredModel =
                 new DelayedSyntheticModel(
-                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
+                        this.configuration, this.processorTemplateHandler, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
 
         this.gatheredModel.gatherOpenElement(firstTag);
 
@@ -145,7 +178,7 @@ final class EventModelController {
 
         this.gatheredModel =
                 new DelayedSyntheticModel(
-                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
+                        this.configuration, this.processorTemplateHandler, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
 
         this.gatheredModel.gatherStandaloneElement(firstTag);
 
@@ -154,16 +187,18 @@ final class EventModelController {
 
     void startGatheringIteratedModel(
             final IOpenElementTag firstTag, final ProcessorExecutionVars processorExecutionVars,
-            final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject, final Text precedingWhitespace) {
+            final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject) {
 
         this.modelLevel--;
 
         final SkipBody gatheredSkipBody = this.skipBodyByLevel[this.modelLevel];
         final boolean gatheredSkipCloseTagByLevel = this.skipCloseTagByLevel[this.modelLevel];
 
+        final Text precedingWhitespace = computeWhiteSpacePrecedingIteration(firstTag.getElementDefinition().elementName);
+
         this.gatheredModel =
                 new IteratedSyntheticModel(
-                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars,
+                        this.configuration, this.processorTemplateHandler, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars,
                         iterVariableName, iterStatusVariableName, iteratedObject, precedingWhitespace);
 
         this.gatheredModel.gatherOpenElement(firstTag);
@@ -173,15 +208,17 @@ final class EventModelController {
 
     void startGatheringIteratedModel(
             final IStandaloneElementTag firstTag, final ProcessorExecutionVars processorExecutionVars,
-            final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject, final Text precedingWhitespace) {
+            final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject) {
 
         SkipBody gatheredSkipBody = this.skipBodyByLevel[this.modelLevel];
         gatheredSkipBody = (gatheredSkipBody == SkipBody.SKIP_ELEMENTS ? SkipBody.PROCESS_ONE_ELEMENT : gatheredSkipBody);
         final boolean gatheredSkipCloseTagByLevel = this.skipCloseTagByLevel[this.modelLevel];
 
+        final Text precedingWhitespace = computeWhiteSpacePrecedingIteration(firstTag.getElementDefinition().elementName);
+
         this.gatheredModel =
                 new IteratedSyntheticModel(
-                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars,
+                        this.configuration, this.processorTemplateHandler, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars,
                         iterVariableName, iterStatusVariableName, iteratedObject, precedingWhitespace);
 
         this.gatheredModel.gatherStandaloneElement(firstTag);
@@ -189,18 +226,32 @@ final class EventModelController {
     }
 
 
-    void startGatheringStandaloneEquivalentModel(
-            final IOpenElementTag firstTag, final ProcessorExecutionVars processorExecutionVars) {
+    StandaloneEquivalentSyntheticModel createStandaloneEquivalentModel(
+            final StandaloneElementTag standaloneElementTag, final ProcessorExecutionVars processorExecutionVars) {
 
         SkipBody gatheredSkipBody = this.skipBodyByLevel[this.modelLevel];
         gatheredSkipBody = (gatheredSkipBody == SkipBody.SKIP_ELEMENTS ? SkipBody.PROCESS_ONE_ELEMENT : gatheredSkipBody);
         final boolean gatheredSkipCloseTagByLevel = this.skipCloseTagByLevel[this.modelLevel];
 
-        this.gatheredModel =
-                new StandaloneEquivalentSyntheticModel(
-                        this.configuration, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
+        final OpenElementTag openTag =
+                new OpenElementTag(
+                        standaloneElementTag.templateMode, standaloneElementTag.elementDefinition,
+                        standaloneElementTag.elementCompleteName, standaloneElementTag.attributes, standaloneElementTag.synthetic,
+                        standaloneElementTag.templateName, standaloneElementTag.line, standaloneElementTag.col);
+        final CloseElementTag closeTag =
+                new CloseElementTag(
+                        standaloneElementTag.templateMode, standaloneElementTag.elementDefinition,
+                        standaloneElementTag.elementCompleteName, null, standaloneElementTag.synthetic, false,
+                        standaloneElementTag.templateName, standaloneElementTag.line, standaloneElementTag.col);
 
-        this.gatheredModel.gatherOpenElement(firstTag);
+        final StandaloneEquivalentSyntheticModel equivalentModel =
+                new StandaloneEquivalentSyntheticModel(
+                        this.configuration, this.processorTemplateHandler, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
+
+        equivalentModel.gatherOpenElement(openTag);
+        equivalentModel.gatherCloseElement(closeTag);
+
+        return equivalentModel;
 
     }
 
@@ -275,6 +326,7 @@ final class EventModelController {
 
 
     boolean shouldProcessText(final IText text) {
+        this.lastEvent = text;
         if (this.gatheredModel != null) {
             this.gatheredModel.gatherText(text);
             return false;
@@ -284,6 +336,7 @@ final class EventModelController {
 
 
     boolean shouldProcessComment(final IComment comment) {
+        this.lastEvent = comment;
         if (this.gatheredModel != null) {
             this.gatheredModel.gatherComment(comment);
             return false;
@@ -293,6 +346,7 @@ final class EventModelController {
 
 
     boolean shouldProcessCDATASection(final ICDATASection cdataSection) {
+        this.lastEvent = cdataSection;
         if (this.gatheredModel != null) {
             this.gatheredModel.gatherCDATASection(cdataSection);
             return false;
@@ -302,6 +356,8 @@ final class EventModelController {
 
 
     boolean shouldProcessStandaloneElement(final IStandaloneElementTag standaloneElementTag) {
+        this.secondToLastEvent = this.lastEvent;
+        this.lastEvent = standaloneElementTag;
         if (this.gatheredModel != null) {
             this.gatheredModel.gatherStandaloneElement(standaloneElementTag);
             return false;
@@ -317,6 +373,8 @@ final class EventModelController {
 
 
     boolean shouldProcessOpenElement(final IOpenElementTag openElementTag) {
+        this.secondToLastEvent = this.lastEvent;
+        this.lastEvent = openElementTag;
         if (this.gatheredModel != null) {
             this.gatheredModel.gatherOpenElement(openElementTag);
             return false;
@@ -340,6 +398,7 @@ final class EventModelController {
             this.gatheredModel.gatherCloseElement(closeElementTag);
             return false;
         }
+        this.lastEvent = closeElementTag;
         decreaseModelLevel();
         if (this.skipBody == SkipBody.PROCESS_ONE_ELEMENT) {
             // This was the first element, the others will be skipped
@@ -360,6 +419,7 @@ final class EventModelController {
 
 
     boolean shouldProcessUnmatchedCloseElement(final ICloseElementTag closeElementTag) {
+        this.lastEvent = closeElementTag;
         if (this.gatheredModel != null) {
             this.gatheredModel.gatherUnmatchedCloseElement(closeElementTag);
             return false;
@@ -369,6 +429,7 @@ final class EventModelController {
 
 
     boolean shouldProcessDocType(final IDocType docType) {
+        this.lastEvent = docType;
         if (this.gatheredModel != null) {
             this.gatheredModel.gatherDocType(docType);
             return false;
@@ -378,6 +439,7 @@ final class EventModelController {
 
 
     boolean shouldProcessXMLDeclaration(final IXMLDeclaration xmlDeclaration) {
+        this.lastEvent = xmlDeclaration;
         if (this.gatheredModel != null) {
             this.gatheredModel.gatherXMLDeclaration(xmlDeclaration);
             return false;
@@ -387,11 +449,29 @@ final class EventModelController {
 
 
     boolean shouldProcessProcessingInstruction(final IProcessingInstruction processingInstruction) {
+        this.lastEvent = processingInstruction;
         if (this.gatheredModel != null) {
             this.gatheredModel.gatherProcessingInstruction(processingInstruction);
             return false;
         }
         return this.skipBody.processNonElements;
+    }
+
+
+
+
+    private Text computeWhiteSpacePrecedingIteration(final ElementName iteratedElementName) {
+        if (this.secondToLastEvent == null || !(this.secondToLastEvent instanceof IText)) {
+            return null;
+        }
+        if (this.templateMode == TemplateMode.XML ||
+                (this.templateMode == TemplateMode.HTML && ITERATION_WHITESPACE_APPLICABLE_ELEMENT_NAMES.contains(iteratedElementName))) {
+            final Text lastEngineText = Text.asEngineText((IText) this.secondToLastEvent);
+            if (lastEngineText.isWhitespace()) {
+                return lastEngineText;
+            }
+        }
+        return null;
     }
 
     

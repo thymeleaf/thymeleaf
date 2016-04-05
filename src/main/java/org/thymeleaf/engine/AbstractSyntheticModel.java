@@ -45,6 +45,7 @@ import org.thymeleaf.model.IXMLDeclaration;
 abstract class AbstractSyntheticModel implements ISyntheticModel {
 
 
+    private final ProcessorTemplateHandler processorTemplateHandler;
     private final IEngineContext context;
     private final Model syntheticModel;
     private final EventModelController eventModelController;
@@ -60,12 +61,13 @@ abstract class AbstractSyntheticModel implements ISyntheticModel {
 
 
     AbstractSyntheticModel(
-            final IEngineConfiguration configuration, final IEngineContext context,
+            final IEngineConfiguration configuration, final ProcessorTemplateHandler processorTemplateHandler, final IEngineContext context,
             final EventModelController eventModelController, final SkipBody buildTimeSkipBody, final boolean buildTimeSkipCloseTag,
             final ProcessorExecutionVars processorExecutionVars) {
 
         super();
 
+        this.processorTemplateHandler = processorTemplateHandler;
         this.context = context;
         this.eventModelController = eventModelController;
         this.buildTimeSkipBody = buildTimeSkipBody;
@@ -95,10 +97,17 @@ abstract class AbstractSyntheticModel implements ISyntheticModel {
     }
 
 
+    protected final void prepareProcessing() {
+        this.processorTemplateHandler.setCurrentSyntheticModel(this);
+        resetGatheredSkipFlags();
+    }
+
+
 
     public final boolean isGatheringFinished() {
         return this.gatheringFinished;
     }
+
 
 
     protected final IEngineContext getContext() {
