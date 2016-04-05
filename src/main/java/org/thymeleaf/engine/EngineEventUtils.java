@@ -19,9 +19,15 @@
  */
 package org.thymeleaf.engine;
 
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.IComment;
+import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IText;
+import org.thymeleaf.standard.expression.FragmentExpression;
+import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
  * <p>
@@ -176,6 +182,43 @@ public final class EngineEventUtils {
         return false;
     }
 
+
+
+
+    /*
+     * The idea behind this method is to cache in the Attribute object itself the IStandardExpression object corresponding
+     * with the expression to be executed, so that we don't have to hit the expression cache at all
+     */
+    public static IStandardExpression computeAttributeExpression(
+            final ITemplateContext context, final IProcessableElementTag tag, final AttributeName attributeName, final String attributeValue) {
+
+        if (!(tag instanceof AbstractProcessableElementTag)) {
+            return parseAttributeExpression(context, attributeValue);
+        }
+
+        final AbstractProcessableElementTag processableElementTag = (AbstractProcessableElementTag)tag;
+        final Attribute attribute = (Attribute) processableElementTag.getAttribute(attributeName);
+
+        IStandardExpression expression = attribute.getCachedStandardExpression();
+        if (expression != null) {
+            return expression;
+        }
+
+        expression = parseAttributeExpression(context, attributeValue);
+        // If the expression has been correctly parsed AND it does not contain preprocessing marks (_), nor it is a FragmentExpression, cache it!
+        if (expression != null && !(expression instanceof FragmentExpression) && attributeValue.indexOf('_') < 0) {
+            attribute.setCachedStandardExpression(expression);
+        }
+
+        return expression;
+
+    }
+
+
+    private static IStandardExpression parseAttributeExpression(final ITemplateContext context, final String attributeValue) {
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
+        return expressionParser.parseExpression(context, attributeValue);
+    }
 
 
 

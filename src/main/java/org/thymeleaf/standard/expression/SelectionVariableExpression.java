@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IExpressionContext;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
 
@@ -38,7 +37,7 @@ import org.thymeleaf.util.Validate;
  * @since 1.1
  *
  */
-public final class SelectionVariableExpression extends SimpleExpression {
+public final class SelectionVariableExpression extends SimpleExpression implements IStandardVariableExpression {
     
     private static final Logger logger = LoggerFactory.getLogger(SelectionVariableExpression.class);
     
@@ -53,6 +52,8 @@ public final class SelectionVariableExpression extends SimpleExpression {
     
     private final String expression;
     private final boolean convertToString;
+
+    private volatile Object cachedExpression = null;
 
     
     
@@ -80,6 +81,10 @@ public final class SelectionVariableExpression extends SimpleExpression {
         return this.expression;
     }
 
+    public boolean getUseSelectionAsRoot() {
+        return true;
+    }
+
 
     /**
      *
@@ -88,6 +93,19 @@ public final class SelectionVariableExpression extends SimpleExpression {
      */
     public boolean getConvertToString() {
         return this.convertToString;
+    }
+
+
+
+    // Meant only to be used internally, in order to avoid cache calls
+    public Object getCachedExpression() {
+        return this.cachedExpression;
+    }
+
+
+    // Meant only to be used internally, in order to avoid cache calls
+    public void setCachedExpression(final Object cachedExpression) {
+        this.cachedExpression = cachedExpression;
     }
 
 
@@ -133,16 +151,10 @@ public final class SelectionVariableExpression extends SimpleExpression {
             logger.trace("[THYMELEAF][{}] Evaluating selection variable expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
-        final String exp = expression.getExpression();
-        if (exp == null) {
-            throw new TemplateProcessingException(
-                    "Variable expression is null, which is not allowed");
-        }
-
         final StandardExpressionExecutionContext evalExpContext =
                 (expression.getConvertToString()? expContext.withTypeConversion() : expContext.withoutTypeConversion());
 
-        return expressionEvaluator.evaluate(context, exp, evalExpContext, true);
+        return expressionEvaluator.evaluate(context, expression, evalExpContext);
         
     }
     

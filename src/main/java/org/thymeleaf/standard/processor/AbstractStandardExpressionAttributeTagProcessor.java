@@ -21,15 +21,14 @@ package org.thymeleaf.standard.processor;
 
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.engine.EngineEventUtils;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpression;
-import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.NoOpToken;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
-import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -62,12 +61,10 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
             final String attributeValue,
             final IElementTagStructureHandler structureHandler) {
 
-        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(context.getConfiguration());
-
         final Object expressionResult;
         if (attributeValue != null) {
 
-            final IStandardExpression expression = expressionParser.parseExpression(context, attributeValue);
+            final IStandardExpression expression = EngineEventUtils.computeAttributeExpression(context, tag, attributeName, attributeValue);
 
             if (expression != null && expression instanceof FragmentExpression) {
                 // This is merely a FragmentExpression (not complex, not combined with anything), so we can apply a shortcut

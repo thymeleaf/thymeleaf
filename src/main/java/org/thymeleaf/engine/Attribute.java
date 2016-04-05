@@ -25,6 +25,7 @@ import java.io.Writer;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.AttributeValueQuotes;
 import org.thymeleaf.model.IAttribute;
+import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.util.FastStringWriter;
 
 /**
@@ -53,6 +54,7 @@ final class Attribute implements IAttribute {
     final int line;
     final int col;
 
+    private volatile IStandardExpression standardExpression = null;
 
 
 
@@ -136,6 +138,14 @@ final class Attribute implements IAttribute {
         return this.col;
     }
 
+
+    IStandardExpression getCachedStandardExpression() {
+        return this.standardExpression;
+    }
+
+    void setCachedStandardExpression(final IStandardExpression standardExpression) {
+        this.standardExpression = standardExpression;
+    }
 
 
 

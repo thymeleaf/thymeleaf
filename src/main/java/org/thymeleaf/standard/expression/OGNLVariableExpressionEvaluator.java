@@ -89,34 +89,38 @@ public final class OGNLVariableExpressionEvaluator
 
 
     public final Object evaluate(
-            final IExpressionContext context, final String expression,
-            final StandardExpressionExecutionContext expContext, final boolean useSelectionAsRoot) {
-        return evaluate(context, expression, expContext, useSelectionAsRoot, this.applyOGNLShortcuts);
+            final IExpressionContext context,
+            final IStandardVariableExpression expression,
+            final StandardExpressionExecutionContext expContext) {
+        return evaluate(context, expression, expContext, this.applyOGNLShortcuts);
     }
 
 
 
 
     private static Object evaluate(
-        final IExpressionContext context, final String expression,
-        final StandardExpressionExecutionContext expContext, final boolean useSelectionAsRoot,
+        final IExpressionContext context,
+        final IStandardVariableExpression expression,
+        final StandardExpressionExecutionContext expContext,
         final boolean applyOGNLShortcuts) {
        
         try {
 
             if (logger.isTraceEnabled()) {
-                logger.trace("[THYMELEAF][{}] OGNL expression: evaluating expression \"{}\" on target", TemplateEngine.threadIndex(), expression);
+                logger.trace("[THYMELEAF][{}] OGNL expression: evaluating expression \"{}\" on target", TemplateEngine.threadIndex(), expression.getExpression());
             }
 
             final IEngineConfiguration configuration = context.getConfiguration();
 
-            ComputedOGNLExpression parsedExpression =
-                    (ComputedOGNLExpression) ExpressionCache.getFromCache(configuration, expression, EXPRESSION_CACHE_TYPE_OGNL);
-            if (parsedExpression == null) {
-                // The result of parsing might be an OGNL expression AST or a ShortcutOGNLExpression (for simple cases)
-                parsedExpression = parseExpression(expression, applyOGNLShortcuts);
-                ExpressionCache.putIntoCache(configuration, expression, parsedExpression, EXPRESSION_CACHE_TYPE_OGNL);
+            final String exp = expression.getExpression();
+            final boolean useSelectionAsRoot = expression.getUseSelectionAsRoot();
+
+            if (exp == null) {
+                throw new TemplateProcessingException("Expression content is null, which is not allowed");
             }
+
+            final ComputedOGNLExpression parsedExpression =
+                    obtainComputedOGNLExpression(configuration, expression, exp, applyOGNLShortcuts);
 
             final Map<String,Object> contextVariablesMap;
             if (parsedExpression.mightNeedExpressionObjects) {
@@ -169,8 +173,8 @@ public final class OGNLVariableExpressionEvaluator
                 // so we need to empty the cache and try again disabling shortcuts. Once processed for the first time,
                 // an OGNL (non-shortcut) parsed expression will already be cached and this exception will not be
                 // thrown again
-                ExpressionCache.removeFromCache(configuration, expression, EXPRESSION_CACHE_TYPE_OGNL);
-                return evaluate(context, expression, expContext, useSelectionAsRoot, false);
+                invalidateComputedOGNLExpression(configuration, expression, exp);
+                return evaluate(context, expression, expContext, false);
             }
 
             if (!expContext.getPerformTypeConversion()) {
@@ -184,7 +188,7 @@ public final class OGNLVariableExpressionEvaluator
             
         } catch (final Exception e) {
             throw new TemplateProcessingException(
-                    "Exception evaluating OGNL expression: \"" + expression + "\"", e);
+                    "Exception evaluating OGNL expression: \"" + expression.getExpression() + "\"", e);
         }
         
     }
@@ -192,8 +196,77 @@ public final class OGNLVariableExpressionEvaluator
 
 
     
-    
+    private static ComputedOGNLExpression obtainComputedOGNLExpression(
+            final IEngineConfiguration configuration, final IStandardVariableExpression expression, final String exp,
+            final boolean applyOGNLShortcuts) throws OgnlException {
 
+        if (expression instanceof VariableExpression) {
+
+            final VariableExpression vexpression = (VariableExpression) expression;
+
+            Object cachedExpression = vexpression.getCachedExpression();
+            if (cachedExpression != null && cachedExpression instanceof ComputedOGNLExpression) {
+                return (ComputedOGNLExpression) cachedExpression;
+            }
+            cachedExpression = parseComputedOGNLExpression(configuration, exp, applyOGNLShortcuts);
+            if (cachedExpression != null) {
+                vexpression.setCachedExpression(cachedExpression);
+            }
+            return (ComputedOGNLExpression) cachedExpression;
+
+        }
+
+        if (expression instanceof SelectionVariableExpression) {
+
+            final SelectionVariableExpression vexpression = (SelectionVariableExpression) expression;
+
+            Object cachedExpression = vexpression.getCachedExpression();
+            if (cachedExpression != null && cachedExpression instanceof ComputedOGNLExpression) {
+                return (ComputedOGNLExpression) cachedExpression;
+            }
+            cachedExpression = parseComputedOGNLExpression(configuration, exp, applyOGNLShortcuts);
+            if (cachedExpression != null) {
+                vexpression.setCachedExpression(cachedExpression);
+            }
+            return (ComputedOGNLExpression) cachedExpression;
+
+        }
+
+        return parseComputedOGNLExpression(configuration, exp, applyOGNLShortcuts);
+
+    }
+
+
+    private static ComputedOGNLExpression parseComputedOGNLExpression(
+            final IEngineConfiguration configuration, final String exp, final boolean applyOGNLShortcuts)
+            throws OgnlException {
+
+        ComputedOGNLExpression parsedExpression =
+                (ComputedOGNLExpression) ExpressionCache.getFromCache(configuration, exp, EXPRESSION_CACHE_TYPE_OGNL);
+        if (parsedExpression != null) {
+            return parsedExpression;
+        }
+        // The result of parsing might be an OGNL expression AST or a ShortcutOGNLExpression (for simple cases)
+        parsedExpression = parseExpression(exp, applyOGNLShortcuts);
+        ExpressionCache.putIntoCache(configuration, exp, parsedExpression, EXPRESSION_CACHE_TYPE_OGNL);
+        return parsedExpression;
+
+    }
+
+
+    private static void invalidateComputedOGNLExpression(
+            final IEngineConfiguration configuration, final IStandardVariableExpression expression, final String exp) {
+
+        if (expression instanceof VariableExpression) {
+            final VariableExpression vexpression = (VariableExpression) expression;
+            vexpression.setCachedExpression(null);
+        } else if (expression instanceof SelectionVariableExpression) {
+            final SelectionVariableExpression vexpression = (SelectionVariableExpression) expression;
+            vexpression.setCachedExpression(null);
+        }
+        ExpressionCache.removeFromCache(configuration, exp, EXPRESSION_CACHE_TYPE_OGNL);
+
+    }
     
     
     

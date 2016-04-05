@@ -52,15 +52,13 @@ public interface IStandardVariableExpressionEvaluator {
      * </p>
      *
      * @param context the context object.
-     * @param expression the expression to be evaluated (as a String).
+     * @param expression the standard variable expression to be evaluated.
      * @param expContext the expression execution context to be applied (preprocessing, etc.)
-     * @param useSelectionAsRoot specify whether this is a <i>variable expression</i> (<tt>${...}</tt>, false) or a
-     *                           <i>selection variable expression</i> (<tt>*{...}</tt>, true).
      * @return the result of evaluating the expression.
      */
     public Object evaluate(
             final IExpressionContext context,
-            final String expression, final StandardExpressionExecutionContext expContext, 
-            final boolean useSelectionAsRoot);
+            final IStandardVariableExpression expression,
+            final StandardExpressionExecutionContext expContext);
     
 }
