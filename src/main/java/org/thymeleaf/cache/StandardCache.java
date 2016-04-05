@@ -328,7 +328,7 @@ public final class StandardCache<K, V> implements ICache<K,V> {
             super();
 
             this.name = name;
-            this.container = new ConcurrentHashMap<K,CacheEntry<V>>(initialCapacity);
+            this.container = new ConcurrentHashMap<K,CacheEntry<V>>(initialCapacity, 0.9f, 2);
             this.maxSize = maxSize;
             this.sizeLimit = (maxSize >= 0);
             if (this.sizeLimit) {

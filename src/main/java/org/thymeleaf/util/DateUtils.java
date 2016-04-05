@@ -39,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class DateUtils {
     
     
-    private static final Map<DateFormatKey,DateFormat> dateFormats = new ConcurrentHashMap<DateFormatKey, DateFormat>();
+    private static final Map<DateFormatKey,DateFormat> dateFormats = new ConcurrentHashMap<DateFormatKey, DateFormat>(4, 0.9f, 2);
 
     /*
      * This SimpleDateFormat defines an almost-ISO8601 formatter.

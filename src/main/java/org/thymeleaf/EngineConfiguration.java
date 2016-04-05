@@ -124,7 +124,7 @@ public class EngineConfiguration implements IEngineConfiguration {
 
         // NOTE we are NOT initializing the templateManager here, but in #initialize()
 
-        this.modelFactories = new ConcurrentHashMap<TemplateMode, IModelFactory>(6,1.0f);
+        this.modelFactories = new ConcurrentHashMap<TemplateMode, IModelFactory>(6,1.0f, 1);
 
     }
 

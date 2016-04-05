@@ -57,8 +57,8 @@ final class TemplateFragmentMarkupReferenceResolver implements IMarkupSelectorRe
 
         HTML_INSTANCE_NO_PREFIX = new TemplateFragmentMarkupReferenceResolver(true, null);
         XML_INSTANCE_NO_PREFIX = new TemplateFragmentMarkupReferenceResolver(false, null);
-        HTML_INSTANCES_BY_PREFIX = new ConcurrentHashMap<String, TemplateFragmentMarkupReferenceResolver>(2);
-        XML_INSTANCES_BY_PREFIX = new ConcurrentHashMap<String, TemplateFragmentMarkupReferenceResolver>(2);
+        HTML_INSTANCES_BY_PREFIX = new ConcurrentHashMap<String, TemplateFragmentMarkupReferenceResolver>(3, 0.9f, 2);
+        XML_INSTANCES_BY_PREFIX = new ConcurrentHashMap<String, TemplateFragmentMarkupReferenceResolver>(3, 0.9f, 2);
 
     }
 

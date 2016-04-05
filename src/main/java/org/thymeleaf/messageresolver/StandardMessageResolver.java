@@ -150,9 +150,9 @@ import org.thymeleaf.util.Validate;
 public class StandardMessageResolver extends AbstractMessageResolver {
 
     private final ConcurrentHashMap<String,ConcurrentHashMap<Locale,Map<String,String>>> messagesByLocaleByTemplate =
-            new ConcurrentHashMap<String,ConcurrentHashMap<Locale,Map<String,String>>>(20);
+            new ConcurrentHashMap<String,ConcurrentHashMap<Locale,Map<String,String>>>(20, 0.9f, 2);
     private final ConcurrentHashMap<Class<?>,ConcurrentHashMap<Locale,Map<String,String>>> messagesByLocaleByOrigin =
-            new ConcurrentHashMap<Class<?>,ConcurrentHashMap<Locale,Map<String,String>>>(20);
+            new ConcurrentHashMap<Class<?>,ConcurrentHashMap<Locale,Map<String,String>>>(20, 0.9f, 2);
     private final Properties defaultMessages;
 
 
