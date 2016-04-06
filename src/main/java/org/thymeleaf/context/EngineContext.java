@@ -89,6 +89,14 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
         }
     };
 
+    // Using a constant for NULL will avoid the need to perform contains() calls on the maps to determine if an entry exists
+    private static final Object NULL = new Object() {
+        @Override
+        public String toString() {
+            return "null";
+        }
+    };
+
 
 
     /**
@@ -143,10 +151,17 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
 
     public boolean containsVariable(final String name) {
         int n = this.index + 1;
+        Object value;
+        HashMap map;
         while (n-- != 0) {
-            if (this.maps[n] != null && this.maps[n].containsKey(name)) {
-                // The most modern entry we find for this key could be a removal --> false
-                return (this.maps[n].get(name) != NON_EXISTING);
+            map = this.maps[n];
+            if (map != null && map.size() > 0) {
+                // Even if the value is null, we will have a value (null is inserted as the NULL constant)
+                value = map.get(name);
+                if (value != null) {
+                    // The most modern entry we find for this key could be a removal --> false
+                    return value != NON_EXISTING;
+                }
             }
         }
         return false;
@@ -155,13 +170,19 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
 
     public Object getVariable(final String key) {
         int n = this.index + 1;
+        Object value;
+        HashMap map;
         while (n-- != 0) {
-            if (this.maps[n] != null && this.maps[n].containsKey(key)) {
-                final Object result = this.maps[n].get(key);
-                if (result == NON_EXISTING) {
-                    return null;
+            map = this.maps[n];
+            if (map != null && map.size() > 0) {
+                // Even if the value is null, we will have a value (null is inserted as the NULL constant)
+                value = map.get(key);
+                if (value != null) {
+                    if (value == NON_EXISTING || value == NULL) {
+                        return null;
+                    }
+                    return resolveLazy(value);
                 }
-                return resolveLazy(result);
             }
         }
         return null;
@@ -197,7 +218,11 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
         if (value == NON_EXISTING && this.level == 0) {
             this.maps[this.index].remove(name);
         } else {
-            this.maps[this.index].put(name, value);
+            if (value == null) {
+                this.maps[this.index].put(name, NULL);
+            } else {
+                this.maps[this.index].put(name, value);
+            }
         }
 
     }
@@ -211,7 +236,14 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
 
         ensureLevelInitialized(Math.max(DEFAULT_MAP_SIZE, variables.size() + 2));
 
-        this.maps[this.index].putAll(variables);
+        for (final Map.Entry<String, Object> entry : variables.entrySet()) {
+            final Object value = entry.getValue();
+            if (value == null) {
+                this.maps[this.index].put(entry.getKey(), NULL);
+            } else {
+                this.maps[this.index].put(entry.getKey(), value);
+            }
+        }
 
     }
 
