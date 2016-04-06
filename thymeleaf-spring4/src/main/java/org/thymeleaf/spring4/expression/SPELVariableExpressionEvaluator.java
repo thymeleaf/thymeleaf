@@ -92,9 +92,11 @@ public class SPELVariableExpressionEvaluator
         SpelExpressionParser spelCompilerExpressionParser = null;
         if (SpringVersionUtils.isSpring41AtLeast()) {
             try {
+                // Enable the SpEL compiler, in MIXED mode (not IMMEDIATE) in order to avoid ClassCastExceptions
+                // when executing the same compiled expression against targets of different classes.
                 final SpelParserConfiguration spelParserConfiguration =
                         new SpelParserConfiguration(
-                                SpelCompilerMode.IMMEDIATE, // Enable the SpEL compiler
+                                SpelCompilerMode.MIXED,
                                 ClassLoaderUtils.getClassLoader(SPELVariableExpressionEvaluator.class));
                 spelCompilerExpressionParser = new SpelExpressionParser(spelParserConfiguration);
             } catch (final Throwable t) {
