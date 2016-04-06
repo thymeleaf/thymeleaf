@@ -66,7 +66,7 @@ About the code you contribute
 
 ### Detailed Java code quality standards:
   
-  - All your code should compile and run in **Java 5.0**.
+  - All your code should compile and run in **Java 6.0**.
   - All comments, names of classes and variables, log messages, etc. must be **in English**.
   - All `.java` files must include the standard Thymeleaf copyright header.
   - All your code should follow the Java Code Conventions regarding variable/method/class naming.
