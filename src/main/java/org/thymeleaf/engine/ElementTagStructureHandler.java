@@ -506,6 +506,10 @@ public final class ElementTagStructureHandler implements IElementTagStructureHan
 
     void applyContextModifications(final IEngineContext engineContext) {
 
+        if (engineContext == null) {
+            return;
+        }
+
         if (this.setLocalVariable) {
             engineContext.setVariables(this.addedLocalVariables);
         }

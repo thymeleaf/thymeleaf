@@ -247,6 +247,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          */
         Model model = null;
         ITemplateHandler modelHandler = this;
+        final TemplateBoundariesStructureHandler structureHandler = this.templateBoundariesStructureHandler;
 
 
         /*
@@ -254,26 +255,25 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          */
         for (int i = 0; i < this.templateBoundariesProcessors.length; i++) {
 
-            this.templateBoundariesStructureHandler.reset();
+            structureHandler.reset();
 
-            this.templateBoundariesProcessors[i].processTemplateStart(
-                    this.context, itemplateStart, this.templateBoundariesStructureHandler);
+            this.templateBoundariesProcessors[i].processTemplateStart(this.context, itemplateStart, structureHandler);
 
             if (this.engineContext != null) {
-                this.templateBoundariesStructureHandler.applyContextModifications(this.engineContext);
+                structureHandler.applyContextModifications(this.engineContext);
             }
 
-            if (this.templateBoundariesStructureHandler.insertText) {
+            if (structureHandler.insertText) {
 
                 model = resetModel(model, true);
-                model.add(new Text(this.templateBoundariesStructureHandler.insertTextValue));
-                modelHandler = this.templateBoundariesStructureHandler.insertTextProcessable? this : this.next;
+                model.add(new Text(structureHandler.insertTextValue));
+                modelHandler = structureHandler.insertTextProcessable? this : this.next;
 
-            } else if (this.templateBoundariesStructureHandler.insertModel) {
+            } else if (structureHandler.insertModel) {
 
                 model = resetModel(model, true);
-                model.addModel(this.templateBoundariesStructureHandler.insertModelValue);
-                modelHandler = this.templateBoundariesStructureHandler.insertModelProcessable? this : this.next;
+                model.addModel(structureHandler.insertModelValue);
+                modelHandler = structureHandler.insertModelProcessable? this : this.next;
 
             }
 
@@ -319,33 +319,32 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          */
         Model model = null;
         ITemplateHandler modelHandler = this;
-
+        final TemplateBoundariesStructureHandler structureHandler = this.templateBoundariesStructureHandler;
 
         /*
          * EXECUTE PROCESSORS
          */
         for (int i = 0; i < this.templateBoundariesProcessors.length; i++) {
 
-            this.templateBoundariesStructureHandler.reset();
+            structureHandler.reset();
 
-            this.templateBoundariesProcessors[i].processTemplateEnd(
-                    this.context, itemplateEnd, this.templateBoundariesStructureHandler);
+            this.templateBoundariesProcessors[i].processTemplateEnd(this.context, itemplateEnd, structureHandler);
 
             if (this.engineContext != null) {
-                this.templateBoundariesStructureHandler.applyContextModifications(this.engineContext);
+                structureHandler.applyContextModifications(this.engineContext);
             }
 
-            if (this.templateBoundariesStructureHandler.insertText) {
+            if (structureHandler.insertText) {
 
                 model = resetModel(model, true);
-                model.add(new Text(this.templateBoundariesStructureHandler.insertTextValue));
-                modelHandler = this.templateBoundariesStructureHandler.insertTextProcessable? this : this.next;
+                model.add(new Text(structureHandler.insertTextValue));
+                modelHandler = structureHandler.insertTextProcessable? this : this.next;
 
-            } else if (this.templateBoundariesStructureHandler.insertModel) {
+            } else if (structureHandler.insertModel) {
 
                 model = resetModel(model, true);
-                model.addModel(this.templateBoundariesStructureHandler.insertModelValue);
-                modelHandler = this.templateBoundariesStructureHandler.insertModelProcessable? this : this.next;
+                model.addModel(structureHandler.insertModelValue);
+                modelHandler = structureHandler.insertModelProcessable? this : this.next;
 
             }
 
@@ -425,6 +424,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         boolean discardEvent = false;
         Model model = null;
         ITemplateHandler modelHandler = this;
+        final TextStructureHandler structureHandler = this.textStructureHandler;
 
 
         /*
@@ -432,22 +432,22 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          */
         for (int i = 0; !discardEvent && i < this.textProcessors.length; i++) {
 
-            this.textStructureHandler.reset();
+            structureHandler.reset();
 
-            this.textProcessors[i].process(this.context, text, this.textStructureHandler);
+            this.textProcessors[i].process(this.context, text, structureHandler);
 
-            if (this.textStructureHandler.setText) {
+            if (structureHandler.setText) {
 
-                text = new Text(this.textStructureHandler.setTextValue);
+                text = new Text(structureHandler.setTextValue);
 
-            } else if (this.textStructureHandler.replaceWithModel) {
+            } else if (structureHandler.replaceWithModel) {
 
                 model = resetModel(model, true);
-                model.addModel(this.textStructureHandler.replaceWithModelValue);
-                modelHandler = this.textStructureHandler.replaceWithModelProcessable? this : this.next;
+                model.addModel(structureHandler.replaceWithModelValue);
+                modelHandler = structureHandler.replaceWithModelProcessable? this : this.next;
                 discardEvent = true;
 
-            } else if (this.textStructureHandler.removeText) {
+            } else if (structureHandler.removeText) {
 
                 model = null;
                 discardEvent = true;
@@ -513,6 +513,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         boolean discardEvent = false;
         Model model = null;
         ITemplateHandler modelHandler = this;
+        final CommentStructureHandler structureHandler = this.commentStructureHandler;
 
 
         /*
@@ -520,22 +521,22 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          */
         for (int i = 0; !discardEvent && i < this.commentProcessors.length; i++) {
 
-            this.commentStructureHandler.reset();
+            structureHandler.reset();
 
-            this.commentProcessors[i].process(this.context, comment, this.commentStructureHandler);
+            this.commentProcessors[i].process(this.context, comment, structureHandler);
 
-            if (this.commentStructureHandler.setContent) {
+            if (structureHandler.setContent) {
 
-                comment = new Comment(comment.prefix, this.commentStructureHandler.setContentValue, comment.suffix);
+                comment = new Comment(comment.prefix, structureHandler.setContentValue, comment.suffix);
 
-            } else if (this.commentStructureHandler.replaceWithModel) {
+            } else if (structureHandler.replaceWithModel) {
 
                 model = resetModel(model, true);
-                model.addModel(this.commentStructureHandler.replaceWithModelValue);
-                modelHandler = this.commentStructureHandler.replaceWithModelProcessable? this : this.next;
+                model.addModel(structureHandler.replaceWithModelValue);
+                modelHandler = structureHandler.replaceWithModelProcessable? this : this.next;
                 discardEvent = true;
 
-            } else if (this.commentStructureHandler.removeComment) {
+            } else if (structureHandler.removeComment) {
 
                 model = null;
                 discardEvent = true;
@@ -601,6 +602,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         boolean discardEvent = false;
         Model model = null;
         ITemplateHandler modelHandler = this;
+        final CDATASectionStructureHandler structureHandler = this.cdataSectionStructureHandler;
 
 
         /*
@@ -608,22 +610,22 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          */
         for (int i = 0; !discardEvent && i < this.cdataSectionProcessors.length; i++) {
 
-            this.cdataSectionStructureHandler.reset();
+            structureHandler.reset();
 
-            this.cdataSectionProcessors[i].process(this.context, cdataSection, this.cdataSectionStructureHandler);
+            this.cdataSectionProcessors[i].process(this.context, cdataSection, structureHandler);
 
-            if (this.cdataSectionStructureHandler.setContent) {
+            if (structureHandler.setContent) {
 
-                cdataSection = new CDATASection(cdataSection.prefix, this.cdataSectionStructureHandler.setContentValue, cdataSection.suffix);
+                cdataSection = new CDATASection(cdataSection.prefix, structureHandler.setContentValue, cdataSection.suffix);
 
-            } else if (this.cdataSectionStructureHandler.replaceWithModel) {
+            } else if (structureHandler.replaceWithModel) {
 
                 model = resetModel(model, true);
-                model.addModel(this.cdataSectionStructureHandler.replaceWithModelValue);
-                modelHandler = this.cdataSectionStructureHandler.replaceWithModelProcessable? this : this.next;
+                model.addModel(structureHandler.replaceWithModelValue);
+                modelHandler = structureHandler.replaceWithModelProcessable? this : this.next;
                 discardEvent = true;
 
-            } else if (this.cdataSectionStructureHandler.removeCDATASection) {
+            } else if (structureHandler.removeCDATASection) {
 
                 model = null;
                 discardEvent = true;
@@ -714,34 +716,38 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
+         * GET THE STRUCTURE HANDLERS INTO LOCAL VARS
+         */
+        final ElementTagStructureHandler tagStructureHandler = this.elementTagStructureHandler;
+        final ElementModelStructureHandler modelStructureHandler = this.elementModelStructureHandler;
+
+
+        /*
          * EXECUTE PROCESSORS
          */
         IElementProcessor processor;
         while (!vars.discardEvent && (processor = vars.processorIterator.next(standaloneElementTag)) != null) {
 
-            this.elementTagStructureHandler.reset();
-            this.elementModelStructureHandler.reset();
+            tagStructureHandler.reset();
+            modelStructureHandler.reset();
 
             if (processor instanceof IElementTagProcessor) {
 
                 final IElementTagProcessor elementProcessor = ((IElementTagProcessor)processor);
-                elementProcessor.process(this.context, standaloneElementTag, this.elementTagStructureHandler);
+                elementProcessor.process(this.context, standaloneElementTag, tagStructureHandler);
 
-                if (this.engineContext != null) {
-                    this.elementTagStructureHandler.applyContextModifications(this.engineContext);
-                }
-
+                tagStructureHandler.applyContextModifications(this.engineContext);
                 standaloneElementTag =
-                        this.elementTagStructureHandler.applyAttributes(this.attributeDefinitions, standaloneElementTag);
+                        tagStructureHandler.applyAttributes(this.attributeDefinitions, standaloneElementTag);
 
-                if (this.elementTagStructureHandler.iterateElement) {
+                if (tagStructureHandler.iterateElement) {
 
                     // Initialize a synthetic model
                     this.eventModelController.startGatheringIteratedModel(
                             standaloneElementTag, vars,
-                            this.elementTagStructureHandler.iterVariableName,
-                            this.elementTagStructureHandler.iterStatusVariableName,
-                            this.elementTagStructureHandler.iteratedObject);
+                            tagStructureHandler.iterVariableName,
+                            tagStructureHandler.iterStatusVariableName,
+                            tagStructureHandler.iteratedObject);
 
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- we need processIteration() to read our data
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
@@ -754,15 +760,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Complete exit of the handler method: no more processing to do from here
                     return;
 
-                } else if (this.elementTagStructureHandler.setBodyText) {
+                } else if (tagStructureHandler.setBodyText) {
 
                     // Initialize model
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
                     // Prepare the text node that will be added to the queue (which will be suspended)
-                    final Text text = new Text(this.elementTagStructureHandler.setBodyTextValue);
+                    final Text text = new Text(tagStructureHandler.setBodyTextValue);
                     vars.modelAfter.add(text);
-                    vars.modelAfterProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
+                    vars.modelAfterProcessable = tagStructureHandler.setBodyTextProcessable;
 
                     // Initialize the iterated model object
                     final StandaloneEquivalentSyntheticModel equivalentSyntheticModel =
@@ -777,15 +783,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Complete exit of the handler method: no more processing to do from here
                     return;
 
-                } else if (this.elementTagStructureHandler.setBodyModel) {
+                } else if (tagStructureHandler.setBodyModel) {
 
                     // Initialize model
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
                     // Prepare the queue (that we will suspend)
                     // Model will be automatically cloned if mutable
-                    vars.modelAfter.addModel(this.elementTagStructureHandler.setBodyModelValue);
-                    vars.modelAfterProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
+                    vars.modelAfter.addModel(tagStructureHandler.setBodyModelValue);
+                    vars.modelAfterProcessable = tagStructureHandler.setBodyModelProcessable;
 
                     // Initialize the iterated model object
                     final StandaloneEquivalentSyntheticModel equivalentSyntheticModel =
@@ -800,14 +806,14 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Complete exit of the handler method: no more processing to do from here
                     return;
 
-                } else if (this.elementTagStructureHandler.insertBeforeModel) {
+                } else if (tagStructureHandler.insertBeforeModel) {
 
                     // Initialize model
                     vars.modelBefore = resetModel(vars.modelBefore, true);
 
-                    vars.modelBefore.addModel(this.elementTagStructureHandler.insertBeforeModelValue);
+                    vars.modelBefore.addModel(tagStructureHandler.insertBeforeModelValue);
 
-                } else if (this.elementTagStructureHandler.insertImmediatelyAfterModel) {
+                } else if (tagStructureHandler.insertImmediatelyAfterModel) {
 
                     // We will only be resetting the queue if we had set it to be executed before delegating, as in that
                     // case adding our new model to the beginning of what already is in the queue would make no sense
@@ -818,46 +824,46 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    vars.modelAfterProcessable = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
+                    vars.modelAfterProcessable = tagStructureHandler.insertImmediatelyAfterModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    vars.modelAfter.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
+                    vars.modelAfter.insertModel(0, tagStructureHandler.insertImmediatelyAfterModelValue);
 
                     // No intervention on the body flags - we will not be removing the body, just inserting before it
 
-                } else if (this.elementTagStructureHandler.replaceWithText) {
+                } else if (tagStructureHandler.replaceWithText) {
 
                     // Initialize model
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                    vars.modelAfterProcessable = this.elementTagStructureHandler.replaceWithTextProcessable;
+                    vars.modelAfterProcessable = tagStructureHandler.replaceWithTextProcessable;
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
-                    vars.modelAfter.add(new Text(this.elementTagStructureHandler.replaceWithTextValue));
+                    vars.modelAfter.add(new Text(tagStructureHandler.replaceWithTextValue));
 
                     vars.discardEvent = true;
 
-                } else if (this.elementTagStructureHandler.replaceWithModel) {
+                } else if (tagStructureHandler.replaceWithModel) {
 
                     // Initialize model
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                    vars.modelAfterProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
+                    vars.modelAfterProcessable = tagStructureHandler.replaceWithModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    vars.modelAfter.addModel(this.elementTagStructureHandler.replaceWithModelValue);
+                    vars.modelAfter.addModel(tagStructureHandler.replaceWithModelValue);
 
                     vars.discardEvent = true;
 
-                } else if (this.elementTagStructureHandler.removeElement) {
+                } else if (tagStructureHandler.removeElement) {
 
                     // Initialize model (if it already exists)
                     vars.modelAfter = resetModel(vars.modelAfter, false);
 
                     vars.discardEvent = true;
 
-                } else if (this.elementTagStructureHandler.removeTags) {
+                } else if (tagStructureHandler.removeTags) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
 
@@ -924,11 +930,10 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 //      anyway) will be ignored.
                 final Model processedModel = new Model(currentSyntheticModel.getInnerModel());
 
-                ((IElementModelProcessor) processor).process(this.context, processedModel, this.elementModelStructureHandler);
+                ((IElementModelProcessor) processor).process(this.context, processedModel, modelStructureHandler);
 
-                if (this.engineContext != null) {
-                    this.elementModelStructureHandler.applyContextModifications(this.engineContext);
-                }
+
+                modelStructureHandler.applyContextModifications(this.engineContext);
 
 
                 // Reset the skipbody flags so that this model can be executed in the same conditions as the original
@@ -1035,34 +1040,38 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
+         * GET THE STRUCTURE HANDLERS INTO LOCAL VARS
+         */
+        final ElementTagStructureHandler tagStructureHandler = this.elementTagStructureHandler;
+        final ElementModelStructureHandler modelStructureHandler = this.elementModelStructureHandler;
+
+
+        /*
          * EXECUTE PROCESSORS
          */
         IElementProcessor processor;
         while (!vars.discardEvent && (processor = vars.processorIterator.next(openElementTag)) != null) {
 
-            this.elementTagStructureHandler.reset();
-            this.elementModelStructureHandler.reset();
+            tagStructureHandler.reset();
+            modelStructureHandler.reset();
 
             if (processor instanceof IElementTagProcessor) {
 
                 final IElementTagProcessor elementProcessor = ((IElementTagProcessor)processor);
-                elementProcessor.process(this.context, openElementTag, this.elementTagStructureHandler);
+                elementProcessor.process(this.context, openElementTag, tagStructureHandler);
 
-                if (this.engineContext != null) {
-                    this.elementTagStructureHandler.applyContextModifications(this.engineContext);
-                }
-
+                tagStructureHandler.applyContextModifications(this.engineContext);
                 openElementTag =
-                        this.elementTagStructureHandler.applyAttributes(this.attributeDefinitions, openElementTag);
+                        tagStructureHandler.applyAttributes(this.attributeDefinitions, openElementTag);
 
-                if (this.elementTagStructureHandler.iterateElement) {
+                if (tagStructureHandler.iterateElement) {
 
                     // Initialize the synthetic model
                     this.eventModelController.startGatheringIteratedModel(
                             openElementTag, vars,
-                            this.elementTagStructureHandler.iterVariableName,
-                            this.elementTagStructureHandler.iterStatusVariableName,
-                            this.elementTagStructureHandler.iteratedObject);
+                            tagStructureHandler.iterVariableName,
+                            tagStructureHandler.iterStatusVariableName,
+                            tagStructureHandler.iteratedObject);
 
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- we need processIteration() to read our data
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
@@ -1070,38 +1079,38 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Nothing else to be done by this handler... let's just queue the rest of the events to be iterated
                     return;
 
-                } else if (this.elementTagStructureHandler.setBodyText) {
+                } else if (tagStructureHandler.setBodyText) {
 
                     // Initialize model
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                    vars.modelAfterProcessable = this.elementTagStructureHandler.setBodyTextProcessable;
+                    vars.modelAfterProcessable = tagStructureHandler.setBodyTextProcessable;
 
                     // Add the new Text to the queue
-                    vars.modelAfter.add(new Text(this.elementTagStructureHandler.setBodyTextValue));
+                    vars.modelAfter.add(new Text(tagStructureHandler.setBodyTextValue));
 
                     vars.skipBody = SkipBody.SKIP_ALL;
 
-                } else if (this.elementTagStructureHandler.setBodyModel) {
+                } else if (tagStructureHandler.setBodyModel) {
 
                     // Initialize model
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                    vars.modelAfterProcessable = this.elementTagStructureHandler.setBodyModelProcessable;
+                    vars.modelAfterProcessable = tagStructureHandler.setBodyModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    vars.modelAfter.addModel(this.elementTagStructureHandler.setBodyModelValue);
+                    vars.modelAfter.addModel(tagStructureHandler.setBodyModelValue);
 
                     vars.skipBody = SkipBody.SKIP_ALL;
 
-                } else if (this.elementTagStructureHandler.insertBeforeModel) {
+                } else if (tagStructureHandler.insertBeforeModel) {
 
                     // Initialize model
                     vars.modelBefore = resetModel(vars.modelBefore, true);
 
-                    vars.modelBefore.addModel(this.elementTagStructureHandler.insertBeforeModelValue);
+                    vars.modelBefore.addModel(tagStructureHandler.insertBeforeModelValue);
 
-                } else if (this.elementTagStructureHandler.insertImmediatelyAfterModel) {
+                } else if (tagStructureHandler.insertImmediatelyAfterModel) {
 
                     // We will only be resetting the queue if we had set it to be executed before delegating, as in that
                     // case adding our new model to the beginning of what already is in the queue would make no sense
@@ -1112,43 +1121,43 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                     // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
                     // was already added to the body queue, simply adding our insertion at the beginning of it all
-                    vars.modelAfterProcessable = this.elementTagStructureHandler.insertImmediatelyAfterModelProcessable;
+                    vars.modelAfterProcessable = tagStructureHandler.insertImmediatelyAfterModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    vars.modelAfter.insertModel(0, this.elementTagStructureHandler.insertImmediatelyAfterModelValue);
+                    vars.modelAfter.insertModel(0, tagStructureHandler.insertImmediatelyAfterModelValue);
 
                     // No intervention on the body flags - we will not be removing the body, just inserting before it
 
-                } else if (this.elementTagStructureHandler.replaceWithText) {
+                } else if (tagStructureHandler.replaceWithText) {
 
                     // Initialize model
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                    vars.modelAfterProcessable = this.elementTagStructureHandler.replaceWithTextProcessable;
+                    vars.modelAfterProcessable = tagStructureHandler.replaceWithTextProcessable;
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
-                    vars.modelAfter.add(new Text(this.elementTagStructureHandler.replaceWithTextValue));
+                    vars.modelAfter.add(new Text(tagStructureHandler.replaceWithTextValue));
 
                     vars.discardEvent = true;
                     vars.skipBody = SkipBody.SKIP_ALL;
                     vars.skipCloseTag = true;
 
-                } else if (this.elementTagStructureHandler.replaceWithModel) {
+                } else if (tagStructureHandler.replaceWithModel) {
 
                     // Initialize model
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                    vars.modelAfterProcessable = this.elementTagStructureHandler.replaceWithModelProcessable;
+                    vars.modelAfterProcessable = tagStructureHandler.replaceWithModelProcessable;
 
                     // Model will be automatically cloned if mutable
-                    vars.modelAfter.addModel(this.elementTagStructureHandler.replaceWithModelValue);
+                    vars.modelAfter.addModel(tagStructureHandler.replaceWithModelValue);
 
                     vars.discardEvent = true;
                     vars.skipBody = SkipBody.SKIP_ALL;
                     vars.skipCloseTag = true;
 
-                } else if (this.elementTagStructureHandler.removeElement) {
+                } else if (tagStructureHandler.removeElement) {
 
                     // Initialize model (if it already exists)
                     vars.modelAfter = resetModel(vars.modelAfter, false);
@@ -1157,21 +1166,21 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     vars.skipBody = SkipBody.SKIP_ALL;
                     vars.skipCloseTag = true;
 
-                } else if (this.elementTagStructureHandler.removeTags) {
+                } else if (tagStructureHandler.removeTags) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
 
                     vars.discardEvent = true;
                     vars.skipCloseTag = true;
 
-                } else if (this.elementTagStructureHandler.removeBody) {
+                } else if (tagStructureHandler.removeBody) {
 
                     // Initialize model (if it already exists)
                     vars.modelAfter = resetModel(vars.modelAfter, false);
 
                     vars.skipBody = SkipBody.SKIP_ALL;
 
-                } else if (this.elementTagStructureHandler.removeAllButFirstChild) {
+                } else if (tagStructureHandler.removeAllButFirstChild) {
 
                     // Initialize model (if it already exists)
                     vars.modelAfter = resetModel(vars.modelAfter, false);
@@ -1233,11 +1242,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 //      anyway) will be ignored.
                 final Model processedModel = new Model(currentSyntheticModel.getInnerModel());
 
-                ((IElementModelProcessor) processor).process(this.context, processedModel, this.elementModelStructureHandler);
+                ((IElementModelProcessor) processor).process(this.context, processedModel, modelStructureHandler);
 
-                if (this.engineContext != null) {
-                    this.elementModelStructureHandler.applyContextModifications(this.engineContext);
-                }
+                modelStructureHandler.applyContextModifications(this.engineContext);
 
 
                 /*
@@ -1415,6 +1422,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         boolean discardEvent = false;
         Model model = null;
         ITemplateHandler modelHandler = this;
+        final DocTypeStructureHandler structureHandler = this.docTypeStructureHandler;
 
 
         /*
@@ -1422,28 +1430,28 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          */
         for (int i = 0; !discardEvent && i < this.docTypeProcessors.length; i++) {
 
-            this.docTypeStructureHandler.reset();
+            structureHandler.reset();
 
-            this.docTypeProcessors[i].process(this.context, docType, this.docTypeStructureHandler);
+            this.docTypeProcessors[i].process(this.context, docType, structureHandler);
 
-            if (this.docTypeStructureHandler.setDocType) {
+            if (structureHandler.setDocType) {
 
                 docType =
                         new DocType(
-                            this.docTypeStructureHandler.setDocTypeKeyword,
-                            this.docTypeStructureHandler.setDocTypeElementName,
-                            this.docTypeStructureHandler.setDocTypePublicId,
-                            this.docTypeStructureHandler.setDocTypeSystemId,
-                            this.docTypeStructureHandler.setDocTypeInternalSubset);
+                            structureHandler.setDocTypeKeyword,
+                            structureHandler.setDocTypeElementName,
+                            structureHandler.setDocTypePublicId,
+                            structureHandler.setDocTypeSystemId,
+                            structureHandler.setDocTypeInternalSubset);
 
-            } else if (this.docTypeStructureHandler.replaceWithModel) {
+            } else if (structureHandler.replaceWithModel) {
 
                 model = resetModel(model, true);
-                model.addModel(this.docTypeStructureHandler.replaceWithModelValue);
-                modelHandler = this.docTypeStructureHandler.replaceWithModelProcessable? this : this.next;
+                model.addModel(structureHandler.replaceWithModelValue);
+                modelHandler = structureHandler.replaceWithModelProcessable? this : this.next;
                 discardEvent = true;
 
-            } else if (this.docTypeStructureHandler.removeDocType) {
+            } else if (structureHandler.removeDocType) {
 
                 model = null;
                 discardEvent = true;
@@ -1509,6 +1517,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         boolean discardEvent = false;
         Model model = null;
         ITemplateHandler modelHandler = this;
+        final XMLDeclarationStructureHandler structureHandler = this.xmlDeclarationStructureHandler;
 
 
         /*
@@ -1516,27 +1525,27 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          */
         for (int i = 0; !discardEvent && i < this.xmlDeclarationProcessors.length; i++) {
 
-            this.xmlDeclarationStructureHandler.reset();
+            structureHandler.reset();
 
-            this.xmlDeclarationProcessors[i].process(this.context, xmlDeclaration, this.xmlDeclarationStructureHandler);
+            this.xmlDeclarationProcessors[i].process(this.context, xmlDeclaration, structureHandler);
 
-            if (this.xmlDeclarationStructureHandler.setXMLDeclaration) {
+            if (structureHandler.setXMLDeclaration) {
 
                 xmlDeclaration =
                         new XMLDeclaration(
-                                this.xmlDeclarationStructureHandler.setXMLDeclarationKeyword,
-                                this.xmlDeclarationStructureHandler.setXMLDeclarationVersion,
-                                this.xmlDeclarationStructureHandler.setXMLDeclarationEncoding,
-                                this.xmlDeclarationStructureHandler.setXMLDeclarationStandalone);
+                                structureHandler.setXMLDeclarationKeyword,
+                                structureHandler.setXMLDeclarationVersion,
+                                structureHandler.setXMLDeclarationEncoding,
+                                structureHandler.setXMLDeclarationStandalone);
 
-            } else if (this.xmlDeclarationStructureHandler.replaceWithModel) {
+            } else if (structureHandler.replaceWithModel) {
 
                 model = resetModel(model, true);
-                model.addModel(this.xmlDeclarationStructureHandler.replaceWithModelValue);
-                modelHandler = this.xmlDeclarationStructureHandler.replaceWithModelProcessable? this : this.next;
+                model.addModel(structureHandler.replaceWithModelValue);
+                modelHandler = structureHandler.replaceWithModelProcessable? this : this.next;
                 discardEvent = true;
 
-            } else if (this.xmlDeclarationStructureHandler.removeXMLDeclaration) {
+            } else if (structureHandler.removeXMLDeclaration) {
 
                 model = null;
                 discardEvent = true;
@@ -1602,6 +1611,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         boolean discardEvent = false;
         Model model = null;
         ITemplateHandler modelHandler = this;
+        final ProcessingInstructionStructureHandler structureHandler = this.processingInstructionStructureHandler;
 
 
         /*
@@ -1609,25 +1619,25 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          */
         for (int i = 0; !discardEvent && i < this.processingInstructionProcessors.length; i++) {
 
-            this.processingInstructionStructureHandler.reset();
+            structureHandler.reset();
 
-            this.processingInstructionProcessors[i].process(this.context, processingInstruction, this.processingInstructionStructureHandler);
+            this.processingInstructionProcessors[i].process(this.context, processingInstruction, structureHandler);
 
-            if (this.processingInstructionStructureHandler.setProcessingInstruction) {
+            if (structureHandler.setProcessingInstruction) {
 
                 processingInstruction =
                         new ProcessingInstruction(
-                                this.processingInstructionStructureHandler.setProcessingInstructionTarget,
-                                this.processingInstructionStructureHandler.setProcessingInstructionContent);
+                                structureHandler.setProcessingInstructionTarget,
+                                structureHandler.setProcessingInstructionContent);
 
-            } else if (this.processingInstructionStructureHandler.replaceWithModel) {
+            } else if (structureHandler.replaceWithModel) {
 
                 model = resetModel(model, true);
-                model.addModel(this.processingInstructionStructureHandler.replaceWithModelValue);
-                modelHandler = this.processingInstructionStructureHandler.replaceWithModelProcessable? this : this.next;
+                model.addModel(structureHandler.replaceWithModelValue);
+                modelHandler = structureHandler.replaceWithModelProcessable? this : this.next;
                 discardEvent = true;
 
-            } else if (this.processingInstructionStructureHandler.removeProcessingInstruction) {
+            } else if (structureHandler.removeProcessingInstruction) {
 
                 model = null;
                 discardEvent = true;

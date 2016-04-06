@@ -137,6 +137,10 @@ public final class ElementModelStructureHandler implements IElementModelStructur
 
     void applyContextModifications(final IEngineContext engineContext) {
 
+        if (engineContext == null) {
+            return;
+        }
+
         if (this.setLocalVariable) {
             engineContext.setVariables(this.addedLocalVariables);
         }
