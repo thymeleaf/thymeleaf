@@ -22,7 +22,6 @@ package org.thymeleaf.engine;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.engine.EventModelController.SkipBody;
-import org.thymeleaf.engine.ProcessorTemplateHandler.ProcessorExecutionVars;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
 
@@ -58,7 +57,7 @@ final class DelayedSyntheticModel extends AbstractSyntheticModel {
 
 
 
-    public void process(final ITemplateHandler handler) {
+    public boolean process() {
 
         /*
          * Check this hasn't already been processed. Only one execution is allowed
@@ -78,7 +77,7 @@ final class DelayedSyntheticModel extends AbstractSyntheticModel {
          * PROCESS THE MODEL
          */
         final Model model = getInnerModel();
-        model.process(handler);
+        model.process(getProcessorTemplateHandler());
 
         /*
          * DECREASE THE CONTEXT LEVEL
@@ -90,6 +89,9 @@ final class DelayedSyntheticModel extends AbstractSyntheticModel {
          * SET THE EXECUTION FLAG TO TRUE
          */
         this.processed = true;
+
+
+        return true;
 
     }
 

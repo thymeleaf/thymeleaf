@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.engine;
 
+import java.util.Arrays;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -85,6 +86,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     private final TextStructureHandler textStructureHandler;
     private final XMLDeclarationStructureHandler xmlDeclarationStructureHandler;
 
+
     private ITemplateHandler next = null;
 
     private IEngineConfiguration configuration = null;
@@ -119,6 +121,11 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
     private ISyntheticModel currentSyntheticModel = null;
 
+
+    private boolean throttleEngine = true;
+    private TemplateProcessorController templateProcessorController = null;
+    private IEngineProcessableModel[] pendingProcessings = null;
+    private int pendingProcessingsSize = 0;
 
 
 
@@ -215,6 +222,11 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
 
+    public void setTemplateProcessorController(final TemplateProcessorController templateProcessorController) {
+        this.templateProcessorController = templateProcessorController;
+        this.throttleEngine = (this.templateProcessorController != null);
+    }
+
 
 
 
@@ -290,7 +302,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * PROCESS THE QUEUE, launching all the queued events
          */
         if (model != null) {
-            model.process(modelHandler);
+            if (this.throttleEngine) {
+                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler));
+                handlePending();
+            } else {
+                model.process(modelHandler);
+            }
         }
 
     }
@@ -355,7 +372,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * PROCESS THE QUEUE, launching all the queued events (BEFORE DELEGATING)
          */
         if (model != null) {
-            model.process(modelHandler);
+            if (this.throttleEngine) {
+                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler));
+                handlePending();
+            } else {
+                model.process(modelHandler);
+            }
         }
 
 
@@ -469,7 +491,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * PROCESS THE QUEUE, launching all the queued events
          */
         if (model != null) {
-            model.process(modelHandler);
+            if (this.throttleEngine) {
+                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler));
+                handlePending();
+            } else {
+                model.process(modelHandler);
+            }
         }
 
     }
@@ -558,7 +585,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * PROCESS THE QUEUE, launching all the queued events
          */
         if (model != null) {
-            model.process(modelHandler);
+            if (this.throttleEngine) {
+                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler));
+                handlePending();
+            } else {
+                model.process(modelHandler);
+            }
         }
 
     }
@@ -647,7 +679,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * PROCESS THE QUEUE, launching all the queued events
          */
         if (model != null) {
-            model.process(modelHandler);
+            if (this.throttleEngine) {
+                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler));
+                handlePending();
+            } else {
+                model.process(modelHandler);
+            }
         }
 
     }
@@ -755,7 +792,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Process the synthetic model
                     final ISyntheticModel newGatheredModel = this.eventModelController.getGatheredModel();
                     this.eventModelController.resetGathering();
-                    newGatheredModel.process(this);
+                    newGatheredModel.process();
 
                     // Complete exit of the handler method: no more processing to do from here
                     return;
@@ -778,7 +815,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Fire the now-equivalent events. Note the handleOpenElement event will take care of the suspended queue
-                    equivalentSyntheticModel.process(this);
+                    equivalentSyntheticModel.process();
 
                     // Complete exit of the handler method: no more processing to do from here
                     return;
@@ -801,7 +838,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Fire the now-equivalent events. Note the handleOpenElement event will take care of the suspended queue
-                    equivalentSyntheticModel.process(this);
+                    equivalentSyntheticModel.process();
 
                     // Complete exit of the handler method: no more processing to do from here
                     return;
@@ -909,7 +946,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- that's the responsibility of the close event
 
                     // Process the new synthetic model (no need to wait for a "close" event, as this is a standalone)
-                    newSyntheticModel.process(this);
+                    newSyntheticModel.process();
 
                     // Nothing else to be done by this handler... let's just queue the rest of the events in this element
                     return;
@@ -1339,7 +1376,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
             if (this.eventModelController.isGatheringFinished()) {
                 final ISyntheticModel syntheticModel = this.eventModelController.getGatheredModel();
                 this.eventModelController.resetGathering();
-                syntheticModel.process(this);
+                syntheticModel.process();
             }
 
             return;
@@ -1473,7 +1510,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * PROCESS THE QUEUE, launching all the queued events
          */
         if (model != null) {
-            model.process(modelHandler);
+            if (this.throttleEngine) {
+                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler));
+                handlePending();
+            } else {
+                model.process(modelHandler);
+            }
         }
 
     }
@@ -1567,7 +1609,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * PROCESS THE QUEUE, launching all the queued events
          */
         if (model != null) {
-            model.process(modelHandler);
+            if (this.throttleEngine) {
+                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler));
+                handlePending();
+            } else {
+                model.process(modelHandler);
+            }
         }
 
     }
@@ -1659,10 +1706,75 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * PROCESS THE QUEUE, launching all the queued events
          */
         if (model != null) {
-            model.process(modelHandler);
+            if (this.throttleEngine) {
+                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler));
+                handlePending();
+            } else {
+                model.process(modelHandler);
+            }
         }
 
     }
+
+
+
+
+
+
+
+
+    public boolean handlePending() {
+
+        if (this.throttleEngine) {
+
+            final TemplateProcessorController controller = this.templateProcessorController;
+
+            if (controller.stopProcessing) {
+                controller.processorTemplateHandlerPending = true;
+                return false;
+            }
+
+            while (this.pendingProcessingsSize > 0) {
+                if (!this.pendingProcessings[this.pendingProcessingsSize - 1].process()) {
+                    controller.processorTemplateHandlerPending = true;
+                    return false;
+                }
+                this.pendingProcessingsSize--;
+            }
+
+            controller.processorTemplateHandlerPending = false;
+            return true;
+
+        }
+        return true;
+
+    }
+
+
+
+
+
+
+
+
+    void stackPendingProcessing(final IEngineProcessableModel processableModel) {
+
+        if (this.pendingProcessings == null) {
+            this.pendingProcessings = new IEngineProcessableModel[5];
+            this.pendingProcessingsSize = 0;
+        }
+
+        if (this.pendingProcessingsSize == this.pendingProcessings.length) {
+            this.pendingProcessings = Arrays.copyOf(this.pendingProcessings, this.pendingProcessings.length + 5);
+        }
+
+        this.pendingProcessings[this.pendingProcessingsSize] = processableModel;
+        this.pendingProcessingsSize++;
+
+    }
+
+
+
 
 
 
@@ -1692,47 +1804,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         model.reset();
         return model;
     }
-
-
-
-
-
-
-    static final class ProcessorExecutionVars {
-
-        final ElementProcessorIterator processorIterator;
-        Model modelBefore = null;
-        Model modelAfter = null;
-        boolean modelAfterProcessable = false;
-        boolean discardEvent = false;
-        SkipBody skipBody = SkipBody.PROCESS;
-        boolean skipCloseTag = false;
-
-
-        ProcessorExecutionVars() {
-            super();
-            this.processorIterator = new ElementProcessorIterator();
-        }
-
-
-        ProcessorExecutionVars cloneVars() {
-            final ProcessorExecutionVars clone = new ProcessorExecutionVars();
-            clone.processorIterator.resetAsCloneOf(this.processorIterator);
-            if (this.modelBefore != null) {
-                clone.modelBefore = (Model)this.modelBefore.cloneModel();
-            }
-            if (this.modelAfter != null) {
-                clone.modelAfter = (Model)this.modelAfter.cloneModel();
-            }
-            clone.modelAfterProcessable = this.modelAfterProcessable;
-            clone.discardEvent = this.discardEvent;
-            clone.skipBody = this.skipBody;
-            clone.skipCloseTag = this.skipCloseTag;
-            return clone;
-        }
-
-    }
-
 
 
 }

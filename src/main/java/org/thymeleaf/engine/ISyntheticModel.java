@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.engine;
 
-import org.thymeleaf.engine.ProcessorTemplateHandler.ProcessorExecutionVars;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
@@ -37,10 +36,7 @@ import org.thymeleaf.model.IXMLDeclaration;
  * @since 3.0.0
  *
  */
-interface ISyntheticModel {
-
-
-    void process(final ITemplateHandler handler);
+interface ISyntheticModel extends IEngineProcessableModel {
 
     boolean isGatheringFinished();
     boolean isProcessed();
@@ -61,6 +57,5 @@ interface ISyntheticModel {
     void gatherDocType(final IDocType docType);
     void gatherXMLDeclaration(final IXMLDeclaration xmlDeclaration);
     void gatherProcessingInstruction(final IProcessingInstruction processingInstruction);
-
 
 }

@@ -29,7 +29,6 @@ import java.util.Map;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.engine.EventModelController.SkipBody;
-import org.thymeleaf.engine.ProcessorTemplateHandler.ProcessorExecutionVars;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.model.IText;
@@ -108,7 +107,13 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
 
 
 
-    public void process(final ITemplateHandler handler) {
+    public boolean process() {
+
+
+        /*
+         * The model handler will always be the ProcessorTemplateHandler
+         */
+        final ITemplateHandler modelHandler = getProcessorTemplateHandler();
 
 
         /*
@@ -149,7 +154,7 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
          * Perform the first iteration, if there is at least one elment (we already obtained the object)
          */
         if (iterationModel != null) {
-            processIteration(iterationModel.modelFirst, handler);
+            processIteration(iterationModel.modelFirst, modelHandler);
         }
 
 
@@ -182,7 +187,7 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
             /*
              * Perform the iteration
              */
-            processIteration(model, handler);
+            processIteration(model, modelHandler);
 
         }
 
@@ -198,6 +203,11 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
          * SET THE EXECUTION FLAG TO TRUE
          */
         this.processed = true;
+
+        /*
+         * RETURN true FOR 'processed' (for now)
+         */
+        return true;
 
     }
 

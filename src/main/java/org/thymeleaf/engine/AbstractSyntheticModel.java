@@ -23,7 +23,6 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.EventModelController.SkipBody;
-import org.thymeleaf.engine.ProcessorTemplateHandler.ProcessorExecutionVars;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
@@ -103,6 +102,10 @@ abstract class AbstractSyntheticModel implements ISyntheticModel {
     }
 
 
+    protected final ProcessorTemplateHandler getProcessorTemplateHandler() {
+        return this.processorTemplateHandler;
+    }
+
 
     public final boolean isGatheringFinished() {
         return this.gatheringFinished;
@@ -128,9 +131,6 @@ abstract class AbstractSyntheticModel implements ISyntheticModel {
         return this.syntheticModel;
     }
 
-
-
-    public abstract void process(final ITemplateHandler handler);
 
 
 
