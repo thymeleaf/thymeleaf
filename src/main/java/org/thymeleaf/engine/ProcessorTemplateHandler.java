@@ -122,7 +122,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     private ISyntheticModel currentSyntheticModel = null;
 
 
-    private boolean throttleEngine = true;
+    private boolean throttleEngine = false;
     private TemplateProcessorController templateProcessorController = null;
     private IEngineProcessableModel[] pendingProcessings = null;
     private int pendingProcessingsSize = 0;
@@ -148,6 +148,10 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         this.processingInstructionStructureHandler = new ProcessingInstructionStructureHandler();
         this.textStructureHandler = new TextStructureHandler();
         this.xmlDeclarationStructureHandler = new XMLDeclarationStructureHandler();
+
+        // TODO Remove this -- only for testing until the complete mechanism is implemented
+        setTemplateProcessorController(new TemplateProcessorController());
+
 
     }
 
