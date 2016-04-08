@@ -277,22 +277,27 @@ final class Model implements IModel {
 
 
 
-    int process(final ITemplateHandler handler) {
-        return process(handler, 0, Integer.MAX_VALUE);
+    void process(final ITemplateHandler handler) {
+        for (int i = 0; i < this.queueSize; i++) {
+            this.queue[i].beHandled(handler);
+        }
     }
 
 
-    int process(final ITemplateHandler handler, final int offset, final int len) {
+    int process(final ITemplateHandler handler, final int offset, final TemplateFlowController controller) {
 
-        if (handler == null || this.queueSize == 0 || offset >= this.queueSize) {
+        if (controller == null) {
+            process(handler);
+            return this.queueSize;
+        }
+
+        if (this.queueSize == 0 || offset >= this.queueSize) {
             return 0;
         }
 
         int processed = 0;
 
-        final int maxi = (len == Integer.MAX_VALUE? this.queueSize : Math.min(this.queueSize, offset + len));
-
-        for (int i = offset; i < maxi; i++) {
+        for (int i = offset; i < this.queueSize && !controller.stopProcessing; i++) {
             this.queue[i].beHandled(handler);
             processed++;
         }

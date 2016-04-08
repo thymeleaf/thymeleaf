@@ -39,7 +39,6 @@ import org.thymeleaf.model.IXMLDeclaration;
 interface ISyntheticModel extends IEngineProcessableModel {
 
     boolean isGatheringFinished();
-    boolean isProcessed();
 
     Model getInnerModel();
 

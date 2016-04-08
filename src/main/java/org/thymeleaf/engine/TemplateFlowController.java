@@ -25,7 +25,7 @@ package org.thymeleaf.engine;
  * @since 3.0.0
  *
  */
-final class TemplateProcessorController {
+final class TemplateFlowController {
 
 
     boolean stopProcessing = false;
@@ -33,7 +33,7 @@ final class TemplateProcessorController {
 
 
 
-    TemplateProcessorController() {
+    TemplateFlowController() {
         super();
     }
 

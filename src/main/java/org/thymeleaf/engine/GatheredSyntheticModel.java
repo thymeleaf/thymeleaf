@@ -22,7 +22,6 @@ package org.thymeleaf.engine;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.engine.EventModelController.SkipBody;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 
 
 /*
@@ -31,67 +30,67 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  * @since 3.0.0
  *
  */
-final class DelayedSyntheticModel extends AbstractSyntheticModel {
+final class GatheredSyntheticModel extends AbstractSyntheticModel {
 
 
     private final IEngineContext context;
 
-    private boolean processed;
+    private int offset;
 
 
 
 
-    DelayedSyntheticModel(
+    GatheredSyntheticModel(
             final IEngineConfiguration configuration, ProcessorTemplateHandler processorTemplateHandler, final IEngineContext context,
-            final EventModelController eventModelController, final SkipBody gatheredSkipBody, final boolean gatheredSkipCloseTag,
+            final EventModelController eventModelController, final TemplateFlowController templateFlowController,
+            final SkipBody gatheredSkipBody, final boolean gatheredSkipCloseTag,
             final ProcessorExecutionVars processorExecutionVars) {
-        super(configuration, processorTemplateHandler, context, eventModelController, gatheredSkipBody, gatheredSkipCloseTag, processorExecutionVars);
+        super(configuration, processorTemplateHandler, context, eventModelController, templateFlowController, gatheredSkipBody, gatheredSkipCloseTag, processorExecutionVars);
         this.context = context;
-        this.processed = false;
-    }
-
-
-    public boolean isProcessed() {
-        return this.processed;
+        this.offset = 0;
     }
 
 
 
     public boolean process() {
 
-        /*
-         * Check this hasn't already been processed. Only one execution is allowed
-         */
-        if (this.processed) {
-            throw new TemplateProcessingException(
-                    "This delayed model has already been processed. Execution can only take place once");
-        }
 
         /*
-         * Reset the "skipBody" and "skipCloseTag" values at the event model controller, and also set this
-         * synthetic model into the processor handler so that it can be used by the executed events
+         * First, check the stopProcess flag
          */
-        prepareProcessing();
+        final TemplateFlowController controller = getTemplateFlowController();
+        if (controller.stopProcessing) {
+            return false;
+        }
+
+        if (this.offset == 0) {
+            /*
+             * Reset the "skipBody" and "skipCloseTag" values at the event model controller, and also set this
+             * synthetic model into the processor handler so that it can be used by the executed events
+             */
+            prepareProcessing();
+        }
 
         /*
          * PROCESS THE MODEL
          */
         final Model model = getInnerModel();
-        model.process(getProcessorTemplateHandler());
+        this.offset += model.process(getProcessorTemplateHandler(), this.offset, controller);
 
         /*
-         * DECREASE THE CONTEXT LEVEL
-         * This was increased before starting gathering, when the handling of the first gathered event started.
+         * Compute whether the whole model has been processed or not
          */
-        this.context.decreaseLevel();
+        final boolean processed = (this.offset == model.queueSize);
 
-        /*
-         * SET THE EXECUTION FLAG TO TRUE
-         */
-        this.processed = true;
+        if (processed) {
+            /*
+             * DECREASE THE CONTEXT LEVEL
+             * This was increased before starting gathering, when the handling of the first gathered event started.
+             */
+            this.context.decreaseLevel();
+        }
 
-
-        return true;
+        return processed;
 
     }
 

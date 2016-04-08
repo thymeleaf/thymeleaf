@@ -48,6 +48,7 @@ abstract class AbstractSyntheticModel implements ISyntheticModel {
     private final IEngineContext context;
     private final Model syntheticModel;
     private final EventModelController eventModelController;
+    private final TemplateFlowController templateFlowController;
 
     private final SkipBody buildTimeSkipBody;
     private final boolean buildTimeSkipCloseTag;
@@ -61,7 +62,8 @@ abstract class AbstractSyntheticModel implements ISyntheticModel {
 
     AbstractSyntheticModel(
             final IEngineConfiguration configuration, final ProcessorTemplateHandler processorTemplateHandler, final IEngineContext context,
-            final EventModelController eventModelController, final SkipBody buildTimeSkipBody, final boolean buildTimeSkipCloseTag,
+            final EventModelController eventModelController, final TemplateFlowController templateFlowController,
+            final SkipBody buildTimeSkipBody, final boolean buildTimeSkipCloseTag,
             final ProcessorExecutionVars processorExecutionVars) {
 
         super();
@@ -69,6 +71,7 @@ abstract class AbstractSyntheticModel implements ISyntheticModel {
         this.processorTemplateHandler = processorTemplateHandler;
         this.context = context;
         this.eventModelController = eventModelController;
+        this.templateFlowController = templateFlowController;
         this.buildTimeSkipBody = buildTimeSkipBody;
         this.buildTimeSkipCloseTag = buildTimeSkipCloseTag;
         this.syntheticModel = new Model(configuration, context.getTemplateMode());
@@ -104,6 +107,10 @@ abstract class AbstractSyntheticModel implements ISyntheticModel {
 
     protected final ProcessorTemplateHandler getProcessorTemplateHandler() {
         return this.processorTemplateHandler;
+    }
+
+    protected final TemplateFlowController getTemplateFlowController() {
+        return this.templateFlowController;
     }
 
 

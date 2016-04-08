@@ -58,16 +58,15 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
     private final Iterator<?> iterator;
     private final Text precedingWhitespace;
 
-    private boolean processed;
-
 
     IteratedSyntheticModel(
             final IEngineConfiguration configuration, ProcessorTemplateHandler processorTemplateHandler, final IEngineContext context,
-            final EventModelController eventModelController, final SkipBody gatheredSkipBody, final boolean gatheredSkipCloseTag,
+            final EventModelController eventModelController, final TemplateFlowController templateFlowController,
+            final SkipBody gatheredSkipBody, final boolean gatheredSkipCloseTag,
             final ProcessorExecutionVars processorExecutionVars,
             final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject, final Text precedingWhitespace) {
 
-        super(configuration, processorTemplateHandler, context, eventModelController, gatheredSkipBody, gatheredSkipCloseTag, processorExecutionVars);
+        super(configuration, processorTemplateHandler, context, eventModelController, templateFlowController, gatheredSkipBody, gatheredSkipCloseTag, processorExecutionVars);
 
         this.context = context;
         this.templateMode = context.getTemplateMode();
@@ -89,14 +88,9 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
 
         this.precedingWhitespace = precedingWhitespace;
 
-        this.processed = false;
-
     }
 
 
-    public boolean isProcessed() {
-        return this.processed;
-    }
 
 
     @Override
@@ -114,15 +108,6 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
          * The model handler will always be the ProcessorTemplateHandler
          */
         final ITemplateHandler modelHandler = getProcessorTemplateHandler();
-
-
-        /*
-         * Check this hasn't already been executed. Only one execution is allowed
-         */
-        if (this.processed) {
-            throw new TemplateProcessingException(
-                    "This delayed model has already been executed. Execution can only take place once");
-        }
 
 
         /*
@@ -198,11 +183,6 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
          */
         this.context.decreaseLevel();
 
-
-        /*
-         * SET THE EXECUTION FLAG TO TRUE
-         */
-        this.processed = true;
 
         /*
          * RETURN true FOR 'processed' (for now)

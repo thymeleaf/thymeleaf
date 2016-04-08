@@ -37,6 +37,7 @@ import org.thymeleaf.model.IOpenElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.model.ITemplateEnd;
+import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.model.ITemplateStart;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.model.IXMLDeclaration;
@@ -123,7 +124,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
     private boolean throttleEngine = false;
-    private TemplateProcessorController templateProcessorController = null;
+    private TemplateFlowController templateFlowController = null;
     private IEngineProcessableModel[] pendingProcessings = null;
     private int pendingProcessingsSize = 0;
 
@@ -150,7 +151,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         this.xmlDeclarationStructureHandler = new XMLDeclarationStructureHandler();
 
         // TODO Remove this -- only for testing until the complete mechanism is implemented
-        setTemplateProcessorController(new TemplateProcessorController());
+        setTemplateFlowController(new TemplateFlowController());
 
 
     }
@@ -195,6 +196,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
         // Instance the gatherer
         this.eventModelController = new EventModelController(this.configuration, this.templateMode, this, this.engineContext);
+        this.eventModelController.setTemplateFlowController(this.templateFlowController); // Might have been already initialized or not
 
         // Obtain all processor sets and compute sizes
         final Set<ITemplateBoundariesProcessor> templateBoundariesProcessorSet = this.configuration.getTemplateBoundariesProcessors(this.templateMode);
@@ -226,9 +228,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
 
-    public void setTemplateProcessorController(final TemplateProcessorController templateProcessorController) {
-        this.templateProcessorController = templateProcessorController;
-        this.throttleEngine = (this.templateProcessorController != null);
+    public void setTemplateFlowController(final TemplateFlowController templateFlowController) {
+        this.templateFlowController = templateFlowController;
+        this.throttleEngine = (this.templateFlowController != null);
+        if (this.eventModelController != null) {
+            this.eventModelController.setTemplateFlowController(this.templateFlowController);
+        }
     }
 
 
@@ -240,6 +245,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
     @Override
     public void handleTemplateStart(final ITemplateStart itemplateStart) {
+
+        /*
+         * If processing is stopped, we should queue this for later handling
+         */
+        if (this.throttleEngine && this.templateFlowController.stopProcessing) {
+            queueEvent(itemplateStart);
+            return;
+        }
+
 
         /*
          * Save the initial engine context level, so that after processing we can ensure it matches
@@ -303,16 +317,17 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * PROCESS THE QUEUE, launching all the queued events
+         * PROCESS THE QUEUED MODEL IF NEEDED (or handle it as pending if we are throttling the engine)
          */
-        if (model != null) {
-            if (this.throttleEngine) {
-                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler));
-                handlePending();
-            } else {
-                model.process(modelHandler);
-            }
+        if (model == null || model.size() == 0) {
+            return;
         }
+        if (!this.throttleEngine) {
+            model.process(modelHandler);
+        }
+        stackPendingProcessing(new SimpleProcessableModel(model, modelHandler, this.templateFlowController));
+        // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
+        handlePending();
 
     }
 
@@ -325,6 +340,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
     @Override
     public void handleTemplateEnd(final ITemplateEnd itemplateEnd) {
+
+        /*
+         * If processing is stopped, we should queue this for later handling
+         */
+        if (this.throttleEngine && this.templateFlowController.stopProcessing) {
+            queueEvent(itemplateEnd);
+            return;
+        }
+
 
         /*
          * FAIL FAST in case this structure has no associated processors.
@@ -375,9 +399,10 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events (BEFORE DELEGATING)
          */
+        // TODO Refactor this! it doesn't follow the same structure as other handlers because it has some code after handling
         if (model != null) {
             if (this.throttleEngine) {
-                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler));
+                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler, this.templateFlowController));
                 handlePending();
             } else {
                 model.process(modelHandler);
@@ -420,6 +445,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
     @Override
     public void handleText(final IText itext) {
+
+        /*
+         * If processing is stopped, we should queue this for later handling
+         */
+        if (this.throttleEngine && this.templateFlowController.stopProcessing) {
+            queueEvent(itext);
+            return;
+        }
+
 
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
@@ -492,16 +526,17 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * PROCESS THE QUEUE, launching all the queued events
+         * PROCESS THE QUEUED MODEL IF NEEDED (or handle it as pending if we are throttling the engine)
          */
-        if (model != null) {
-            if (this.throttleEngine) {
-                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler));
-                handlePending();
-            } else {
-                model.process(modelHandler);
-            }
+        if (model == null || model.size() == 0) {
+            return;
         }
+        if (!this.throttleEngine) {
+            model.process(modelHandler);
+        }
+        stackPendingProcessing(new SimpleProcessableModel(model, modelHandler, this.templateFlowController));
+        // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
+        handlePending();
 
     }
 
@@ -514,6 +549,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
     @Override
     public void handleComment(final IComment icomment) {
+
+        /*
+         * If processing is stopped, we should queue this for later handling
+         */
+        if (this.throttleEngine && this.templateFlowController.stopProcessing) {
+            queueEvent(icomment);
+            return;
+        }
+
 
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
@@ -586,16 +630,17 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * PROCESS THE QUEUE, launching all the queued events
+         * PROCESS THE QUEUED MODEL IF NEEDED (or handle it as pending if we are throttling the engine)
          */
-        if (model != null) {
-            if (this.throttleEngine) {
-                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler));
-                handlePending();
-            } else {
-                model.process(modelHandler);
-            }
+        if (model == null || model.size() == 0) {
+            return;
         }
+        if (!this.throttleEngine) {
+            model.process(modelHandler);
+        }
+        stackPendingProcessing(new SimpleProcessableModel(model, modelHandler, this.templateFlowController));
+        // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
+        handlePending();
 
     }
 
@@ -608,6 +653,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     
     @Override
     public void handleCDATASection(final ICDATASection icdataSection) {
+
+        /*
+         * If processing is stopped, we should queue this for later handling
+         */
+        if (this.throttleEngine && this.templateFlowController.stopProcessing) {
+            queueEvent(icdataSection);
+            return;
+        }
+
 
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
@@ -680,16 +734,17 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * PROCESS THE QUEUE, launching all the queued events
+         * PROCESS THE QUEUED MODEL IF NEEDED (or handle it as pending if we are throttling the engine)
          */
-        if (model != null) {
-            if (this.throttleEngine) {
-                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler));
-                handlePending();
-            } else {
-                model.process(modelHandler);
-            }
+        if (model == null || model.size() == 0) {
+            return;
         }
+        if (!this.throttleEngine) {
+            model.process(modelHandler);
+        }
+        stackPendingProcessing(new SimpleProcessableModel(model, modelHandler, this.templateFlowController));
+        // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
+        handlePending();
 
     }
 
@@ -702,6 +757,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
     @Override
     public void handleStandaloneElement(final IStandaloneElementTag istandaloneElementTag) {
+
+        /*
+         * If processing is stopped, we should queue this for later handling
+         */
+        if (this.throttleEngine && this.templateFlowController.stopProcessing) {
+            queueEvent(istandaloneElementTag);
+            return;
+        }
+
 
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
@@ -812,7 +876,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     vars.modelAfterProcessable = tagStructureHandler.setBodyTextProcessable;
 
                     // Initialize the iterated model object
-                    final StandaloneEquivalentSyntheticModel equivalentSyntheticModel =
+                    final GatheredSyntheticModel equivalentSyntheticModel =
                             this.eventModelController.createStandaloneEquivalentModel(standaloneElementTag, vars);
 
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be the responsibility of handleOpenElement
@@ -835,7 +899,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     vars.modelAfterProcessable = tagStructureHandler.setBodyModelProcessable;
 
                     // Initialize the iterated model object
-                    final StandaloneEquivalentSyntheticModel equivalentSyntheticModel =
+                    final GatheredSyntheticModel equivalentSyntheticModel =
                             this.eventModelController.createStandaloneEquivalentModel(standaloneElementTag, vars);
 
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be the responsibility of handleOpenElement
@@ -1042,6 +1106,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
     @Override
     public void handleOpenElement(final IOpenElementTag iopenElementTag) {
+
+        /*
+         * If processing is stopped, we should queue this for later handling
+         */
+        if (this.throttleEngine && this.templateFlowController.stopProcessing) {
+            queueEvent(iopenElementTag);
+            return;
+        }
+
 
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
@@ -1370,6 +1443,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
+         * If processing is stopped, we should queue this for later handling
+         */
+        if (this.throttleEngine && this.templateFlowController.stopProcessing) {
+            queueEvent(icloseElementTag);
+            return;
+        }
+
+
+        /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
         if (!this.eventModelController.shouldProcessCloseElement(icloseElementTag)) {
@@ -1405,6 +1487,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     private void handleUnmatchedCloseElement(final ICloseElementTag icloseElementTag) {
 
         /*
+         * If processing is stopped, we should queue this for later handling
+         */
+        if (this.throttleEngine && this.templateFlowController.stopProcessing) {
+            queueEvent(icloseElementTag);
+            return;
+        }
+
+
+        /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
          */
         if (!this.eventModelController.shouldProcessUnmatchedCloseElement(icloseElementTag)) {
@@ -1433,6 +1524,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
     @Override
     public void handleDocType(final IDocType idocType) {
+
+        /*
+         * If processing is stopped, we should queue this for later handling
+         */
+        if (this.throttleEngine && this.templateFlowController.stopProcessing) {
+            queueEvent(idocType);
+            return;
+        }
+
 
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
@@ -1511,16 +1611,17 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * PROCESS THE QUEUE, launching all the queued events
+         * PROCESS THE QUEUED MODEL IF NEEDED (or handle it as pending if we are throttling the engine)
          */
-        if (model != null) {
-            if (this.throttleEngine) {
-                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler));
-                handlePending();
-            } else {
-                model.process(modelHandler);
-            }
+        if (model == null || model.size() == 0) {
+            return;
         }
+        if (!this.throttleEngine) {
+            model.process(modelHandler);
+        }
+        stackPendingProcessing(new SimpleProcessableModel(model, modelHandler, this.templateFlowController));
+        // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
+        handlePending();
 
     }
 
@@ -1533,6 +1634,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     
     @Override
     public void handleXMLDeclaration(final IXMLDeclaration ixmlDeclaration) {
+
+        /*
+         * If processing is stopped, we should queue this for later handling
+         */
+        if (this.throttleEngine && this.templateFlowController.stopProcessing) {
+            queueEvent(ixmlDeclaration);
+            return;
+        }
+
 
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
@@ -1610,16 +1720,17 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * PROCESS THE QUEUE, launching all the queued events
+         * PROCESS THE QUEUED MODEL IF NEEDED (or handle it as pending if we are throttling the engine)
          */
-        if (model != null) {
-            if (this.throttleEngine) {
-                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler));
-                handlePending();
-            } else {
-                model.process(modelHandler);
-            }
+        if (model == null || model.size() == 0) {
+            return;
         }
+        if (!this.throttleEngine) {
+            model.process(modelHandler);
+        }
+        stackPendingProcessing(new SimpleProcessableModel(model, modelHandler, this.templateFlowController));
+        // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
+        handlePending();
 
     }
 
@@ -1632,6 +1743,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
     @Override
     public void handleProcessingInstruction(final IProcessingInstruction iprocessingInstruction) {
+
+        /*
+         * If processing is stopped, we should queue this for later handling
+         */
+        if (this.throttleEngine && this.templateFlowController.stopProcessing) {
+            queueEvent(iprocessingInstruction);
+            return;
+        }
+
 
         /*
          * CHECK WHETHER WE ARE GATHERING AN ELEMENT's MODEL
@@ -1707,16 +1827,17 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * PROCESS THE QUEUE, launching all the queued events
+         * PROCESS THE QUEUED MODEL IF NEEDED (or handle it as pending if we are throttling the engine)
          */
-        if (model != null) {
-            if (this.throttleEngine) {
-                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler));
-                handlePending();
-            } else {
-                model.process(modelHandler);
-            }
+        if (model == null || model.size() == 0) {
+            return;
         }
+        if (!this.throttleEngine) {
+            model.process(modelHandler);
+        }
+        stackPendingProcessing(new SimpleProcessableModel(model, modelHandler, this.templateFlowController));
+        // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
+        handlePending();
 
     }
 
@@ -1731,7 +1852,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
         if (this.throttleEngine) {
 
-            final TemplateProcessorController controller = this.templateProcessorController;
+            final TemplateFlowController controller = this.templateFlowController;
 
             if (controller.stopProcessing) {
                 controller.processorTemplateHandlerPending = true;
@@ -1739,7 +1860,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
             }
 
             while (this.pendingProcessingsSize > 0) {
-                if (!this.pendingProcessings[this.pendingProcessingsSize - 1].process()) {
+                final boolean processed = this.pendingProcessings[this.pendingProcessingsSize - 1].process();
+                if (!processed) {
                     controller.processorTemplateHandlerPending = true;
                     return false;
                 }
@@ -1760,20 +1882,58 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
 
-
-    void stackPendingProcessing(final IEngineProcessableModel processableModel) {
-
+    void ensurePendingCapacity() {
         if (this.pendingProcessings == null) {
             this.pendingProcessings = new IEngineProcessableModel[5];
             this.pendingProcessingsSize = 0;
         }
-
         if (this.pendingProcessingsSize == this.pendingProcessings.length) {
             this.pendingProcessings = Arrays.copyOf(this.pendingProcessings, this.pendingProcessings.length + 5);
         }
+    }
 
+
+    void stackPendingProcessing(final IEngineProcessableModel processableModel) {
+        ensurePendingCapacity();
         this.pendingProcessings[this.pendingProcessingsSize] = processableModel;
         this.pendingProcessingsSize++;
+    }
+
+
+    /*
+     * This method will be called for any event that arrives from a previous handler in the chain (or the parser, cache...)
+     * when the execution has already been stopped and we (potentially) have some work pending. The idea is to queue
+     * these events at the end of the pending queue (i.e. at level 0) so that they are processed normally once all
+     * pending work has been processed too.
+     *
+     * Note events used here should always come from previous handlers and never from the execution of pending work
+     * itself, given all pending-work structures (i.e. all implementations of IEngineProcessableModel) should check
+     * the "stopProcessing" flag before executing each event, so they should never produce additional pending events
+     * that would potentially (and erroneously) be queued at level 0.
+     */
+    public void queueEvent(final ITemplateEvent event) {
+
+        final SimpleProcessableModel pendingProcessableModel;
+        if (this.pendingProcessingsSize > 0) {
+            final IEngineProcessableModel level0Pending = this.pendingProcessings[0];
+            if (level0Pending instanceof SimpleProcessableModel && ((SimpleProcessableModel)level0Pending).getModelHandler() == this) {
+                pendingProcessableModel = (SimpleProcessableModel)level0Pending;
+            } else {
+                final Model model = new Model(this.configuration, this.templateMode);
+                pendingProcessableModel = new SimpleProcessableModel(model, this, this.templateFlowController);
+                ensurePendingCapacity();
+                System.arraycopy(this.pendingProcessings, 0, this.pendingProcessings, 1, this.pendingProcessingsSize);
+                this.pendingProcessings[0] = pendingProcessableModel;
+                this.pendingProcessingsSize++;
+            }
+        } else {
+            final Model model = new Model(this.configuration, this.templateMode);
+            pendingProcessableModel = new SimpleProcessableModel(model, this, this.templateFlowController);
+            ensurePendingCapacity();
+            this.pendingProcessings[0] = pendingProcessableModel;
+            this.pendingProcessingsSize++;
+        }
+        pendingProcessableModel.getModel().add(event);
 
     }
 

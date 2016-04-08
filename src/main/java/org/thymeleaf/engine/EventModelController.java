@@ -103,6 +103,8 @@ final class EventModelController {
     private final ProcessorTemplateHandler processorTemplateHandler;
     private final IEngineContext context;
 
+    private TemplateFlowController templateFlowController;
+
     private AbstractSyntheticModel gatheredModel;
 
     private SkipBody skipBody;
@@ -146,6 +148,11 @@ final class EventModelController {
     }
 
 
+    void setTemplateFlowController(final TemplateFlowController templateFlowController) {
+        this.templateFlowController = templateFlowController;
+    }
+
+
     int getModelLevel() {
         return this.modelLevel;
     }
@@ -160,8 +167,10 @@ final class EventModelController {
         final boolean gatheredSkipCloseTagByLevel = this.skipCloseTagByLevel[this.modelLevel];
 
         this.gatheredModel =
-                new DelayedSyntheticModel(
-                        this.configuration, this.processorTemplateHandler, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
+                new GatheredSyntheticModel(
+                        this.configuration, this.processorTemplateHandler, this.context,
+                        this, this.templateFlowController,
+                        gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
 
         this.gatheredModel.gatherOpenElement(firstTag);
 
@@ -176,8 +185,10 @@ final class EventModelController {
         final boolean gatheredSkipCloseTagByLevel = this.skipCloseTagByLevel[this.modelLevel];
 
         this.gatheredModel =
-                new DelayedSyntheticModel(
-                        this.configuration, this.processorTemplateHandler, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
+                new GatheredSyntheticModel(
+                        this.configuration, this.processorTemplateHandler, this.context,
+                        this, this.templateFlowController,
+                        gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
 
         this.gatheredModel.gatherStandaloneElement(firstTag);
 
@@ -197,7 +208,9 @@ final class EventModelController {
 
         this.gatheredModel =
                 new IteratedSyntheticModel(
-                        this.configuration, this.processorTemplateHandler, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars,
+                        this.configuration, this.processorTemplateHandler, this.context,
+                        this, this.templateFlowController,
+                        gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars,
                         iterVariableName, iterStatusVariableName, iteratedObject, precedingWhitespace);
 
         this.gatheredModel.gatherOpenElement(firstTag);
@@ -217,7 +230,9 @@ final class EventModelController {
 
         this.gatheredModel =
                 new IteratedSyntheticModel(
-                        this.configuration, this.processorTemplateHandler, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars,
+                        this.configuration, this.processorTemplateHandler, this.context,
+                        this, this.templateFlowController,
+                        gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars,
                         iterVariableName, iterStatusVariableName, iteratedObject, precedingWhitespace);
 
         this.gatheredModel.gatherStandaloneElement(firstTag);
@@ -225,7 +240,7 @@ final class EventModelController {
     }
 
 
-    StandaloneEquivalentSyntheticModel createStandaloneEquivalentModel(
+    GatheredSyntheticModel createStandaloneEquivalentModel(
             final StandaloneElementTag standaloneElementTag, final ProcessorExecutionVars processorExecutionVars) {
 
         SkipBody gatheredSkipBody = this.skipBodyByLevel[this.modelLevel];
@@ -243,9 +258,11 @@ final class EventModelController {
                         standaloneElementTag.elementCompleteName, null, standaloneElementTag.synthetic, false,
                         standaloneElementTag.templateName, standaloneElementTag.line, standaloneElementTag.col);
 
-        final StandaloneEquivalentSyntheticModel equivalentModel =
-                new StandaloneEquivalentSyntheticModel(
-                        this.configuration, this.processorTemplateHandler, this.context, this, gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
+        final GatheredSyntheticModel equivalentModel =
+                new GatheredSyntheticModel(
+                        this.configuration, this.processorTemplateHandler, this.context,
+                        this, this.templateFlowController,
+                        gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
 
         equivalentModel.gatherOpenElement(openTag);
         equivalentModel.gatherCloseElement(closeTag);
