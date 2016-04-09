@@ -324,10 +324,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         }
         if (!this.throttleEngine) {
             model.process(modelHandler);
+        } else {
+            queueProcessable(new SimpleModelProcessable(model, modelHandler, this.flowController));
         }
-        stackPendingProcessable(new SimpleModelProcessable(model, modelHandler, this.flowController));
-        // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
-        handlePending();
 
     }
 
@@ -401,11 +400,10 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          */
         // TODO Refactor this! it doesn't follow the same structure as other handlers because it has some code after handling
         if (model != null) {
-            if (this.throttleEngine) {
-                stackPendingProcessable(new SimpleModelProcessable(model, modelHandler, this.flowController));
-                handlePending();
-            } else {
+            if (!this.throttleEngine) {
                 model.process(modelHandler);
+            } else {
+                queueProcessable(new SimpleModelProcessable(model, modelHandler, this.flowController));
             }
         }
 
@@ -533,10 +531,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         }
         if (!this.throttleEngine) {
             model.process(modelHandler);
+        } else {
+            queueProcessable(new SimpleModelProcessable(model, modelHandler, this.flowController));
         }
-        stackPendingProcessable(new SimpleModelProcessable(model, modelHandler, this.flowController));
-        // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
-        handlePending();
 
     }
 
@@ -637,10 +634,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         }
         if (!this.throttleEngine) {
             model.process(modelHandler);
+        } else {
+            queueProcessable(new SimpleModelProcessable(model, modelHandler, this.flowController));
         }
-        stackPendingProcessable(new SimpleModelProcessable(model, modelHandler, this.flowController));
-        // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
-        handlePending();
 
     }
 
@@ -741,10 +737,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         }
         if (!this.throttleEngine) {
             model.process(modelHandler);
+        } else {
+            queueProcessable(new SimpleModelProcessable(model, modelHandler, this.flowController));
         }
-        stackPendingProcessable(new SimpleModelProcessable(model, modelHandler, this.flowController));
-        // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
-        handlePending();
 
     }
 
@@ -804,8 +799,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     this.engineContext.decreaseLevel();
                 }
             } else {
-                stackPendingProcessable(new DecreaseContextLevelProcessable(this.engineContext, this.flowController));
-                handlePending();
+                queueProcessable(new DecreaseContextLevelProcessable(this.engineContext, this.flowController));
             }
 
             return;
@@ -873,8 +867,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     if (!this.throttleEngine) {
                         newGatheredModel.process();
                     } else {
-                        stackPendingProcessable(newGatheredModel);
-                        handlePending();
+                        queueProcessable(newGatheredModel);
                     }
 
                     // Complete exit of the handler method: no more processing to do from here
@@ -901,8 +894,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     if (!this.throttleEngine) {
                         equivalentSyntheticModel.process();
                     } else {
-                        stackPendingProcessable(equivalentSyntheticModel);
-                        handlePending();
+                        queueProcessable(equivalentSyntheticModel);
                     }
 
                     // Complete exit of the handler method: no more processing to do from here
@@ -929,8 +921,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     if (!this.throttleEngine) {
                         equivalentSyntheticModel.process();
                     } else {
-                        stackPendingProcessable(equivalentSyntheticModel);
-                        handlePending();
+                        queueProcessable(equivalentSyntheticModel);
                     }
 
                     // Complete exit of the handler method: no more processing to do from here
@@ -1042,8 +1033,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     if (!this.throttleEngine) {
                         newModel.process();
                     } else {
-                        stackPendingProcessable(newModel);
-                        handlePending();
+                        queueProcessable(newModel);
                     }
 
                     // Nothing else to be done by this handler... let's just queue the rest of the events in this element
@@ -1648,10 +1638,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         }
         if (!this.throttleEngine) {
             model.process(modelHandler);
+        } else {
+            queueProcessable(new SimpleModelProcessable(model, modelHandler, this.flowController));
         }
-        stackPendingProcessable(new SimpleModelProcessable(model, modelHandler, this.flowController));
-        // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
-        handlePending();
 
     }
 
@@ -1757,10 +1746,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         }
         if (!this.throttleEngine) {
             model.process(modelHandler);
+        } else {
+            queueProcessable(new SimpleModelProcessable(model, modelHandler, this.flowController));
         }
-        stackPendingProcessable(new SimpleModelProcessable(model, modelHandler, this.flowController));
-        // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
-        handlePending();
 
     }
 
@@ -1864,10 +1852,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         }
         if (!this.throttleEngine) {
             model.process(modelHandler);
+        } else {
+            queueProcessable(new SimpleModelProcessable(model, modelHandler, this.flowController));
         }
-        stackPendingProcessable(new SimpleModelProcessable(model, modelHandler, this.flowController));
-        // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
-        handlePending();
 
     }
 
@@ -1909,10 +1896,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
 
-
-
-
-    void ensurePendingCapacity() {
+    private void ensurePendingCapacity() {
         if (this.pendingProcessings == null) {
             this.pendingProcessings = new IEngineProcessable[5];
             this.pendingProcessingsSize = 0;
@@ -1923,10 +1907,29 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     }
 
 
-    void stackPendingProcessable(final IEngineProcessable processableModel) {
+    private void queueProcessable(final IEngineProcessable processableModel) {
+
         ensurePendingCapacity();
+
+        final TemplateFlowController controller = this.flowController;
+
         this.pendingProcessings[this.pendingProcessingsSize] = processableModel;
         this.pendingProcessingsSize++;
+
+        if (controller.stopProcessing) {
+            controller.processorTemplateHandlerPending = true;
+            return;
+        }
+
+        final boolean processed = this.pendingProcessings[this.pendingProcessingsSize - 1].process();
+        if (!processed) {
+            controller.processorTemplateHandlerPending = true;
+            return;
+        }
+        this.pendingProcessingsSize--;
+
+        controller.processorTemplateHandlerPending = false;
+
     }
 
 
@@ -1941,7 +1944,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
      * the "stopProcessing" flag before executing each event, so they should never produce additional pending events
      * that would potentially (and erroneously) be queued at level 0.
      */
-    public void queueEvent(final ITemplateEvent event) {
+    private void queueEvent(final ITemplateEvent event) {
 
         final SimpleModelProcessable pendingProcessableModel;
         if (this.pendingProcessingsSize > 0) {
