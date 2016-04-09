@@ -120,13 +120,14 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     private TemplateModelController modelController = null;
 
 
-    private IGatheringModelProcessable currentSyntheticModel = null;
+    private IGatheringModelProcessable currentGatheringModel = null;
 
 
     private boolean throttleEngine = false;
     private TemplateFlowController flowController = null;
     private IEngineProcessable[] pendingProcessings = null;
     private int pendingProcessingsSize = 0;
+    private DecreaseContextLevelProcessable DECREASE_CONTEXT_LEVEL_PROCESSABLE = null; // This one can be cached
 
 
 
@@ -234,6 +235,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         if (this.modelController != null) {
             this.modelController.setTemplateFlowController(this.flowController);
         }
+        this.DECREASE_CONTEXT_LEVEL_PROCESSABLE = new DecreaseContextLevelProcessable(this.engineContext, this.flowController);
     }
 
 
@@ -779,14 +781,14 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * OBTAIN THE CURRENT SYNTHETIC MODEL (if any)
          */
-        final IGatheringModelProcessable currentSyntheticModel = obtainCurrentSyntheticModel();
+        final IGatheringModelProcessable currentGatheringModel = obtainCurrentGatheringModel();
 
 
         /*
          * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
          * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
          */
-        if (currentSyntheticModel == null && !standaloneElementTag.hasAssociatedProcessors()) {
+        if (currentGatheringModel == null && !standaloneElementTag.hasAssociatedProcessors()) {
 
             if (this.engineContext != null) {
                 this.engineContext.increaseLevel();
@@ -794,12 +796,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
             this.next.handleStandaloneElement(standaloneElementTag);
 
-            if (!this.throttleEngine) {
+            if (!this.throttleEngine || !this.flowController.stopProcessing) {
                 if (this.engineContext != null) {
                     this.engineContext.decreaseLevel();
                 }
             } else {
-                queueProcessable(new DecreaseContextLevelProcessable(this.engineContext, this.flowController));
+                queueProcessable(this.DECREASE_CONTEXT_LEVEL_PROCESSABLE);
             }
 
             return;
@@ -811,7 +813,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * DECLARE THE STATE VARS NEEDED FOR PROCESSOR EXECUTION
          */
         final ProcessorExecutionVars vars =
-                (currentSyntheticModel == null? new ProcessorExecutionVars() : currentSyntheticModel.initializeProcessorExecutionVars());
+                (currentGatheringModel == null? new ProcessorExecutionVars() : currentGatheringModel.initializeProcessorExecutionVars());
 
 
         /*
@@ -850,7 +852,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                 if (tagStructureHandler.iterateElement) {
 
-                    // Initialize a synthetic model
+                    // Initialize a gathering model
                     this.modelController.startGatheringIteratedModel(
                             standaloneElementTag, vars,
                             tagStructureHandler.iterVariableName,
@@ -860,14 +862,14 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- we need processIteration() to read our data
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
-                    // Process the synthetic model
-                    final IGatheringModelProcessable newGatheredModel = this.modelController.getGatheredModel();
+                    // Process the gathering model
+                    final IGatheringModelProcessable gatheredModel = this.modelController.getGatheredModel();
                     this.modelController.resetGathering();
 
                     if (!this.throttleEngine) {
-                        newGatheredModel.process();
+                        gatheredModel.process();
                     } else {
-                        queueProcessable(newGatheredModel);
+                        queueProcessable(gatheredModel);
                     }
 
                     // Complete exit of the handler method: no more processing to do from here
@@ -1020,7 +1022,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Set the processor to be executed again, because this time we will just set the "model gathering" mechanism
                     vars.processorIterator.setLastToBeRepeated(standaloneElementTag);
 
-                    // Initialize the synthetic model
+                    // Initialize the gathering model
                     this.modelController.startGatheringDelayedModel(standaloneElementTag, vars);
                     final IGatheringModelProcessable newModel = this.modelController.getGatheredModel();
                     this.modelController.resetGathering();
@@ -1029,7 +1031,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be done when we re-execute this after gathering model
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- that's the responsibility of the close event
 
-                    // Process the new synthetic model (no need to wait for a "close" event, as this is a standalone)
+                    // Process the new gathering model (no need to wait for a "close" event, as this is a standalone)
                     if (!this.throttleEngine) {
                         newModel.process();
                     } else {
@@ -1053,7 +1055,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 // NOTE we are not cloning the events themselves here. There should be no need, as we are going to
                 //      re-locate these events into a new queue, and their old position (which will be executed
                 //      anyway) will be ignored.
-                final Model processedModel = new Model(currentSyntheticModel.getInnerModel());
+                final Model processedModel = new Model(currentGatheringModel.getInnerModel());
 
                 ((IElementModelProcessor) processor).process(this.context, processedModel, modelStructureHandler);
 
@@ -1062,7 +1064,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
                 // Reset the skipbody flags so that this model can be executed in the same conditions as the original
-                currentSyntheticModel.resetGatheredSkipFlags();
+                currentGatheringModel.resetGatheredSkipFlags();
 
                 // Initialize model
                 vars.modelAfter = resetModel(vars.modelAfter, true);
@@ -1080,6 +1082,16 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                         " which is neither a Tag Element Processor nor a Model Element Processor.");
             }
 
+        }
+
+
+        /*
+         * QUEUE MODEL HANDLING (IF WE ARE THROTTLING)
+         */
+        if (this.throttleEngine &&
+                ((vars.modelAfter != null && vars.modelAfter.size() > 0) || (vars.modelBefore != null && vars.modelBefore.size() > 0))) {
+            queueProcessable(new StandaloneElementTagModelProcessable(standaloneElementTag, vars, this.engineContext, this.modelController, this.flowController, this, this.next));
+            return;
         }
 
 
@@ -1111,8 +1123,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * DECREASE THE CONTEXT LEVEL once we have executed all the processors (and maybe a body if we added
          * one to the tag converting it into an open tag)
          */
-        if (this.engineContext != null) {
-            this.engineContext.decreaseLevel();
+        if (!this.throttleEngine || !this.flowController.stopProcessing) {
+            if (this.engineContext != null) {
+                this.engineContext.decreaseLevel();
+            }
+        } else {
+            queueProcessable(this.DECREASE_CONTEXT_LEVEL_PROCESSABLE);
         }
 
     }
@@ -1153,14 +1169,14 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * OBTAIN THE CURRENT SYNTHETIC MODEL
          */
-        final IGatheringModelProcessable currentSyntheticModel = obtainCurrentSyntheticModel();
+        final IGatheringModelProcessable currentGatheringModel = obtainCurrentGatheringModel();
 
 
         /*
          * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
          * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
          */
-        if (currentSyntheticModel == null && !openElementTag.hasAssociatedProcessors()) {
+        if (currentGatheringModel == null && !openElementTag.hasAssociatedProcessors()) {
             this.next.handleOpenElement(openElementTag);
             return;
         }
@@ -1170,7 +1186,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * DECLARE THE STATE VARS NEEDED FOR PROCESSOR EXECUTION
          */
         final ProcessorExecutionVars vars =
-                (currentSyntheticModel == null? new ProcessorExecutionVars() : currentSyntheticModel.initializeProcessorExecutionVars());
+                (currentGatheringModel == null? new ProcessorExecutionVars() : currentGatheringModel.initializeProcessorExecutionVars());
 
 
         /*
@@ -1200,7 +1216,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                 if (tagStructureHandler.iterateElement) {
 
-                    // Initialize the synthetic model
+                    // Initialize the gathering model
                     this.modelController.startGatheringIteratedModel(
                             openElementTag, vars,
                             tagStructureHandler.iterVariableName,
@@ -1350,7 +1366,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Set the processor to be executed again, because this time we will just set the "model gathering" mechanism
                     vars.processorIterator.setLastToBeRepeated(openElementTag);
 
-                    // Initialize the synthetic model
+                    // Initialize the gathering model
                     this.modelController.startGatheringDelayedModel(openElementTag, vars);
 
                     // Note we DO NOT DECREASE THE MODEL LEVEL -- that will be done when we re-execute this after gathering model
@@ -1374,7 +1390,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 // NOTE we are not cloning the events themselves here. There should be no need, as we are going to
                 //      re-locate these events into a new queue, and their old position (which will be executed
                 //      anyway) will be ignored.
-                final Model processedModel = new Model(currentSyntheticModel.getInnerModel());
+                final Model processedModel = new Model(currentGatheringModel.getInnerModel());
 
                 ((IElementModelProcessor) processor).process(this.context, processedModel, modelStructureHandler);
 
@@ -1387,7 +1403,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                  */
 
                 // Reset the skipbody flags so that this model can be executed in the same conditions as the original
-                currentSyntheticModel.resetGatheredSkipFlags();
+                currentGatheringModel.resetGatheredSkipFlags();
 
                 // Initialize model
                 vars.modelAfter = resetModel(vars.modelAfter, true);
@@ -1406,6 +1422,16 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                         " which is neither a Tag Element Processor nor a Model Element Processor.");
             }
 
+        }
+
+
+        /*
+         * QUEUE MODEL HANDLING (IF WE ARE THROTTLING)
+         */
+        if (this.throttleEngine &&
+                ((vars.modelAfter != null && vars.modelAfter.size() > 0) || (vars.modelBefore != null && vars.modelBefore.size() > 0))) {
+            queueProcessable(new OpenElementTagModelProcessable(openElementTag, vars, this.modelController, this.flowController, this, this.next));
+            return;
         }
 
 
@@ -1480,9 +1506,13 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
              * IF WE JUST ENDED GATHERING A SYNTHETIC MODEL, PROCESS IT
              */
             if (this.modelController.isGatheringFinished()) {
-                final IGatheringModelProcessable syntheticModel = this.modelController.getGatheredModel();
+                final IGatheringModelProcessable gatheredModel = this.modelController.getGatheredModel();
                 this.modelController.resetGathering();
-                syntheticModel.process();
+                if (!this.throttleEngine) {
+                    gatheredModel.process();
+                } else {
+                    queueProcessable(gatheredModel);
+                }
             }
 
             return;
@@ -1978,15 +2008,15 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
 
-    private IGatheringModelProcessable obtainCurrentSyntheticModel() {
-        final IGatheringModelProcessable syntheticModel = this.currentSyntheticModel;
-        this.currentSyntheticModel = null;
-        return syntheticModel;
+    private IGatheringModelProcessable obtainCurrentGatheringModel() {
+        final IGatheringModelProcessable gatheringModel = this.currentGatheringModel;
+        this.currentGatheringModel = null;
+        return gatheringModel;
     }
 
 
-    void setCurrentSyntheticModel(final IGatheringModelProcessable syntheticModel) {
-        this.currentSyntheticModel = syntheticModel;
+    void setCurrentGatheringModel(final IGatheringModelProcessable gatheringModel) {
+        this.currentGatheringModel = gatheringModel;
     }
 
 

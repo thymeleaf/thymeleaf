@@ -100,7 +100,7 @@ abstract class AbstractGatheringModelProcessable implements IGatheringModelProce
 
 
     protected final void prepareProcessing() {
-        this.processorTemplateHandler.setCurrentSyntheticModel(this);
+        this.processorTemplateHandler.setCurrentGatheringModel(this);
         resetGatheredSkipFlags();
     }
 
