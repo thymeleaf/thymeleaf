@@ -36,7 +36,7 @@ import org.thymeleaf.model.IXMLDeclaration;
  * @since 3.0.0
  *
  */
-interface ISyntheticModel extends IEngineProcessableModel {
+interface IGatheringModelProcessable extends IEngineProcessable {
 
     boolean isGatheringFinished();
 

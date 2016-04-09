@@ -41,7 +41,7 @@ import org.thymeleaf.model.IXMLDeclaration;
  * @since 3.0.0
  *
  */
-abstract class AbstractSyntheticModel implements ISyntheticModel {
+abstract class AbstractGatheringModelProcessable implements IGatheringModelProcessable {
 
 
     private final ProcessorTemplateHandler processorTemplateHandler;
@@ -60,7 +60,7 @@ abstract class AbstractSyntheticModel implements ISyntheticModel {
     private int modelLevel;
 
 
-    AbstractSyntheticModel(
+    AbstractGatheringModelProcessable(
             final IEngineConfiguration configuration, final ProcessorTemplateHandler processorTemplateHandler, final IEngineContext context,
             final EventModelController eventModelController, final TemplateFlowController templateFlowController,
             final SkipBody buildTimeSkipBody, final boolean buildTimeSkipCloseTag,

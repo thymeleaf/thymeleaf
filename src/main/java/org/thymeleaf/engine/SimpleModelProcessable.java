@@ -25,7 +25,7 @@ package org.thymeleaf.engine;
  * @since 3.0.0
  *
  */
-final class SimpleProcessableModel implements IEngineProcessableModel {
+final class SimpleModelProcessable implements IEngineProcessable {
 
     private final Model model;
     private final ITemplateHandler modelHandler;
@@ -34,7 +34,7 @@ final class SimpleProcessableModel implements IEngineProcessableModel {
     private int offset;
 
 
-    SimpleProcessableModel(
+    SimpleModelProcessable(
             final Model model, final ITemplateHandler modelHandler, final TemplateFlowController controller) {
         super();
         this.model = model;

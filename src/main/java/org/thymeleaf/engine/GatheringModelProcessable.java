@@ -30,7 +30,7 @@ import org.thymeleaf.engine.EventModelController.SkipBody;
  * @since 3.0.0
  *
  */
-final class GatheredSyntheticModel extends AbstractSyntheticModel {
+final class GatheringModelProcessable extends AbstractGatheringModelProcessable {
 
 
     private final IEngineContext context;
@@ -40,7 +40,7 @@ final class GatheredSyntheticModel extends AbstractSyntheticModel {
 
 
 
-    GatheredSyntheticModel(
+    GatheringModelProcessable(
             final IEngineConfiguration configuration, ProcessorTemplateHandler processorTemplateHandler, final IEngineContext context,
             final EventModelController eventModelController, final TemplateFlowController templateFlowController,
             final SkipBody gatheredSkipBody, final boolean gatheredSkipCloseTag,

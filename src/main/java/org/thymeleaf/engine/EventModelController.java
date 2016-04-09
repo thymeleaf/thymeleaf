@@ -105,7 +105,7 @@ final class EventModelController {
 
     private TemplateFlowController templateFlowController;
 
-    private AbstractSyntheticModel gatheredModel;
+    private AbstractGatheringModelProcessable gatheredModel;
 
     private SkipBody skipBody;
     private SkipBody[] skipBodyByLevel;
@@ -167,7 +167,7 @@ final class EventModelController {
         final boolean gatheredSkipCloseTagByLevel = this.skipCloseTagByLevel[this.modelLevel];
 
         this.gatheredModel =
-                new GatheredSyntheticModel(
+                new GatheringModelProcessable(
                         this.configuration, this.processorTemplateHandler, this.context,
                         this, this.templateFlowController,
                         gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
@@ -185,7 +185,7 @@ final class EventModelController {
         final boolean gatheredSkipCloseTagByLevel = this.skipCloseTagByLevel[this.modelLevel];
 
         this.gatheredModel =
-                new GatheredSyntheticModel(
+                new GatheringModelProcessable(
                         this.configuration, this.processorTemplateHandler, this.context,
                         this, this.templateFlowController,
                         gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
@@ -207,7 +207,7 @@ final class EventModelController {
         final Text precedingWhitespace = computeWhiteSpacePrecedingIteration(firstTag.getElementDefinition().elementName);
 
         this.gatheredModel =
-                new IteratedSyntheticModel(
+                new IteratedGatheringModelProcessable(
                         this.configuration, this.processorTemplateHandler, this.context,
                         this, this.templateFlowController,
                         gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars,
@@ -229,7 +229,7 @@ final class EventModelController {
         final Text precedingWhitespace = computeWhiteSpacePrecedingIteration(firstTag.getElementDefinition().elementName);
 
         this.gatheredModel =
-                new IteratedSyntheticModel(
+                new IteratedGatheringModelProcessable(
                         this.configuration, this.processorTemplateHandler, this.context,
                         this, this.templateFlowController,
                         gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars,
@@ -240,7 +240,7 @@ final class EventModelController {
     }
 
 
-    GatheredSyntheticModel createStandaloneEquivalentModel(
+    GatheringModelProcessable createStandaloneEquivalentModel(
             final StandaloneElementTag standaloneElementTag, final ProcessorExecutionVars processorExecutionVars) {
 
         SkipBody gatheredSkipBody = this.skipBodyByLevel[this.modelLevel];
@@ -258,8 +258,8 @@ final class EventModelController {
                         standaloneElementTag.elementCompleteName, null, standaloneElementTag.synthetic, false,
                         standaloneElementTag.templateName, standaloneElementTag.line, standaloneElementTag.col);
 
-        final GatheredSyntheticModel equivalentModel =
-                new GatheredSyntheticModel(
+        final GatheringModelProcessable equivalentModel =
+                new GatheringModelProcessable(
                         this.configuration, this.processorTemplateHandler, this.context,
                         this, this.templateFlowController,
                         gatheredSkipBody, gatheredSkipCloseTagByLevel, processorExecutionVars);
@@ -277,7 +277,7 @@ final class EventModelController {
     }
 
 
-    ISyntheticModel getGatheredModel() {
+    IGatheringModelProcessable getGatheredModel() {
         return this.gatheredModel;
     }
 

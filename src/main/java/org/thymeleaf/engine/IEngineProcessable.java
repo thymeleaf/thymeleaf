@@ -25,7 +25,7 @@ package org.thymeleaf.engine;
  * @since 3.0.0
  *
  */
-interface IEngineProcessableModel {
+interface IEngineProcessable {
 
     boolean process();
 

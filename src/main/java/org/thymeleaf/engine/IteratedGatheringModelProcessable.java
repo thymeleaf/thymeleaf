@@ -41,7 +41,7 @@ import org.thymeleaf.util.StringUtils;
  * @since 3.0.0
  *
  */
-final class IteratedSyntheticModel extends AbstractSyntheticModel {
+final class IteratedGatheringModelProcessable extends AbstractGatheringModelProcessable {
 
     private static final String DEFAULT_STATUS_VAR_SUFFIX = "Stat";
 
@@ -64,7 +64,7 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
     private boolean iterHasNext;
 
 
-    IteratedSyntheticModel(
+    IteratedGatheringModelProcessable(
             final IEngineConfiguration configuration, ProcessorTemplateHandler processorTemplateHandler, final IEngineContext context,
             final EventModelController eventModelController, final TemplateFlowController templateFlowController,
             final SkipBody gatheredSkipBody, final boolean gatheredSkipCloseTag,

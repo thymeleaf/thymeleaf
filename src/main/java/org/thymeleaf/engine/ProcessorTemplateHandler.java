@@ -120,12 +120,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     private EventModelController eventModelController = null;
 
 
-    private ISyntheticModel currentSyntheticModel = null;
+    private IGatheringModelProcessable currentSyntheticModel = null;
 
 
     private boolean throttleEngine = false;
     private TemplateFlowController templateFlowController = null;
-    private IEngineProcessableModel[] pendingProcessings = null;
+    private IEngineProcessable[] pendingProcessings = null;
     private int pendingProcessingsSize = 0;
 
 
@@ -325,7 +325,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         if (!this.throttleEngine) {
             model.process(modelHandler);
         }
-        stackPendingProcessing(new SimpleProcessableModel(model, modelHandler, this.templateFlowController));
+        stackPendingProcessing(new SimpleModelProcessable(model, modelHandler, this.templateFlowController));
         // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
         handlePending();
 
@@ -402,7 +402,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         // TODO Refactor this! it doesn't follow the same structure as other handlers because it has some code after handling
         if (model != null) {
             if (this.throttleEngine) {
-                stackPendingProcessing(new SimpleProcessableModel(model, modelHandler, this.templateFlowController));
+                stackPendingProcessing(new SimpleModelProcessable(model, modelHandler, this.templateFlowController));
                 handlePending();
             } else {
                 model.process(modelHandler);
@@ -534,7 +534,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         if (!this.throttleEngine) {
             model.process(modelHandler);
         }
-        stackPendingProcessing(new SimpleProcessableModel(model, modelHandler, this.templateFlowController));
+        stackPendingProcessing(new SimpleModelProcessable(model, modelHandler, this.templateFlowController));
         // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
         handlePending();
 
@@ -638,7 +638,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         if (!this.throttleEngine) {
             model.process(modelHandler);
         }
-        stackPendingProcessing(new SimpleProcessableModel(model, modelHandler, this.templateFlowController));
+        stackPendingProcessing(new SimpleModelProcessable(model, modelHandler, this.templateFlowController));
         // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
         handlePending();
 
@@ -742,7 +742,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         if (!this.throttleEngine) {
             model.process(modelHandler);
         }
-        stackPendingProcessing(new SimpleProcessableModel(model, modelHandler, this.templateFlowController));
+        stackPendingProcessing(new SimpleModelProcessable(model, modelHandler, this.templateFlowController));
         // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
         handlePending();
 
@@ -784,7 +784,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * OBTAIN THE CURRENT SYNTHETIC MODEL (if any)
          */
-        final ISyntheticModel currentSyntheticModel = obtainCurrentSyntheticModel();
+        final IGatheringModelProcessable currentSyntheticModel = obtainCurrentSyntheticModel();
 
 
         /*
@@ -858,7 +858,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Process the synthetic model
-                    final ISyntheticModel newGatheredModel = this.eventModelController.getGatheredModel();
+                    final IGatheringModelProcessable newGatheredModel = this.eventModelController.getGatheredModel();
                     this.eventModelController.resetGathering();
                     newGatheredModel.process();
 
@@ -876,7 +876,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     vars.modelAfterProcessable = tagStructureHandler.setBodyTextProcessable;
 
                     // Initialize the iterated model object
-                    final GatheredSyntheticModel equivalentSyntheticModel =
+                    final GatheringModelProcessable equivalentSyntheticModel =
                             this.eventModelController.createStandaloneEquivalentModel(standaloneElementTag, vars);
 
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be the responsibility of handleOpenElement
@@ -899,7 +899,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     vars.modelAfterProcessable = tagStructureHandler.setBodyModelProcessable;
 
                     // Initialize the iterated model object
-                    final GatheredSyntheticModel equivalentSyntheticModel =
+                    final GatheringModelProcessable equivalentSyntheticModel =
                             this.eventModelController.createStandaloneEquivalentModel(standaloneElementTag, vars);
 
                     // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be the responsibility of handleOpenElement
@@ -1006,7 +1006,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                     // Initialize the synthetic model
                     this.eventModelController.startGatheringDelayedModel(standaloneElementTag, vars);
-                    final ISyntheticModel newSyntheticModel = this.eventModelController.getGatheredModel();
+                    final IGatheringModelProcessable newSyntheticModel = this.eventModelController.getGatheredModel();
                     this.eventModelController.resetGathering();
 
                     // Note we DO NOT DECREASE THE MODEL LEVEL -- that will be done when we re-execute this after gathering model
@@ -1133,7 +1133,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * OBTAIN THE CURRENT SYNTHETIC MODEL
          */
-        final ISyntheticModel currentSyntheticModel = obtainCurrentSyntheticModel();
+        final IGatheringModelProcessable currentSyntheticModel = obtainCurrentSyntheticModel();
 
 
         /*
@@ -1460,7 +1460,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
              * IF WE JUST ENDED GATHERING A SYNTHETIC MODEL, PROCESS IT
              */
             if (this.eventModelController.isGatheringFinished()) {
-                final ISyntheticModel syntheticModel = this.eventModelController.getGatheredModel();
+                final IGatheringModelProcessable syntheticModel = this.eventModelController.getGatheredModel();
                 this.eventModelController.resetGathering();
                 syntheticModel.process();
             }
@@ -1619,7 +1619,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         if (!this.throttleEngine) {
             model.process(modelHandler);
         }
-        stackPendingProcessing(new SimpleProcessableModel(model, modelHandler, this.templateFlowController));
+        stackPendingProcessing(new SimpleModelProcessable(model, modelHandler, this.templateFlowController));
         // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
         handlePending();
 
@@ -1728,7 +1728,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         if (!this.throttleEngine) {
             model.process(modelHandler);
         }
-        stackPendingProcessing(new SimpleProcessableModel(model, modelHandler, this.templateFlowController));
+        stackPendingProcessing(new SimpleModelProcessable(model, modelHandler, this.templateFlowController));
         // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
         handlePending();
 
@@ -1835,7 +1835,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         if (!this.throttleEngine) {
             model.process(modelHandler);
         }
-        stackPendingProcessing(new SimpleProcessableModel(model, modelHandler, this.templateFlowController));
+        stackPendingProcessing(new SimpleModelProcessable(model, modelHandler, this.templateFlowController));
         // Note it is EXTREMELY IMPORTANT that this is the last line in this handling method
         handlePending();
 
@@ -1884,7 +1884,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
     void ensurePendingCapacity() {
         if (this.pendingProcessings == null) {
-            this.pendingProcessings = new IEngineProcessableModel[5];
+            this.pendingProcessings = new IEngineProcessable[5];
             this.pendingProcessingsSize = 0;
         }
         if (this.pendingProcessingsSize == this.pendingProcessings.length) {
@@ -1893,7 +1893,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     }
 
 
-    void stackPendingProcessing(final IEngineProcessableModel processableModel) {
+    void stackPendingProcessing(final IEngineProcessable processableModel) {
         ensurePendingCapacity();
         this.pendingProcessings[this.pendingProcessingsSize] = processableModel;
         this.pendingProcessingsSize++;
@@ -1907,20 +1907,20 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
      * pending work has been processed too.
      *
      * Note events used here should always come from previous handlers and never from the execution of pending work
-     * itself, given all pending-work structures (i.e. all implementations of IEngineProcessableModel) should check
+     * itself, given all pending-work structures (i.e. all implementations of IEngineProcessable) should check
      * the "stopProcessing" flag before executing each event, so they should never produce additional pending events
      * that would potentially (and erroneously) be queued at level 0.
      */
     public void queueEvent(final ITemplateEvent event) {
 
-        final SimpleProcessableModel pendingProcessableModel;
+        final SimpleModelProcessable pendingProcessableModel;
         if (this.pendingProcessingsSize > 0) {
-            final IEngineProcessableModel level0Pending = this.pendingProcessings[0];
-            if (level0Pending instanceof SimpleProcessableModel && ((SimpleProcessableModel)level0Pending).getModelHandler() == this) {
-                pendingProcessableModel = (SimpleProcessableModel)level0Pending;
+            final IEngineProcessable level0Pending = this.pendingProcessings[0];
+            if (level0Pending instanceof SimpleModelProcessable && ((SimpleModelProcessable)level0Pending).getModelHandler() == this) {
+                pendingProcessableModel = (SimpleModelProcessable)level0Pending;
             } else {
                 final Model model = new Model(this.configuration, this.templateMode);
-                pendingProcessableModel = new SimpleProcessableModel(model, this, this.templateFlowController);
+                pendingProcessableModel = new SimpleModelProcessable(model, this, this.templateFlowController);
                 ensurePendingCapacity();
                 System.arraycopy(this.pendingProcessings, 0, this.pendingProcessings, 1, this.pendingProcessingsSize);
                 this.pendingProcessings[0] = pendingProcessableModel;
@@ -1928,12 +1928,13 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
             }
         } else {
             final Model model = new Model(this.configuration, this.templateMode);
-            pendingProcessableModel = new SimpleProcessableModel(model, this, this.templateFlowController);
+            pendingProcessableModel = new SimpleModelProcessable(model, this, this.templateFlowController);
             ensurePendingCapacity();
             this.pendingProcessings[0] = pendingProcessableModel;
             this.pendingProcessingsSize++;
         }
         pendingProcessableModel.getModel().add(event);
+        this.templateFlowController.processorTemplateHandlerPending = true;
 
     }
 
@@ -1944,14 +1945,14 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
 
-    private ISyntheticModel obtainCurrentSyntheticModel() {
-        final ISyntheticModel syntheticModel = this.currentSyntheticModel;
+    private IGatheringModelProcessable obtainCurrentSyntheticModel() {
+        final IGatheringModelProcessable syntheticModel = this.currentSyntheticModel;
         this.currentSyntheticModel = null;
         return syntheticModel;
     }
 
 
-    void setCurrentSyntheticModel(final ISyntheticModel syntheticModel) {
+    void setCurrentSyntheticModel(final IGatheringModelProcessable syntheticModel) {
         this.currentSyntheticModel = syntheticModel;
     }
 
