@@ -29,7 +29,6 @@ import java.util.Map;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.engine.EventModelController.SkipBody;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -57,6 +56,12 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
     private final IterationStatusVar iterStatusVariable;
     private final Iterator<?> iterator;
     private final Text precedingWhitespace;
+
+    private IterationModels iterationModels;
+
+    private int iter;
+    private int iterOffset;
+    private boolean iterHasNext;
 
 
     IteratedSyntheticModel(
@@ -88,6 +93,9 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
 
         this.precedingWhitespace = precedingWhitespace;
 
+        this.iter = 0;
+        this.iterOffset = 0;
+
     }
 
 
@@ -103,76 +111,110 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
 
     public boolean process() {
 
-
         /*
-         * The model handler will always be the ProcessorTemplateHandler
+         * First, check the stopProcess flag
          */
-        final ITemplateHandler modelHandler = getProcessorTemplateHandler();
-
-
-        /*
-         * Compute the iteration type, by trying to obtain the first iterated object
-         */
-        final IterationType iterationType;
-        boolean iterHasNext = this.iterator.hasNext();
-        if (!iterHasNext) {
-            iterationType = IterationType.ZERO;
-        } else {
-            this.iterStatusVariable.current = this.iterator.next();
-            iterHasNext = this.iterator.hasNext();
-            if (!iterHasNext) {
-                iterationType = IterationType.ONE;
-            } else {
-                iterationType = IterationType.MULTIPLE;
-            }
+        if (getTemplateFlowController().stopProcessing) {
+            return false;
         }
 
 
-        /*
-         * Once the type of iteration we have has been determined, compute the models that will be used
-         * for the first, the middle and the last iterations
-         */
-        final IterationModels iterationModel = computeIterationModels(iterationType);
-
+        boolean iterFinished = true;
 
         /*
-         * Perform the first iteration, if there is at least one elment (we already obtained the object)
+         * Perform the first iteration
          */
-        if (iterationModel != null) {
-            processIteration(iterationModel.modelFirst, modelHandler);
+        if (this.iter == 0) {
+
+            if (this.iterOffset == 0) {
+
+                /*
+                 * Compute the iteration type, by trying to obtain the first iterated object
+                 */
+                final IterationType iterationType;
+                this.iterHasNext = this.iterator.hasNext();
+                if (!this.iterHasNext) {
+                    iterationType = IterationType.ZERO;
+                } else {
+                    this.iterStatusVariable.current = this.iterator.next();
+                    this.iterHasNext = this.iterator.hasNext();
+                    if (!this.iterHasNext) {
+                        iterationType = IterationType.ONE;
+                    } else {
+                        iterationType = IterationType.MULTIPLE;
+                    }
+                }
+
+                /*
+                 * Once the type of iteration we have has been determined, compute the models that will be used
+                 * for the first, the middle and the last iterations
+                 */
+                this.iterationModels = computeIterationModels(iterationType);
+
+            }
+
+            /*
+             * Perform the first iteration, if there is at least one elment (we already obtained the object)
+             */
+            if (this.iterationModels != null) {
+
+                iterFinished = processIteration(this.iterationModels.modelFirst);
+
+                if (!iterFinished) {
+                    return false;
+                }
+
+                this.iter++;
+                this.iterOffset = 0;
+
+            }
+
         }
 
 
         /*
          * Perform iterations > 1
          */
-        while (iterHasNext) {
+        while (this.iterHasNext) {
 
             /*
-             * Increase the iteration counter
+             * Initialize the iteration, if we are at the beginning of it
              */
-            this.iterStatusVariable.index++;
+            if (this.iterOffset == 0) {
 
-            /*
-             * Obtain the new iterated objects
-             */
-            this.iterStatusVariable.current = this.iterator.next();
+                /*
+                 * Increase the iteration counter
+                 */
+                this.iterStatusVariable.index++;
 
-            /*
-             * Recompute hasNext
-             */
-            iterHasNext = this.iterator.hasNext(); // precomputed in order to know when we are at the last element
+                /*
+                 * Obtain the new iterated objects
+                 */
+                this.iterStatusVariable.current = this.iterator.next();
 
+                /*
+                 * Recompute hasNext
+                 */
+                this.iterHasNext = this.iterator.hasNext(); // precomputed in order to know when we are at the last element
+
+            }
 
             /*
              * Select the model to be processed
              */
-            final Model model = (iterHasNext? iterationModel.modelMiddle : iterationModel.modelLast);
+            final Model model = (this.iterHasNext? this.iterationModels.modelMiddle : this.iterationModels.modelLast);
 
             /*
              * Perform the iteration
              */
-            processIteration(model, modelHandler);
+            iterFinished = processIteration(model);
+
+            if (!iterFinished) {
+                return false;
+            }
+
+            this.iter++;
+            this.iterOffset = 0;
 
         }
 
@@ -187,41 +229,58 @@ final class IteratedSyntheticModel extends AbstractSyntheticModel {
         /*
          * RETURN true FOR 'processed' (for now)
          */
-        return true;
+        return iterFinished;
 
     }
 
 
-    private void processIteration(final Model model, final ITemplateHandler handler) {
 
-        /*
-         * Increase the engine context level, so that we can store the needed local variables there
-         */
-        this.context.increaseLevel();
+    private boolean processIteration(final Model model) {
 
-        /*
-         * Set the iteration local variables (iteration variable and iteration status variable)
-         */
-        this.context.setVariable(this.iterVariableName, this.iterStatusVariable.current);
-        this.context.setVariable(this.iterStatusVariableName, this.iterStatusVariable);
+        if (this.iterOffset == 0) {
 
-        /*
-         * Reset the "skipBody" and "skipCloseTag" values at the event model controller, and also set this
-         * synthetic model into the processor handler so that it can be used by the executed events
-         */
-        prepareProcessing();
+            /*
+             * Increase the engine context level, so that we can store the needed local variables there
+             */
+            this.context.increaseLevel();
+
+            /*
+             * Set the iteration local variables (iteration variable and iteration status variable)
+             */
+            this.context.setVariable(this.iterVariableName, this.iterStatusVariable.current);
+            this.context.setVariable(this.iterStatusVariableName, this.iterStatusVariable);
+
+            /*
+             * Reset the "skipBody" and "skipCloseTag" values at the event model controller, and also set this
+             * synthetic model into the processor handler so that it can be used by the executed events
+             */
+            prepareProcessing();
+
+        }
 
         /*
          * PERFORM THE EXECUTION on the gathered queue, which now does not live at the current exec level, but
          * at the previous one (we protected it by increasing execution level before)
          */
-        model.process(handler);
+        this.iterOffset += model.process(getProcessorTemplateHandler(), this.iterOffset, getTemplateFlowController());
+
+        /*
+         * Check if we have completed the iteration, returning false if not
+         */
+        if (this.iterOffset < model.queueSize) {
+            return false;
+        }
 
         /*
          * Decrease the engine context level, now that this iteration has been executed and we can dispose of
          * the local variables
          */
         this.context.decreaseLevel();
+
+        /*
+         * If we reached this point, it's before we were able to complete the iteration
+         */
+        return true;
 
     }
 
