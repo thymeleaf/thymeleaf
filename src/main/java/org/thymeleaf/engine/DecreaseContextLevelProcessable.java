@@ -30,15 +30,13 @@ import org.thymeleaf.context.IEngineContext;
 final class DecreaseContextLevelProcessable implements IEngineProcessable {
 
     private final IEngineContext context;
-    private final TemplateFlowController controller;
-
-    private int offset;
+    private final TemplateFlowController flowController;
 
 
-    DecreaseContextLevelProcessable(final IEngineContext context, final TemplateFlowController controller) {
+    DecreaseContextLevelProcessable(final IEngineContext context, final TemplateFlowController flowController) {
         super();
         this.context = context;
-        this.controller = controller;
+        this.flowController = flowController;
     }
 
 
@@ -47,7 +45,7 @@ final class DecreaseContextLevelProcessable implements IEngineProcessable {
         /*
          * First, check the stopProcess flag
          */
-        if (this.controller.stopProcessing) {
+        if (this.flowController.stopProcessing) {
             return false;
         }
 

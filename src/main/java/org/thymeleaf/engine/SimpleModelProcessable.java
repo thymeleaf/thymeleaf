@@ -29,17 +29,17 @@ final class SimpleModelProcessable implements IEngineProcessable {
 
     private final Model model;
     private final ITemplateHandler modelHandler;
-    private final TemplateFlowController controller;
+    private final TemplateFlowController flowController;
 
     private int offset;
 
 
     SimpleModelProcessable(
-            final Model model, final ITemplateHandler modelHandler, final TemplateFlowController controller) {
+            final Model model, final ITemplateHandler modelHandler, final TemplateFlowController flowController) {
         super();
         this.model = model;
         this.modelHandler = modelHandler;
-        this.controller = controller;
+        this.flowController = flowController;
         this.offset = 0;
     }
 
@@ -49,14 +49,14 @@ final class SimpleModelProcessable implements IEngineProcessable {
         /*
          * First, check the stopProcess flag
          */
-        if (this.controller.stopProcessing) {
+        if (this.flowController.stopProcessing) {
             return false;
         }
 
         /*
          * Process the queue
          */
-        this.offset += this.model.process(this.modelHandler, this.offset, this.controller);
+        this.offset += this.model.process(this.modelHandler, this.offset, this.flowController);
 
         /*
          * Compute whether the whole model has been processed or not

@@ -58,8 +58,8 @@ final class GatheringModelProcessable extends AbstractGatheringModelProcessable 
         /*
          * First, check the stopProcess flag
          */
-        final TemplateFlowController controller = getTemplateFlowController();
-        if (controller.stopProcessing) {
+        final TemplateFlowController flowController = getTemplateFlowController();
+        if (flowController.stopProcessing) {
             return false;
         }
 
@@ -75,7 +75,7 @@ final class GatheringModelProcessable extends AbstractGatheringModelProcessable 
          * PROCESS THE MODEL
          */
         final Model model = getInnerModel();
-        this.offset += model.process(getProcessorTemplateHandler(), this.offset, controller);
+        this.offset += model.process(getProcessorTemplateHandler(), this.offset, flowController);
 
         /*
          * Compute whether the whole model has been processed or not
