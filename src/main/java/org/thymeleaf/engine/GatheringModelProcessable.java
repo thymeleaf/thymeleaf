@@ -21,7 +21,7 @@ package org.thymeleaf.engine;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
-import org.thymeleaf.engine.EventModelController.SkipBody;
+import org.thymeleaf.engine.TemplateModelController.SkipBody;
 
 
 /*
@@ -42,10 +42,10 @@ final class GatheringModelProcessable extends AbstractGatheringModelProcessable 
 
     GatheringModelProcessable(
             final IEngineConfiguration configuration, ProcessorTemplateHandler processorTemplateHandler, final IEngineContext context,
-            final EventModelController eventModelController, final TemplateFlowController templateFlowController,
+            final TemplateModelController modelController, final TemplateFlowController flowController,
             final SkipBody gatheredSkipBody, final boolean gatheredSkipCloseTag,
             final ProcessorExecutionVars processorExecutionVars) {
-        super(configuration, processorTemplateHandler, context, eventModelController, templateFlowController, gatheredSkipBody, gatheredSkipCloseTag, processorExecutionVars);
+        super(configuration, processorTemplateHandler, context, modelController, flowController, gatheredSkipBody, gatheredSkipCloseTag, processorExecutionVars);
         this.context = context;
         this.offset = 0;
     }
@@ -58,7 +58,7 @@ final class GatheringModelProcessable extends AbstractGatheringModelProcessable 
         /*
          * First, check the stopProcess flag
          */
-        final TemplateFlowController flowController = getTemplateFlowController();
+        final TemplateFlowController flowController = getFlowController();
         if (flowController.stopProcessing) {
             return false;
         }

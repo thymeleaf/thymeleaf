@@ -22,7 +22,7 @@ package org.thymeleaf.engine;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.engine.EventModelController.SkipBody;
+import org.thymeleaf.engine.TemplateModelController.SkipBody;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.ICloseElementTag;
@@ -47,8 +47,8 @@ abstract class AbstractGatheringModelProcessable implements IGatheringModelProce
     private final ProcessorTemplateHandler processorTemplateHandler;
     private final IEngineContext context;
     private final Model syntheticModel;
-    private final EventModelController eventModelController;
-    private final TemplateFlowController templateFlowController;
+    private final TemplateModelController modelController;
+    private final TemplateFlowController flowController;
 
     private final SkipBody buildTimeSkipBody;
     private final boolean buildTimeSkipCloseTag;
@@ -62,7 +62,7 @@ abstract class AbstractGatheringModelProcessable implements IGatheringModelProce
 
     AbstractGatheringModelProcessable(
             final IEngineConfiguration configuration, final ProcessorTemplateHandler processorTemplateHandler, final IEngineContext context,
-            final EventModelController eventModelController, final TemplateFlowController templateFlowController,
+            final TemplateModelController modelController, final TemplateFlowController flowController,
             final SkipBody buildTimeSkipBody, final boolean buildTimeSkipCloseTag,
             final ProcessorExecutionVars processorExecutionVars) {
 
@@ -70,8 +70,8 @@ abstract class AbstractGatheringModelProcessable implements IGatheringModelProce
 
         this.processorTemplateHandler = processorTemplateHandler;
         this.context = context;
-        this.eventModelController = eventModelController;
-        this.templateFlowController = templateFlowController;
+        this.modelController = modelController;
+        this.flowController = flowController;
         this.buildTimeSkipBody = buildTimeSkipBody;
         this.buildTimeSkipCloseTag = buildTimeSkipCloseTag;
         this.syntheticModel = new Model(configuration, context.getTemplateMode());
@@ -95,7 +95,7 @@ abstract class AbstractGatheringModelProcessable implements IGatheringModelProce
 
 
     public final void resetGatheredSkipFlags() {
-        this.eventModelController.skip(this.buildTimeSkipBody, this.buildTimeSkipCloseTag);
+        this.modelController.skip(this.buildTimeSkipBody, this.buildTimeSkipCloseTag);
     }
 
 
@@ -109,8 +109,8 @@ abstract class AbstractGatheringModelProcessable implements IGatheringModelProce
         return this.processorTemplateHandler;
     }
 
-    protected final TemplateFlowController getTemplateFlowController() {
-        return this.templateFlowController;
+    protected final TemplateFlowController getFlowController() {
+        return this.flowController;
     }
 
 

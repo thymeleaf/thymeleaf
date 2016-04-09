@@ -32,7 +32,7 @@ final class ProcessorExecutionVars {
     Model modelAfter = null;
     boolean modelAfterProcessable = false;
     boolean discardEvent = false;
-    EventModelController.SkipBody skipBody = EventModelController.SkipBody.PROCESS;
+    TemplateModelController.SkipBody skipBody = TemplateModelController.SkipBody.PROCESS;
     boolean skipCloseTag = false;
 
 

@@ -51,7 +51,7 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-final class EventModelController {
+final class TemplateModelController {
 
     static final int DEFAULT_MODEL_LEVELS = 25;
 
@@ -120,7 +120,7 @@ final class EventModelController {
     private int modelLevel;
 
 
-    EventModelController(
+    TemplateModelController(
             final IEngineConfiguration configuration, final TemplateMode templateMode,
             final ProcessorTemplateHandler processorTemplateHandler, final IEngineContext context) {
 

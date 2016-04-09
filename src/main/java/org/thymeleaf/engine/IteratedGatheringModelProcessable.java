@@ -28,7 +28,7 @@ import java.util.Map;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IEngineContext;
-import org.thymeleaf.engine.EventModelController.SkipBody;
+import org.thymeleaf.engine.TemplateModelController.SkipBody;
 import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.model.IText;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -66,12 +66,12 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
 
     IteratedGatheringModelProcessable(
             final IEngineConfiguration configuration, ProcessorTemplateHandler processorTemplateHandler, final IEngineContext context,
-            final EventModelController eventModelController, final TemplateFlowController templateFlowController,
+            final TemplateModelController modelController, final TemplateFlowController flowController,
             final SkipBody gatheredSkipBody, final boolean gatheredSkipCloseTag,
             final ProcessorExecutionVars processorExecutionVars,
             final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject, final Text precedingWhitespace) {
 
-        super(configuration, processorTemplateHandler, context, eventModelController, templateFlowController, gatheredSkipBody, gatheredSkipCloseTag, processorExecutionVars);
+        super(configuration, processorTemplateHandler, context, modelController, flowController, gatheredSkipBody, gatheredSkipCloseTag, processorExecutionVars);
 
         this.context = context;
         this.templateMode = context.getTemplateMode();
@@ -114,7 +114,7 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
         /*
          * First, check the stopProcess flag
          */
-        if (getTemplateFlowController().stopProcessing) {
+        if (getFlowController().stopProcessing) {
             return false;
         }
 
@@ -262,7 +262,7 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
          * PERFORM THE EXECUTION on the gathered queue, which now does not live at the current exec level, but
          * at the previous one (we protected it by increasing execution level before)
          */
-        this.iterOffset += model.process(getProcessorTemplateHandler(), this.iterOffset, getTemplateFlowController());
+        this.iterOffset += model.process(getProcessorTemplateHandler(), this.iterOffset, getFlowController());
 
         /*
          * Check if we have completed the iteration, returning false if not
