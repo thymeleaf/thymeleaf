@@ -394,15 +394,19 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
+         * QUEUE MODEL HANDLING AND LATEST CHECKS (IF WE ARE THROTTLING)
+         */
+        if (this.throttleEngine && model != null && model.size() > 0) {
+            queueProcessable(new TemplateEndModelProcessable(itemplateEnd, model, modelHandler, this, this.next, this.flowController));
+            return;
+        }
+
+
+        /*
          * PROCESS THE QUEUE, launching all the queued events (BEFORE DELEGATING)
          */
-        // TODO Refactor this! it doesn't follow the same structure as other handlers because it has some code after handling
         if (model != null) {
-            if (!this.throttleEngine) {
-                model.process(modelHandler);
-            } else {
-                queueProcessable(new SimpleModelProcessable(model, modelHandler, this.flowController));
-            }
+            model.process(modelHandler);
         }
 
 
@@ -415,20 +419,28 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         /*
          * LAST ROUND OF CHECKS. If we have not returned our indexes to -1, something has gone wrong during processing
          */
+        performTearDownChecks(itemplateEnd);
+
+    }
+
+
+
+
+    void performTearDownChecks(final ITemplateEnd itemplateEnd) {
+
         if (this.modelController.getModelLevel() != 0) {
             throw new TemplateProcessingException(
                     "Bad markup or template processing sequence. Model level is != 0 (" + this.modelController.getModelLevel() + ") " +
-                    "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
+                            "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
         }
         if (this.engineContext != null) {
             if (this.engineContext.level() != this.initialContextLevel.intValue()) {
                 throw new TemplateProcessingException(
                         "Bad markup or template processing sequence. Context level after processing (" + this.engineContext.level() + ") " +
-                        "does not correspond to context level before processing (" + this.initialContextLevel.intValue() + ").",
+                                "does not correspond to context level before processing (" + this.initialContextLevel.intValue() + ").",
                         itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
             }
         }
-
 
     }
 
