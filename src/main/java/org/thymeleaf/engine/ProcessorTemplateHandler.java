@@ -151,10 +151,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         this.textStructureHandler = new TextStructureHandler();
         this.xmlDeclarationStructureHandler = new XMLDeclarationStructureHandler();
 
-        // TODO Remove this -- only for testing until the complete mechanism is implemented
-        setFlowController(new TemplateFlowController());
-
-
     }
 
 
