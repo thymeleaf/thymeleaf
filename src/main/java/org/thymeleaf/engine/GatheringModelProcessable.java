@@ -59,7 +59,7 @@ final class GatheringModelProcessable extends AbstractGatheringModelProcessable 
          * First, check the stopProcess flag
          */
         final TemplateFlowController flowController = getFlowController();
-        if (flowController.stopProcessing) {
+        if (flowController != null && flowController.stopProcessing) {
             return false;
         }
 

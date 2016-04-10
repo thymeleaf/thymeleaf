@@ -111,10 +111,12 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
 
     public boolean process() {
 
+        final TemplateFlowController flowController = getFlowController();
+
         /*
          * First, check the stopProcess flag
          */
-        if (getFlowController().stopProcessing) {
+        if (flowController != null && flowController.stopProcessing) {
             return false;
         }
 
