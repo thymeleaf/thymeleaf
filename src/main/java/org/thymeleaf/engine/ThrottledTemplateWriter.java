@@ -37,6 +37,7 @@ final class ThrottledTemplateWriter extends Writer {
     private static int OVERFLOW_BUFFER_INCREMENT = 512;
 
     private final String templateName;
+    private final TemplateFlowController flowController;
     private final Writer writer;
 
     private char[] overflow;
@@ -47,15 +48,17 @@ final class ThrottledTemplateWriter extends Writer {
     private int limit;
 
 
-    public ThrottledTemplateWriter(final String templateName, final Writer writer) {
+    public ThrottledTemplateWriter(final String templateName, final TemplateFlowController flowController, final Writer writer) {
         super();
         this.templateName = templateName;
+        this.flowController = flowController;
         this.writer = writer;
         this.overflow = null;
         this.overflowSize = 0;
         this.maxOverflowSize = 0;
         this.unlimited = false;
         this.limit = 0;
+        this.flowController.stopProcessing = true;
     }
 
 
@@ -87,13 +90,15 @@ final class ThrottledTemplateWriter extends Writer {
             }
         }
 
+        this.flowController.stopProcessing = (this.limit == 0);
+
         if (this.overflowSize == 0 || this.limit == 0) {
             return;
         }
 
         try {
 
-            if (this.unlimited || this.limit >= this.overflowSize) {
+            if (this.unlimited || this.limit > this.overflowSize) {
                 this.writer.write(this.overflow, 0, this.overflowSize);
                 if (!this.unlimited) {
                     this.limit -= this.overflowSize;
@@ -103,9 +108,12 @@ final class ThrottledTemplateWriter extends Writer {
             }
 
             this.writer.write(this.overflow, 0, this.limit);
-            System.arraycopy(this.overflow, this.limit, this.overflow, 0, this.overflowSize - this.limit);
+            if (this.limit < this.overflowSize) {
+                System.arraycopy(this.overflow, this.limit, this.overflow, 0, this.overflowSize - this.limit);
+            }
             this.overflowSize -= this.limit;
             this.limit = 0;
+            this.flowController.stopProcessing = true;
 
         } catch (final IOException e) {
             throw new TemplateOutputException(
@@ -126,6 +134,9 @@ final class ThrottledTemplateWriter extends Writer {
         if (!this.unlimited) {
             this.limit--;
         }
+        if (this.limit == 0) {
+            this.flowController.stopProcessing = true;
+        }
     }
 
 
@@ -136,7 +147,7 @@ final class ThrottledTemplateWriter extends Writer {
             overflow(str, 0, len);
             return;
         }
-        if (this.unlimited || this.limit >= len) {
+        if (this.unlimited || this.limit > len) {
             this.writer.write(str, 0, len);
             if (!this.unlimited) {
                 this.limit -= len;
@@ -144,8 +155,11 @@ final class ThrottledTemplateWriter extends Writer {
             return;
         }
         this.writer.write(str, 0, this.limit);
-        overflow(str, this.limit, (len - this.limit));
+        if (this.limit < len) {
+            overflow(str, this.limit, (len - this.limit));
+        }
         this.limit = 0;
+        this.flowController.stopProcessing = true;
     }
 
 
@@ -155,7 +169,7 @@ final class ThrottledTemplateWriter extends Writer {
             overflow(str, off, len);
             return;
         }
-        if (this.unlimited || this.limit >= len) {
+        if (this.unlimited || this.limit > len) {
             this.writer.write(str, off, len);
             if (!this.unlimited) {
                 this.limit -= len;
@@ -163,8 +177,11 @@ final class ThrottledTemplateWriter extends Writer {
             return;
         }
         this.writer.write(str, off, this.limit);
-        overflow(str, off + this.limit, (len - this.limit));
+        if (this.limit < len) {
+            overflow(str, off + this.limit, (len - this.limit));
+        }
         this.limit = 0;
+        this.flowController.stopProcessing = true;
     }
 
 
@@ -175,7 +192,7 @@ final class ThrottledTemplateWriter extends Writer {
             overflow(cbuf, 0, len);
             return;
         }
-        if (this.unlimited || this.limit >= len) {
+        if (this.unlimited || this.limit > len) {
             this.writer.write(cbuf, 0, len);
             if (!this.unlimited) {
                 this.limit -= len;
@@ -183,8 +200,11 @@ final class ThrottledTemplateWriter extends Writer {
             return;
         }
         this.writer.write(cbuf, 0, this.limit);
-        overflow(cbuf, this.limit, (len - this.limit));
+        if (this.limit < len) {
+            overflow(cbuf, this.limit, (len - this.limit));
+        }
         this.limit = 0;
+        this.flowController.stopProcessing = true;
     }
 
 
@@ -194,7 +214,7 @@ final class ThrottledTemplateWriter extends Writer {
             overflow(cbuf, off, len);
             return;
         }
-        if (this.unlimited || this.limit >= len) {
+        if (this.unlimited || this.limit > len) {
             this.writer.write(cbuf, off, len);
             if (!this.unlimited) {
                 this.limit -= len;
@@ -202,8 +222,11 @@ final class ThrottledTemplateWriter extends Writer {
             return;
         }
         this.writer.write(cbuf, off, this.limit);
-        overflow(cbuf, off + this.limit, (len - this.limit));
+        if (this.limit < len) {
+            overflow(cbuf, off + this.limit, (len - this.limit));
+        }
         this.limit = 0;
+        this.flowController.stopProcessing = true;
     }
 
 

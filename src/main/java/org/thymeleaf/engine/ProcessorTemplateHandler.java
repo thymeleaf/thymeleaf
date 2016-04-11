@@ -1906,7 +1906,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
 
-    public boolean handlePending() {
+    public void handlePending() {
 
         if (this.throttleEngine) {
 
@@ -1914,23 +1914,21 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
             if (controller.stopProcessing) {
                 controller.processorTemplateHandlerPending = true;
-                return false;
+                return;
             }
 
             while (this.pendingProcessingsSize > 0) {
                 final boolean processed = this.pendingProcessings[this.pendingProcessingsSize - 1].process();
                 if (!processed) {
                     controller.processorTemplateHandlerPending = true;
-                    return false;
+                    return;
                 }
                 this.pendingProcessingsSize--;
             }
 
             controller.processorTemplateHandlerPending = false;
-            return true;
 
         }
-        return true;
 
     }
 

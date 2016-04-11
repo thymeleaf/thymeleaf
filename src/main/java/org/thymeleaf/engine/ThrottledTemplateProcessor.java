@@ -52,6 +52,7 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
     private final IEngineContext context;
     private final TemplateModel templateModel;
     private final ITemplateHandler templateHandler;
+    private final ProcessorTemplateHandler processorTemplateHandler;
     private final TemplateFlowController flowController;
     private final ThrottledTemplateWriter writer;
 
@@ -64,6 +65,7 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
             final TemplateSpec templateSpec,
             final IEngineContext context,
             final TemplateModel templateModel, final ITemplateHandler templateHandler,
+            final ProcessorTemplateHandler processorTemplateHandler,
             final TemplateFlowController flowController,
             final ThrottledTemplateWriter writer) {
         super();
@@ -71,6 +73,7 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
         this.context = context;
         this.templateModel = templateModel;
         this.templateHandler = templateHandler;
+        this.processorTemplateHandler = processorTemplateHandler;
         this.flowController = flowController;
         this.writer = writer;
         this.offset = 0;
@@ -96,7 +99,8 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
             return true;
         }
 
-        this.allProcessingFinished = this.eventProcessingFinished && !this.writer.isOverflowed();
+        this.allProcessingFinished =
+                this.eventProcessingFinished && !this.flowController.processorTemplateHandlerPending && !this.writer.isOverflowed();
 
         return this.allProcessingFinished;
 
@@ -142,6 +146,7 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
                 this.offset += this.templateModel.process(this.templateHandler, this.offset, this.flowController);
                 EngineContextManager.disposeEngineContext(this.context);
                 this.eventProcessingFinished = true;
+
                 computeFinish();
 
             }
@@ -216,10 +221,13 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
             this.writer.allow(outputLimitInChars);
 
             // Maybe by processing all overflow we just finished
-            if (!computeFinish()) {
+            if (!computeFinish() && !this.writer.isStopped()) {
 
-                // Check if the writer still can process more output
-                if (!this.writer.isStopped()) {
+                if (this.flowController.processorTemplateHandlerPending) {
+                    this.processorTemplateHandler.handlePending();
+                }
+
+                if (!computeFinish() && !this.writer.isStopped()) {
 
                     this.offset += this.templateModel.process(this.templateHandler, this.offset, this.flowController);
                     if (this.offset == this.templateModel.size()) {

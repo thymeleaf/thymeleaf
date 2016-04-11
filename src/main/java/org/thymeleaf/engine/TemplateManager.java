@@ -712,7 +712,7 @@ public final class TemplateManager {
          * Instantiate the throttling artifacts
          */
         final TemplateFlowController flowController = new TemplateFlowController();
-        final ThrottledTemplateWriter throttledTemplateWriter = new ThrottledTemplateWriter(template, writer);
+        final ThrottledTemplateWriter throttledTemplateWriter = new ThrottledTemplateWriter(template, flowController, writer);
 
 
         /*
@@ -740,7 +740,9 @@ public final class TemplateManager {
                 /*
                  * Return the throttled template processor
                  */
-                return new ThrottledTemplateProcessor(templateSpec, engineContext, cached, processingHandlerChain, flowController, throttledTemplateWriter);
+                return new ThrottledTemplateProcessor(
+                        templateSpec, engineContext, cached, processingHandlerChain,
+                        processorTemplateHandler, flowController, throttledTemplateWriter);
 
             }
 
@@ -774,6 +776,7 @@ public final class TemplateManager {
          * both pre-processors and post-processors (besides creating a last output-to-writer step)
          */
         final ProcessorTemplateHandler processorTemplateHandler = new ProcessorTemplateHandler();
+        processorTemplateHandler.setFlowController(flowController);
         final ITemplateHandler processingHandlerChain =
                 createTemplateProcessingHandlerChain(engineContext, true, true, processorTemplateHandler, throttledTemplateWriter);
 
@@ -811,7 +814,9 @@ public final class TemplateManager {
         /*
          * Return the throttled template processor
          */
-        return new ThrottledTemplateProcessor(templateSpec, engineContext, templateModel, processingHandlerChain, flowController, throttledTemplateWriter);
+        return new ThrottledTemplateProcessor(
+                templateSpec, engineContext, templateModel, processingHandlerChain,
+                processorTemplateHandler, flowController, throttledTemplateWriter);
 
     }
 
