@@ -29,8 +29,9 @@ package org.thymeleaf;
 public interface IThrottledTemplateProcessor {
 
     public boolean isFinished();
-    public void allow(final int limitChars);
 
     public void processAll();
+    public void process(final int outputLimitInChars);
+
 
 }

@@ -55,6 +55,7 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
     private final TemplateFlowController flowController;
     private final ThrottledTemplateWriter writer;
 
+    private int offset;
     private boolean eventProcessingFinished;
     private boolean allProcessingFinished;
 
@@ -72,33 +73,12 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
         this.templateHandler = templateHandler;
         this.flowController = flowController;
         this.writer = writer;
+        this.offset = 0;
         this.eventProcessingFinished = false;
         this.allProcessingFinished = false;
     }
 
 
-
-
-    @Override
-    public void allow(final int limitChars) {
-
-        if (!this.allProcessingFinished) {
-
-            this.writer.allow(limitChars);
-
-            this.allProcessingFinished = this.eventProcessingFinished && !this.writer.isOverflowed();
-
-            if (this.allProcessingFinished) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace(
-                            "[THYMELEAF][{}] FINISHED OUTPUT OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}. MAXIMUM OVERFLOW WAS {} CHARS.",
-                            new Object[]{TemplateEngine.threadIndex(), this.templateSpec, this.context.getLocale(), Integer.valueOf(this.writer.getMaxOverflowSize()) });
-                }
-            }
-
-        }
-
-    }
 
 
 
@@ -110,19 +90,61 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
 
 
 
+    private boolean computeFinish() {
+
+        if (this.allProcessingFinished) {
+            return true;
+        }
+
+        this.allProcessingFinished = this.eventProcessingFinished && !this.writer.isOverflowed();
+
+        return this.allProcessingFinished;
+
+    }
+
+
+    private void reportFinish() {
+
+        if (this.allProcessingFinished) {
+            if (logger.isTraceEnabled()) {
+                logger.trace(
+                        "[THYMELEAF][{}] FINISHED OUTPUT OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}. MAXIMUM OVERFLOW WAS {} CHARS.",
+                        new Object[]{TemplateEngine.threadIndex(), this.templateSpec, this.context.getLocale(), Integer.valueOf(this.writer.getMaxOverflowSize()) });
+            }
+        }
+
+    }
+
+
+
+
     public void processAll() {
 
         try {
 
+            if (this.allProcessingFinished) {
+                return;
+            }
+
             if (logger.isTraceEnabled()) {
-                logger.trace("[THYMELEAF][{}] STARTING PROCESS-ALL THROTTLED OF TEMPLATE \"{}\" WITH LOCALE {}",
+                logger.trace("[THYMELEAF][{}] STARTING PROCESS-ALL OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}",
                         new Object[]{TemplateEngine.threadIndex(), this.templateSpec, this.context.getLocale()});
             }
 
             final long startNanos = System.nanoTime();
 
-            this.templateModel.process(this.templateHandler);
-            EngineContextManager.disposeEngineContext(this.context);
+            // Process all overflow and remove the limit
+            this.writer.allow(-1);
+
+            // Maybe by processing all overflow we just finished
+            if (!computeFinish()) {
+
+                this.offset += this.templateModel.process(this.templateHandler, this.offset, this.flowController);
+                EngineContextManager.disposeEngineContext(this.context);
+                this.eventProcessingFinished = true;
+                computeFinish();
+
+            }
 
             final long endNanos = System.nanoTime();
 
@@ -168,16 +190,93 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
 
         }
 
-        this.eventProcessingFinished = true;
-        this.allProcessingFinished = this.eventProcessingFinished && !this.writer.isOverflowed();
+        reportFinish();
 
-        if (this.allProcessingFinished) {
-            if (logger.isTraceEnabled()) {
-                logger.trace(
-                        "[THYMELEAF][{}] FINISHED OUTPUT OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}. MAXIMUM OVERFLOW WAS {} CHARS.",
-                        new Object[]{TemplateEngine.threadIndex(), this.templateSpec, this.context.getLocale(), Integer.valueOf(this.writer.getMaxOverflowSize()) });
+    }
+
+
+
+
+    public void process(final int outputLimitInChars) {
+
+        try {
+
+            if (this.allProcessingFinished || outputLimitInChars <= 0) {
+                return;
             }
+
+            if (logger.isTraceEnabled()) {
+                logger.trace("[THYMELEAF][{}] STARTING PROCESS(LIMIT:{} chars) OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}",
+                        new Object[]{TemplateEngine.threadIndex(), Integer.valueOf(outputLimitInChars), this.templateSpec, this.context.getLocale()});
+            }
+
+            final long startNanos = System.nanoTime();
+
+            // Set the new limit for the writer (might provoke overflow being processed)
+            this.writer.allow(outputLimitInChars);
+
+            // Maybe by processing all overflow we just finished
+            if (!computeFinish()) {
+
+                // Check if the writer still can process more output
+                if (!this.writer.isStopped()) {
+
+                    this.offset += this.templateModel.process(this.templateHandler, this.offset, this.flowController);
+                    if (this.offset == this.templateModel.size()) {
+                        EngineContextManager.disposeEngineContext(this.context);
+                        this.eventProcessingFinished = true;
+                        computeFinish();
+                    }
+
+                }
+
+            }
+
+            final long endNanos = System.nanoTime();
+
+            if (logger.isTraceEnabled()) {
+                logger.trace("[THYMELEAF][{}] FINISHED PROCESS(LIMIT:{} chars) OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}",
+                        new Object[]{TemplateEngine.threadIndex(), Integer.valueOf(outputLimitInChars), this.templateSpec, this.context.getLocale()});
+            }
+
+            if (timerLogger.isTraceEnabled()) {
+                final BigDecimal elapsed = BigDecimal.valueOf(endNanos - startNanos);
+                final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(NANOS_IN_SECOND), RoundingMode.HALF_UP);
+                timerLogger.trace(
+                        "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH LOCALE {} PROCESSED (THROTTLED, LIMIT:{} chars) IN {} nanoseconds (approx. {}ms)",
+                        new Object[]{
+                                TemplateEngine.threadIndex(),
+                                LoggingUtils.loggifyTemplateName(this.templateSpec.getTemplate()), this.context.getLocale(), elapsed, elapsedMs,
+                                this.templateSpec, this.context.getLocale(), Integer.valueOf(outputLimitInChars), elapsed, elapsedMs});
+            }
+
+        } catch (final TemplateOutputException e) {
+
+            this.eventProcessingFinished = true;
+            this.allProcessingFinished = true;
+            // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
+            logger.error(String.format("[THYMELEAF][%s] Exception processing throttled template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), this.templateSpec, e.getMessage()}), e);
+            throw e;
+
+        } catch (final TemplateEngineException e) {
+
+            this.eventProcessingFinished = true;
+            this.allProcessingFinished = true;
+            // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
+            logger.error(String.format("[THYMELEAF][%s] Exception processing throttled template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), this.templateSpec, e.getMessage()}), e);
+            throw e;
+
+        } catch (final RuntimeException e) {
+
+            this.eventProcessingFinished = true;
+            this.allProcessingFinished = true;
+            // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
+            logger.error(String.format("[THYMELEAF][%s] Exception processing throttled template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), this.templateSpec, e.getMessage()}), e);
+            throw new TemplateProcessingException("Exception processing throttled template", this.templateSpec.toString(), e);
+
         }
+
+        reportFinish();
 
     }
 

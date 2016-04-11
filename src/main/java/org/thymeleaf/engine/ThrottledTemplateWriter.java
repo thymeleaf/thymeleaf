@@ -63,6 +63,10 @@ final class ThrottledTemplateWriter extends Writer {
         return this.overflowSize > 0;
     }
 
+    boolean isStopped() {
+        return this.limit == 0;
+    }
+
 
     int getMaxOverflowSize() {
         return this.maxOverflowSize;
