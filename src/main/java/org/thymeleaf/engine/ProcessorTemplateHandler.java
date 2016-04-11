@@ -194,6 +194,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         // Instance the gatherer
         this.modelController = new TemplateModelController(this.configuration, this.templateMode, this, this.engineContext);
         this.modelController.setTemplateFlowController(this.flowController); // Might have been already initialized or not
+        this.DECREASE_CONTEXT_LEVEL_PROCESSABLE = new DecreaseContextLevelProcessable(this.engineContext, this.flowController);
 
         // Obtain all processor sets and compute sizes
         final Set<ITemplateBoundariesProcessor> templateBoundariesProcessorSet = this.configuration.getTemplateBoundariesProcessors(this.templateMode);
@@ -228,10 +229,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     public void setFlowController(final TemplateFlowController flowController) {
         this.flowController = flowController;
         this.throttleEngine = (this.flowController != null);
-        if (this.modelController != null) {
+        if (this.throttleEngine && this.modelController != null) {
             this.modelController.setTemplateFlowController(this.flowController);
         }
-        this.DECREASE_CONTEXT_LEVEL_PROCESSABLE = new DecreaseContextLevelProcessable(this.engineContext, this.flowController);
+        if (this.throttleEngine && this.engineContext != null) {
+            this.DECREASE_CONTEXT_LEVEL_PROCESSABLE = new DecreaseContextLevelProcessable(this.engineContext, this.flowController);
+        }
     }
 
 

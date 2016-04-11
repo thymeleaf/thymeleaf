@@ -358,7 +358,7 @@ public final class TemplateManager {
         final ITemplateHandler processingHandlerChain =
                 createTemplateProcessingHandlerChain(engineContext, true, false, builderHandler, null);
 
-        processTemplateModel(templateModel, processingHandlerChain);
+        templateModel.process(processingHandlerChain);
 
         EngineContextManager.disposeEngineContext(engineContext);
 
@@ -517,7 +517,7 @@ public final class TemplateManager {
         /*
          *  Process the template
          */
-        processTemplateModel(template, processingHandlerChain);
+        template.process(processingHandlerChain);
 
 
         /*
@@ -590,7 +590,7 @@ public final class TemplateManager {
                 final ITemplateHandler processingHandlerChain =
                         createTemplateProcessingHandlerChain(engineContext, true, true, processorTemplateHandler, writer);
 
-                processTemplateModel(cached, processingHandlerChain);
+                cached.process(processingHandlerChain);
 
                 EngineContextManager.disposeEngineContext(engineContext);
 
@@ -646,7 +646,7 @@ public final class TemplateManager {
             // Create the handler chain to create the Template object
             final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(this.configuration, templateData);
 
-            // Process the cached template itself
+            // Process the template into a TemplateModel
             parser.parseStandalone(
                     this.configuration,
                     null, template, templateSelectors, templateData.getTemplateResource(),
@@ -659,7 +659,7 @@ public final class TemplateManager {
             this.templateCache.put(cacheKey, templateModel);
 
             // Process the read (+cached) template itself
-            processTemplateModel(templateModel, processingHandlerChain);
+            templateModel.process(processingHandlerChain);
 
         } else {
 
@@ -677,6 +677,141 @@ public final class TemplateManager {
          */
         EngineContextManager.disposeEngineContext(engineContext);
 
+
+    }
+
+
+    public ThrottledTemplateProcessor parseAndProcessThrottled(
+            final TemplateSpec templateSpec,
+            final IContext context,
+            final Writer writer) {
+
+        Validate.notNull(templateSpec, "Template Specification cannot be null");
+        Validate.notNull(context, "Context cannot be null");
+        Validate.notNull(writer, "Writer cannot be null");
+
+
+        // TemplateSpec will already have validated its contents, so need to do it here (template selectors,
+        // resolution attributes, etc.)
+
+        final String template = templateSpec.getTemplate();
+        final Set<String> templateSelectors = templateSpec.getTemplateSelectors();
+        final TemplateMode templateMode = templateSpec.getTemplateMode();
+        final Map<String, Object> templateResolutionAttributes = templateSpec.getTemplateResolutionAttributes();
+
+        final TemplateCacheKey cacheKey =
+                new TemplateCacheKey(
+                        null, // ownerTemplate
+                        template, templateSelectors,
+                        0, 0, // lineOffset, colOffset
+                        templateMode,
+                        templateResolutionAttributes);
+
+
+        /*
+         * Instantiate the throttling artifacts
+         */
+        final TemplateFlowController flowController = new TemplateFlowController();
+        final ThrottledTemplateWriter throttledTemplateWriter = new ThrottledTemplateWriter(template, writer);
+
+
+        /*
+         * First look at the cache - it might be already cached
+         */
+        if (this.templateCache != null) {
+
+            final TemplateModel cached =  this.templateCache.get(cacheKey);
+
+            if (cached != null) {
+
+                final IEngineContext engineContext =
+                        EngineContextManager.prepareEngineContext(this.configuration, cached.getTemplateData(), templateResolutionAttributes, context);
+
+                /*
+                 * Create the handler chain to process the data.
+                 * This is PARSE + PROCESS, so its called from the TemplateEngine, and the only case in which we should apply
+                 * both pre-processors and post-processors (besides creating a last output-to-writer step)
+                 */
+                final ProcessorTemplateHandler processorTemplateHandler = new ProcessorTemplateHandler();
+                processorTemplateHandler.setFlowController(flowController);
+                final ITemplateHandler processingHandlerChain =
+                        createTemplateProcessingHandlerChain(engineContext, true, true, processorTemplateHandler, throttledTemplateWriter);
+
+                /*
+                 * Return the throttled template processor
+                 */
+                return new ThrottledTemplateProcessor(templateSpec, engineContext, cached, processingHandlerChain, flowController, throttledTemplateWriter);
+
+            }
+
+        }
+
+
+        /*
+         * Resolve the template
+         */
+        final TemplateResolution templateResolution =
+                resolveTemplate(this.configuration, null, template, templateResolutionAttributes, true);
+
+
+        /*
+         * Build the TemplateData object
+         */
+        final TemplateData templateData =
+                buildTemplateData(templateResolution, template, templateSelectors, templateMode, true);
+
+
+        /*
+         * Prepare the context instance that corresponds to this execution of the template engine
+         */
+        final IEngineContext engineContext =
+                EngineContextManager.prepareEngineContext(this.configuration, templateData, templateResolutionAttributes, context);
+
+
+        /*
+         * Create the handler chain to process the data.
+         * This is PARSE + PROCESS, so its called from the TemplateEngine, and the only case in which we should apply
+         * both pre-processors and post-processors (besides creating a last output-to-writer step)
+         */
+        final ProcessorTemplateHandler processorTemplateHandler = new ProcessorTemplateHandler();
+        final ITemplateHandler processingHandlerChain =
+                createTemplateProcessingHandlerChain(engineContext, true, true, processorTemplateHandler, throttledTemplateWriter);
+
+
+        /*
+         * Obtain the parser
+         */
+        final ITemplateParser parser = getParserForTemplateMode(engineContext.getTemplateMode());
+
+
+        /*
+         * Parse the template into a TemplateModel. Even if we are not using the cache, throttled template processings
+         * will always be processed first into a TemplateModel, so that throttling can then be applied on an
+         * already-in-memory sequence of events
+         */
+        final ModelBuilderTemplateHandler builderHandler = new ModelBuilderTemplateHandler(this.configuration, templateData);
+        parser.parseStandalone(
+                this.configuration,
+                null, template, templateSelectors, templateData.getTemplateResource(),
+                engineContext.getTemplateMode(), templateResolution.getUseDecoupledLogic(), builderHandler);
+        final TemplateModel templateModel = builderHandler.getModel();
+
+
+        /*
+         * If cache is active, put the cached TemplateModel into cache
+         */
+        if (templateResolution.getValidity().isCacheable() && this.templateCache != null) {
+
+            // Put the new template into cache
+            this.templateCache.put(cacheKey, templateModel);
+
+        }
+
+
+        /*
+         * Return the throttled template processor
+         */
+        return new ThrottledTemplateProcessor(templateSpec, engineContext, templateModel, processingHandlerChain, flowController, throttledTemplateWriter);
 
     }
 
@@ -878,34 +1013,6 @@ public final class TemplateManager {
     }
 
 
-
-
-
-    static int processTemplateModel(final TemplateModel model, final ITemplateHandler handler) {
-        return processTemplateModel(model, handler, 0, Integer.MAX_VALUE);
-    }
-
-
-    static int processTemplateModel(final TemplateModel model, final ITemplateHandler handler, final int offset, final int len) {
-
-        final IEngineTemplateEvent[] queue = model.queue;
-
-        if (handler == null || queue.length == 0 || offset >= queue.length) {
-            return 0;
-        }
-
-        int processed = 0;
-
-        final int maxi = (len == Integer.MAX_VALUE? queue.length : Math.min(queue.length, offset + len));
-
-        for (int i = offset; i < maxi; i++) {
-            queue[i].beHandled(handler);
-            processed++;
-        }
-
-        return processed;
-
-    }
 
 
 }

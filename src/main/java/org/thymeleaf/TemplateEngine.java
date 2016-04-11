@@ -1049,6 +1049,8 @@ public class TemplateEngine implements ITemplateEngine {
     }
 
 
+
+
     public final void process(final String template, final IContext context, final Writer writer) {
         process(new TemplateSpec(template, null, null, null), context, writer);
     }
@@ -1121,6 +1123,86 @@ public class TemplateEngine implements ITemplateEngine {
             
         }
         
+    }
+
+
+
+
+    public final IThrottledTemplateProcessor processThrottled(final String template, final IContext context, final Writer writer) {
+        return processThrottled(new TemplateSpec(template, null, null, null), context, writer);
+    }
+
+
+    public final IThrottledTemplateProcessor processThrottled(final String template, final Set<String> templateSelectors, final IContext context, final Writer writer) {
+        return processThrottled(new TemplateSpec(template, templateSelectors, null, null), context, writer);
+    }
+
+
+    public final IThrottledTemplateProcessor processThrottled(final TemplateSpec templateSpec, final IContext context, final Writer writer) {
+
+        if (!this.initialized) {
+            initialize();
+        }
+
+        final IThrottledTemplateProcessor throttledTemplateProcessor;
+        try {
+
+            Validate.notNull(templateSpec, "Template Specification cannot be null");
+            Validate.notNull(context, "Context cannot be null");
+            Validate.notNull(writer, "Writer cannot be null");
+            // selectors CAN actually be null if we are going to render the entire template
+            // templateMode CAN also be null if we are going to use the mode specified by the template resolver
+
+            if (logger.isTraceEnabled()) {
+                logger.trace("[THYMELEAF][{}] STARTING PREPARATION OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}",
+                        new Object[]{TemplateEngine.threadIndex(), templateSpec, context.getLocale()});
+            }
+
+            final long startNanos = System.nanoTime();
+
+            final TemplateManager templateManager = this.configuration.getTemplateManager();
+            throttledTemplateProcessor = templateManager.parseAndProcessThrottled(templateSpec, context, writer);
+
+            final long endNanos = System.nanoTime();
+
+            if (logger.isTraceEnabled()) {
+                logger.trace("[THYMELEAF][{}] FINISHED PREPARATION OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}",
+                        new Object[]{TemplateEngine.threadIndex(), templateSpec, context.getLocale()});
+            }
+
+            if (timerLogger.isTraceEnabled()) {
+                final BigDecimal elapsed = BigDecimal.valueOf(endNanos - startNanos);
+                final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(NANOS_IN_SECOND), RoundingMode.HALF_UP);
+                timerLogger.trace(
+                        "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH LOCALE {} PREPARED FOR THROTTLED PROCESSING IN {} nanoseconds (approx. {}ms)",
+                        new Object[]{
+                                TemplateEngine.threadIndex(),
+                                LoggingUtils.loggifyTemplateName(templateSpec.getTemplate()), context.getLocale(), elapsed, elapsedMs,
+                                templateSpec, context.getLocale(), elapsed, elapsedMs});
+            }
+
+        } catch (final TemplateOutputException e) {
+
+            // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
+            logger.error(String.format("[THYMELEAF][%s] Exception preparing throttled template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), templateSpec, e.getMessage()}), e);
+            throw e;
+
+        } catch (final TemplateEngineException e) {
+
+            // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
+            logger.error(String.format("[THYMELEAF][%s] Exception preparing throttled template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), templateSpec, e.getMessage()}), e);
+            throw e;
+
+        } catch (final RuntimeException e) {
+
+            // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
+            logger.error(String.format("[THYMELEAF][%s] Exception preparing throttled template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), templateSpec, e.getMessage()}), e);
+            throw new TemplateProcessingException("Exception preparing throttled template", templateSpec.toString(), e);
+
+        }
+
+        return throttledTemplateProcessor;
+
     }
 
 

@@ -131,10 +131,34 @@ public final class TemplateModel implements IModel {
 
 
 
-    // ----------------------------
-    // NO process() methods at the TemplateModel. They will only be processed directly (i.e. with their corresponding
-    // TemplateStart/TemplateEnd events) by the TemplateManager. All other processing will be done at the Model class.
-    // ----------------------------
+    void process(final ITemplateHandler handler) {
+        for (int i = 0; i < this.queue.length; i++) {
+            this.queue[i].beHandled(handler);
+        }
+    }
+
+
+    int process(final ITemplateHandler handler, final int offset, final TemplateFlowController controller) {
+
+        if (controller == null) {
+            process(handler);
+            return this.queue.length;
+        }
+
+        if (this.queue.length == 0 || offset >= this.queue.length) {
+            return 0;
+        }
+
+        int processed = 0;
+
+        for (int i = offset; i < this.queue.length && !controller.stopProcessing; i++) {
+            this.queue[i].beHandled(handler);
+            processed++;
+        }
+
+        return processed;
+
+    }
 
 
 
