@@ -41,6 +41,7 @@ final class ThrottledTemplateWriter extends Writer {
 
     private char[] overflow;
     private int overflowSize;
+    private int maxOverflowSize;
 
     private boolean unlimited;
     private int limit;
@@ -52,6 +53,7 @@ final class ThrottledTemplateWriter extends Writer {
         this.writer = writer;
         this.overflow = null;
         this.overflowSize = 0;
+        this.maxOverflowSize = 0;
         this.unlimited = false;
         this.limit = 0;
     }
@@ -59,6 +61,11 @@ final class ThrottledTemplateWriter extends Writer {
 
     boolean isOverflowed() {
         return this.overflowSize > 0;
+    }
+
+
+    int getMaxOverflowSize() {
+        return this.maxOverflowSize;
     }
 
 
@@ -202,6 +209,9 @@ final class ThrottledTemplateWriter extends Writer {
         ensureOverflowCapacity(1);
         this.overflow[this.overflowSize] = (char)c;
         this.overflowSize++;
+        if (this.overflowSize > this.maxOverflowSize) {
+            this.maxOverflowSize = this.overflowSize;
+        }
     }
 
 
@@ -209,6 +219,9 @@ final class ThrottledTemplateWriter extends Writer {
         ensureOverflowCapacity(len);
         str.getChars(off, off + len, this.overflow, this.overflowSize);
         this.overflowSize += len;
+        if (this.overflowSize > this.maxOverflowSize) {
+            this.maxOverflowSize = this.overflowSize;
+        }
     }
 
 
@@ -216,6 +229,9 @@ final class ThrottledTemplateWriter extends Writer {
         ensureOverflowCapacity(len);
         System.arraycopy(cbuf, off, this.overflow, this.overflowSize, len);
         this.overflowSize += len;
+        if (this.overflowSize > this.maxOverflowSize) {
+            this.maxOverflowSize = this.overflowSize;
+        }
     }
 
 
