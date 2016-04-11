@@ -119,7 +119,7 @@ final class ThrottledTemplateWriter extends Writer {
             return;
         }
         this.writer.write(c);
-        if (this.unlimited) {
+        if (!this.unlimited) {
             this.limit--;
         }
     }
