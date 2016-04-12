@@ -31,6 +31,7 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.thymeleaf.IThrottledTemplateProcessor;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.dialect.IDialect;
@@ -62,6 +63,7 @@ public final class TestExecutor {
     private ITestableResolver testableResolver = new StandardTestableResolver();
     private IProcessingContextBuilder processingContextBuilder = new WebProcessingContextBuilder(); 
     private List<IDialect> dialects = Collections.singletonList((IDialect)new StandardDialect());
+    private int throttleStep = Integer.MAX_VALUE;
     protected ITestReporter reporter = new ConsoleTestReporter();
     
     
@@ -140,8 +142,17 @@ public final class TestExecutor {
         return this.dialects;
     }
 
+
     
-    
+
+    public void setThrottleStep(final int throttleStep) {
+        this.throttleStep = throttleStep;
+    }
+
+    public int getThrottleStep() {
+        return this.throttleStep;
+    }
+
 
     
 
@@ -372,8 +383,15 @@ public final class TestExecutor {
         long startTimeNanos = System.nanoTime();
         long endTimeNanos;
         try {
-            
-            templateEngine.process(testName, markupSelectors, processingContext, writer);
+
+            if (this.throttleStep <= 0 || this.throttleStep == Integer.MAX_VALUE) {
+                templateEngine.process(testName, markupSelectors, processingContext, writer);
+            } else {
+                final IThrottledTemplateProcessor throttledProcessor = templateEngine.processThrottled(testName, markupSelectors, processingContext, writer);
+                while (!throttledProcessor.isFinished()) {
+                    throttledProcessor.process(this.throttleStep);
+                }
+            }
             endTimeNanos = System.nanoTime();
             
             final String result = writer.toString();
