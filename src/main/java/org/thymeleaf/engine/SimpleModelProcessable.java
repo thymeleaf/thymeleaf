@@ -61,7 +61,7 @@ final class SimpleModelProcessable implements IEngineProcessable {
         /*
          * Compute whether the whole model has been processed or not
          */
-        return (this.offset == this.model.queueSize);
+        return (this.offset == this.model.queueSize && !this.flowController.stopProcessing);
 
     }
 

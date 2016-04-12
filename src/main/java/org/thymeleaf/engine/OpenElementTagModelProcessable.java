@@ -74,7 +74,7 @@ final class OpenElementTagModelProcessable implements IEngineProcessable {
              */
             if (this.vars.modelBefore != null) {
                 this.offset += this.vars.modelBefore.process(this.nextTemplateHandler, this.offset, this.flowController); // This is never processable
-                if (this.offset < this.vars.modelBefore.queueSize) {
+                if (this.offset < this.vars.modelBefore.queueSize || this.flowController.stopProcessing) {
                     return false;
                 }
             }
@@ -94,6 +94,9 @@ final class OpenElementTagModelProcessable implements IEngineProcessable {
             this.offset = 0;
         }
 
+        if (this.flowController.stopProcessing) {
+            return false;
+        }
 
         if (!this.afterProcessed) {
             /*
@@ -105,7 +108,7 @@ final class OpenElementTagModelProcessable implements IEngineProcessable {
             if (this.vars.modelAfter != null) {
                 final ITemplateHandler modelHandler = this.vars.modelAfterProcessable ? this.processorTemplateHandler : this.nextTemplateHandler;
                 this.offset += this.vars.modelAfter.process(modelHandler, this.offset, this.flowController);
-                if (this.offset < this.vars.modelAfter.queueSize) {
+                if (this.offset < this.vars.modelAfter.queueSize || this.flowController.stopProcessing) {
                     return false;
                 }
             }

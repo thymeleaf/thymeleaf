@@ -62,6 +62,7 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
     private int iter;
     private int iterOffset;
     private boolean iterHasNext;
+    private boolean iterPending;
 
 
     IteratedGatheringModelProcessable(
@@ -95,6 +96,7 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
 
         this.iter = 0;
         this.iterOffset = 0;
+        this.iterPending = false;
 
     }
 
@@ -160,7 +162,7 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
              */
             if (this.iterationModels != null) {
 
-                iterFinished = processIteration(this.iterationModels.modelFirst);
+                iterFinished = processIteration(this.iterationModels.modelFirst, flowController);
 
                 if (!iterFinished) {
                     return false;
@@ -173,11 +175,17 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
 
         }
 
+        /*
+         * Check the stopProcess flag again
+         */
+        if (flowController != null && flowController.stopProcessing) {
+            return false;
+        }
 
         /*
          * Perform iterations > 1
          */
-        while (this.iterHasNext) {
+        while (this.iterHasNext || this.iterPending) {
 
             /*
              * Initialize the iteration, if we are at the beginning of it
@@ -209,14 +217,16 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
             /*
              * Perform the iteration
              */
-            iterFinished = processIteration(model);
+            iterFinished = processIteration(model, flowController);
 
             if (!iterFinished) {
+                this.iterPending = true;
                 return false;
             }
 
             this.iter++;
             this.iterOffset = 0;
+            this.iterPending = false;
 
         }
 
@@ -237,7 +247,7 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
 
 
 
-    private boolean processIteration(final Model model) {
+    private boolean processIteration(final Model model, final TemplateFlowController flowController) {
 
         if (this.iterOffset == 0) {
 
@@ -264,12 +274,12 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
          * PERFORM THE EXECUTION on the gathered queue, which now does not live at the current exec level, but
          * at the previous one (we protected it by increasing execution level before)
          */
-        this.iterOffset += model.process(getProcessorTemplateHandler(), this.iterOffset, getFlowController());
+        this.iterOffset += model.process(getProcessorTemplateHandler(), this.iterOffset, flowController);
 
         /*
          * Check if we have completed the iteration, returning false if not
          */
-        if (this.iterOffset < model.queueSize) {
+        if (flowController != null && (this.iterOffset < model.queueSize || flowController.stopProcessing)) {
             return false;
         }
 

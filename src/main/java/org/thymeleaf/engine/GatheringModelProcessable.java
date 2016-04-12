@@ -80,7 +80,8 @@ final class GatheringModelProcessable extends AbstractGatheringModelProcessable 
         /*
          * Compute whether the whole model has been processed or not
          */
-        final boolean processed = (this.offset == model.queueSize);
+        final boolean processed =
+                (flowController == null || (this.offset == model.queueSize && !flowController.stopProcessing));
 
         if (processed) {
             /*

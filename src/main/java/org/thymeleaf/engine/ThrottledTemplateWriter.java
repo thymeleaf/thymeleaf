@@ -34,7 +34,7 @@ import org.thymeleaf.exceptions.TemplateOutputException;
  */
 final class ThrottledTemplateWriter extends Writer {
 
-    private static int OVERFLOW_BUFFER_INCREMENT = 512;
+    private static int OVERFLOW_BUFFER_INCREMENT = 256;
 
     private final String templateName;
     private final TemplateFlowController flowController;
@@ -48,7 +48,7 @@ final class ThrottledTemplateWriter extends Writer {
     private int limit;
 
 
-    public ThrottledTemplateWriter(final String templateName, final TemplateFlowController flowController, final Writer writer) {
+    ThrottledTemplateWriter(final String templateName, final TemplateFlowController flowController, final Writer writer) {
         super();
         this.templateName = templateName;
         this.flowController = flowController;

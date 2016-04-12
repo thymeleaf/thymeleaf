@@ -68,7 +68,7 @@ final class TemplateEndModelProcessable implements IEngineProcessable {
          * Process the queue
          */
         this.offset += this.model.process(this.modelHandler, this.offset, this.flowController);
-        if (this.offset < this.model.queueSize) {
+        if (this.offset < this.model.queueSize || this.flowController.stopProcessing) {
             return false;
         }
 

@@ -206,7 +206,12 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
 
         try {
 
-            if (this.allProcessingFinished || outputLimitInChars <= 0) {
+            if (outputLimitInChars < 0 || outputLimitInChars == Integer.MAX_VALUE) {
+                processAll();
+                return;
+            }
+
+            if (this.allProcessingFinished || outputLimitInChars == 0) {
                 return;
             }
 
