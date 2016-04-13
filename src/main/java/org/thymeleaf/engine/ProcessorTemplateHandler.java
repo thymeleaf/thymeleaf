@@ -55,6 +55,17 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Basic, most fundamental processor in the chain of {@link ITemplateHandler}s applied to a template for
+ *   processing it.
+ * </p>
+ * <p>
+ *   This handler actually executes all applicable {@link org.thymeleaf.processor.IProcessor}s to each of the
+ *   template events, resulting in the processing of the template.
+ * </p>
+ * <p>
+ *   All pre-processors apply before this handler, and all post-processors apply afterwards.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
@@ -65,6 +76,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     private static final Logger logger = LoggerFactory.getLogger(ProcessorTemplateHandler.class);
 
 
+    // Convenience static zero-processor processor arrays.
     private static final ITemplateBoundariesProcessor[] EMPTY_TEMPLATE_BOUNDARIES_PROCESSORS = new ITemplateBoundariesProcessor[0];
     private static final ICDATASectionProcessor[] EMPTY_CDATA_SECTION_PROCESSORS = new ICDATASectionProcessor[0];
     private static final ICommentProcessor[] EMPTY_COMMENT_PROCESSORS = new ICommentProcessor[0];
@@ -76,7 +88,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
     // Structure handlers are reusable objects that will be used by processors in order to instruct the engine to
     // do things with the processed structures themselves (things that cannot be directly done from the processors like
-    // removing structures or iterating elements)
+    // removing structures or iterating elements). They are reusable so we will create one per type.
     private final ElementTagStructureHandler elementTagStructureHandler;
     private final ElementModelStructureHandler elementModelStructureHandler;
     private final TemplateBoundariesStructureHandler templateBoundariesStructureHandler;
@@ -88,14 +100,18 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     private final XMLDeclarationStructureHandler xmlDeclarationStructureHandler;
 
 
+    // We keep the 'next' template here instead of making the handler extend AbstractTemplateHandler because most code
+    // in this class is extremely time-critical, and we want to avoid tons of calls to super.handleX() or getNext().
     private ITemplateHandler next = null;
 
     private IEngineConfiguration configuration = null;
     private AttributeDefinitions attributeDefinitions = null;
     private TemplateMode templateMode = null;
 
+    // These three will not be set at constructor time, but rather by means of calls to their respective setter methods.
     private ITemplateContext context = null;
     private IEngineContext engineContext = null;
+    private TemplateFlowController flowController = null; // optional, only if the template should be throttled
 
 
     // These arrays will be initialized with all the registered processors for the different kind of non-element
@@ -111,23 +127,38 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     private IXMLDeclarationProcessor[] xmlDeclarationProcessors = null;
 
 
+    // This will be given a value at the TemplateStart event, so that when we are processing the TemplateEnd
+    // event we can make sure the context level values at the beginning and end of the template processing match.
     private Integer initialContextLevel = null;
 
 
-    // The modelController will be in charge of deciding if we have to skip the processing of an event, because it has to be
-    // discarded or maybe because events are being gathered for future processing as a whole (e.g. iteration or
-    // element model processors).
+    // The modelController will be in charge of deciding if we have to skip the processing of an event, because
+    // it has to be discarded or maybe because events are being gathered for future processing as a whole (e.g.
+    // iteration or element model processors).
     private TemplateModelController modelController = null;
 
 
+    // When a gathering model is being executed, this variable will be set to the model being executed itself so that
+    // the first event executed in that model (the standalone or open tag that initially stopped execution and started
+    // the gathering process) is able to retrieve it and re-initialize its processing flags to the state they were
+    // when the execution was initially suspended.
     private IGatheringModelProcessable currentGatheringModel = null;
 
 
+    // This flag will be used for quickly determining whether the current template is being throttled or not.
     private boolean throttleEngine = false;
-    private TemplateFlowController flowController = null;
+
+    // This array (plus a companion int for measuring how much of it is used) will be used for keeping a queue of work
+    // that was left pending to be processed the last time the engine was stopped by the throttling mechanism. It is
+    // an array because pending processables can actually be nested (e.g. an iteration calls a model processor), so when
+    // executing the pending work we will do it from the top of the queue, going back in the array positions as we
+    // complete pending processables.
     private IEngineProcessable[] pendingProcessings = null;
     private int pendingProcessingsSize = 0;
-    private DecreaseContextLevelProcessable DECREASE_CONTEXT_LEVEL_PROCESSABLE = null; // This one can be cached
+
+    // This specific type of processable (used for throttling) does not depend on the specific event being processd,
+    // so we can just create one and use it everytime it is needed.
+    private DecreaseContextLevelProcessable decreaseContextLevelProcessable = null;
 
 
 
@@ -194,7 +225,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         // Instance the gatherer
         this.modelController = new TemplateModelController(this.configuration, this.templateMode, this, this.engineContext);
         this.modelController.setTemplateFlowController(this.flowController); // Might have been already initialized or not
-        this.DECREASE_CONTEXT_LEVEL_PROCESSABLE = new DecreaseContextLevelProcessable(this.engineContext, this.flowController);
+        this.decreaseContextLevelProcessable = new DecreaseContextLevelProcessable(this.engineContext, this.flowController);
 
         // Obtain all processor sets and compute sizes
         final Set<ITemplateBoundariesProcessor> templateBoundariesProcessorSet = this.configuration.getTemplateBoundariesProcessors(this.templateMode);
@@ -233,7 +264,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
             this.modelController.setTemplateFlowController(this.flowController);
         }
         if (this.throttleEngine && this.engineContext != null) {
-            this.DECREASE_CONTEXT_LEVEL_PROCESSABLE = new DecreaseContextLevelProcessable(this.engineContext, this.flowController);
+            this.decreaseContextLevelProcessable = new DecreaseContextLevelProcessable(this.engineContext, this.flowController);
         }
     }
 
@@ -812,7 +843,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     this.engineContext.decreaseLevel();
                 }
             } else {
-                queueProcessable(this.DECREASE_CONTEXT_LEVEL_PROCESSABLE);
+                queueProcessable(this.decreaseContextLevelProcessable);
             }
 
             return;
@@ -1139,7 +1170,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 this.engineContext.decreaseLevel();
             }
         } else {
-            queueProcessable(this.DECREASE_CONTEXT_LEVEL_PROCESSABLE);
+            queueProcessable(this.decreaseContextLevelProcessable);
         }
 
     }
