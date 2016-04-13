@@ -62,7 +62,7 @@ public interface ITemplateEngine {
 
     /**
      * <p>
-     * Process a template starting from a template (usually the template name). Output will be written
+     * Process the specified template (usually the template name). Output will be written
      * into a {@link String} that will be returned from calling this method, once template processing
      * has finished.
      * </p>
@@ -82,7 +82,7 @@ public interface ITemplateEngine {
 
     /**
      * <p>
-     * Process a template starting from a template (usually the template name) and a set of
+     * Process the specified template (usually the template name) applying a set of
      * <em>template selectors</em>. Output will be written into a {@link String}
      * that will be returned from calling this method, once template processing has finished.
      * </p>
@@ -134,7 +134,7 @@ public interface ITemplateEngine {
 
     /**
      * <p>
-     * Process a template starting from a template (usually the template name). Output will be written
+     * Process the specified template (usually the template name). Output will be written
      * to the specified writer as it is generated from processing the template. This is specially
      * useful for web environments (using {@link javax.servlet.http.HttpServletResponse#getWriter()}).
      * </p>
@@ -153,7 +153,7 @@ public interface ITemplateEngine {
 
     /**
      * <p>
-     * Process a template starting from a template (usually the template name) and a set of
+     * Process the specified template (usually the template name) applying a set of
      * <em>template selectors</em>. Output will be written to the specified writer as it is generated
      * from processing the template. This is specially useful for web environments
      * (using {@link javax.servlet.http.HttpServletResponse#getWriter()}).
@@ -205,7 +205,7 @@ public interface ITemplateEngine {
 
     /**
      * <p>
-     * Process a template starting from a template (usually the template name). Output will be written to the
+     * Process the specified template (usually the template name). Output will be written to the
      * specified writer as it is generated from processing the template as dictated by the returned
      * {@link IThrottledTemplateProcessor}. This is specially useful for scenarios such as reactive architectures
      * in which the production of output could be regulated by a back-pressure mechanism.
@@ -228,7 +228,7 @@ public interface ITemplateEngine {
 
     /**
      * <p>
-     * Process a template starting from a template (usually the template name) and a set of
+     * Process the specified template (usually the template name) applying a set of
      * <em>template selectors</em>. Output will be written to the
      * specified writer as it is generated from processing the template as dictated by the returned
      * {@link IThrottledTemplateProcessor}. This is specially useful for scenarios such as reactive architectures
