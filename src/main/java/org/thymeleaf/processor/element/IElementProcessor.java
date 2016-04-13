@@ -50,7 +50,22 @@ import org.thymeleaf.processor.IProcessor;
  */
 public interface IElementProcessor extends IProcessor {
 
+    /**
+     * <p>
+     *   Returns the element name that would make this processor match (if any).
+     * </p>
+     *
+     * @return the element name.
+     */
     public MatchingElementName getMatchingElementName();
+
+    /**
+     * <p>
+     *   Returns the attribute name that would make this processor match (if any).
+     * </p>
+     *
+     * @return the attribute name.
+     */
     public MatchingAttributeName getMatchingAttributeName();
 
 }

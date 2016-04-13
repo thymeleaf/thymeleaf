@@ -28,7 +28,7 @@ import org.thymeleaf.model.IModelVisitor;
  *   Interface to be implemented by all <em>element model processors</em>.
  * </p>
  * <p>
- *   This kind of processors are executed on the entire elements they match --including their bodies--,
+ *   Processors of this kind are executed on the entire elements they match --including their bodies--,
  *   in the form of an {@link IModel} object that contains the complete sequence of events that models such
  *   element and its contents.
  * </p>
@@ -37,14 +37,12 @@ import org.thymeleaf.model.IModelVisitor;
  * </p>
  * <p>
  *   The {@link IModel} object passed as a parameter to the
- *   {@link #process(ITemplateContext, IModel, IElementModelStructureHandler)} method is a mutable model,
+ *   {@link #process(ITemplateContext, IModel, IElementModelStructureHandler)} method is mutable,
  *   so it allows any modifications to be done on it. For example, we might want to modify it so that we
  *   replace every text node from its body with a comment with the same contents:
  * </p>
  * <code>
- *   final TemplateMode templateMode = context.getTemplateMode();<br>
- *   final IModelFactory modelFactory =<br>
- *       context.getConfiguration().getModelFactory(templateMode);<br>
+ *   final IModelFactory modelFactory = context.getModelFactory();<br>
  *   <br>
  *   int n = model.size();<br>
  *   while (n-- != 0) {<br>
@@ -53,7 +51,7 @@ import org.thymeleaf.model.IModelVisitor;
  *           final IComment comment =<br>
  *               modelFactory.createComment(((IText)event).getText());<br>
  *           model.insert(n, comment);<br>
- *           model.remove(n);<br>
+ *           model.remove(n + 1);<br>
  *       }<br>
  *   }<br>
  * </code>
@@ -94,6 +92,20 @@ import org.thymeleaf.model.IModelVisitor;
 public interface IElementModelProcessor extends IElementProcessor {
 
 
+    /**
+     * <p>
+     *   Execute the processor.
+     * </p>
+     * <p>
+     *   The {@link IModel} object represents the section of template (a <em>fragment</em>) on which the processor
+     *   is executing, and can be directly modified. Instructions to be given to the template engine such as
+     *   local variable creation, inlining etc. should be done via the {@link IElementModelStructureHandler} handler.
+     * </p>
+     *
+     * @param context the execution context.
+     * @param model the model this processor is executing on.
+     * @param structureHandler the handler that will centralise modifications and commands to the engine.
+     */
     public void process(
             final ITemplateContext context,
             final IModel model, final IElementModelStructureHandler structureHandler);
