@@ -21,21 +21,56 @@ package org.thymeleaf.postprocessor;
 
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Basic implementation of {@link IPostProcessor}.
+ * </p>
+ * <p>
+ *   This implementation will suffice for most of the scenarios in which specifying a post-processor at
+ *   a dialect is needed.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  *
  */
-public final class PostProcessor extends AbstractPostProcessor {
+public final class PostProcessor implements IPostProcessor {
+
+    private final TemplateMode templateMode;
+    private final Class<? extends ITemplateHandler> handlerClass;
+    private final int precedence;
 
 
     public PostProcessor(
             final TemplateMode templateMode, final Class<? extends ITemplateHandler> handlerClass, final int precedence) {
 
-        super(templateMode, handlerClass, precedence);
+        super();
 
+        Validate.notNull(templateMode, "Template mode cannot be null");
+        Validate.notNull(handlerClass, "Handler class cannot be null");
+
+        this.templateMode = templateMode;
+        this.handlerClass = handlerClass;
+        this.precedence = precedence;
+
+    }
+
+
+
+    public final TemplateMode getTemplateMode() {
+        return this.templateMode;
+    }
+
+
+    public final int getPrecedence() {
+        return this.precedence;
+    }
+
+
+    public final Class<? extends ITemplateHandler> getHandlerClass() {
+        return this.handlerClass;
     }
 
 }
