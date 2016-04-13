@@ -25,11 +25,11 @@ import java.io.Writer;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IModelVisitor;
 
-/**
+/*
+ * Engine implementation of IComment.
  *
- * @author Daniel Fern&aacute;ndez
+ * @author Daniel Fernandez
  * @since 3.0.0
- * 
  */
 final class Comment extends AbstractTextualTemplateEvent implements IComment {
 

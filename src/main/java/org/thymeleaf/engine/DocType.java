@@ -25,11 +25,11 @@ import java.io.Writer;
 import org.thymeleaf.model.IDocType;
 import org.thymeleaf.model.IModelVisitor;
 
-/**
+/*
+ * Engine implementation of IDocType.
  *
- * @author Daniel Fern&aacute;ndez
+ * @author Daniel Fernandez
  * @since 3.0.0
- * 
  */
 final class DocType extends AbstractTemplateEvent implements IDocType, IEngineTemplateEvent {
 

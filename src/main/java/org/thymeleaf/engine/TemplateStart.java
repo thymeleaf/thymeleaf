@@ -25,11 +25,11 @@ import java.io.Writer;
 import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.model.ITemplateStart;
 
-/**
+/*
+ * Engine implementation of ITemplateStart.
  *
- * @author Daniel Fern&aacute;ndez
+ * @author Daniel Fernandez
  * @since 3.0.0
- * 
  */
 final class TemplateStart extends AbstractTemplateEvent implements ITemplateStart, IEngineTemplateEvent {
 

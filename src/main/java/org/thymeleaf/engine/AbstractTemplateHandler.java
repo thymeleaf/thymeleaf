@@ -35,6 +35,15 @@ import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Basic abstract implementation of {@link ITemplateHandler} that takes care of the whole contract of this
+ *   interface and offers a good base for the easy implementation of custom template handlers.
+ * </p>
+ * <p>
+ *   All <tt>handleX()</tt> implementations in this class are set to simply delegate to the
+ *   <em>next</em> handler in the chain, so that subclasses can override only the handling methods that are
+ *   really relevant to them.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0

@@ -25,11 +25,11 @@ import java.io.Writer;
 import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.model.IXMLDeclaration;
 
-/**
+/*
+ * Engine implementation of IXMLDeclaration.
  *
- * @author Daniel Fern&aacute;ndez
+ * @author Daniel Fernandez
  * @since 3.0.0
- * 
  */
 final class XMLDeclaration extends AbstractTemplateEvent implements IXMLDeclaration, IEngineTemplateEvent {
 

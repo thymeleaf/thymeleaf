@@ -28,11 +28,11 @@ import org.thymeleaf.model.IAttribute;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.util.FastStringWriter;
 
-/**
+/*
+ * Engine implementation of IAttribute.
  *
- * @author Daniel Fern&aacute;ndez
+ * @author Daniel Fernandez
  * @since 3.0.0
- *
  */
 final class Attribute implements IAttribute {
 

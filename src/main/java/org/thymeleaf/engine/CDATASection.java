@@ -25,11 +25,11 @@ import java.io.Writer;
 import org.thymeleaf.model.ICDATASection;
 import org.thymeleaf.model.IModelVisitor;
 
-/**
+/*
+ * Engine implementation of ICDATASection.
  *
- * @author Daniel Fern&aacute;ndez
+ * @author Daniel Fernandez
  * @since 3.0.0
- * 
  */
 final class CDATASection extends AbstractTextualTemplateEvent implements ICDATASection {
 

@@ -25,11 +25,11 @@ import java.io.Writer;
 import org.thymeleaf.model.IModelVisitor;
 import org.thymeleaf.model.IProcessingInstruction;
 
-/**
+/*
+ * Engine implementation of IProcessingInstruction.
  *
- * @author Daniel Fern&aacute;ndez
+ * @author Daniel Fernandez
  * @since 3.0.0
- * 
  */
 final class ProcessingInstruction extends AbstractTemplateEvent implements IProcessingInstruction, IEngineTemplateEvent {
 
