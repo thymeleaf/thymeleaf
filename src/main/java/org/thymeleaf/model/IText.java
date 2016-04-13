@@ -20,6 +20,13 @@
 package org.thymeleaf.model;
 
 /**
+ * <p>
+ *   Event interface defining a Text, i.e. a part of a template that does not contain any
+ *   kind of relevant structure.
+ * </p>
+ * <p>
+ *   Note that any implementations of this interface should be <strong>immutable</strong>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
@@ -27,6 +34,13 @@ package org.thymeleaf.model;
  */
 public interface IText extends ITemplateEvent, CharSequence {
 
+    /**
+     * <p>
+     *   Returns the Text as a String.
+     * </p>
+     *
+     * @return the text.
+     */
     public String getText();
 
 }

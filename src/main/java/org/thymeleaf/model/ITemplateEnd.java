@@ -20,6 +20,12 @@
 package org.thymeleaf.model;
 
 /**
+ * <p>
+ *   Event interface for events specifying the end of a template processing operation.
+ * </p>
+ * <p>
+ *   Note that any implementations of this interface should be <strong>immutable</strong>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0

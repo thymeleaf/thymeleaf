@@ -20,6 +20,13 @@
 package org.thymeleaf.model;
 
 /**
+ * <p>
+ *   Abstract base implementation for the {@link IModelVisitor} interface.
+ * </p>
+ * <p>
+ *   This class provides empty implementations for all methods in the interface, so
+ *   that users can define only the ones they are interested on.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0

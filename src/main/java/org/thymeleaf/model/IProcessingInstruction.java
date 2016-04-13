@@ -20,6 +20,12 @@
 package org.thymeleaf.model;
 
 /**
+ * <p>
+ *   Event interface defining a Processing Instruction.
+ * </p>
+ * <p>
+ *   Note that any implementations of this interface should be <strong>immutable</strong>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
@@ -27,8 +33,31 @@ package org.thymeleaf.model;
  */
 public interface IProcessingInstruction extends ITemplateEvent {
 
+    /**
+     * <p>
+     *   Returns the target of the Processing Instruction.
+     * </p>
+     *
+     * @return the Processing Instruction target.
+     */
     public String getTarget();
+
+    /**
+     * <p>
+     *   Returns the content of the Processing Instruction.
+     * </p>
+     *
+     * @return the Processing Instruction content.
+     */
     public String getContent();
+
+    /**
+     * <p>
+     *   Returns the complete Processing Instruction as a String.
+     * </p>
+     *
+     * @return the complete Processing Instruction.
+     */
     public String getProcessingInstruction();
 
 }

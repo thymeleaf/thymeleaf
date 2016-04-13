@@ -20,6 +20,12 @@
 package org.thymeleaf.model;
 
 /**
+ * <p>
+ *   Event interface defining a DOCTYPE clause.
+ * </p>
+ * <p>
+ *   Note that any implementations of this interface should be <strong>immutable</strong>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
@@ -27,13 +33,69 @@ package org.thymeleaf.model;
  */
 public interface IDocType extends ITemplateEvent {
 
+    /**
+     * <p>
+     *   Returns the keyword of the DOCTYPE clause in its original
+     *   case (usually <tt>DOCTYPE</tt>).
+     * </p>
+     *
+     * @return the DOCTYPE keyword.
+     */
     public String getKeyword();
+
+    /**
+     * <p>
+     *   Returns the root element name in the DOCTYPE clause. Will normally be
+     *   <tt>html</tt> in HTML or XHTML documents.
+     * </p>
+     *
+     * @return the element name
+     */
     public String getElementName();
+
+    /**
+     * <p>
+     *   Returns the type of DOCTYPE, usually <tt>null</tt>, <tt>PUBLIC</tt> or <tt>SYSTEM</tt>.
+     * </p>
+     *
+     * @return the type of DOCTYPE (might be null).
+     */
     public String getType();
+
+    /**
+     * <p>
+     *   Returns the PUBLIC ID, if it has been specified.
+     * </p>
+     *
+     * @return the PUBLIC ID (might be null).
+     */
     public String getPublicId();
+
+    /**
+     * <p>
+     *   Returns the SYSTEM ID, if it has been specified.
+     * </p>
+     *
+     * @return the SYSTEM ID (might be null).
+     */
     public String getSystemId();
+
+    /**
+     * <p>
+     *   Returns the internal subset in the DOCTYPE, if it has been specified.
+     * </p>
+     *
+     * @return the internal subset (might be null).
+     */
     public String getInternalSubset();
 
+    /**
+     * <p>
+     *   Returns the complete DOCTYPE clause as a String.
+     * </p>
+     *
+     * @return the complete DOCTYPE clause.
+     */
     public String getDocType();
 
 }

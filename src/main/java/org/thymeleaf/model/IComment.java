@@ -20,6 +20,12 @@
 package org.thymeleaf.model;
 
 /**
+ * <p>
+ *   Event interface defining a Comment.
+ * </p>
+ * <p>
+ *   Note that any implementations of this interface should be <strong>immutable</strong>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
@@ -27,7 +33,22 @@ package org.thymeleaf.model;
  */
 public interface IComment extends ITemplateEvent, CharSequence {
 
+    /**
+     * <p>
+     *   Returns the whole Comment, including the <tt>&lt;!--...--&gt;</tt> prefix and suffix.
+     * </p>
+     *
+     * @return the Comment.
+     */
     public String getComment();
+
+    /**
+     * <p>
+     *   Returns the content of the Comment, without the prefix or suffix.
+     * </p>
+     *
+     * @return the content of the Comment.
+     */
     public String getContent();
 
 }

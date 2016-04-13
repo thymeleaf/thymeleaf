@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.templatemode.TemplateMode;
 
 
@@ -35,16 +36,17 @@ import org.thymeleaf.templatemode.TemplateMode;
  *   with all its body and nested elements, or even an entire document.
  * </p>
  * <p>
- *   {@link IModel} implementations are the base classes used at the template engine for representing
- *   fragments of templates.
+ *   {@link IModel} implementations are the classes used at the template engine for representing
+ *   templates or fragments.
  * </p>
  * <p>
- *   The most important implementation of this interface is {@link org.thymeleaf.engine.TemplateModel},
- *   used for representing parsed and/or cached fragments or templates.
+ *   From the user's code (e.g. custom processors), implementations of {@link IModel} are created using an
+ *   {@link IModelFactory}, obtained from {@link ITemplateContext#getModelFactory()}.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @see org.thymeleaf.engine.TemplateModel
+ * @see IModelFactory
  * @see org.thymeleaf.processor.element.IElementModelProcessor
  * @since 3.0.0
  *

@@ -20,6 +20,12 @@
 package org.thymeleaf.model;
 
 /**
+ * <p>
+ *   Event interface defining an XML declaration.
+ * </p>
+ * <p>
+ *   Note that any implementations of this interface should be <strong>immutable</strong>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
@@ -27,10 +33,52 @@ package org.thymeleaf.model;
  */
 public interface IXMLDeclaration extends ITemplateEvent {
 
+    /**
+     * <p>
+     *   Returns the keyword of the XML Declaration in its original
+     *   case (usually <tt>xml</tt>).
+     * </p>
+     *
+     * @return the XML Declaration keyword.
+     */
     public String getKeyword();
+
+    /**
+     * <p>
+     *   Returns the XML version specified at the XML Declaration (if specified).
+     * </p>
+     *
+     * @return the XML version (might be null).
+     */
     public String getVersion();
+
+    /**
+     * <p>
+     *   Returns the value of the <tt>encoding</tt> attribute specified at the
+     *   XML Declaration (if specified).
+     * </p>
+     *
+     * @return the encoding value (might be null).
+     */
     public String getEncoding();
+
+    /**
+     * <p>
+     *   Returns the value of the <tt>standalone</tt> attribute specified at the
+     *   XML Declaration (if specified).
+     * </p>
+     *
+     * @return the standalone value (might be null).
+     */
     public String getStandalone();
+
+    /**
+     * <p>
+     *   Returns the complete XML Declaration as a String.
+     * </p>
+     *
+     * @return the complete XML Declaration.
+     */
     public String getXmlDeclaration();
 
 }

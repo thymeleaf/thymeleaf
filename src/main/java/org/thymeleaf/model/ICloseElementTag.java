@@ -20,6 +20,12 @@
 package org.thymeleaf.model;
 
 /**
+ * <p>
+ *   Event interface defining a close element tag.
+ * </p>
+ * <p>
+ *   Note that any implementations of this interface should be <strong>immutable</strong>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
@@ -27,6 +33,14 @@ package org.thymeleaf.model;
  */
 public interface ICloseElementTag extends IElementTag {
 
+    /**
+     * <p>
+     *   Returns whether this close tag is unmatched, i.e. there is no
+     *   corresponding previous open tag for it.
+     * </p>
+     *
+     * @return true if the tag is unmatched, false if not.
+     */
     public boolean isUnmatched();
 
 }

@@ -20,6 +20,9 @@
 package org.thymeleaf.model;
 
 /**
+ * <p>
+ *   Enum class modelling the different types of quotes that can be found surrounding attribute values in tags.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0

@@ -20,6 +20,12 @@
 package org.thymeleaf.model;
 
 /**
+ * <p>
+ *   Event interface defining a CDATA Section.
+ * </p>
+ * <p>
+ *   Note that any implementations of this interface should be <strong>immutable</strong>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
@@ -27,7 +33,22 @@ package org.thymeleaf.model;
  */
 public interface ICDATASection extends ITemplateEvent, CharSequence {
 
+    /**
+     * <p>
+     *   Returns the whole CDATA Section, including the <tt>&lt;![CDATA[...]]&gt;</tt> prefix and suffix.
+     * </p>
+     *
+     * @return the CDATA Section.
+     */
     public String getCDATASection();
+
+    /**
+     * <p>
+     *   Returns the content of the CDATA Section, without the prefix or suffix.
+     * </p>
+     *
+     * @return the content of the CDATA Section.
+     */
     public String getContent();
 
 }
