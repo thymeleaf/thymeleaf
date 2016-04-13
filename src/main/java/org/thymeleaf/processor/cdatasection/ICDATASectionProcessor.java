@@ -36,6 +36,20 @@ import org.thymeleaf.processor.IProcessor;
  */
 public interface ICDATASectionProcessor extends IProcessor {
 
+    /**
+     * <p>
+     *   Execute the processor.
+     * </p>
+     * <p>
+     *   The {@link ICDATASection} object argument is immutable, so all modifications to this object or any
+     *   instructions to be given to the engine should be done through the specified
+     *   {@link ICDATASectionStructureHandler} handler.
+     * </p>
+     *
+     * @param context the execution context.
+     * @param cdataSection the event this processor is executing on.
+     * @param structureHandler the handler that will centralise modifications and commands to the engine.
+     */
     public void process(
             final ITemplateContext context,
             final ICDATASection cdataSection, final ICDATASectionStructureHandler structureHandler);

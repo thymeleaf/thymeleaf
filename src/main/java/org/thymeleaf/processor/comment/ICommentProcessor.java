@@ -36,6 +36,20 @@ import org.thymeleaf.processor.IProcessor;
  */
 public interface ICommentProcessor extends IProcessor {
 
+    /**
+     * <p>
+     *   Execute the processor.
+     * </p>
+     * <p>
+     *   The {@link IComment} object argument is immutable, so all modifications to this object or any
+     *   instructions to be given to the engine should be done through the specified
+     *   {@link ICommentStructureHandler} handler.
+     * </p>
+     *
+     * @param context the execution context.
+     * @param comment the event this processor is executing on.
+     * @param structureHandler the handler that will centralise modifications and commands to the engine.
+     */
     public void process(
             final ITemplateContext context,
             final IComment comment, final ICommentStructureHandler structureHandler);

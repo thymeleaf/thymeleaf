@@ -30,6 +30,9 @@ import org.thymeleaf.templatemode.TemplateMode;
  * <p>
  *   Basic abstract implementation of {@link ITemplateBoundariesProcessor}.
  * </p>
+ * <p>
+ *   This abstract implementation takes care of correct exception handling so that subclasses don't have to.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *

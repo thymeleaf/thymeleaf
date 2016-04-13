@@ -45,10 +45,38 @@ import org.thymeleaf.processor.IProcessor;
  */
 public interface ITemplateBoundariesProcessor extends IProcessor {
 
+    /**
+     * <p>
+     *   Execute the processor for a {@link ITemplateStart} event.
+     * </p>
+     * <p>
+     *   The {@link ITemplateStart} object argument is immutable, so all modifications to this object or any
+     *   instructions to be given to the engine should be done through the specified
+     *   {@link ITemplateBoundariesStructureHandler} handler.
+     * </p>
+     *
+     * @param context the execution context.
+     * @param templateStart the event this processor is executing on.
+     * @param structureHandler the handler that will centralise modifications and commands to the engine.
+     */
     public void processTemplateStart(
             final ITemplateContext context,
             final ITemplateStart templateStart, final ITemplateBoundariesStructureHandler structureHandler);
 
+    /**
+     * <p>
+     *   Execute the processor for a {@link ITemplateEnd} event.
+     * </p>
+     * <p>
+     *   The {@link ITemplateEnd} object argument is immutable, so all modifications to this object or any
+     *   instructions to be given to the engine should be done through the specified
+     *   {@link ITemplateBoundariesStructureHandler} handler.
+     * </p>
+     *
+     * @param context the execution context.
+     * @param templateEnd the event this processor is executing on.
+     * @param structureHandler the handler that will centralise modifications and commands to the engine.
+     */
     public void processTemplateEnd(
             final ITemplateContext context,
             final ITemplateEnd templateEnd, final ITemplateBoundariesStructureHandler structureHandler);
