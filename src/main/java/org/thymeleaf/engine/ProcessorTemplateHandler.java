@@ -279,7 +279,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     public void handleTemplateStart(final ITemplateStart itemplateStart) {
 
         /*
-         * If processing is stopped, we should queue this for later handling
+         * If processing is stopped, we should queue this for later handling.
+         * In theory, given the origin of events (parser or cache) should get stopped immediately, this should
+         * only happen if a pre-processor is producing additional events.
          */
         if (this.throttleEngine && this.flowController.stopProcessing) {
             queueEvent(itemplateStart);
@@ -289,6 +291,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
         /*
          * Save the initial engine context level, so that after processing we can ensure it matches
+         * This check will be performed as a kind of assertion that nothing wrong happened with correct
+         * context handling during template processing.
          */
         if (this.engineContext != null) {
             this.initialContextLevel = Integer.valueOf(this.engineContext.level());
@@ -374,6 +378,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
         /*
          * If processing is stopped, we should queue this for later handling
+         * In theory, given the origin of events (parser or cache) should get stopped immediately, this should
+         * only happen if a pre-processor is producing additional events.
          */
         if (this.throttleEngine && this.flowController.stopProcessing) {
             queueEvent(itemplateEnd);
@@ -451,7 +457,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * LAST ROUND OF CHECKS. If we have not returned our indexes to -1, something has gone wrong during processing
+         * LAST ROUND OF CHECKS. These will check that we have returned all our hierarchical indexes to their
+         * correct position, so we are sure that nothing wrong has happened with context or model handling.
          */
         performTearDownChecks(itemplateEnd);
 
@@ -460,6 +467,10 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
 
+    /*
+     * Asserts to be executed at the end of template processing for making sure all hierarchical indexes have finally
+     * returned to their initial position (which means nothing wrong has happened during model or context processing).
+     */
     void performTearDownChecks(final ITemplateEnd itemplateEnd) {
 
         if (this.modelController.getModelLevel() != 0) {
@@ -490,6 +501,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
         /*
          * If processing is stopped, we should queue this for later handling
+         * In theory, given the origin of events (parser or cache) should get stopped immediately, this should
+         * only happen if a pre-processor is producing additional events.
          */
         if (this.throttleEngine && this.flowController.stopProcessing) {
             queueEvent(itext);
@@ -593,6 +606,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
         /*
          * If processing is stopped, we should queue this for later handling
+         * In theory, given the origin of events (parser or cache) should get stopped immediately, this should
+         * only happen if a pre-processor is producing additional events.
          */
         if (this.throttleEngine && this.flowController.stopProcessing) {
             queueEvent(icomment);
@@ -696,6 +711,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
         /*
          * If processing is stopped, we should queue this for later handling
+         * In theory, given the origin of events (parser or cache) should get stopped immediately, this should
+         * only happen if a pre-processor is producing additional events.
          */
         if (this.throttleEngine && this.flowController.stopProcessing) {
             queueEvent(icdataSection);
@@ -799,6 +816,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
         /*
          * If processing is stopped, we should queue this for later handling
+         * In theory, given the origin of events (parser or cache) should get stopped immediately, this should
+         * only happen if a pre-processor is producing additional events.
          */
         if (this.throttleEngine && this.flowController.stopProcessing) {
             queueEvent(istandaloneElementTag);
@@ -815,20 +834,24 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * CAST (WITHOUT CLONING) TO ENGINE-SPECIFIC IMPLEMENTATION, which will ease the handling of the structure during processing
+         * CAST TO ENGINE-SPECIFIC IMPLEMENTATION, which will ease the handling of the structure during processing
          */
         StandaloneElementTag standaloneElementTag = StandaloneElementTag.asEngineStandaloneElementTag(istandaloneElementTag);
 
 
         /*
-         * OBTAIN THE CURRENT SYNTHETIC MODEL (if any)
+         * OBTAIN THE CURRENT SYNTHETIC MODEL (if any). This is needed in case this event was previously being handled,
+         * then a gathering process started (as a consequence of the execution of one of its processors), and then
+         * once the model was gathered the process started again by handling the first event, which was the one
+         * suspended. By obtaining the current gathering model here we can reinitialize all the handling variables and
+         * flags to their original state before being suspended.
          */
         final IGatheringModelProcessable currentGatheringModel = obtainCurrentGatheringModel();
 
 
         /*
          * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
-         * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
+         * anyway (because of having been suspended).
          */
         if (currentGatheringModel == null && !standaloneElementTag.hasAssociatedProcessors()) {
 
@@ -852,7 +875,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * DECLARE THE STATE VARS NEEDED FOR PROCESSOR EXECUTION
+         * DECLARE THE STATE VARS NEEDED FOR PROCESSOR EXECUTION. If we are executing the first event of a gathered
+         * model, we will just re-initialize to the original variables, the ones we had before suspending.
          */
         final ProcessorExecutionVars vars =
                 (currentGatheringModel == null? new ProcessorExecutionVars() : currentGatheringModel.initializeProcessorExecutionVars());
@@ -888,9 +912,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 final IElementTagProcessor elementProcessor = ((IElementTagProcessor)processor);
                 elementProcessor.process(this.context, standaloneElementTag, tagStructureHandler);
 
+                // Apply any context modifications made by the processor (local vars, inlining, etc.)
                 tagStructureHandler.applyContextModifications(this.engineContext);
-                standaloneElementTag =
-                        tagStructureHandler.applyAttributes(this.attributeDefinitions, standaloneElementTag);
+
+                // Apply any modifications to the tag itself: new/removed/replace attributes, etc. Note this
+                // creates a new tag object because tag objects are immutable.
+                standaloneElementTag = tagStructureHandler.applyAttributes(this.attributeDefinitions, standaloneElementTag);
 
                 if (tagStructureHandler.iterateElement) {
 
@@ -901,13 +928,11 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                             tagStructureHandler.iterStatusVariableName,
                             tagStructureHandler.iteratedObject);
 
-                    // Note we DO NOT DECREASE THE EXEC LEVEL -- we need processIteration() to read our data
-                    // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
-
-                    // Process the gathering model
+                    // Obtain the gathered model (this is a standalone tag, so no additional events needed in iteration)
                     final IGatheringModelProcessable gatheredModel = this.modelController.getGatheredModel();
                     this.modelController.resetGathering();
 
+                    // Process the gathering model, or queue for throttled execution
                     if (!this.throttleEngine) {
                         gatheredModel.process();
                     } else {
@@ -919,20 +944,19 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                 } else if (tagStructureHandler.setBodyText) {
 
-                    // Initialize model
+                    // Reset model, we need it clean
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
                     // Prepare the text node that will be added to the queue (which will be suspended)
                     final Text text = new Text(tagStructureHandler.setBodyTextValue);
                     vars.modelAfter.add(text);
+
+                    // If processable, events will be executed by the ProcessorTemplateHandler. If not, by this.next
                     vars.modelAfterProcessable = tagStructureHandler.setBodyTextProcessable;
 
-                    // Initialize the iterated model object
+                    // Initialize the gathered model object (open+close equivalent to this standalone tag)
                     final GatheringModelProcessable equivalentSyntheticModel =
                             this.modelController.createStandaloneEquivalentModel(standaloneElementTag, vars);
-
-                    // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be the responsibility of handleOpenElement
-                    // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Fire the now-equivalent events. Note the handleOpenElement event will take care of the suspended queue
                     if (!this.throttleEngine) {
@@ -946,20 +970,18 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                 } else if (tagStructureHandler.setBodyModel) {
 
-                    // Initialize model
+                    // Reset model, we need it clean
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
                     // Prepare the queue (that we will suspend)
-                    // Model will be automatically cloned if mutable
                     vars.modelAfter.addModel(tagStructureHandler.setBodyModelValue);
+
+                    // If processable, events will be executed by the ProcessorTemplateHandler. If not, by this.next
                     vars.modelAfterProcessable = tagStructureHandler.setBodyModelProcessable;
 
-                    // Initialize the iterated model object
+                    // Initialize the gathered model object (open+close equivalent to this standalone tag)
                     final GatheringModelProcessable equivalentSyntheticModel =
                             this.modelController.createStandaloneEquivalentModel(standaloneElementTag, vars);
-
-                    // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be the responsibility of handleOpenElement
-                    // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
 
                     // Fire the now-equivalent events. Note the handleOpenElement event will take care of the suspended queue
                     if (!this.throttleEngine) {
@@ -973,84 +995,93 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
                 } else if (tagStructureHandler.insertBeforeModel) {
 
-                    // Initialize model
+                    // Reset BEFORE model, we need it clean
                     vars.modelBefore = resetModel(vars.modelBefore, true);
 
+                    // Add model to be passed to this.next BEFORE delegating the event. Note this cannot be processable.
                     vars.modelBefore.addModel(tagStructureHandler.insertBeforeModelValue);
 
                 } else if (tagStructureHandler.insertImmediatelyAfterModel) {
 
-                    // We will only be resetting the queue if we had set it to be executed before delegating, as in that
-                    // case adding our new model to the beginning of what already is in the queue would make no sense
-                    // Initialize model
+                    // We will just make sure that a model to be executed AFTER delegating does exist. If it does, we
+                    // will not be resetting it because we will be inserting our model at the very beginning of it.
                     if (vars.modelAfter == null) {
                         vars.modelAfter = resetModel(vars.modelAfter, true);
                     }
 
-                    // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
-                    // was already added to the body queue, simply adding our insertion at the beginning of it all
+                    // If processable, events will be executed by the ProcessorTemplateHandler. If not, by this.next
                     vars.modelAfterProcessable = tagStructureHandler.insertImmediatelyAfterModelProcessable;
 
-                    // Model will be automatically cloned if mutable
+                    // Insert the new model
                     vars.modelAfter.insertModel(0, tagStructureHandler.insertImmediatelyAfterModelValue);
-
-                    // No intervention on the body flags - we will not be removing the body, just inserting before it
 
                 } else if (tagStructureHandler.replaceWithText) {
 
-                    // Initialize model
+                    // Reset model, we need it clean
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
+                    // If processable, events will be executed by the ProcessorTemplateHandler. If not, by this.next
                     vars.modelAfterProcessable = tagStructureHandler.replaceWithTextProcessable;
 
-                    // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
-                    // (containing only the text node) immediately. No further processors are to be executed
+                    // Create the new replacement Text event and add it to the model
                     vars.modelAfter.add(new Text(tagStructureHandler.replaceWithTextValue));
 
+                    // This tag, the standalone tag itself, will be replaced, so it has to be removed
                     vars.discardEvent = true;
 
                 } else if (tagStructureHandler.replaceWithModel) {
 
-                    // Initialize model
+                    // Reset model, we need it clean
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
+                    // If processable, events will be executed by the ProcessorTemplateHandler. If not, by this.next
                     vars.modelAfterProcessable = tagStructureHandler.replaceWithModelProcessable;
 
-                    // Model will be automatically cloned if mutable
+                    // Add the new replacement model
                     vars.modelAfter.addModel(tagStructureHandler.replaceWithModelValue);
 
+                    // This tag, the standalone tag itself, will be replaced, so it has to be removed
                     vars.discardEvent = true;
 
                 } else if (tagStructureHandler.removeElement) {
 
-                    // Initialize model (if it already exists)
+                    // Reset model, but only if it already exists
                     vars.modelAfter = resetModel(vars.modelAfter, false);
 
+                    // We are removing the element (the standalone tag), so no further processing will be allowed
                     vars.discardEvent = true;
 
                 } else if (tagStructureHandler.removeTags) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
-
                     vars.discardEvent = true;
 
                 }
+
+                // --------------
                 // No way to process 'removeBody' or 'removeAllButFirstChild' on a standalone tag
+                // --------------
 
             } else if (processor instanceof IElementModelProcessor) {
 
                 /*
-                 * This is an Element Model processor, which means that before executing we might need to gather
+                 * This is an Element Model processor, which means that before executing we will need to gather
                  * all the model that is inside the element (including the element's events themselves) and then,
-                 * once all model has been gathered, call the processor. Note this process is quite similar to
-                 * that of iteration.
+                 * once all model has been gathered, call the processor passing such gathered model as the processor's
+                 * target. Note this process is similar to that of iteration.
                  *
-                 * In order to know whether we need to start the model gathering process, or if just finished it
-                 * and we need to actually execute the processor, we will ask the elementProcessorIterator to know
-                 * if this is the first or the second time we execute this processor.
+                 * In order to know whether we need to start the model gathering process, or if we just finished it
+                 * and we need to actually execute the processor, we will ask the processor iterator to know
+                 * if this is the first or the second time we execute this processor (the first time it will be
+                 * suspended to let the gathering start, and the processor will be set to be returned by the iterator
+                 * once again, once gathering finishes).
                  */
 
                 if (!vars.processorIterator.lastWasRepeated()){
+
+                    /*
+                     * First time we are here: we need to START THE MODEL GATHERING PROCESS
+                     */
 
                     if ((vars.modelBefore != null && vars.modelBefore.size() > 0) || (vars.modelAfter != null && vars.modelAfter.size() > 0)) {
                         throw new TemplateProcessingException(
@@ -1064,14 +1095,11 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Set the processor to be executed again, because this time we will just set the "model gathering" mechanism
                     vars.processorIterator.setLastToBeRepeated(standaloneElementTag);
 
-                    // Initialize the gathering model
+                    // Initialize the gathering model, and close it quickly because this is a standalone tag so there
+                    // is only one event to be gathered.
                     this.modelController.startGatheringDelayedModel(standaloneElementTag, vars);
                     final IGatheringModelProcessable newModel = this.modelController.getGatheredModel();
                     this.modelController.resetGathering();
-
-                    // Note we DO NOT DECREASE THE MODEL LEVEL -- that will be done when we re-execute this after gathering model
-                    // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be done when we re-execute this after gathering model
-                    // Note we DO NOT DECREASE THE CONTEXT LEVEL -- that's the responsibility of the close event
 
                     // Process the new gathering model (no need to wait for a "close" event, as this is a standalone)
                     if (!this.throttleEngine) {
@@ -1090,32 +1118,33 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                  * process has already taken place.
                  */
 
-                // We will use the model buffer in order to save in number of Model objects created. This is safe
-                // because we will only be calling one of these processors at a time, and the model contents will
-                // be cloned after execution in order to insert them into the queue.
-                //
-                // NOTE we are not cloning the events themselves here. There should be no need, as we are going to
-                //      re-locate these events into a new queue, and their old position (which will be executed
-                //      anyway) will be ignored.
+                // Create the actual Model instance (a clone) that will be passed to the processor to execute on
                 final Model processedModel = new Model(currentGatheringModel.getInnerModel());
 
+                // Execute the processor on the just-created Model
                 ((IElementModelProcessor) processor).process(this.context, processedModel, modelStructureHandler);
 
-
+                // Apply any context modifications made by the processor (local vars, inlining, etc.)
                 modelStructureHandler.applyContextModifications(this.engineContext);
 
-
-                // Reset the skipbody flags so that this model can be executed in the same conditions as the original
+                // Reset the skipbody flags so that the processed model can be executed in the same conditions as the original
                 currentGatheringModel.resetGatheredSkipFlags();
 
-                // Initialize model
+                /*
+                 * Now we will do the exact equivalent to what is performed for an Element Tag processor, when this
+                 * returns a result of type "replaceWithModel".
+                 */
+
+                // Reset model
                 vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                vars.modelAfterProcessable = true; // We actually NEED TO process this queue
-
-                // Set the model to be executed
+                // Set the model to be executed, and set it to be processable (that is a MUST in this case)
                 vars.modelAfter.addModel(processedModel);
+                vars.modelAfterProcessable = true;
 
+                // We will discard this event (the standalone one) because we are going to process the new, modified
+                // model instead. Note we do not need to set the body to skip or anything because we know this is a
+                // standalone tag.
                 vars.discardEvent = true;
 
             } else {
@@ -1187,6 +1216,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
         /*
          * If processing is stopped, we should queue this for later handling
+         * In theory, given the origin of events (parser or cache) should get stopped immediately, this should
+         * only happen if a pre-processor is producing additional events.
          */
         if (this.throttleEngine && this.flowController.stopProcessing) {
             queueEvent(iopenElementTag);
@@ -1203,20 +1234,24 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * CAST (WITHOUT CLONING) TO ENGINE-SPECIFIC IMPLEMENTATION, which will ease the handling of the structure during processing
+         * CAST TO ENGINE-SPECIFIC IMPLEMENTATION, which will ease the handling of the structure during processing
          */
         OpenElementTag openElementTag = OpenElementTag.asEngineOpenElementTag(iopenElementTag);
 
 
         /*
-         * OBTAIN THE CURRENT SYNTHETIC MODEL
+         * OBTAIN THE CURRENT SYNTHETIC MODEL (if any). This is needed in case this event was previously being handled,
+         * then a gathering process started (as a consequence of the execution of one of its processors), and then
+         * once the model was gathered the process started again by handling the first event, which was the one
+         * suspended. By obtaining the current gathering model here we can reinitialize all the handling variables and
+         * flags to their original state before being suspended.
          */
         final IGatheringModelProcessable currentGatheringModel = obtainCurrentGatheringModel();
 
 
         /*
          * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
-         * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
+         * anyway (because of having been suspended).
          */
         if (currentGatheringModel == null && !openElementTag.hasAssociatedProcessors()) {
             this.next.handleOpenElement(openElementTag);
@@ -1225,7 +1260,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
-         * DECLARE THE STATE VARS NEEDED FOR PROCESSOR EXECUTION
+         * DECLARE THE STATE VARS NEEDED FOR PROCESSOR EXECUTION. If we are executing the first event of a gathered
+         * model, we will just re-initialize to the original variables, the ones we had before suspending.
          */
         final ProcessorExecutionVars vars =
                 (currentGatheringModel == null? new ProcessorExecutionVars() : currentGatheringModel.initializeProcessorExecutionVars());
@@ -1252,9 +1288,12 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 final IElementTagProcessor elementProcessor = ((IElementTagProcessor)processor);
                 elementProcessor.process(this.context, openElementTag, tagStructureHandler);
 
+                // Apply any context modifications made by the processor (local vars, inlining, etc.)
                 tagStructureHandler.applyContextModifications(this.engineContext);
-                openElementTag =
-                        tagStructureHandler.applyAttributes(this.attributeDefinitions, openElementTag);
+
+                // Apply any modifications to the tag itself: new/removed/replace attributes, etc. Note this
+                // creates a new tag object because tag objects are immutable.
+                openElementTag = tagStructureHandler.applyAttributes(this.attributeDefinitions, openElementTag);
 
                 if (tagStructureHandler.iterateElement) {
 
@@ -1265,118 +1304,128 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                             tagStructureHandler.iterStatusVariableName,
                             tagStructureHandler.iteratedObject);
 
-                    // Note we DO NOT DECREASE THE EXEC LEVEL -- we need processIteration() to read our data
-                    // Note we DO NOT DECREASE THE CONTEXT LEVEL -- we need the variables stored there, if any
-
                     // Nothing else to be done by this handler... let's just queue the rest of the events to be iterated
                     return;
 
                 } else if (tagStructureHandler.setBodyText) {
 
-                    // Initialize model
+                    // Reset model, we need it clean
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
+                    // If processable, events will be executed by the ProcessorTemplateHandler. If not, by this.next
                     vars.modelAfterProcessable = tagStructureHandler.setBodyTextProcessable;
 
                     // Add the new Text to the queue
                     vars.modelAfter.add(new Text(tagStructureHandler.setBodyTextValue));
 
+                    // All the body of the original open tag should be skipped (has just been replaced)
                     vars.skipBody = SkipBody.SKIP_ALL;
 
                 } else if (tagStructureHandler.setBodyModel) {
 
-                    // Initialize model
+                    // Reset model, we need it clean
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
+                    // If processable, events will be executed by the ProcessorTemplateHandler. If not, by this.next
                     vars.modelAfterProcessable = tagStructureHandler.setBodyModelProcessable;
 
-                    // Model will be automatically cloned if mutable
+                    // Add the new body model to the queue
                     vars.modelAfter.addModel(tagStructureHandler.setBodyModelValue);
 
+                    // All the body of the original open tag should be skipped (has just been replaced)
                     vars.skipBody = SkipBody.SKIP_ALL;
 
                 } else if (tagStructureHandler.insertBeforeModel) {
 
-                    // Initialize model
+                    // Reset BEFORE model, we need it clean
                     vars.modelBefore = resetModel(vars.modelBefore, true);
 
+                    // Add model to be passed to this.next BEFORE delegating the event. Note this cannot be processable.
                     vars.modelBefore.addModel(tagStructureHandler.insertBeforeModelValue);
 
                 } else if (tagStructureHandler.insertImmediatelyAfterModel) {
 
-                    // We will only be resetting the queue if we had set it to be executed before delegating, as in that
-                    // case adding our new model to the beginning of what already is in the queue would make no sense
-                    // Initialize model
+                    // We will just make sure that a model to be executed AFTER delegating does exist. If it does, we
+                    // will not be resetting it because we will be inserting our model at the very beginning of it.
                     if (vars.modelAfter == null) {
                         vars.modelAfter = resetModel(vars.modelAfter, true);
                     }
 
-                    // No cleaning the queue, as we are not setting the entire body, so we will respect whatever
-                    // was already added to the body queue, simply adding our insertion at the beginning of it all
+                    // If processable, events will be executed by the ProcessorTemplateHandler. If not, by this.next
                     vars.modelAfterProcessable = tagStructureHandler.insertImmediatelyAfterModelProcessable;
 
-                    // Model will be automatically cloned if mutable
+                    // Insert the new model
                     vars.modelAfter.insertModel(0, tagStructureHandler.insertImmediatelyAfterModelValue);
 
                     // No intervention on the body flags - we will not be removing the body, just inserting before it
 
                 } else if (tagStructureHandler.replaceWithText) {
 
-                    // Initialize model
+                    // Reset model, we need it clean
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
+                    // If processable, events will be executed by the ProcessorTemplateHandler. If not, by this.next
                     vars.modelAfterProcessable = tagStructureHandler.replaceWithTextProcessable;
 
-                    // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
-                    // (containing only the text node) immediately. No further processors are to be executed
+                    // Create the new replacement Text event and add it to the model
                     vars.modelAfter.add(new Text(tagStructureHandler.replaceWithTextValue));
 
+                    // This tag, its body and its corresponding close tag have to be replaced.
                     vars.discardEvent = true;
                     vars.skipBody = SkipBody.SKIP_ALL;
                     vars.skipCloseTag = true;
 
                 } else if (tagStructureHandler.replaceWithModel) {
 
-                    // Initialize model
+                    // Reset model, we need it clean
                     vars.modelAfter = resetModel(vars.modelAfter, true);
 
+                    // If processable, events will be executed by the ProcessorTemplateHandler. If not, by this.next
                     vars.modelAfterProcessable = tagStructureHandler.replaceWithModelProcessable;
 
-                    // Model will be automatically cloned if mutable
+                    // Add the new replacement model
                     vars.modelAfter.addModel(tagStructureHandler.replaceWithModelValue);
 
+                    // This tag, its body and its corresponding close tag have to be replaced.
                     vars.discardEvent = true;
                     vars.skipBody = SkipBody.SKIP_ALL;
                     vars.skipCloseTag = true;
 
                 } else if (tagStructureHandler.removeElement) {
 
-                    // Initialize model (if it already exists)
+                    // Reset model, but only if it already exists
                     vars.modelAfter = resetModel(vars.modelAfter, false);
 
+                    // We are removing the element (complete with body + close tag). No further processing will be allowed
                     vars.discardEvent = true;
                     vars.skipBody = SkipBody.SKIP_ALL;
                     vars.skipCloseTag = true;
 
                 } else if (tagStructureHandler.removeTags) {
 
-                    // No modifications to the queue - it's just the tag that will be removed, not its possible contents
-
+                    // No modifications to the queue - it's just the tag that will be removed, not its possible body
                     vars.discardEvent = true;
                     vars.skipCloseTag = true;
 
                 } else if (tagStructureHandler.removeBody) {
 
-                    // Initialize model (if it already exists)
+                    // Reset model, but only if it already exists
                     vars.modelAfter = resetModel(vars.modelAfter, false);
 
+                    // We will be only removing the body contents, not the tag itself
                     vars.skipBody = SkipBody.SKIP_ALL;
 
                 } else if (tagStructureHandler.removeAllButFirstChild) {
 
-                    // Initialize model (if it already exists)
+                    // Reset model, but only if it already exists
                     vars.modelAfter = resetModel(vars.modelAfter, false);
 
+                    // This special SkipBody value will allow the first child element (open-body-close or standalone)
+                    // to be processed, but only that. Once it has been processed, the eventModelController will change
+                    // this value to SkipBody.SKIP_ELEMENTS.
+                    //
+                    // Note that all non-element child events before and after the first element child event will be
+                    // processed normally.
                     vars.skipBody = SkipBody.PROCESS_ONE_ELEMENT;
 
                 }
@@ -1384,17 +1433,23 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
             } else if (processor instanceof IElementModelProcessor) {
 
                 /*
-                 * This is an Element Model processor, which means that before executing we might need to gather
+                 * This is an Element Model processor, which means that before executing we will need to gather
                  * all the model that is inside the element (including the element's events themselves) and then,
-                 * once all model has been gathered, call the processor. Note this process is quite similar to
-                 * that of iteration.
+                 * once all model has been gathered, call the processor passing such gathered model as the processor's
+                 * target. Note this process is similar to that of iteration.
                  *
-                 * In order to know whether we need to start the model gathering process, or if just finished it
-                 * and we need to actually execute the processor, we will ask the elementProcessorIterator to know
-                 * if this is the first or the second time we execute this processor.
+                 * In order to know whether we need to start the model gathering process, or if we just finished it
+                 * and we need to actually execute the processor, we will ask the processor iterator to know
+                 * if this is the first or the second time we execute this processor (the first time it will be
+                 * suspended to let the gathering start, and the processor will be set to be returned by the iterator
+                 * once again, once gathering finishes).
                  */
 
                 if (!vars.processorIterator.lastWasRepeated()){
+
+                    /*
+                     * First time we are here: we need to START THE MODEL GATHERING PROCESS
+                     */
 
                     if ((vars.modelBefore != null && vars.modelBefore.size() > 0) || (vars.modelAfter != null && vars.modelAfter.size() > 0)) {
                         throw new TemplateProcessingException(
@@ -1408,12 +1463,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                     // Set the processor to be executed again, because this time we will just set the "model gathering" mechanism
                     vars.processorIterator.setLastToBeRepeated(openElementTag);
 
-                    // Initialize the gathering model
+                    // Initialize the gathering model. This will be concluded (and the gathering model set for
+                    // processing) at the corresponding close tag.
                     this.modelController.startGatheringDelayedModel(openElementTag, vars);
-
-                    // Note we DO NOT DECREASE THE MODEL LEVEL -- that will be done when we re-execute this after gathering model
-                    // Note we DO NOT DECREASE THE EXEC LEVEL -- that will be done when we re-execute this after gathering model
-                    // Note we DO NOT DECREASE THE CONTEXT LEVEL -- that's the responsibility of the close event
 
                     // Nothing else to be done by this handler... let's just queue the rest of the events in this element
                     return;
@@ -1425,35 +1477,32 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                  * process has already taken place.
                  */
 
-                // We will use the model buffer in order to save in number of Model objects created. This is safe
-                // because we will only be calling one of these processors at a time, and the model contents will
-                // be cloned after execution in order to insert them into the queue.
-                //
-                // NOTE we are not cloning the events themselves here. There should be no need, as we are going to
-                //      re-locate these events into a new queue, and their old position (which will be executed
-                //      anyway) will be ignored.
+                // Create the actual Model instance (a clone) that will be passed to the processor to execute on
                 final Model processedModel = new Model(currentGatheringModel.getInnerModel());
 
+                // Execute the processor on the just-created Model
                 ((IElementModelProcessor) processor).process(this.context, processedModel, modelStructureHandler);
 
+                // Apply any context modifications made by the processor (local vars, inlining, etc.)
                 modelStructureHandler.applyContextModifications(this.engineContext);
 
+                // Reset the skipbody flags so that the processed model can be executed in the same conditions as the original
+                currentGatheringModel.resetGatheredSkipFlags();
 
                 /*
                  * Now we will do the exact equivalent to what is performed for an Element Tag processor, when this
                  * returns a result of type "replaceWithModel".
                  */
 
-                // Reset the skipbody flags so that this model can be executed in the same conditions as the original
-                currentGatheringModel.resetGatheredSkipFlags();
-
-                // Initialize model
+                // Reset the model
                 vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                vars.modelAfterProcessable = true; // We actually NEED TO process this queue
-
+                // Set the model to be executed, and set it to be processable (that is a MUST in this case)
                 vars.modelAfter.addModel(processedModel);
+                vars.modelAfterProcessable = true;
 
+                // Given we are going to execute the modified model instead of the gathered one, we will set all body
+                // skipping flags just as if we had just executed a "replaceWithModel" operation.
                 vars.discardEvent = true;
                 vars.skipBody = SkipBody.SKIP_ALL;
                 vars.skipCloseTag = true;
@@ -1532,6 +1581,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
         /*
          * If processing is stopped, we should queue this for later handling
+         * In theory, given the origin of events (parser or cache) should get stopped immediately, this should
+         * only happen if a pre-processor is producing additional events.
          */
         if (this.throttleEngine && this.flowController.stopProcessing) {
             queueEvent(icloseElementTag);
@@ -1545,7 +1596,7 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         if (!this.modelController.shouldProcessCloseElement(icloseElementTag)) {
 
             /*
-             * IF WE JUST ENDED GATHERING A SYNTHETIC MODEL, PROCESS IT
+             * IF WE JUST ENDED GATHERING A MODEL, PROCESS IT
              */
             if (this.modelController.isGatheringFinished()) {
                 final IGatheringModelProcessable gatheredModel = this.modelController.getGatheredModel();
@@ -1580,6 +1631,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
         /*
          * If processing is stopped, we should queue this for later handling
+         * In theory, given the origin of events (parser or cache) should get stopped immediately, this should
+         * only happen if a pre-processor is producing additional events.
          */
         if (this.throttleEngine && this.flowController.stopProcessing) {
             queueEvent(icloseElementTag);
@@ -1619,6 +1672,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
         /*
          * If processing is stopped, we should queue this for later handling
+         * In theory, given the origin of events (parser or cache) should get stopped immediately, this should
+         * only happen if a pre-processor is producing additional events.
          */
         if (this.throttleEngine && this.flowController.stopProcessing) {
             queueEvent(idocType);
@@ -1728,6 +1783,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
         /*
          * If processing is stopped, we should queue this for later handling
+         * In theory, given the origin of events (parser or cache) should get stopped immediately, this should
+         * only happen if a pre-processor is producing additional events.
          */
         if (this.throttleEngine && this.flowController.stopProcessing) {
             queueEvent(ixmlDeclaration);
@@ -1836,6 +1893,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
         /*
          * If processing is stopped, we should queue this for later handling
+         * In theory, given the origin of events (parser or cache) should get stopped immediately, this should
+         * only happen if a pre-processor is producing additional events.
          */
         if (this.throttleEngine && this.flowController.stopProcessing) {
             queueEvent(iprocessingInstruction);
@@ -1933,10 +1992,16 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
 
-
-
-
-
+    /**
+     * <p>
+     *   Handle any processing that might have been left pending during its execution because of the process having
+     *   been stopped during throttling.
+     * </p>
+     * <p>
+     *   This method is only for internal use, and will be called by the {@link org.thymeleaf.IThrottledTemplateProcessor}
+     *   implementations before actually letting any new events flow in from the parser or cache.
+     * </p>
+     */
     public void handlePending() {
 
         if (this.throttleEngine) {
@@ -1948,15 +2013,20 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 return;
             }
 
+            // Execution of pending tasks will be done from the last one to be stopped to the newest one, so that
+            // all nested executions of the ProcessorTemplateHandler are correctly managed.
             while (this.pendingProcessingsSize > 0) {
                 final boolean processed = this.pendingProcessings[this.pendingProcessingsSize - 1].process();
                 if (!processed) {
+                    // Couldn't finish -- we were stopped again. This handlePending() will need to be called
+                    // again the next time the throttling mechanism is asked to produce more output.
                     controller.processorTemplateHandlerPending = true;
                     return;
                 }
                 this.pendingProcessingsSize--;
             }
 
+            // All pending jobs finished
             controller.processorTemplateHandlerPending = false;
 
         }
@@ -1966,6 +2036,9 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
 
+    /*
+     * Before adding a new entry to the array of pending jobs, this will make sure there is enough room for it.
+     */
     private void ensurePendingCapacity() {
         if (this.pendingProcessings == null) {
             this.pendingProcessings = new IEngineProcessable[5];
@@ -1977,6 +2050,10 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
     }
 
 
+    /*
+     * This will be called by any handleX() methods (only when throttling is enabled) whenever they have to execute
+     * work that might potentially get stopped and therefore be left in the pending queue.
+     */
     private void queueProcessable(final IEngineProcessable processableModel) {
 
         ensurePendingCapacity();
@@ -2009,7 +2086,11 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
      * these events at the end of the pending queue (i.e. at level 0) so that they are processed normally once all
      * pending work has been processed too.
      *
-     * Note events used here should always come from previous handlers and never from the execution of pending work
+     * Given the cache/parser are immediately stopped once we receive a stop signal, this can only happen if a
+     * pre-processor sits in the middle and produces several "sister" events to the one which handling was
+     * originally stopped.
+     *
+     * Also note events used here should always come from previous handlers and never from the execution of pending work
      * itself, given all pending-work structures (i.e. all implementations of IEngineProcessable) should check
      * the "stopProcessing" flag before executing each event, so they should never produce additional pending events
      * that would potentially (and erroneously) be queued at level 0.
@@ -2040,7 +2121,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         this.flowController.processorTemplateHandlerPending = true;
 
     }
-
 
 
 

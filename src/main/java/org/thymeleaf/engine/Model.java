@@ -295,14 +295,12 @@ final class Model implements IModel {
             return 0;
         }
 
-        int processed = 0;
-
-        for (int i = offset; i < this.queueSize && !controller.stopProcessing; i++) {
-            this.queue[i].beHandled(handler);
-            processed++;
+        int i = offset;
+        while (i < this.queueSize && !controller.stopProcessing) {
+            this.queue[i++].beHandled(handler);
         }
 
-        return processed;
+        return (i - offset);
 
     }
 
