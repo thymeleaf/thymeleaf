@@ -59,8 +59,19 @@ public final class SpringTextareaFieldTagProcessor extends AbstractSpringFieldTa
 
         final String value = ValueFormatterWrapper.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), true);
 
-        final String processedValue =
+        String processedValue =
                 RequestDataValueProcessorUtils.processFormFieldValue(context, name, value, "textarea");
+
+        if (processedValue != null) {
+            final char c0 = processedValue.charAt(0);
+            if (c0 == '\n') {
+                processedValue = '\n' + processedValue;
+            } else if (c0 == '\r' && processedValue.charAt(1) == '\n') {
+                processedValue = "\r\n" + processedValue;
+            } else if (c0 == '\r') {
+                processedValue = '\r' + processedValue;
+            }
+        }
 
         StandardProcessorUtils.setAttribute(structureHandler, this.idAttributeDefinition, ID_ATTR_NAME, id); // No need to escape: this comes from an existing 'id' or from a token
         StandardProcessorUtils.setAttribute(structureHandler, this.nameAttributeDefinition, NAME_ATTR_NAME, name); // No need to escape: this is a java-valid token
