@@ -70,7 +70,7 @@ public final class SpringTextareaFieldAttrProcessor
         element.setAttribute("id", id);
         element.setAttribute("name", name);
         
-        final Text text = new Text(processedValue == null? "" : processedValue);
+        final Text text = new Text("\r\n" + (processedValue == null? "" : processedValue));
 
         element.clearChildren();
         element.addChild(text);
