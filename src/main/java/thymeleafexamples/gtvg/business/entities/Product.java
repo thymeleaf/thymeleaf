@@ -37,6 +37,15 @@ public class Product {
     }
 
 
+    public Product(final Integer id, final String name, final boolean inStock, final BigDecimal price) {
+        super();
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.inStock = inStock;
+    }
+
+
     public Integer getId() {
         return this.id;
     }
