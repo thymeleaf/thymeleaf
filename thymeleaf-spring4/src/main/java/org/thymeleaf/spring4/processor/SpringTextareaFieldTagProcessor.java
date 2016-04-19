@@ -27,6 +27,7 @@ import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring4.requestdata.RequestDataValueProcessorUtils;
 import org.thymeleaf.standard.util.StandardProcessorUtils;
+import org.thymeleaf.util.StringUtils;
 
 
 /**
@@ -62,11 +63,11 @@ public final class SpringTextareaFieldTagProcessor extends AbstractSpringFieldTa
         String processedValue =
                 RequestDataValueProcessorUtils.processFormFieldValue(context, name, value, "textarea");
 
-        if (processedValue != null) {
+        if (!StringUtils.isEmpty(processedValue)) {
             final char c0 = processedValue.charAt(0);
             if (c0 == '\n') {
                 processedValue = '\n' + processedValue;
-            } else if (c0 == '\r' && processedValue.charAt(1) == '\n') {
+            } else if (c0 == '\r' && processedValue.length() > 1 && processedValue.charAt(1) == '\n') {
                 processedValue = "\r\n" + processedValue;
             } else if (c0 == '\r') {
                 processedValue = '\r' + processedValue;
