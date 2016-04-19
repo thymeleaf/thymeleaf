@@ -17,10 +17,11 @@
  *
  * =============================================================================
  */
-package thymeleafexamples.stsm.config;
+package thymeleafexamples.stsm.application;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -32,16 +33,32 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+import org.thymeleaf.templatemode.TemplateMode;
 import thymeleafexamples.stsm.web.conversion.DateFormatter;
 import thymeleafexamples.stsm.web.conversion.VarietyFormatter;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan("thymeleafexamples.stsm.business, thymeleafexamples.stsm.web")
-public class ServletConfig extends WebMvcConfigurerAdapter {
+@ComponentScan("thymeleafexamples.stsm")
+public class SpringWebConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
 
-    @Autowired
-    private ApplicationContext appContext;
+    public static final String CHARACTER_ENCODING = "UTF-8";
+
+
+    private ApplicationContext applicationContext;
+
+
+
+    public SpringWebConfig() {
+        super();
+    }
+
+
+    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+
 
     /**
      *  Message externalization/internationalization
@@ -61,10 +78,10 @@ public class ServletConfig extends WebMvcConfigurerAdapter {
     @Bean
     public SpringResourceTemplateResolver templateResolver(){
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
-        templateResolver.setApplicationContext(this.appContext);
+        templateResolver.setApplicationContext(this.applicationContext);
         templateResolver.setPrefix("/WEB-INF/templates/");
         templateResolver.setSuffix(".html");
-        templateResolver.setTemplateMode("HTML5");
+        templateResolver.setTemplateMode(TemplateMode.HTML);
         // Template cache is true by default. Set to false if you want
         // templates to be automatically updated when modified.
         templateResolver.setCacheable(true);
@@ -94,9 +111,11 @@ public class ServletConfig extends WebMvcConfigurerAdapter {
      *  Dispatcher configuration for serving static resources
      */
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(final ResourceHandlerRegistry registry) {
+        super.addResourceHandlers(registry);
         registry.addResourceHandler("/images/**").addResourceLocations("/images/");
         registry.addResourceHandler("/css/**").addResourceLocations("/css/");
+        registry.addResourceHandler("/js/**").addResourceLocations("/js/");
     }
 
     /**
@@ -104,7 +123,8 @@ public class ServletConfig extends WebMvcConfigurerAdapter {
      * and {@link java.util.Date} in addition to the one registered by default
      */
     @Override
-    public void addFormatters(FormatterRegistry registry) {
+    public void addFormatters(final FormatterRegistry registry) {
+        super.addFormatters(registry);
         registry.addFormatter(varietyFormatter());
         registry.addFormatter(dataFormatter());
     }
@@ -118,4 +138,5 @@ public class ServletConfig extends WebMvcConfigurerAdapter {
     public DateFormatter dataFormatter() {
         return new DateFormatter();
     }
+
 }
