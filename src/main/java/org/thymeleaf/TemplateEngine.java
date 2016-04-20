@@ -19,6 +19,7 @@
  */
 package org.thymeleaf;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -1101,6 +1102,15 @@ public class TemplateEngine implements ITemplateEngine {
                                 TemplateEngine.threadIndex(),
                                 LoggingUtils.loggifyTemplateName(templateSpec.getTemplate()), context.getLocale(), elapsed, elapsedMs,
                                 templateSpec, context.getLocale(), elapsed, elapsedMs});
+            }
+
+            /*
+             * Finally, flush the writer in order to make sure that everything has been written to output
+             */
+            try {
+                writer.flush();
+            } catch (final IOException e) {
+                throw new TemplateOutputException("An error happened while flushing output writer", templateSpec.getTemplate(), -1, -1, e);
             }
             
         } catch (final TemplateOutputException e) {

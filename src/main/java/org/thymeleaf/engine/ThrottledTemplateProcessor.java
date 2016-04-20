@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.engine;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -169,6 +170,15 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
                                 this.templateSpec, this.context.getLocale(), elapsed, elapsedMs});
             }
 
+            /*
+             * Finally, flush the writer in order to make sure that everything has been written to output
+             */
+            try {
+                this.writer.flush();
+            } catch (final IOException e) {
+                throw new TemplateOutputException("An error happened while flushing output writer", templateSpec.getTemplate(), -1, -1, e);
+            }
+
         } catch (final TemplateOutputException e) {
 
             this.eventProcessingFinished = true;
@@ -261,6 +271,15 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
                                 TemplateEngine.threadIndex(),
                                 LoggingUtils.loggifyTemplateName(this.templateSpec.getTemplate()), this.context.getLocale(), elapsed, elapsedMs,
                                 this.templateSpec, this.context.getLocale(), Integer.valueOf(outputLimitInChars), elapsed, elapsedMs});
+            }
+
+            /*
+             * Finally, flush the writer in order to make sure that everything has been written to output
+             */
+            try {
+                this.writer.flush();
+            } catch (final IOException e) {
+                throw new TemplateOutputException("An error happened while flushing output writer", templateSpec.getTemplate(), -1, -1, e);
             }
 
         } catch (final TemplateOutputException e) {
