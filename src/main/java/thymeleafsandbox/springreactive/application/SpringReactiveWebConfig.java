@@ -38,6 +38,10 @@ import org.springframework.web.reactive.result.method.annotation.RequestMappingH
 import org.springframework.web.reactive.view.ViewResolverResultHandler;
 import org.springframework.web.reactive.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.reactive.view.freemarker.FreeMarkerViewResolver;
+import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.templatemode.TemplateMode;
+import thymeleafsandbox.springreactive.thymeleaf.ThymeleafViewResolver;
 
 @Configuration
 @ComponentScan("thymeleafsandbox.springreactive")
@@ -65,7 +69,7 @@ public class SpringReactiveWebConfig implements ApplicationContextAware {
     @Bean
     public RequestMappingHandlerMapping handlerMapping() {
         final RequestMappingHandlerMapping handlerMapping = new RequestMappingHandlerMapping();
-        // TODO How to add resource handlers for /images, /css, /js, etc.?
+        // TODO * How to add resource handlers for /images, /css, /js, etc.?
         return handlerMapping;
     }
 
@@ -96,6 +100,9 @@ public class SpringReactiveWebConfig implements ApplicationContextAware {
     @Bean
     public ViewResolverResultHandler viewResolverResultHandler() {
         final List<ViewResolver> viewResolvers = new ArrayList<>();
+        // TODO * Order of addition here seems to have influence in how the ViewResolvers are queries, instead of
+        // TODO   relying on their 'order' property
+        viewResolvers.add(thymeleafViewResolver());
         viewResolvers.add(freeMarkerViewResolver());
         final ViewResolverResultHandler viewResolverResultHandler = new ViewResolverResultHandler(viewResolvers, conversionService());
         return viewResolverResultHandler;
@@ -122,9 +129,49 @@ public class SpringReactiveWebConfig implements ApplicationContextAware {
     public FreeMarkerViewResolver freeMarkerViewResolver() {
         final FreeMarkerViewResolver freeMarkerViewResolver = new FreeMarkerViewResolver("", ".ftl");
         freeMarkerViewResolver.setOrder(2);
-        // TODO Apparently no way to specify which views can be handled by this ViewResolver (viewNames property)
+        // TODO * Apparently no way to specify which views can be handled by this ViewResolver (viewNames property)
         return freeMarkerViewResolver;
     }
 
+
+
+
+
+    /*
+     * --------------------------------------
+     * THYMELEAF CONFIGURATION
+     * --------------------------------------
+     */
+
+
+    @Bean
+    public SpringResourceTemplateResolver thymeleafTemplateResolver(){
+        SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
+        templateResolver.setApplicationContext(this.applicationContext);
+        templateResolver.setPrefix("classpath:/webapp/templates/");
+        templateResolver.setSuffix(".html");
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        // Template cache is true by default. Set to false if you want
+        // templates to be automatically updated when modified.
+        templateResolver.setCacheable(true);
+        return templateResolver;
+    }
+
+    @Bean
+    public SpringTemplateEngine thymeleafTemplateEngine(){
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setTemplateResolver(thymeleafTemplateResolver());
+        return templateEngine;
+    }
+
+    @Bean
+    public ThymeleafViewResolver thymeleafViewResolver(){
+        ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
+        viewResolver.setTemplateEngine(thymeleafTemplateEngine());
+        viewResolver.setOrder(1);
+        viewResolver.setViewNames(new String[] {"thymeleaf/*"});
+        viewResolver.setResponseChunkSize(100); // 100 characters, just for the fun of seeing multiple buffers being output
+        return viewResolver;
+    }
 
 }

@@ -37,10 +37,15 @@ public class Main {
     }
     
 
-    @RequestMapping("/")
-    public String index() {
+    @RequestMapping({"/", "/thymeleaf"})
+    public String indexThymeleaf() {
+        return "thymeleaf/index";
+    }
+
+
+    @RequestMapping("/freemarker")
+    public String indexFreeMarker() {
         return "freemarker/index";
     }
 
-    
 }

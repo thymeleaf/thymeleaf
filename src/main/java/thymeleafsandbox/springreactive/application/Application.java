@@ -53,7 +53,7 @@ public class Application {
         /*
          * Initialization: CharacterEncodingFilter
          */
-        // TODO Apparently no implementation of WebFilter for CharacterEncoding yet
+        // TODO * Apparently no implementation of WebFilter for CharacterEncoding yet
         final WebFilter[] filters = new WebFilter[] {};
 
         /*
