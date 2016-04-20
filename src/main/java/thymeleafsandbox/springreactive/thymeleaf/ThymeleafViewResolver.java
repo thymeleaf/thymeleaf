@@ -73,7 +73,7 @@ public class ThymeleafViewResolver extends ViewResolverSupport {
     //
     // The value established here will be a default value, which can be overridden by specific views at the
     // ThymeleafView class
-    private long responseChunkSizeBytes = Long.MAX_VALUE;
+    private long responseChunkSize = Long.MAX_VALUE;
     
     private ITemplateEngine templateEngine;
 
@@ -212,13 +212,13 @@ public class ThymeleafViewResolver extends ViewResolverSupport {
 
 
     // Default is Long.MAX_VALUE, which means we will not be throttling at all
-    public void setResponseChunkSize(final long responseChunkSizeBytes) {
-        this.responseChunkSizeBytes = responseChunkSizeBytes;
+    public void setResponseChunkSize(final long responseChunkSize) {
+        this.responseChunkSize = responseChunkSize;
     }
 
 
     public long getResponseChunkSize() {
-        return this.responseChunkSizeBytes;
+        return this.responseChunkSize;
     }
 
 

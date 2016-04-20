@@ -100,7 +100,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
     //
     // The value established here is nullable (and null by default) because it will work as an override of the
     // value established at the ThymeleafViewResolver for the same purpose.
-    private Long responseChunkSizeBytes = null;
+    private Long responseChunkSize = null;
 
 
 
@@ -200,13 +200,13 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
 
     // Default is Long.MAX_VALUE, which means we will not be throttling at all
-    public void setResponseChunkSize(final long responseChunkSizeBytes) {
-        this.responseChunkSizeBytes = Long.valueOf(responseChunkSizeBytes);
+    public void setResponseChunkSize(final long responseChunkSize) {
+        this.responseChunkSize = Long.valueOf(responseChunkSize);
     }
 
 
     public long getResponseChunkSize() {
-        return this.responseChunkSizeBytes == null? Long.MAX_VALUE : this.responseChunkSizeBytes.longValue();
+        return this.responseChunkSize == null? Long.MAX_VALUE : this.responseChunkSize.longValue();
     }
 
 
@@ -363,7 +363,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         final MediaType templateContentType = getContentType();
         final Locale templateLocale = getLocale();
         final String templateCharacterEncoding = getCharacterEncoding();
-        final long responseChunkSizeBytes = getResponseChunkSize();
+        final long responseChunkSize = getResponseChunkSize();
 
 
         final Set<String> processMarkupSelectors;
@@ -430,7 +430,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
             logger.debug("Finished preparation of Thymeleaf template [" + templateName + "].");
         }
 
-        return Flux.from(new ThymeleafViewPublisher(getBufferAllocator(), throttledProcessor, writer, responseChunkSizeBytes));
+        return Flux.from(new ThymeleafViewPublisher(getBufferAllocator(), throttledProcessor, writer, responseChunkSize));
 
     }
 
@@ -443,18 +443,18 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         private final DataBufferAllocator dataBufferAllocator;
         private final IThrottledTemplateProcessor throttledProcessor;
         private final ThymeleafViewWriter writer;
-        private final long responseChunkSizeBytes;
+        private final long responseChunkSize;
 
 
         ThymeleafViewPublisher(final DataBufferAllocator dataBufferAllocator,
                                final IThrottledTemplateProcessor throttledProcessor,
                                final ThymeleafViewWriter writer,
-                               final long responseChunkSizeBytes) {
+                               final long responseChunkSize) {
             super();
             this.dataBufferAllocator = dataBufferAllocator;
             this.throttledProcessor = throttledProcessor;
             this.writer = writer;
-            this.responseChunkSizeBytes = responseChunkSizeBytes;
+            this.responseChunkSize = responseChunkSize;
         }
 
 
@@ -469,7 +469,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
                                 this.dataBufferAllocator,
                                 this.throttledProcessor,
                                 this.writer,
-                                this.responseChunkSizeBytes);
+                                this.responseChunkSize);
 
                 subscriber.onSubscribe(subscription);
 
@@ -492,7 +492,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         private final DataBufferAllocator dataBufferAllocator;
         private final IThrottledTemplateProcessor throttledProcessor;
         private final ThymeleafViewWriter writer;
-        private final long responseChunkSizeBytes;
+        private final long responseChunkSize;
 
         volatile boolean cancelled;
 
@@ -501,13 +501,13 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
                                   final DataBufferAllocator dataBufferAllocator,
                                   final IThrottledTemplateProcessor throttledProcessor,
                                   final ThymeleafViewWriter writer,
-                                  final long responseChunkSizeBytes) {
+                                  final long responseChunkSize) {
             super();
             this.subscriber = subscriber;
             this.dataBufferAllocator = dataBufferAllocator;
             this.throttledProcessor = throttledProcessor;
             this.writer = writer;
-            this.responseChunkSizeBytes = responseChunkSizeBytes;
+            this.responseChunkSize = responseChunkSize;
         }
 
 
@@ -522,7 +522,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
                 return;
             }
 
-            if (this.responseChunkSizeBytes == Long.MAX_VALUE) {
+            if (this.responseChunkSize == Long.MAX_VALUE) {
                 processAll();
             } else {
                 int i = 0;
@@ -547,7 +547,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         void processOne() {
             final DataBuffer buffer = this.dataBufferAllocator.allocateBuffer();
             this.writer.setBuffer(buffer);
-            this.throttledProcessor.process((int)this.responseChunkSizeBytes); // TODO allow a long here?
+            this.throttledProcessor.process((int)this.responseChunkSize); // TODO allow a long here?
             this.subscriber.onNext(buffer);
             if (this.throttledProcessor.isFinished()) {
                 this.subscriber.onComplete();
