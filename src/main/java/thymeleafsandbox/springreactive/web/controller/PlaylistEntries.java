@@ -19,28 +19,40 @@
  */
 package thymeleafsandbox.springreactive.web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import thymeleafsandbox.springreactive.business.repository.PlaylistEntryRepository;
 
 
 @Controller
-public class Main {
+public class PlaylistEntries {
 
 
-    public Main() {
+    @Autowired
+    private PlaylistEntryRepository playlistEntryRepository;
+
+
+
+    public PlaylistEntries() {
         super();
     }
-    
 
-    @RequestMapping({"/", "/thymeleaf"})
-    public String indexThymeleaf() {
-        return "thymeleaf/index";
+
+
+    @RequestMapping("/playlistentries.thymeleaf")
+    public String playlistEntryListThymeleaf(final Model model) {
+        model.addAttribute("entries", this.playlistEntryRepository.findAllPlaylistEntries());
+        return "thymeleaf/playlistentries";
     }
 
 
-    @RequestMapping("/freemarker")
-    public String indexFreeMarker() {
-        return "freemarker/index";
+    @RequestMapping("/playlistentries.freemarker")
+    public String playlistEntryListFreeMarker(final Model model) {
+        model.addAttribute("entries", this.playlistEntryRepository.findAllPlaylistEntries());
+        return "freemarker/playlistentries";
     }
+
 
 }

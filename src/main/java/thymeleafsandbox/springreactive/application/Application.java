@@ -42,7 +42,7 @@ public class Application {
          * Initialization: ApplicationContext
          */
         final AnnotationConfigApplicationContext context =
-                new AnnotationConfigApplicationContext(SpringReactiveWebConfig.class);
+                new AnnotationConfigApplicationContext(SpringReactiveWebConfig.class, SpringReactiveAppConfig.class);
 
         /*
          * Initialization: DispatcherHandler
@@ -53,7 +53,7 @@ public class Application {
         /*
          * Initialization: CharacterEncodingFilter
          */
-        // TODO * Apparently no implementation of WebFilter for CharacterEncoding yet
+        // TODO * Apparently no implementation of WebFilter for CharacterEncoding yet (if such thing is needed)
         final WebFilter[] filters = new WebFilter[] {};
 
         /*

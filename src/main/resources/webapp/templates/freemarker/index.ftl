@@ -10,9 +10,7 @@
   <body>
 
     <h1>Spring Reactive</h1>
-    <h2>Thymeleaf Sandbox application</h2>
-
-    <p>This template uses <strong>FREEMARKER</strong></p>
+    <h2>Thymeleaf Sandbox application (FREEMARKER)</h2>
 
     <span>Current time is ${.now}</span>
 

@@ -44,7 +44,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 import thymeleafsandbox.springreactive.thymeleaf.ThymeleafViewResolver;
 
 @Configuration
-@ComponentScan("thymeleafsandbox.springreactive")
+@ComponentScan("thymeleafsandbox.springreactive.web")
 public class SpringReactiveWebConfig implements ApplicationContextAware {
 
     public static final String CHARACTER_ENCODING = "UTF-8";
