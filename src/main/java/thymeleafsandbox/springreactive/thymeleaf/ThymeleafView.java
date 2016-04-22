@@ -29,10 +29,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.ConversionService;
@@ -54,7 +52,7 @@ import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import reactor.core.publisher.Flux;
-import reactor.core.util.Exceptions;
+import reactor.core.subscriber.SubscriberWithContext;
 
 
 /**
@@ -430,15 +428,14 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
             logger.debug("Finished preparation of Thymeleaf template [" + templateName + "].");
         }
 
-        return Flux.from(new ThymeleafViewPublisher(getBufferAllocator(), throttledProcessor, writer, responseChunkSize));
+        return Flux.create(new ThymeleafConsumer(getBufferAllocator(), throttledProcessor, writer, responseChunkSize));
 
     }
 
 
 
 
-    private static class ThymeleafViewPublisher implements Publisher<DataBuffer> {
-
+    private static class ThymeleafConsumer implements Consumer<SubscriberWithContext<DataBuffer,Void>> {
 
         private final DataBufferAllocator dataBufferAllocator;
         private final IThrottledTemplateProcessor throttledProcessor;
@@ -446,10 +443,10 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         private final long responseChunkSize;
 
 
-        ThymeleafViewPublisher(final DataBufferAllocator dataBufferAllocator,
-                               final IThrottledTemplateProcessor throttledProcessor,
-                               final ThymeleafViewWriter writer,
-                               final long responseChunkSize) {
+        ThymeleafConsumer(final DataBufferAllocator dataBufferAllocator,
+                          final IThrottledTemplateProcessor throttledProcessor,
+                          final ThymeleafViewWriter writer,
+                          final long responseChunkSize) {
             super();
             this.dataBufferAllocator = dataBufferAllocator;
             this.throttledProcessor = throttledProcessor;
@@ -459,106 +456,34 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
 
         @Override
-        public void subscribe(final Subscriber<? super DataBuffer> subscriber) {
-
-            try {
-
-                final ThymeleafViewSubscription subscription =
-                        new ThymeleafViewSubscription(
-                                subscriber,
-                                this.dataBufferAllocator,
-                                this.throttledProcessor,
-                                this.writer,
-                                this.responseChunkSize);
-
-                subscriber.onSubscribe(subscription);
-
-            } catch (final Throwable throwable) {
-                Exceptions.throwIfFatal(throwable);
-                subscriber.onError(throwable);
-            }
-
-        }
-
-
-    }
-
-
-
-
-    private static class ThymeleafViewSubscription implements Subscription {
-
-        private final Subscriber<? super DataBuffer> subscriber;
-        private final DataBufferAllocator dataBufferAllocator;
-        private final IThrottledTemplateProcessor throttledProcessor;
-        private final ThymeleafViewWriter writer;
-        private final long responseChunkSize;
-
-        volatile boolean cancelled;
-
-
-        ThymeleafViewSubscription(final Subscriber<? super DataBuffer> subscriber,
-                                  final DataBufferAllocator dataBufferAllocator,
-                                  final IThrottledTemplateProcessor throttledProcessor,
-                                  final ThymeleafViewWriter writer,
-                                  final long responseChunkSize) {
-            super();
-            this.subscriber = subscriber;
-            this.dataBufferAllocator = dataBufferAllocator;
-            this.throttledProcessor = throttledProcessor;
-            this.writer = writer;
-            this.responseChunkSize = responseChunkSize;
-        }
-
-
-        @Override
-        public void request(final long n) {
-
-            if (n < 0) {
-                throw new IllegalArgumentException("Number of elements requested cannot be < 0");
-            }
-
-            if (this.cancelled) {
-                return;
-            }
-
+        public void accept(final SubscriberWithContext<DataBuffer, Void> subscriber) {
             if (this.responseChunkSize == Long.MAX_VALUE) {
-                processAll();
+                processAll(subscriber);
             } else {
-                int i = 0;
-                while (i < n && !this.throttledProcessor.isFinished() && !this.cancelled) {
-                    processOne();
-                    i++;
-                }
+                processOne(subscriber);
             }
-
         }
 
 
-        void processAll() {
+        void processAll(final SubscriberWithContext<DataBuffer, Void> subscriber) {
             final DataBuffer buffer = this.dataBufferAllocator.allocateBuffer();
             this.writer.setBuffer(buffer);
             this.throttledProcessor.processAll();
-            this.subscriber.onNext(buffer);
-            this.subscriber.onComplete();
+            subscriber.onNext(buffer);
+            subscriber.onComplete();
         }
 
 
-        void processOne() {
+        void processOne(final SubscriberWithContext<DataBuffer, Void> subscriber) {
             final DataBuffer buffer = this.dataBufferAllocator.allocateBuffer();
             this.writer.setBuffer(buffer);
             this.throttledProcessor.process((int)this.responseChunkSize); // TODO allow a long here?
-            this.subscriber.onNext(buffer);
+            subscriber.onNext(buffer);
             if (this.throttledProcessor.isFinished()) {
-                this.subscriber.onComplete();
+                subscriber.onComplete();
             }
         }
 
-
-        @Override
-        public void cancel() {
-            this.cancelled = true;
-        }
 
     }
 
