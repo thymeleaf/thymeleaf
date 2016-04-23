@@ -26,13 +26,11 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferAllocator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.view.AbstractView;
@@ -49,7 +47,6 @@ import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import reactor.core.publisher.Flux;
-import reactor.core.subscriber.SubscriberWithContext;
 
 
 /**
@@ -405,78 +402,43 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         responseHeaders.setContentType(MediaType.valueOf(responseContentType));
 
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Starting preparation of Thymeleaf template [" + templateName + "].");
-        }
+        final Charset charset = responseCharset;
 
-        final IThrottledTemplateProcessor throttledProcessor;
-        try {
-            throttledProcessor = viewTemplateEngine.processThrottled(templateName, processMarkupSelectors, context);
-        } catch (final Exception e) {
-            final String message = "Could not prepare Thymeleaf template [" + templateName + "]";
-            return Flux.error(new IllegalStateException(message, e));
-        } catch (final Throwable e) {
-            return Flux.error(e);
-        }
+        return Flux.create(
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Finished preparation of Thymeleaf template [" + templateName + "].");
-        }
+                subscriber -> {
+                    final IThrottledTemplateProcessor throttledProcessor = (IThrottledTemplateProcessor) subscriber.context();
+                    final DataBuffer buffer = getBufferAllocator().allocateBuffer();
+                    throttledProcessor.process(responseChunkSize, buffer.asOutputStream(), charset);
+                    subscriber.onNext(buffer);
+                    if (throttledProcessor.isFinished()) {
+                        subscriber.onComplete();
+                    }
+                },
 
-        return Flux.create(new ThymeleafConsumer(getBufferAllocator(), throttledProcessor, responseChunkSize, responseCharset));
+                subscriber -> {
 
-    }
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Starting preparation of Thymeleaf template [" + templateName + "].");
+                    }
 
+                    final IThrottledTemplateProcessor throttledProcessor;
+                    try {
+                        throttledProcessor = viewTemplateEngine.processThrottled(templateName, processMarkupSelectors, context);
+                    } catch (final Exception e) {
+                        final String message = "Could not prepare Thymeleaf template [" + templateName + "]";
+                        return Flux.error(new IllegalStateException(message, e));
+                    } catch (final Throwable e) {
+                        return Flux.error(e);
+                    }
 
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Finished preparation of Thymeleaf template [" + templateName + "].");
+                    }
 
+                    return throttledProcessor;
 
-    private static class ThymeleafConsumer implements Consumer<SubscriberWithContext<DataBuffer,Void>> {
-
-        private final DataBufferAllocator dataBufferAllocator;
-        private final IThrottledTemplateProcessor throttledProcessor;
-        private final int responseChunkSize;
-        private final Charset charset;
-
-
-        ThymeleafConsumer(final DataBufferAllocator dataBufferAllocator,
-                          final IThrottledTemplateProcessor throttledProcessor,
-                          final int responseChunkSize,
-                          final Charset charset) {
-            super();
-            this.dataBufferAllocator = dataBufferAllocator;
-            this.throttledProcessor = throttledProcessor;
-            this.responseChunkSize = responseChunkSize;
-            this.charset = charset;
-        }
-
-
-        @Override
-        public void accept(final SubscriberWithContext<DataBuffer, Void> subscriber) {
-            if (this.responseChunkSize == Integer.MAX_VALUE) {
-                processAll(subscriber);
-            } else {
-                processOne(subscriber);
-            }
-        }
-
-
-        void processAll(final SubscriberWithContext<DataBuffer, Void> subscriber) {
-            final DataBuffer buffer = this.dataBufferAllocator.allocateBuffer();
-            this.throttledProcessor.processAll(buffer.asOutputStream(), this.charset);
-            subscriber.onNext(buffer);
-            subscriber.onComplete();
-        }
-
-
-        void processOne(final SubscriberWithContext<DataBuffer, Void> subscriber) {
-            final DataBuffer buffer = this.dataBufferAllocator.allocateBuffer();
-            this.throttledProcessor.process(this.responseChunkSize, buffer.asOutputStream(), this.charset);
-            subscriber.onNext(buffer);
-            if (this.throttledProcessor.isFinished()) {
-                subscriber.onComplete();
-            }
-        }
-
+                });
 
     }
 
