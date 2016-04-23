@@ -20,21 +20,31 @@
 package thymeleafsandbox.springreactive.application;
 
 
+import java.io.IOException;
 import java.net.URL;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
 @ComponentScan("thymeleafsandbox.springreactive.business")
-public class SpringReactiveAppConfig {
+public class SpringReactiveAppConfig implements ApplicationContextAware {
+
+    private static final Logger logger = LoggerFactory.getLogger(SpringReactiveAppConfig.class);
 
 
+    private ApplicationContext applicationContext;
 
 
     public SpringReactiveAppConfig() {
@@ -42,14 +52,24 @@ public class SpringReactiveAppConfig {
     }
 
 
+    @Override
+    public void setApplicationContext(final ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
 
     @Bean
     public DataSource dataSource() {
-        final URL databaseUrl = Thread.currentThread().getContextClassLoader().getResource("data/chinook.sqlite");
-        final BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName("org.sqlite.JDBC");
-        dataSource.setUrl("jdbc:sqlite:" + databaseUrl.getPath());
-        return dataSource;
+        try {
+            final Resource dbResource = this.applicationContext.getResource("classpath:data/chinook.sqlite");
+            logger.debug("Database path: " + dbResource.getURL().getPath());
+            final BasicDataSource dataSource = new BasicDataSource();
+            dataSource.setDriverClassName("org.sqlite.JDBC");
+            dataSource.setUrl("jdbc:sqlite:" + dbResource.getURL().getPath());
+            return dataSource;
+        } catch (final IOException e) {
+            throw new ApplicationContextException("Error initializing database", e);
+        }
     }
 
 
