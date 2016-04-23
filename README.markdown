@@ -16,15 +16,11 @@
 
  Clean compilation:
  
-     mvn clean
-     
- Compile and generate artifacts:
- 
-     mvn compile package
+     mvn clean compile
      
  Run the application (embedded NETTY TcpServer):
  
-     java -jar target/springreactive-ci-jar-with-dependencies.jar
+     mvn exec:java -Dexec.mainClass="thymeleafsandbox.springreactive.application.Application"
 
  Or, from an IDE, just launch the class:
 
