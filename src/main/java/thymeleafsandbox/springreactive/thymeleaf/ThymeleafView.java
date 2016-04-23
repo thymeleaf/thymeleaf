@@ -19,9 +19,6 @@
  */
 package thymeleafsandbox.springreactive.thymeleaf;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
@@ -98,7 +95,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
     //
     // The value established here is nullable (and null by default) because it will work as an override of the
     // value established at the ThymeleafViewResolver for the same purpose.
-    private Long responseChunkSize = null;
+    private Integer responseChunkSize = null;
 
 
 
@@ -197,14 +194,14 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
 
 
-    // Default is Long.MAX_VALUE, which means we will not be throttling at all
-    public void setResponseChunkSize(final long responseChunkSize) {
-        this.responseChunkSize = Long.valueOf(responseChunkSize);
+    // Default is Integer.MAX_VALUE, which means we will not be throttling at all
+    public void setResponseChunkSize(final int responseChunkSize) {
+        this.responseChunkSize = Integer.valueOf(responseChunkSize);
     }
 
 
-    public long getResponseChunkSize() {
-        return this.responseChunkSize == null? Long.MAX_VALUE : this.responseChunkSize.longValue();
+    public int getResponseChunkSize() {
+        return this.responseChunkSize == null? Integer.MAX_VALUE : this.responseChunkSize.intValue();
     }
 
 
@@ -361,7 +358,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         final MediaType templateContentType = getContentType();
         final Locale templateLocale = getLocale();
         final String templateCharacterEncoding = getCharacterEncoding();
-        final long responseChunkSize = getResponseChunkSize();
+        final int responseChunkSize = getResponseChunkSize();
 
 
         final Set<String> processMarkupSelectors;
@@ -412,11 +409,9 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
             logger.debug("Starting preparation of Thymeleaf template [" + templateName + "].");
         }
 
-        final ThymeleafViewWriter writer;
         final IThrottledTemplateProcessor throttledProcessor;
         try {
-            writer = new ThymeleafViewWriter(responseCharset);
-            throttledProcessor = viewTemplateEngine.processThrottled(templateName, processMarkupSelectors, context, writer);
+            throttledProcessor = viewTemplateEngine.processThrottled(templateName, processMarkupSelectors, context);
         } catch (final Exception e) {
             final String message = "Could not prepare Thymeleaf template [" + templateName + "]";
             return Flux.error(new IllegalStateException(message, e));
@@ -428,7 +423,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
             logger.debug("Finished preparation of Thymeleaf template [" + templateName + "].");
         }
 
-        return Flux.create(new ThymeleafConsumer(getBufferAllocator(), throttledProcessor, writer, responseChunkSize));
+        return Flux.create(new ThymeleafConsumer(getBufferAllocator(), throttledProcessor, responseChunkSize, responseCharset));
 
     }
 
@@ -439,25 +434,25 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
         private final DataBufferAllocator dataBufferAllocator;
         private final IThrottledTemplateProcessor throttledProcessor;
-        private final ThymeleafViewWriter writer;
-        private final long responseChunkSize;
+        private final int responseChunkSize;
+        private final Charset charset;
 
 
         ThymeleafConsumer(final DataBufferAllocator dataBufferAllocator,
                           final IThrottledTemplateProcessor throttledProcessor,
-                          final ThymeleafViewWriter writer,
-                          final long responseChunkSize) {
+                          final int responseChunkSize,
+                          final Charset charset) {
             super();
             this.dataBufferAllocator = dataBufferAllocator;
             this.throttledProcessor = throttledProcessor;
-            this.writer = writer;
             this.responseChunkSize = responseChunkSize;
+            this.charset = charset;
         }
 
 
         @Override
         public void accept(final SubscriberWithContext<DataBuffer, Void> subscriber) {
-            if (this.responseChunkSize == Long.MAX_VALUE) {
+            if (this.responseChunkSize == Integer.MAX_VALUE) {
                 processAll(subscriber);
             } else {
                 processOne(subscriber);
@@ -467,8 +462,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
         void processAll(final SubscriberWithContext<DataBuffer, Void> subscriber) {
             final DataBuffer buffer = this.dataBufferAllocator.allocateBuffer();
-            this.writer.setBuffer(buffer);
-            this.throttledProcessor.processAll();
+            this.throttledProcessor.processAll(buffer.asOutputStream(), this.charset);
             subscriber.onNext(buffer);
             subscriber.onComplete();
         }
@@ -476,79 +470,11 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
         void processOne(final SubscriberWithContext<DataBuffer, Void> subscriber) {
             final DataBuffer buffer = this.dataBufferAllocator.allocateBuffer();
-            this.writer.setBuffer(buffer);
-            this.throttledProcessor.process((int)this.responseChunkSize); // TODO allow a long here?
+            this.throttledProcessor.process(this.responseChunkSize, buffer.asOutputStream(), this.charset);
             subscriber.onNext(buffer);
             if (this.throttledProcessor.isFinished()) {
                 subscriber.onComplete();
             }
-        }
-
-
-    }
-
-
-
-
-    private static class ThymeleafViewWriter extends Writer {
-
-
-        private final Charset characterEncoding;
-        private Writer delegate = null;
-
-
-        ThymeleafViewWriter(final Charset characterEncoding) {
-            super();
-            this.characterEncoding = characterEncoding;
-        }
-
-
-        void setBuffer(final DataBuffer buffer) {
-            this.delegate = new OutputStreamWriter(buffer.asOutputStream(), this.characterEncoding);
-        }
-
-
-
-        @Override
-        public void write(final int c) throws IOException {
-            this.delegate.write(c);
-        }
-
-
-        @Override
-        public void write(final String str) throws IOException {
-            this.delegate.write(str);
-        }
-
-
-        @Override
-        public void write(final String str, final int off, final int len) throws IOException {
-            this.delegate.write(str, off, len);
-        }
-
-
-        @Override
-        public void write(final char[] cbuf) throws IOException {
-            this.delegate.write(cbuf);
-        }
-
-
-        @Override
-        public void write(final char[] cbuf, final int off, final int len) throws IOException {
-            this.delegate.write(cbuf, off, len);
-        }
-
-
-
-        @Override
-        public void flush() throws IOException {
-            this.delegate.flush();
-        }
-
-
-        @Override
-        public void close() throws IOException {
-            this.delegate.close();
         }
 
 
