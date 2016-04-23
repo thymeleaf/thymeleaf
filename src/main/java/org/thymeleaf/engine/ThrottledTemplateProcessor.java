@@ -100,7 +100,7 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
 
 
 
-    private boolean computeFinish() {
+    private boolean computeFinish() throws IOException {
 
         if (this.allProcessingFinished) {
             return true;
@@ -214,7 +214,7 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
             logger.error(String.format("[THYMELEAF][%s] Exception processing throttled template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), this.templateSpec, e.getMessage()}), e);
             throw e;
 
-        } catch (final RuntimeException e) {
+        } catch (final Exception e) {
 
             this.eventProcessingFinished = true;
             this.allProcessingFinished = true;
@@ -237,9 +237,9 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
     }
 
 
-    public void process(final int maxOutputInChars, final OutputStream outputStream, final Charset charset) {
+    public void process(final int maxOutputInBytes, final OutputStream outputStream, final Charset charset) {
         this.writer.setOutput(outputStream, charset);
-        process(maxOutputInChars, OUTPUT_TYPE_BYTES);
+        process(maxOutputInBytes, OUTPUT_TYPE_BYTES);
     }
 
 
@@ -329,7 +329,7 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
             logger.error(String.format("[THYMELEAF][%s] Exception processing throttled template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), this.templateSpec, e.getMessage()}), e);
             throw e;
 
-        } catch (final RuntimeException e) {
+        } catch (final Exception e) {
 
             this.eventProcessingFinished = true;
             this.allProcessingFinished = true;

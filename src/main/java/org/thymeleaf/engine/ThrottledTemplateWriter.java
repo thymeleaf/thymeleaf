@@ -19,12 +19,12 @@
  */
 package org.thymeleaf.engine;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 
 import org.thymeleaf.exceptions.TemplateOutputException;
 
@@ -43,6 +43,8 @@ final class ThrottledTemplateWriter extends Writer {
     private IThrottledTemplateWriterAdapter adapter;
     private Writer writer;
 
+    private boolean flushable;
+
 
     ThrottledTemplateWriter(final String templateName, final TemplateFlowController flowController) {
         super();
@@ -50,6 +52,7 @@ final class ThrottledTemplateWriter extends Writer {
         this.flowController = flowController;
         this.adapter = null;
         this.writer = null;
+        this.flushable = false;
     }
 
 
@@ -77,7 +80,9 @@ final class ThrottledTemplateWriter extends Writer {
         }
         if (this.adapter == null) {
             this.adapter = new ThrottledTemplateWriterOutputStreamAdapter(this.templateName, this.flowController);
-            this.writer = new OutputStreamWriter((ThrottledTemplateWriterOutputStreamAdapter)this.adapter, charset);
+            // Use of a wrapping BufferedWriter is recommended by OutputStreamWriter javadoc for improving efficiency,
+            // avoiding frequent converter invocations (note that the character converter also has its own buffer).
+            this.writer = new BufferedWriter(new OutputStreamWriter((ThrottledTemplateWriterOutputStreamAdapter)this.adapter, charset));
         }
         ((ThrottledTemplateWriterOutputStreamAdapter)this.adapter).setOutputStream(outputStream);
     }
@@ -85,11 +90,25 @@ final class ThrottledTemplateWriter extends Writer {
 
 
 
-    boolean isOverflown() {
+    boolean isOverflown() throws IOException {
+        if (this.flushable) {
+            // We need this flushing because OutputStreamWriter bufferizes, and given we might be taking account of
+            // the output bytes at an OutputStream implementation in a level below this OutputStreamWriter, we could
+            // have the wrong figures until we flush contents.
+            this.flush();
+            this.flushable = false;
+        }
         return this.adapter.isOverflown();
     }
 
-    boolean isStopped() {
+    boolean isStopped() throws IOException {
+        if (this.flushable) {
+            // We need this flushing because OutputStreamWriter bufferizes, and given we might be taking account of
+            // the output bytes at an OutputStream implementation in a level below this OutputStreamWriter, we could
+            // have the wrong figures until we flush contents.
+            this.flush();
+            this.flushable = false;
+        }
         return this.adapter.isStopped();
     }
 
@@ -107,30 +126,35 @@ final class ThrottledTemplateWriter extends Writer {
 
     @Override
     public void write(final int c) throws IOException {
+        this.flushable = true;
         this.writer.write(c);
     }
 
 
     @Override
     public void write(final String str) throws IOException {
+        this.flushable = true;
         this.writer.write(str);
     }
 
 
     @Override
     public void write(final String str, final int off, final int len) throws IOException {
+        this.flushable = true;
         this.writer.write(str, off, len);
     }
 
 
     @Override
     public void write(final char[] cbuf) throws IOException {
+        this.flushable = true;
         this.writer.write(cbuf);
     }
 
 
     @Override
     public void write(final char[] cbuf, final int off, final int len) throws IOException {
+        this.flushable = true;
         this.writer.write(cbuf, off, len);
     }
 
