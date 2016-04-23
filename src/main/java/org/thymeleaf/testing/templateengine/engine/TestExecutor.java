@@ -19,7 +19,9 @@
  */
 package org.thymeleaf.testing.templateengine.engine;
 
+import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -60,10 +62,13 @@ import org.thymeleaf.util.Validate;
 
 public final class TestExecutor {
 
+    public enum ThrottleType { CHARS, BYTES }
+
     private ITestableResolver testableResolver = new StandardTestableResolver();
     private IProcessingContextBuilder processingContextBuilder = new WebProcessingContextBuilder(); 
     private List<IDialect> dialects = Collections.singletonList((IDialect)new StandardDialect());
     private int throttleStep = Integer.MAX_VALUE;
+    private ThrottleType throttleType = ThrottleType.CHARS;
     protected ITestReporter reporter = new ConsoleTestReporter();
     
     
@@ -154,7 +159,17 @@ public final class TestExecutor {
     }
 
 
-    
+
+
+    public ThrottleType getThrottleType() {
+        return this.throttleType;
+    }
+
+    public void setThrottleType(final ThrottleType throttleType) {
+        this.throttleType = throttleType;
+    }
+
+
 
 
     public void setReporter(final ITestReporter reporter) {
@@ -387,9 +402,17 @@ public final class TestExecutor {
             if (this.throttleStep <= 0 || this.throttleStep == Integer.MAX_VALUE) {
                 templateEngine.process(testName, markupSelectors, processingContext, writer);
             } else {
-                final IThrottledTemplateProcessor throttledProcessor = templateEngine.processThrottled(testName, markupSelectors, processingContext, writer);
-                while (!throttledProcessor.isFinished()) {
-                    throttledProcessor.process(this.throttleStep);
+                final IThrottledTemplateProcessor throttledProcessor = templateEngine.processThrottled(testName, markupSelectors, processingContext);
+                if (this.throttleType == ThrottleType.CHARS) {
+                    while (!throttledProcessor.isFinished()) {
+                        throttledProcessor.process(this.throttleStep, writer);
+                    }
+                } else {
+                    final ByteArrayOutputStream baos = new ByteArrayOutputStream(200);
+                    while (!throttledProcessor.isFinished()) {
+                        throttledProcessor.process(this.throttleStep, baos, Charset.forName("UTF-8"));
+                    }
+                    writer.write(new String(baos.toByteArray(), "UTF-8"));
                 }
             }
             endTimeNanos = System.nanoTime();
