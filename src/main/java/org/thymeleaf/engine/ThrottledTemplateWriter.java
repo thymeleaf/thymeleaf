@@ -19,12 +19,13 @@
  */
 package org.thymeleaf.engine;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 
 import org.thymeleaf.exceptions.TemplateOutputException;
 
@@ -72,17 +73,44 @@ final class ThrottledTemplateWriter extends Writer {
     }
 
 
-    void setOutput(final OutputStream outputStream, final Charset charset) {
+    void setOutput(final OutputStream outputStream, final Charset charset, final int maxOutputInBytes) {
         if (this.adapter != null && this.adapter instanceof ThrottledTemplateWriterWriterAdapter) {
             throw new TemplateOutputException(
                     "The throttled processor has already been initialized to use char-based output (Writer), " +
                     "but an OutputStream has been specified.", this.templateName, -1, -1, null);
         }
         if (this.adapter == null) {
-            this.adapter = new ThrottledTemplateWriterOutputStreamAdapter(this.templateName, this.flowController);
+            final int adapterOverflowBufferIncrementBytes = (maxOutputInBytes == Integer.MAX_VALUE? 128 : maxOutputInBytes / 8);
+            this.adapter = new ThrottledTemplateWriterOutputStreamAdapter(this.templateName, this.flowController, adapterOverflowBufferIncrementBytes);
+            // We cannot directly use a java.io.OutputStreamWriter here because that class uses a CharsetEncoder
+            // underneath that always creates a 8192byte (8KB) buffer, and there is no way to configure that.
+            //
+            // The problem with such buffer is that we are counting the number of output bytes at the OutputStream
+            // wrapper (the adapter we just created), which is set as the output of the OutputStreamWriter, and which
+            // does not receive any bytes until the OutputStreamWriter flushes its 8KB buffer. But in a scenario in
+            // which, for instance, we only need 100 bytes to complete our output chunk, this would mean we would still
+            // have an overflow of more than 8,000 bytes. And that basically renders this whole template throttling
+            // mechanism useless.
+            //
+            // So we will use an alternative construct to OutputStreamWriter, based on a WritableByteChannel. This
+            // will basically work in the same way as an OutputStreamWriter, but by building it manually we will be
+            // able to specify the size of the buffer to be used.
+            //
+            // And we do not want the buffer at the Writer -> OutputStream converter to completely dissapear, because
+            // it actually improves the performance of the converter. So we will use the maxOutputInBytes (the size
+            // of the output to be obtained from the throttled template the first time) as an approximate measure
+            // of what we will need in subsequent calls, and we will to try to adjust the size of the buffer so
+            // that we make the most use of it without needing to flush too often, nor 'losing' chars in the buffer.
+            //
+            // Last, note that in order to avoid this 'loss of chars' we will combine this with 'flush' calls at the
+            // 'isOverflown()' and 'isStopped()' calls.
+            final CharsetEncoder charsetEncoder = charset.newEncoder();
+            int channelBufferSize = (maxOutputInBytes == Integer.MAX_VALUE? 1024 : adapterOverflowBufferIncrementBytes * 2);
+            final WritableByteChannel channel = Channels.newChannel((ThrottledTemplateWriterOutputStreamAdapter)this.adapter);
+            this.writer = Channels.newWriter(channel, charsetEncoder, channelBufferSize);
             // Use of a wrapping BufferedWriter is recommended by OutputStreamWriter javadoc for improving efficiency,
             // avoiding frequent converter invocations (note that the character converter also has its own buffer).
-            this.writer = new BufferedWriter(new OutputStreamWriter((ThrottledTemplateWriterOutputStreamAdapter)this.adapter, charset));
+            //this.writer = new BufferedWriter(new OutputStreamWriter((ThrottledTemplateWriterOutputStreamAdapter)this.adapter, charset));
         }
         ((ThrottledTemplateWriterOutputStreamAdapter)this.adapter).setOutputStream(outputStream);
     }
@@ -115,6 +143,11 @@ final class ThrottledTemplateWriter extends Writer {
 
     int getMaxOverflowSize() {
         return this.adapter.getMaxOverflowSize();
+    }
+
+
+    int getOverflowGrowCount() {
+        return this.adapter.getOverflowGrowCount();
     }
 
 
@@ -178,6 +211,7 @@ final class ThrottledTemplateWriter extends Writer {
         boolean isOverflown();
         boolean isStopped();
         int getMaxOverflowSize();
+        int getOverflowGrowCount();
         void allow(final int limit);
 
     }

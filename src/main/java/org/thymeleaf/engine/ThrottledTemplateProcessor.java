@@ -119,8 +119,8 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
         if (this.allProcessingFinished) {
             if (logger.isTraceEnabled()) {
                 logger.trace(
-                        "[THYMELEAF][{}] FINISHED OUTPUT OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}. MAXIMUM OVERFLOW WAS {} {}.",
-                        new Object[]{TemplateEngine.threadIndex(), this.templateSpec, this.context.getLocale(), Integer.valueOf(this.writer.getMaxOverflowSize()), outputType });
+                        "[THYMELEAF][{}] FINISHED OUTPUT OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}. Maximum overflow was {} {} (overflow buffer grown {} times).",
+                        new Object[]{TemplateEngine.threadIndex(), this.templateSpec, this.context.getLocale(), Integer.valueOf(this.writer.getMaxOverflowSize()), outputType, this.writer.getOverflowGrowCount() });
             }
         }
 
@@ -136,7 +136,7 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
 
 
     public void processAll(final OutputStream outputStream, final Charset charset) {
-        this.writer.setOutput(outputStream, charset);
+        this.writer.setOutput(outputStream, charset, Integer.MAX_VALUE);
         processAll(OUTPUT_TYPE_BYTES);
     }
 
@@ -238,7 +238,7 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
 
 
     public void process(final int maxOutputInBytes, final OutputStream outputStream, final Charset charset) {
-        this.writer.setOutput(outputStream, charset);
+        this.writer.setOutput(outputStream, charset, maxOutputInBytes);
         process(maxOutputInBytes, OUTPUT_TYPE_BYTES);
     }
 

@@ -36,6 +36,9 @@ final class ThrottledTemplateWriterWriterAdapter
         extends Writer
         implements ThrottledTemplateWriter.IThrottledTemplateWriterAdapter {
 
+    // Given we will be directly writing chars we will use a 256-char buffer as a sensible, approximate
+    // measure of the amount of overflow we will need, given the only influencing factor for us is
+    // the size of the structures being written to this writer (elements, texts, etc.)
     private static int OVERFLOW_BUFFER_INCREMENT = 256;
 
     private final String templateName;
@@ -46,6 +49,7 @@ final class ThrottledTemplateWriterWriterAdapter
     private char[] overflow;
     private int overflowSize;
     private int maxOverflowSize;
+    private int overflowGrowCount;
 
     private boolean unlimited;
     private int limit;
@@ -58,6 +62,7 @@ final class ThrottledTemplateWriterWriterAdapter
         this.overflow = null;
         this.overflowSize = 0;
         this.maxOverflowSize = 0;
+        this.overflowGrowCount = 0;
         this.unlimited = false;
         this.limit = 0;
         this.flowController.stopProcessing = true;
@@ -80,6 +85,13 @@ final class ThrottledTemplateWriterWriterAdapter
     public int getMaxOverflowSize() {
         return this.maxOverflowSize;
     }
+
+
+    public int getOverflowGrowCount() {
+        return this.overflowGrowCount;
+    }
+
+
 
 
     public void allow(final int limit) {
@@ -278,6 +290,7 @@ final class ThrottledTemplateWriterWriterAdapter
         final int targetLen = this.overflowSize + len;
         if (this.overflow.length < targetLen) {
             this.overflow = Arrays.copyOf(this.overflow, ((targetLen / OVERFLOW_BUFFER_INCREMENT) + 1) * OVERFLOW_BUFFER_INCREMENT);
+            this.overflowGrowCount++;
         }
     }
 

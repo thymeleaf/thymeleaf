@@ -36,28 +36,39 @@ final class ThrottledTemplateWriterOutputStreamAdapter
         extends OutputStream
         implements ThrottledTemplateWriter.IThrottledTemplateWriterAdapter {
 
-    private static int OVERFLOW_BUFFER_INCREMENT = 256;
-
     private final String templateName;
     private final TemplateFlowController flowController;
+
+    // We will use a different increment depending on the size of the chunks asked by the throttled template
+    // client. This is a complex setup because this adapter will be fed by a byte array channel acting as a
+    // Writer -> OutputStream bridge that will in fact have its own buffer, and due to this we will need at least
+    // the same size as the buffer in this channel (in fact, a bit more) if we don't want to be continuously growing
+    // our overflow buffer. So if chunks are x in size, the channel's buffer will be x/4, and we will have an overflow
+    // of (x/8)*3, growing in chunks of x/8.
+    // See the implementation of this mechanism at ThrottledTemplateWriter for more info.
+    private final int overflowIncrementInBytes;
 
     private OutputStream os;
 
     private byte[] overflow;
     private int overflowSize;
     private int maxOverflowSize;
+    private int overflowGrowCount;
 
     private boolean unlimited;
     private int limit;
 
 
-    ThrottledTemplateWriterOutputStreamAdapter(final String templateName, final TemplateFlowController flowController) {
+    ThrottledTemplateWriterOutputStreamAdapter(
+            final String templateName, final TemplateFlowController flowController, final int overflowIncrementInBytes) {
         super();
         this.templateName = templateName;
         this.flowController = flowController;
+        this.overflowIncrementInBytes = overflowIncrementInBytes;
         this.overflow = null;
         this.overflowSize = 0;
         this.maxOverflowSize = 0;
+        this.overflowGrowCount = 0;
         this.unlimited = false;
         this.limit = 0;
         this.flowController.stopProcessing = true;
@@ -79,6 +90,11 @@ final class ThrottledTemplateWriterOutputStreamAdapter
 
     public int getMaxOverflowSize() {
         return this.maxOverflowSize;
+    }
+
+
+    public int getOverflowGrowCount() {
+        return this.overflowGrowCount;
     }
 
 
@@ -220,12 +236,21 @@ final class ThrottledTemplateWriterOutputStreamAdapter
 
     private void ensureOverflowCapacity(final int len) {
         if (this.overflow == null) {
-            this.overflow = new byte[((len / OVERFLOW_BUFFER_INCREMENT) + 1) * OVERFLOW_BUFFER_INCREMENT];
+            int bufferInitialSize = this.overflowIncrementInBytes * 3;
+            while (bufferInitialSize < len) {
+                bufferInitialSize += this.overflowIncrementInBytes;
+            }
+            this.overflow = new byte[bufferInitialSize];
             return;
         }
         final int targetLen = this.overflowSize + len;
         if (this.overflow.length < targetLen) {
-            this.overflow = Arrays.copyOf(this.overflow, ((targetLen / OVERFLOW_BUFFER_INCREMENT) + 1) * OVERFLOW_BUFFER_INCREMENT);
+            int newLen = this.overflow.length;
+            do {
+                newLen += this.overflowIncrementInBytes;
+            } while (newLen < targetLen);
+            this.overflow = Arrays.copyOf(this.overflow, newLen);
+            this.overflowGrowCount++;
         }
     }
 
