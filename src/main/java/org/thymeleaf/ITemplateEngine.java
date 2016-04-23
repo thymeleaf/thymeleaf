@@ -205,10 +205,10 @@ public interface ITemplateEngine {
 
     /**
      * <p>
-     * Process the specified template (usually the template name). Output will be written to the
-     * specified writer as it is generated from processing the template as dictated by the returned
-     * {@link IThrottledTemplateProcessor}. This is specially useful for scenarios such as reactive architectures
-     * in which the production of output could be regulated by a back-pressure mechanism.
+     * Process the specified template (usually the template name). Output will be generated from processing the
+     * template as dictated by the returned {@link IThrottledTemplateProcessor}, and will be written to the output
+     * means specified to this throttled processor's methods. This is specially useful for scenarios such as
+     * reactive architectures in which the production of output could be regulated by a back-pressure mechanism.
      * </p>
      * <p>
      * This is actually a convenience method that will internally create a {@link TemplateSpec} and then
@@ -218,21 +218,19 @@ public interface ITemplateEngine {
      * @param template the template; depending on the template resolver this might be a template name or even
      *                 the template contents (e.g. StringTemplateResolver).
      * @param context  the context.
-     * @param writer   the writer the results will be output to.
      * @return the IThrottledTemplateProcessor object in charge of dictating the engine when to process the template and
      *         how much output should be produced.
      */
-    public IThrottledTemplateProcessor processThrottled(
-            final String template, final IContext context, final Writer writer);
+    public IThrottledTemplateProcessor processThrottled(final String template, final IContext context);
 
 
     /**
      * <p>
      * Process the specified template (usually the template name) applying a set of
-     * <em>template selectors</em>. Output will be written to the
-     * specified writer as it is generated from processing the template as dictated by the returned
-     * {@link IThrottledTemplateProcessor}. This is specially useful for scenarios such as reactive architectures
-     * in which the production of output could be regulated by a back-pressure mechanism.
+     * <em>template selectors</em>. Output will be generated from processing the
+     * template as dictated by the returned {@link IThrottledTemplateProcessor}, and will be written to the output
+     * means specified to this throttled processor's methods. This is specially useful for scenarios such as
+     * reactive architectures in which the production of output could be regulated by a back-pressure mechanism.
      * </p>
      * <p>
      * Template selectors allow the possibility to process only a part of the specified template, expressing
@@ -250,20 +248,18 @@ public interface ITemplateEngine {
      *                          the template contents (e.g. StringTemplateResolver).
      * @param templateSelectors the selectors to be used, defining the fragments that should be processed. Can be null.
      * @param context           the context.
-     * @param writer            the writer the results will be output to.
      * @return the IThrottledTemplateProcessor object in charge of dictating the engine when to process the template and
      *         how much output should be produced.
      */
-    public IThrottledTemplateProcessor processThrottled(
-            final String template, final Set<String> templateSelectors, final IContext context, final Writer writer);
+    public IThrottledTemplateProcessor processThrottled(final String template, final Set<String> templateSelectors, final IContext context);
 
 
     /**
      * <p>
-     * Process a template starting from a {@link TemplateSpec}. Output will be written to the
-     * specified writer as it is generated from processing the template as dictated by the returned
-     * {@link IThrottledTemplateProcessor}. This is specially useful for scenarios such as reactive architectures
-     * in which the production of output could be regulated by a back-pressure mechanism.
+     * Process a template starting from a {@link TemplateSpec}. Output will be generated from processing the
+     * template as dictated by the returned {@link IThrottledTemplateProcessor}, and will be written to the output
+     * means specified to this throttled processor's methods. This is specially useful for scenarios such as
+     * reactive architectures in which the production of output could be regulated by a back-pressure mechanism.
      * </p>
      * <p>
      * The template specification will be used as input for the template resolvers, queried in chain
@@ -278,11 +274,9 @@ public interface ITemplateEngine {
      *                     template selectors if they are to be applied, a template mode if it should be forced
      *                     (instead of computing it at resolution time), and other attributes.
      * @param context      the context.
-     * @param writer       the writer the results will be output to.
      * @return the IThrottledTemplateProcessor object in charge of dictating the engine when to process the template and
      *         how much output should be produced.
      */
-    public IThrottledTemplateProcessor processThrottled(
-            final TemplateSpec templateSpec, final IContext context, final Writer writer);
+    public IThrottledTemplateProcessor processThrottled(final TemplateSpec templateSpec, final IContext context);
 
 }

@@ -681,14 +681,10 @@ public final class TemplateManager {
     }
 
 
-    public ThrottledTemplateProcessor parseAndProcessThrottled(
-            final TemplateSpec templateSpec,
-            final IContext context,
-            final Writer writer) {
+    public ThrottledTemplateProcessor parseAndProcessThrottled(final TemplateSpec templateSpec, final IContext context) {
 
         Validate.notNull(templateSpec, "Template Specification cannot be null");
         Validate.notNull(context, "Context cannot be null");
-        Validate.notNull(writer, "Writer cannot be null");
 
 
         // TemplateSpec will already have validated its contents, so need to do it here (template selectors,
@@ -712,7 +708,7 @@ public final class TemplateManager {
          * Instantiate the throttling artifacts
          */
         final TemplateFlowController flowController = new TemplateFlowController();
-        final ThrottledTemplateWriter throttledTemplateWriter = new ThrottledTemplateWriter(template, flowController, writer);
+        final ThrottledTemplateWriter throttledTemplateWriter = new ThrottledTemplateWriter(template, flowController);
 
 
         /*

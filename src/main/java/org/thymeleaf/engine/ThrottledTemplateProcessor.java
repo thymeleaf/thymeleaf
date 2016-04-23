@@ -20,8 +20,11 @@
 package org.thymeleaf.engine;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.charset.Charset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +50,9 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
     private static final Logger timerLogger = LoggerFactory.getLogger(TemplateEngine.TIMER_LOGGER_NAME);
 
     private static final int NANOS_IN_SECOND = 1000000;
+
+    private static final String OUTPUT_TYPE_CHARS = "chars";
+    private static final String OUTPUT_TYPE_BYTES = "bytes";
 
 
     private final TemplateSpec templateSpec;
@@ -101,20 +107,20 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
         }
 
         this.allProcessingFinished =
-                this.eventProcessingFinished && !this.flowController.processorTemplateHandlerPending && !this.writer.isOverflowed();
+                this.eventProcessingFinished && !this.flowController.processorTemplateHandlerPending && !this.writer.isOverflown();
 
         return this.allProcessingFinished;
 
     }
 
 
-    private void reportFinish() {
+    private void reportFinish(final String outputType) {
 
         if (this.allProcessingFinished) {
             if (logger.isTraceEnabled()) {
                 logger.trace(
-                        "[THYMELEAF][{}] FINISHED OUTPUT OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}. MAXIMUM OVERFLOW WAS {} CHARS.",
-                        new Object[]{TemplateEngine.threadIndex(), this.templateSpec, this.context.getLocale(), Integer.valueOf(this.writer.getMaxOverflowSize()) });
+                        "[THYMELEAF][{}] FINISHED OUTPUT OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}. MAXIMUM OVERFLOW WAS {} {}.",
+                        new Object[]{TemplateEngine.threadIndex(), this.templateSpec, this.context.getLocale(), Integer.valueOf(this.writer.getMaxOverflowSize()), outputType });
             }
         }
 
@@ -123,7 +129,20 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
 
 
 
-    public void processAll() {
+    public void processAll(final Writer writer) {
+        this.writer.setOutput(writer);
+        processAll(OUTPUT_TYPE_CHARS);
+    }
+
+
+    public void processAll(final OutputStream outputStream, final Charset charset) {
+        this.writer.setOutput(outputStream, charset);
+        processAll(OUTPUT_TYPE_BYTES);
+    }
+
+
+
+    private void processAll(final String outputType) {
 
         try {
 
@@ -205,35 +224,47 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
 
         }
 
-        reportFinish();
+        reportFinish(outputType);
 
     }
 
 
 
 
-    public void process(final int outputLimitInChars) {
+    public void process(final int maxOutputInChars, final Writer writer) {
+        this.writer.setOutput(writer);
+        process(maxOutputInChars, OUTPUT_TYPE_CHARS);
+    }
+
+
+    public void process(final int maxOutputInChars, final OutputStream outputStream, final Charset charset) {
+        this.writer.setOutput(outputStream, charset);
+        process(maxOutputInChars, OUTPUT_TYPE_BYTES);
+    }
+
+
+    private void process(final int maxOutput, final String outputType) {
 
         try {
 
-            if (outputLimitInChars < 0 || outputLimitInChars == Integer.MAX_VALUE) {
-                processAll();
+            if (maxOutput < 0 || maxOutput == Integer.MAX_VALUE) {
+                processAll(outputType);
                 return;
             }
 
-            if (this.allProcessingFinished || outputLimitInChars == 0) {
+            if (this.allProcessingFinished || maxOutput == 0) {
                 return;
             }
 
             if (logger.isTraceEnabled()) {
-                logger.trace("[THYMELEAF][{}] STARTING PROCESS(LIMIT:{} chars) OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}",
-                        new Object[]{TemplateEngine.threadIndex(), Integer.valueOf(outputLimitInChars), this.templateSpec, this.context.getLocale()});
+                logger.trace("[THYMELEAF][{}] STARTING PROCESS(LIMIT:{} {}) OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}",
+                        new Object[]{TemplateEngine.threadIndex(), Integer.valueOf(maxOutput), outputType, this.templateSpec, this.context.getLocale()});
             }
 
             final long startNanos = System.nanoTime();
 
             // Set the new limit for the writer (might provoke overflow being processed)
-            this.writer.allow(outputLimitInChars);
+            this.writer.allow(maxOutput);
 
             // Maybe by processing all overflow we just finished
             if (!computeFinish() && !this.writer.isStopped()) {
@@ -258,19 +289,19 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
             final long endNanos = System.nanoTime();
 
             if (logger.isTraceEnabled()) {
-                logger.trace("[THYMELEAF][{}] FINISHED PROCESS(LIMIT:{} chars) OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}",
-                        new Object[]{TemplateEngine.threadIndex(), Integer.valueOf(outputLimitInChars), this.templateSpec, this.context.getLocale()});
+                logger.trace("[THYMELEAF][{}] FINISHED PROCESS(LIMIT:{} {}) OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}",
+                        new Object[]{TemplateEngine.threadIndex(), Integer.valueOf(maxOutput), outputType, this.templateSpec, this.context.getLocale()});
             }
 
             if (timerLogger.isTraceEnabled()) {
                 final BigDecimal elapsed = BigDecimal.valueOf(endNanos - startNanos);
                 final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(NANOS_IN_SECOND), RoundingMode.HALF_UP);
                 timerLogger.trace(
-                        "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH LOCALE {} PROCESSED (THROTTLED, LIMIT:{} chars) IN {} nanoseconds (approx. {}ms)",
+                        "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH LOCALE {} PROCESSED (THROTTLED, LIMIT:{} {}) IN {} nanoseconds (approx. {}ms)",
                         new Object[]{
                                 TemplateEngine.threadIndex(),
                                 LoggingUtils.loggifyTemplateName(this.templateSpec.getTemplate()), this.context.getLocale(), elapsed, elapsedMs,
-                                this.templateSpec, this.context.getLocale(), Integer.valueOf(outputLimitInChars), elapsed, elapsedMs});
+                                this.templateSpec, this.context.getLocale(), Integer.valueOf(maxOutput), outputType, elapsed, elapsedMs});
             }
 
             /*
@@ -308,7 +339,7 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
 
         }
 
-        reportFinish();
+        reportFinish(outputType);
 
     }
 

@@ -1138,17 +1138,17 @@ public class TemplateEngine implements ITemplateEngine {
 
 
 
-    public final IThrottledTemplateProcessor processThrottled(final String template, final IContext context, final Writer writer) {
-        return processThrottled(new TemplateSpec(template, null, null, null), context, writer);
+    public final IThrottledTemplateProcessor processThrottled(final String template, final IContext context) {
+        return processThrottled(new TemplateSpec(template, null, null, null), context);
     }
 
 
-    public final IThrottledTemplateProcessor processThrottled(final String template, final Set<String> templateSelectors, final IContext context, final Writer writer) {
-        return processThrottled(new TemplateSpec(template, templateSelectors, null, null), context, writer);
+    public final IThrottledTemplateProcessor processThrottled(final String template, final Set<String> templateSelectors, final IContext context) {
+        return processThrottled(new TemplateSpec(template, templateSelectors, null, null), context);
     }
 
 
-    public final IThrottledTemplateProcessor processThrottled(final TemplateSpec templateSpec, final IContext context, final Writer writer) {
+    public final IThrottledTemplateProcessor processThrottled(final TemplateSpec templateSpec, final IContext context) {
 
         if (!this.initialized) {
             initialize();
@@ -1159,7 +1159,6 @@ public class TemplateEngine implements ITemplateEngine {
 
             Validate.notNull(templateSpec, "Template Specification cannot be null");
             Validate.notNull(context, "Context cannot be null");
-            Validate.notNull(writer, "Writer cannot be null");
             // selectors CAN actually be null if we are going to render the entire template
             // templateMode CAN also be null if we are going to use the mode specified by the template resolver
 
@@ -1171,7 +1170,7 @@ public class TemplateEngine implements ITemplateEngine {
             final long startNanos = System.nanoTime();
 
             final TemplateManager templateManager = this.configuration.getTemplateManager();
-            throttledTemplateProcessor = templateManager.parseAndProcessThrottled(templateSpec, context, writer);
+            throttledTemplateProcessor = templateManager.parseAndProcessThrottled(templateSpec, context);
 
             final long endNanos = System.nanoTime();
 

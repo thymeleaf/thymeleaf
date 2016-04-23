@@ -19,10 +19,9 @@
  */
 package org.thymeleaf;
 
+import java.io.OutputStream;
 import java.io.Writer;
-import java.util.Set;
-
-import org.thymeleaf.context.IContext;
+import java.nio.charset.Charset;
 
 /**
  * <p>
@@ -32,13 +31,14 @@ import org.thymeleaf.context.IContext;
  * </p>
  * <p>
  *   When the processing of a template is <em>throttled</em> the client classes can tell the engine how much output
- *   they are prepared to handle by calling {@link IThrottledTemplateProcessor#process(int)}. As a response to this,
- *   the engine will process only the part of the template enough to write so many chars as specified to the
- *   {@link Writer} object that was specified at the <tt>processThrottled(...)</tt> call.
+ *   they are prepared to handle by calling any of the <tt>process(int,...)</tt> methods. As a response to this,
+ *   the engine will process only the part of the template enough to write <strong>at most</strong> so many chars
+ *   or bytes as specified at the <tt>processThrottled(...)</tt> call. Output will be written to a {@link Writer}
+ *   in the form of chars, or to an {@link OutputStream} in the form of bytes.
  * </p>
  * <p>
- *   Once the desired amount of chars has been written to the {@link Writer}, the engine stops where it is with minimum
- *   or no pending output caching, and returns control of the {@link #process(int)} call, so that the client can
+ *   Once the desired amount of output has been written, the engine stops where it is with minimum
+ *   or no pending output caching, and returns control to the caller, so that the client can
  *   process output and prepare for a subsequent call. Note that this whole process is
  *   <strong>single-threaded</strong>.
  * </p>
@@ -48,10 +48,6 @@ import org.thymeleaf.context.IContext;
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
- *
- * @see ITemplateEngine#processThrottled(String, IContext, Writer)
- * @see ITemplateEngine#processThrottled(String, Set, IContext, Writer)
- * @see ITemplateEngine#processThrottled(TemplateSpec, IContext, Writer)
  *
  * @since 3.0.0
  *
@@ -71,18 +67,41 @@ public interface IThrottledTemplateProcessor {
      * <p>
      *   Process the whole template (all parts remaining), with no limit in the amount of chars written to output.
      * </p>
+     * @param writer the writer output should be written to.
      */
-    public void processAll();
+    public void processAll(final Writer writer);
 
     /**
      * <p>
-     *   Process the template until the specified amount of chars has been written to output, then return control.
+     *   Process the whole template (all parts remaining), with no limit in the amount of bytes written to output.
+     * </p>
+     * @param outputStream the output stream output should be written to.
+     * @param charset the charset to be used for encoding the written output into bytes.
+     */
+    public void processAll(final OutputStream outputStream, final Charset charset);
+
+    /**
+     * <p>
+     *   Process the template until at most the specified amount of chars has been written to output, then return control.
      * </p>
      *
-     * @param outputLimitInChars the amount of chars that the engine is allowed to output. A number &lt; 0 or
+     * @param maxOutputInChars the maximum amount of chars that the engine is allowed to output. A number &lt; 0 or
      *                           {@link Integer#MAX_VALUE} will mean "no limit".
+     * @param writer the writer output should be written to.
      */
-    public void process(final int outputLimitInChars);
+    public void process(final int maxOutputInChars, final Writer writer);
+
+    /**
+     * <p>
+     *   Process the template until at most the specified amount of bytes has been written to output, then return control.
+     * </p>
+     *
+     * @param maxOutputInBytes the maximum amount of bytes that the engine is allowed to output. A number &lt; 0 or
+     *                           {@link Integer#MAX_VALUE} will mean "no limit".
+     * @param outputStream the output stream output should be written to.
+     * @param charset the charset to be used for encoding the written output into bytes.
+     */
+    public void process(final int maxOutputInBytes, final OutputStream outputStream, final Charset charset);
 
 
 }
