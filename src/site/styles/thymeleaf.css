@@ -54,11 +54,25 @@ a:hover,
 a:focus {
 	border-bottom-style: solid;
 }
+
 a.anchor {
 	border-bottom: none;
+	color: currentColor;
 	display: block;
 	position: relative;
-	top: -4em;
+	top: -5rem;
+	visibility: hidden;
+}
+a.anchor::before {
+	content: "#";
+	cursor: pointer;
+	padding: 0 0.5em;
+	position: absolute;
+	left: -1.25em;
+	top: 5rem;
+}
+a.anchor::before:hover {
+	visibility: visible;
 }
 
 blockquote {
@@ -89,6 +103,10 @@ figcaption {
 	text-align: center;
 }
 
+header {
+	position: relative;
+}
+
 h1, h2, h3, h4, h5, h6 {
 	font-style: italic;
 	font-weight: normal;
@@ -98,9 +116,20 @@ h1, h2, h3, h4, h5, h6 {
 	padding-bottom: 0.5em;
 }
 
+h1:hover .anchor,
+h2:hover .anchor,
+h3:hover .anchor {
+	visibility: visible;
+}
+
+h1 {
+	font-size: 2em;
+}
+
 h2 {
 	background-color: #005f0f;
 	color: white;
+	font-size: 1.5em;
 	margin-top: 1.5em;
 	margin-left: -1em;
 	padding-left: 1em;
@@ -109,6 +138,8 @@ h2 {
 
 h3 {
 	border-bottom: 1px solid #005f0f;
+	font-size: 1.25em;
+	font-weight: bold;
 }
 
 h5, h6 {
@@ -569,6 +600,10 @@ th, td {
 
 #footer-issue-tracking {
 	margin-top: 1em;
+}
+
+#thymeleaf-faq h3 {
+	font-weight: normal;
 }
 
 
