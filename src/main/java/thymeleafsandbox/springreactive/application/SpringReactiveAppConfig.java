@@ -21,7 +21,6 @@ package thymeleafsandbox.springreactive.application;
 
 
 import java.io.IOException;
-import java.net.URL;
 
 import javax.sql.DataSource;
 
