@@ -101,11 +101,7 @@ final class ThrottledTemplateWriterWriterAdapter
             this.limit = -1;
         } else {
             this.unlimited = false;
-            if (this.limit < 0) {
-                this.limit = limit;
-            } else {
-                this.limit += limit;
-            }
+            this.limit = limit;
         }
 
         this.flowController.stopProcessing = (this.limit == 0);
