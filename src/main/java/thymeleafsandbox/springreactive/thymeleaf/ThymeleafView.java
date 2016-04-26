@@ -23,14 +23,19 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferAllocator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.view.AbstractView;
@@ -40,13 +45,17 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.IThrottledTemplateProcessor;
 import org.thymeleaf.context.ExpressionContext;
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.engine.DataDrivenTemplateIterator;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring4.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.util.StringUtils;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 
 /**
@@ -57,6 +66,12 @@ import reactor.core.publisher.Flux;
  *
  */
 public class ThymeleafView extends AbstractView implements BeanNameAware {
+
+
+    protected static final Logger logger = LoggerFactory.getLogger(ThymeleafView.class);
+
+    public static final int DEFAULT_RESPONSE_CHUNK_SIZE = Integer.MAX_VALUE;
+    public static final int DEFAULT_DATA_DRIVEN_BUFFER_SIZE = 100;
 
     /*
      * Name of the variable containing the map of path variables to be applied.
@@ -83,6 +98,9 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
     private Locale locale = null;
     private Map<String, Object> staticVariables = null;
 
+    private String dataDrivenVariableName = null;
+    private Integer dataDrivenBufferSize = null;
+
     private Set<String> markupSelectors = null;
 
 
@@ -92,7 +110,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
     //
     // The value established here is nullable (and null by default) because it will work as an override of the
     // value established at the ThymeleafViewResolver for the same purpose.
-    private Integer responseChunkSize = null;
+    private Integer responseMaxChunkSize = null;
 
 
 
@@ -154,6 +172,37 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
 
 
+    public String getDataDrivenVariableName() {
+        return dataDrivenVariableName;
+    }
+
+
+    public void setDataDrivenVariableName(final String dataDrivenVariableName) {
+        this.dataDrivenVariableName = dataDrivenVariableName;
+    }
+
+
+
+
+    // Default is DEFAULT_DATA_DRIVEN_BUFFER_SIZE
+    public int getDataDrivenBufferSize() {
+        return this.dataDrivenBufferSize == null? DEFAULT_DATA_DRIVEN_BUFFER_SIZE : this.dataDrivenBufferSize.intValue();
+    }
+
+
+    // We need this one at the ViewResolver to determine if a value has been set at all
+    Integer getNullableDataDrivenBufferSize() {
+        return this.dataDrivenBufferSize;
+    }
+
+
+    public void setDataDrivenBufferSize(final int dataDrivenBufferSize) {
+        this.dataDrivenBufferSize = Integer.valueOf(dataDrivenBufferSize);
+    }
+
+
+
+
     public String getBeanName() {
         return this.beanName;
     }
@@ -192,13 +241,19 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
 
     // Default is Integer.MAX_VALUE, which means we will not be throttling at all
-    public void setResponseChunkSize(final int responseChunkSize) {
-        this.responseChunkSize = Integer.valueOf(responseChunkSize);
+    public int getResponseMaxChunkSize() {
+        return this.responseMaxChunkSize == null? DEFAULT_RESPONSE_CHUNK_SIZE : this.responseMaxChunkSize.intValue();
     }
 
 
-    public int getResponseChunkSize() {
-        return this.responseChunkSize == null? Integer.MAX_VALUE : this.responseChunkSize.intValue();
+    // We need this one at the ViewResolver to determine if a value has been set at all
+    Integer getNullableResponseMaxChunkSize() {
+        return this.responseMaxChunkSize;
+    }
+
+
+    public void setResponseMaxChunkSize(final int responseMaxChunkSize) {
+        this.responseMaxChunkSize = Integer.valueOf(responseMaxChunkSize);
     }
 
 
@@ -355,7 +410,9 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         final MediaType templateContentType = getContentType();
         final Locale templateLocale = getLocale();
         final String templateCharacterEncoding = getCharacterEncoding();
-        final int responseChunkSize = getResponseChunkSize();
+        final int templateResponseMaxChunkSize = getResponseMaxChunkSize();
+        final String templateDataDrivenVariableName = getDataDrivenVariableName();
+        final int templateDataDrivenBufferSize = getDataDrivenBufferSize();
 
 
         final Set<String> processMarkupSelectors;
@@ -401,46 +458,153 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         }
         responseHeaders.setContentType(MediaType.valueOf(responseContentType));
 
-
         final Charset charset = responseCharset;
+
+
+        if (!StringUtils.isEmptyOrWhitespace(templateDataDrivenVariableName)) {
+            final Object dataDrivenVariableValue = context.getVariable(templateDataDrivenVariableName);
+            if (dataDrivenVariableValue != null && dataDrivenVariableValue instanceof Publisher<?>) {
+
+                final DataDrivenTemplateIterator throttledIterator = new DataDrivenTemplateIterator();
+                context.setVariable(templateDataDrivenVariableName, throttledIterator);
+
+                final Publisher<Object> contextBoundPublisher = (Publisher<Object>) dataDrivenVariableValue;
+
+                return createDataDrivenFlow(
+                        templateName, viewTemplateEngine, processMarkupSelectors, context,
+                        contextBoundPublisher, templateDataDrivenBufferSize, throttledIterator,
+                        templateResponseMaxChunkSize, getBufferAllocator(), charset);
+
+            }
+        }
+
+
+        return createOutputDrivenFlow(templateName, viewTemplateEngine, processMarkupSelectors, context, responseMaxChunkSize, getBufferAllocator(), charset);
+
+    }
+
+
+
+
+    static IThrottledTemplateProcessor initializeThrottledProcessor(
+            final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context) {
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Starting preparation of Thymeleaf template [" + templateName + "].");
+        }
+
+        final IThrottledTemplateProcessor throttledProcessor =
+                templateEngine.processThrottled(templateName, markupSelectors, context);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Finished preparation of Thymeleaf template [" + templateName + "].");
+        }
+
+        return throttledProcessor;
+
+    }
+
+
+
+
+    static Flux<DataBuffer> createOutputDrivenFlow(
+            final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
+            final int responseMaxChunkSize, final DataBufferAllocator bufferAllocator, final Charset charset) {
 
         return Flux.create(
 
                 subscriber -> {
-                    final IThrottledTemplateProcessor throttledProcessor = (IThrottledTemplateProcessor) subscriber.context();
-                    final DataBuffer buffer = getBufferAllocator().allocateBuffer();
-                    throttledProcessor.process(responseChunkSize, buffer.asOutputStream(), charset);
+                    final IThrottledTemplateProcessor throttledProcessor = subscriber.context();
+                    final DataBuffer buffer = bufferAllocator.allocateBuffer(responseMaxChunkSize);
+                    throttledProcessor.process(responseMaxChunkSize, buffer.asOutputStream(), charset);
                     subscriber.onNext(buffer);
                     if (throttledProcessor.isFinished()) {
                         subscriber.onComplete();
                     }
                 },
 
-                subscriber -> {
+                subscriber -> initializeThrottledProcessor(templateName, templateEngine, markupSelectors, context));
 
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Starting preparation of Thymeleaf template [" + templateName + "].");
+    }
+
+
+
+
+    static Flux<DataBuffer> createDataDrivenFlow(
+            final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
+            final Publisher<Object> dataDriverPublisher, final int dataDriverBufferSize, final DataDrivenTemplateIterator dataDrivenIterator,
+            final int responseMaxChunkSize, final DataBufferAllocator bufferAllocator, final Charset charset) {
+
+
+        final Flux<List<Object>> dataDriverBufferedFlow = Flux.from(dataDriverPublisher).buffer(dataDriverBufferSize);
+
+        final Flux<DataDrivenValuesWithContext> dataDriverWithContextFlow =
+                Flux.using(
+                        () -> initializeThrottledProcessor(templateName, templateEngine, markupSelectors, context),
+                        throttledProcessor ->
+                                Flux.concat(
+                                        dataDriverBufferedFlow.map(values -> new DataDrivenValuesWithContext(throttledProcessor, values)),
+                                        Mono.just(new DataDrivenValuesWithContext(throttledProcessor, null)) // Will process the part of the template after iteration
+                                ),
+                        throttledProcessor -> { /* no need to perform any cleanup operations */ });
+
+        return dataDriverWithContextFlow.flatMap(
+                valuesWithContext -> {
+
+                    final IThrottledTemplateProcessor throttledProcessor = valuesWithContext.getThrottledProcessor();
+                    final List<Object> values = valuesWithContext.getValues();
+                    if (values != null) {
+                        dataDrivenIterator.feedBuffer(values);
+                    } else {
+                        dataDrivenIterator.feedingComplete();
                     }
 
-                    final IThrottledTemplateProcessor throttledProcessor;
-                    try {
-                        throttledProcessor = viewTemplateEngine.processThrottled(templateName, processMarkupSelectors, context);
-                    } catch (final Exception e) {
-                        final String message = "Could not prepare Thymeleaf template [" + templateName + "]";
-                        return Flux.error(new IllegalStateException(message, e));
-                    } catch (final Throwable e) {
-                        return Flux.error(e);
-                    }
-
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Finished preparation of Thymeleaf template [" + templateName + "].");
-                    }
-
-                    return throttledProcessor;
+                    return Flux.create(
+                                subscriber -> {
+                                    final DataBuffer buffer = bufferAllocator.allocateBuffer(responseMaxChunkSize);
+                                    throttledProcessor.process(responseMaxChunkSize, buffer.asOutputStream(), charset);
+                                    subscriber.onNext(buffer);
+                                    if (values != null) {
+                                        if (!dataDrivenIterator.continueBufferExecution()) {
+                                            subscriber.onComplete();
+                                        }
+                                    } else {
+                                        if (throttledProcessor.isFinished()) {
+                                            subscriber.onComplete();
+                                        }
+                                    }
+                                });
 
                 });
 
     }
+
+
+
+
+
+    static final class DataDrivenValuesWithContext {
+
+        private final IThrottledTemplateProcessor throttledProcessor;
+        private final List<Object> values;
+
+        public DataDrivenValuesWithContext(
+                final IThrottledTemplateProcessor throttledProcessor, final List<Object> values) {
+            super();
+            this.throttledProcessor = throttledProcessor;
+            this.values = values;
+        }
+
+        public IThrottledTemplateProcessor getThrottledProcessor() {
+            return this.throttledProcessor;
+        }
+
+        public List<Object> getValues() {
+            return this.values;
+        }
+
+    }
+
 
 
 }

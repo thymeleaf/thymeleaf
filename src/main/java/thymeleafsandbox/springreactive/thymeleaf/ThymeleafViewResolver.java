@@ -62,6 +62,8 @@ public class ThymeleafViewResolver extends ViewResolverSupport {
     private String[] excludedViewNames = null;
     private int order = Integer.MAX_VALUE;
 
+    private String dataDrivenVariableName = null;
+    private int dataDrivenBufferSize = ThymeleafView.DEFAULT_DATA_DRIVEN_BUFFER_SIZE;
 
     private final Map<String, Object> staticVariables = new LinkedHashMap<String, Object>(10);
     private String contentType = null;
@@ -73,7 +75,7 @@ public class ThymeleafViewResolver extends ViewResolverSupport {
     //
     // The value established here will be a default value, which can be overridden by specific views at the
     // ThymeleafView class
-    private int responseChunkSize = Integer.MAX_VALUE;
+    private int responseMaxChunkSize = ThymeleafView.DEFAULT_RESPONSE_CHUNK_SIZE;
     
     private ITemplateEngine templateEngine;
 
@@ -171,8 +173,33 @@ public class ThymeleafViewResolver extends ViewResolverSupport {
     public String getCharacterEncoding() {
         return this.characterEncoding;
     }
-    
-    
+
+
+
+
+    public String getDataDrivenVariableName() {
+        return dataDrivenVariableName;
+    }
+
+
+    public void setDataDrivenVariableName(final String dataDrivenVariableName) {
+        this.dataDrivenVariableName = dataDrivenVariableName;
+    }
+
+
+
+
+    // Default is DEFAULT_DATA_DRIVEN_BUFFER_SIZE
+    public int getDataDrivenBufferSize() {
+        return this.dataDrivenBufferSize;
+    }
+
+
+    public void setDataDrivenBufferSize(final int dataDrivenBufferSize) {
+        this.dataDrivenBufferSize = dataDrivenBufferSize;
+    }
+
+
 
 
     public void setRedirectContextRelative(final boolean redirectContextRelative) {
@@ -212,13 +239,13 @@ public class ThymeleafViewResolver extends ViewResolverSupport {
 
 
     // Default is Integer.MAX_VALUE, which means we will not be throttling at all
-    public void setResponseChunkSize(final int responseChunkSize) {
-        this.responseChunkSize = responseChunkSize;
+    public void setResponseMaxChunkSize(final int responseMaxChunkSize) {
+        this.responseMaxChunkSize = responseMaxChunkSize;
     }
 
 
-    public int getResponseChunkSize() {
-        return this.responseChunkSize;
+    public int getResponseMaxChunkSize() {
+        return this.responseMaxChunkSize;
     }
 
 
@@ -351,8 +378,14 @@ public class ThymeleafViewResolver extends ViewResolverSupport {
         if (view.getCharacterEncoding() == null && getCharacterEncoding() != null) {
             view.setCharacterEncoding(getCharacterEncoding());
         }
-        if (view.getResponseChunkSize() == Integer.MAX_VALUE && getResponseChunkSize() != Integer.MAX_VALUE) {
-            view.setResponseChunkSize(getResponseChunkSize());
+        if (view.getNullableResponseMaxChunkSize() == null && getResponseMaxChunkSize() != ThymeleafView.DEFAULT_RESPONSE_CHUNK_SIZE) {
+            view.setResponseMaxChunkSize(getResponseMaxChunkSize());
+        }
+        if (view.getDataDrivenVariableName() == null && getDataDrivenVariableName() != null) {
+            view.setDataDrivenVariableName(getDataDrivenVariableName());
+        }
+        if (view.getNullableDataDrivenBufferSize() == null && getDataDrivenBufferSize() != ThymeleafView.DEFAULT_DATA_DRIVEN_BUFFER_SIZE) {
+            view.setDataDrivenBufferSize(getDataDrivenBufferSize());
         }
 
         return Mono.just(view);
