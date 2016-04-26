@@ -45,7 +45,7 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
 
     private static final String DEFAULT_STATUS_VAR_SUFFIX = "Stat";
 
-    private enum IterationType { ZERO, ONE, MULTIPLE }
+    enum IterationType { ZERO, ONE, MULTIPLE }
 
 
     private final IEngineContext context;
@@ -57,12 +57,17 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
     private final Iterator<?> iterator;
     private final Text precedingWhitespace;
 
+    private IterationType iterationType;
     private IterationModels iterationModels;
+
+    private ThrottledIteration throttledIteration;
 
     private int iter;
     private int iterOffset;
     private boolean iterHasNext;
     private boolean iterPending;
+    private boolean iterTargetComputed;
+
 
 
     IteratedGatheringModelProcessable(
@@ -94,9 +99,14 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
 
         this.precedingWhitespace = precedingWhitespace;
 
+        this.throttledIteration = new ThrottledIteration(flowController, this.iterator);
+
+        this.iterationType = null;
+
         this.iter = 0;
         this.iterOffset = 0;
         this.iterPending = false;
+        this.iterTargetComputed = false;
 
     }
 
@@ -118,6 +128,7 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
         /*
          * First, check the stopProcess flag
          */
+        this.throttledIteration.checkStatus();
         if (flowController != null && flowController.stopProcessing) {
             return false;
         }
@@ -130,35 +141,56 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
          */
         if (this.iter == 0) {
 
-            if (this.iterOffset == 0) {
+            if (this.iterationType == null) {
 
                 /*
                  * Compute the iteration type, by trying to obtain the first iterated object
                  */
-                final IterationType iterationType;
+
+                this.iterationType = this.throttledIteration.computeIterationType();
+                if (flowController != null && flowController.stopProcessing) {
+                    // If stopped during hasNext (because of a throttled iterator), we will need to ask again afterwards
+                    return false;
+                }
+
+                /*
+                 * When we arrive this point, we know for sure that either the iterator is not throttled, or
+                 * it is but we have already been able to compute the iterationType.
+                 */
+
                 this.iterHasNext = this.iterator.hasNext();
-                if (!this.iterHasNext) {
-                    iterationType = IterationType.ZERO;
+                if (this.iterationType != null) {
+                    // Throttled iterator, just obtain the first element and move the "hasNext" cursor to pos 2
+                    if (this.iterHasNext) {
+                        this.iterStatusVariable.current = this.iterator.next();
+                        this.iterHasNext = this.iterator.hasNext();
+                    }
                 } else {
-                    this.iterStatusVariable.current = this.iterator.next();
-                    this.iterHasNext = this.iterator.hasNext();
+                    // Unthrottled iterator. Advance cursors like in throttled one, but computing iterationType
                     if (!this.iterHasNext) {
-                        iterationType = IterationType.ONE;
+                        this.iterationType = IterationType.ZERO;
                     } else {
-                        iterationType = IterationType.MULTIPLE;
+                        this.iterStatusVariable.current = this.iterator.next();
+                        this.iterHasNext = this.iterator.hasNext();
+                        if (!this.iterHasNext) {
+                            this.iterationType = IterationType.ONE;
+                        } else {
+                            this.iterationType = IterationType.MULTIPLE;
+                        }
                     }
                 }
+
 
                 /*
                  * Once the type of iteration we have has been determined, compute the models that will be used
                  * for the first, the middle and the last iterations
                  */
-                this.iterationModels = computeIterationModels(iterationType);
+                this.iterationModels = computeIterationModels(this.iterationType);
 
             }
 
             /*
-             * Perform the first iteration, if there is at least one elment (we already obtained the object)
+             * Perform the first iteration, if there is at least one element (we already obtained the object)
              */
             if (this.iterationModels != null) {
 
@@ -192,15 +224,38 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
              */
             if (this.iterOffset == 0) {
 
-                /*
-                 * Increase the iteration counter
-                 */
-                this.iterStatusVariable.index++;
+                if (!this.iterTargetComputed) {
+
+                    /*
+                     * Increase the iteration counter
+                     */
+                    this.iterStatusVariable.index++;
+
+                    /*
+                     * Obtain the new iterated objects
+                     */
+                    this.iterStatusVariable.current = this.iterator.next();
+
+                    /*
+                     * Signal the iteration target as having been computed already
+                     */
+                    this.iterTargetComputed = true;
+
+                }
 
                 /*
-                 * Obtain the new iterated objects
+                 * Check whether the iterator will allow us to compute hasNext or not
+                 *
+                 * Note that, in effect, this means that we will not be processing the last buffered element in the
+                 * iterator until the next buffer load comes, and that we will always leave the last iterated element
+                 * for a last execution. And this is correct because if we weren't doing so we would have no way
+                 * to determine whether a buffered element is actually the last element to be iterated or not (and
+                 * this has an influence on the model to be used, because it affects whitespace handling).
                  */
-                this.iterStatusVariable.current = this.iterator.next();
+                this.throttledIteration.checkStatus();
+                if (flowController != null && flowController.stopProcessing) {
+                    return false;
+                }
 
                 /*
                  * Recompute hasNext
@@ -226,6 +281,7 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
 
             this.iter++;
             this.iterOffset = 0;
+            this.iterTargetComputed = false;
             this.iterPending = false;
 
         }
@@ -601,6 +657,42 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
 
 
 
+    private static final class ThrottledIteration {
+
+        private final TemplateFlowController flowController;
+        private final DataDrivenTemplateIterator throttledIterator;
+
+        ThrottledIteration(final TemplateFlowController flowController, final Iterator<?> iterator) {
+            super();
+            this.flowController = flowController;
+            if (iterator != null && iterator instanceof DataDrivenTemplateIterator) {
+                this.throttledIterator = (DataDrivenTemplateIterator) iterator;
+            } else {
+                this.throttledIterator = null;
+            }
+        }
+
+
+        IterationType computeIterationType() {
+            if (this.throttledIterator != null) {
+                final IterationType iterationType = this.throttledIterator.getIterationType();
+                if (iterationType == null) {
+                    this.flowController.stopProcessing = true;
+                }
+                return iterationType;
+            }
+            return null;
+        }
+
+        void checkStatus() {
+            if (this.throttledIterator != null) {
+                if (this.throttledIterator.isPaused()) {
+                    this.flowController.stopProcessing = true;
+                }
+            }
+        }
+
+    }
 
 
 
