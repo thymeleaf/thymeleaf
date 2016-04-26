@@ -14,6 +14,27 @@
 
     <span>Current time is [[${#dates.createNow()}]]</span>
 
+    <p>
+      Some URLs:
+    </p>
+
+    <ul>
+      <li>Thymeleaf:
+        <ul>
+          <li><a th:href="@{thymeleaf}">Index</a></li>
+          <li><a th:href="@{playlistentries.thymeleaf}">Playlist Entries</a></li>
+          <li><a th:href="@{datadriven.thymeleaf}">Playlist Entries (Data-Driven)</a></li>
+        </ul>
+      </li>
+      <li>FreeMarker:
+        <ul>
+          <li><a th:href="@{freemarker}">Index</a></li>
+          <li><a th:href="@{playlistentries.freemarker}">Playlist Entries</a></li>
+          <li><a th:href="@{datadriven.freemarker}">Playlist Entries (Non Data-Driven but equivalent in size)</a></li>
+        </ul>
+      </li>
+    </ul>
+
   </body>
   
 </html>

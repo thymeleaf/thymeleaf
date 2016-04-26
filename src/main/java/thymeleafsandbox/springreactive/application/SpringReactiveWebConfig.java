@@ -171,7 +171,7 @@ public class SpringReactiveWebConfig implements ApplicationContextAware {
         viewResolver.setOrder(1);
         viewResolver.setViewNames(new String[] {"thymeleaf/*"});
         viewResolver.setResponseMaxChunkSize(16384);
-        viewResolver.setDataDrivenVariableName("dataDriven");
+        viewResolver.setDataDrivenVariableName("dataSource");
         viewResolver.setDataDrivenBufferSize(500);
         return viewResolver;
     }

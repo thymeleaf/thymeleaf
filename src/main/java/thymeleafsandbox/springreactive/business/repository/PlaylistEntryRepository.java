@@ -21,9 +21,11 @@ package thymeleafsandbox.springreactive.business.repository;
 
 import java.util.List;
 
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import thymeleafsandbox.springreactive.business.PlaylistEntry;
 
 
@@ -72,5 +74,21 @@ public class PlaylistEntryRepository {
 
     }
 
+
+    public Publisher<PlaylistEntry> findLargeCollectionPlaylistEntries() {
+
+        return Flux.fromIterable(
+                this.jdbcTemplate.query(
+                    QUERY_FIND_ALL_PLAYLIST_ENTRIES,
+                    (resultSet, i) -> {
+                        return new PlaylistEntry(
+                                Integer.valueOf(resultSet.getInt("playlistID")),
+                                resultSet.getString("playlistName"),
+                                resultSet.getString("trackName"),
+                                resultSet.getString("artistName"),
+                                resultSet.getString("albumTitle"));
+                    })).repeat(10);
+
+    }
 
 }
