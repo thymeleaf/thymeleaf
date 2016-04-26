@@ -53,6 +53,7 @@ final class ThrottledTemplateWriterWriterAdapter
 
     private boolean unlimited;
     private int limit;
+    private int writtenCount;
 
 
     ThrottledTemplateWriterWriterAdapter(final String templateName, final TemplateFlowController flowController) {
@@ -65,11 +66,13 @@ final class ThrottledTemplateWriterWriterAdapter
         this.overflowGrowCount = 0;
         this.unlimited = false;
         this.limit = 0;
+        this.writtenCount = 0;
         this.flowController.stopProcessing = true;
     }
 
     void setWriter(final Writer writer) {
         this.writer = writer;
+        this.writtenCount = 0;
     }
 
 
@@ -79,6 +82,11 @@ final class ThrottledTemplateWriterWriterAdapter
 
     public boolean isStopped() {
         return this.limit == 0;
+    }
+
+
+    public int getWrittenCount() {
+        return this.writtenCount;
     }
 
 
@@ -117,6 +125,7 @@ final class ThrottledTemplateWriterWriterAdapter
                 if (!this.unlimited) {
                     this.limit -= this.overflowSize;
                 }
+                this.writtenCount += this.overflowSize;
                 this.overflowSize = 0;
                 return;
             }
@@ -126,6 +135,7 @@ final class ThrottledTemplateWriterWriterAdapter
                 System.arraycopy(this.overflow, this.limit, this.overflow, 0, this.overflowSize - this.limit);
             }
             this.overflowSize -= this.limit;
+            this.writtenCount += this.limit;
             this.limit = 0;
             this.flowController.stopProcessing = true;
 
@@ -148,6 +158,7 @@ final class ThrottledTemplateWriterWriterAdapter
         if (!this.unlimited) {
             this.limit--;
         }
+        this.writtenCount++;
         if (this.limit == 0) {
             this.flowController.stopProcessing = true;
         }
@@ -166,12 +177,14 @@ final class ThrottledTemplateWriterWriterAdapter
             if (!this.unlimited) {
                 this.limit -= len;
             }
+            this.writtenCount += len;
             return;
         }
         this.writer.write(str, 0, this.limit);
         if (this.limit < len) {
             overflow(str, this.limit, (len - this.limit));
         }
+        this.writtenCount += this.limit;
         this.limit = 0;
         this.flowController.stopProcessing = true;
     }
@@ -188,12 +201,14 @@ final class ThrottledTemplateWriterWriterAdapter
             if (!this.unlimited) {
                 this.limit -= len;
             }
+            this.writtenCount += len;
             return;
         }
         this.writer.write(str, off, this.limit);
         if (this.limit < len) {
             overflow(str, off + this.limit, (len - this.limit));
         }
+        this.writtenCount += this.limit;
         this.limit = 0;
         this.flowController.stopProcessing = true;
     }
@@ -211,12 +226,14 @@ final class ThrottledTemplateWriterWriterAdapter
             if (!this.unlimited) {
                 this.limit -= len;
             }
+            this.writtenCount += len;
             return;
         }
         this.writer.write(cbuf, 0, this.limit);
         if (this.limit < len) {
             overflow(cbuf, this.limit, (len - this.limit));
         }
+        this.writtenCount += this.limit;
         this.limit = 0;
         this.flowController.stopProcessing = true;
     }
@@ -233,12 +250,14 @@ final class ThrottledTemplateWriterWriterAdapter
             if (!this.unlimited) {
                 this.limit -= len;
             }
+            this.writtenCount += len;
             return;
         }
         this.writer.write(cbuf, off, this.limit);
         if (this.limit < len) {
             overflow(cbuf, off + this.limit, (len - this.limit));
         }
+        this.writtenCount += this.limit;
         this.limit = 0;
         this.flowController.stopProcessing = true;
     }

@@ -289,19 +289,19 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
             final long endNanos = System.nanoTime();
 
             if (logger.isTraceEnabled()) {
-                logger.trace("[THYMELEAF][{}] FINISHED PROCESS(LIMIT:{} {}) OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}",
-                        new Object[]{TemplateEngine.threadIndex(), Integer.valueOf(maxOutput), outputType, this.templateSpec, this.context.getLocale()});
+                logger.trace("[THYMELEAF][{}] FINISHED PROCESS(LIMIT:{} {}, OUTPUT: {} {}) OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}",
+                        new Object[]{TemplateEngine.threadIndex(), Integer.valueOf(maxOutput), outputType, Integer.valueOf(this.writer.getWrittenCount()), outputType, this.templateSpec, this.context.getLocale()});
             }
 
             if (timerLogger.isTraceEnabled()) {
                 final BigDecimal elapsed = BigDecimal.valueOf(endNanos - startNanos);
                 final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(NANOS_IN_SECOND), RoundingMode.HALF_UP);
                 timerLogger.trace(
-                        "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH LOCALE {} PROCESSED (THROTTLED, LIMIT:{} {}) IN {} nanoseconds (approx. {}ms)",
+                        "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH LOCALE {} PROCESSED (THROTTLED, LIMIT:{} {}, OUTPUT: {} {}) IN {} nanoseconds (approx. {}ms)",
                         new Object[]{
                                 TemplateEngine.threadIndex(),
                                 LoggingUtils.loggifyTemplateName(this.templateSpec.getTemplate()), this.context.getLocale(), elapsed, elapsedMs,
-                                this.templateSpec, this.context.getLocale(), Integer.valueOf(maxOutput), outputType, elapsed, elapsedMs});
+                                this.templateSpec, this.context.getLocale(), Integer.valueOf(maxOutput), outputType, Integer.valueOf(this.writer.getWrittenCount()), outputType, elapsed, elapsedMs});
             }
 
             /*

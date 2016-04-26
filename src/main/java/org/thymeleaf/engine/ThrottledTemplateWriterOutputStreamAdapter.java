@@ -57,6 +57,7 @@ final class ThrottledTemplateWriterOutputStreamAdapter
 
     private boolean unlimited;
     private int limit;
+    private int writtenCount;
 
 
     ThrottledTemplateWriterOutputStreamAdapter(
@@ -71,11 +72,13 @@ final class ThrottledTemplateWriterOutputStreamAdapter
         this.overflowGrowCount = 0;
         this.unlimited = false;
         this.limit = 0;
+        this.writtenCount = 0;
         this.flowController.stopProcessing = true;
     }
 
     void setOutputStream(final OutputStream os) {
         this.os = os;
+        this.writtenCount = 0;
     }
 
 
@@ -85,6 +88,11 @@ final class ThrottledTemplateWriterOutputStreamAdapter
 
     public boolean isStopped() {
         return this.limit == 0;
+    }
+
+
+    public int getWrittenCount() {
+        return this.writtenCount;
     }
 
 
@@ -123,6 +131,7 @@ final class ThrottledTemplateWriterOutputStreamAdapter
                 if (!this.unlimited) {
                     this.limit -= this.overflowSize;
                 }
+                this.writtenCount += this.overflowSize;
                 this.overflowSize = 0;
                 return;
             }
@@ -132,6 +141,7 @@ final class ThrottledTemplateWriterOutputStreamAdapter
                 System.arraycopy(this.overflow, this.limit, this.overflow, 0, this.overflowSize - this.limit);
             }
             this.overflowSize -= this.limit;
+            this.writtenCount += this.limit;
             this.limit = 0;
             this.flowController.stopProcessing = true;
 
@@ -155,6 +165,7 @@ final class ThrottledTemplateWriterOutputStreamAdapter
         if (!this.unlimited) {
             this.limit--;
         }
+        this.writtenCount++;
         if (this.limit == 0) {
             this.flowController.stopProcessing = true;
         }
@@ -172,12 +183,14 @@ final class ThrottledTemplateWriterOutputStreamAdapter
             if (!this.unlimited) {
                 this.limit -= len;
             }
+            this.writtenCount += len;
             return;
         }
         this.os.write(bytes, off, this.limit);
         if (this.limit < len) {
             overflow(bytes, off + this.limit, (len - this.limit));
         }
+        this.writtenCount += this.limit;
         this.limit = 0;
         this.flowController.stopProcessing = true;
     }
@@ -195,12 +208,14 @@ final class ThrottledTemplateWriterOutputStreamAdapter
             if (!this.unlimited) {
                 this.limit -= len;
             }
+            this.writtenCount += len;
             return;
         }
         this.os.write(bytes, 0, this.limit);
         if (this.limit < len) {
             overflow(bytes, this.limit, (len - this.limit));
         }
+        this.writtenCount += this.limit;
         this.limit = 0;
         this.flowController.stopProcessing = true;
     }

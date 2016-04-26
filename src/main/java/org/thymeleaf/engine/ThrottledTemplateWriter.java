@@ -141,6 +141,11 @@ final class ThrottledTemplateWriter extends Writer {
     }
 
 
+    int getWrittenCount() {
+        return this.adapter.getWrittenCount();
+    }
+
+
     int getMaxOverflowSize() {
         return this.adapter.getMaxOverflowSize();
     }
@@ -210,6 +215,7 @@ final class ThrottledTemplateWriter extends Writer {
 
         boolean isOverflown();
         boolean isStopped();
+        int getWrittenCount();
         int getMaxOverflowSize();
         int getOverflowGrowCount();
         void allow(final int limit);
