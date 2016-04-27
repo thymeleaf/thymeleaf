@@ -511,20 +511,20 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
          * - There are three possible processing mode, for each of which a Flux<DataBuffer> will be created in a
          *   different way:
          *
-         *     1. Output buffers not limited (templateResponseMaxBufferSizeBytes == Integer.MAX_VALUE) and
+         *     1. NORMAL: Output buffers not limited (templateResponseMaxBufferSizeBytes == Integer.MAX_VALUE) and
          *        no data-driven execution (no context variable of type Publisher<X> driving the template engine
          *        execution): In this case Thymeleaf will be executed unthrottled, in normal mode, writing output
          *        to a single DataBuffer instanced before execution, and which will be passed to the output channels
          *        in a single onNext(buffer) call (immediately followed by onComplete()).
          *
-         *     2. Output buffers limited in size (templateResponseMaxBufferSizeBytes) but no data-driven execution
-         *        (no Publisher<X> driving engine execution). All model attributes are expected to be fully resolved
-         *        before engine execution (except those implementing Thymeleaf's ILazyContextVariable interface) and
-         *        the Thymeleaf engine will execute in throttled mode, performing a full-stop each time the buffer
-         *        reaches the specified size, sending it to the output channels with onNext(buffer) and then waiting
-         *        until these output channels make the engine resume its work with a new request(n) call.
+         *     2. BUFFERED: Output buffers limited in size (templateResponseMaxBufferSizeBytes) but no data-driven
+         *        execution (no Publisher<X> driving engine execution). All model attributes are expected to be fully
+         *        resolved before engine execution (except those implementing Thymeleaf's ILazyContextVariable
+         *        interface) and the Thymeleaf engine will execute in throttled mode, performing a full-stop each time
+         *        the buffer reaches the specified size, sending it to the output channels with onNext(buffer) and
+         *        then waiting until these output channels make the engine resume its work with a new request(n) call.
          *
-         *     3. Data-driven execution: one of the model attributes is a Publisher<X> which name is established at
+         *     3. DATA-DRIVEN: one of the model attributes is a Publisher<X> which name is established at
          *        the "dataDrivenVariableName" configuration parameter at the View or ViewResolver. In this case,
          *        the Thymeleaf engine will execute as a response to onNext(List<X>) events triggered by this
          *        Publisher. A related parameter, "dataDrivenChunkSizeElements" will define the amount of elements
@@ -559,7 +559,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
 
         if (templateResponseMaxBufferSizeBytes == Integer.MAX_VALUE) {
-            return createUnbufferedOutputDrivenFlow(templateName, viewTemplateEngine, processMarkupSelectors, context, getBufferAllocator(), charset);
+            return createNormalOutputDrivenFlow(templateName, viewTemplateEngine, processMarkupSelectors, context, getBufferAllocator(), charset);
         }
         return createBufferedOutputDrivenFlow(templateName, viewTemplateEngine, processMarkupSelectors, context, templateResponseMaxBufferSizeBytes, getBufferAllocator(), charset);
 
@@ -623,7 +623,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
      * Creates a Flux<DataBuffer> for processing templates non-data-driven, and also without a limit in the size of
      * the output buffers.
      */
-    static Flux<DataBuffer> createUnbufferedOutputDrivenFlow(
+    static Flux<DataBuffer> createNormalOutputDrivenFlow(
             final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
             final DataBufferAllocator bufferAllocator, final Charset charset) {
 

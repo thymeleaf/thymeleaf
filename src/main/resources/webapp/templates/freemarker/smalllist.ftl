@@ -9,12 +9,11 @@
 
   <body>
 
-    <h1>Spring Reactive</h1>
-    <h2>Thymeleaf Sandbox application (THYMELEAF)</h2>
+  <h2>Small Listing (8,715 entries)</h2>
 
-    <h3>Playlist Entries (Data-driven)</h3>
+  <p>Using template engine: <strong>FreeMarker</strong></p>
 
-    <table>
+  <table>
       <thead>
         <tr>
           <th>Playlist ID</th>
@@ -25,13 +24,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr th:each="e : ${dataSource}">
-          <td th:text="${e.playlistId}">...</td>
-          <td th:text="${e.playlistName}">...</td>
-          <td th:text="${e.trackName}">...</td>
-          <td th:text="${e.artistName}">...</td>
-          <td th:text="${e.albumTitle}">...</td>
+        <#list entries as e>
+        <tr>
+          <td>${e.playlistId?html}</td>
+          <td>${e.playlistName?html}</td>
+          <td>${e.trackName?html}</td>
+          <td>${e.artistName?html}</td>
+          <td>${e.albumTitle?html}</td>
         </tr>
+        </#list>
       </tbody>
     </table>
 

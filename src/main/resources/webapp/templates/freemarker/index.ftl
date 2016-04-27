@@ -9,10 +9,10 @@
 
   <body>
 
-    <h1>Spring Reactive</h1>
-    <h2>Thymeleaf Sandbox application (FREEMARKER)</h2>
+    <h2>Spring Reactive - Thymeleaf Sandbox application</h2>
 
-    <span>Current time is ${.now}</span>
+    <p>Using template engine: <strong>FreeMarker</strong></p>
+    <p><span>Current time is ${.now}</span></p>
 
     <p>
         Some URLs:
@@ -22,15 +22,17 @@
         <li>Thymeleaf:
             <ul>
                 <li><a href="/thymeleaf">Index</a></li>
-                <li><a href="/playlistentries.thymeleaf">Playlist Entries</a></li>
-                <li><a href="/datadriven.thymeleaf">Playlist Entries (Data-Driven)</a></li>
+                <li><a href="/smalllist.thymeleaf">Small List</a></li>
+                <li><a href="/biglist-normal.thymeleaf">Big List in NORMAL mode</a></li>
+                <li><a href="/biglist-buffered.thymeleaf">Big List in BUFFERED mode</a></li>
+                <li><a href="/biglist-datadriven.thymeleaf">Big List in DATA-DRIVEN mode</a></li>
             </ul>
         </li>
         <li>FreeMarker:
             <ul>
                 <li><a href="/freemarker">Index</a></li>
-                <li><a href="/playlistentries.freemarker">Playlist Entries</a></li>
-                <li><a href="/datadriven.freemarker">Playlist Entries (Non Data-Driven but equivalent in size)</a></li>
+                <li><a href="/smalllist.freemarker">Small List</a></li>
+                <li><a href="/biglist.freemarker">Big List (in NORMAL mode &mdash; no other available)</a></li>
             </ul>
         </li>
     </ul>

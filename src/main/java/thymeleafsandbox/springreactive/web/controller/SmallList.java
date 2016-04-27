@@ -27,7 +27,7 @@ import thymeleafsandbox.springreactive.business.repository.PlaylistEntryReposito
 
 
 @Controller
-public class PlaylistEntries {
+public class SmallList {
 
 
     @Autowired
@@ -35,23 +35,23 @@ public class PlaylistEntries {
 
 
 
-    public PlaylistEntries() {
+    public SmallList() {
         super();
     }
 
 
 
-    @RequestMapping("/playlistentries.thymeleaf")
-    public String playlistEntryListThymeleaf(final Model model) {
+    @RequestMapping("/smalllist.thymeleaf")
+    public String smallListThymeleaf(final Model model) {
         model.addAttribute("entries", this.playlistEntryRepository.findAllPlaylistEntries());
-        return "thymeleaf/playlistentries";
+        return "thymeleaf/smalllist";
     }
 
 
-    @RequestMapping("/playlistentries.freemarker")
-    public String playlistEntryListFreeMarker(final Model model) {
+    @RequestMapping("/smalllist.freemarker")
+    public String smallListFreeMarker(final Model model) {
         model.addAttribute("entries", this.playlistEntryRepository.findAllPlaylistEntries());
-        return "freemarker/playlistentries";
+        return "freemarker/smalllist";
     }
 
 

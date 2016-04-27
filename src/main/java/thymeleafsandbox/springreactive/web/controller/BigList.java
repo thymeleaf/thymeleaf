@@ -32,7 +32,7 @@ import thymeleafsandbox.springreactive.business.repository.PlaylistEntryReposito
 
 
 @Controller
-public class DataDriven {
+public class BigList {
 
 
     @Autowired
@@ -40,69 +40,63 @@ public class DataDriven {
 
 
 
-    public DataDriven() {
+    public BigList() {
         super();
     }
 
 
-    @RequestMapping("/datadriven-flow-buffered.thymeleaf")
-    public String dataDrivenFlowBufferedThymeleaf(final Model model) {
-
-        final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
-
-        model.addAttribute("dataSource", playlistFlow);
-
-        return "thymeleaf/datadriven";
-
-    }
-
-    @RequestMapping("/datadriven-noflow-buffered.thymeleaf")
-    public String dataDrivenNoFlowBufferedThymeleaf(final Model model) {
-
-        final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
-        final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).toList().get();
-
-        model.addAttribute("dataSource", playlistEntries);
-
-        return "thymeleaf/datadriven";
-
-    }
 
 
-    // NOTE When a Publisher (a "flow") is used, there will always buffering, but without a size limit in bytes
-    @RequestMapping("/datadriven-flow-unbuffered.thymeleaf")
+    @RequestMapping("/biglist-datadriven.thymeleaf")
     public String dataDrivenFlowUnbufferedThymeleaf(final Model model) {
 
         final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
-
+        // No need to fully resolve the Publisher! We will just let it drive
         model.addAttribute("dataSource", playlistFlow);
 
-        return "thymeleaf/datadriven-unbuffered";
-
-    }
-
-    @RequestMapping("/datadriven-noflow-unbuffered.thymeleaf")
-    public String dataDrivenNoFlowUnbufferedThymeleaf(final Model model) {
-
-        final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
-        final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).toList().get();
-
-        model.addAttribute("dataSource", playlistEntries);
-
-        return "thymeleaf/datadriven-unbuffered";
+        return "thymeleaf/biglist-datadriven";
 
     }
 
 
-    @RequestMapping("/datadriven.freemarker")
-    public String playlistEntryListFreeMarker(final Model model) {
+    @RequestMapping("/biglist-buffered.thymeleaf")
+    public String bigListBufferedThymeleaf(final Model model) {
 
         final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
+        // We need to fully resolve the list before executing the template
         final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).toList().get();
 
         model.addAttribute("dataSource", playlistEntries);
 
-        return "freemarker/datadriven";
+        return "thymeleaf/biglist-buffered";
+
+    }
+
+
+    @RequestMapping("/biglist-normal.thymeleaf")
+    public String bigListNormalThymeleaf(final Model model) {
+
+        final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
+        // We need to fully resolve the list before executing the template
+        final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).toList().get();
+
+        model.addAttribute("dataSource", playlistEntries);
+
+        return "thymeleaf/biglist-normal";
+
+    }
+
+
+    @RequestMapping("/biglist.freemarker")
+    public String bigListFreeMarker(final Model model) {
+
+        final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
+        // We need to fully resolve the list before executing the template
+        final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).toList().get();
+
+        model.addAttribute("dataSource", playlistEntries);
+
+        return "freemarker/biglist";
 
     }
 

@@ -9,10 +9,10 @@
 
   <body>
 
-    <h1>Spring Reactive</h1>
-    <h2>Thymeleaf Sandbox application (FREEMARKER)</h2>
+    <h2>Big Listing (8,715 * 50 = 435,750 entries)</h2>
+    <h3>Mode: <strong>NORMAL</strong></h3>
 
-    <h3>Playlist Entries</h3>
+    <p>Using template engine: <strong>FreeMarker</strong></p>
 
     <table>
       <thead>
@@ -25,15 +25,14 @@
         </tr>
       </thead>
       <tbody>
-        <#list entries as e>
-        <tr>
-          <td>${e.playlistId}</td>
-          <td>${e.playlistName}</td>
-          <td>${e.trackName}</td>
-          <td>${e.artistName}</td>
-          <td>${e.albumTitle}</td>
+<#list dataSource as e>        <tr>
+          <td>${e.playlistId?html}</td>
+          <td>${e.playlistName?html}</td>
+          <td>${e.trackName?html}</td>
+          <td>${e.artistName?html}</td>
+          <td>${e.albumTitle?html}</td>
         </tr>
-        </#list>
+</#list>
       </tbody>
     </table>
 
