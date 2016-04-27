@@ -87,7 +87,7 @@ public class PlaylistEntryRepository {
                                 resultSet.getString("trackName"),
                                 resultSet.getString("artistName"),
                                 resultSet.getString("albumTitle"));
-                    })).repeat(10);
+                    })).repeat(50);
 
     }
 

@@ -25,15 +25,14 @@
         </tr>
       </thead>
       <tbody>
-        <#list dataSource as e>
-        <tr>
-          <td>${e.playlistId}</td>
-          <td>${e.playlistName}</td>
-          <td>${e.trackName}</td>
-          <td>${e.artistName}</td>
-          <td>${e.albumTitle}</td>
+<#list dataSource as e>        <tr>
+          <td>${e.playlistId?html}</td>
+          <td>${e.playlistName?html}</td>
+          <td>${e.trackName?html}</td>
+          <td>${e.artistName?html}</td>
+          <td>${e.albumTitle?html}</td>
         </tr>
-        </#list>
+</#list>
       </tbody>
     </table>
 

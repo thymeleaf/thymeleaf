@@ -45,14 +45,51 @@ public class DataDriven {
     }
 
 
-    @RequestMapping("/datadriven.thymeleaf")
-    public String dataDrivenThymeleaf(final Model model) {
+    @RequestMapping("/datadriven-flow-buffered.thymeleaf")
+    public String dataDrivenFlowBufferedThymeleaf(final Model model) {
 
         final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
 
         model.addAttribute("dataSource", playlistFlow);
 
         return "thymeleaf/datadriven";
+
+    }
+
+    @RequestMapping("/datadriven-noflow-buffered.thymeleaf")
+    public String dataDrivenNoFlowBufferedThymeleaf(final Model model) {
+
+        final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
+        final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).toList().get();
+
+        model.addAttribute("dataSource", playlistEntries);
+
+        return "thymeleaf/datadriven";
+
+    }
+
+
+    // NOTE When a Publisher (a "flow") is used, there will always buffering, but without a size limit in bytes
+    @RequestMapping("/datadriven-flow-unbuffered.thymeleaf")
+    public String dataDrivenFlowUnbufferedThymeleaf(final Model model) {
+
+        final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
+
+        model.addAttribute("dataSource", playlistFlow);
+
+        return "thymeleaf/datadriven-unbuffered";
+
+    }
+
+    @RequestMapping("/datadriven-noflow-unbuffered.thymeleaf")
+    public String dataDrivenNoFlowUnbufferedThymeleaf(final Model model) {
+
+        final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
+        final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).toList().get();
+
+        model.addAttribute("dataSource", playlistEntries);
+
+        return "thymeleaf/datadriven-unbuffered";
 
     }
 

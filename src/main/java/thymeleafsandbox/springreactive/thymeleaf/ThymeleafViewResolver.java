@@ -63,19 +63,19 @@ public class ThymeleafViewResolver extends ViewResolverSupport {
     private int order = Integer.MAX_VALUE;
 
     private String dataDrivenVariableName = null;
-    private int dataDrivenBufferSize = ThymeleafView.DEFAULT_DATA_DRIVEN_BUFFER_SIZE;
+    private int dataDrivenChunkSizeElements = ThymeleafView.DEFAULT_DATA_DRIVEN_CHUNK_SIZE_ELEMENTS;
 
     private final Map<String, Object> staticVariables = new LinkedHashMap<String, Object>(10);
     private String contentType = null;
     private String characterEncoding = null;
 
 
-    // This will determine whether we will be throttling or not, and if so the size of the chunks that will be produced
+    // This will determine whether we will be throttling or not, and if so the size of the buffers that will be produced
     // by the throttled engine each time the back-pressure mechanism asks for a new "unit" (a new DataBuffer)
     //
     // The value established here will be a default value, which can be overridden by specific views at the
     // ThymeleafView class
-    private int responseMaxChunkSize = ThymeleafView.DEFAULT_RESPONSE_CHUNK_SIZE;
+    private int responseMaxBufferSizeBytes = ThymeleafView.DEFAULT_RESPONSE_BUFFER_SIZE_BYTES;
     
     private ITemplateEngine templateEngine;
 
@@ -189,14 +189,14 @@ public class ThymeleafViewResolver extends ViewResolverSupport {
 
 
 
-    // Default is DEFAULT_DATA_DRIVEN_BUFFER_SIZE
-    public int getDataDrivenBufferSize() {
-        return this.dataDrivenBufferSize;
+    // Default is DEFAULT_DATA_DRIVEN_CHUNK_SIZE_ELEMENTS
+    public int getDataDrivenChunkSizeElements() {
+        return this.dataDrivenChunkSizeElements;
     }
 
 
-    public void setDataDrivenBufferSize(final int dataDrivenBufferSize) {
-        this.dataDrivenBufferSize = dataDrivenBufferSize;
+    public void setDataDrivenChunkSizeElements(final int dataDrivenChunkSizeElements) {
+        this.dataDrivenChunkSizeElements = dataDrivenChunkSizeElements;
     }
 
 
@@ -238,14 +238,14 @@ public class ThymeleafViewResolver extends ViewResolverSupport {
 
 
 
-    // Default is Integer.MAX_VALUE, which means we will not be throttling at all
-    public void setResponseMaxChunkSize(final int responseMaxChunkSize) {
-        this.responseMaxChunkSize = responseMaxChunkSize;
+    // Default is Integer.MAX_VALUE, which means we will write the whole response in a single buffer
+    public void setResponseMaxBufferSizeBytes(final int responseMaxBufferSizeBytes) {
+        this.responseMaxBufferSizeBytes = responseMaxBufferSizeBytes;
     }
 
 
-    public int getResponseMaxChunkSize() {
-        return this.responseMaxChunkSize;
+    public int getResponseMaxBufferSizeBytes() {
+        return this.responseMaxBufferSizeBytes;
     }
 
 
@@ -297,16 +297,13 @@ public class ThymeleafViewResolver extends ViewResolverSupport {
         // Process redirects (HTTP redirects)
         if (viewName.startsWith(REDIRECT_URL_PREFIX)) {
             vrlogger.trace("[THYMELEAF] View \"{}\" is a redirect, and will not be handled directly by ThymeleafViewResolver.", viewName);
-            // TODO * What is the equivalent to RedirectView in Spring Reactive? How do we process a "redirect:" prefix?
+            // TODO * No "ReactiveView" implementation in Spring Reactive yet
             throw new UnsupportedOperationException("Redirects are not currently supported by ThymeleafViewResolver");
         }
         // Process forwards (to JSP resources)
         if (viewName.startsWith(FORWARD_URL_PREFIX)) {
-            // The "forward:" prefix will actually create a Servlet/JSP view, and that's precisely its aim per the Spring
-            // documentation. See http://docs.spring.io/spring-framework/docs/4.2.4.RELEASE/spring-framework-reference/html/mvc.html#mvc-redirecting-forward-prefix
             vrlogger.trace("[THYMELEAF] View \"{}\" is a forward, and will not be handled directly by ThymeleafViewResolver.", viewName);
-            // TODO * What is the the way to process a "forward:" prefix in Spring Reactive (if there is a way to do so,
-            // TODO   given they are meant to forward to JSP resources)?
+            // TODO * No view forwarding in Spring Reactive yet
             throw new UnsupportedOperationException("Forwards are not currently supported by ThymeleafViewResolver");
         }
         // Second possible call to check "viewNames": after processing redirects and forwards
@@ -378,14 +375,14 @@ public class ThymeleafViewResolver extends ViewResolverSupport {
         if (view.getCharacterEncoding() == null && getCharacterEncoding() != null) {
             view.setCharacterEncoding(getCharacterEncoding());
         }
-        if (view.getNullableResponseMaxChunkSize() == null && getResponseMaxChunkSize() != ThymeleafView.DEFAULT_RESPONSE_CHUNK_SIZE) {
-            view.setResponseMaxChunkSize(getResponseMaxChunkSize());
+        if (view.getNullableResponseMaxChunkSize() == null && getResponseMaxBufferSizeBytes() != ThymeleafView.DEFAULT_RESPONSE_BUFFER_SIZE_BYTES) {
+            view.setResponseMaxBufferSizeBytes(getResponseMaxBufferSizeBytes());
         }
         if (view.getDataDrivenVariableName() == null && getDataDrivenVariableName() != null) {
             view.setDataDrivenVariableName(getDataDrivenVariableName());
         }
-        if (view.getNullableDataDrivenBufferSize() == null && getDataDrivenBufferSize() != ThymeleafView.DEFAULT_DATA_DRIVEN_BUFFER_SIZE) {
-            view.setDataDrivenBufferSize(getDataDrivenBufferSize());
+        if (view.getNullableDataDrivenBufferSize() == null && getDataDrivenChunkSizeElements() != ThymeleafView.DEFAULT_DATA_DRIVEN_CHUNK_SIZE_ELEMENTS) {
+            view.setDataDrivenChunkSizeElements(getDataDrivenChunkSizeElements());
         }
 
         return Mono.just(view);

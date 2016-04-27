@@ -102,7 +102,8 @@ public class SpringReactiveWebConfig implements ApplicationContextAware {
         final List<ViewResolver> viewResolvers = new ArrayList<>();
         // TODO * Order of addition here seems to have influence in how the ViewResolvers are queries, instead of
         // TODO   relying on their 'order' property
-        viewResolvers.add(thymeleafViewResolver());
+        viewResolvers.add(thymeleafUnbufferedViewResolver());
+        viewResolvers.add(thymeleafBufferedViewResolver());
         viewResolvers.add(freeMarkerViewResolver());
         final ViewResolverResultHandler viewResolverResultHandler = new ViewResolverResultHandler(viewResolvers, conversionService());
         return viewResolverResultHandler;
@@ -128,7 +129,7 @@ public class SpringReactiveWebConfig implements ApplicationContextAware {
     @Bean
     public FreeMarkerViewResolver freeMarkerViewResolver() {
         final FreeMarkerViewResolver freeMarkerViewResolver = new FreeMarkerViewResolver("", ".ftl");
-        freeMarkerViewResolver.setOrder(2);
+        freeMarkerViewResolver.setOrder(3);
         // TODO * Apparently no way to specify which views can be handled by this ViewResolver (viewNames property)
         return freeMarkerViewResolver;
     }
@@ -165,14 +166,26 @@ public class SpringReactiveWebConfig implements ApplicationContextAware {
     }
 
     @Bean
-    public ThymeleafViewResolver thymeleafViewResolver(){
+    public ThymeleafViewResolver thymeleafBufferedViewResolver(){
+        ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
+        viewResolver.setTemplateEngine(thymeleafTemplateEngine());
+        viewResolver.setOrder(2);
+        viewResolver.setViewNames(new String[] {"thymeleaf/*"});
+        viewResolver.setResponseMaxBufferSizeBytes(16384); // OUTPUT BUFFER configuration
+        viewResolver.setDataDrivenVariableName("dataSource");
+        viewResolver.setDataDrivenChunkSizeElements(1000);
+        return viewResolver;
+    }
+
+    @Bean
+    public ThymeleafViewResolver thymeleafUnbufferedViewResolver(){
         ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
         viewResolver.setTemplateEngine(thymeleafTemplateEngine());
         viewResolver.setOrder(1);
-        viewResolver.setViewNames(new String[] {"thymeleaf/*"});
-        viewResolver.setResponseMaxChunkSize(16384);
+        viewResolver.setViewNames(new String[] {"thymeleaf/*unbuffered*"});
+        // NO OUTPUT BUFFER configuration - results will be completely computed in memory if not data-driven
         viewResolver.setDataDrivenVariableName("dataSource");
-        viewResolver.setDataDrivenBufferSize(500);
+        viewResolver.setDataDrivenChunkSizeElements(1000);
         return viewResolver;
     }
 

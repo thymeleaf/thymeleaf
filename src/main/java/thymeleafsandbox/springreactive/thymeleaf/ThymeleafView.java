@@ -19,6 +19,7 @@
  */
 package thymeleafsandbox.springreactive.thymeleaf;
 
+import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
@@ -70,13 +71,13 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
     protected static final Logger logger = LoggerFactory.getLogger(ThymeleafView.class);
 
-    public static final int DEFAULT_RESPONSE_CHUNK_SIZE = Integer.MAX_VALUE;
-    public static final int DEFAULT_DATA_DRIVEN_BUFFER_SIZE = 100;
+    public static final int DEFAULT_RESPONSE_BUFFER_SIZE_BYTES = Integer.MAX_VALUE;
+    public static final int DEFAULT_DATA_DRIVEN_CHUNK_SIZE_ELEMENTS = 100;
 
     /*
      * Name of the variable containing the map of path variables to be applied.
      */
-    // TODO * Does this come anywhere in the renderAttributes, the ServerWebExchange attributes or the HttpRequest?
+    // TODO * Add Path Variable management when it's available in Spring Reactive
     // private static final String pathVariablesSelector = ...
 
     /**
@@ -86,7 +87,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
      * </p>
      */
     public static final MediaType DEFAULT_CONTENT_TYPE = ViewResolverSupport.DEFAULT_CONTENT_TYPE;
-    // TODO * What is the use of AbstractView's List<MediaType> supportedMediaTypes in a View like this (or FreeMarker's)?
+    // TODO * Application of AbstractView's List<MediaType> supportedMediaTypes is still unclear in Spring Reactive
     
 
     private String beanName = null;
@@ -99,18 +100,19 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
     private Map<String, Object> staticVariables = null;
 
     private String dataDrivenVariableName = null;
-    private Integer dataDrivenBufferSize = null;
+    private Integer dataDrivenChunkSizeElements = null;
 
     private Set<String> markupSelectors = null;
 
 
 
-    // This will determine whether we will be throttling or not, and if so the size of the chunks that will be produced
-    // by the throttled engine each time the back-pressure mechanism asks for a new "unit" (a new DataBuffer)
+    // This will determine whether we will be throttling or not, and if so the maximum size of the buffers that will be
+    // produced by the throttled engine each time the back-pressure mechanism asks for a new "unit" (a new DataBuffer)
     //
     // The value established here is nullable (and null by default) because it will work as an override of the
     // value established at the ThymeleafViewResolver for the same purpose.
-    private Integer responseMaxChunkSize = null;
+    //
+    private Integer responseMaxBufferSizeBytes = null;
 
 
 
@@ -184,20 +186,20 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
 
 
-    // Default is DEFAULT_DATA_DRIVEN_BUFFER_SIZE
-    public int getDataDrivenBufferSize() {
-        return this.dataDrivenBufferSize == null? DEFAULT_DATA_DRIVEN_BUFFER_SIZE : this.dataDrivenBufferSize.intValue();
+    // Default is DEFAULT_DATA_DRIVEN_CHUNK_SIZE_ELEMENTS
+    public int getDataDrivenChunkSizeElements() {
+        return this.dataDrivenChunkSizeElements == null? DEFAULT_DATA_DRIVEN_CHUNK_SIZE_ELEMENTS : this.dataDrivenChunkSizeElements.intValue();
     }
 
 
     // We need this one at the ViewResolver to determine if a value has been set at all
     Integer getNullableDataDrivenBufferSize() {
-        return this.dataDrivenBufferSize;
+        return this.dataDrivenChunkSizeElements;
     }
 
 
-    public void setDataDrivenBufferSize(final int dataDrivenBufferSize) {
-        this.dataDrivenBufferSize = Integer.valueOf(dataDrivenBufferSize);
+    public void setDataDrivenChunkSizeElements(final int dataDrivenChunkSizeElements) {
+        this.dataDrivenChunkSizeElements = Integer.valueOf(dataDrivenChunkSizeElements);
     }
 
 
@@ -241,19 +243,19 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
 
     // Default is Integer.MAX_VALUE, which means we will not be throttling at all
-    public int getResponseMaxChunkSize() {
-        return this.responseMaxChunkSize == null? DEFAULT_RESPONSE_CHUNK_SIZE : this.responseMaxChunkSize.intValue();
+    public int getResponseMaxBufferSizeBytes() {
+        return this.responseMaxBufferSizeBytes == null? DEFAULT_RESPONSE_BUFFER_SIZE_BYTES : this.responseMaxBufferSizeBytes.intValue();
     }
 
 
     // We need this one at the ViewResolver to determine if a value has been set at all
     Integer getNullableResponseMaxChunkSize() {
-        return this.responseMaxChunkSize;
+        return this.responseMaxBufferSizeBytes;
     }
 
 
-    public void setResponseMaxChunkSize(final int responseMaxChunkSize) {
-        this.responseMaxChunkSize = Integer.valueOf(responseMaxChunkSize);
+    public void setResponseMaxBufferSizeBytes(final int responseMaxBufferSizeBytes) {
+        this.responseMaxBufferSizeBytes = Integer.valueOf(responseMaxBufferSizeBytes);
     }
 
 
@@ -324,20 +326,30 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         }
 
 
-        final Map<String, Object> mergedModel = new HashMap<String, Object>(30);
+        /*
+         * ----------------------------------------------------------------------------------------------------------
+         * GATHERING OF THE MERGED MODEL
+         * ----------------------------------------------------------------------------------------------------------
+         * - The merged model is the map that will be used for initialising the Thymelef IContext. This context will
+         *   contain all the data accessible by the template during its execution.
+         * - The base of the merged model is the ModelMap created by the Controller, but there are some additional
+         *   things
+         * ----------------------------------------------------------------------------------------------------------
+         */
+
+        final Map<String, Object> mergedModel = new HashMap<>(30);
         final Map<String, Object> templateStaticVariables = getStaticVariables();
         if (templateStaticVariables != null) {
             mergedModel.putAll(templateStaticVariables);
         }
-        // TODO * Add Path Variables map to the merged model (if they exist in Spring Reactive)
+        // TODO * Add Path Variables map to the merged model (when they exist in Spring Reactive)
         if (renderAttributes != null) {
             mergedModel.putAll(renderAttributes);
         }
 
         final ApplicationContext applicationContext = getApplicationContext();
 
-        // TODO * Get the equivalent to the RequestContext from somewhere (or create a new instance) and add it
-        // TODO   to the mergedModel. We need it for form binding.
+        // TODO * Apply RequestContext equivalent (still does not exist in Spring Reactive)
 
 
         // Expose Thymeleaf's own evaluation context as a model variable
@@ -358,9 +370,31 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         // TODO   attributes for better integration with other view-layer technologies that rely directly on the request)
         // TODO   Would this be an issue here? Shouldn't we be synchronizing with ServerWebExchange attributes?
 
+
+        /*
+         * ----------------------------------------------------------------------------------------------------------
+         * INSTANTIATION OF THE CONTEXT
+         * ----------------------------------------------------------------------------------------------------------
+         * - Once the model has been merged, we can create the Thymeleaf context object itself.
+         * - The reason it is an ExpressionContext and not a Context is that before executing the template itself,
+         *   we might need to use it for computing the markup selectors (if "template :: selector" was specified).
+         * - The reason it is not a WebExpressionContext is that this class is linked to the Servlet API, which
+         *   might not be present in a Spring Reactive environment.
+         * ----------------------------------------------------------------------------------------------------------
+         */
+
         final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
         final ExpressionContext context = new ExpressionContext(configuration, getLocale(), mergedModel);
 
+
+        /*
+         * ----------------------------------------------------------------------------------------------------------
+         * COMPUTATION OF (OPTIONAL) MARKUP SELECTORS
+         * ----------------------------------------------------------------------------------------------------------
+         * - If view name has been specified with a template selector (in order to execute only a fragment of
+         *   the template) like "template :: selector", we will extract it and compute it.
+         * ----------------------------------------------------------------------------------------------------------
+         */
 
         final String templateName;
         final Set<String> markupSelectors;
@@ -406,15 +440,6 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
         }
 
-
-        final MediaType templateContentType = getContentType();
-        final Locale templateLocale = getLocale();
-        final String templateCharacterEncoding = getCharacterEncoding();
-        final int templateResponseMaxChunkSize = getResponseMaxChunkSize();
-        final String templateDataDrivenVariableName = getDataDrivenVariableName();
-        final int templateDataDrivenBufferSize = getDataDrivenBufferSize();
-
-
         final Set<String> processMarkupSelectors;
         if (markupSelectors != null && markupSelectors.size() > 0) {
             if (markupSelectorsToRender != null && markupSelectorsToRender.size() > 0) {
@@ -433,10 +458,28 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         }
 
 
+        /*
+         * ----------------------------------------------------------------------------------------------------------
+         * COMPUTATION OF TEMPLATE PROCESSING PARAMETERS AND HTTP HEADERS
+         * ----------------------------------------------------------------------------------------------------------
+         * - At this point we will compute the final values of the different parameters needed for processing the
+         *   template (locale, encoding, buffer and chunk sizes, etc.)
+         * ----------------------------------------------------------------------------------------------------------
+         */
+
+        final MediaType templateContentType = getContentType();
+        final Locale templateLocale = getLocale();
+        final String templateCharacterEncoding = getCharacterEncoding();
+        final int templateResponseMaxBufferSizeBytes = getResponseMaxBufferSizeBytes();
+        final String templateDataDrivenVariableName = getDataDrivenVariableName();
+        final int templateDataDrivenChunkSizeElements = getDataDrivenChunkSizeElements();
+
+
         final HttpHeaders responseHeaders = exchange.getResponse().getHeaders();
         if (templateLocale != null) {
-            // TODO * There seems to be no way to set the Content-Language HTTP header in the response, how could we
-            // TODO   communicate the locale through the response?
+            // TODO * Change this to less-artisan code if the HttpHeaders class at some point in the future allows
+            // TODO   setting the Content-Language at a higher level.
+            responseHeaders.set("Content-Language", templateLocale.toString());
         }
         Charset responseCharset = null;
         String responseContentType = null;
@@ -461,6 +504,42 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         final Charset charset = responseCharset;
 
 
+        /*
+         * ----------------------------------------------------------------------------------------------------------
+         * SET (AND RETURN) THE TEMPLATE PROCESSING Flux<DataBuffer> OBJECTS
+         * ----------------------------------------------------------------------------------------------------------
+         * - There are three possible processing mode, for each of which a Flux<DataBuffer> will be created in a
+         *   different way:
+         *
+         *     1. Output buffers not limited (templateResponseMaxBufferSizeBytes == Integer.MAX_VALUE) and
+         *        no data-driven execution (no context variable of type Publisher<X> driving the template engine
+         *        execution): In this case Thymeleaf will be executed unthrottled, in normal mode, writing output
+         *        to a single DataBuffer instanced before execution, and which will be passed to the output channels
+         *        in a single onNext(buffer) call (immediately followed by onComplete()).
+         *
+         *     2. Output buffers limited in size (templateResponseMaxBufferSizeBytes) but no data-driven execution
+         *        (no Publisher<X> driving engine execution). All model attributes are expected to be fully resolved
+         *        before engine execution (except those implementing Thymeleaf's ILazyContextVariable interface) and
+         *        the Thymeleaf engine will execute in throttled mode, performing a full-stop each time the buffer
+         *        reaches the specified size, sending it to the output channels with onNext(buffer) and then waiting
+         *        until these output channels make the engine resume its work with a new request(n) call.
+         *
+         *     3. Data-driven execution: one of the model attributes is a Publisher<X> which name is established at
+         *        the "dataDrivenVariableName" configuration parameter at the View or ViewResolver. In this case,
+         *        the Thymeleaf engine will execute as a response to onNext(List<X>) events triggered by this
+         *        Publisher. A related parameter, "dataDrivenChunkSizeElements" will define the amount of elements
+         *        produced by this Publisher that will be buffered into a List<X> before triggering the template
+         *        engine each time (which is why Thymeleaf will react on onNext(List<X>) and not onNext(X)). Thymeleaf
+         *        will expect to find a "th:each" iteration on the data-driven variable inside the processed template,
+         *        and will be executed in throttled mode for the published elements, sending the resulting DataBuffer
+         *        (or DataBuffers) to the output channels via onNext(buffer) and stopping until a new onNext(List<X>)
+         *        event is triggered. When execution is data-driven, a limit in size can be optionally specified for
+         *        the output buffers (templateResponseMaxBufferSizeBytes) which will make Thymeleaf never send
+         *        to the output channels a buffer bigger than that (thus splitting the output generated for a List<X>
+         *        of published elements into several buffers if required).
+         * ----------------------------------------------------------------------------------------------------------
+         */
+
         if (!StringUtils.isEmptyOrWhitespace(templateDataDrivenVariableName)) {
             final Object dataDrivenVariableValue = context.getVariable(templateDataDrivenVariableName);
             if (dataDrivenVariableValue != null && dataDrivenVariableValue instanceof Publisher<?>) {
@@ -472,14 +551,17 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
                 return createDataDrivenFlow(
                         templateName, viewTemplateEngine, processMarkupSelectors, context,
-                        contextBoundPublisher, templateDataDrivenBufferSize, throttledIterator,
-                        templateResponseMaxChunkSize, getBufferAllocator(), charset);
+                        contextBoundPublisher, templateDataDrivenChunkSizeElements, throttledIterator,
+                        templateResponseMaxBufferSizeBytes, getBufferAllocator(), charset);
 
             }
         }
 
 
-        return createOutputDrivenFlow(templateName, viewTemplateEngine, processMarkupSelectors, context, responseMaxChunkSize, getBufferAllocator(), charset);
+        if (templateResponseMaxBufferSizeBytes == Integer.MAX_VALUE) {
+            return createUnbufferedOutputDrivenFlow(templateName, viewTemplateEngine, processMarkupSelectors, context, getBufferAllocator(), charset);
+        }
+        return createBufferedOutputDrivenFlow(templateName, viewTemplateEngine, processMarkupSelectors, context, templateResponseMaxBufferSizeBytes, getBufferAllocator(), charset);
 
     }
 
@@ -507,16 +589,23 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
 
 
-    static Flux<DataBuffer> createOutputDrivenFlow(
+    /*
+     * Creates a Flux<DataBuffer> for processing templates non-data-driven, but with an established limit in the
+     * size of the output buffers.
+     */
+    static Flux<DataBuffer> createBufferedOutputDrivenFlow(
             final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
-            final int responseMaxChunkSize, final DataBufferAllocator bufferAllocator, final Charset charset) {
+            final int responseMaxBufferSizeBytes, final DataBufferAllocator bufferAllocator, final Charset charset) {
 
         return Flux.create(
 
                 subscriber -> {
-                    final IThrottledTemplateProcessor throttledProcessor = subscriber.context();
-                    final DataBuffer buffer = bufferAllocator.allocateBuffer(responseMaxChunkSize);
-                    throttledProcessor.process(responseMaxChunkSize, buffer.asOutputStream(), charset);
+                    final IThrottledTemplateProcessor throttledProcessor = (IThrottledTemplateProcessor) subscriber.context();
+                    final DataBuffer buffer =
+                            (responseMaxBufferSizeBytes != Integer.MAX_VALUE?
+                                    bufferAllocator.allocateBuffer(responseMaxBufferSizeBytes) :
+                                    bufferAllocator.allocateBuffer());
+                    throttledProcessor.process(responseMaxBufferSizeBytes, buffer.asOutputStream(), charset);
                     subscriber.onNext(buffer);
                     if (throttledProcessor.isFinished()) {
                         subscriber.onComplete();
@@ -530,25 +619,67 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
 
 
+    /*
+     * Creates a Flux<DataBuffer> for processing templates non-data-driven, and also without a limit in the size of
+     * the output buffers.
+     */
+    static Flux<DataBuffer> createUnbufferedOutputDrivenFlow(
+            final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
+            final DataBufferAllocator bufferAllocator, final Charset charset) {
+
+        return Flux.create(
+                subscriber -> {
+
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Starting full execution (unbuffered) of Thymeleaf template [" + templateName + "].");
+                    }
+
+                    final DataBuffer dataBuffer = bufferAllocator.allocateBuffer();
+                    final OutputStreamWriter writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset);
+
+                    templateEngine.process(templateName, markupSelectors, context, writer);
+
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Finished full execution (unbuffered) of Thymeleaf template [" + templateName + "].");
+                    }
+
+                    subscriber.onNext(dataBuffer);
+                    subscriber.onComplete();
+
+                });
+
+    }
+
+
+
+
+    /*
+     * Creates a Flux<DataBuffer> for processing data-driven templates: a Publisher<X> variable will control
+     * the engine, making it output the markup corresponding to each chunk of published data as a part of its own
+     * data publishing flow.
+     */
     static Flux<DataBuffer> createDataDrivenFlow(
             final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
-            final Publisher<Object> dataDriverPublisher, final int dataDriverBufferSize, final DataDrivenTemplateIterator dataDrivenIterator,
-            final int responseMaxChunkSize, final DataBufferAllocator bufferAllocator, final Charset charset) {
+            final Publisher<Object> dataDriverPublisher, final int dataDriverChunkSizeElements, final DataDrivenTemplateIterator dataDrivenIterator,
+            final int responseMaxBufferSizeBytes, final DataBufferAllocator bufferAllocator, final Charset charset) {
 
+        // STEP 1: Create the chunks (flow buffering)
+        final Flux<List<Object>> dataDrivenChunkedFlow = Flux.from(dataDriverPublisher).buffer(dataDriverChunkSizeElements);
 
-        final Flux<List<Object>> dataDriverBufferedFlow = Flux.from(dataDriverPublisher).buffer(dataDriverBufferSize);
-
-        final Flux<DataDrivenValuesWithContext> dataDriverWithContextFlow =
+        // STEP 2: Initialize the (throttled) template engine for each subscriber (normally there will only be one)
+        final Flux<DataDrivenValuesWithContext> dataDrivenWithContextFlow =
                 Flux.using(
                         () -> initializeThrottledProcessor(templateName, templateEngine, markupSelectors, context),
                         throttledProcessor ->
                                 Flux.concat(
-                                        dataDriverBufferedFlow.map(values -> new DataDrivenValuesWithContext(throttledProcessor, values)),
+                                        dataDrivenChunkedFlow.map(values -> new DataDrivenValuesWithContext(throttledProcessor, values)),
                                         Mono.just(new DataDrivenValuesWithContext(throttledProcessor, null)) // Will process the part of the template after iteration
                                 ),
                         throttledProcessor -> { /* no need to perform any cleanup operations */ });
 
-        return dataDriverWithContextFlow.flatMap(
+        // STEP 3: React to each chunk of published data by creating one or many (concatMap) DataBuffers containing
+        //         the result of processing only that chunk.
+        return dataDrivenWithContextFlow.concatMap(
                 valuesWithContext -> {
 
                     final IThrottledTemplateProcessor throttledProcessor = valuesWithContext.getThrottledProcessor();
@@ -561,8 +692,12 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
                     return Flux.create(
                                 subscriber -> {
-                                    final DataBuffer buffer = bufferAllocator.allocateBuffer(responseMaxChunkSize);
-                                    throttledProcessor.process(responseMaxChunkSize, buffer.asOutputStream(), charset);
+
+                                    final DataBuffer buffer =
+                                            (responseMaxBufferSizeBytes != Integer.MAX_VALUE?
+                                                    bufferAllocator.allocateBuffer(responseMaxBufferSizeBytes) :
+                                                    bufferAllocator.allocateBuffer());
+                                    throttledProcessor.process(responseMaxBufferSizeBytes, buffer.asOutputStream(), charset);
                                     subscriber.onNext(buffer);
                                     if (values != null) {
                                         if (!dataDrivenIterator.continueBufferExecution()) {
@@ -578,9 +713,6 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
                 });
 
     }
-
-
-
 
 
     static final class DataDrivenValuesWithContext {
