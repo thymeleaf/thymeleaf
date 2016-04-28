@@ -24,7 +24,7 @@
 
  Clean compilation:
  
-     mvn clean compile
+     mvn -U clean compile
      
  Run the application (embedded NETTY TcpServer):
  
