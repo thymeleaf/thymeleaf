@@ -71,7 +71,7 @@
 #### FreeMarker (`/biglist.freemarker`)
  
 ```
-?  spring-reactive-tests curl http://localhost:8080/biglist.freemarker > output
+$ curl http://localhost:8080/biglist.freemarker > output
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100 76.4M    0 76.4M    0     0   701k      0 --:--:--  0:01:51 --:--:-- 18.6M
@@ -82,7 +82,7 @@
 #### Thymeleaf NORMAL (`/biglist-normal.thymeleaf`)
  
 ```
-?  spring-reactive-tests curl http://localhost:8080/biglist-normal.thymeleaf > output
+$ curl http://localhost:8080/biglist-normal.thymeleaf > output
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100 76.6M    0 76.6M    0     0   687k      0 --:--:--  0:01:54 --:--:-- 16.6M
@@ -94,7 +94,7 @@
 #### Thymeleaf BUFFERED (`/biglist-buffered.thymeleaf`)
  
 ```
-?  spring-reactive-tests curl http://localhost:8080/biglist-buffered.thymeleaf > output
+$ curl http://localhost:8080/biglist-buffered.thymeleaf > output
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100 76.6M    0 76.6M    0     0  22.3M      0 --:--:--  0:00:03 --:--:-- 22.3M
@@ -106,7 +106,7 @@
 #### Thymeleaf DATA-DRIVEN (`/biglist-datadriven.thymeleaf`)
  
 ```
-?  spring-reactive-tests curl http://localhost:8080/biglist-datadriven.thymeleaf > output
+$ curl http://localhost:8080/biglist-datadriven.thymeleaf > output
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100 76.6M    0 76.6M    0     0  23.6M      0 --:--:--  0:00:03 --:--:-- 23.6M
