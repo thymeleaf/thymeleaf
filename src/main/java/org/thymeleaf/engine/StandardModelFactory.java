@@ -184,6 +184,18 @@ public class StandardModelFactory implements IModelFactory {
 
 
     @Override
+    public IStandaloneElementTag createStandaloneElementTag(final String elementName) {
+        return createStandaloneElementTag(elementName, false, true);
+    }
+
+
+    @Override
+    public IStandaloneElementTag createStandaloneElementTag(final String elementName, final String attributeName, final String attributeValue) {
+        return createStandaloneElementTag(elementName, attributeName, attributeValue, false, true);
+    }
+
+
+    @Override
     public IStandaloneElementTag createStandaloneElementTag(final String elementName, final boolean synthetic, final boolean minimized) {
         final ElementDefinition elementDefinition = this.elementDefinitions.forName(this.templateMode, elementName);
         return new StandaloneElementTag(this.templateMode, elementDefinition, elementName, null, synthetic, minimized);
@@ -206,6 +218,18 @@ public class StandardModelFactory implements IModelFactory {
     }
 
 
+
+
+    @Override
+    public IOpenElementTag createOpenElementTag(final String elementName) {
+        return createOpenElementTag(elementName, false);
+    }
+
+
+    @Override
+    public IOpenElementTag createOpenElementTag(final String elementName, final String attributeName, final String attributeValue) {
+        return createOpenElementTag(elementName, attributeName, attributeValue, false);
+    }
 
 
     @Override
@@ -454,6 +478,12 @@ public class StandardModelFactory implements IModelFactory {
     }
 
 
+
+
+    @Override
+    public ICloseElementTag createCloseElementTag(final String elementName) {
+        return createCloseElementTag(elementName, false, false);
+    }
 
 
     @Override

@@ -180,6 +180,36 @@ public interface IModelFactory {
 
     /**
      * <p>
+     *   Create a new standalone element tag, non synthetic and minimized.
+     * </p>
+     * <p>
+     *   This is equivalent to calling {@link #createStandaloneElementTag(String, boolean, boolean)} with
+     *   <tt>false</tt> as a value for <tt>synthetic</tt> and <tt>true</tt> as a value for <tt>minimized</tt>.
+     * </p>
+     *
+     * @param elementName the element name.
+     * @return the standalone tag.
+     */
+    public IStandaloneElementTag createStandaloneElementTag(final String elementName);
+
+    /**
+     * <p>
+     *   Create a new standalone element tag, non synthetic and minimized, specifying one attribute.
+     * </p>
+     * <p>
+     *   This is equivalent to calling {@link #createStandaloneElementTag(String, String, String, boolean, boolean)} with
+     *   <tt>false</tt> as a value for <tt>synthetic</tt> and <tt>true</tt> as a value for <tt>minimized</tt>.
+     * </p>
+     *
+     * @param elementName the element name.
+     * @param attributeName the name of the attribute to be added to the tag.
+     * @param attributeValue the value of the attribute to be added to the tag.
+     * @return the standalone tag.
+     */
+    public IStandaloneElementTag createStandaloneElementTag(final String elementName, final String attributeName, final String attributeValue);
+
+    /**
+     * <p>
      *   Create a new standalone element tag.
      * </p>
      *
@@ -227,6 +257,36 @@ public interface IModelFactory {
 
     /**
      * <p>
+     *   Create a new open element tag, non-synthetic.
+     * </p>
+     * <p>
+     *   This is equivalent to calling {@link #createOpenElementTag(String, boolean)} with
+     *   <tt>false</tt> as a value for <tt>synthetic</tt>.
+     * </p>
+     *
+     * @param elementName the element name.
+     * @return the open tag.
+     */
+    public IOpenElementTag createOpenElementTag(final String elementName);
+
+    /**
+     * <p>
+     *   Create a new open element tag, non-synthetic, specifying one attribute.
+     * </p>
+     * <p>
+     *   This is equivalent to calling {@link #createOpenElementTag(String, String, String, boolean)} with
+     *   <tt>false</tt> as a value for <tt>synthetic</tt>.
+     * </p>
+     *
+     * @param elementName the element name.
+     * @param attributeName the name of the attribute to be added to the tag.
+     * @param attributeValue the value of the attribute to be added to the tag.
+     * @return the open tag.
+     */
+    public IOpenElementTag createOpenElementTag(final String elementName, final String attributeName, final String attributeValue);
+
+    /**
+     * <p>
      *   Create a new open element tag.
      * </p>
      *
@@ -264,6 +324,21 @@ public interface IModelFactory {
      * @return the open tag.
      */
     public IOpenElementTag createOpenElementTag(final String elementName, final Map<String,String> attributes, final AttributeValueQuotes attributeValueQuotes, final boolean synthetic);
+
+
+    /**
+     * <p>
+     *   Create a new close tag, non-synthetic and non-unmatched.
+     * </p>
+     * <p>
+     *   This is equivalent to calling {@link #createCloseElementTag(String, boolean, boolean)} with
+     *   <tt>false</tt> as a value for <tt>synthetic</tt> and also <tt>false</tt> as a value for <tt>unmatched</tt>.
+     * </p>
+     *
+     * @param elementName the element name.
+     * @return the close tag.
+     */
+    public ICloseElementTag createCloseElementTag(final String elementName);
 
 
     /**
