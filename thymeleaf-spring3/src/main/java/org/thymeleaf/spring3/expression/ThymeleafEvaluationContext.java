@@ -20,6 +20,7 @@
 package org.thymeleaf.spring3.expression;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.core.convert.ConversionService;
@@ -64,20 +65,23 @@ public final class ThymeleafEvaluationContext
     private static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
 
 
+    private final ApplicationContext applicationContext;
+
     private IExpressionObjects expressionObjects = null;
     private boolean variableAccessRestricted = false;
 
 
 
 
-    public ThymeleafEvaluationContext(final BeanFactory beanFactory, final ConversionService conversionService) {
+    public ThymeleafEvaluationContext(final ApplicationContext applicationContext, final ConversionService conversionService) {
         
         super();
 
-        Validate.notNull(beanFactory, "Bean factory cannot be null");
+        Validate.notNull(applicationContext, "Application Context cannot be null");
         // ConversionService CAN be null
 
-        this.setBeanResolver(new BeanFactoryResolver(beanFactory));
+        this.applicationContext = applicationContext;
+        this.setBeanResolver(new BeanFactoryResolver(applicationContext));
         if (conversionService != null) {
             this.setTypeConverter(new StandardTypeConverter(conversionService));
         }
@@ -85,6 +89,11 @@ public final class ThymeleafEvaluationContext
         this.addPropertyAccessor(SPELContextPropertyAccessor.INSTANCE);
         this.addPropertyAccessor(MAP_ACCESSOR_INSTANCE);
 
+    }
+
+
+    public ApplicationContext getApplicationContext() {
+        return this.applicationContext;
     }
 
 
