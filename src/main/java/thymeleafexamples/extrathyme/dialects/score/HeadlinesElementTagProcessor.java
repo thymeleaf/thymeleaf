@@ -102,9 +102,9 @@ public class HeadlinesElementTagProcessor extends AbstractElementTagProcessor {
 
         final IModel model = modelFactory.createModel();
 
-        model.add(modelFactory.createOpenElementTag("div", "class", "headlines", false));
+        model.add(modelFactory.createOpenElementTag("div", "class", "headlines"));
         model.add(modelFactory.createText(headlineText));
-        model.add(modelFactory.createCloseElementTag("div", false, false));
+        model.add(modelFactory.createCloseElementTag("div"));
 
         /*
          * Instruct the engine to replace this entire element with the specified model.
