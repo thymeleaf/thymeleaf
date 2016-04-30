@@ -19,53 +19,50 @@
  */
 package thymeleafexamples.extrathyme.dialects.score;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 import org.springframework.context.ApplicationContext;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Element;
-import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Text;
-import org.thymeleaf.processor.element.AbstractMarkupSubstitutionElementProcessor;
-import org.thymeleaf.spring4.context.SpringWebContext;
+import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.model.IModel;
+import org.thymeleaf.model.IModelFactory;
+import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.processor.element.AbstractElementTagProcessor;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
+import org.thymeleaf.spring4.context.SpringContextUtils;
+import org.thymeleaf.templatemode.TemplateMode;
 import thymeleafexamples.extrathyme.business.entities.Headline;
 import thymeleafexamples.extrathyme.business.entities.repositories.HeadlineRepository;
 
-public class HeadlinesElementProcessor extends AbstractMarkupSubstitutionElementProcessor {
+public class HeadlinesElementTagProcessor extends AbstractElementTagProcessor {
 
     private final Random rand = new Random(System.currentTimeMillis());
-    
-    
-    public HeadlinesElementProcessor() {
-        super("headlines");
-    }
-    
 
+    private static final int PRECEDENCE = 1000;
+
+
+    public HeadlinesElementTagProcessor(final String dialectPrefix) {
+        super(
+            TemplateMode.HTML, // This processor will apply only to HTML mode
+            dialectPrefix,     // Prefix to be applied to name for matching
+            "headlines",       // Tag name: match specifically this tag
+            true,              // Apply dialect prefix to tag name
+            null,              // No attribute name: will match by tag name
+            false,             // No prefix to be applied to attribute name
+            PRECEDENCE);       // Precedence (inside dialect's own precedence)
+    }
 
 
     @Override
-    public int getPrecedence() {
-        return 1000;
-    }
-
-    
-    
-
-    @Override
-    protected List<Node> getMarkupSubstitutes(
-            final Arguments arguments, final Element element) {
+    protected void doProcess(
+            final ITemplateContext context, final IProcessableElementTag tag,
+            final IElementTagStructureHandler structureHandler) {
 
         /*
-         * Obtain the Spring application context. Being a SpringMVC-based 
-         * application, we know that the IContext implementation being
-         * used is SpringWebContext, and so we can directly cast and ask it
-         * to return the AppCtx. 
+         * Obtain the Spring application context.
          */
-        final ApplicationContext appCtx = 
-            ((SpringWebContext)arguments.getContext()).getApplicationContext();
+        final ApplicationContext appCtx = SpringContextUtils.getApplicationContext(context);
 
         /*
          * Obtain the HeadlineRepository bean from the application context, and ask
@@ -79,7 +76,7 @@ public class HeadlinesElementProcessor extends AbstractMarkupSubstitutionElement
          * will allow us to determine whether we want to show a random headline or
          * only the latest one ('latest' is default).
          */
-        final String order = element.getAttributeValue("order");
+        final String order = tag.getAttributeValue("order");
 
         String headlineText = null;
         if (order != null && order.trim().toLowerCase().equals("random")) {
@@ -101,21 +98,18 @@ public class HeadlinesElementProcessor extends AbstractMarkupSubstitutionElement
          * The headline will be shown inside a '<div>' tag, and so this must
          * be created first and then a Text node must be added to it.
          */
-        final Element container = new Element("div");
-        container.setAttribute("class", "headlines");
+        final IModelFactory modelFactory = context.getModelFactory();
 
-        final Text text = new Text(headlineText);
-        container.addChild(text);
+        final IModel model = modelFactory.createModel();
+
+        model.add(modelFactory.createOpenElementTag("div", "class", "headlines", false));
+        model.add(modelFactory.createText(headlineText));
+        model.add(modelFactory.createCloseElementTag("div", false, false));
 
         /*
-         * The abstract IAttrProcessor implementation we are using defines
-         * that a list of nodes will be returned, and that these nodes
-         * will substitute the tag we are processing.
+         * Instruct the engine to replace this entire element with the specified model.
          */
-        final List<Node> nodes = new ArrayList<Node>();
-        nodes.add(container);
-        
-        return nodes;
+        structureHandler.replaceWith(model, false);
         
     }
 

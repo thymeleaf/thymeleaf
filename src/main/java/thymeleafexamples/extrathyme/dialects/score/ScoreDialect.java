@@ -22,18 +22,16 @@ package thymeleafexamples.extrathyme.dialects.score;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.thymeleaf.dialect.AbstractDialect;
+import org.thymeleaf.dialect.AbstractProcessorDialect;
 import org.thymeleaf.processor.IProcessor;
 
-public class ScoreDialect extends AbstractDialect {
+public class ScoreDialect extends AbstractProcessorDialect {
 
-    /*
-     * Default prefix: this is the prefix that will be used for this dialect
-     * unless a different one is specified when adding the dialect to
-     * the Template Engine.
-     */
-    public String getPrefix() {
-        return "score";
+    private static final String DIALECT_NAME = "Score Dialect";
+
+
+    protected ScoreDialect() {
+        super(DIALECT_NAME, "score", 1000);
     }
 
     /*
@@ -41,12 +39,11 @@ public class ScoreDialect extends AbstractDialect {
      * 'remarkforposition'. Also one element processor: the 'headlines'
      * tag.
      */
-    @Override
-    public Set<IProcessor> getProcessors() {
+    public Set<IProcessor> getProcessors(final String dialectPrefix) {
         final Set<IProcessor> processors = new HashSet<IProcessor>();
-        processors.add(new ClassForPositionAttrProcessor());
-        processors.add(new RemarkForPositionAttrProcessor());
-        processors.add(new HeadlinesElementProcessor());
+        processors.add(new ClassForPositionAttrtibuteTagProcessor(dialectPrefix));
+        processors.add(new RemarkForPositionAttributeTagProcessor(dialectPrefix));
+        processors.add(new HeadlinesElementTagProcessor(dialectPrefix));
         return processors;
     }
 

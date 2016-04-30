@@ -25,7 +25,7 @@
   <groupId>thymeleafexamples</groupId>
   <artifactId>extrathyme</artifactId>
   <packaging>war</packaging>
-  <version>20141222</version>
+  <version>ci</version>
   <name>Thymeleaf Examples - extraThyme</name>
 
   <description>XML/XHTML/HTML5 template engine for Java</description>
@@ -82,8 +82,8 @@
 
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <thymeleaf.version>2.1.4.RELEASE</thymeleaf.version>
-    <springframework.version>4.1.2.RELEASE</springframework.version>
+    <thymeleaf.version>3.0.0-SNAPSHOT</thymeleaf.version>
+    <springframework.version>4.2.5.RELEASE</springframework.version>
   </properties>
   
 
