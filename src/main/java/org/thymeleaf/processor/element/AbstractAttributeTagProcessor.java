@@ -26,6 +26,7 @@ import org.thymeleaf.model.IAttribute;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EscapedAttributeUtils;
+import org.thymeleaf.util.Validate;
 
 /**
  * <p>
@@ -50,6 +51,7 @@ public abstract class AbstractAttributeTagProcessor extends AbstractElementTagPr
             final String attributeName, final boolean prefixAttributeName,
             final int precedence, final boolean removeAttribute) {
         super(templateMode, dialectPrefix, elementName, prefixElementName, attributeName, prefixAttributeName, precedence);
+        Validate.notEmpty(attributeName, "Attribute name cannot be null or empty in Attribute Tag Processor");
         this.removeAttribute = removeAttribute;
     }
 
