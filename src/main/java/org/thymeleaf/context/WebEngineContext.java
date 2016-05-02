@@ -590,7 +590,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
     private static final class RequestAttributesVariablesMap extends AbstractEngineContext implements IEngineContext {
 
-        private static final int DEFAULT_LEVELS_SIZE = 3;
+        private static final int DEFAULT_LEVELS_SIZE = 10;
         private static final int DEFAULT_LEVELARRAYS_SIZE = 5;
 
         private final HttpServletRequest request;
@@ -711,7 +711,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
         public void setVariable(final String name, final Object value) {
 
-            ensureLevelInitialized();
+            ensureLevelInitialized(true);
 
             if (this.level > 0) {
                 // We will only take care of new/old values if we are not on level 0
@@ -825,7 +825,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
 
         public void setSelectionTarget(final Object selectionTarget) {
-            ensureLevelInitialized();
+            ensureLevelInitialized(false);
             this.lastSelectionTarget = new SelectionTarget(selectionTarget);
             this.selectionTargets[this.index] = this.lastSelectionTarget;
         }
@@ -855,7 +855,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
 
         public void setInliner(final IInliner inliner) {
-            ensureLevelInitialized();
+            ensureLevelInitialized(false);
             // We use NoOpInliner.INSTACE in order to signal when inlining has actually been disabled
             this.lastInliner = (inliner == null? NoOpInliner.INSTANCE : inliner);
             this.inliners[this.index] = this.lastInliner;
@@ -881,7 +881,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
         public void setTemplateData(final TemplateData templateData) {
             Validate.notNull(templateData, "Template Data cannot be null");
-            ensureLevelInitialized();
+            ensureLevelInitialized(false);
             this.lastTemplateData = templateData;
             this.templateDatas[this.index] = this.lastTemplateData;
             this.templateStack.clear();
@@ -939,8 +939,8 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
             if (this.level > 0) {
                 // We will only take care of new/old values if we are not on level 0
 
-                if (this.names[this.index] == null) {
-                    // the arrays for this level have still not ben created
+                if (initVariables && this.names[this.index] == null) {
+                    // the arrays for this level have still not been created
 
                     this.names[this.index] = new String[DEFAULT_LEVELARRAYS_SIZE];
                     Arrays.fill(this.names[this.index], null);

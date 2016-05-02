@@ -64,7 +64,7 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
      * for the levels they correspond to.
      */
 
-    private static final int DEFAULT_LEVELS_SIZE = 3;
+    private static final int DEFAULT_LEVELS_SIZE = 10;
     private static final int DEFAULT_MAP_SIZE = 5;
 
 
@@ -306,7 +306,7 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
 
 
     public void setSelectionTarget(final Object selectionTarget) {
-        ensureLevelInitialized(DEFAULT_MAP_SIZE);
+        ensureLevelInitialized(-1);
         this.lastSelectionTarget = new SelectionTarget(selectionTarget);
         this.selectionTargets[this.index] = this.lastSelectionTarget;
     }
@@ -336,7 +336,7 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
 
 
     public void setInliner(final IInliner inliner) {
-        ensureLevelInitialized(DEFAULT_MAP_SIZE);
+        ensureLevelInitialized(-1);
         // We use NoOpInliner.INSTANCE in order to signal when inlining has actually been disabled
         this.lastInliner = (inliner == null? NoOpInliner.INSTANCE : inliner);
         this.inliners[this.index] = this.lastInliner;
@@ -362,7 +362,7 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
 
     public void setTemplateData(final TemplateData templateData) {
         Validate.notNull(templateData, "Template Data cannot be null");
-        ensureLevelInitialized(DEFAULT_MAP_SIZE);
+        ensureLevelInitialized(-1);
         this.lastTemplateData = templateData;
         this.templateDatas[this.index] = this.lastTemplateData;
         this.templateStack.clear();
@@ -413,7 +413,7 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
 
         }
 
-        if (this.maps[this.index] == null) {
+        if (requiredSize >= 0 && this.maps[this.index] == null) {
             // The map for this level has not yet been created
             this.maps[this.index] = new HashMap<String,Object>(requiredSize, 1.0f);
         }
