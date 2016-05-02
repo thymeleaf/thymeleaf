@@ -25,6 +25,7 @@ import java.util.Map;
 import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.IModelFactory;
+import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -101,6 +102,26 @@ public interface ITemplateContext extends IExpressionContext {
      * @return the stack of templates (list of {@link TemplateData}).
      */
     public List<TemplateData> getTemplateStack();
+
+    /**
+     * <p>
+     *   Returns the list of all the {@link IProcessableElementTag} objects corresponding to the hierarchy
+     *   of elements (open or standalone elements) that contains the element being currently processed.
+     * </p>
+     * <p>
+     *   If the element being processed is a tag (open/standalone), it will appear at the end of the list.
+     * </p>
+     * <p>
+     *   Note this information is set at the <em>processor</em> level, so <strong>it should not be considered to be
+     *   <em>available</em> and/or <em>valid</em> at the pre-processor layer</strong>. The reason for this is the
+     *   hierarchy itself might vary during processing, and a specific event (tag, text...) might live at a different
+     *   point in hierarchy during parsing than during processing (besides, many new hierarchy levels can be created
+     *   during processing itself).
+     * </p>
+     *
+     * @return the stack of elements (list of {@link IProcessableElementTag}).
+     */
+    public List<IProcessableElementTag> getElementStack();
 
     /**
      * <p>

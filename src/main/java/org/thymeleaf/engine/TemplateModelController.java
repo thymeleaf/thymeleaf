@@ -311,7 +311,7 @@ final class TemplateModelController {
 
 
 
-    private void increaseModelLevel() {
+    private void increaseModelLevel(final IOpenElementTag openElementTag) {
         this.modelLevel++;
         if (this.skipBodyByLevel.length == this.modelLevel) {
             this.skipBodyByLevel = Arrays.copyOf(this.skipBodyByLevel, this.skipBodyByLevel.length + DEFAULT_MODEL_LEVELS/2);
@@ -323,6 +323,7 @@ final class TemplateModelController {
         this.unskippedFirstElementByLevel[this.modelLevel] = null;
         if (this.context != null) {
             this.context.increaseLevel();
+            this.context.setElementTag(openElementTag);
         }
     }
 
@@ -378,13 +379,24 @@ final class TemplateModelController {
             this.gatheredModel.gatherStandaloneElement(standaloneElementTag);
             return false;
         }
+        boolean process = this.skipBody.processElements;
         if (this.skipBody == SkipBody.PROCESS_ONE_ELEMENT) {
             // This was the first element, the others will be skipped. Let's save it in case it is iterated
             this.unskippedFirstElementByLevel[this.modelLevel] = standaloneElementTag;
             skipBody(SkipBody.SKIP_ELEMENTS);
-            return true;
+            process = true;
         }
-        return this.skipBody.processElements;
+        if (process) {
+            /*
+             * INCREASE THE CONTEXT LEVEL so that all local variables created during the execution of processors
+             * are available for the rest of the processors as well as the body of the tag
+             */
+            if (this.context != null) {
+                this.context.increaseLevel();
+                this.context.setElementTag(standaloneElementTag);
+            }
+        }
+        return process;
     }
 
 
@@ -404,7 +416,7 @@ final class TemplateModelController {
             skipBody(SkipBody.PROCESS_ONE_ELEMENT);
             process = true;
         }
-        increaseModelLevel();
+        increaseModelLevel(openElementTag);
         return process;
     }
 

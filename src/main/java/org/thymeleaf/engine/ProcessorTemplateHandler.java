@@ -20,6 +20,7 @@
 package org.thymeleaf.engine;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -34,6 +35,7 @@ import org.thymeleaf.model.ICloseElementTag;
 import org.thymeleaf.model.IComment;
 import org.thymeleaf.model.IDocType;
 import org.thymeleaf.model.IOpenElementTag;
+import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IProcessingInstruction;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.model.ITemplateEnd;
@@ -476,14 +478,20 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
         if (this.modelController.getModelLevel() != 0) {
             throw new TemplateProcessingException(
                     "Bad markup or template processing sequence. Model level is != 0 (" + this.modelController.getModelLevel() + ") " +
-                            "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
+                    "at template end.", itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
         }
         if (this.engineContext != null) {
             if (this.engineContext.level() != this.initialContextLevel.intValue()) {
                 throw new TemplateProcessingException(
                         "Bad markup or template processing sequence. Context level after processing (" + this.engineContext.level() + ") " +
-                                "does not correspond to context level before processing (" + this.initialContextLevel.intValue() + ").",
+                        "does not correspond to context level before processing (" + this.initialContextLevel.intValue() + ").",
                         itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
+            }
+            final List<IProcessableElementTag> elementStack = this.engineContext.getElementStackAbove(this.initialContextLevel.intValue());
+            if (!elementStack.isEmpty()) {
+                throw new TemplateProcessingException(
+                        "Bad markup or template processing sequence. Element stack after processing is not empty: " +
+                        elementStack, itemplateEnd.getTemplateName(), itemplateEnd.getLine(), itemplateEnd.getCol());
             }
         }
 
@@ -855,10 +863,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          */
         if (currentGatheringModel == null && !standaloneElementTag.hasAssociatedProcessors()) {
 
-            if (this.engineContext != null) {
-                this.engineContext.increaseLevel();
-            }
-
             this.next.handleStandaloneElement(standaloneElementTag);
 
             if (!this.throttleEngine || !this.flowController.stopProcessing) {
@@ -880,15 +884,6 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          */
         final ProcessorExecutionVars vars =
                 (currentGatheringModel == null? new ProcessorExecutionVars() : currentGatheringModel.initializeProcessorExecutionVars());
-
-
-        /*
-         * INCREASE THE CONTEXT LEVEL so that all local variables created during the execution of processors
-         * are available for the rest of the processors as well as the body of the tag
-         */
-        if (this.engineContext != null) {
-            this.engineContext.increaseLevel();
-        }
 
 
         /*

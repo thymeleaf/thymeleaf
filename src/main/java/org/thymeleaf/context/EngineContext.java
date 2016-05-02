@@ -34,6 +34,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
+import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -64,6 +65,7 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
      * for the levels they correspond to.
      */
 
+    private static final int DEFAULT_ELEMENT_HIERARCHY_SIZE = 20;
     private static final int DEFAULT_LEVELS_SIZE = 10;
     private static final int DEFAULT_MAP_SIZE = 5;
 
@@ -75,12 +77,14 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
     private SelectionTarget[] selectionTargets;
     private IInliner[] inliners;
     private TemplateData[] templateDatas;
+    private IProcessableElementTag[] elementTags;
 
     private SelectionTarget lastSelectionTarget = null;
     private IInliner lastInliner = null;
     private TemplateData lastTemplateData = null;
 
     private final List<TemplateData> templateStack;
+
 
     private static final Object NON_EXISTING = new Object() {
         @Override
@@ -130,11 +134,17 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
         this.selectionTargets = new SelectionTarget[DEFAULT_LEVELS_SIZE];
         this.inliners = new IInliner[DEFAULT_LEVELS_SIZE];
         this.templateDatas = new TemplateData[DEFAULT_LEVELS_SIZE];
+
+        this.elementTags = new IProcessableElementTag[DEFAULT_ELEMENT_HIERARCHY_SIZE];
+
         Arrays.fill(this.levels, Integer.MAX_VALUE);
         Arrays.fill(this.maps, null);
         Arrays.fill(this.selectionTargets, null);
         Arrays.fill(this.inliners, null);
         Arrays.fill(this.templateDatas, null);
+
+        Arrays.fill(this.elementTags, null);
+
         this.levels[0] = 0;
         this.templateDatas[0] = templateData;
         this.lastTemplateData = templateData;
@@ -388,6 +398,43 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
 
 
 
+    public void setElementTag(final IProcessableElementTag elementTag) {
+        Validate.notNull(elementTag, "Element Tag cannot be null");
+        if (this.elementTags.length <= this.level) {
+            this.elementTags = Arrays.copyOf(this.elementTags, Math.max(this.level, this.elementTags.length + DEFAULT_ELEMENT_HIERARCHY_SIZE));
+        }
+        this.elementTags[this.level] = elementTag;
+    }
+
+
+
+
+    public List<IProcessableElementTag> getElementStack() {
+        final List<IProcessableElementTag> elementStack = new ArrayList<IProcessableElementTag>(this.level);
+        for (int i = 0; i <= this.level && i < this.elementTags.length; i++) {
+            if (this.elementTags[i] != null) {
+                elementStack.add(this.elementTags[i]);
+            }
+        }
+
+        return Collections.unmodifiableList(elementStack);
+    }
+
+
+    public List<IProcessableElementTag> getElementStackAbove(final int contextLevel) {
+        final List<IProcessableElementTag> elementStack = new ArrayList<IProcessableElementTag>(this.level);
+        for (int i = contextLevel + 1; i <= this.level && i < this.elementTags.length; i++) {
+            if (this.elementTags[i] != null) {
+                elementStack.add(this.elementTags[i]);
+            }
+        }
+
+        return Collections.unmodifiableList(elementStack);
+    }
+
+
+
+
     private void ensureLevelInitialized(final int requiredSize) {
 
         // First, check if the current index already signals the current level (in which case, everything is OK)
@@ -449,6 +496,10 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
             this.lastTemplateData = null;
             this.templateStack.clear();
 
+        }
+
+        if (this.level < this.elementTags.length) {
+            this.elementTags[this.level] = null;
         }
 
         this.level--;

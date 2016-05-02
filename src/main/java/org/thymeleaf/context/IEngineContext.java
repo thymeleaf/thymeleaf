@@ -19,10 +19,12 @@
  */
 package org.thymeleaf.context;
 
+import java.util.List;
 import java.util.Map;
 
 import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.inline.IInliner;
+import org.thymeleaf.model.IProcessableElementTag;
 
 /**
  * <p>
@@ -145,6 +147,29 @@ public interface IEngineContext extends ITemplateContext {
      * @param template the template data.
      */
     public void setTemplateData(final TemplateData template);
+
+    /**
+     * <p>
+     *   Sets a new element tag ({@link IProcessableElementTag}) into the hierarchy (stack) of element tags.
+     * </p>
+     * <p>
+     *   This hierarchy of element tags (added this way) can be obtained with {@link #getElementStack()}.
+     * </p>
+     *
+     * @param elementTag the element tag.
+     */
+    public void setElementTag(final IProcessableElementTag elementTag);
+
+    /**
+     * <p>
+     *   Retrieves the element stack just like {@link #getElementStack()}, but only for those elements added
+     *   to the hierarchy above a specific context level.
+     * </p>
+     *
+     * @param contextLevel the level above which we want to obtain the element stack.
+     * @return the element stack above a specified level.
+     */
+    public List<IProcessableElementTag> getElementStackAbove(final int contextLevel);
 
     /**
      * <p>

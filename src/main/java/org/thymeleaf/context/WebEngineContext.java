@@ -43,6 +43,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
+import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -285,6 +286,26 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
     public List<TemplateData> getTemplateStack() {
         return this.requestAttributesVariablesMap.getTemplateStack();
     }
+
+
+
+
+    public void setElementTag(final IProcessableElementTag elementTag) {
+        this.requestAttributesVariablesMap.setElementTag(elementTag);
+    }
+
+
+
+
+    public List<IProcessableElementTag> getElementStack() {
+        return this.requestAttributesVariablesMap.getElementStack();
+    }
+
+
+    public List<IProcessableElementTag> getElementStackAbove(final int contextLevel) {
+        return this.requestAttributesVariablesMap.getElementStackAbove(contextLevel);
+    }
+
 
 
 
@@ -590,6 +611,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
     private static final class RequestAttributesVariablesMap extends AbstractEngineContext implements IEngineContext {
 
+        private static final int DEFAULT_ELEMENT_HIERARCHY_SIZE = 20;
         private static final int DEFAULT_LEVELS_SIZE = 10;
         private static final int DEFAULT_LEVELARRAYS_SIZE = 5;
 
@@ -606,6 +628,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
         private SelectionTarget[] selectionTargets;
         private IInliner[] inliners;
         private TemplateData[] templateDatas;
+        private IProcessableElementTag[] elementTags;
 
         private SelectionTarget lastSelectionTarget = null;
         private IInliner lastInliner = null;
@@ -635,6 +658,9 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
             this.selectionTargets = new SelectionTarget[DEFAULT_LEVELS_SIZE];
             this.inliners = new IInliner[DEFAULT_LEVELS_SIZE];
             this.templateDatas = new TemplateData[DEFAULT_LEVELS_SIZE];
+
+            this.elementTags = new IProcessableElementTag[DEFAULT_ELEMENT_HIERARCHY_SIZE];
+
             Arrays.fill(this.levels, Integer.MAX_VALUE);
             Arrays.fill(this.names, null);
             Arrays.fill(this.oldValues, null);
@@ -643,6 +669,9 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
             Arrays.fill(this.selectionTargets, null);
             Arrays.fill(this.inliners, null);
             Arrays.fill(this.templateDatas, null);
+
+            Arrays.fill(this.elementTags, null);
+
             this.levels[0] = 0;
             this.templateDatas[0] = templateData;
             this.lastTemplateData = templateData;
@@ -907,7 +936,44 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
 
 
-        private void ensureLevelInitialized() {
+        public void setElementTag(final IProcessableElementTag elementTag) {
+            Validate.notNull(elementTag, "Element Tag cannot be null");
+            if (this.elementTags.length <= this.level) {
+                this.elementTags = Arrays.copyOf(this.elementTags, Math.max(this.level, this.elementTags.length + DEFAULT_ELEMENT_HIERARCHY_SIZE));
+            }
+            this.elementTags[this.level] = elementTag;
+        }
+
+
+
+
+        public List<IProcessableElementTag> getElementStack() {
+            final List<IProcessableElementTag> elementStack = new ArrayList<IProcessableElementTag>(this.level);
+            for (int i = 0; i <= this.level && i < this.elementTags.length; i++) {
+                if (this.elementTags[i] != null) {
+                    elementStack.add(this.elementTags[i]);
+                }
+            }
+
+            return Collections.unmodifiableList(elementStack);
+        }
+
+
+        public List<IProcessableElementTag> getElementStackAbove(final int contextLevel) {
+            final List<IProcessableElementTag> elementStack = new ArrayList<IProcessableElementTag>(this.level);
+            for (int i = contextLevel + 1; i <= this.level && i < this.elementTags.length; i++) {
+                if (this.elementTags[i] != null) {
+                    elementStack.add(this.elementTags[i]);
+                }
+            }
+
+            return Collections.unmodifiableList(elementStack);
+        }
+
+
+
+
+        private void ensureLevelInitialized(final boolean initVariables) {
 
             // First, check if the current index already signals the current level (in which case, everything is OK)
             if (this.levels[this.index] != this.level) {
@@ -970,7 +1036,9 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
 
         public void decreaseLevel() {
+
             Validate.isTrue(this.level > 0, "Cannot decrease variable map level below 0");
+
             if (this.levels[this.index] == this.level) {
 
                 this.levels[this.index] = Integer.MAX_VALUE;
@@ -1006,7 +1074,13 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
                 this.templateStack.clear();
 
             }
+
+            if (this.level < this.elementTags.length) {
+                this.elementTags[this.level] = null;
+            }
+
             this.level--;
+
         }
 
 
