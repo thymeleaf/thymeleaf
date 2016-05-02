@@ -895,13 +895,10 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
                 // If would have been empty if we had just decreased a level or added a new template
                 return Collections.unmodifiableList(new ArrayList<TemplateData>(this.templateStack));
             }
-            int n = this.index + 1;
-            int i = 0;
-            while (n-- != 0) {
+            for (int i = 0; i <= this.index; i++) {
                 if (this.templateDatas[i] != null) {
                     this.templateStack.add(this.templateDatas[i]);
                 }
-                i++;
             }
 
             return Collections.unmodifiableList(new ArrayList<TemplateData>(this.templateStack));
