@@ -33,6 +33,7 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
+import thymeleafexamples.extrathyme.dialects.score.ScoreDialect;
 
 @Configuration
 @EnableWebMvc
@@ -89,6 +90,7 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter implements Applicat
     public SpringTemplateEngine templateEngine(){
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(templateResolver());
+        templateEngine.addDialect(new ScoreDialect());
         return templateEngine;
     }
 

@@ -24,14 +24,17 @@ import java.util.Set;
 
 import org.thymeleaf.dialect.AbstractProcessorDialect;
 import org.thymeleaf.processor.IProcessor;
+import org.thymeleaf.standard.StandardDialect;
 
 public class ScoreDialect extends AbstractProcessorDialect {
 
     private static final String DIALECT_NAME = "Score Dialect";
 
 
-    protected ScoreDialect() {
-        super(DIALECT_NAME, "score", 1000);
+    public ScoreDialect() {
+        // We will set this dialect the same "dialect processor" precedence as
+        // the Standard Dialect, so that processor executions can interleave.
+        super(DIALECT_NAME, "score", StandardDialect.PROCESSOR_PRECEDENCE);
     }
 
     /*
@@ -41,9 +44,10 @@ public class ScoreDialect extends AbstractProcessorDialect {
      */
     public Set<IProcessor> getProcessors(final String dialectPrefix) {
         final Set<IProcessor> processors = new HashSet<IProcessor>();
-        processors.add(new ClassForPositionAttrtibuteTagProcessor(dialectPrefix));
+        processors.add(new ClassForPositionAttributeTagProcessor(dialectPrefix));
         processors.add(new RemarkForPositionAttributeTagProcessor(dialectPrefix));
         processors.add(new HeadlinesElementTagProcessor(dialectPrefix));
+        processors.add(new MatchDayTodayModelProcessor(dialectPrefix));
         return processors;
     }
 
