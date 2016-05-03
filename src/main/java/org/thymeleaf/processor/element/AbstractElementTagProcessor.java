@@ -70,6 +70,9 @@ public abstract class AbstractElementTagProcessor
 
     }
 
+    protected final String getDialectPrefix() {
+        return this.dialectPrefix;
+    }
 
     public final MatchingElementName getMatchingElementName() {
         return this.matchingElementName;
