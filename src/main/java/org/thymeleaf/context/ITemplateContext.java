@@ -106,17 +106,21 @@ public interface ITemplateContext extends IExpressionContext {
     /**
      * <p>
      *   Returns the list of all the {@link IProcessableElementTag} objects corresponding to the hierarchy
-     *   of elements (open or standalone elements) that contains the element being currently processed.
+     *   of elements (open or standalone elements) that had to be processed in order to reach the current
+     *   point in execution.
      * </p>
      * <p>
      *   If the element being processed is a tag (open/standalone), it will appear at the end of the list.
      * </p>
      * <p>
-     *   Note this information is set at the <em>processor</em> level, so <strong>it should not be considered to be
-     *   <em>available</em> and/or <em>valid</em> at the pre-processor layer</strong>. The reason for this is the
-     *   hierarchy itself might vary during processing, and a specific event (tag, text...) might live at a different
-     *   point in hierarchy during parsing than during processing (besides, many new hierarchy levels can be created
-     *   during processing itself).
+     *   Note this hierarchy does not correspond with the tag hierarchy at the original template, but with the
+     *   hierarchy of processing (many tags could appear during processing itself and not be present at the
+     *   original template).
+     * </p>
+     * <p>
+     *   Also note that, because of this being the <em>processing-time</em> hierarchy, this information is set
+     *   at the <em>processor</em> level, so <strong>it should not be considered to be <em>available</em>
+     *   and/or <em>valid</em> at the pre-processor layer</strong>.
      * </p>
      *
      * @return the stack of elements (list of {@link IProcessableElementTag}).
