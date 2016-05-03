@@ -399,7 +399,6 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
 
 
     public void setElementTag(final IProcessableElementTag elementTag) {
-        Validate.notNull(elementTag, "Element Tag cannot be null");
         if (this.elementTags.length <= this.level) {
             this.elementTags = Arrays.copyOf(this.elementTags, Math.max(this.level, this.elementTags.length + DEFAULT_ELEMENT_HIERARCHY_SIZE));
         }

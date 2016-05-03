@@ -858,6 +858,16 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
 
 
         /*
+         * If we are resuming an execution after suspending it, we want to retire the register of the element tag
+         * that was added by the controller. The reason we want this is that the current tag was already registered
+         * by the controller when the execution was suspended, and we don't want it duplicated (nor altered).
+         */
+        if (currentGatheringModel != null && this.engineContext != null) {
+            this.engineContext.setElementTag(null);
+        }
+
+
+        /*
          * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
          * anyway (because of having been suspended).
          */
@@ -1242,6 +1252,16 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
          * flags to their original state before being suspended.
          */
         final IGatheringModelProcessable currentGatheringModel = obtainCurrentGatheringModel();
+
+
+        /*
+         * If we are resuming an execution after suspending it, we want to retire the register of the element tag
+         * that was added by the controller. The reason we want this is that the current tag was already registered
+         * by the controller when the execution was suspended, and we don't want it duplicated (nor altered).
+         */
+        if (currentGatheringModel != null && this.engineContext != null) {
+            this.engineContext.setElementTag(null);
+        }
 
 
         /*
