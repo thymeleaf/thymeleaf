@@ -71,6 +71,9 @@ public abstract class AbstractElementModelProcessor
 
     }
 
+    protected final String getDialectPrefix() {
+        return this.dialectPrefix;
+    }
 
     public final MatchingElementName getMatchingElementName() {
         return this.matchingElementName;
