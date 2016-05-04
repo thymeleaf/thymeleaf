@@ -484,10 +484,10 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         Charset responseCharset = null;
         String responseContentType = null;
         if (templateContentType != null) {
-            responseCharset = templateContentType.getCharSet();
+            responseCharset = templateContentType.getCharset();
             responseContentType = templateContentType.toString();
         } else {
-            responseCharset = DEFAULT_CONTENT_TYPE.getCharSet();
+            responseCharset = DEFAULT_CONTENT_TYPE.getCharset();
             responseContentType = DEFAULT_CONTENT_TYPE.toString();
         }
         if (templateCharacterEncoding != null) {
