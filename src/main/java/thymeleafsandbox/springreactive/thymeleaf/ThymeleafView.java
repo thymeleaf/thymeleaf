@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -597,23 +598,20 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
             final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
             final int responseMaxBufferSizeBytes, final DataBufferAllocator bufferAllocator, final Charset charset) {
 
-        return Flux.create(
-
-                subscriber -> {
-                    final IThrottledTemplateProcessor throttledProcessor = (IThrottledTemplateProcessor) subscriber.context();
+        return Flux.generate(
+                () -> initializeThrottledProcessor(templateName, templateEngine, markupSelectors, context),
+                (throttledProcessor, emitter) -> {
                     final DataBuffer buffer =
-                            (responseMaxBufferSizeBytes != Integer.MAX_VALUE?
+                            (responseMaxBufferSizeBytes != Integer.MAX_VALUE ?
                                     bufferAllocator.allocateBuffer(responseMaxBufferSizeBytes) :
                                     bufferAllocator.allocateBuffer());
                     throttledProcessor.process(responseMaxBufferSizeBytes, buffer.asOutputStream(), charset);
-                    subscriber.onNext(buffer);
+                    emitter.tryEmit(buffer);
                     if (throttledProcessor.isFinished()) {
-                        subscriber.onComplete();
+                        emitter.complete();
                     }
-                },
-
-                subscriber -> initializeThrottledProcessor(templateName, templateEngine, markupSelectors, context));
-
+                    return throttledProcessor;
+                });
     }
 
 
