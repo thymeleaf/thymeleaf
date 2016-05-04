@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -641,8 +640,8 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
                         logger.debug("Finished full execution (unbuffered) of Thymeleaf template [" + templateName + "].");
                     }
 
-                    subscriber.onNext(dataBuffer);
-                    subscriber.onComplete();
+                    subscriber.tryEmit(dataBuffer);
+                    subscriber.complete();
 
                 });
 
@@ -678,37 +677,44 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         // STEP 3: React to each chunk of published data by creating one or many (concatMap) DataBuffers containing
         //         the result of processing only that chunk.
         return dataDrivenWithContextFlow.concatMap(
-                valuesWithContext -> {
+                valuesWithContext ->
+                        Flux.generate(
+                                () -> {
 
-                    final IThrottledTemplateProcessor throttledProcessor = valuesWithContext.getThrottledProcessor();
-                    final List<Object> values = valuesWithContext.getValues();
-                    if (values != null) {
-                        dataDrivenIterator.feedBuffer(values);
-                    } else {
-                        dataDrivenIterator.feedingComplete();
-                    }
+                                    final List<Object> values = valuesWithContext.getValues();
+                                    if (values != null) {
+                                        dataDrivenIterator.feedBuffer(values);
+                                    } else {
+                                        dataDrivenIterator.feedingComplete();
+                                    }
+                                    return valuesWithContext;
 
-                    return Flux.create(
-                                subscriber -> {
+                                },
+                                (vwc, emitter) -> {
+
+                                    final List<Object> values = vwc.getValues();
+                                    final IThrottledTemplateProcessor throttledProcessor = vwc.getThrottledProcessor();
 
                                     final DataBuffer buffer =
                                             (responseMaxBufferSizeBytes != Integer.MAX_VALUE?
                                                     bufferAllocator.allocateBuffer(responseMaxBufferSizeBytes) :
                                                     bufferAllocator.allocateBuffer());
                                     throttledProcessor.process(responseMaxBufferSizeBytes, buffer.asOutputStream(), charset);
-                                    subscriber.onNext(buffer);
+                                    emitter.tryEmit(buffer);
                                     if (values != null) {
                                         if (!dataDrivenIterator.continueBufferExecution()) {
-                                            subscriber.onComplete();
+                                            emitter.complete();
                                         }
                                     } else {
                                         if (throttledProcessor.isFinished()) {
-                                            subscriber.onComplete();
+                                            emitter.complete();
                                         }
                                     }
-                                });
+                                    return vwc;
 
-                });
+                                })
+
+                );
 
     }
 
