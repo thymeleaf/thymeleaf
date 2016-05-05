@@ -43,10 +43,10 @@ public class MatchDayTodayModelProcessor extends AbstractAttributeModelProcessor
         super(
             TemplateMode.HTML, // This processor will apply only to HTML mode
             dialectPrefix,     // Prefix to be applied to name for matching
-            null,              // Tag name: match specifically this tag
-            false,             // Apply dialect prefix to tag name
-            ATTR_NAME,         // No attribute name: will match by tag name
-            true,              // No prefix to be applied to attribute name
+            null,              // No tag name: match any tag name
+            false,             // No prefix to be applied to tag name
+            ATTR_NAME,         // Name of the attribute that will be matched
+            true,              // Apply dialect prefix to attribute name
             PRECEDENCE,        // Precedence (inside dialect's own precedence)
             true);             // Remove the matched attribute afterwards
     }
