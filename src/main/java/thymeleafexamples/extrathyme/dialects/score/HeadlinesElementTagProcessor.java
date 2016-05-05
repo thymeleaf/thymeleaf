@@ -32,6 +32,7 @@ import org.thymeleaf.processor.element.AbstractElementTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.spring4.context.SpringContextUtils;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.unbescape.html.HtmlEscape;
 import thymeleafexamples.extrathyme.business.entities.Headline;
 import thymeleafexamples.extrathyme.business.entities.repositories.HeadlineRepository;
 
@@ -105,7 +106,7 @@ public class HeadlinesElementTagProcessor extends AbstractElementTagProcessor {
         final IModel model = modelFactory.createModel();
 
         model.add(modelFactory.createOpenElementTag("div", "class", "headlines"));
-        model.add(modelFactory.createText(headlineText));
+        model.add(modelFactory.createText(HtmlEscape.escapeHtml5(headlineText)));
         model.add(modelFactory.createCloseElementTag("div"));
 
         /*

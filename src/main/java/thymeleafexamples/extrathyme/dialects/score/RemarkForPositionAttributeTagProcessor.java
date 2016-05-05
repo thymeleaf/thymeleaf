@@ -29,6 +29,7 @@ import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.unbescape.html.HtmlEscape;
 import thymeleafexamples.extrathyme.business.entities.Remark;
 import thymeleafexamples.extrathyme.business.util.RemarkUtil;
 
@@ -104,9 +105,10 @@ public class RemarkForPositionAttributeTagProcessor extends AbstractAttributeTag
                         RemarkForPositionAttributeTagProcessor.class, "remarks." + remark.toString(), new Object[0], true);
 
         /*
-         * Set the computed message as the body of the tag
+         * Set the computed message as the body of the tag, HTML-escaped and
+         * non-processable (hence the 'false' argument)
          */
-        structureHandler.setBody(i18nMessage, false); // false == 'non-processable'
+        structureHandler.setBody(HtmlEscape.escapeHtml5(i18nMessage), false);
         
     }
 
