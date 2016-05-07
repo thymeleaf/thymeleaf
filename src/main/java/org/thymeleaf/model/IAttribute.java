@@ -50,7 +50,7 @@ public interface IAttribute {
      *
      * @return the complete name.
      */
-    public String getCompleteName();
+    public String getAttributeCompleteName();
 
     /**
      * <p>
@@ -65,7 +65,7 @@ public interface IAttribute {
      *
      * @return the attribute definition.
      */
-    public AttributeDefinition getDefinition();
+    public AttributeDefinition getAttributeDefinition();
 
     /**
      * <p>

@@ -102,11 +102,11 @@ final class Attribute implements IAttribute {
 
 
 
-    public AttributeDefinition getDefinition() {
+    public AttributeDefinition getAttributeDefinition() {
         return this.definition;
     }
 
-    public String getCompleteName() {
+    public String getAttributeCompleteName() {
         return this.completeName;
     }
 

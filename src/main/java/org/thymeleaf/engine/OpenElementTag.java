@@ -176,7 +176,7 @@ final class OpenElementTag
                 final IAttribute originalAttribute = originalAttributeArray[i];
                 newAttributeArray[i] =
                         new Attribute(
-                                originalAttribute.getDefinition(), originalAttribute.getCompleteName(),
+                                originalAttribute.getAttributeDefinition(), originalAttribute.getAttributeCompleteName(),
                                 originalAttribute.getOperator(), originalAttribute.getValue(), originalAttribute.getValueQuotes(),
                                 originalAttribute.getTemplateName(), originalAttribute.getLine(), originalAttribute.getCol());
             }

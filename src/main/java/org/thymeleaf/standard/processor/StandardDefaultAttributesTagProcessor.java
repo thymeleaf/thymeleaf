@@ -91,7 +91,7 @@ public final class StandardDefaultAttributesTagProcessor
         // should not be affected by modifications on the original tag attribute set
         for (final IAttribute attribute : attributes) {
 
-            final AttributeName attributeName = attribute.getDefinition().getAttributeName();
+            final AttributeName attributeName = attribute.getAttributeDefinition().getAttributeName();
             if (attributeName.isPrefixed()) {
                 if (TextUtil.equals(templateMode.isCaseSensitive(), attributeName.getPrefix(), this.dialectPrefix)) {
 
@@ -114,7 +114,7 @@ public final class StandardDefaultAttributesTagProcessor
 
         try {
 
-            final AttributeName attributeName = attribute.getDefinition().getAttributeName();
+            final AttributeName attributeName = attribute.getAttributeDefinition().getAttributeName();
             final String attributeValue =
                     EscapedAttributeUtils.unescapeAttribute(context.getTemplateMode(), attribute.getValue());
 
@@ -122,7 +122,7 @@ public final class StandardDefaultAttributesTagProcessor
             /*
              * Compute the new attribute name (i.e. the same, without the prefix)
              */
-            final String originalCompleteAttributeName = attribute.getCompleteName();
+            final String originalCompleteAttributeName = attribute.getAttributeCompleteName();
             final String canonicalAttributeName = attributeName.getAttributeName();
 
             final String newAttributeName;
