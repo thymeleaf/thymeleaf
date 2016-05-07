@@ -19,6 +19,8 @@
  */
 package thymeleafexamples.springmail.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
@@ -26,8 +28,11 @@ import org.springframework.web.servlet.ModelAndView;
 @ControllerAdvice
 public class ErrorController {
 
+    private static Logger logger = LoggerFactory.getLogger(ErrorController.class);
+
     @ExceptionHandler(Throwable.class)
     public ModelAndView exception(Throwable throwable) {
+        logger.error("Exception during execution of SpringMail application", throwable);
         String errorMessage = throwable != null ? throwable.getMessage() : "Unknown error";
         ModelAndView mav = new ModelAndView();
         mav.getModel().put("errorMessage", errorMessage);

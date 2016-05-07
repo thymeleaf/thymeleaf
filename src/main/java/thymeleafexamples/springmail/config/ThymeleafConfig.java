@@ -1,5 +1,7 @@
 package thymeleafexamples.springmail.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -10,10 +12,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-import org.thymeleaf.templateresolver.TemplateResolver;
+import org.thymeleaf.templateresolver.ITemplateResolver;
+import org.thymeleaf.templateresolver.StringTemplateResolver;
+
 import static thymeleafexamples.springmail.config.SpringWebInitializer.ENCODING;
 
 /**
@@ -23,6 +28,10 @@ import static thymeleafexamples.springmail.config.SpringWebInitializer.ENCODING;
 @ComponentScan("thymeleafexamples.springmail")
 @EnableWebMvc
 public class ThymeleafConfig extends WebMvcConfigurerAdapter {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
 
     /**
      * THYMELEAF: View Resolver - implementation of Spring's ViewResolver interface.
@@ -44,20 +53,21 @@ public class ThymeleafConfig extends WebMvcConfigurerAdapter {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.addTemplateResolver(emailTemplateResolver());
         templateEngine.addTemplateResolver(webTemplateResolver());
+        templateEngine.addTemplateResolver(stringTemplateResolver());
+        templateEngine.setMessageResolver(messageResolver());
         return templateEngine;
     }
 
     /**
      * THYMELEAF: Template Resolver for email templates.
      */
-    private TemplateResolver emailTemplateResolver() {
-        TemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+    private ITemplateResolver emailTemplateResolver() {
+        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setPrefix("/mail/");
-        templateResolver.setTemplateMode("HTML5");
+        templateResolver.setTemplateMode(TemplateMode.HTML);
         templateResolver.setCharacterEncoding(ENCODING);
-        templateResolver.setOrder(1);
-        // Template cache is true by default. Set to false if you want 
-        // templates to be automatically updated when modified.
+        templateResolver.setOrder(Integer.valueOf(1));
+        templateResolver.setCheckExistence(true);
         templateResolver.setCacheable(false);
         return templateResolver;
     }
@@ -66,17 +76,36 @@ public class ThymeleafConfig extends WebMvcConfigurerAdapter {
      * THYMELEAF: Template Resolver for webapp pages.
      * (we would not need this if our app was not web)
      */
-    private TemplateResolver webTemplateResolver() {
-        TemplateResolver templateResolver = new ServletContextTemplateResolver();
+    private ITemplateResolver webTemplateResolver() {
+        SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
+        templateResolver.setApplicationContext(this.applicationContext);
         templateResolver.setPrefix("/WEB-INF/templates/");
-        templateResolver.setTemplateMode("HTML5");
+        templateResolver.setTemplateMode(TemplateMode.HTML);
         templateResolver.setCharacterEncoding(ENCODING);
-        templateResolver.setOrder(2);
-        // Template cache is true by default. Set to false if you want 
-        // templates to be automatically updated when modified.
+        templateResolver.setOrder(Integer.valueOf(2));
+        templateResolver.setCheckExistence(true);
         templateResolver.setCacheable(false);
         return templateResolver;
     }
+
+    /**
+     * THYMELEAF: Template Resolver for String templates.
+     * (template will be a passed String -- for editable templates)
+     */
+    private ITemplateResolver stringTemplateResolver() {
+        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode("HTML5");
+        templateResolver.setOrder(Integer.valueOf(3));
+        templateResolver.setCheckExistence(true);
+        templateResolver.setCacheable(false);
+        return templateResolver;
+    }
+
+    private IMessageResolver messageResolver() {
+        // For convenience We will override the Spring one used by SpringTemplateEngine
+        return new StandardMessageResolver();
+    }
+
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -87,8 +116,5 @@ public class ThymeleafConfig extends WebMvcConfigurerAdapter {
 	    registry.addResourceHandler("/swf/**").addResourceLocations("/swf/");
     }
 
-    @Bean
-    public IMessageResolver messageResolver() {
-        return new StandardMessageResolver();
-    }
+
 }

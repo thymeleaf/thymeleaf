@@ -35,9 +35,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.messageresolver.IMessageResolver;
-import static org.thymeleaf.templatemode.StandardTemplateModeHandlers.HTML5;
-import thymeleafexamples.springmail.tools.StaticTemplateExecutor;
 
 @Service
 public class EmailService {
@@ -54,9 +51,7 @@ public class EmailService {
     
     @Autowired 
     private TemplateEngine templateEngine;
-    
-    @Autowired
-    private IMessageResolver messageResolver;
+
 
     /* 
      * Send HTML mail (simple) 
@@ -187,12 +182,12 @@ public class EmailService {
         ctx.setVariable("name", recipientName);
         ctx.setVariable("subscriptionDate", new Date());
         ctx.setVariable("hobbies", Arrays.asList("Cinema", "Sports", "Music"));
-        
-        final StaticTemplateExecutor templateExecutor = new StaticTemplateExecutor(
-            ctx, messageResolver, HTML5.getTemplateModeName());
-        final String output = templateExecutor.processTemplateCode(htmlContent);
+
+        // Create the HTML body using Thymeleaf
+        // NOTE the engine will end up using the StringTemplateResolver
+        final String output = this.templateEngine.process(htmlContent, ctx);
         message.setText(output, true /* isHtml */);
-        
+
         // Add the inline images, referenced from the HTML code as "cid:image-name"
         message.addInline("background", new ClassPathResource(BACKGROUND_IMAGE), PNG_MIME);
         message.addInline("logo-background", new ClassPathResource(LOGO_BACKGROUND_IMAGE), PNG_MIME);
