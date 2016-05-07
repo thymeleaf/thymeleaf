@@ -151,8 +151,9 @@ public class SpringMessageResolver
          * SECOND STEP: Look for the message using origin-based resolution, delegated to the StandardMessageResolver
          */
         if (origin != null) {
-            // We will be using context == null when delegating so that only origin-based resolution is performed
-            final String message = this.standardMessageResolver.resolveMessage(null, origin, key, messageParameters);
+            // We will be disabling template-based resolution when delegating in order to use only origin-based
+            final String message =
+                    this.standardMessageResolver.resolveMessage(context, origin, key, messageParameters, false, true, true);
             if (message != null) {
                 return message;
             }
