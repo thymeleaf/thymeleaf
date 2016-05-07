@@ -290,6 +290,16 @@
       <artifactId>thymeleaf</artifactId>
       <version>3.0.0-SNAPSHOT</version>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>ognl</groupId>
+          <artifactId>ognl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.javassist</groupId>
+          <artifactId>javassist</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
