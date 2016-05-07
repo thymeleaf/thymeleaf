@@ -27,13 +27,13 @@ import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.unbescape.html.HtmlEscape;
 
-public class SayToAttrProcessor extends AbstractAttributeTagProcessor {
+public class SayToAttributeTagProcessor extends AbstractAttributeTagProcessor {
 
     private static final String ATTR_NAME = "sayto";
     private static final int PRECEDENCE = 10000;
 
 
-    public SayToAttrProcessor(final String dialectPrefix) {
+    public SayToAttributeTagProcessor(final String dialectPrefix) {
         super(
             TemplateMode.HTML, // This processor will apply only to HTML mode
             dialectPrefix,     // Prefix to be applied to name for matching

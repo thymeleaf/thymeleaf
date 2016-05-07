@@ -37,8 +37,8 @@ public class HelloDialect extends AbstractProcessorDialect {
      */
     public Set<IProcessor> getProcessors(final String dialectPrefix) {
         final Set<IProcessor> processors = new HashSet<IProcessor>();
-        processors.add(new SayToAttrProcessor(dialectPrefix));
-        processors.add(new SayToPlanetAttrProcessor(dialectPrefix));
+        processors.add(new SayToAttributeTagProcessor(dialectPrefix));
+        processors.add(new SayToPlanetAttributeTagProcessor(dialectPrefix));
         return processors;
     }
 

@@ -31,7 +31,7 @@ import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.unbescape.html.HtmlEscape;
 
-public class SayToPlanetAttrProcessor extends AbstractAttributeTagProcessor {
+public class SayToPlanetAttributeTagProcessor extends AbstractAttributeTagProcessor {
 
     private static final String ATTR_NAME = "saytoplanet";
     private static final int PRECEDENCE = 10000;
@@ -39,7 +39,7 @@ public class SayToPlanetAttrProcessor extends AbstractAttributeTagProcessor {
     private static final String SAYTO_PLANET_MESSAGE = "msg.helloplanet";
 
     
-    public SayToPlanetAttrProcessor(final String dialectPrefix) {
+    public SayToPlanetAttributeTagProcessor(final String dialectPrefix) {
         super(
             TemplateMode.HTML, // This processor will apply only to HTML mode
             dialectPrefix,     // Prefix to be applied to name for matching
@@ -84,7 +84,7 @@ public class SayToPlanetAttrProcessor extends AbstractAttributeTagProcessor {
          */
         final String i18nMessage =
                 context.getMessage(
-                        SayToPlanetAttrProcessor.class,
+                        SayToPlanetAttributeTagProcessor.class,
                         SAYTO_PLANET_MESSAGE,
                         new Object[] {planet},
                         true);
