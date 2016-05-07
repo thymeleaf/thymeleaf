@@ -19,69 +19,81 @@
  */
 package thymeleafexamples.sayhello.dialect;
 
-import org.thymeleaf.Arguments;
-import org.thymeleaf.Configuration;
-import org.thymeleaf.dom.Element;
-import org.thymeleaf.processor.attr.AbstractTextChildModifierAttrProcessor;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.unbescape.html.HtmlEscape;
 
-public class SayToPlanetAttrProcessor 
-        extends AbstractTextChildModifierAttrProcessor {
+public class SayToPlanetAttrProcessor extends AbstractAttributeTagProcessor {
 
-    private static final String SAYTO_PLANET_MESSAGE = "msg.helloplanet"; 
+    private static final String ATTR_NAME = "saytoplanet";
+    private static final int PRECEDENCE = 10000;
+
+    private static final String SAYTO_PLANET_MESSAGE = "msg.helloplanet";
 
     
-    public SayToPlanetAttrProcessor() {
-        // Only execute this processor for 'saytoplanet' attributes.
-        super("saytoplanet");
+    public SayToPlanetAttrProcessor(final String dialectPrefix) {
+        super(
+            TemplateMode.HTML, // This processor will apply only to HTML mode
+            dialectPrefix,     // Prefix to be applied to name for matching
+            null,              // No tag name: match any tag name
+            false,             // No prefix to be applied to tag name
+            ATTR_NAME,         // Name of the attribute that will be matched
+            true,              // Apply dialect prefix to attribute name
+            PRECEDENCE,        // Precedence (inside dialect's precedence)
+            true);             // Remove the matched attribute afterwards
     }
 
-    
-    public int getPrecedence() {
-        // Higher (less-precedent) than any attribute in the
-        // SpringStandard dialect and also than 'sayto'.
-        return 11000;
-    }
 
-
-    
-    @Override
-    protected String getText(final Arguments arguments, final Element element, 
-            final String attributeName) {
+    protected void doProcess(
+            final ITemplateContext context, final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue,
+            final IElementTagStructureHandler structureHandler) {
 
         /*
          * In order to evaluate the attribute value as a Thymeleaf Standard Expression,
          * we first obtain the parser, then use it for parsing the attribute value into
          * an expression object, and finally execute this expression object.
          */
-        final Configuration configuration = arguments.getConfiguration();
+        final IEngineConfiguration configuration = context.getConfiguration();
 
         final IStandardExpressionParser parser =
                 StandardExpressions.getExpressionParser(configuration);
 
-        final IStandardExpression expression =
-                parser.parseExpression(configuration, arguments, element.getAttributeValue(attributeName));
+        final IStandardExpression expression = parser.parseExpression(context, attributeValue);
 
-        final String planet = (String) expression.execute(configuration, arguments);
+        final String planet = (String) expression.execute(context);
 
         /*
-         * This 'getMessage(...)' method will first try to resolve the
-         * message as a 'template message' (one that is defined for a specific 
-         * template or templates, and that would be resolved, in a Spring MVC app, 
-         * by Spring's MessageSource objects).
+         * This 'getMessage(...)' method will first try to resolve the message
+         * from the configured Spring Message Sources (because this is a Spring
+         * -enabled application).
          * 
-         * If not found, it will try to resolve it as a 'processor message', a type
-         * of messages meant to appear in .properties files by the side of the 
-         * attribute processor itself (or any of its superclasses) and, if needed, 
-         * be packaged along with it in a .jar file for better encapsulation of UI 
-         * components.
+         * If not found, it will try to resolve it from a classpath-bound
+         * .properties with the same name as the specified 'origin', which
+         * in this case is this processor's class itself. This allows resources
+         * to be packaged if needed in the same .jar files as the processors
+         * they are used in.
          */
-        final String message = 
-            getMessage(arguments, SAYTO_PLANET_MESSAGE, new Object[] {planet});
-        
-        return message;
+        final String i18nMessage =
+                context.getMessage(
+                        SayToPlanetAttrProcessor.class,
+                        SAYTO_PLANET_MESSAGE,
+                        new Object[] {planet},
+                        true);
+
+        /*
+         * Set the computed message as the body of the tag, HTML-escaped and
+         * non-processable (hence the 'false' argument)
+         */
+        structureHandler.setBody(HtmlEscape.escapeHtml5(i18nMessage), false);
         
     }
 

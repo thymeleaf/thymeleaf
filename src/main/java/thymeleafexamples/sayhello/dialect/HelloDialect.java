@@ -22,32 +22,23 @@ package thymeleafexamples.sayhello.dialect;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.thymeleaf.dialect.AbstractDialect;
+import org.thymeleaf.dialect.AbstractProcessorDialect;
 import org.thymeleaf.processor.IProcessor;
 
-public class HelloDialect extends AbstractDialect {
+public class HelloDialect extends AbstractProcessorDialect {
 
     public HelloDialect() {
-        super();
-    }
-    
-    /*
-     * All of this dialect's attributes and/or tags
-     * will start with 'hello:*'
-     */
-    public String getPrefix() {
-        return "hello";
+        super("Hello Dialect", "hello", 1000);
     }
 
     
     /*
      * The processors.
      */
-    @Override
-    public Set<IProcessor> getProcessors() {
+    public Set<IProcessor> getProcessors(final String dialectPrefix) {
         final Set<IProcessor> processors = new HashSet<IProcessor>();
-        processors.add(new SayToAttrProcessor());
-        processors.add(new SayToPlanetAttrProcessor());
+        processors.add(new SayToAttrProcessor(dialectPrefix));
+        processors.add(new SayToPlanetAttrProcessor(dialectPrefix));
         return processors;
     }
 

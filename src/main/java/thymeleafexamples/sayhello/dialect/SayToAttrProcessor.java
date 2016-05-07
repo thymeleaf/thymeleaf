@@ -19,41 +19,41 @@
  */
 package thymeleafexamples.sayhello.dialect;
 
-import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Element;
-import org.thymeleaf.processor.attr.AbstractTextChildModifierAttrProcessor;
+import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.unbescape.html.HtmlEscape;
 
-public class SayToAttrProcessor 
-        extends AbstractTextChildModifierAttrProcessor {
+public class SayToAttrProcessor extends AbstractAttributeTagProcessor {
 
-    
-    public SayToAttrProcessor() {
-        // Only execute this processor for 'sayto' attributes.
-        super("sayto");
+    private static final String ATTR_NAME = "sayto";
+    private static final int PRECEDENCE = 10000;
+
+
+    public SayToAttrProcessor(final String dialectPrefix) {
+        super(
+            TemplateMode.HTML, // This processor will apply only to HTML mode
+            dialectPrefix,     // Prefix to be applied to name for matching
+            null,              // No tag name: match any tag name
+            false,             // No prefix to be applied to tag name
+            ATTR_NAME,         // Name of the attribute that will be matched
+            true,              // Apply dialect prefix to attribute name
+            PRECEDENCE,        // Precedence (inside dialect's precedence)
+            true);             // Remove the matched attribute afterwards
     }
-    
 
-    public int getPrecedence() {
-        // A value of 10000 is higher than any attribute in the
-        // SpringStandard dialect. So this attribute will execute
-        // after all other attributes from that dialect, if in the 
-        // same tag.
-        return 10000;
-    }
 
-    
-    /*
-     * Our processor is a subclass of the convenience abstract implementation
-     * 'AbstractTextChildModifierAttrProcessor', which takes care of the
-     * DOM modifying stuff and allows us just to implement this 'getText(...)'
-     * method to compute the text to be set as tag body.
-     */
-    @Override
-    protected String getText(final Arguments arguments, final Element element, 
-            final String attributeName) {
+    protected void doProcess(
+            final ITemplateContext context, final IProcessableElementTag tag,
+            final AttributeName attributeName, final String attributeValue,
+            final IElementTagStructureHandler structureHandler) {
 
-        return "Hello, "  + element.getAttributeValue(attributeName) + "!";
-        
+        structureHandler.setBody(
+                "Hello, " + HtmlEscape.escapeHtml5(attributeValue) + "!", false);
+
     }
 
 
