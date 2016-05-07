@@ -216,8 +216,7 @@ public class StandardMessageResolver extends AbstractMessageResolver {
         this.defaultMessages.clear();
     }
 
-    
-    
+
 
 
 
@@ -225,7 +224,16 @@ public class StandardMessageResolver extends AbstractMessageResolver {
 
     public final String resolveMessage(
             final ITemplateContext context, final Class<?> origin, final String key, final Object[] messageParameters) {
+        return resolveMessage(context, origin, key, messageParameters, true, true, true);
+    }
 
+
+    public final String resolveMessage(
+            final ITemplateContext context, final Class<?> origin, final String key, final Object[] messageParameters,
+            final boolean performTemplateBasedResolution, final boolean performOriginBasedResolution,
+            final boolean performDefaultBasedResolution) {
+
+        Validate.notNull(context, "Context cannot be null");
         Validate.notNull(context.getLocale(), "Locale in context cannot be null");
         Validate.notNull(key, "Message key cannot be null");
 
@@ -239,7 +247,7 @@ public class StandardMessageResolver extends AbstractMessageResolver {
          *
          * This allows container templates to override the messages defined in fragments, which will act as defaults.
          */
-        if (context != null) {
+        if (performTemplateBasedResolution) {
 
             for (final TemplateData templateData : context.getTemplateStack()) {
 
@@ -294,7 +302,7 @@ public class StandardMessageResolver extends AbstractMessageResolver {
         /*
          * SECOND STEP: Look for the message using origin-based resolution
          */
-        if (origin != null) {
+        if (performOriginBasedResolution && origin != null) {
 
             ConcurrentHashMap<Locale, Map<String, String>> messagesByLocaleForOrigin = this.messagesByLocaleByOrigin.get(origin);
             if (messagesByLocaleForOrigin == null) {
@@ -326,7 +334,7 @@ public class StandardMessageResolver extends AbstractMessageResolver {
         /*
          * THIRD STEP: Try default messages.
          */
-        if (this.defaultMessages != null) {
+        if (performDefaultBasedResolution && this.defaultMessages != null) {
 
             final String message = this.defaultMessages.getProperty(key);
             if (message != null) {
