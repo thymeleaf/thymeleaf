@@ -142,7 +142,7 @@ final class StandardMessageResolutionUtils {
 
 
         final ClassLoader originClassLoader = originClass.getClassLoader();
-        final String originClassName = originClass.getClass().getName();
+        final String originClassName = originClass.getName();
 
         final String resourceBaseName = StringUtils.replace(originClassName, ".", "/");
 
