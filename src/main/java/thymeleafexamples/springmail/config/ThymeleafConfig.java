@@ -51,6 +51,7 @@ public class ThymeleafConfig extends WebMvcConfigurerAdapter {
 	@Bean
     public SpringTemplateEngine templateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setEnableSpringELCompiler(true); // Compiled SpringEL should speed up executions
         templateEngine.addTemplateResolver(emailTemplateResolver());
         templateEngine.addTemplateResolver(webTemplateResolver());
         templateEngine.addTemplateResolver(stringTemplateResolver());
