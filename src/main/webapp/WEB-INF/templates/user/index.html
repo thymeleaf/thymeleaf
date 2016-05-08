@@ -6,7 +6,7 @@
         <link rel="stylesheet" href="css/main.css" th:href="@{/css/main.css}" />
     </head>
     <body>
-        <div th:substituteby="index.html::logout"></div>
+        <div th:replace="index::logout"></div>
         <h1>Thymeleafexamples - Spring security</h1>
         <p>This is the <b>user</b> zone</p>
         <p>Only authenticated users with role <b>USER</b> are allowed to see this page.</p>

@@ -10,7 +10,8 @@
              sec:authorize="isAuthenticated()">
             Logged user: <span sec:authentication="name">Bob</span> |
             Roles: <span sec:authentication="principal.authorities">[ROLE_USER, ROLE_ADMIN]</span> |
-            <a href="index.html" th:href="@{/j_spring_security_logout}">Logout</a>
+            <!--/* When using CSRF this needs to be a POST */-->
+            <form th:action="@{/logout}" method="post" style="display:inline"><input type="submit" value="Logout"/></form>
         </div>
         <h1>Thymeleafexamples - Spring security</h1>
         <p>This is a demo of Thymeleaf and Spring-security integration.</p>

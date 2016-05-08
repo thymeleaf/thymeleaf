@@ -11,7 +11,7 @@
         <p>Example user: bob / demo</p>
         <p>Example user and administrator: ted / demo</p>
         <p th:if="${loginError}" class="error">Wrong user or password</p>
-        <form th:action="@{/login}" method="post">
+        <form th:action="@{/login.html}" method="post">
             <label for="username">Username</label>:
             <input type="text" id="username" name="username" autofocus="autofocus" /> <br />
             <label for="password">Password</label>:
