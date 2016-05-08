@@ -94,7 +94,7 @@
     <reactor.version>2.5.0.BUILD-SNAPSHOT</reactor.version>
     <jackson.version>2.7.3</jackson.version>
     <freemarker.version>2.3.23</freemarker.version>
-    <thymeleaf.version>3.0.0-SNAPSHOT</thymeleaf.version>
+    <thymeleaf.version>3.0.0.RELEASE</thymeleaf.version>
   </properties>
   
   
