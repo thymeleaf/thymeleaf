@@ -109,6 +109,9 @@ public abstract class ComplexExpression extends Expression {
         if (expression instanceof LessOrEqualToExpression) {
             return LessOrEqualToExpression.executeLessOrEqualTo(context, (LessOrEqualToExpression)expression, expContext);
         }
+        if(expression instanceof SwitchCaseExpression) {
+        	return SwitchCaseExpression.executeSwitchCase(context, (SwitchCaseExpression)expression, expContext);
+        }
 
         throw new TemplateProcessingException("Unrecognized complex expression: " + expression.getClass().getName());
         
