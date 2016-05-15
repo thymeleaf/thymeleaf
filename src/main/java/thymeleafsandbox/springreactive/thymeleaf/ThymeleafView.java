@@ -605,7 +605,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
                                     bufferAllocator.allocateBuffer(responseMaxBufferSizeBytes) :
                                     bufferAllocator.allocateBuffer());
                     throttledProcessor.process(responseMaxBufferSizeBytes, buffer.asOutputStream(), charset);
-                    emitter.tryEmit(buffer);
+                    emitter.next(buffer);
                     if (throttledProcessor.isFinished()) {
                         emitter.complete();
                     }
@@ -640,7 +640,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
                         logger.debug("Finished full execution (unbuffered) of Thymeleaf template [" + templateName + "].");
                     }
 
-                    subscriber.tryEmit(dataBuffer);
+                    subscriber.next(dataBuffer);
                     subscriber.complete();
 
                 });
@@ -700,7 +700,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
                                                     bufferAllocator.allocateBuffer(responseMaxBufferSizeBytes) :
                                                     bufferAllocator.allocateBuffer());
                                     throttledProcessor.process(responseMaxBufferSizeBytes, buffer.asOutputStream(), charset);
-                                    emitter.tryEmit(buffer);
+                                    emitter.next(buffer);
                                     if (values != null) {
                                         if (!dataDrivenIterator.continueBufferExecution()) {
                                             emitter.complete();
