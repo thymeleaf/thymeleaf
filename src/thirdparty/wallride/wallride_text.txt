@@ -1,0 +1,12 @@
+
+WallRide is an open-source, 100% pure Java multilingual CMS especially made for developers
+by Tagbangers, inc. It was developed using Spring Framework, Hibernate and Thymeleaf, and carefully designed
+for maintainability and customizability.
+
+Taking advantage of Thymeleaf, WallRide can separate templates completely from the system. For example,
+users can upload templates written with Thymeleaf to Amazon S3, and of course use local file systems. WallRide can
+also provide frontend developers with custom Thymeleaf dialects that allow them to place
+specific content in the specific section of the screen they want by only modifying templates,
+without server-side modification.
+
+LINK: http://www.wallride.org
