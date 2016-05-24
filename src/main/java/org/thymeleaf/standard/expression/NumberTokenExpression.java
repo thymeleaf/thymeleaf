@@ -20,6 +20,7 @@
 package org.thymeleaf.standard.expression;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,16 +54,29 @@ public final class NumberTokenExpression extends Token {
     public static final char DECIMAL_POINT = '.';
     
 
+
+    static Number computeValue(final String value) {
+        final BigDecimal bigDecimalValue = new BigDecimal(value);
+        if (bigDecimalValue.scale() > 0) {
+            return bigDecimalValue;
+        }
+        return bigDecimalValue.toBigInteger();
+    }
+
     
     public NumberTokenExpression(final String value) {
-        super(new BigDecimal(value));
+        super(computeValue(value));
     }
     
 
     
     @Override
     public String getStringRepresentation() {
-        return ((BigDecimal)getValue()).toPlainString();
+        final Object value = getValue();
+        if (value instanceof BigDecimal) {
+            return ((BigDecimal)getValue()).toPlainString();
+        }
+        return value.toString();
     }
 
 
