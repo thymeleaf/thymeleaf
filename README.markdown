@@ -20,7 +20,8 @@ This repository contains two projects:
 
 Current versions: 
 
-  * **Version 2.1.2.RELEASE** - for Thymeleaf 2.1 (requires 2.1.2+)
+  * **Version 3.0.0.RELEASE** - for Thymeleaf 3.0 (requires Thymeleaf 3.0.0+)
+  * **Version 2.1.2.RELEASE** - for Thymeleaf 2.1 (requires Thymeleaf 2.1.2+)
 
 
 License
@@ -30,12 +31,12 @@ This software is licensed under the [Apache License 2.0]
 (http://www.apache.org/licenses/LICENSE-2.0.html).
 
 
-Requirements
-------------
+Requirements (3.0.x)
+--------------------
 
-  *   Thymeleaf **2.1.2+**
-  *   Spring Framework version **3.0.x**, **3.1.x**, **3.2.x**, **4.0.x**
-  *   Spring Security version **3.0.x**, **3.1.1+**, **3.2.x**, **4.0.x**
+  *   Thymeleaf **3.0.0+**
+  *   Spring Framework version **3.0.x** to **4.3.x**
+  *   Spring Security version **3.0.x** to **4.1.x**
   *   Web environment (Spring Security integration cannot work offline)
 
 
@@ -90,7 +91,7 @@ etc.), and add the SpringSecurity dialect to our Template Engine so that we
 can use the `sec:*` attributes and special expression utility objects:
 
 ```xml
-    <bean id="templateEngine" class="org.thymeleaf.spring3.SpringTemplateEngine">
+    <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
       ...
       <property name="additionalDialects">
         <set>
