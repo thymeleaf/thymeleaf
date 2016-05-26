@@ -1176,7 +1176,16 @@ public class TemplateEngine {
         } catch (IOException e) {
             throw new TemplateOutputException("Error during creation of output", e);
         }
-    
+
+        /*
+         * Finally, flush the writer in order to make sure that everything has been written to output
+         */
+        try {
+            writer.flush();
+        } catch (final IOException e) {
+            throw new TemplateOutputException("An error happened while flushing output writer", e);
+        }
+
     }
 
     
