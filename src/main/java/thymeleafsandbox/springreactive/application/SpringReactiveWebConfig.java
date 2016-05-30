@@ -32,12 +32,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.ui.freemarker.SpringTemplateLoader;
-import org.springframework.web.reactive.ViewResolver;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
-import org.springframework.web.reactive.view.ViewResolverResultHandler;
-import org.springframework.web.reactive.view.freemarker.FreeMarkerConfigurer;
-import org.springframework.web.reactive.view.freemarker.FreeMarkerViewResolver;
+import org.springframework.web.reactive.result.view.ViewResolutionResultHandler;
+import org.springframework.web.reactive.result.view.ViewResolver;
+import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfigurer;
+import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewResolver;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -98,7 +98,7 @@ public class SpringReactiveWebConfig implements ApplicationContextAware {
 
 
     @Bean
-    public ViewResolverResultHandler viewResolverResultHandler() {
+    public ViewResolutionResultHandler viewResolverResultHandler() {
         final List<ViewResolver> viewResolvers = new ArrayList<>();
         // TODO * Order of addition here seems to have influence in how the ViewResolvers are queries, instead of
         // TODO   relying on their 'order' property
@@ -106,7 +106,7 @@ public class SpringReactiveWebConfig implements ApplicationContextAware {
         viewResolvers.add(thymeleafBufferedViewResolver());
         viewResolvers.add(thymeleafNormalViewResolver());
         viewResolvers.add(freeMarkerViewResolver());
-        final ViewResolverResultHandler viewResolverResultHandler = new ViewResolverResultHandler(viewResolvers, conversionService());
+        final ViewResolutionResultHandler viewResolverResultHandler = new ViewResolutionResultHandler(viewResolvers, conversionService());
         return viewResolverResultHandler;
     }
 

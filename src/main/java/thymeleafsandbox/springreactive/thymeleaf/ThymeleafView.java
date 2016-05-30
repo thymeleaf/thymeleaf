@@ -36,11 +36,11 @@ import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferAllocator;
+import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.reactive.view.AbstractView;
-import org.springframework.web.reactive.view.ViewResolverSupport;
+import org.springframework.web.reactive.result.view.AbstractView;
+import org.springframework.web.reactive.result.view.ViewResolverSupport;
 import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.ITemplateEngine;
@@ -595,7 +595,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
      */
     static Flux<DataBuffer> createBufferedOutputDrivenFlow(
             final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
-            final int responseMaxBufferSizeBytes, final DataBufferAllocator bufferAllocator, final Charset charset) {
+            final int responseMaxBufferSizeBytes, final DataBufferFactory bufferAllocator, final Charset charset) {
 
         return Flux.generate(
                 () -> initializeThrottledProcessor(templateName, templateEngine, markupSelectors, context),
@@ -622,7 +622,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
      */
     static Flux<DataBuffer> createNormalOutputDrivenFlow(
             final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
-            final DataBufferAllocator bufferAllocator, final Charset charset) {
+            final DataBufferFactory bufferAllocator, final Charset charset) {
 
         return Flux.create(
                 subscriber -> {
@@ -658,7 +658,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
     static Flux<DataBuffer> createDataDrivenFlow(
             final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
             final Publisher<Object> dataDriverPublisher, final int dataDriverChunkSizeElements, final DataDrivenTemplateIterator dataDrivenIterator,
-            final int responseMaxBufferSizeBytes, final DataBufferAllocator bufferAllocator, final Charset charset) {
+            final int responseMaxBufferSizeBytes, final DataBufferFactory bufferAllocator, final Charset charset) {
 
         // STEP 1: Create the chunks (flow buffering)
         final Flux<List<Object>> dataDrivenChunkedFlow = Flux.from(dataDriverPublisher).buffer(dataDriverChunkSizeElements);

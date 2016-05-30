@@ -29,8 +29,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.util.PatternMatchUtils;
-import org.springframework.web.reactive.View;
-import org.springframework.web.reactive.view.ViewResolverSupport;
+import org.springframework.web.reactive.result.view.View;
+import org.springframework.web.reactive.result.view.ViewResolver;
+import org.springframework.web.reactive.result.view.ViewResolverSupport;
 import org.thymeleaf.ITemplateEngine;
 import reactor.core.publisher.Mono;
 
@@ -42,7 +43,7 @@ import reactor.core.publisher.Mono;
  * @since 3.0.0
  *
  */
-public class ThymeleafViewResolver extends ViewResolverSupport {
+public class ThymeleafViewResolver extends ViewResolverSupport implements ViewResolver {
 
     
     private static final Logger vrlogger = LoggerFactory.getLogger(ThymeleafViewResolver.class);
