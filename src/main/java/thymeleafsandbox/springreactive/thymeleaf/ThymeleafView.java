@@ -554,7 +554,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
                 return response.writeWith(createDataDrivenFlow(
                         templateName, viewTemplateEngine, processMarkupSelectors, context,
                         contextBoundPublisher, templateDataDrivenChunkSizeElements, throttledIterator,
-                        templateResponseMaxBufferSizeBytes, getBufferAllocator(), charset));
+                        templateResponseMaxBufferSizeBytes, response.bufferFactory(), charset));
 
             }
         }
@@ -562,10 +562,10 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
         if (templateResponseMaxBufferSizeBytes == Integer.MAX_VALUE) {
             return response.writeWith(
-                    createNormalOutputDrivenFlow(templateName, viewTemplateEngine, processMarkupSelectors, context, getBufferAllocator(), charset));
+                    createNormalOutputDrivenFlow(templateName, viewTemplateEngine, processMarkupSelectors, context, response.bufferFactory(), charset));
         }
         return response.writeWith(
-                createBufferedOutputDrivenFlow(templateName, viewTemplateEngine, processMarkupSelectors, context, templateResponseMaxBufferSizeBytes, getBufferAllocator(), charset));
+                createBufferedOutputDrivenFlow(templateName, viewTemplateEngine, processMarkupSelectors, context, templateResponseMaxBufferSizeBytes, response.bufferFactory(), charset));
 
     }
 
