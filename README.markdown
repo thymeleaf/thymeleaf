@@ -63,57 +63,7 @@
        output to the output channels.
      * `/biglist.freemarker`: *Big* listing using FreeMarker. No limit to output buffers can be set. Model has to
        be fully resolved before template execution.
-     
-## Results
 
- Observed results for the *Big* listing:
- 
-#### FreeMarker (`/biglist.freemarker`)
- 
-```
-$ curl http://localhost:8080/biglist.freemarker > output
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100 76.4M    0 76.4M    0     0   701k      0 --:--:--  0:01:51 --:--:-- 18.6M
-```
-
- Latency: nothing received until full output was available (1m51s).
- 
-#### Thymeleaf NORMAL (`/biglist-normal.thymeleaf`)
- 
-```
-$ curl http://localhost:8080/biglist-normal.thymeleaf > output
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100 76.6M    0 76.6M    0     0   687k      0 --:--:--  0:01:54 --:--:-- 16.6M
-```
-
- Latency: nothing received until full output was available (1m54s).
- 
- 
-#### Thymeleaf BUFFERED (`/biglist-buffered.thymeleaf`)
- 
-```
-$ curl http://localhost:8080/biglist-buffered.thymeleaf > output
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100 76.6M    0 76.6M    0     0  22.3M      0 --:--:--  0:00:03 --:--:-- 22.3M
-```
-
- Latency: started receiving output almost instantly, finished receiving the whole 76M in 3secs.
- 
- 
-#### Thymeleaf DATA-DRIVEN (`/biglist-datadriven.thymeleaf`)
- 
-```
-$ curl http://localhost:8080/biglist-datadriven.thymeleaf > output
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100 76.6M    0 76.6M    0     0  23.6M      0 --:--:--  0:00:03 --:--:-- 23.6M
-```
-
- Latency: started receiving output almost instantly, finished receiving the whole 76M in 3secs.
- 
  
  
  
