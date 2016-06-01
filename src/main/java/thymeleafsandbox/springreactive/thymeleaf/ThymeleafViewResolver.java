@@ -358,7 +358,6 @@ public class ThymeleafViewResolver extends ViewResolverSupport implements ViewRe
 
         }
 
-        view.setBufferAllocator(getBufferAllocator());
         view.setSupportedMediaTypes(getSupportedMediaTypes());
 
         view.setTemplateEngine(getTemplateEngine());
