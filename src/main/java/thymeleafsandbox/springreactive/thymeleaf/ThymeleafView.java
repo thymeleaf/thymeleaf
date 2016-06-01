@@ -39,6 +39,7 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.reactive.result.view.AbstractView;
 import org.springframework.web.reactive.result.view.ViewResolverSupport;
 import org.springframework.web.server.ServerWebExchange;
@@ -304,12 +305,12 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
 
     @Override
-    protected Flux<DataBuffer> renderInternal(final Map<String, Object> renderAttributes, final ServerWebExchange exchange) {
+    protected Mono<Void> renderInternal(final Map<String, Object> renderAttributes, final ServerWebExchange exchange) {
         return renderFragmentInternal(this.markupSelectors, renderAttributes, exchange);
     }
 
 
-    protected Flux<DataBuffer> renderFragmentInternal(
+    protected Mono<Void> renderFragmentInternal(
             final Set<String> markupSelectorsToRender, final Map<String, Object> renderAttributes, final ServerWebExchange exchange) {
 
         final String viewTemplateName = getTemplateName();
@@ -325,6 +326,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
             throw new IllegalArgumentException("Property 'thymeleafTemplateEngine' is required");
         }
 
+        final ServerHttpResponse response = exchange.getResponse();
 
         /*
          * ----------------------------------------------------------------------------------------------------------
@@ -549,19 +551,21 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
                 final Publisher<Object> contextBoundPublisher = (Publisher<Object>) dataDrivenVariableValue;
 
-                return createDataDrivenFlow(
+                return response.writeWith(createDataDrivenFlow(
                         templateName, viewTemplateEngine, processMarkupSelectors, context,
                         contextBoundPublisher, templateDataDrivenChunkSizeElements, throttledIterator,
-                        templateResponseMaxBufferSizeBytes, getBufferAllocator(), charset);
+                        templateResponseMaxBufferSizeBytes, getBufferAllocator(), charset));
 
             }
         }
 
 
         if (templateResponseMaxBufferSizeBytes == Integer.MAX_VALUE) {
-            return createNormalOutputDrivenFlow(templateName, viewTemplateEngine, processMarkupSelectors, context, getBufferAllocator(), charset);
+            return response.writeWith(
+                    createNormalOutputDrivenFlow(templateName, viewTemplateEngine, processMarkupSelectors, context, getBufferAllocator(), charset));
         }
-        return createBufferedOutputDrivenFlow(templateName, viewTemplateEngine, processMarkupSelectors, context, templateResponseMaxBufferSizeBytes, getBufferAllocator(), charset);
+        return response.writeWith(
+                createBufferedOutputDrivenFlow(templateName, viewTemplateEngine, processMarkupSelectors, context, templateResponseMaxBufferSizeBytes, getBufferAllocator(), charset));
 
     }
 
