@@ -358,9 +358,11 @@ public class ThymeleafViewResolver extends ViewResolverSupport implements ViewRe
 
         }
 
+        view.setBufferAllocator(getBufferAllocator());
+        view.setSupportedMediaTypes(getSupportedMediaTypes());
+
         view.setTemplateEngine(getTemplateEngine());
         view.setStaticVariables(getStaticVariables());
-
 
         // We give view beans the opportunity to specify the template name to be used
         if (view.getTemplateName() == null) {
