@@ -400,7 +400,7 @@ public final class FieldUtils {
         final int pathLen = path.length();
         for (int charPos = 0; charPos < pathLen; charPos++) {
             final char c = path.charAt(charPos);
-            if (!Character.isJavaIdentifierPart(c) || c == '.') {
+            if (!Character.isJavaIdentifierPart(c) && c != '.') {
                 return false;
             }
         }
