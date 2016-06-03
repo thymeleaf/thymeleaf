@@ -64,7 +64,7 @@ public class BigList {
 
         final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
         // We need to fully resolve the list before executing the template
-        final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).toList().get();
+        final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).collectList().block();
 
         model.addAttribute("dataSource", playlistEntries);
 
@@ -78,7 +78,7 @@ public class BigList {
 
         final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
         // We need to fully resolve the list before executing the template
-        final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).toList().get();
+        final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).collectList().block();
 
         model.addAttribute("dataSource", playlistEntries);
 
@@ -92,7 +92,7 @@ public class BigList {
 
         final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
         // We need to fully resolve the list before executing the template
-        final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).toList().get();
+        final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).collectList().block();
 
         model.addAttribute("dataSource", playlistEntries);
 
