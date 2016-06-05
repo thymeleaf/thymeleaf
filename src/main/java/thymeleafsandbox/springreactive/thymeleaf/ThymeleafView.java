@@ -21,6 +21,7 @@ package thymeleafsandbox.springreactive.thymeleaf;
 
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -81,18 +82,9 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
     // TODO * Add Path Variable management when it's available in Spring Reactive
     // private static final String pathVariablesSelector = ...
 
-    /**
-     * <p>
-     *   Default charset set to UTF-8, default for Spring Reactive.
-     *   Value is "<tt>text/html;charset=UTF-8</tt>".
-     * </p>
-     */
-    public static final MediaType DEFAULT_CONTENT_TYPE = ViewResolverSupport.DEFAULT_CONTENT_TYPE;
-    // TODO * Application of AbstractView's List<MediaType> supportedMediaTypes is still unclear in Spring Reactive
-    
 
     private String beanName = null;
-    private MediaType contentType = DEFAULT_CONTENT_TYPE;
+    private MediaType contentType = null;
     private boolean contentTypeSet = false;
     private String characterEncoding = null;
     private ITemplateEngine templateEngine = null;
@@ -469,41 +461,29 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
          * ----------------------------------------------------------------------------------------------------------
          */
 
-        final MediaType templateContentType = getContentType();
-        final Locale templateLocale = getLocale();
-        final String templateCharacterEncoding = getCharacterEncoding();
         final int templateResponseMaxBufferSizeBytes = getResponseMaxBufferSizeBytes();
         final String templateDataDrivenVariableName = getDataDrivenVariableName();
         final int templateDataDrivenChunkSizeElements = getDataDrivenChunkSizeElements();
 
-
         final HttpHeaders responseHeaders = exchange.getResponse().getHeaders();
+        final Locale templateLocale = getLocale();
         if (templateLocale != null) {
             // TODO * Change this to less-artisan code if the HttpHeaders class at some point in the future allows
             // TODO   setting the Content-Language at a higher level.
             responseHeaders.set("Content-Language", templateLocale.toString());
         }
-        Charset responseCharset = null;
-        String responseContentType = null;
-        if (templateContentType != null) {
-            responseCharset = templateContentType.getCharset();
-            responseContentType = templateContentType.toString();
-        } else {
-            responseCharset = DEFAULT_CONTENT_TYPE.getCharset();
-            responseContentType = DEFAULT_CONTENT_TYPE.toString();
-        }
-        if (templateCharacterEncoding != null) {
-            responseCharset = Charset.forName(templateCharacterEncoding);
-            final int separatorPos = responseContentType.indexOf(';');
-            if (separatorPos < 0) {
-                responseContentType = responseContentType + ";charset=" + responseCharset.toString();
-            } else {
-                responseContentType = responseContentType.substring(0, separatorPos) + ";charset=" + responseCharset.toString();
-            }
-        }
-        responseHeaders.setContentType(MediaType.valueOf(responseContentType));
 
-        final Charset charset = responseCharset;
+        // We will compute the media types by first checking if the content-type and character encoding that have
+        // been configured for this view are already there and, if not, modify these media types. Note also that
+        // we will check that all media types specify the same character encoding (so that we can use it for byte[]
+        // output at the output streams).
+        final List<MediaType> supportedMediaTypes =
+                computeSupportedMediaTypes(getSupportedMediaTypes(), getContentType(), getCharacterEncoding());
+        setSupportedMediaTypes(supportedMediaTypes);
+
+        // By this time, we know all media types are charset-compatible, and there is at least one media type, so
+        // we can just take the first one.
+        final Charset charset = supportedMediaTypes.get(0).getCharset();
 
 
         /*
@@ -721,6 +701,89 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
                 );
 
     }
+
+
+
+    static MediaType combineMediaType(final MediaType mediaType, final Charset charset) {
+        if (charset == null) {
+            return mediaType;
+        }
+        final Charset mediaTypeCharset = mediaType.getCharset();
+        if (mediaTypeCharset == null) {
+            return MediaType.valueOf(mediaType.toString() + ";charset=" + charset.toString());
+        }
+        if (mediaTypeCharset.equals(charset)) {
+            return mediaType;
+        }
+        final String mediaTypeStr = mediaType.toString();
+        final int separatorPos = mediaTypeStr.indexOf(';');
+        if (separatorPos < 0) {
+            return MediaType.valueOf(mediaTypeStr + ";charset=" + charset.toString());
+        }
+        return MediaType.valueOf(mediaTypeStr.substring(0, separatorPos) + ";charset=" + charset.toString());
+    }
+
+
+
+    static List<MediaType> computeSupportedMediaTypes(
+            final List<MediaType> supportedMediaTypes, final MediaType templateContentType, final String templateCharacterEncoding) {
+
+        Charset responseCharset = null;
+        if (templateCharacterEncoding != null) {
+            responseCharset = Charset.forName(templateCharacterEncoding);
+        }
+        final Charset templateContentTypeCharset = (templateContentType == null? null : templateContentType.getCharset());
+        if (responseCharset == null && templateContentTypeCharset != null) {
+            responseCharset = templateContentTypeCharset;
+        }
+        if (responseCharset == null && supportedMediaTypes != null && !supportedMediaTypes.isEmpty()) {
+            for (final MediaType mediaType : supportedMediaTypes) {
+                final Charset mediaTypeCharset = mediaType.getCharset();
+                if (responseCharset == null) {
+                    responseCharset = mediaTypeCharset;
+                } else {
+                    if (mediaTypeCharset != null && !responseCharset.equals(mediaTypeCharset)) {
+                        throw new TemplateProcessingException(
+                                "At least two supported media types have been configured with incompatible " +
+                                "character encoding: " + responseCharset + " and " + mediaTypeCharset + ". If more than " +
+                                "one supported media type is configured and character encoding is not explicitly " +
+                                "configured for a view, all configured charsets must match.");
+                    }
+                }
+            }
+        }
+        if (responseCharset == null) {
+            responseCharset = ViewResolverSupport.DEFAULT_CONTENT_TYPE.getCharset();
+        }
+
+
+        // We have explicitly set a content type, so we must use it as the only supported media type. But we
+        // might need to add/change its charset by combining it
+        if (templateContentType != null) {
+            return Collections.singletonList(combineMediaType(templateContentType, responseCharset));
+        }
+
+        // If we haven't either explicitly set a content type, nor there are supported media types coming from
+        // the higher-level configuration, we will use the default
+        if (supportedMediaTypes == null || supportedMediaTypes.isEmpty()) {
+            return Collections.singletonList(combineMediaType(ViewResolverSupport.DEFAULT_CONTENT_TYPE, responseCharset));
+        }
+
+        // If we have 'supported media types' configured, the most common case is that we have only one, so we will
+        // take a shortcut here...
+        if (supportedMediaTypes.size() == 1) {
+            return Collections.singletonList(combineMediaType(supportedMediaTypes.get(0), responseCharset));
+        }
+
+        // We will create a new list of media types, making sure we combine the charsets adequately
+        final List<MediaType> mediaTypes = new ArrayList<>(supportedMediaTypes.size());
+        for (final MediaType supportedMediaType : supportedMediaTypes) {
+            mediaTypes.add(combineMediaType(supportedMediaType, responseCharset));
+        }
+        return mediaTypes;
+
+    }
+
 
 
     static final class DataDrivenValuesWithContext {
