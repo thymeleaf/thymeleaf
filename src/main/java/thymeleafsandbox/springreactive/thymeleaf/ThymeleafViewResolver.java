@@ -21,6 +21,7 @@ package thymeleafsandbox.springreactive.thymeleaf;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.http.MediaType;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.reactive.result.view.ViewResolver;
@@ -358,7 +360,6 @@ public class ThymeleafViewResolver extends ViewResolverSupport implements ViewRe
 
         }
 
-        view.setSupportedMediaTypes(getSupportedMediaTypes());
 
         view.setTemplateEngine(getTemplateEngine());
         view.setStaticVariables(getStaticVariables());
@@ -368,27 +369,52 @@ public class ThymeleafViewResolver extends ViewResolverSupport implements ViewRe
             view.setTemplateName(viewName);
         }
 
-        if (!view.isContentTypeSet() && getContentType() != null) {
+        if (getContentType() != null && !view.isContentTypeSet()) {
             view.setContentType(getContentType());
         }
-        if (view.getLocale() == null && locale != null) {
+        if (locale != null && view.getLocale() == null) {
             view.setLocale(locale);
         }
-        if (view.getCharacterEncoding() == null && getCharacterEncoding() != null) {
+        if (getCharacterEncoding() != null && view.getCharacterEncoding() == null) {
             view.setCharacterEncoding(getCharacterEncoding());
         }
-        if (view.getNullableResponseMaxChunkSize() == null && getResponseMaxBufferSizeBytes() != ThymeleafView.DEFAULT_RESPONSE_BUFFER_SIZE_BYTES) {
+        if (!viewMediaTypesAreDefaultOrEmpty(getSupportedMediaTypes()) && viewMediaTypesAreDefaultOrEmpty(view.getSupportedMediaTypes())) {
+            view.setSupportedMediaTypes(getSupportedMediaTypes());
+        }
+
+        // Once all content-type-related info has been set, compute the definitive supported media types to be used
+        // for content negotiation at the view level. Note it is important that this is performed now, before
+        // the "render" methods are called on the view itself by the framework (by then, all content negotiation
+        // would be already done).
+        view.initializeMediaTypes();
+
+
+        if (getResponseMaxBufferSizeBytes() != ThymeleafView.DEFAULT_RESPONSE_BUFFER_SIZE_BYTES && view.getNullableResponseMaxChunkSize() == null) {
             view.setResponseMaxBufferSizeBytes(getResponseMaxBufferSizeBytes());
         }
-        if (view.getDataDrivenVariableName() == null && getDataDrivenVariableName() != null) {
+        if (getDataDrivenVariableName() != null && view.getDataDrivenVariableName() == null) {
             view.setDataDrivenVariableName(getDataDrivenVariableName());
         }
-        if (view.getNullableDataDrivenBufferSize() == null && getDataDrivenChunkSizeElements() != ThymeleafView.DEFAULT_DATA_DRIVEN_CHUNK_SIZE_ELEMENTS) {
+        if (getDataDrivenChunkSizeElements() != ThymeleafView.DEFAULT_DATA_DRIVEN_CHUNK_SIZE_ELEMENTS && view.getNullableDataDrivenBufferSize() == null) {
             view.setDataDrivenChunkSizeElements(getDataDrivenChunkSizeElements());
         }
 
         return Mono.just(view);
 
     }
+
+
+
+    private static boolean viewMediaTypesAreDefaultOrEmpty(final List<MediaType> mediaTypes) {
+        if (mediaTypes == null || mediaTypes.size() == 0) {
+            return true;
+        }
+        if (mediaTypes.size() > 1) {
+            return false;
+        }
+        final MediaType firstMediaType = mediaTypes.get(0);
+        return firstMediaType == null || firstMediaType.equals(ViewResolverSupport.DEFAULT_CONTENT_TYPE);
+    }
+
 
 }

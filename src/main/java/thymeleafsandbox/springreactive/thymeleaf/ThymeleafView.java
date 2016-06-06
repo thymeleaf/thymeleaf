@@ -473,17 +473,9 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
             responseHeaders.set("Content-Language", templateLocale.toString());
         }
 
-        // We will compute the media types by first checking if the content-type and character encoding that have
-        // been configured for this view are already there and, if not, modify these media types. Note also that
-        // we will check that all media types specify the same character encoding (so that we can use it for byte[]
-        // output at the output streams).
-        final List<MediaType> supportedMediaTypes =
-                computeSupportedMediaTypes(getSupportedMediaTypes(), getContentType(), getCharacterEncoding());
-        setSupportedMediaTypes(supportedMediaTypes);
-
         // By this time, we know all media types are charset-compatible, and there is at least one media type, so
         // we can just take the first one.
-        final Charset charset = supportedMediaTypes.get(0).getCharset();
+        final Charset charset = getSupportedMediaTypes().get(0).getCharset();
 
 
         /*
@@ -725,8 +717,16 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
 
 
-    static List<MediaType> computeSupportedMediaTypes(
-            final List<MediaType> supportedMediaTypes, final MediaType templateContentType, final String templateCharacterEncoding) {
+    // We will compute the media types by first checking if the content-type and character encoding that have
+    // been configured for this view are already there and, if not, modify these media types. Note also that
+    // we will check that all media types specify the same character encoding (so that we can use it for byte[]
+    // output at the output streams).
+    void initializeMediaTypes() {
+
+        final List<MediaType> supportedMediaTypes = getSupportedMediaTypes();
+        final MediaType templateContentType = getContentType();
+        final String templateCharacterEncoding = getCharacterEncoding();
+
 
         Charset responseCharset = null;
         if (templateCharacterEncoding != null) {
@@ -757,30 +757,38 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         }
 
 
-        // We have explicitly set a content type, so we must use it as the only supported media type. But we
-        // might need to add/change its charset by combining it
+        final List<MediaType> computedSupportedMediaTypes;
         if (templateContentType != null) {
-            return Collections.singletonList(combineMediaType(templateContentType, responseCharset));
+            // We have explicitly set a content type, so we must use it as the only supported media type. But we
+            // might need to add/change its charset by combining it
+
+            computedSupportedMediaTypes =  Collections.singletonList(combineMediaType(templateContentType, responseCharset));
+
+        } else if (supportedMediaTypes == null || supportedMediaTypes.isEmpty()) {
+            // If we haven't either explicitly set a content type, nor there are supported media types coming from
+            // the higher-level configuration, we will use the default
+
+            computedSupportedMediaTypes = Collections.singletonList(combineMediaType(ViewResolverSupport.DEFAULT_CONTENT_TYPE, responseCharset));
+
+        } else if (supportedMediaTypes.size() == 1) {
+            // If we have 'supported media types' configured, the most common case is that we have only one, so we will
+            // take a shortcut here...
+
+            computedSupportedMediaTypes = Collections.singletonList(combineMediaType(supportedMediaTypes.get(0), responseCharset));
+
+        } else {
+            // We will create a new list of media types, making sure we combine the charsets adequately
+
+            final List<MediaType> mediaTypes = new ArrayList<>(supportedMediaTypes.size());
+            for (final MediaType supportedMediaType : supportedMediaTypes) {
+                mediaTypes.add(combineMediaType(supportedMediaType, responseCharset));
+            }
+            computedSupportedMediaTypes = mediaTypes;
+
         }
 
-        // If we haven't either explicitly set a content type, nor there are supported media types coming from
-        // the higher-level configuration, we will use the default
-        if (supportedMediaTypes == null || supportedMediaTypes.isEmpty()) {
-            return Collections.singletonList(combineMediaType(ViewResolverSupport.DEFAULT_CONTENT_TYPE, responseCharset));
-        }
-
-        // If we have 'supported media types' configured, the most common case is that we have only one, so we will
-        // take a shortcut here...
-        if (supportedMediaTypes.size() == 1) {
-            return Collections.singletonList(combineMediaType(supportedMediaTypes.get(0), responseCharset));
-        }
-
-        // We will create a new list of media types, making sure we combine the charsets adequately
-        final List<MediaType> mediaTypes = new ArrayList<>(supportedMediaTypes.size());
-        for (final MediaType supportedMediaType : supportedMediaTypes) {
-            mediaTypes.add(combineMediaType(supportedMediaType, responseCharset));
-        }
-        return mediaTypes;
+        // Finally, once computed, we can set the new list of supported media types
+        setSupportedMediaTypes(computedSupportedMediaTypes);
 
     }
 
