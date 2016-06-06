@@ -20,22 +20,14 @@
 package thymeleafsandbox.springreactive.application;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.ui.freemarker.SpringTemplateLoader;
-import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerAdapter;
-import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
-import org.springframework.web.reactive.result.view.ViewResolutionResultHandler;
-import org.springframework.web.reactive.result.view.ViewResolver;
+import org.springframework.web.reactive.config.ViewResolverRegistry;
+import org.springframework.web.reactive.config.WebReactiveConfiguration;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewResolver;
 import org.thymeleaf.spring4.SpringTemplateEngine;
@@ -45,9 +37,7 @@ import thymeleafsandbox.springreactive.thymeleaf.ThymeleafViewResolver;
 
 @Configuration
 @ComponentScan("thymeleafsandbox.springreactive.web")
-public class SpringReactiveWebConfig implements ApplicationContextAware {
-
-    public static final String CHARACTER_ENCODING = "UTF-8";
+public class SpringReactiveWebConfig extends WebReactiveConfiguration {
 
 
     private ApplicationContext applicationContext = null;
@@ -60,32 +50,14 @@ public class SpringReactiveWebConfig implements ApplicationContextAware {
     }
 
 
+    // TODO * It would be more comfortable to have a getApplicationContext() method at WebReactiveConfiguration
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+        super.setApplicationContext(applicationContext);
         this.applicationContext = applicationContext;
     }
 
 
-
-    @Bean
-    public RequestMappingHandlerMapping handlerMapping() {
-        final RequestMappingHandlerMapping handlerMapping = new RequestMappingHandlerMapping();
-        // TODO * How to add resource handlers for /images, /css, /js, etc.?
-        return handlerMapping;
-    }
-
-
-    @Bean
-    public RequestMappingHandlerAdapter handlerAdapter() {
-        RequestMappingHandlerAdapter handlerAdapter = new RequestMappingHandlerAdapter();
-        handlerAdapter.setConversionService(conversionService());
-        return handlerAdapter;
-    }
-
-
-    @Bean
-    public ConversionService conversionService() {
-        return new GenericConversionService();
-    }
+    // TODO * How could we add resource handlers for /images, /css, /js, etc.?
 
 
 
@@ -96,18 +68,12 @@ public class SpringReactiveWebConfig implements ApplicationContextAware {
      * --------------------------------------
      */
 
-
-    @Bean
-    public ViewResolutionResultHandler viewResolverResultHandler() {
-        final List<ViewResolver> viewResolvers = new ArrayList<>();
-        // TODO * Order of addition here seems to have influence in how the ViewResolvers are queries, instead of
-        // TODO   relying on their 'order' property
-        viewResolvers.add(thymeleafDataDrivenViewResolver());
-        viewResolvers.add(thymeleafBufferedViewResolver());
-        viewResolvers.add(thymeleafNormalViewResolver());
-        viewResolvers.add(freeMarkerViewResolver());
-        final ViewResolutionResultHandler viewResolverResultHandler = new ViewResolutionResultHandler(viewResolvers, conversionService());
-        return viewResolverResultHandler;
+    @Override
+    protected void configureViewResolvers(final ViewResolverRegistry registry) {
+        registry.viewResolver(thymeleafDataDrivenViewResolver());
+        registry.viewResolver(thymeleafBufferedViewResolver());
+        registry.viewResolver(thymeleafNormalViewResolver());
+        registry.viewResolver(freeMarkerViewResolver());
     }
 
 
