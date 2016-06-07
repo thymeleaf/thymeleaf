@@ -300,7 +300,7 @@ public class ThymeleafViewResolver extends ViewResolverSupport implements ViewRe
         // Process redirects (HTTP redirects)
         if (viewName.startsWith(REDIRECT_URL_PREFIX)) {
             vrlogger.trace("[THYMELEAF] View \"{}\" is a redirect, and will not be handled directly by ThymeleafViewResolver.", viewName);
-            // TODO * No "ReactiveView" implementation in Spring Reactive yet
+            // TODO * No "RedirectView" implementation in Spring Reactive yet
             throw new UnsupportedOperationException("Redirects are not currently supported by ThymeleafViewResolver");
         }
         // Process forwards (to JSP resources)

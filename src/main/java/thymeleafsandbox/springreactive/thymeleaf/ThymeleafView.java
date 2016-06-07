@@ -332,6 +332,7 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
          */
 
         final Map<String, Object> mergedModel = new HashMap<>(30);
+        // First of all, set all the static variables into the mergedModel
         final Map<String, Object> templateStaticVariables = getStaticVariables();
         if (templateStaticVariables != null) {
             mergedModel.putAll(templateStaticVariables);
@@ -351,8 +352,6 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         // Note Spring's EvaluationContexts are NOT THREAD-SAFE (in exchange for SpelExpressions being thread-safe).
         // That's why we need to create a new EvaluationContext for each request / template execution, even if it is
         // quite expensive to create because of requiring the initialization of several ConcurrentHashMaps.
-        // TODO * In SpringMVC we were obtaining the ConversionService from the request, because it had been placed there
-        // TODO   by SpringMVC's infrastructure. Now we are getting it from the ApplicationContext. Might this be an issue?
         final ConversionService conversionService = applicationContext.getBean(ConversionService.class);
         final ThymeleafEvaluationContext evaluationContext =
                 new ThymeleafEvaluationContext(applicationContext, conversionService);
