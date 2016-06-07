@@ -108,7 +108,7 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
      *   Creates a new instance of this {@link IEngineContext} implementation.
      * </p>
      * <p>
-     *   Note that implementations of {@link IEngineContext} are not meant to be used in order to execute
+     *   Note that implementations of {@link IEngineContext} are not meant to be used in order to call
      *   the template engine (use implementations of {@link IContext} such as {@link Context} or {@link WebContext}
      *   instead). This is therefore mostly an <b>internal</b> implementation, and users should have no reason
      *   to ever call this constructor except in very specific integration/extension scenarios.
