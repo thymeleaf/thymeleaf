@@ -41,6 +41,7 @@ import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.result.view.AbstractView;
 import org.springframework.web.reactive.result.view.ViewResolverSupport;
 import org.springframework.web.server.ServerWebExchange;
@@ -75,12 +76,6 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
     public static final int DEFAULT_RESPONSE_BUFFER_SIZE_BYTES = Integer.MAX_VALUE;
     public static final int DEFAULT_DATA_DRIVEN_CHUNK_SIZE_ELEMENTS = 100;
-
-    /*
-     * Name of the variable containing the map of path variables to be applied.
-     */
-    // TODO * Add Path Variable management when it's available in Spring Reactive
-    // private static final String pathVariablesSelector = ...
 
 
     private String beanName = null;
@@ -337,7 +332,13 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
         if (templateStaticVariables != null) {
             mergedModel.putAll(templateStaticVariables);
         }
-        // TODO * Add Path Variables map to the merged model (when they exist in Spring Reactive)
+        // Add path variables to merged model (if there are any)
+        final Map<String, Object> pathVars =
+                (Map<String, Object>) exchange.getAttributes().get(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+        if (pathVars != null) {
+            mergedModel.putAll(pathVars);
+        }
+        // Simply dump all the renderAttributes (model coming from the controller) into the merged model
         if (renderAttributes != null) {
             mergedModel.putAll(renderAttributes);
         }
