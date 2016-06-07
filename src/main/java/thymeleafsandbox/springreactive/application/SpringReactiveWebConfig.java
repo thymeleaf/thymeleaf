@@ -20,8 +20,6 @@
 package thymeleafsandbox.springreactive.application;
 
 
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -40,21 +38,12 @@ import thymeleafsandbox.springreactive.thymeleaf.ThymeleafViewResolver;
 public class SpringReactiveWebConfig extends WebReactiveConfiguration {
 
 
-    private ApplicationContext applicationContext = null;
-
-
 
 
     public SpringReactiveWebConfig() {
         super();
     }
 
-
-    // TODO * It would be more comfortable to have a getApplicationContext() method at WebReactiveConfiguration
-    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-        super.setApplicationContext(applicationContext);
-        this.applicationContext = applicationContext;
-    }
 
 
     // TODO * How could we add resource handlers for /images, /css, /js, etc.?
@@ -89,7 +78,7 @@ public class SpringReactiveWebConfig extends WebReactiveConfiguration {
     @Bean
     public FreeMarkerConfigurer freeMarkerConfig() {
         final FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
-        freeMarkerConfigurer.setPreTemplateLoaders(new SpringTemplateLoader(this.applicationContext, "/webapp/templates/"));
+        freeMarkerConfigurer.setPreTemplateLoaders(new SpringTemplateLoader(getApplicationContext(), "/webapp/templates/"));
         return freeMarkerConfigurer;
     }
 
@@ -119,7 +108,7 @@ public class SpringReactiveWebConfig extends WebReactiveConfiguration {
     @Bean
     public SpringResourceTemplateResolver thymeleafTemplateResolver(){
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
-        templateResolver.setApplicationContext(this.applicationContext);
+        templateResolver.setApplicationContext(getApplicationContext());
         templateResolver.setPrefix("classpath:/webapp/templates/");
         templateResolver.setSuffix(".html");
         templateResolver.setTemplateMode(TemplateMode.HTML);
