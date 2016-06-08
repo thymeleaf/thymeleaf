@@ -55,21 +55,6 @@ import reactor.core.publisher.Mono;
 public class SpringReactiveWebEngineContext
         extends AbstractEngineContext implements IEngineContext, ISpringReactiveWebEngineContext {
 
-    /*
-     * -------------------------------------------------------------------------------
-     * THIS MAP FORWARDS ALL OPERATIONS TO THE UNDERLYING EXCHANGE ATTRIBUTES, EXCEPT
-     * FOR THE param (request parameters) AND session (session attributes) VARIABLES.
-     *
-     * NOTE that, even if attributes are leveled so that above level 0 they are
-     * considered local and thus disappear after lowering the level, attributes
-     * directly set on the exchange attributes map are considered global and therefore
-     * valid even when the level decreased (though they can be overridden). This
-     * is so for better simulating the effect of directly working against the
-     * exchange object, and for better integration with other template
-     * engines or view-layer technologies that expect the ServerWebExchange object to
-     * be the 'only source of truth' for context variables.
-     * -------------------------------------------------------------------------------
-     */
 
     private static final String PARAM_VARIABLE_NAME = "param";
     private static final String SESSION_VARIABLE_NAME = "session";
@@ -130,26 +115,31 @@ public class SpringReactiveWebEngineContext
     }
 
 
+    @Override
     public ServerHttpRequest getRequest() {
         return this.request;
     }
 
 
+    @Override
     public ServerHttpResponse getResponse() {
         return this.response;
     }
 
 
+    @Override
     public Mono<WebSession> getSession() {
         return this.session;
     }
 
 
+    @Override
     public ServerWebExchange getExchange() {
         return this.exchange;
     }
 
 
+    @Override
     public boolean containsVariable(final String name) {
         return SESSION_VARIABLE_NAME.equals(name) ||
                 PARAM_VARIABLE_NAME.equals(name) ||
@@ -157,6 +147,7 @@ public class SpringReactiveWebEngineContext
     }
 
 
+    @Override
     public Object getVariable(final String key) {
         if (SESSION_VARIABLE_NAME.equals(key)) {
             return this.sessionAttributesVariablesMap;
@@ -168,6 +159,7 @@ public class SpringReactiveWebEngineContext
     }
 
 
+    @Override
     public Set<String> getVariableNames() {
         // Note this set will NOT include 'param', 'session' or 'application', as they are considered special
         // ways to access attributes/parameters in these Servlet API structures
@@ -175,6 +167,7 @@ public class SpringReactiveWebEngineContext
     }
 
 
+    @Override
     public void setVariable(final String name, final Object value) {
         if (SESSION_VARIABLE_NAME.equals(name) || PARAM_VARIABLE_NAME.equals(name)) {
             throw new IllegalArgumentException(
@@ -184,6 +177,7 @@ public class SpringReactiveWebEngineContext
     }
 
 
+    @Override
     public void setVariables(final Map<String, Object> variables) {
         if (variables == null || variables.isEmpty()) {
             return;
@@ -199,6 +193,7 @@ public class SpringReactiveWebEngineContext
     }
 
 
+    @Override
     public void removeVariable(final String name) {
         if (SESSION_VARIABLE_NAME.equals(name) || PARAM_VARIABLE_NAME.equals(name)) {
             throw new IllegalArgumentException(
@@ -208,21 +203,25 @@ public class SpringReactiveWebEngineContext
     }
 
 
+    @Override
     public boolean isVariableLocal(final String name) {
         return this.webExchangeAttributesVariablesMap.isVariableLocal(name);
     }
 
 
+    @Override
     public boolean hasSelectionTarget() {
         return this.webExchangeAttributesVariablesMap.hasSelectionTarget();
     }
 
 
+    @Override
     public Object getSelectionTarget() {
         return this.webExchangeAttributesVariablesMap.getSelectionTarget();
     }
 
 
+    @Override
     public void setSelectionTarget(final Object selectionTarget) {
         this.webExchangeAttributesVariablesMap.setSelectionTarget(selectionTarget);
     }
@@ -230,10 +229,12 @@ public class SpringReactiveWebEngineContext
 
 
 
+    @Override
     public IInliner getInliner() {
         return this.webExchangeAttributesVariablesMap.getInliner();
     }
 
+    @Override
     public void setInliner(final IInliner inliner) {
         this.webExchangeAttributesVariablesMap.setInliner(inliner);
     }
@@ -241,15 +242,18 @@ public class SpringReactiveWebEngineContext
 
 
 
+    @Override
     public TemplateData getTemplateData() {
         return this.webExchangeAttributesVariablesMap.getTemplateData();
     }
 
+    @Override
     public void setTemplateData(final TemplateData templateData) {
         this.webExchangeAttributesVariablesMap.setTemplateData(templateData);
     }
 
 
+    @Override
     public List<TemplateData> getTemplateStack() {
         return this.webExchangeAttributesVariablesMap.getTemplateStack();
     }
@@ -257,6 +261,7 @@ public class SpringReactiveWebEngineContext
 
 
 
+    @Override
     public void setElementTag(final IProcessableElementTag elementTag) {
         this.webExchangeAttributesVariablesMap.setElementTag(elementTag);
     }
@@ -264,11 +269,13 @@ public class SpringReactiveWebEngineContext
 
 
 
+    @Override
     public List<IProcessableElementTag> getElementStack() {
         return this.webExchangeAttributesVariablesMap.getElementStack();
     }
 
 
+    @Override
     public List<IProcessableElementTag> getElementStackAbove(final int contextLevel) {
         return this.webExchangeAttributesVariablesMap.getElementStackAbove(contextLevel);
     }
@@ -276,16 +283,19 @@ public class SpringReactiveWebEngineContext
 
 
 
+    @Override
     public int level() {
         return this.webExchangeAttributesVariablesMap.level();
     }
 
 
+    @Override
     public void increaseLevel() {
         this.webExchangeAttributesVariablesMap.increaseLevel();
     }
 
 
+    @Override
     public void decreaseLevel() {
         this.webExchangeAttributesVariablesMap.decreaseLevel();
     }
@@ -481,6 +491,7 @@ public class SpringReactiveWebEngineContext
         }
 
 
+        @Override
         public boolean containsVariable(final String name) {
             if (super.containsVariable(name)) {
                 return true;
@@ -489,6 +500,7 @@ public class SpringReactiveWebEngineContext
         }
 
 
+        @Override
         public Object getVariable(final String key) {
             final Object value = super.getVariable(key);
             if (value != null) {
@@ -498,6 +510,7 @@ public class SpringReactiveWebEngineContext
         }
 
 
+        @Override
         public Set<String> getVariableNames() {
             final Set<String> variableNames = super.getVariableNames();
             variableNames.addAll(this.exchange.getAttributes().keySet());
@@ -505,6 +518,7 @@ public class SpringReactiveWebEngineContext
         }
 
 
+        @Override
         public String getStringRepresentationByLevel() {
             final StringBuilder strBuilder = new StringBuilder(super.getStringRepresentationByLevel());
             strBuilder.append("[[EXCHANGE: " + this.exchange.getAttributes() + "]]");
@@ -533,50 +547,62 @@ public class SpringReactiveWebEngineContext
             super();
         }
 
+        @Override
         public int size() {
             return 0;
         }
 
+        @Override
         public boolean isEmpty() {
             return true;
         }
 
+        @Override
         public boolean containsKey(final Object key) {
             return false;
         }
 
+        @Override
         public boolean containsValue(final Object value) {
             return false;
         }
 
+        @Override
         public Object get(final Object key) {
             return null;
         }
 
+        @Override
         public Object put(final String key, final Object value) {
             throw new UnsupportedOperationException("Cannot add new entry: map is immutable");
         }
 
+        @Override
         public Object remove(final Object key) {
             throw new UnsupportedOperationException("Cannot remove entry: map is immutable");
         }
 
+        @Override
         public void putAll(final Map<? extends String, ? extends Object> m) {
             throw new UnsupportedOperationException("Cannot add new entry: map is immutable");
         }
 
+        @Override
         public void clear() {
             throw new UnsupportedOperationException("Cannot clear: map is immutable");
         }
 
+        @Override
         public Set<String> keySet() {
             return Collections.emptySet();
         }
 
+        @Override
         public Collection<Object> values() {
             return Collections.emptyList();
         }
 
+        @Override
         public Set<Entry<String,Object>> entrySet() {
             return Collections.emptySet();
         }
@@ -593,14 +619,17 @@ public class SpringReactiveWebEngineContext
                 this.value = value;
             }
 
+            @Override
             public String getKey() {
                 return this.key;
             }
 
+            @Override
             public Object getValue() {
                 return this.value;
             }
 
+            @Override
             public Object setValue(final Object value) {
                 throw new UnsupportedOperationException("Cannot set value: map is immutable");
             }
