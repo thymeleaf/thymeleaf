@@ -31,7 +31,7 @@ import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewRes
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
-import thymeleafsandbox.springreactive.thymeleaf.ThymeleafViewResolver;
+import thymeleafsandbox.springreactive.thymeleaf.view.ThymeleafViewResolver;
 
 @Configuration
 @ComponentScan("thymeleafsandbox.springreactive.web")

@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafsandbox.springreactive.thymeleaf;
+package thymeleafsandbox.springreactive.thymeleaf.context;
 
 import java.util.AbstractList;
 import java.util.Collection;

@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafsandbox.springreactive.thymeleaf;
+package thymeleafsandbox.springreactive.thymeleaf.view;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
