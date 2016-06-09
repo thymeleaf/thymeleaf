@@ -32,6 +32,7 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import thymeleafsandbox.springreactive.thymeleaf.context.SpringReactiveEngineContextFactory;
+import thymeleafsandbox.springreactive.thymeleaf.linkbuilder.SpringReactiveLinkBuilder;
 import thymeleafsandbox.springreactive.thymeleaf.view.ThymeleafViewResolver;
 
 @Configuration
@@ -124,6 +125,7 @@ public class SpringReactiveWebConfig extends WebReactiveConfiguration {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(thymeleafTemplateResolver());
         templateEngine.setEngineContextFactory(new SpringReactiveEngineContextFactory());
+        templateEngine.setLinkBuilder(new SpringReactiveLinkBuilder());
         return templateEngine;
     }
 
