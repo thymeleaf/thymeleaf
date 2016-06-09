@@ -48,7 +48,6 @@ import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.IThrottledTemplateProcessor;
-import org.thymeleaf.context.ExpressionContext;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.engine.DataDrivenTemplateIterator;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -60,6 +59,7 @@ import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import thymeleafsandbox.springreactive.thymeleaf.context.SpringReactiveWebExpressionContext;
 
 
 /**
@@ -378,7 +378,8 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
          */
 
         final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
-        final ExpressionContext context = new ExpressionContext(configuration, getLocale(), mergedModel);
+        final SpringReactiveWebExpressionContext context =
+                new SpringReactiveWebExpressionContext(configuration, exchange, getLocale(), mergedModel);
 
 
         /*

@@ -26,7 +26,8 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebSession;
-import org.thymeleaf.context.AbstractContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.AbstractExpressionContext;
 import reactor.core.publisher.Mono;
 
 /**
@@ -36,23 +37,28 @@ import reactor.core.publisher.Mono;
  * @since 3.0.0
  *
  */
-public class SpringReactiveWebContext extends AbstractContext implements ISpringReactiveWebContext {
+public class SpringReactiveWebExpressionContext extends AbstractExpressionContext implements ISpringReactiveWebContext {
 
     private final ServerWebExchange exchange;
 
 
-    public SpringReactiveWebContext(final ServerWebExchange exchange) {
-        super();
+    public SpringReactiveWebExpressionContext(
+            final IEngineConfiguration configuration, final ServerWebExchange exchange) {
+        super(configuration);
         this.exchange = exchange;
     }
 
-    public SpringReactiveWebContext(final ServerWebExchange exchange, final Locale locale) {
-        super(locale);
+    public SpringReactiveWebExpressionContext(
+            final IEngineConfiguration configuration, final ServerWebExchange exchange, final Locale locale) {
+        super(configuration, locale);
         this.exchange = exchange;
     }
 
-    public SpringReactiveWebContext(final ServerWebExchange exchange, final Locale locale, final Map<String, Object> variables) {
-        super(locale, variables);
+    public SpringReactiveWebExpressionContext(
+            final IEngineConfiguration configuration,
+            final ServerWebExchange exchange,
+            final Locale locale, final Map<String, Object> variables) {
+        super(configuration, locale, variables);
         this.exchange = exchange;
     }
 
@@ -74,7 +80,7 @@ public class SpringReactiveWebContext extends AbstractContext implements ISpring
 
     @Override
     public ServerWebExchange getExchange() {
-        return null;
+        return this.exchange;
     }
 
 }

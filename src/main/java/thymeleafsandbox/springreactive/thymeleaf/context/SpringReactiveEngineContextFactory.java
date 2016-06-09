@@ -57,10 +57,6 @@ public class SpringReactiveEngineContextFactory implements IEngineContextFactory
 
         Validate.notNull(context, "Context object cannot be null");
 
-        // NOTE calling getVariableNames() on an IWebContext would be very expensive, as it would mean
-        // calling HttpServletRequest#getAttributeNames(), which is very slow in some common implementations
-        // (e.g. Apache Tomcat). So it's a good thing we might have tried to reuse the IEngineContext
-        // before calling this factory.
         final Set<String> variableNames = context.getVariableNames();
 
         if (variableNames == null || variableNames.isEmpty()) {
@@ -75,7 +71,7 @@ public class SpringReactiveEngineContextFactory implements IEngineContextFactory
                     context.getLocale(), Collections.EMPTY_MAP);
         }
 
-        final Map<String,Object> variables = new LinkedHashMap<String, Object>(variableNames.size() + 1, 1.0f);
+        final Map<String,Object> variables = new LinkedHashMap<>(variableNames.size() + 1, 1.0f);
         for (final String variableName : variableNames) {
             variables.put(variableName, context.getVariable(variableName));
         }
@@ -83,7 +79,7 @@ public class SpringReactiveEngineContextFactory implements IEngineContextFactory
             final ISpringReactiveWebContext srContext = (ISpringReactiveWebContext)context;
             return new SpringReactiveWebEngineContext(
                     configuration, templateData, templateResolutionAttributes,
-                    srContext.getExchange(), srContext.getLocale(), Collections.EMPTY_MAP);
+                    srContext.getExchange(), srContext.getLocale(), variables);
         }
 
         return new EngineContext(
