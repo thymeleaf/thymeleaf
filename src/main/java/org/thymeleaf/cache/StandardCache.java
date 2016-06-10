@@ -21,6 +21,7 @@ package org.thymeleaf.cache;
 
 import java.lang.ref.SoftReference;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -351,7 +352,13 @@ public final class StandardCache<K, V> implements ICache<K,V> {
 
 
         public Set<K> keySet() {
-            return this.container.keySet();
+            // This 'strange' cast is needed in order to keep compatibility with Java 6 and 7, when compiling with
+            // Java 8. The reason is, the return type of Java 8's ConcurrentHashMap#keySet() changed to a class
+            // called KeySetView, implementing java.util.Set but new in Java 8. This made this code throw a
+            // java.lang.NoSuchMethodError when executed in Java 6 or 7.
+            // By adding the cast, we are binding bytecode not to the specific keySet() method of ConcurrentHashMap,
+            // but to the one defined at the java.util.Map interface, which simply returns java.util.Set.
+            return ((Map<K,CacheEntry<V>>)this.container).keySet();
         }
 
 
