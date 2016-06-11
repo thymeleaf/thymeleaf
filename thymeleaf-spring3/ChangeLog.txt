@@ -1,3 +1,26 @@
+3.0.0
+=====
+See: http://forum.thymeleaf.org/Thymeleaf-3-0-is-here-td4029676.html
+     http://www.thymeleaf.org/doc/articles/thymeleaf3migration.html
+- New event-based template processing engine
+- Full HTML5 support, new parsing infrastructure
+- Thymeleaf 3.0 Template Mode set
+- Inlined output expressions
+- New syntax for textual template modes
+- Refactoring of the inlining mechanism
+- New Processor API
+- New Pre-Processor and Post-Processor APIs
+- New Dialect API
+- Refactoring of the Template Resolution API
+- Refactoring of the Context API
+- Refactoring of the Message Resolution API
+- Fragment Expressions
+- The NO-OP token
+- Decoupled Template Logic
+- New extension point: Link Builders
+- Throttled template execution
+
+
 2.1.4
 =====
 - Fixed th:errorclass not picking the correct form property name when selected object expression
