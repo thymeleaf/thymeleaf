@@ -626,6 +626,7 @@ pre {
 	line-height: 1.25em;
 	overflow: auto;
 	padding: 1em;
+	white-space: pre;
 }
 
 pre.line-numbers {
