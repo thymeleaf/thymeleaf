@@ -25,7 +25,9 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import thymeleafexamples.gtvg.web.controller.HomeController;
 import thymeleafexamples.gtvg.web.controller.IGTVGController;
@@ -51,8 +53,8 @@ public class GTVGApplication {
 
         ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
         
-        // XHTML is the default mode, but we will set it anyway for better understanding of code
-        templateResolver.setTemplateMode("HTML");
+        // HTML is the default mode, but we will set it anyway for better understanding of code
+        templateResolver.setTemplateMode(TemplateMode.HTML);
         // This will convert "home" to "/WEB-INF/templates/home.html"
         templateResolver.setPrefix("/WEB-INF/templates/");
         templateResolver.setSuffix(".html");
@@ -62,7 +64,7 @@ public class GTVGApplication {
         // Cache is set to true by default. Set to false if you want templates to
         // be automatically updated when modified.
         templateResolver.setCacheable(true);
-        
+
         this.templateEngine = new TemplateEngine();
         this.templateEngine.setTemplateResolver(templateResolver);
 
@@ -84,7 +86,7 @@ public class GTVGApplication {
     }
     
     
-    public TemplateEngine getTemplateEngine() {
+    public ITemplateEngine getTemplateEngine() {
         return this.templateEngine;
     }
 

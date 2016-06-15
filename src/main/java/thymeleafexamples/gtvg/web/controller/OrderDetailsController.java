@@ -23,7 +23,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.WebContext;
 import thymeleafexamples.gtvg.business.entities.Order;
 import thymeleafexamples.gtvg.business.services.OrderService;
@@ -38,7 +38,7 @@ public class OrderDetailsController implements IGTVGController {
     
     public void process(
             final HttpServletRequest request, final HttpServletResponse response,
-            final ServletContext servletContext, final TemplateEngine templateEngine)
+            final ServletContext servletContext, final ITemplateEngine templateEngine)
             throws Exception {
         
         final Integer orderId = Integer.valueOf(request.getParameter("orderId"));

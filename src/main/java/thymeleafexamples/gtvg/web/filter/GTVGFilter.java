@@ -31,7 +31,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.ITemplateEngine;
 import thymeleafexamples.gtvg.business.entities.User;
 import thymeleafexamples.gtvg.web.application.GTVGApplication;
 import thymeleafexamples.gtvg.web.controller.IGTVGController;
@@ -110,7 +110,7 @@ public class GTVGFilter implements Filter {
             /*
              * Obtain the TemplateEngine instance.
              */
-            TemplateEngine templateEngine = this.application.getTemplateEngine();
+            ITemplateEngine templateEngine = this.application.getTemplateEngine();
 
             /*
              * Write the response headers

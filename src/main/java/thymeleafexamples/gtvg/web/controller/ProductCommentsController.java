@@ -23,7 +23,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.WebContext;
 import thymeleafexamples.gtvg.business.entities.Product;
 import thymeleafexamples.gtvg.business.services.ProductService;
@@ -38,7 +38,7 @@ public class ProductCommentsController implements IGTVGController {
     
     public void process(
             final HttpServletRequest request, final HttpServletResponse response,
-            final ServletContext servletContext, final TemplateEngine templateEngine) 
+            final ServletContext servletContext, final ITemplateEngine templateEngine)
             throws Exception {
         
         final Integer prodId = Integer.valueOf(request.getParameter("prodId"));
