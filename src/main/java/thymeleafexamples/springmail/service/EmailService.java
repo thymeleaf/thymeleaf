@@ -35,9 +35,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.messageresolver.IMessageResolver;
-import org.thymeleaf.templatemode.TemplateMode;
-import thymeleafexamples.springmail.tools.StaticTemplateExecutor;
 
 @Service
 public class EmailService {
@@ -58,8 +55,8 @@ public class EmailService {
     @Autowired 
     private TemplateEngine textTemplateEngine;
     
-    @Autowired
-    private IMessageResolver messageResolver;
+    @Autowired 
+    private TemplateEngine stringTemplateEngine;
 
     /* 
      * Send plain TEXT mail 
@@ -204,15 +201,14 @@ public class EmailService {
         message.setTo(recipientEmail);
 
         // FIXME: duplicated images in src/main/resources and src/main/webapp
-         // Prepare the evaluation context
+        // Prepare the evaluation context
         final Context ctx = new Context(locale);
         ctx.setVariable("name", recipientName);
         ctx.setVariable("subscriptionDate", new Date());
         ctx.setVariable("hobbies", Arrays.asList("Cinema", "Sports", "Music"));
         
-        final StaticTemplateExecutor templateExecutor = new StaticTemplateExecutor(
-            ctx, messageResolver, TemplateMode.HTML);
-        final String output = templateExecutor.processTemplateCode(htmlContent);
+        // Create the HTML body using Thymeleaf
+        final String output = stringTemplateEngine.process(htmlContent, ctx);
         message.setText(output, true /* isHtml */);
         
         // Add the inline images, referenced from the HTML code as "cid:image-name"

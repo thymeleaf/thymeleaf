@@ -8,6 +8,7 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
+import org.thymeleaf.templateresolver.StringTemplateResolver;
 import static thymeleafexamples.springmail.config.SpringWebInitializer.ENCODING;
 
 /**
@@ -37,20 +38,15 @@ public class ThymeleafMailConfig extends WebMvcConfigurerAdapter {
     }
 
     /**
-     * THYMELEAF: Template Resolver for HTML email templates.
+     * THYMELEAF: Template Engine (Spring4-specific version) for in-memory HTML email templates.
      */
-    private ITemplateResolver htmlTemplateResolver() {
-        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-        templateResolver.setPrefix("/mail/");
-        templateResolver.setSuffix(".html");
-        templateResolver.setTemplateMode(TemplateMode.HTML);
-        templateResolver.setCharacterEncoding(ENCODING);
-        // Template cache is true by default. Set to false if you want 
-        // templates to be automatically updated when modified.
-        templateResolver.setCacheable(false);
-        return templateResolver;
+	@Bean
+    public TemplateEngine stringTemplateEngine() {
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.addTemplateResolver(stringTemplateResolver());
+        return templateEngine;
     }
-
+    
     /**
      * THYMELEAF: Template Resolver for HTML email templates.
      */
@@ -60,8 +56,30 @@ public class ThymeleafMailConfig extends WebMvcConfigurerAdapter {
         templateResolver.setSuffix(".txt");
         templateResolver.setTemplateMode(TemplateMode.TEXT);
         templateResolver.setCharacterEncoding(ENCODING);
-        // Template cache is true by default. Set to false if you want 
-        // templates to be automatically updated when modified.
+        templateResolver.setCacheable(false);
+        return templateResolver;
+    }
+
+    /**
+     * THYMELEAF: Template Resolver for HTML email templates.
+     */
+    private ITemplateResolver htmlTemplateResolver() {
+        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setPrefix("/mail/");
+        templateResolver.setSuffix(".html");
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        templateResolver.setCharacterEncoding(ENCODING);
+        templateResolver.setCacheable(false);
+        return templateResolver;
+    }
+
+    /**
+     * THYMELEAF: Template Resolver for String templates.
+     * (template will be a passed String -- for editable templates)
+     */
+    private ITemplateResolver stringTemplateResolver() {
+        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode("HTML5");
         templateResolver.setCacheable(false);
         return templateResolver;
     }

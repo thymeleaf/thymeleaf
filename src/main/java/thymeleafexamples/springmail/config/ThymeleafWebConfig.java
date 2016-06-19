@@ -17,6 +17,7 @@ import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ITemplateResolver;
+import org.thymeleaf.templateresolver.StringTemplateResolver;
 import static thymeleafexamples.springmail.config.SpringWebInitializer.ENCODING;
 
 /**
@@ -52,6 +53,9 @@ public class ThymeleafWebConfig extends WebMvcConfigurerAdapter implements Appli
     private TemplateEngine webTemplateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(webTemplateResolver());
+        templateEngine.setEnableSpringELCompiler(true); // Compiled SpringEL should speed up executions
+        templateEngine.addTemplateResolver(webTemplateResolver());
+        templateEngine.setMessageResolver(messageResolver());
         return templateEngine;
     }
     
