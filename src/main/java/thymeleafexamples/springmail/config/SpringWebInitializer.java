@@ -14,26 +14,26 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 /**
- *  Spring configuration and Spring MVC bootstrapping.
+ * Spring configuration and Spring MVC bootstrapping.
  */
 public class SpringWebInitializer implements WebApplicationInitializer {
 
     public static final String ENCODING = "UTF-8";
 
-	@Override
-	public void onStartup(ServletContext servletContext) throws ServletException {
-		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.register(ThymeleafWebConfig.class);
-		context.register(MailConfig.class);
-		context.setServletContext(servletContext);
+    @Override
+    public void onStartup(ServletContext servletContext) throws ServletException {
+        AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+        context.register(ThymeleafWebConfig.class);
+        context.register(MailConfig.class);
+        context.setServletContext(servletContext);
         configureSpringMvcFrontController(servletContext, context);
         configureEncodingFilter(servletContext);
-	}
-    
+    }
+
     private void configureSpringMvcFrontController(ServletContext servletContext, WebApplicationContext context) {
-		Dynamic servlet = servletContext.addServlet("dispatcher", new DispatcherServlet(context));
-		servlet.addMapping("/");
-		servlet.setLoadOnStartup(1);
+        Dynamic servlet = servletContext.addServlet("dispatcher", new DispatcherServlet(context));
+        servlet.addMapping("/");
+        servlet.setLoadOnStartup(1);
     }
 
     private void configureEncodingFilter(ServletContext servletContext) {
@@ -42,6 +42,6 @@ public class SpringWebInitializer implements WebApplicationInitializer {
         encodingFilter.setForceEncoding(true);
         FilterRegistration.Dynamic filterRegistration = servletContext.addFilter("encodingFilter", encodingFilter);
         filterRegistration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
-   }
+    }
 
 }

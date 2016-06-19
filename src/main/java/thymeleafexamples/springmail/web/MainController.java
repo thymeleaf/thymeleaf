@@ -33,37 +33,37 @@ import static thymeleafexamples.springmail.config.SpringWebInitializer.ENCODING;
 public class MainController {
 
     private static final String EDITABLE_TEMPLATE = "mail/email-editable.html";
-    
+
     /* Home page. */
     @RequestMapping(value = {"/", "/index.html"}, method = GET)
     public String index() {
         return "index";
     }
-    
+
     /* Plain text email. */
     @RequestMapping(value = "/text.html", method = GET)
     public String text() {
         return "text";
     }
-    
+
     /* Simple HTML email. */
     @RequestMapping(value = "/simple.html", method = GET)
     public String simple() {
         return "simple";
     }
-    
+
     /* HTML email with attachment. */
     @RequestMapping(value = "/attachment.html", method = GET)
     public String attachment() {
         return "attachment";
     }
-    
+
     /* HTML email with inline image. */
     @RequestMapping(value = "/inline.html", method = GET)
     public String inline() {
         return "inline";
     }
-    
+
     /* Editable HTML email. */
     @RequestMapping(value = "/editable.html", method = GET)
     public String editable(Model model) throws IOException {
@@ -73,11 +73,11 @@ public class MainController {
         model.addAttribute("baseTemplate", baseTemplate);
         return "editable";
     }
-    
+
     /* Sending confirmation page. */
     @RequestMapping(value = "/sent.html", method = GET)
     public String sent() {
         return "sent";
     }
-    
+
 }

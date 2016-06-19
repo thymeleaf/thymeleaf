@@ -17,7 +17,6 @@ import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ITemplateResolver;
-import org.thymeleaf.templateresolver.StringTemplateResolver;
 import static thymeleafexamples.springmail.config.SpringWebInitializer.ENCODING;
 
 /**
@@ -36,17 +35,17 @@ public class ThymeleafWebConfig extends WebMvcConfigurerAdapter implements Appli
     }
 
     /**
-     * THYMELEAF: implementation of Spring's ViewResolver interface for the HTML pages of this web application.
-     * (we would not need this if our app was not web)
+     * THYMELEAF: implementation of Spring's ViewResolver interface for the HTML pages of this web application. (we
+     * would not need this if our app was not web)
      */
-	@Bean
+    @Bean
     public ViewResolver webViewResolver() {
         ThymeleafViewResolver resolver = new ThymeleafViewResolver();
         resolver.setTemplateEngine(webTemplateEngine());
         resolver.setCharacterEncoding(ENCODING);
         return resolver;
     }
-    
+
     /**
      * THYMELEAF: Template Engine (Spring4-specific version) for HTML pages.
      */
@@ -58,7 +57,7 @@ public class ThymeleafWebConfig extends WebMvcConfigurerAdapter implements Appli
         templateEngine.setMessageResolver(messageResolver());
         return templateEngine;
     }
-    
+
     /**
      * THYMELEAF: Template Resolver for HTML pages.
      */
@@ -78,10 +77,10 @@ public class ThymeleafWebConfig extends WebMvcConfigurerAdapter implements Appli
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Use Spring servlet to serve static resources
-	    registry.addResourceHandler("/images/**").addResourceLocations("/images/");
-	    registry.addResourceHandler("/css/**").addResourceLocations("/css/");
-	    registry.addResourceHandler("/js/**").addResourceLocations("/js/");
-	    registry.addResourceHandler("/swf/**").addResourceLocations("/swf/");
+        registry.addResourceHandler("/images/**").addResourceLocations("/images/");
+        registry.addResourceHandler("/css/**").addResourceLocations("/css/");
+        registry.addResourceHandler("/js/**").addResourceLocations("/js/");
+        registry.addResourceHandler("/swf/**").addResourceLocations("/swf/");
     }
 
     @Bean

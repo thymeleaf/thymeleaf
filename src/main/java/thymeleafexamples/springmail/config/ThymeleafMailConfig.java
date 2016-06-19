@@ -20,17 +20,17 @@ public class ThymeleafMailConfig extends WebMvcConfigurerAdapter {
     /**
      * THYMELEAF: Template Engine (Spring4-specific version) for HTML email templates.
      */
-	@Bean
+    @Bean
     public TemplateEngine htmlTemplateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(htmlTemplateResolver());
         return templateEngine;
     }
-    
+
     /**
      * THYMELEAF: Template Engine (Spring4-specific version) for TEXT email templates.
      */
-	@Bean
+    @Bean
     public TemplateEngine textTemplateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(textTemplateResolver());
@@ -40,13 +40,13 @@ public class ThymeleafMailConfig extends WebMvcConfigurerAdapter {
     /**
      * THYMELEAF: Template Engine (Spring4-specific version) for in-memory HTML email templates.
      */
-	@Bean
+    @Bean
     public TemplateEngine stringTemplateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.addTemplateResolver(stringTemplateResolver());
         return templateEngine;
     }
-    
+
     /**
      * THYMELEAF: Template Resolver for HTML email templates.
      */
@@ -74,8 +74,7 @@ public class ThymeleafMailConfig extends WebMvcConfigurerAdapter {
     }
 
     /**
-     * THYMELEAF: Template Resolver for String templates.
-     * (template will be a passed String -- for editable templates)
+     * THYMELEAF: Template Resolver for String templates. (template will be a passed String -- for editable templates)
      */
     private ITemplateResolver stringTemplateResolver() {
         StringTemplateResolver templateResolver = new StringTemplateResolver();

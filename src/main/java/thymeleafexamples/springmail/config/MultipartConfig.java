@@ -6,17 +6,17 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 /**
- *  Spring upload support configuration.
+ * Spring upload support configuration.
  */
 @Configuration
 public class MultipartConfig {
-    
+
     private static final long maxUploadSize = 10485760; // 10 Mb
 
     @Bean
-	public MultipartResolver multipartResolver() {
+    public MultipartResolver multipartResolver() {
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
         multipartResolver.setMaxUploadSize(maxUploadSize);
-		return multipartResolver;
+        return multipartResolver;
     }
 }
