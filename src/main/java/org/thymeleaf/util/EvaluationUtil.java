@@ -86,6 +86,8 @@ public final class EvaluationUtil {
                 return (BigDecimal)object;
             } else if (object instanceof BigInteger) {
                 return new BigDecimal((BigInteger)object);
+            } else if (object instanceof Byte) {
+                return new BigDecimal(((Byte)object).intValue());
             } else if (object instanceof Short) {
                 return new BigDecimal(((Short)object).intValue());
             } else if (object instanceof Integer) {
