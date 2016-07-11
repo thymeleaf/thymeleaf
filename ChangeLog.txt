@@ -1,3 +1,17 @@
+2.1.5
+=====
+- Fixed stack overflow exception when serializing enums into JavaScript.
+- Fixed exceptions in inlined expressions being silently ignored.
+- Fixed bad specification of th:field selected option when options are nested in <th:block>.
+- Fixed management of exceptions during pre-processing.
+- Fixed possible infinite loop in #numbers.sequence().
+- Fixed ordering of ITemplateResolver implementations with 'null' order value.
+- Fixed performance of some complex expression operations due to tentative conversion to BigDecimal.
+- Fixed bad results of integer division in some scenarios due to BigDecimal conversion.
+- Fixed underlying output streams not being flushed by the engine after writing template results.
+- Fixed th:switch not correctly working with variable of type Byte.
+
+
 2.1.4
 =====
 - Fixed expression execution exceptions being silently ignored in javascript/dart inlining.
