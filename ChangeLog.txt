@@ -10,7 +10,6 @@
 - Fixed bad results of integer division in some scenarios due to BigDecimal conversion.
 - Fixed underlying output streams not being flushed by the engine after writing template results.
 - Fixed th:switch not correctly working with variable of type Byte.
-- Updated dependencies (OGNL 3.0.8 -> 3.1.3; javassist 3.16.1 -> 3.20.0; unbescape 1.1.0 -> 1.1.3).
 
 
 2.1.4
