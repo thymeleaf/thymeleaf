@@ -248,7 +248,7 @@ public final class TemplateManager {
          * Resolve the template
          */
         final TemplateResolution templateResolution =
-                resolveTemplate(this.configuration, ownerTemplate, template, templateResolutionAttributes, failIfNotExists);
+                resolveTemplate(this.configuration, context, ownerTemplate, template, templateResolutionAttributes, failIfNotExists);
 
 
         /*
@@ -605,7 +605,7 @@ public final class TemplateManager {
          * Resolve the template
          */
         final TemplateResolution templateResolution =
-                resolveTemplate(this.configuration, null, template, templateResolutionAttributes, true);
+                resolveTemplate(this.configuration, context, null, template, templateResolutionAttributes, true);
 
 
         /*
@@ -749,7 +749,7 @@ public final class TemplateManager {
          * Resolve the template
          */
         final TemplateResolution templateResolution =
-                resolveTemplate(this.configuration, null, template, templateResolutionAttributes, true);
+                resolveTemplate(this.configuration, context, null, template, templateResolutionAttributes, true);
 
 
         /*
@@ -823,6 +823,7 @@ public final class TemplateManager {
 
     private static TemplateResolution resolveTemplate(
             final IEngineConfiguration configuration,
+            final IContext context,
             final String ownerTemplate,
             final String template,
             final Map<String, Object> templateResolutionAttributes,
@@ -837,7 +838,7 @@ public final class TemplateManager {
         for (final ITemplateResolver templateResolver : configuration.getTemplateResolvers()) {
 
             final TemplateResolution templateResolution =
-                    templateResolver.resolveTemplate(configuration, ownerTemplate, template, templateResolutionAttributes);
+                    templateResolver.resolveTemplate(configuration, context, ownerTemplate, template, templateResolutionAttributes);
             if (templateResolution != null) {
                 if (logger.isTraceEnabled()) {
                     logger.trace(
