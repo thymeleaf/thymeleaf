@@ -1,3 +1,9 @@
+2.1.5
+=====
+- Fixed registered custom editor not used for nested property path with double-brace syntax.
+- Fixed NPE being thrown when #fields.hasErrors() was called without form name outside th:object scope.
+
+
 2.1.4
 =====
 - Fixed th:errorclass not picking the correct form property name when selected object expression
