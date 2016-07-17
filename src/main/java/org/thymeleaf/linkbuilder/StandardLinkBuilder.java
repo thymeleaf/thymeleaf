@@ -258,7 +258,7 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
                     Character.toLowerCase(linkBase.charAt(6)) == ':') {
                 return true;
             }
-        } else if (c0 == '/' || c0 == '/') {
+        } else if (c0 == '/') {
             return linkBase.charAt(1) == '/'; // It starts with '//' -> true, any other '/x' -> false
         }
         for (int i = 0; i < (linkBaseLen - 2); i++) {
