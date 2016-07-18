@@ -1124,7 +1124,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                  */
 
                 // Create the actual Model instance (a clone) that will be passed to the processor to execute on
-                final Model processedModel = new Model(currentGatheringModel.getInnerModel());
+                final Model gatheredModel = currentGatheringModel.getInnerModel();
+                final Model processedModel = new Model(gatheredModel);
 
                 // Execute the processor on the just-created Model
                 ((IElementModelProcessor) processor).process(this.context, processedModel, modelStructureHandler);
@@ -1136,21 +1137,30 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 currentGatheringModel.resetGatheredSkipFlags();
 
                 /*
-                 * Now we will do the exact equivalent to what is performed for an Element Tag processor, when this
-                 * returns a result of type "replaceWithModel".
+                 * Before making any changes and queue the new model for execution, check that it actually is
+                 * a "new" model (the processor might have been no-op on the tag and changes might have been
+                 * only on the local variables, for example.)
                  */
+                if (!gatheredModel.sameAs(processedModel)) {
 
-                // Reset model
-                vars.modelAfter = resetModel(vars.modelAfter, true);
+                    /*
+                     * Now we will do the exact equivalent to what is performed for an Element Tag processor, when this
+                     * returns a result of type "replaceWithModel".
+                     */
 
-                // Set the model to be executed, and set it to be processable (that is a MUST in this case)
-                vars.modelAfter.addModel(processedModel);
-                vars.modelAfterProcessable = true;
+                    // Reset model
+                    vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                // We will discard this event (the standalone one) because we are going to process the new, modified
-                // model instead. Note we do not need to set the body to skip or anything because we know this is a
-                // standalone tag.
-                vars.discardEvent = true;
+                    // Set the model to be executed, and set it to be processable (that is a MUST in this case)
+                    vars.modelAfter.addModel(processedModel);
+                    vars.modelAfterProcessable = true;
+
+                    // We will discard this event (the standalone one) because we are going to process the new, modified
+                    // model instead. Note we do not need to set the body to skip or anything because we know this is a
+                    // standalone tag.
+                    vars.discardEvent = true;
+
+                }
 
             } else {
                 throw new IllegalStateException(
@@ -1493,7 +1503,8 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                  */
 
                 // Create the actual Model instance (a clone) that will be passed to the processor to execute on
-                final Model processedModel = new Model(currentGatheringModel.getInnerModel());
+                final Model gatheredModel = currentGatheringModel.getInnerModel();
+                final Model processedModel = new Model(gatheredModel);
 
                 // Execute the processor on the just-created Model
                 ((IElementModelProcessor) processor).process(this.context, processedModel, modelStructureHandler);
@@ -1505,22 +1516,31 @@ public final class ProcessorTemplateHandler implements ITemplateHandler {
                 currentGatheringModel.resetGatheredSkipFlags();
 
                 /*
-                 * Now we will do the exact equivalent to what is performed for an Element Tag processor, when this
-                 * returns a result of type "replaceWithModel".
+                 * Before making any changes and queue the new model for execution, check that it actually is
+                 * a "new" model (the processor might have been no-op on the tag and changes might have been
+                 * only on the local variables, for example.)
                  */
+                if (!gatheredModel.sameAs(processedModel)) {
 
-                // Reset the model
-                vars.modelAfter = resetModel(vars.modelAfter, true);
+                    /*
+                     * Now we will do the exact equivalent to what is performed for an Element Tag processor, when this
+                     * returns a result of type "replaceWithModel".
+                     */
 
-                // Set the model to be executed, and set it to be processable (that is a MUST in this case)
-                vars.modelAfter.addModel(processedModel);
-                vars.modelAfterProcessable = true;
+                    // Reset the model
+                    vars.modelAfter = resetModel(vars.modelAfter, true);
 
-                // Given we are going to execute the modified model instead of the gathered one, we will set all body
-                // skipping flags just as if we had just executed a "replaceWithModel" operation.
-                vars.discardEvent = true;
-                vars.skipBody = SkipBody.SKIP_ALL;
-                vars.skipCloseTag = true;
+                    // Set the model to be executed, and set it to be processable (that is a MUST in this case)
+                    vars.modelAfter.addModel(processedModel);
+                    vars.modelAfterProcessable = true;
+
+                    // Given we are going to execute the modified model instead of the gathered one, we will set all body
+                    // skipping flags just as if we had just executed a "replaceWithModel" operation.
+                    vars.discardEvent = true;
+                    vars.skipBody = SkipBody.SKIP_ALL;
+                    vars.skipCloseTag = true;
+
+                }
 
             } else {
                 throw new IllegalStateException(

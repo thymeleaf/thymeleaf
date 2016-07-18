@@ -345,6 +345,25 @@ final class Model implements IModel {
 
 
 
+
+    // Note we will use object equality for comparing events here - the idea is to check whether
+    // a model has been changed at all, and replacing an event with an equivalent one would be
+    // considered "a change" anyway.
+    boolean sameAs(final Model model) {
+        if (model == null || model.queueSize != this.queueSize) {
+            return false;
+        }
+        for (int i = 0; i < this.queueSize; i++) {
+            if (this.queue[i] != model.queue[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
+
     @Override
     public final String toString() {
         try {
