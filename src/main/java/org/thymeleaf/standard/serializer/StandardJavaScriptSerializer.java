@@ -39,6 +39,8 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.DateUtils;
@@ -73,8 +75,10 @@ import org.unbescape.json.JsonEscapeType;
  */
 public final class StandardJavaScriptSerializer implements IStandardJavaScriptSerializer {
 
+    private static final Logger logger = LoggerFactory.getLogger(StandardJavaScriptSerializer.class);
 
-    private IStandardJavaScriptSerializer delegate;
+
+    private final IStandardJavaScriptSerializer delegate;
 
 
 
@@ -91,12 +95,44 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
 
 
     public StandardJavaScriptSerializer(final boolean useJacksonIfAvailable) {
+
         super();
+
+        IStandardJavaScriptSerializer newDelegate = null;
+
         if (useJacksonIfAvailable && isJacksonPresent()) {
-            this.delegate = new JacksonStandardJavaScriptSerializer();
-        } else {
-            this.delegate = new DefaultStandardJavaScriptSerializer();
+
+            try {
+
+                newDelegate = new JacksonStandardJavaScriptSerializer();
+
+            } catch (final Exception e) {
+
+                final String warningMessage =
+                        "[THYMELEAF] Could not initialize Jackson-based serializer even if the Jackson library was " +
+                        "detected to be present at the classpath. Please make sure you are adding the " +
+                        "jackson-databind module to your classpath, and that version is >= 2.5.0. " +
+                        "THYMELEAF INITIALIZATION WILL CONTINUE, but Jackson will not be used for JavaScript " +
+                        "serialization.";
+
+                if (logger.isDebugEnabled()) {
+                    logger.warn(warningMessage, e);
+                } else {
+                    // We will avoid an ugly exception trace appearing through the logs as WARN unless DEBUG is enabled
+                    logger.warn(
+                            warningMessage + " Set the log to DEBUG to see a complete exception trace. Exception " +
+                            "message is: " + e.getMessage());
+                }
+            }
+
         }
+
+        if (newDelegate == null) {
+            // Jackson could not be used, so we will use a default StandardJavaScriptSerializer (non-Jackson)
+            newDelegate = new DefaultStandardJavaScriptSerializer();
+        }
+
+        this.delegate = newDelegate;
     }
 
 
