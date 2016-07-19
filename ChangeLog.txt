@@ -1,3 +1,10 @@
+3.0.1
+=====
+- Fixed bad results of integer division in some scenarios due to BigDecimal conversion.
+- Fixed th:switch not correctly working with variable of type Byte.
+- Fixed Java version compatibility issue when calling StandardCache.keySet() from Java 7.
+
+
 3.0.0
 =====
 See: http://forum.thymeleaf.org/Thymeleaf-3-0-is-here-td4029676.html
