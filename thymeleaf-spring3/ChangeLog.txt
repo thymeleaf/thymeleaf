@@ -1,3 +1,8 @@
+3.0.1
+=====
+- Fixed registered custom editor not used for nested property path with double-brace syntax.
+
+
 3.0.0
 =====
 See: http://forum.thymeleaf.org/Thymeleaf-3-0-is-here-td4029676.html
