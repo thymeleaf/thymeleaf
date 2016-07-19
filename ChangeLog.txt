@@ -3,6 +3,7 @@
 - Fixed bad results of integer division in some scenarios due to BigDecimal conversion.
 - Fixed th:switch not correctly working with variable of type Byte.
 - Fixed Java version compatibility issue when calling StandardCache.keySet() from Java 7.
+- Improved error handling during initialisation of Jackson-based JavaScript serializer objects.
 
 
 3.0.0
