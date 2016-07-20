@@ -74,12 +74,6 @@ abstract class AbstractGatheringModelProcessable implements IGatheringModelProce
         this.flowController = flowController;
         this.buildTimeSkipBody = buildTimeSkipBody;
         this.buildTimeSkipCloseTag = buildTimeSkipCloseTag;
-        this.syntheticModel = new Model(configuration, context.getTemplateMode());
-        this.processorExecutionVars = processorExecutionVars.cloneVars();
-
-        this.gatheringFinished = false;
-
-        this.modelLevel = 0;
 
         if (this.context == null) {
             throw new TemplateProcessingException(
@@ -90,7 +84,10 @@ abstract class AbstractGatheringModelProcessable implements IGatheringModelProce
                     " interface");
         }
 
-
+        this.syntheticModel = new Model(configuration, context.getTemplateMode());
+        this.processorExecutionVars = processorExecutionVars.cloneVars();
+        this.gatheringFinished = false;
+        this.modelLevel = 0;
     }
 
 
