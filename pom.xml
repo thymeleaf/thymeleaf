@@ -30,6 +30,14 @@
 
   <description>XML/XHTML/HTML5 template engine for Java</description>
 
+  <!-- Spring Boot parent: experimental Spring Boot Web Reactive -->
+  <parent>
+    <groupId>org.springframework.boot.experimental</groupId>
+    <artifactId>spring-boot-web-reactive</artifactId>
+    <version>0.1.0.BUILD-SNAPSHOT</version>
+    <relativePath/>
+  </parent>
+
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -59,7 +67,7 @@
       </roles>
      </developer>
   </developers>
-  
+
 
   <repositories>
     <repository>
@@ -71,30 +79,50 @@
       </snapshots>
     </repository>
     <repository>
-      <id>spring-milestones</id>
-      <name>Spring Milestones</name>
-      <url>http://repo.spring.io/milestone</url>
-    </repository>
-    <repository>
       <id>spring-snapshots</id>
       <name>Spring Snapshots</name>
-      <url>http://repo.spring.io/snapshot</url>
+      <url>https://repo.spring.io/snapshot</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
     </repository>
+    <repository>
+      <id>spring-milestones</id>
+      <name>Spring Milestones</name>
+      <url>https://repo.spring.io/milestone</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
   </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>spring-snapshots</id>
+      <name>Spring Snapshots</name>
+      <url>https://repo.spring.io/snapshot</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>spring-milestones</id>
+      <name>Spring Milestones</name>
+      <url>https://repo.spring.io/milestone</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
 
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <servlet-api.version>3.1.0</servlet-api.version>
-    <springframework.version>4.3.0.RC1</springframework.version>
-    <springreactive.version>0.1.0.BUILD-SNAPSHOT</springreactive.version>
-    <reactor.version>2.5.0.BUILD-SNAPSHOT</reactor.version>
-    <jackson.version>2.7.3</jackson.version>
-    <freemarker.version>2.3.23</freemarker.version>
-    <thymeleaf.version>3.0.0.RELEASE</thymeleaf.version>
+    <java.version>1.8</java.version>
+    <spring.version>5.0.0.BUILD-SNAPSHOT</spring.version>
+    <thymeleaf.version>3.0.1.RELEASE</thymeleaf.version>
+    <reactor.version>3.0.0.BUILD-SNAPSHOT</reactor.version>
+    <reactor-netty.version>2.5.0.BUILD-SNAPSHOT</reactor-netty.version>
   </properties>
   
   
@@ -119,22 +147,8 @@
     <plugins>
 
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.5.1</version>
-        <configuration>
-          <source>8</source>
-          <target>8</target>
-        </configuration>
-      </plugin>
-      
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>2.7</version>
-        <configuration>
-          <encoding>ISO-8859-1</encoding>
-        </configuration>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
 
     </plugins>
@@ -142,112 +156,73 @@
   </build>
 
 
+
   <dependencies>
 
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>${servlet-api.version}</version>
-      <scope>compile</scope>
-    </dependency>
-
-        
-    <dependency>
-      <groupId>org.thymeleaf</groupId>
-      <artifactId>thymeleaf-spring4</artifactId>
-      <version>${thymeleaf.version}</version>
-      <scope>compile</scope>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.springframework.reactive</groupId>
-      <artifactId>spring-reactive</artifactId>
-      <version>${springreactive.version}</version>
-      <scope>compile</scope>
+      <groupId>org.springframework.boot.experimental</groupId>
+      <artifactId>spring-boot-starter-web-reactive</artifactId>
+      <exclusions>
+        <!-- Excluded because we will be using reactor-netty -->
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-tomcat</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
       <groupId>io.projectreactor</groupId>
       <artifactId>reactor-netty</artifactId>
-      <version>${reactor.version}</version>
-      <scope>compile</scope>
+      <version>${reactor-netty.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.thymeleaf</groupId>
+      <artifactId>thymeleaf-spring4</artifactId>
     </dependency>
 
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
-      <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
-      <version>${freemarker.version}</version>
-      <scope>compile</scope>
     </dependency>
 
 
+    <!-- Needed only for the FreemarkerConfigurer -->
     <dependency>
-      <!-- Needed only for the FreemarkerConfigurer -->
       <groupId>org.springframework</groupId>
       <artifactId>spring-context-support</artifactId>
-      <version>${springframework.version}</version>
-      <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-jdbc</artifactId>
-      <version>${springframework.version}</version>
-      <scope>compile</scope>
     </dependency>
 
 
     <dependency>
       <groupId>org.xerial</groupId>
       <artifactId>sqlite-jdbc</artifactId>
-      <version>3.8.11.2</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-dbcp2</artifactId>
-      <version>2.1.1</version>
     </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.6.1</version>
-      <scope>compile</scope>
-    </dependency>
-        
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.6.1</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.15</version>
-      <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>com.sun.jdmk</groupId>
-          <artifactId>jmxtools</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.jmx</groupId>
-          <artifactId>jmxri</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.jms</groupId>
-          <artifactId>jms</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
         
