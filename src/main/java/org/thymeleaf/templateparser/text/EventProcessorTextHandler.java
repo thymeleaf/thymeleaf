@@ -215,7 +215,7 @@ final class EventProcessorTextHandler extends AbstractChainedTextHandler {
         }
 
         throw new TextParseException(
-                "Malformed template: " + (peek.length > 0? ("closing element \"" + new String(buffer, offset, len) + "\"") : ("unnamed closing element")) + " is never open", line, col);
+                "Malformed template: unnamed closing element is never opened", line, col);
 
     }
 
