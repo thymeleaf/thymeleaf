@@ -24,9 +24,9 @@ import java.io.IOException;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationContextException;
@@ -34,7 +34,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
 @ComponentScan("thymeleafsandbox.springreactive.business")
@@ -60,22 +59,18 @@ public class SpringReactiveAppConfig implements ApplicationContextAware {
     @Bean
     public DataSource dataSource() {
         try {
+
             final Resource dbResource = this.applicationContext.getResource("classpath:data/chinook.sqlite");
             logger.debug("Database path: " + dbResource.getURL().getPath());
-            final BasicDataSource dataSource = new BasicDataSource();
-            dataSource.setDriverClassName("org.sqlite.JDBC");
-            dataSource.setUrl("jdbc:sqlite:" + dbResource.getURL().getPath());
-            return dataSource;
+
+            final DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
+            dataSourceBuilder.driverClassName("org.sqlite.JDBC");
+            dataSourceBuilder.url("jdbc:sqlite:" + dbResource.getURL().getPath());
+            return dataSourceBuilder.build();
+
         } catch (final IOException e) {
             throw new ApplicationContextException("Error initializing database", e);
         }
-    }
-
-
-    @Bean
-    public JdbcTemplate jdbcTemplate() {
-        final JdbcTemplate template = new JdbcTemplate(dataSource());
-        return template;
     }
 
 }
