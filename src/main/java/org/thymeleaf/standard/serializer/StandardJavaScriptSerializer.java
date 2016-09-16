@@ -107,22 +107,9 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
                 newDelegate = new JacksonStandardJavaScriptSerializer();
 
             } catch (final Exception e) {
-
-                final String warningMessage =
-                        "[THYMELEAF] Could not initialize Jackson-based serializer even if the Jackson library was " +
-                        "detected to be present at the classpath. Please make sure you are adding the " +
-                        "jackson-databind module to your classpath, and that version is >= 2.5.0. " +
-                        "THYMELEAF INITIALIZATION WILL CONTINUE, but Jackson will not be used for JavaScript " +
-                        "serialization.";
-
-                if (logger.isDebugEnabled()) {
-                    logger.warn(warningMessage, e);
-                } else {
-                    // We will avoid an ugly exception trace appearing through the logs as WARN unless DEBUG is enabled
-                    logger.warn(
-                            warningMessage + " Set the log to DEBUG to see a complete exception trace. Exception " +
-                            "message is: " + e.getMessage());
-                }
+                handleErrorLoggingOnJacksonInitialization(e);
+            } catch (final NoSuchMethodError e)  {
+                handleErrorLoggingOnJacksonInitialization(e);
             }
 
         }
@@ -500,6 +487,21 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
 
     }
 
+    private void handleErrorLoggingOnJacksonInitialization(Throwable e)  {
+        final String warningMessage =
+                "[THYMELEAF] Could not initialize Jackson-based serializer even if the Jackson library was " +
+                        "detected to be present at the classpath. Please make sure you are adding the " +
+                        "jackson-databind module to your classpath, and that version is >= 2.5.0. " +
+                        "THYMELEAF INITIALIZATION WILL CONTINUE, but Jackson will not be used for JavaScript " +
+                        "serialization.";
 
-
+        if (logger.isDebugEnabled()) {
+            logger.warn(warningMessage, e);
+        } else {
+            // We will avoid an ugly exception trace appearing through the logs as WARN unless DEBUG is enabled
+            logger.warn(
+                    warningMessage + " Set the log to DEBUG to see a complete exception trace. Exception " +
+                            "message is: " + e.getMessage());
+        }
+    }
 }
