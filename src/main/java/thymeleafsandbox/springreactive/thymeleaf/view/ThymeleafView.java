@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.reactivestreams.Publisher;
@@ -292,13 +293,15 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
 
     @Override
-    protected Mono<Void> renderInternal(final Map<String, Object> renderAttributes, final ServerWebExchange exchange) {
-        return renderFragmentInternal(this.markupSelectors, renderAttributes, exchange);
+    protected Mono<Void> renderInternal(
+            final Map<String, Object> renderAttributes, final MediaType contentType, final ServerWebExchange exchange) {
+        return renderFragmentInternal(this.markupSelectors, renderAttributes, contentType, exchange);
     }
 
 
     protected Mono<Void> renderFragmentInternal(
-            final Set<String> markupSelectorsToRender, final Map<String, Object> renderAttributes, final ServerWebExchange exchange) {
+            final Set<String> markupSelectorsToRender, final Map<String, Object> renderAttributes,
+            final MediaType contentType, final ServerWebExchange exchange) {
 
         final String viewTemplateName = getTemplateName();
         final ITemplateEngine viewTemplateEngine = getTemplateEngine();
@@ -474,9 +477,8 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
             responseHeaders.set("Content-Language", templateLocale.toString());
         }
 
-        // By this time, we know all media types are charset-compatible, and there is at least one media type, so
-        // we can just take the first one.
-        final Charset charset = getSupportedMediaTypes().get(0).getCharset();
+        // Get the charset from the selected content type (or use default)
+        final Charset charset = getCharset(contentType).orElse(getDefaultCharset());
 
 
         /*
@@ -693,6 +695,12 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
                 );
 
+    }
+
+
+
+    private static Optional<Charset> getCharset(final MediaType mediaType) {
+        return mediaType != null ? Optional.ofNullable(mediaType.getCharset()) : Optional.empty();
     }
 
 
