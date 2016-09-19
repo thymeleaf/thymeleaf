@@ -21,7 +21,6 @@ package thymeleafsandbox.springreactive.thymeleaf.view;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -29,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.http.MediaType;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.reactive.result.view.ViewResolver;
@@ -69,8 +67,6 @@ public class ThymeleafViewResolver extends ViewResolverSupport implements ViewRe
     private int dataDrivenChunkSizeElements = ThymeleafView.DEFAULT_DATA_DRIVEN_CHUNK_SIZE_ELEMENTS;
 
     private final Map<String, Object> staticVariables = new LinkedHashMap<String, Object>(10);
-    private String contentType = null;
-    private String characterEncoding = null;
 
 
     // This will determine whether we will be throttling or not, and if so the size of the buffers that will be produced
@@ -151,30 +147,6 @@ public class ThymeleafViewResolver extends ViewResolverSupport implements ViewRe
 
     public int getOrder() {
         return this.order;
-    }
-
-
-    
-
-    public void setContentType(final String contentType) {
-        this.contentType = contentType;
-    }
-
-
-    public String getContentType() {
-        return this.contentType;
-    }
-    
-
-
-    
-    public void setCharacterEncoding(final String characterEncoding) {
-        this.characterEncoding = characterEncoding;
-    }
-
-
-    public String getCharacterEncoding() {
-        return this.characterEncoding;
     }
 
 
@@ -369,26 +341,24 @@ public class ThymeleafViewResolver extends ViewResolverSupport implements ViewRe
             view.setTemplateName(viewName);
         }
 
-        if (getContentType() != null && !view.isContentTypeSet()) {
-            view.setContentType(getContentType());
-        }
-        if (locale != null && view.getLocale() == null) {
-            view.setLocale(locale);
-        }
-        if (getCharacterEncoding() != null && view.getCharacterEncoding() == null) {
-            view.setCharacterEncoding(getCharacterEncoding());
-        }
-        if (!viewMediaTypesAreDefaultOrEmpty(getSupportedMediaTypes()) && viewMediaTypesAreDefaultOrEmpty(view.getSupportedMediaTypes())) {
+        // We set the media types from the view resolver only if no value has already been set at the view def.
+        if (!view.isSupportedMediaTypesSet()) {
             view.setSupportedMediaTypes(getSupportedMediaTypes());
         }
 
-        // Once all content-type-related info has been set, compute the definitive supported media types to be used
-        // for content negotiation at the view level. Note it is important that this is performed now, before
-        // the "render" methods are called on the view itself by the framework (by then, all content negotiation
-        // would be already done).
-        view.initializeMediaTypes();
+        // We set the default charset from the view resolver only if no value has already been set at the view def.
+        if (!view.isDefaultCharsetSet()) {
+            view.setDefaultCharset(getDefaultCharset());
+        }
 
+        // We set the locale from the view resolver only if no value has already been set at the view def.
+        if (locale != null && view.getLocale() == null) {
+            view.setLocale(locale);
+        }
 
+        /*
+         * Set the reactive operation-related flags
+         */
         if (getResponseMaxBufferSizeBytes() != ThymeleafView.DEFAULT_RESPONSE_BUFFER_SIZE_BYTES && view.getNullableResponseMaxChunkSize() == null) {
             view.setResponseMaxBufferSizeBytes(getResponseMaxBufferSizeBytes());
         }
@@ -403,18 +373,6 @@ public class ThymeleafViewResolver extends ViewResolverSupport implements ViewRe
 
     }
 
-
-
-    private static boolean viewMediaTypesAreDefaultOrEmpty(final List<MediaType> mediaTypes) {
-        if (mediaTypes == null || mediaTypes.size() == 0) {
-            return true;
-        }
-        if (mediaTypes.size() > 1) {
-            return false;
-        }
-        final MediaType firstMediaType = mediaTypes.get(0);
-        return firstMediaType == null || firstMediaType.equals(ViewResolverSupport.DEFAULT_CONTENT_TYPE);
-    }
 
 
 }

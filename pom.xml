@@ -121,8 +121,8 @@
     <java.version>1.8</java.version>
     <thymeleaf.version>3.0.1.RELEASE</thymeleaf.version>
     <spring-boot-web-reactive.version>0.1.0.BUILD-SNAPSHOT</spring-boot-web-reactive.version>
-    <reactor.version>3.0.0.RC1</reactor.version>
-    <spring.version>5.0.0.M1</spring.version>
+    <reactor.version>3.0.1.BUILD-SNAPSHOT</reactor.version>
+    <spring.version>5.0.0.BUILD-SNAPSHOT</spring.version>
   </properties>
   
   

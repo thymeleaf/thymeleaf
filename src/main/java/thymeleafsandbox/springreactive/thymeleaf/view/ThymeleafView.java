@@ -21,7 +21,6 @@ package thymeleafsandbox.springreactive.thymeleaf.view;
 
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,7 +43,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.result.view.AbstractView;
-import org.springframework.web.reactive.result.view.ViewResolverSupport;
 import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.ITemplateEngine;
@@ -80,14 +78,21 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
 
     private String beanName = null;
-    private MediaType contentType = null;
-    private boolean contentTypeSet = false;
-    private String characterEncoding = null;
     private ITemplateEngine templateEngine = null;
 	private String templateName = null;
     private Locale locale = null;
     private Map<String, Object> staticVariables = null;
 
+    // These two flags are meant to determine if these fields have been specifically set a
+    // value for this View object, so that we know that the ViewResolver should not be
+    // overriding them with its own view-resolution-wide values.
+    private boolean defaultCharsetSet = false;
+    private boolean supportedMediaTypesSet = false;
+
+    // These two properties are meant to contain the metadata needed to perform a data-driven
+    // execution of this template: the name of the (iterable) variable on which to bind the data-driven
+    // execution, and the size of the chunks that will be gathered before each partial execution
+    // of the template.
     private String dataDrivenVariableName = null;
     private Integer dataDrivenChunkSizeElements = null;
 
@@ -124,40 +129,34 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
                 (markupSelector == null || markupSelector.trim().length() == 0? null : Collections.singleton(markupSelector.trim()));
     }
 
-	
 
 
-    public MediaType getContentType() {
-        return this.contentType;
+
+    boolean isDefaultCharsetSet() {
+        return this.defaultCharsetSet;
     }
 
 
-    public void setContentType(final MediaType contentType) {
-        this.contentType = contentType;
-        this.contentTypeSet = true;
+    // Implemented at AbstractView, but overridden here in order to set the flag
+    @Override
+    public void setDefaultCharset(final Charset defaultCharset) {
+        super.setDefaultCharset(defaultCharset);
+        this.defaultCharsetSet = true;
     }
 
 
-    public void setContentType(final String contentType) {
-        this.contentType = MediaType.valueOf(contentType);
-        this.contentTypeSet = true;
+
+
+    boolean isSupportedMediaTypesSet() {
+        return this.supportedMediaTypesSet;
     }
 
 
-    protected boolean isContentTypeSet() {
-        return this.contentTypeSet;
-    }
-
-
-    
-	
-    public String getCharacterEncoding() {
-        return this.characterEncoding;
-    }
-
-
-    public void setCharacterEncoding(final String characterEncoding) {
-        this.characterEncoding = characterEncoding;
+    // Implemented at AbstractView, but overridden here in order to set the flag
+    @Override
+    public void setSupportedMediaTypes(final List<MediaType> supportedMediaTypes) {
+        super.setSupportedMediaTypes(supportedMediaTypes);
+        this.supportedMediaTypesSet = true;
     }
 
 
@@ -726,81 +725,81 @@ public class ThymeleafView extends AbstractView implements BeanNameAware {
 
 
 
-    // We will compute the media types by first checking if the content-type and character encoding that have
-    // been configured for this view are already there and, if not, modify these media types. Note also that
-    // we will check that all media types specify the same character encoding (so that we can use it for byte[]
-    // output at the output streams).
-    void initializeMediaTypes() {
-
-        final List<MediaType> supportedMediaTypes = getSupportedMediaTypes();
-        final MediaType templateContentType = getContentType();
-        final String templateCharacterEncoding = getCharacterEncoding();
-
-
-        Charset responseCharset = null;
-        if (templateCharacterEncoding != null) {
-            responseCharset = Charset.forName(templateCharacterEncoding);
-        }
-        final Charset templateContentTypeCharset = (templateContentType == null? null : templateContentType.getCharset());
-        if (responseCharset == null && templateContentTypeCharset != null) {
-            responseCharset = templateContentTypeCharset;
-        }
-        if (responseCharset == null && supportedMediaTypes != null && !supportedMediaTypes.isEmpty()) {
-            for (final MediaType mediaType : supportedMediaTypes) {
-                final Charset mediaTypeCharset = mediaType.getCharset();
-                if (responseCharset == null) {
-                    responseCharset = mediaTypeCharset;
-                } else {
-                    if (mediaTypeCharset != null && !responseCharset.equals(mediaTypeCharset)) {
-                        throw new TemplateProcessingException(
-                                "At least two supported media types have been configured with incompatible " +
-                                "character encoding: " + responseCharset + " and " + mediaTypeCharset + ". If more than " +
-                                "one supported media type is configured and character encoding is not explicitly " +
-                                "configured for a view, all configured charsets must match.");
-                    }
-                }
-            }
-        }
-        if (responseCharset == null) {
-            responseCharset = ViewResolverSupport.DEFAULT_CONTENT_TYPE.getCharset();
-        }
-
-
-        final List<MediaType> computedSupportedMediaTypes;
-        if (templateContentType != null) {
-            // We have explicitly set a content type, so we must use it as the only supported media type. But we
-            // might need to add/change its charset by combining it
-
-            computedSupportedMediaTypes =  Collections.singletonList(combineMediaType(templateContentType, responseCharset));
-
-        } else if (supportedMediaTypes == null || supportedMediaTypes.isEmpty()) {
-            // If we haven't either explicitly set a content type, nor there are supported media types coming from
-            // the higher-level configuration, we will use the default
-
-            computedSupportedMediaTypes = Collections.singletonList(combineMediaType(ViewResolverSupport.DEFAULT_CONTENT_TYPE, responseCharset));
-
-        } else if (supportedMediaTypes.size() == 1) {
-            // If we have 'supported media types' configured, the most common case is that we have only one, so we will
-            // take a shortcut here...
-
-            computedSupportedMediaTypes = Collections.singletonList(combineMediaType(supportedMediaTypes.get(0), responseCharset));
-
-        } else {
-            // We will create a new list of media types, making sure we combine the charsets adequately
-
-            final List<MediaType> mediaTypes = new ArrayList<>(supportedMediaTypes.size());
-            for (final MediaType supportedMediaType : supportedMediaTypes) {
-                mediaTypes.add(combineMediaType(supportedMediaType, responseCharset));
-            }
-            computedSupportedMediaTypes = mediaTypes;
-
-        }
-
-        // Finally, once computed, we can set the new list of supported media types
-        setSupportedMediaTypes(computedSupportedMediaTypes);
-
-    }
-
+//    // We will compute the media types by first checking if the content-type and character encoding that have
+//    // been configured for this view are already there and, if not, modify these media types. Note also that
+//    // we will check that all media types specify the same character encoding (so that we can use it for byte[]
+//    // output at the output streams).
+//    void initializeMediaTypes() {
+//
+//        final List<MediaType> supportedMediaTypes = getSupportedMediaTypes();
+//        final MediaType templateContentType = getContentType();
+//        final String templateCharacterEncoding = getCharacterEncoding();
+//
+//
+//        Charset responseCharset = null;
+//        if (templateCharacterEncoding != null) {
+//            responseCharset = Charset.forName(templateCharacterEncoding);
+//        }
+//        final Charset templateContentTypeCharset = (templateContentType == null? null : templateContentType.getCharset());
+//        if (responseCharset == null && templateContentTypeCharset != null) {
+//            responseCharset = templateContentTypeCharset;
+//        }
+//        if (responseCharset == null && supportedMediaTypes != null && !supportedMediaTypes.isEmpty()) {
+//            for (final MediaType mediaType : supportedMediaTypes) {
+//                final Charset mediaTypeCharset = mediaType.getCharset();
+//                if (responseCharset == null) {
+//                    responseCharset = mediaTypeCharset;
+//                } else {
+//                    if (mediaTypeCharset != null && !responseCharset.equals(mediaTypeCharset)) {
+//                        throw new TemplateProcessingException(
+//                                "At least two supported media types have been configured with incompatible " +
+//                                "character encoding: " + responseCharset + " and " + mediaTypeCharset + ". If more than " +
+//                                "one supported media type is configured and character encoding is not explicitly " +
+//                                "configured for a view, all configured charsets must match.");
+//                    }
+//                }
+//            }
+//        }
+//        if (responseCharset == null) {
+//            responseCharset = ViewResolverSupport.DEFAULT_CONTENT_TYPE.getCharset();
+//        }
+//
+//
+//        final List<MediaType> computedSupportedMediaTypes;
+//        if (templateContentType != null) {
+//            // We have explicitly set a content type, so we must use it as the only supported media type. But we
+//            // might need to add/change its charset by combining it
+//
+//            computedSupportedMediaTypes =  Collections.singletonList(combineMediaType(templateContentType, responseCharset));
+//
+//        } else if (supportedMediaTypes == null || supportedMediaTypes.isEmpty()) {
+//            // If we haven't either explicitly set a content type, nor there are supported media types coming from
+//            // the higher-level configuration, we will use the default
+//
+//            computedSupportedMediaTypes = Collections.singletonList(combineMediaType(ViewResolverSupport.DEFAULT_CONTENT_TYPE, responseCharset));
+//
+//        } else if (supportedMediaTypes.size() == 1) {
+//            // If we have 'supported media types' configured, the most common case is that we have only one, so we will
+//            // take a shortcut here...
+//
+//            computedSupportedMediaTypes = Collections.singletonList(combineMediaType(supportedMediaTypes.get(0), responseCharset));
+//
+//        } else {
+//            // We will create a new list of media types, making sure we combine the charsets adequately
+//
+//            final List<MediaType> mediaTypes = new ArrayList<>(supportedMediaTypes.size());
+//            for (final MediaType supportedMediaType : supportedMediaTypes) {
+//                mediaTypes.add(combineMediaType(supportedMediaType, responseCharset));
+//            }
+//            computedSupportedMediaTypes = mediaTypes;
+//
+//        }
+//
+//        // Finally, once computed, we can set the new list of supported media types
+//        setSupportedMediaTypes(computedSupportedMediaTypes);
+//
+//    }
+//
 
 
     static final class DataDrivenValuesWithContext {
