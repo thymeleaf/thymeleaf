@@ -58,9 +58,9 @@ public class  SpringReactiveWebConfig extends WebReactiveConfiguration {
     @Override
     protected void addResourceHandlers(final ResourceHandlerRegistry registry) {
         super.addResourceHandlers(registry);
-        registry.addResourceHandler("/images/**").addResourceLocations("/images/");
-        registry.addResourceHandler("/css/**").addResourceLocations("/css/");
-        registry.addResourceHandler("/js/**").addResourceLocations("/js/");
+        registry.addResourceHandler("/images/**").addResourceLocations("/webapp/images/");
+        registry.addResourceHandler("/css/**").addResourceLocations("/webapp/css/");
+        registry.addResourceHandler("/js/**").addResourceLocations("/webapp/js/");
     }
 
 
