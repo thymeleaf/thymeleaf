@@ -108,7 +108,7 @@ public class ThymeleafView
      *   Creates a new instance of <tt>ThymeleafView</tt>.
      * </p>
      */
-	protected ThymeleafView() {
+    public ThymeleafView() {
 	    super();
 	}
 
@@ -121,7 +121,7 @@ public class ThymeleafView
 	 *
 	 * @param templateName the template name.
 	 */
-	protected ThymeleafView(final String templateName) {
+    public ThymeleafView(final String templateName) {
 	    super(templateName);
 	}
 
