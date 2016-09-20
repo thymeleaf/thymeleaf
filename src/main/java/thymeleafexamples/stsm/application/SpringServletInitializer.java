@@ -29,12 +29,12 @@ import org.springframework.web.servlet.support.AbstractDispatcherServletInitiali
 
 public class SpringServletInitializer extends AbstractDispatcherServletInitializer {
 
+    public static final String CHARACTER_ENCODING = "UTF-8";
 
 
     public SpringServletInitializer() {
         super();
     }
-
 
 
     protected WebApplicationContext createServletApplicationContext() {
@@ -54,7 +54,7 @@ public class SpringServletInitializer extends AbstractDispatcherServletInitializ
     @Override
     protected Filter[] getServletFilters() {
         final CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();
-        encodingFilter.setEncoding(SpringWebConfig.CHARACTER_ENCODING);
+        encodingFilter.setEncoding(CHARACTER_ENCODING);
         encodingFilter.setForceEncoding(true);
         return new Filter[] { encodingFilter };
     }

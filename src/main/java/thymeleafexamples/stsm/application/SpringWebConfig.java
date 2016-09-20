@@ -40,13 +40,10 @@ import thymeleafexamples.stsm.web.conversion.VarietyFormatter;
 @Configuration
 @EnableWebMvc
 @ComponentScan("thymeleafexamples.stsm")
-public class SpringWebConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
-
-    public static final String CHARACTER_ENCODING = "UTF-8";
-
+public class SpringWebConfig
+        extends WebMvcConfigurerAdapter implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
-
 
 
     public SpringWebConfig() {
@@ -54,21 +51,61 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter implements Applicat
     }
 
 
-    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(final ApplicationContext applicationContext)
+            throws BeansException {
         this.applicationContext = applicationContext;
     }
 
 
+
+    /* ******************************************************************* */
+    /*  GENERAL CONFIGURATION ARTIFACTS                                    */
+    /*  Static Resources, i18n Messages, Formatters (Conversion Service)   */
+    /* ******************************************************************* */
+
+    /**
+     *  Dispatcher configuration for serving static resources
+     */
+    @Override
+    public void addResourceHandlers(final ResourceHandlerRegistry registry) {
+        super.addResourceHandlers(registry);
+        registry.addResourceHandler("/images/**").addResourceLocations("/images/");
+        registry.addResourceHandler("/css/**").addResourceLocations("/css/");
+        registry.addResourceHandler("/js/**").addResourceLocations("/js/");
+    }
 
     /**
      *  Message externalization/internationalization
      */
     @Bean
     public ResourceBundleMessageSource messageSource() {
-        ResourceBundleMessageSource resourceBundleMessageSource = new ResourceBundleMessageSource();
-        resourceBundleMessageSource.setBasename("Messages");
-        return resourceBundleMessageSource;
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("Messages");
+        return messageSource;
     }
+
+    /**
+     * Add formatter for class {@link thymeleafexamples.stsm.business.entities.Variety}
+     * and {@link java.util.Date} in addition to the one registered by default
+     */
+    @Override
+    public void addFormatters(final FormatterRegistry registry) {
+        super.addFormatters(registry);
+        registry.addFormatter(varietyFormatter());
+        registry.addFormatter(dateFormatter());
+    }
+
+    @Bean
+    public VarietyFormatter varietyFormatter() {
+        return new VarietyFormatter();
+    }
+
+    @Bean
+    public DateFormatter dateFormatter() {
+        return new DateFormatter();
+    }
+
+
 
     /* **************************************************************** */
     /*  THYMELEAF-SPECIFIC ARTIFACTS                                    */
@@ -77,6 +114,8 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter implements Applicat
 
     @Bean
     public SpringResourceTemplateResolver templateResolver(){
+        // SpringResourceTemplateResolver automatically integrates with Spring's own
+        // resource resolution infrastructure, which is highly recommended.
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
         templateResolver.setApplicationContext(this.applicationContext);
         templateResolver.setPrefix("/WEB-INF/templates/");
@@ -91,6 +130,8 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter implements Applicat
 
     @Bean
     public SpringTemplateEngine templateEngine(){
+        // SpringTemplateEngine automatically applies SpringStandardDialect and
+        // enables Spring's own MessageSource message resolution mechanisms.
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(templateResolver());
         // Enabling the SpringEL compiler with Spring 4.2.4 or newer can
@@ -107,43 +148,6 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter implements Applicat
         ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
         viewResolver.setTemplateEngine(templateEngine());
         return viewResolver;
-    }
-
-    /* ******************************************************************* */
-    /*  Defines callback methods to customize the Java-based configuration */
-    /*  for Spring MVC enabled via {@code @EnableWebMvc}                   */
-    /* ******************************************************************* */
-
-    /**
-     *  Dispatcher configuration for serving static resources
-     */
-    @Override
-    public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-        super.addResourceHandlers(registry);
-        registry.addResourceHandler("/images/**").addResourceLocations("/images/");
-        registry.addResourceHandler("/css/**").addResourceLocations("/css/");
-        registry.addResourceHandler("/js/**").addResourceLocations("/js/");
-    }
-
-    /**
-     * Add formatter for class {@link thymeleafexamples.stsm.business.entities.Variety}
-     * and {@link java.util.Date} in addition to the one registered by default
-     */
-    @Override
-    public void addFormatters(final FormatterRegistry registry) {
-        super.addFormatters(registry);
-        registry.addFormatter(varietyFormatter());
-        registry.addFormatter(dataFormatter());
-    }
-
-    @Bean
-    public VarietyFormatter varietyFormatter() {
-        return new VarietyFormatter();
-    }
-
-    @Bean
-    public DateFormatter dataFormatter() {
-        return new DateFormatter();
     }
 
 }
