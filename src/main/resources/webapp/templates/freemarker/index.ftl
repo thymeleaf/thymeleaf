@@ -11,7 +11,10 @@
 
     <h2>Spring Reactive - Thymeleaf Sandbox application</h2>
 
-    <p>Using template engine: <strong>FreeMarker</strong></p>
+    <p>Using template engine: <strong>FreeMarker</strong> (see logo below)</p>
+
+    <img src="/images/freemarker_logo.png">
+
     <p><span>Current time is ${.now}</span></p>
 
     <p>

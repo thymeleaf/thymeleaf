@@ -11,7 +11,10 @@
 
     <h2>Spring Reactive - Thymeleaf Sandbox application</h2>
 
-    <p>Using template engine: <strong>Thymeleaf</strong></p>
+    <p>Using template engine: <strong>Thymeleaf</strong> (see logo below)</p>
+
+    <img th:src="@{/images/thymeleaf_logo.png}">
+
     <p><span>Current time is [[${#dates.createNow()}]]</span></p>
 
     <p>
