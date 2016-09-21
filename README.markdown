@@ -26,9 +26,9 @@
  
      mvn -U clean compile
      
- Run the application (embedded NETTY TcpServer):
+ Run the application (Spring Boot based, using **netty** as a web server):
  
-     mvn exec:java -Dexec.mainClass="thymeleafsandbox.springreactive.application.Application"
+     mvn spring-boot:run
 
  Or, from an IDE, just launch the class:
 
