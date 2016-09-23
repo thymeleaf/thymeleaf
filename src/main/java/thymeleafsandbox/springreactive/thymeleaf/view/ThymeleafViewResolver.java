@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.reactive.result.view.ViewResolver;
@@ -302,33 +304,57 @@ public class ThymeleafViewResolver extends ViewResolverSupport implements ViewRe
 
         final AutowireCapableBeanFactory beanFactory = getApplicationContext().getAutowireCapableBeanFactory();
 
-        ThymeleafView view = BeanUtils.instantiateClass(getViewClass());
-
         final boolean viewBeanExists = beanFactory.containsBean(viewName);
         final Class<?> viewBeanType = viewBeanExists? beanFactory.getType(viewName) : null;
 
+        final ThymeleafView view;
         if (viewBeanExists && viewBeanType != null && ThymeleafView.class.isAssignableFrom(viewBeanType)) {
             // AppCtx has a bean with name == viewName, and it is a View bean. So let's use it as a prototype!
+            //
+            // This can mean two things: if the bean has been defined with scope "prototype", we will just use it.
+            // If it hasn't we will create a new instance of the view class and use its properties in order to
+            // configure this view instance (so that we don't end up using the same bean from several request threads).
+            //
+            // Note that, if Java-based configuration is used, using @Scope("prototype") would be the only viable
+            // possibility here.
 
-            view = (ThymeleafView) beanFactory.configureBean(view, viewName);
+            final BeanDefinition viewBeanDefinition =
+                    (beanFactory instanceof ConfigurableListableBeanFactory ?
+                            ((ConfigurableListableBeanFactory)beanFactory).getBeanDefinition(viewName) :
+                            null);
 
-        } else if (viewBeanExists && viewBeanType == null) {
-            // AppCtx has a bean with name == viewName, but it is an abstract bean. We still can use it as a prototype.
-
-            // The AUTOWIRE_NO mode applies autowiring only through annotations
-            beanFactory.autowireBeanProperties(view, AutowireCapableBeanFactory.AUTOWIRE_NO, false);
-            // A bean with this name exists, so we apply its properties
-            beanFactory.applyBeanPropertyValues(view, viewName);
-            // Finally, we let Spring do the remaining initializations (incl. proxifying if needed)
-            view = (ThymeleafView) beanFactory.initializeBean(view, viewName);
+            if (viewBeanDefinition == null || !viewBeanDefinition.isPrototype()) {
+                // No scope="prototype", so we will just apply its properties. This should only happen with XML config.
+                final ThymeleafView viewInstance = BeanUtils.instantiateClass(getViewClass());
+                view = (ThymeleafView) beanFactory.configureBean(viewInstance, viewName);
+            } else {
+                // This is a prototype bean. Use it as such.
+                view = (ThymeleafView) beanFactory.getBean(viewName);
+            }
 
         } else {
-            // Either AppCtx has no bean with name == viewName, or it is of an incompatible class. No prototyping done.
 
-            // The AUTOWIRE_NO mode applies autowiring only through annotations
-            beanFactory.autowireBeanProperties(view, AutowireCapableBeanFactory.AUTOWIRE_NO, false);
-            // Finally, we let Spring do the remaining initializations (incl. proxifying if needed)
-            view = (ThymeleafView) beanFactory.initializeBean(view, viewName);
+            final ThymeleafView viewInstance = BeanUtils.instantiateClass(getViewClass());
+
+            if (viewBeanExists && viewBeanType == null) {
+                // AppCtx has a bean with name == viewName, but it is an abstract bean. We still can use it as a prototype.
+
+                // The AUTOWIRE_NO mode applies autowiring only through annotations
+                beanFactory.autowireBeanProperties(viewInstance, AutowireCapableBeanFactory.AUTOWIRE_NO, false);
+                // A bean with this name exists, so we apply its properties
+                beanFactory.applyBeanPropertyValues(viewInstance, viewName);
+                // Finally, we let Spring do the remaining initializations (incl. proxifying if needed)
+                view = (ThymeleafView) beanFactory.initializeBean(viewInstance, viewName);
+
+            } else {
+                // Either AppCtx has no bean with name == viewName, or it is of an incompatible class. No prototyping done.
+
+                // The AUTOWIRE_NO mode applies autowiring only through annotations
+                beanFactory.autowireBeanProperties(viewInstance, AutowireCapableBeanFactory.AUTOWIRE_NO, false);
+                // Finally, we let Spring do the remaining initializations (incl. proxifying if needed)
+                view = (ThymeleafView) beanFactory.initializeBean(viewInstance, viewName);
+
+            }
 
         }
 
