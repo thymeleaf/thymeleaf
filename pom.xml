@@ -119,10 +119,11 @@
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <java.version>1.8</java.version>
-    <thymeleaf.version>3.0.1.RELEASE</thymeleaf.version>
     <spring-boot-web-reactive.version>0.1.0.BUILD-SNAPSHOT</spring-boot-web-reactive.version>
-    <reactor.version>3.0.3.BUILD-SNAPSHOT</reactor.version>
-    <spring.version>5.0.0.BUILD-SNAPSHOT</spring.version>
+    <thymeleaf.version>3.0.1.RELEASE</thymeleaf.version>
+    <!-- Need to specify this here. Reactor 2.0.8 would be used if we didn't -->
+    <!-- See: https://github.com/bclozel/spring-boot-web-reactive/issues/36  -->
+    <reactor.version>3.0.2.RELEASE</reactor.version>
   </properties>
   
   
