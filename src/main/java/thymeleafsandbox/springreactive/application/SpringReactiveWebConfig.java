@@ -20,6 +20,7 @@
 package thymeleafsandbox.springreactive.application;
 
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -30,8 +31,7 @@ import org.springframework.web.reactive.config.WebReactiveConfiguration;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewResolver;
 import org.thymeleaf.spring4.SpringTemplateEngine;
-import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
-import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ITemplateResolver;
 import thymeleafsandbox.springreactive.thymeleaf.context.SpringReactiveEngineContextFactory;
 import thymeleafsandbox.springreactive.thymeleaf.linkbuilder.SpringReactiveLinkBuilder;
 import thymeleafsandbox.springreactive.thymeleaf.view.ThymeleafViewResolver;
@@ -40,11 +40,24 @@ import thymeleafsandbox.springreactive.thymeleaf.view.ThymeleafViewResolver;
 @ComponentScan("thymeleafsandbox.springreactive.web")
 public class  SpringReactiveWebConfig extends WebReactiveConfiguration {
 
+    // TODO * Extending WebReactiveConfiguration should be completely
+    // TODO   unnecessary once https://github.com/bclozel/spring-boot-web-reactive/issues/31
+    // TODO   is implemented (auto-configuration of View Resolvers). Once that is implemented,
+    // TODO   this class should not extend anything and just let the auto-configurer do its job,
+    // TODO   including the handling of static resources in Spring-Boot style.
+
+
+    private ApplicationContext applicationContext;
+    private ITemplateResolver thymeleafTemplateResolver; // auto-configured by Spring Boot
 
 
 
-    public SpringReactiveWebConfig() {
+    public SpringReactiveWebConfig(
+            final ApplicationContext applicationContext,
+            final ITemplateResolver thymeleafTemplateResolver) {
         super();
+        this.applicationContext = applicationContext;
+        this.thymeleafTemplateResolver = thymeleafTemplateResolver;
     }
 
 
@@ -55,12 +68,13 @@ public class  SpringReactiveWebConfig extends WebReactiveConfiguration {
      * --------------------------------------
      */
 
+    // TODO * This should be unnecessary once https://github.com/bclozel/spring-boot-web-reactive/issues/31
+    // TODO   is implemented (auto-configuration of View Resolvers). See comment above on this class' parent.
+
     @Override
     protected void addResourceHandlers(final ResourceHandlerRegistry registry) {
         super.addResourceHandlers(registry);
-        registry.addResourceHandler("/images/**").addResourceLocations("/webapp/images/");
-        registry.addResourceHandler("/css/**").addResourceLocations("/webapp/css/");
-        registry.addResourceHandler("/js/**").addResourceLocations("/webapp/js/");
+        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
     }
 
 
@@ -71,6 +85,9 @@ public class  SpringReactiveWebConfig extends WebReactiveConfiguration {
      * VIEW RESOLVER CONFIGURATION
      * --------------------------------------
      */
+
+    // TODO * This should be unnecessary once https://github.com/bclozel/spring-boot-web-reactive/issues/31
+    // TODO   is implemented (auto-configuration of View Resolvers). See comment above on this class' parent.
 
     @Override
     protected void configureViewResolvers(final ViewResolverRegistry registry) {
@@ -92,8 +109,9 @@ public class  SpringReactiveWebConfig extends WebReactiveConfiguration {
 
     @Bean
     public FreeMarkerConfigurer freeMarkerConfig() {
+        // Note this is the reactive version of FreeMarker's configuration, so there is no auto-configuration yet.
         final FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
-        freeMarkerConfigurer.setPreTemplateLoaders(new SpringTemplateLoader(getApplicationContext(), "/webapp/templates/"));
+        freeMarkerConfigurer.setPreTemplateLoaders(new SpringTemplateLoader(this.applicationContext, "/templates/"));
         return freeMarkerConfigurer;
     }
 
@@ -121,22 +139,11 @@ public class  SpringReactiveWebConfig extends WebReactiveConfiguration {
 
 
     @Bean
-    public SpringResourceTemplateResolver thymeleafTemplateResolver(){
-        SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
-        templateResolver.setApplicationContext(getApplicationContext());
-        templateResolver.setPrefix("classpath:/webapp/templates/");
-        templateResolver.setSuffix(".html");
-        templateResolver.setTemplateMode(TemplateMode.HTML);
-        // Template cache is true by default. Set to false if you want
-        // templates to be automatically updated when modified.
-        templateResolver.setCacheable(true);
-        return templateResolver;
-    }
-
-    @Bean
     public SpringTemplateEngine thymeleafTemplateEngine(){
+        // We override here the SpringTemplateEngine instance that would otherwise be instantiated by
+        // Spring Boot because we want to apply the SpringReactive-specific context factory, link builder...
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.setTemplateResolver(thymeleafTemplateResolver());
+        templateEngine.setTemplateResolver(this.thymeleafTemplateResolver);
         templateEngine.setEngineContextFactory(new SpringReactiveEngineContextFactory());
         templateEngine.setLinkBuilder(new SpringReactiveLinkBuilder());
         return templateEngine;
