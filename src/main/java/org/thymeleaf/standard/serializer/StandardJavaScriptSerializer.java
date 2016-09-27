@@ -37,6 +37,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.SerializableString;
+import com.fasterxml.jackson.core.io.CharacterEscapes;
+import com.fasterxml.jackson.core.io.SerializedString;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
@@ -146,6 +149,7 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
             this.mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             this.mapper.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
             this.mapper.enable(JsonGenerator.Feature.ESCAPE_NON_ASCII);
+            this.mapper.getFactory().setCharacterEscapes(new JacksonThymeleafCharacterEscapes());
             this.mapper.setDateFormat(new JacksonThymeleafISO8601DateFormat());
         }
 
@@ -216,6 +220,50 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
 
 
     }
+
+
+
+    /*
+     * This CharacterEscapes implementation makes sure that the slash ('/') character is also escaped,
+     * which is not standard Jackson behaviour. This covers against the possible premature closing of
+     * <script> tags inside inlined JavaScript literals.
+     *
+     * Unfortunately Jackson's escape customization mechanism offers no way to only escape '/' when it
+     * is preceded by '<', so that only '</' is escaped. Therefore, all '/' need to be escaped.
+     */
+    private static final class JacksonThymeleafCharacterEscapes extends CharacterEscapes {
+
+        private static final int[] CHARACTER_ESCAPES;
+        private static final SerializableString SLASH_ESCAPE;
+
+        static {
+
+            CHARACTER_ESCAPES = CharacterEscapes.standardAsciiEscapesForJSON();
+            CHARACTER_ESCAPES['/'] = CharacterEscapes.ESCAPE_CUSTOM;
+
+            SLASH_ESCAPE = new SerializedString("\\/");
+
+        }
+
+        JacksonThymeleafCharacterEscapes() {
+            super();
+        }
+
+        @Override
+        public int[] getEscapeCodesForAscii() {
+            return CHARACTER_ESCAPES;
+        }
+
+        @Override
+        public SerializableString getEscapeSequence(final int ch) {
+            if (ch == '/') {
+                return SLASH_ESCAPE;
+            }
+            return null;
+        }
+
+    }
+
 
 
 
