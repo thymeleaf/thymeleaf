@@ -275,10 +275,6 @@
           <groupId>ognl</groupId>
           <artifactId>ognl</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>org.javassist</groupId>
-          <artifactId>javassist</artifactId>
-        </exclusion>
       </exclusions>
     </dependency>
 
