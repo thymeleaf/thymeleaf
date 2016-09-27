@@ -9,6 +9,7 @@
 - Improved error handling during Jackson initialization.
 - Updated AttoParser dependency to 2.0.1.RELEASE.
 - Updated Unbescape dependency to 1.1.4.RELEASE.
+- Updated OGNL dependency to 3.1.10, removed direct dependency on javassist.
 
 
 3.0.1
