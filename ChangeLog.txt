@@ -3,9 +3,12 @@
 - Fixed <head> being aggressively auto-closed by block tags inside <script> or <template> tags, which
   caused JavaScript template fragments to be incorrectly inserted from other templates.
 - Fixed Jackson not escaping '</' in JavaScript/JSON literals, which could allow code injection that
-  prematurely closed </script> tags.
+  prematurely closed </script> tags when browsers display pages in HTML mode.
+- Fixed JavaScript/JSON literals not escaping amperand (&), which could allow code injection that
+  prematurely closed </script> tags when browsers display pages in XHTML (application/xhtml+xml) mode.
 - Improved error handling during Jackson initialization.
 - Updated AttoParser dependency to 2.0.1.RELEASE.
+- Updated Unbescape dependency to 1.1.4.RELEASE.
 
 
 3.0.1

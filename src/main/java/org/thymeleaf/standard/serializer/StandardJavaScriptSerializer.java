@@ -224,24 +224,34 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
 
 
     /*
-     * This CharacterEscapes implementation makes sure that the slash ('/') character is also escaped,
-     * which is not standard Jackson behaviour. This covers against the possible premature closing of
-     * <script> tags inside inlined JavaScript literals.
+     * This CharacterEscapes implementation makes sure that the slash ('/') and ampersand ('&') characters
+     * are also escaped, which is not standard Jackson behaviour.
      *
-     * Unfortunately Jackson's escape customization mechanism offers no way to only escape '/' when it
-     * is preceded by '<', so that only '</' is escaped. Therefore, all '/' need to be escaped.
+     * Escaping '/' covers against the possible premature closing of <script> tags inside inlined JavaScript
+     * literals, thus preventing code injection in templates being processed by browsers as HTML.
+     *
+     * Escaping '&' covers against the injection of XHTML-escaped code which might prematurely close the
+     * inlined JavaScript literals and even the container <script> tags in templates being processed
+     * by browsers as XHTML.
+     *
+     * Note that, unfortunately Jackson's escape customization mechanism offers no way to only escape '/' when it
+     * is preceded by '<', so that only '</' is escaped. Therefore, all '/' need to be escaped. Which is a
+     * difference with the default Unbescape-based mechanism.
      */
     private static final class JacksonThymeleafCharacterEscapes extends CharacterEscapes {
 
         private static final int[] CHARACTER_ESCAPES;
         private static final SerializableString SLASH_ESCAPE;
+        private static final SerializableString AMPERSAND_ESCAPE;
 
         static {
 
             CHARACTER_ESCAPES = CharacterEscapes.standardAsciiEscapesForJSON();
             CHARACTER_ESCAPES['/'] = CharacterEscapes.ESCAPE_CUSTOM;
+            CHARACTER_ESCAPES['&'] = CharacterEscapes.ESCAPE_CUSTOM;
 
             SLASH_ESCAPE = new SerializedString("\\/");
+            AMPERSAND_ESCAPE = new SerializedString("\\u0026");
 
         }
 
@@ -258,6 +268,9 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
         public SerializableString getEscapeSequence(final int ch) {
             if (ch == '/') {
                 return SLASH_ESCAPE;
+            }
+            if (ch == '&') {
+                return AMPERSAND_ESCAPE;
             }
             return null;
         }
