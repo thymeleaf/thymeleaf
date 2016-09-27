@@ -1,3 +1,11 @@
+3.0.2
+=====
+- Fixed ThymeleafView not having public constructors, which made separate definition
+  of View beans impossible.
+- Improved handling of View beans by ThymeleafViewResolver so that beans with scope
+  prototype of class ThymeleafView can now be properly used.
+
+
 3.0.1
 =====
 - Fixed registered custom editor not used for nested property path with double-brace syntax.
