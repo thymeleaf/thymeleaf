@@ -75,7 +75,7 @@
 
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <thymeleaf.version>3.0.1.RELEASE</thymeleaf.version>
+    <thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
   </properties>
   
   
