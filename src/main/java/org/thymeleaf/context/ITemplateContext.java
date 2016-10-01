@@ -203,7 +203,7 @@ public interface ITemplateContext extends IExpressionContext {
      * @param key the key of the message to be retrieved.
      * @param messageParameters the parameters to be applied to the requested message.
      * @param useAbsentMessageRepresentation whether an <em>absent message representation</em> should be returned in
-     *                                       the case that the message does not exist or not
+     *                                       the case that the message does not exist
      *                                       (see {@link org.thymeleaf.messageresolver.IMessageResolver}).
      * @return the requested message, correctly formatted. Or an <em>absent message representation</em>, or
      *         <tt>null</tt> if no absent message representations are allowed.
