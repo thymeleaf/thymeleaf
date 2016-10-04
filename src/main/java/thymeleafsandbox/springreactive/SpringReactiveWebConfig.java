@@ -17,12 +17,11 @@
  * 
  * =============================================================================
  */
-package thymeleafsandbox.springreactive.application;
+package thymeleafsandbox.springreactive;
 
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.freemarker.SpringTemplateLoader;
 import org.springframework.web.reactive.config.ResourceHandlerRegistry;
@@ -37,7 +36,6 @@ import thymeleafsandbox.springreactive.thymeleaf.linkbuilder.SpringReactiveLinkB
 import thymeleafsandbox.springreactive.thymeleaf.view.ThymeleafViewResolver;
 
 @Configuration
-@ComponentScan("thymeleafsandbox.springreactive.web")
 public class  SpringReactiveWebConfig extends WebReactiveConfiguration {
 
     // TODO * Extending WebReactiveConfiguration should be completely

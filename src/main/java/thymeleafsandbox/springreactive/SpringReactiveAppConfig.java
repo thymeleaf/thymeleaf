@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafsandbox.springreactive.application;
+package thymeleafsandbox.springreactive;
 
 
 import java.io.IOException;
@@ -31,12 +31,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
 @Configuration
-@ComponentScan("thymeleafsandbox.springreactive.business")
 public class SpringReactiveAppConfig implements ApplicationContextAware {
 
     private static final Logger logger = LoggerFactory.getLogger(SpringReactiveAppConfig.class);
