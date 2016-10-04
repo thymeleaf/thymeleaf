@@ -17,17 +17,13 @@
  * 
  * =============================================================================
  */
-package thymeleafsandbox.springreactive.application;
+package thymeleafsandbox.springreactive;
 
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.freemarker.SpringTemplateLoader;
-import org.springframework.web.reactive.config.ResourceHandlerRegistry;
-import org.springframework.web.reactive.config.ViewResolverRegistry;
-import org.springframework.web.reactive.config.WebReactiveConfiguration;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewResolver;
 import org.thymeleaf.spring4.SpringTemplateEngine;
@@ -37,14 +33,7 @@ import thymeleafsandbox.springreactive.thymeleaf.linkbuilder.SpringReactiveLinkB
 import thymeleafsandbox.springreactive.thymeleaf.view.ThymeleafViewResolver;
 
 @Configuration
-@ComponentScan("thymeleafsandbox.springreactive.web")
-public class  SpringReactiveWebConfig extends WebReactiveConfiguration {
-
-    // TODO * Extending WebReactiveConfiguration should be completely
-    // TODO   unnecessary once https://github.com/bclozel/spring-boot-web-reactive/issues/31
-    // TODO   is implemented (auto-configuration of View Resolvers). Once that is implemented,
-    // TODO   this class should not extend anything and just let the auto-configurer do its job,
-    // TODO   including the handling of static resources in Spring-Boot style.
+public class SpringReactiveWebConfig {
 
 
     private ApplicationContext applicationContext;
@@ -58,43 +47,6 @@ public class  SpringReactiveWebConfig extends WebReactiveConfiguration {
         super();
         this.applicationContext = applicationContext;
         this.thymeleafTemplateResolver = thymeleafTemplateResolver;
-    }
-
-
-
-    /*
-     * --------------------------------------
-     * STATIC RESOURCE CONFIGURATION
-     * --------------------------------------
-     */
-
-    // TODO * This should be unnecessary once https://github.com/bclozel/spring-boot-web-reactive/issues/31
-    // TODO   is implemented (auto-configuration of View Resolvers). See comment above on this class' parent.
-
-    @Override
-    protected void addResourceHandlers(final ResourceHandlerRegistry registry) {
-        super.addResourceHandlers(registry);
-        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
-    }
-
-
-
-
-    /*
-     * --------------------------------------
-     * VIEW RESOLVER CONFIGURATION
-     * --------------------------------------
-     */
-
-    // TODO * This should be unnecessary once https://github.com/bclozel/spring-boot-web-reactive/issues/31
-    // TODO   is implemented (auto-configuration of View Resolvers). See comment above on this class' parent.
-
-    @Override
-    protected void configureViewResolvers(final ViewResolverRegistry registry) {
-        registry.viewResolver(thymeleafDataDrivenViewResolver());
-        registry.viewResolver(thymeleafBufferedViewResolver());
-        registry.viewResolver(thymeleafNormalViewResolver());
-        registry.viewResolver(freeMarkerViewResolver());
     }
 
 

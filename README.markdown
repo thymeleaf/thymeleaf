@@ -32,7 +32,7 @@
 
  Or, from an IDE, just launch the class:
 
-     thymeleafsandbox.springreactive.application.Application
+     thymeleafsandbox.springreactive.Application
 
  Once started, the application should be available at:
  

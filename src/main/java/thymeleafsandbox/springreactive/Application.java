@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafsandbox.springreactive.application;
+package thymeleafsandbox.springreactive;
 
 
 import org.springframework.boot.SpringApplication;
