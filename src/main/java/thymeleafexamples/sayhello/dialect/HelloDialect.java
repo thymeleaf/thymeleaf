@@ -24,6 +24,8 @@ import java.util.Set;
 
 import org.thymeleaf.dialect.AbstractProcessorDialect;
 import org.thymeleaf.processor.IProcessor;
+import org.thymeleaf.standard.processor.StandardXmlNsTagProcessor;
+import org.thymeleaf.templatemode.TemplateMode;
 
 public class HelloDialect extends AbstractProcessorDialect {
 
@@ -47,6 +49,8 @@ public class HelloDialect extends AbstractProcessorDialect {
         final Set<IProcessor> processors = new HashSet<IProcessor>();
         processors.add(new SayToAttributeTagProcessor(dialectPrefix));
         processors.add(new SayToPlanetAttributeTagProcessor(dialectPrefix));
+        // This will remove the xmlns:hello attributes we might add for IDE validation
+        processors.add(new StandardXmlNsTagProcessor(TemplateMode.HTML, dialectPrefix));
         return processors;
     }
 
