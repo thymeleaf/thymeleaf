@@ -25,6 +25,8 @@ import java.util.Set;
 import org.thymeleaf.dialect.AbstractProcessorDialect;
 import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.standard.StandardDialect;
+import org.thymeleaf.standard.processor.StandardXmlNsTagProcessor;
+import org.thymeleaf.templatemode.TemplateMode;
 
 public class ScoreDialect extends AbstractProcessorDialect {
 
@@ -48,6 +50,8 @@ public class ScoreDialect extends AbstractProcessorDialect {
         processors.add(new RemarkForPositionAttributeTagProcessor(dialectPrefix));
         processors.add(new HeadlinesElementTagProcessor(dialectPrefix));
         processors.add(new MatchDayTodayModelProcessor(dialectPrefix));
+        // This will remove the xmlns:score attributes we might add for IDE validation
+        processors.add(new StandardXmlNsTagProcessor(TemplateMode.HTML, dialectPrefix));
         return processors;
     }
 
