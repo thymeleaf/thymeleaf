@@ -1,3 +1,9 @@
+3.0.3
+=====
+- Fixed empty comments (<!---->) not being properly parsed and recognised (AttoParser).
+- Updated AttoParser dependency to 2.0.2.RELEASE.
+
+
 3.0.2
 =====
 - Fixed <head> being aggressively auto-closed by block tags inside <script> or <template> tags, which
