@@ -116,9 +116,9 @@ final class TextParsingUtil {
     
 
 
-    static int findNextStructureStart(
+    static int findNextStructureStartOrLiteralMarker(
             final char[] text, final int offset, final int maxi, 
-            final int[] locator) {
+            final int[] locator, final char literalMarker) {
 
         char c;
 
@@ -138,6 +138,11 @@ final class TextParsingUtil {
             } else if (c == '[' || c == '/') { // '[' is for elements, '/' is for comments (/*...*/)
                 locator[1] += (i - colIndex);
                 return i;
+            } else if (c == '\'' || c == '"') { // literal markers
+                if (literalMarker == 0 || isLiteralFinished(text, offset, i, literalMarker)) { // either not in literal, or it matches the open one
+                    locator[1] += (i - colIndex);
+                    return i;
+                }
             }
 
             i++;
@@ -147,6 +152,20 @@ final class TextParsingUtil {
         locator[1] += (maxi - colIndex);
         return -1;
         
+    }
+
+
+    private static boolean isLiteralFinished(
+            final char[] text, final int offset, final int i, final char literalMarker) {
+        if (literalMarker == 0 || text[i] != literalMarker) {
+            return false;
+        }
+        int escapes = 0;
+        int j = i - 1;
+        while (j >= offset && text[j--] == '\\') {
+            escapes++;
+        }
+        return escapes % 2 == 0;
     }
 
 
