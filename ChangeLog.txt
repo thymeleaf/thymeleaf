@@ -1,6 +1,7 @@
 3.0.3
 =====
 - Fixed empty comments (<!---->) not being properly parsed and recognised (AttoParser).
+- Fixed text parser wrongly recognizing comment start prefixes ('/*') even if inside JavaScript/CSS literals.
 - Updated AttoParser dependency to 2.0.2.RELEASE.
 
 
