@@ -65,7 +65,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
 
     private final boolean replaceHost;
-    // This flag should probably be removed once th:include is removed in 3.2 (deprecated in 3.0)
+    // This flag should probably be removed once th:include is removed in 3.2 (not recommended in 3.0, deprecated in 3.1)
     private final boolean insertOnlyContents;
 
 
@@ -78,7 +78,8 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
     /*
      * This constructor has package visibility in order to avoid user-created subclasses to use it. This should
-     * only be used by the th:include processor, which was deprecated as of 3.0, and will be removed in 3.2.
+     * only be used by the th:include processor, which was not recommended as of 3.0, (deprecated as of 3.1,
+     * and will be removed in 3.2).
      */
     AbstractStandardFragmentInsertionTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix, final String attrName, final int precedence,
@@ -203,7 +204,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                         "Template being processed uses template mode " + context.getTemplateMode() + ", " +
                         "inserted fragment \"" + attributeValue + "\" uses template mode " +
                         fragmentModel.getTemplateMode() + ". Cross-template-mode fragment insertion is not " +
-                        "allowed using the " + attributeName + " attribute, which is considered deprecated as " +
+                        "allowed using the " + attributeName + " attribute, which is no longer recommended for use as " +
                         "of Thymeleaf 3.0. Use {th:insert,data-th-insert} or {th:replace,data-th-replace} " +
                         "instead, which do not remove the container element from the fragment being inserted.");
             }
