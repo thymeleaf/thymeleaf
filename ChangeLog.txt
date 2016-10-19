@@ -2,6 +2,7 @@
 =====
 - Fixed empty comments (<!---->) not being properly parsed and recognised (AttoParser).
 - Fixed text parser wrongly recognizing comment start prefixes ('/*') even if inside JavaScript/CSS literals.
+- Fixed #numbers.sequence(from,to) throwing an exception if from > to (bad computation of 'step' argument).
 - Updated AttoParser dependency to 2.0.2.RELEASE.
 
 
