@@ -1,3 +1,8 @@
+2.1.6
+=====
+- Fixed #numbers.sequence(from,to) throwing an exception if from > to (bad computation of 'step' argument).
+
+
 2.1.5
 =====
 - Fixed stack overflow exception when serializing enums into JavaScript.
