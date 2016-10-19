@@ -109,7 +109,7 @@ public final class NumberUtils {
      * @since 1.1.2
      */
     public static Integer[] sequence(final Integer from, final Integer to) {
-        return sequence(from, to, Integer.valueOf(1));
+        return sequence(from, to, Integer.valueOf(from <= to? 1 : -1));
     }
     
 
