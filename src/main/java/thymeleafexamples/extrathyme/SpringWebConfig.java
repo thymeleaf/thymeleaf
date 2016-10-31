@@ -17,7 +17,7 @@
  *
  * =============================================================================
  */
-package thymeleafexamples.extrathyme.application;
+package thymeleafexamples.extrathyme;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -37,7 +37,7 @@ import thymeleafexamples.extrathyme.dialects.score.ScoreDialect;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan("thymeleafexamples.extrathyme")
+@ComponentScan
 public class SpringWebConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
 
     public static final String CHARACTER_ENCODING = "UTF-8";
@@ -58,7 +58,7 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter implements Applicat
 
 
 
-    /**
+    /*
      *  Message externalization/internationalization
      */
     @Bean
@@ -107,7 +107,7 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter implements Applicat
     /*  for Spring MVC enabled via {@code @EnableWebMvc}                   */
     /* ******************************************************************* */
 
-    /**
+    /*
      *  Dispatcher configuration for serving static resources
      */
     @Override

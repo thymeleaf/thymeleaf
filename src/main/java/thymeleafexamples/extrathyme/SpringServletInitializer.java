@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.extrathyme.application;
+package thymeleafexamples.extrathyme;
 
 import javax.servlet.Filter;
 
