@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.stsm.application;
+package thymeleafexamples.stsm;
 
 import javax.servlet.Filter;
 

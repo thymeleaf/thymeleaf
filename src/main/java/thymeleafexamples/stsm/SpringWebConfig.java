@@ -17,13 +17,12 @@
  *
  * =============================================================================
  */
-package thymeleafexamples.stsm.application;
+package thymeleafexamples.stsm;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.format.FormatterRegistry;
@@ -39,7 +38,6 @@ import thymeleafexamples.stsm.web.conversion.VarietyFormatter;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan("thymeleafexamples.stsm")
 public class SpringWebConfig
         extends WebMvcConfigurerAdapter implements ApplicationContextAware {
 
@@ -63,7 +61,7 @@ public class SpringWebConfig
     /*  Static Resources, i18n Messages, Formatters (Conversion Service)   */
     /* ******************************************************************* */
 
-    /**
+    /*
      *  Dispatcher configuration for serving static resources
      */
     @Override
@@ -74,7 +72,7 @@ public class SpringWebConfig
         registry.addResourceHandler("/js/**").addResourceLocations("/js/");
     }
 
-    /**
+    /*
      *  Message externalization/internationalization
      */
     @Bean
@@ -84,7 +82,7 @@ public class SpringWebConfig
         return messageSource;
     }
 
-    /**
+    /*
      * Add formatter for class {@link thymeleafexamples.stsm.business.entities.Variety}
      * and {@link java.util.Date} in addition to the one registered by default
      */
