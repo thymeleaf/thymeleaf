@@ -17,7 +17,7 @@
  *
  * =============================================================================
  */
-package thymeleafexamples.thvsjsp.application;
+package thymeleafexamples.thvsjsp;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -38,7 +38,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan("thymeleafexamples.thvsjsp")
+@ComponentScan
 public class SpringWebConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
 
     public static final String CHARACTER_ENCODING = "UTF-8";
@@ -59,7 +59,7 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter implements Applicat
 
 
 
-    /**
+    /*
      *  Message externalization/internationalization
      */
     @Bean
@@ -124,7 +124,7 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter implements Applicat
     /*  for Spring MVC enabled via {@code @EnableWebMvc}                   */
     /* ******************************************************************* */
 
-    /**
+    /*
      *  Dispatcher configuration for serving static resources
      */
     @Override

@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.thvsjsp.application;
+package thymeleafexamples.thvsjsp;
 
 import javax.servlet.Filter;
 
