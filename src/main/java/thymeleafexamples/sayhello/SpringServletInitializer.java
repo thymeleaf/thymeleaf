@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.sayhello.application;
+package thymeleafexamples.sayhello;
 
 import javax.servlet.Filter;
 
