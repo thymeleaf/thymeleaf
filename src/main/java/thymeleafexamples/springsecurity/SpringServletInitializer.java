@@ -17,10 +17,11 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.springsecurity.application;
+package thymeleafexamples.springsecurity;
 
 import javax.servlet.Filter;
 
+import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -28,7 +29,7 @@ import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.support.AbstractDispatcherServletInitializer;
 
 
-public class SpringServletInitializer extends AbstractDispatcherServletInitializer {
+public class SpringServletInitializer extends AbstractSecurityWebApplicationInitializer {
 
 
 
@@ -38,18 +39,19 @@ public class SpringServletInitializer extends AbstractDispatcherServletInitializ
 
 
 
+    @Override
     protected WebApplicationContext createServletApplicationContext() {
         final AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-        context.register(SpringWebConfig.class);
+        context.register(SpringWebConfig.class, SpringSecurityConfig.class);
         return context;
     }
 
+    @Override
     protected WebApplicationContext createRootApplicationContext() {
-        final AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-        context.register(SpringSecurityConfig.class);
-        return context;
+        return new AnnotationConfigWebApplicationContext();
     }
 
+    @Override
     protected String[] getServletMappings() {
         return new String[] { "/" };
     }
@@ -66,5 +68,7 @@ public class SpringServletInitializer extends AbstractDispatcherServletInitializ
         return new Filter[] { encodingFilter, springSecurityFilter };
 
     }
+
+
 
 }

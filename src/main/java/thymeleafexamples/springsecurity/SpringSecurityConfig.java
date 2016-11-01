@@ -17,7 +17,7 @@
  *
  * =============================================================================
  */
-package thymeleafexamples.springsecurity.application;
+package thymeleafexamples.springsecurity;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -40,17 +40,17 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/user/**").hasRole("USER")
-                .antMatchers("/shared/**").hasAnyRole("USER","ADMIN")
+                .formLogin()
+                .loginPage("/login.html")
+                .failureUrl("/login-error.html")
             .and()
                 .logout()
                 .logoutSuccessUrl("/index.html")
             .and()
-                .formLogin()
-                .loginPage("/login.html")
-                .failureUrl("/error.html")
+                .authorizeRequests()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/user/**").hasRole("USER")
+                .antMatchers("/shared/**").hasAnyRole("USER","ADMIN")
             .and()
                 .exceptionHandling()
                 .accessDeniedPage("/403.html");

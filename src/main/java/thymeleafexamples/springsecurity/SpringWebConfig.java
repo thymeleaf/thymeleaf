@@ -17,7 +17,7 @@
  *
  * =============================================================================
  */
-package thymeleafexamples.springsecurity.application;
+package thymeleafexamples.springsecurity;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -37,7 +37,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan("thymeleafexamples.springsecurity")
+@ComponentScan
 public class SpringWebConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
 
     public static final String CHARACTER_ENCODING = "UTF-8";
