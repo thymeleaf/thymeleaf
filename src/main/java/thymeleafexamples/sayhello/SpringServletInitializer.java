@@ -37,16 +37,19 @@ public class SpringServletInitializer extends AbstractDispatcherServletInitializ
 
 
 
+    @Override
     protected WebApplicationContext createServletApplicationContext() {
         final AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
         context.register(SpringWebConfig.class);
         return context;
     }
 
+    @Override
     protected WebApplicationContext createRootApplicationContext() {
         return null;
     }
 
+    @Override
     protected String[] getServletMappings() {
         return new String[] { "/" };
     }
