@@ -21,13 +21,15 @@ package thymeleafexamples.springmail.web;
 
 import java.io.IOException;
 import java.io.InputStream;
+
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import org.thymeleaf.util.ClassLoaderUtils;
-import static thymeleafexamples.springmail.config.SpringWebInitializer.ENCODING;
+
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static thymeleafexamples.springmail.config.SpringServletInitializer.ENCODING;
 
 @Controller
 public class MainController {

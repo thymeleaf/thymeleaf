@@ -2,9 +2,13 @@ package thymeleafexamples.springmail.config;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -17,7 +21,8 @@ import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ITemplateResolver;
-import static thymeleafexamples.springmail.config.SpringWebInitializer.ENCODING;
+
+import static thymeleafexamples.springmail.config.SpringServletInitializer.ENCODING;
 
 /**
  * Spring MVC and Thymeleaf configuration.
@@ -25,18 +30,52 @@ import static thymeleafexamples.springmail.config.SpringWebInitializer.ENCODING;
 @Configuration
 @ComponentScan("thymeleafexamples.springmail")
 @EnableWebMvc
-public class ThymeleafWebConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
+public class SpringWebConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
+
+    private static final String MESSAGES_BASENAME = "Messages";
 
     private ApplicationContext applicationContext;
+
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 
-    /**
-     * THYMELEAF: implementation of Spring's ViewResolver interface for the HTML pages of this web application. (we
-     * would not need this if our app was not web)
+
+    // TODO ??????????????????????
+    @Bean
+    public IMessageResolver messageResolver() {
+        return new StandardMessageResolver();
+    }
+
+
+
+    /*
+     * Message externalization/internationalization.
+     */
+    @Bean
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename(MESSAGES_BASENAME);
+        return messageSource;
+    }
+
+
+    /*
+     * Multipart resolver (needed for uploading attachments from web form)
+     */
+    @Bean
+    public MultipartResolver multipartResolver() {
+        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+        multipartResolver.setMaxUploadSize(10485760); // 10MBytes
+        return multipartResolver;
+    }
+
+
+    /*
+     * THYMELEAF: implementation of Spring's ViewResolver interface for the HTML pages of this web application.
+     *            (we would not need this if our app was not web)
      */
     @Bean
     public ViewResolver webViewResolver() {
@@ -46,7 +85,7 @@ public class ThymeleafWebConfig extends WebMvcConfigurerAdapter implements Appli
         return resolver;
     }
 
-    /**
+    /*
      * THYMELEAF: Template Engine (Spring4-specific version) for HTML pages.
      */
     private TemplateEngine webTemplateEngine() {
@@ -58,7 +97,7 @@ public class ThymeleafWebConfig extends WebMvcConfigurerAdapter implements Appli
         return templateEngine;
     }
 
-    /**
+    /*
      * THYMELEAF: Template Resolver for HTML pages.
      */
     private ITemplateResolver webTemplateResolver() {
@@ -83,8 +122,4 @@ public class ThymeleafWebConfig extends WebMvcConfigurerAdapter implements Appli
         registry.addResourceHandler("/swf/**").addResourceLocations("/swf/");
     }
 
-    @Bean
-    public IMessageResolver messageResolver() {
-        return new StandardMessageResolver();
-    }
 }
