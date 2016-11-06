@@ -24,6 +24,8 @@ import javax.servlet.Filter;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import thymeleafexamples.springsecurity.security.SpringSecurityConfig;
+import thymeleafexamples.springsecurity.web.SpringWebConfig;
 
 
 @Order(1) // Filters declared at the Dispatcher initializer should be registered first
