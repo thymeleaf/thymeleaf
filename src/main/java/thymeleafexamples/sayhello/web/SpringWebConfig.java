@@ -17,7 +17,7 @@
  *
  * =============================================================================
  */
-package thymeleafexamples.sayhello;
+package thymeleafexamples.sayhello.web;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -39,8 +39,6 @@ import thymeleafexamples.sayhello.dialect.HelloDialect;
 @EnableWebMvc
 @ComponentScan
 public class SpringWebConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
-
-    public static final String CHARACTER_ENCODING = "UTF-8";
 
 
     private ApplicationContext applicationContext;
