@@ -40,8 +40,6 @@ import org.thymeleaf.templatemode.TemplateMode;
 @ComponentScan
 public class SpringWebConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
 
-    public static final String CHARACTER_ENCODING = "UTF-8";
-
 
     private ApplicationContext applicationContext;
 
