@@ -21,32 +21,31 @@ package thymeleafexamples.stsm;
 
 import javax.servlet.Filter;
 
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
-import org.springframework.web.servlet.support.AbstractDispatcherServletInitializer;
+import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import thymeleafexamples.stsm.business.SpringBusinessConfig;
+import thymeleafexamples.stsm.web.SpringWebConfig;
 
 
-public class SpringServletInitializer extends AbstractDispatcherServletInitializer {
+public class SpringWebApplicationInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     public static final String CHARACTER_ENCODING = "UTF-8";
 
 
-    public SpringServletInitializer() {
+    public SpringWebApplicationInitializer() {
         super();
     }
 
 
+
     @Override
-    protected WebApplicationContext createServletApplicationContext() {
-        final AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-        context.register(SpringWebConfig.class);
-        return context;
+    protected Class<?>[] getServletConfigClasses() {
+        return new Class<?>[] { SpringWebConfig.class };
     }
 
     @Override
-    protected WebApplicationContext createRootApplicationContext() {
-        return null;
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class<?>[] { SpringBusinessConfig.class };
     }
 
     @Override
