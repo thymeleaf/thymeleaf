@@ -26,7 +26,6 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.util.NumberFormatType;
 import org.thymeleaf.util.NumberPointType;
 import org.thymeleaf.util.NumberUtils;
 
