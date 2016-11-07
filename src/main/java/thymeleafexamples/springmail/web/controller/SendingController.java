@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.springmail.web;
+package thymeleafexamples.springmail.web.controller;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import thymeleafexamples.springmail.service.EmailService;
+import thymeleafexamples.springmail.business.service.EmailService;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 

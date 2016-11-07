@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.springmail.web;
+package thymeleafexamples.springmail.web.controller;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

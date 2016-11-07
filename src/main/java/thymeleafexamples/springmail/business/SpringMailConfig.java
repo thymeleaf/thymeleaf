@@ -1,4 +1,4 @@
-package thymeleafexamples.springmail.config;
+package thymeleafexamples.springmail.business;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -25,8 +25,7 @@ import org.thymeleaf.templateresolver.StringTemplateResolver;
 @PropertySource("classpath:configuration.properties")
 public class SpringMailConfig implements ApplicationContextAware, EnvironmentAware {
 
-    private ApplicationContext applicationContext;
-    private Environment environment;
+    private static final String EMAIL_TEMPLATE_ENCODING = "UTF-8";
 
     private static final String JAVA_MAIL_FILE = "classpath:javamail.properties";
 
@@ -35,6 +34,10 @@ public class SpringMailConfig implements ApplicationContextAware, EnvironmentAwa
     private static final String PROTOCOL = "mail.server.protocol";
     private static final String USERNAME = "mail.server.username";
     private static final String PASSWORD = "mail.server.password";
+
+
+    private ApplicationContext applicationContext;
+    private Environment environment;
 
 
 
@@ -114,7 +117,7 @@ public class SpringMailConfig implements ApplicationContextAware, EnvironmentAwa
         templateResolver.setPrefix("/mail/");
         templateResolver.setSuffix(".txt");
         templateResolver.setTemplateMode(TemplateMode.TEXT);
-        templateResolver.setCharacterEncoding(ENCODING);
+        templateResolver.setCharacterEncoding(EMAIL_TEMPLATE_ENCODING);
         templateResolver.setCacheable(false);
         return templateResolver;
     }
@@ -127,7 +130,7 @@ public class SpringMailConfig implements ApplicationContextAware, EnvironmentAwa
         templateResolver.setPrefix("/mail/");
         templateResolver.setSuffix(".html");
         templateResolver.setTemplateMode(TemplateMode.HTML);
-        templateResolver.setCharacterEncoding(ENCODING);
+        templateResolver.setCharacterEncoding(EMAIL_TEMPLATE_ENCODING);
         templateResolver.setCacheable(false);
         return templateResolver;
     }

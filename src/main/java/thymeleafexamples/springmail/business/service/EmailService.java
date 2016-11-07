@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.springmail.service;
+package thymeleafexamples.springmail.business.service;
 
 import java.util.Arrays;
 import java.util.Date;

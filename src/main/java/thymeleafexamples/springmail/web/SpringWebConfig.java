@@ -1,4 +1,4 @@
-package thymeleafexamples.springmail.config;
+package thymeleafexamples.springmail.web;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -22,13 +22,11 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
-import static thymeleafexamples.springmail.config.SpringServletInitializer.ENCODING;
-
 /**
  * Spring MVC and Thymeleaf configuration.
  */
 @Configuration
-@ComponentScan("thymeleafexamples.springmail")
+@ComponentScan
 @EnableWebMvc
 public class SpringWebConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
 
@@ -81,7 +79,6 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter implements Applicat
     public ViewResolver webViewResolver() {
         ThymeleafViewResolver resolver = new ThymeleafViewResolver();
         resolver.setTemplateEngine(webTemplateEngine());
-        resolver.setCharacterEncoding(ENCODING);
         return resolver;
     }
 
@@ -102,12 +99,11 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter implements Applicat
      */
     private ITemplateResolver webTemplateResolver() {
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
-        templateResolver.setApplicationContext(applicationContext);
+        templateResolver.setApplicationContext(this.applicationContext);
         templateResolver.setPrefix("/WEB-INF/templates/");
         templateResolver.setSuffix(".html");
         templateResolver.setTemplateMode(TemplateMode.HTML);
-        templateResolver.setCharacterEncoding(ENCODING);
-        // Template cache is true by default. Set to false if you want 
+        // Template cache is true by default. Set to false if you want
         // templates to be automatically updated when modified (for development purposes).
         templateResolver.setCacheable(false);
         return templateResolver;

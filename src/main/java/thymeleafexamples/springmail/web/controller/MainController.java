@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.springmail.web;
+package thymeleafexamples.springmail.web.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.thymeleaf.util.ClassLoaderUtils;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static thymeleafexamples.springmail.config.SpringServletInitializer.ENCODING;
+import static thymeleafexamples.springmail.SpringWebApplicationInitializer.ENCODING;
 
 @Controller
 public class MainController {
