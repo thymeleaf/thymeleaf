@@ -99,9 +99,11 @@ public class SpringMailConfig implements ApplicationContextAware, EnvironmentAwa
     }
 
 
-    /*
-     * THYMELEAF: Template Engine (Spring4-specific version) for HTML email templates.
-     */
+    /* ******************************************************************** */
+    /*  THYMELEAF-SPECIFIC ARTIFACTS FOR HTML EMAILS                        */
+    /*  TemplateResolver <- TemplateEngine                                  */
+    /* ******************************************************************** */
+
     @Bean
     public TemplateEngine htmlTemplateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
@@ -110,44 +112,6 @@ public class SpringMailConfig implements ApplicationContextAware, EnvironmentAwa
         return templateEngine;
     }
 
-    /*
-     * THYMELEAF: Template Engine (Spring4-specific version) for TEXT email templates.
-     */
-    @Bean
-    public TemplateEngine textTemplateEngine() {
-        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.setTemplateResolver(textTemplateResolver());
-        templateEngine.setTemplateEngineMessageSource(emailMessageSource());
-        return templateEngine;
-    }
-
-    /*
-     * THYMELEAF: Template Engine (Spring4-specific version) for in-memory HTML email templates.
-     */
-    @Bean
-    public TemplateEngine stringTemplateEngine() {
-        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.addTemplateResolver(stringTemplateResolver());
-        templateEngine.setTemplateEngineMessageSource(emailMessageSource());
-        return templateEngine;
-    }
-
-    /*
-     * THYMELEAF: Template Resolver for TEXT email templates.
-     */
-    private ITemplateResolver textTemplateResolver() {
-        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-        templateResolver.setPrefix("/mail/");
-        templateResolver.setSuffix(".txt");
-        templateResolver.setTemplateMode(TemplateMode.TEXT);
-        templateResolver.setCharacterEncoding(EMAIL_TEMPLATE_ENCODING);
-        templateResolver.setCacheable(false);
-        return templateResolver;
-    }
-
-    /*
-     * THYMELEAF: Template Resolver for HTML email templates.
-     */
     private ITemplateResolver htmlTemplateResolver() {
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setPrefix("/mail/");
@@ -158,9 +122,44 @@ public class SpringMailConfig implements ApplicationContextAware, EnvironmentAwa
         return templateResolver;
     }
 
-    /*
-     * THYMELEAF: Template Resolver for String templates. (template will be a passed String -- for editable templates)
-     */
+
+    /* ******************************************************************** */
+    /*  THYMELEAF-SPECIFIC ARTIFACTS FOR TEXT EMAILS                        */
+    /*  TemplateResolver <- TemplateEngine                                  */
+    /* ******************************************************************** */
+
+    @Bean
+    public TemplateEngine textTemplateEngine() {
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setTemplateResolver(textTemplateResolver());
+        templateEngine.setTemplateEngineMessageSource(emailMessageSource());
+        return templateEngine;
+    }
+
+    private ITemplateResolver textTemplateResolver() {
+        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setPrefix("/mail/");
+        templateResolver.setSuffix(".txt");
+        templateResolver.setTemplateMode(TemplateMode.TEXT);
+        templateResolver.setCharacterEncoding(EMAIL_TEMPLATE_ENCODING);
+        templateResolver.setCacheable(false);
+        return templateResolver;
+    }
+
+
+    /* ******************************************************************** */
+    /*  THYMELEAF-SPECIFIC ARTIFACTS FOR STRING-TEMPLATE (EDITABLE) EMAILS  */
+    /*  TemplateResolver <- TemplateEngine                                  */
+    /* ******************************************************************** */
+
+    @Bean
+    public TemplateEngine stringTemplateEngine() {
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.addTemplateResolver(stringTemplateResolver());
+        templateEngine.setTemplateEngineMessageSource(emailMessageSource());
+        return templateEngine;
+    }
+
     private ITemplateResolver stringTemplateResolver() {
         StringTemplateResolver templateResolver = new StringTemplateResolver();
         templateResolver.setTemplateMode("HTML5");
