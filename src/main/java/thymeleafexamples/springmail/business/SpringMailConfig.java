@@ -10,6 +10,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -22,12 +23,12 @@ import org.thymeleaf.templateresolver.StringTemplateResolver;
 
 
 @Configuration
-@PropertySource("classpath:configuration.properties")
+@PropertySource("classpath:mail/emailconfig.properties")
 public class SpringMailConfig implements ApplicationContextAware, EnvironmentAware {
 
-    private static final String EMAIL_TEMPLATE_ENCODING = "UTF-8";
+    public static final String EMAIL_TEMPLATE_ENCODING = "UTF-8";
 
-    private static final String JAVA_MAIL_FILE = "classpath:javamail.properties";
+    private static final String JAVA_MAIL_FILE = "classpath:mail/javamail.properties";
 
     private static final String HOST = "mail.server.host";
     private static final String PORT = "mail.server.port";
@@ -60,7 +61,7 @@ public class SpringMailConfig implements ApplicationContextAware, EnvironmentAwa
 
         final JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 
-        // Basic mail sender configuration, based on configuration.properties
+        // Basic mail sender configuration, based on emailconfig.properties
         mailSender.setHost(this.environment.getProperty(HOST));
         mailSender.setPort(Integer.parseInt(this.environment.getProperty(PORT)));
         mailSender.setProtocol(this.environment.getProperty(PROTOCOL));
@@ -77,6 +78,26 @@ public class SpringMailConfig implements ApplicationContextAware, EnvironmentAwa
     }
 
 
+    /*
+     *  Message externalization/internationalization for emails.
+     *
+     *  NOTE we are avoiding the use of the name 'messageSource' for this bean because that
+     *       would make the MessageSource defined in SpringWebConfig (and made available for the
+     *       web-side template engine) delegate to this one, and thus effectively merge email
+     *       messages into web messages and make both types available at the web side, which could
+     *       bring undesired collisions.
+     *
+     *  NOTE also that given we want this specific message source to be used by our
+     *       SpringTemplateEngines for emails (and not by the web one), we will set it explicitly
+     *       into each of the TemplateEngine objects with 'setTemplateEngineMessageSource(...)'
+     */
+    @Bean
+    public ResourceBundleMessageSource emailMessageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("mail/MailMessages");
+        return messageSource;
+    }
+
 
     /*
      * THYMELEAF: Template Engine (Spring4-specific version) for HTML email templates.
@@ -85,7 +106,7 @@ public class SpringMailConfig implements ApplicationContextAware, EnvironmentAwa
     public TemplateEngine htmlTemplateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(htmlTemplateResolver());
-        templateEngine.setMessageSource();
+        templateEngine.setTemplateEngineMessageSource(emailMessageSource());
         return templateEngine;
     }
 
@@ -96,6 +117,7 @@ public class SpringMailConfig implements ApplicationContextAware, EnvironmentAwa
     public TemplateEngine textTemplateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(textTemplateResolver());
+        templateEngine.setTemplateEngineMessageSource(emailMessageSource());
         return templateEngine;
     }
 
@@ -106,6 +128,7 @@ public class SpringMailConfig implements ApplicationContextAware, EnvironmentAwa
     public TemplateEngine stringTemplateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.addTemplateResolver(stringTemplateResolver());
+        templateEngine.setTemplateEngineMessageSource(emailMessageSource());
         return templateEngine;
     }
 

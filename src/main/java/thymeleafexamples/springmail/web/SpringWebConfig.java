@@ -2,25 +2,19 @@ package thymeleafexamples.springmail.web;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
-import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.messageresolver.IMessageResolver;
-import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ITemplateResolver;
 
 /**
  * Spring MVC and Thymeleaf configuration.
@@ -29,8 +23,6 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 @ComponentScan
 @EnableWebMvc
 public class SpringWebConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
-
-    private static final String MESSAGES_BASENAME = "Messages";
 
     private ApplicationContext applicationContext;
 
@@ -41,24 +33,33 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter implements Applicat
     }
 
 
-    // TODO ??????????????????????
-    @Bean
-    public IMessageResolver messageResolver() {
-        return new StandardMessageResolver();
-    }
 
 
+    /* ******************************************************************* */
+    /*  GENERAL CONFIGURATION ARTIFACTS                                    */
+    /*  Static Resources, i18n Messages, Formatters (Conversion Service)   */
+    /* ******************************************************************* */
 
     /*
-     * Message externalization/internationalization.
+     *  Dispatcher configuration for serving static resources
      */
-    @Bean
-    public MessageSource messageSource() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename(MESSAGES_BASENAME);
-        return messageSource;
+    @Override
+    public void addResourceHandlers(final ResourceHandlerRegistry registry) {
+        super.addResourceHandlers(registry);
+        registry.addResourceHandler("/images/**").addResourceLocations("/images/");
+        registry.addResourceHandler("/css/**").addResourceLocations("/css/");
+        registry.addResourceHandler("/js/**").addResourceLocations("/js/");
     }
 
+    /*
+     *  Message externalization/internationalization
+     */
+    @Bean
+    public ResourceBundleMessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("Messages");
+        return messageSource;
+    }
 
     /*
      * Multipart resolver (needed for uploading attachments from web form)
@@ -71,51 +72,49 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter implements Applicat
     }
 
 
-    /*
-     * THYMELEAF: implementation of Spring's ViewResolver interface for the HTML pages of this web application.
-     *            (we would not need this if our app was not web)
-     */
+
+    /* **************************************************************** */
+    /*  THYMELEAF-SPECIFIC ARTIFACTS                                    */
+    /*  TemplateResolver <- TemplateEngine <- ViewResolver              */
+    /* **************************************************************** */
+
     @Bean
-    public ViewResolver webViewResolver() {
-        ThymeleafViewResolver resolver = new ThymeleafViewResolver();
-        resolver.setTemplateEngine(webTemplateEngine());
-        return resolver;
-    }
-
-    /*
-     * THYMELEAF: Template Engine (Spring4-specific version) for HTML pages.
-     */
-    private TemplateEngine webTemplateEngine() {
-        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.setTemplateResolver(webTemplateResolver());
-        templateEngine.setEnableSpringELCompiler(true); // Compiled SpringEL should speed up executions
-        templateEngine.addTemplateResolver(webTemplateResolver());
-        templateEngine.setMessageResolver(messageResolver());
-        return templateEngine;
-    }
-
-    /*
-     * THYMELEAF: Template Resolver for HTML pages.
-     */
-    private ITemplateResolver webTemplateResolver() {
+    public SpringResourceTemplateResolver templateResolver(){
+        // SpringResourceTemplateResolver automatically integrates with Spring's own
+        // resource resolution infrastructure, which is highly recommended.
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
         templateResolver.setApplicationContext(this.applicationContext);
         templateResolver.setPrefix("/WEB-INF/templates/");
         templateResolver.setSuffix(".html");
+        // HTML is the default value, added here for the sake of clarity.
         templateResolver.setTemplateMode(TemplateMode.HTML);
         // Template cache is true by default. Set to false if you want
-        // templates to be automatically updated when modified (for development purposes).
-        templateResolver.setCacheable(false);
+        // templates to be automatically updated when modified.
+        templateResolver.setCacheable(true);
         return templateResolver;
     }
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Use Spring servlet to serve static resources
-        registry.addResourceHandler("/images/**").addResourceLocations("/images/");
-        registry.addResourceHandler("/css/**").addResourceLocations("/css/");
-        registry.addResourceHandler("/js/**").addResourceLocations("/js/");
-        registry.addResourceHandler("/swf/**").addResourceLocations("/swf/");
+    @Bean
+    public SpringTemplateEngine templateEngine(){
+        // SpringTemplateEngine automatically applies SpringStandardDialect and
+        // enables Spring's own MessageSource message resolution mechanisms.
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver());
+        // Enabling the SpringEL compiler with Spring 4.2.4 or newer can
+        // speed up execution in most scenarios, but might be incompatible
+        // with specific cases when expressions in one template are reused
+        // across different data types, so this flag is "false" by default
+        // for safer backwards compatibility.
+        templateEngine.setEnableSpringELCompiler(true);
+        return templateEngine;
     }
+
+    @Bean
+    public ThymeleafViewResolver viewResolver(){
+        ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
+        viewResolver.setTemplateEngine(templateEngine());
+        return viewResolver;
+    }
+
 
 }

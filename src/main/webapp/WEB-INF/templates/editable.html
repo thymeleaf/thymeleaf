@@ -12,7 +12,7 @@
     </head>
     <body>
         <div class="container">
-            <h1>Spring email with Thymeleaf</h1>
+            <h1 th:text="#{application.title}">Spring email with Thymeleaf</h1>
             <h2>Editable HTML email</h2>
             <form action="sent.html" th:action="@{/sendEditableMail}" method="post">
                 <fieldset>
