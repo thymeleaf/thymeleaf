@@ -1,8 +1,6 @@
 [[ #{greeting(${name})} ]]
 
-[# th:if="${name.length() gt 10}"]
-Wow! You've got a long name (more than 10 chars)!
-[/]
+[# th:if="${name.length() gt 10}"]Wow! You've got a long name (more than 10 chars)![/]
 
 You have been successfully subscribed to the Fake newsletter on [[ ${#dates.format(subscriptionDate)} ]].
 
