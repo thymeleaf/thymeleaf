@@ -1,6 +1,7 @@
 package thymeleafexamples.springmail.business;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Properties;
 
 import org.springframework.beans.BeansException;
@@ -93,51 +94,31 @@ public class SpringMailConfig implements ApplicationContextAware, EnvironmentAwa
      */
     @Bean
     public ResourceBundleMessageSource emailMessageSource() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setBasename("mail/MailMessages");
         return messageSource;
     }
 
 
     /* ******************************************************************** */
-    /*  THYMELEAF-SPECIFIC ARTIFACTS FOR HTML EMAILS                        */
-    /*  TemplateResolver <- TemplateEngine                                  */
+    /*  THYMELEAF-SPECIFIC ARTIFACTS FOR EMAIL                              */
+    /*  TemplateResolver(3) <- TemplateEngine                               */
     /* ******************************************************************** */
 
     @Bean
-    public TemplateEngine htmlTemplateEngine() {
-        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.setTemplateResolver(htmlTemplateResolver());
-        templateEngine.setTemplateEngineMessageSource(emailMessageSource());
-        return templateEngine;
-    }
-
-    private ITemplateResolver htmlTemplateResolver() {
-        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-        templateResolver.setPrefix("/mail/");
-        templateResolver.setSuffix(".html");
-        templateResolver.setTemplateMode(TemplateMode.HTML);
-        templateResolver.setCharacterEncoding(EMAIL_TEMPLATE_ENCODING);
-        templateResolver.setCacheable(false);
-        return templateResolver;
-    }
-
-
-    /* ******************************************************************** */
-    /*  THYMELEAF-SPECIFIC ARTIFACTS FOR TEXT EMAILS                        */
-    /*  TemplateResolver <- TemplateEngine                                  */
-    /* ******************************************************************** */
-
-    @Bean
-    public TemplateEngine textTemplateEngine() {
-        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.setTemplateResolver(textTemplateResolver());
+    public TemplateEngine emailTemplateEngine() {
+        final SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.addTemplateResolver(textTemplateResolver());
+        templateEngine.addTemplateResolver(htmlTemplateResolver());
+        templateEngine.addTemplateResolver(stringTemplateResolver());
         templateEngine.setTemplateEngineMessageSource(emailMessageSource());
         return templateEngine;
     }
 
     private ITemplateResolver textTemplateResolver() {
-        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setOrder(Integer.valueOf(1));
+        templateResolver.setResolvablePatterns(Collections.singleton("text/*"));
         templateResolver.setPrefix("/mail/");
         templateResolver.setSuffix(".txt");
         templateResolver.setTemplateMode(TemplateMode.TEXT);
@@ -146,22 +127,22 @@ public class SpringMailConfig implements ApplicationContextAware, EnvironmentAwa
         return templateResolver;
     }
 
-
-    /* ******************************************************************** */
-    /*  THYMELEAF-SPECIFIC ARTIFACTS FOR STRING-TEMPLATE (EDITABLE) EMAILS  */
-    /*  TemplateResolver <- TemplateEngine                                  */
-    /* ******************************************************************** */
-
-    @Bean
-    public TemplateEngine stringTemplateEngine() {
-        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.addTemplateResolver(stringTemplateResolver());
-        templateEngine.setTemplateEngineMessageSource(emailMessageSource());
-        return templateEngine;
+    private ITemplateResolver htmlTemplateResolver() {
+        final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setOrder(Integer.valueOf(2));
+        templateResolver.setResolvablePatterns(Collections.singleton("html/*"));
+        templateResolver.setPrefix("/mail/");
+        templateResolver.setSuffix(".html");
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        templateResolver.setCharacterEncoding(EMAIL_TEMPLATE_ENCODING);
+        templateResolver.setCacheable(false);
+        return templateResolver;
     }
 
     private ITemplateResolver stringTemplateResolver() {
-        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        final StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setOrder(Integer.valueOf(3));
+        // No resolvable pattern, will simply process as a String template everything not previously matched
         templateResolver.setTemplateMode("HTML5");
         templateResolver.setCacheable(false);
         return templateResolver;

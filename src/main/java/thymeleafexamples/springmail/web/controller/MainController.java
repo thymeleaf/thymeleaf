@@ -20,23 +20,24 @@
 package thymeleafexamples.springmail.web.controller;
 
 import java.io.IOException;
-import java.io.InputStream;
 
-import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.thymeleaf.util.ClassLoaderUtils;
-import thymeleafexamples.springmail.business.SpringMailConfig;
+import thymeleafexamples.springmail.business.service.EmailService;
 
 @Controller
 public class MainController {
 
-    private static final String EDITABLE_TEMPLATE = "mail/email-editable.html";
+    private static final String EDITABLE_TEMPLATE = "mail/editablehtml/email-editable.html";
+
+    @Autowired
+    private EmailService emailService;
 
     /* Home page. */
-    @RequestMapping(value = {"/", "/index.html"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/", "/index"}, method = RequestMethod.GET)
     public String index() {
         return "index";
     }
@@ -67,11 +68,8 @@ public class MainController {
 
     /* Editable HTML email. */
     @RequestMapping(value = "/editable.html", method = RequestMethod.GET)
-    public String editable(Model model) throws IOException {
-        final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(MainController.class);
-        InputStream inputStream = classLoader.getResourceAsStream(EDITABLE_TEMPLATE);
-        String baseTemplate = IOUtils.toString(inputStream, SpringMailConfig.EMAIL_TEMPLATE_ENCODING);
-        model.addAttribute("baseTemplate", baseTemplate);
+    public String editable(final Model model) throws IOException {
+        model.addAttribute("baseTemplate", this.emailService.getEditableMailTemplate());
         return "editable";
     }
 

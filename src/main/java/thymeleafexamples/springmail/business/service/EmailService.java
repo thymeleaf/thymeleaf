@@ -19,6 +19,8 @@
  */
 package thymeleafexamples.springmail.business.service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
@@ -26,25 +28,38 @@ import java.util.Locale;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamSource;
+import org.springframework.core.io.Resource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import thymeleafexamples.springmail.business.SpringMailConfig;
 
 @Service
 public class EmailService {
 
-    private static final String BACKGROUND_IMAGE = "mail/images/background.png";
-    private static final String LOGO_BACKGROUND_IMAGE = "mail/images/logo-background.png";
-    private static final String THYMELEAF_BANNER_IMAGE = "mail/images/thymeleaf-banner.png";
-    private static final String THYMELEAF_LOGO_IMAGE = "mail/images/thymeleaf-logo.png";
+    private static final String EMAIL_TEXT_TEMPLATE_NAME = "text/email-text";
+    private static final String EMAIL_SIMPLE_TEMPLATE_NAME = "html/email-simple";
+    private static final String EMAIL_WITHATTACHMENT_TEMPLATE_NAME = "html/email-withattachment";
+    private static final String EMAIL_INLINEIMAGE_TEMPLATE_NAME = "html/email-inlineimage";
+    private static final String EMAIL_EDITABLE_TEMPLATE_CLASSPATH_RES = "classpath:mail/editablehtml/email-editable.html";
+
+    private static final String BACKGROUND_IMAGE = "mail/editablehtml/images/background.png";
+    private static final String LOGO_BACKGROUND_IMAGE = "mail/editablehtml/images/logo-background.png";
+    private static final String THYMELEAF_BANNER_IMAGE = "mail/editablehtml/images/thymeleaf-banner.png";
+    private static final String THYMELEAF_LOGO_IMAGE = "mail/editablehtml/images/thymeleaf-logo.png";
 
     private static final String PNG_MIME = "image/png";
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Autowired
     private JavaMailSender mailSender;
@@ -57,6 +72,8 @@ public class EmailService {
 
     @Autowired
     private TemplateEngine stringTemplateEngine;
+
+
 
     /* 
      * Send plain TEXT mail 
@@ -79,12 +96,13 @@ public class EmailService {
         message.setTo(recipientEmail);
 
         // Create the plain TEXT body using Thymeleaf
-        final String context = this.textTemplateEngine.process("email-text", ctx);
+        final String context = this.textTemplateEngine.process(EMAIL_TEXT_TEMPLATE_NAME, ctx);
         message.setText(context);
 
         // Send email
         this.mailSender.send(mimeMessage);
     }
+
 
     /* 
      * Send HTML mail (simple) 
@@ -107,12 +125,13 @@ public class EmailService {
         message.setTo(recipientEmail);
 
         // Create the HTML body using Thymeleaf
-        final String htmlContent = this.htmlTemplateEngine.process("email-simple", ctx);
+        final String htmlContent = this.htmlTemplateEngine.process(EMAIL_SIMPLE_TEMPLATE_NAME, ctx);
         message.setText(htmlContent, true /* isHtml */);
 
         // Send email
         this.mailSender.send(mimeMessage);
     }
+
 
     /* 
      * Send HTML mail with attachment. 
@@ -137,7 +156,7 @@ public class EmailService {
         message.setTo(recipientEmail);
 
         // Create the HTML body using Thymeleaf
-        final String htmlContent = this.htmlTemplateEngine.process("email-withattachment", ctx);
+        final String htmlContent = this.htmlTemplateEngine.process(EMAIL_WITHATTACHMENT_TEMPLATE_NAME, ctx);
         message.setText(htmlContent, true /* isHtml */);
 
         // Add the attachment
@@ -148,6 +167,7 @@ public class EmailService {
         // Send mail
         this.mailSender.send(mimeMessage);
     }
+
 
     /* 
      * Send HTML mail with inline image
@@ -173,7 +193,7 @@ public class EmailService {
         message.setTo(recipientEmail);
 
         // Create the HTML body using Thymeleaf
-        final String htmlContent = this.htmlTemplateEngine.process("email-inlineimage", ctx);
+        final String htmlContent = this.htmlTemplateEngine.process(EMAIL_INLINEIMAGE_TEMPLATE_NAME, ctx);
         message.setText(htmlContent, true /* isHtml */);
 
         // Add the inline image, referenced from the HTML code as "cid:${imageResourceName}"
@@ -184,23 +204,33 @@ public class EmailService {
         this.mailSender.send(mimeMessage);
     }
 
+
     /* 
      * Send HTML mail with inline image
      */
+    public String getEditableMailTemplate() throws IOException {
+        final Resource templateResource = this.applicationContext.getResource(EMAIL_EDITABLE_TEMPLATE_CLASSPATH_RES);
+        final InputStream inputStream = templateResource.getInputStream();
+        return IOUtils.toString(inputStream, SpringMailConfig.EMAIL_TEMPLATE_ENCODING);
+    }
+
+
+    /*
+     * Send HTML mail with inline image
+     */
     public void sendEditableMail(
-        final String recipientName, final String recipientEmail, final String htmlContent,
-        final Locale locale)
-        throws MessagingException {
+            final String recipientName, final String recipientEmail, final String htmlContent,
+            final Locale locale)
+            throws MessagingException {
 
         // Prepare message using a Spring helper
         final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
         final MimeMessageHelper message
-            = new MimeMessageHelper(mimeMessage, true /* multipart */, "UTF-8");
+                = new MimeMessageHelper(mimeMessage, true /* multipart */, "UTF-8");
         message.setSubject("Example editable HTML email");
         message.setFrom("thymeleaf@example.com");
         message.setTo(recipientEmail);
 
-        // FIXME: duplicated images in src/main/resources and src/main/webapp
         // Prepare the evaluation context
         final Context ctx = new Context(locale);
         ctx.setVariable("name", recipientName);
