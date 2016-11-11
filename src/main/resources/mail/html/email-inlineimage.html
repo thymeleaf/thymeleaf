@@ -26,7 +26,7 @@
             You can find <b>your inlined image</b> just below this text.
         </p>
         <p>
-            <img src="../../../webapp/images/thymeleaf-banner.png" th:src="'cid:' + ${imageResourceName}" />
+            <img src="../../../webapp/images/thymeleaf-banner.png" th:src="|cid:${imageResourceName}|" />
         </p>
         <p>
             Regards, <br />
