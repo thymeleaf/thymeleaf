@@ -96,8 +96,8 @@ public class EmailService {
         message.setTo(recipientEmail);
 
         // Create the plain TEXT body using Thymeleaf
-        final String context = this.textTemplateEngine.process(EMAIL_TEXT_TEMPLATE_NAME, ctx);
-        message.setText(context);
+        final String textContent = this.textTemplateEngine.process(EMAIL_TEXT_TEMPLATE_NAME, ctx);
+        message.setText(textContent);
 
         // Send email
         this.mailSender.send(mimeMessage);
