@@ -65,7 +65,10 @@ public final class SpringVersionUtils {
 
         } else {
 
-            if (testClassExistence("org.springframework.core.annotation.AliasFor")) {
+            if (testClassExistence("org.springframework.context.annotation.ComponentScans")) {
+                SPRING_VERSION_MAJOR = 4;
+                SPRING_VERSION_MINOR = 3;
+            } else if (testClassExistence("org.springframework.core.annotation.AliasFor")) {
                 SPRING_VERSION_MAJOR = 4;
                 SPRING_VERSION_MINOR = 2;
             } else if (testClassExistence("org.springframework.cache.annotation.CacheConfig")) {
@@ -145,6 +148,11 @@ public final class SpringVersionUtils {
 
     public static boolean isSpring42AtLeast() {
         return SPRING_VERSION_MAJOR > 4 || (SPRING_VERSION_MAJOR == 4 && SPRING_VERSION_MINOR >= 2);
+    }
+
+
+    public static boolean isSpring43AtLeast() {
+        return SPRING_VERSION_MAJOR > 4 || (SPRING_VERSION_MAJOR == 4 && SPRING_VERSION_MINOR >= 3);
     }
 
 
