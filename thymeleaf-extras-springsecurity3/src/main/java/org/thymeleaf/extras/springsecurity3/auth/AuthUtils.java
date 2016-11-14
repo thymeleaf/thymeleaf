@@ -42,6 +42,7 @@ import org.springframework.security.access.expression.ExpressionUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.FilterInvocation;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 import org.springframework.security.web.access.expression.WebSecurityExpressionHandler;
 import org.thymeleaf.TemplateEngine;
@@ -263,7 +264,7 @@ public final class AuthUtils {
         }
         
         final boolean result =
-                getPrivilegeEvaluator(servletContext).isAllowed(
+                getPrivilegeEvaluator(servletContext, request).isAllowed(
                     request.getContextPath(), url, method, authentication) ? 
                             true : false;
 
@@ -278,11 +279,19 @@ public final class AuthUtils {
     }
 
 
-    
 
 
-    
-    private static WebInvocationPrivilegeEvaluator getPrivilegeEvaluator(final ServletContext servletContext) {
+
+
+    private static WebInvocationPrivilegeEvaluator getPrivilegeEvaluator(
+            final ServletContext servletContext, final HttpServletRequest request) {
+
+        final WebInvocationPrivilegeEvaluator privEvaluatorFromRequest =
+                (WebInvocationPrivilegeEvaluator) request.getAttribute(WebAttributes.WEB_INVOCATION_PRIVILEGE_EVALUATOR_ATTRIBUTE);
+        if (privEvaluatorFromRequest != null) {
+            return privEvaluatorFromRequest;
+        }
+
         final ApplicationContext ctx = getContext(servletContext);
 
         final Map<String, WebInvocationPrivilegeEvaluator> privilegeEvaluators = 
