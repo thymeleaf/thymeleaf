@@ -1,3 +1,14 @@
+3.0.1
+=====
+- Adapt the mechanism to retrieve the WebApplicationContext to newer versions (non-root attribute names).
+- Flexibilize the mechanism for obtaining the PrivilegeEvaluator (request attributes instead of app ctx bean).
+
+
+3.0.0
+=====
+- Updated dialect to Thymeleaf 3.0 architecture.
+
+
 2.1.2
 =====
 - First release of thymeleaf-extras-springsecurity4
