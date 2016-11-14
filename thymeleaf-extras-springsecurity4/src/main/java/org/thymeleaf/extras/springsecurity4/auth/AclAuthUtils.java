@@ -46,7 +46,6 @@ import org.springframework.security.acls.model.Sid;
 import org.springframework.security.acls.model.SidRetrievalStrategy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.exceptions.ConfigurationException;
 
@@ -98,8 +97,7 @@ public final class AclAuthUtils {
                             (domainObject == null? null : domainObject.getClass().getName()), permissions});
         }
         
-        final ApplicationContext applicationContext =
-                WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+        final ApplicationContext applicationContext = AuthUtils.getContext(servletContext);
 
         final AclService aclService = getBeanOfType(applicationContext, AclService.class);
 

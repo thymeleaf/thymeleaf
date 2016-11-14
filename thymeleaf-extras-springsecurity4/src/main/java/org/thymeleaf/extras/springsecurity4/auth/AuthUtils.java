@@ -45,11 +45,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.IExpressionObjects;
+import org.thymeleaf.extras.springsecurity4.util.SpringSecurityWebApplicationContextUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -234,8 +234,7 @@ public final class AuthUtils {
     @SuppressWarnings("unchecked")
     private static SecurityExpressionHandler<FilterInvocation> getExpressionHandler(final ServletContext servletContext) {
 
-        final ApplicationContext ctx =
-                WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+        final ApplicationContext ctx = getContext(servletContext);
         
         final Map<String, SecurityExpressionHandler> expressionHandlers =
                 ctx.getBeansOfType(SecurityExpressionHandler.class);
@@ -288,10 +287,8 @@ public final class AuthUtils {
 
     
     private static WebInvocationPrivilegeEvaluator getPrivilegeEvaluator(final ServletContext servletContext) {
+        final ApplicationContext ctx = getContext(servletContext);
 
-        final ApplicationContext ctx =
-                WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
-        
         final Map<String, WebInvocationPrivilegeEvaluator> privilegeEvaluators = 
                 ctx.getBeansOfType(WebInvocationPrivilegeEvaluator.class);
 
@@ -310,7 +307,7 @@ public final class AuthUtils {
 
     
     public static ApplicationContext getContext(final ServletContext servletContext) {
-        return WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+        return SpringSecurityWebApplicationContextUtils.findRequiredWebApplicationContext(servletContext);
     }
     
     
