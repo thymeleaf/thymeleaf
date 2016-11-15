@@ -82,10 +82,10 @@
 
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <springframework.version>4.3.3.RELEASE</springframework.version>
-    <springsecurity.version>4.1.0.RELEASE</springsecurity.version>
+    <springframework.version>4.3.4.RELEASE</springframework.version>
+    <springsecurity.version>4.2.0.RELEASE</springsecurity.version>
     <thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
-    <thymeleafspringsecurity4.version>3.0.0.RELEASE</thymeleafspringsecurity4.version>
+    <thymeleafspringsecurity4.version>3.0.1.RELEASE</thymeleafspringsecurity4.version>
   </properties>
 
   <build>
