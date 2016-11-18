@@ -285,6 +285,71 @@ public final class NumberUtils {
     
     
     
+    public static String formatCurrency(final Number target, final Locale locale) {
+
+        Validate.notNull(locale, "Locale cannot be null");
+
+        if (target == null) {
+            return null;
+        }
+
+        NumberFormat format = null;
+        
+        if (target instanceof Double || target instanceof Float || target instanceof BigDecimal ||
+            target instanceof Integer || target instanceof Long || target instanceof Byte || target instanceof Short || target instanceof BigInteger) {
+
+            format = NumberFormat.getCurrencyInstance(locale);
+                
+        } else {
+            throw new IllegalArgumentException(
+                    "Cannot format object of class \"" + target.getClass().getName() + "\" as a currency number");
+        }
+        
+        return format.format(target);
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    public static String formatPercent(final Number target, final Integer minIntegerDigits, final Integer fractionDigits, final Locale locale) {
+
+        Validate.notNull(fractionDigits, "Fraction digits cannot be null");
+        Validate.notNull(locale, "Locale cannot be null");
+
+        if (target == null) {
+            return null;
+        }
+
+        NumberFormat format = null;
+        
+        if (target instanceof Double || target instanceof Float || target instanceof BigDecimal ||
+            target instanceof Integer || target instanceof Long || target instanceof Byte || target instanceof Short || target instanceof BigInteger) {
+
+            format = NumberFormat.getPercentInstance();
+            format.setMinimumFractionDigits(fractionDigits.intValue());
+            format.setMaximumFractionDigits(fractionDigits.intValue());
+            if (minIntegerDigits != null) {
+                format.setMinimumIntegerDigits(minIntegerDigits.intValue());
+            }
+                
+        } else {
+            throw new IllegalArgumentException(
+                    "Cannot format object of class \"" + target.getClass().getName() + "\" as a percent number");
+        }
+        
+        return format.format(target);
+    }
+    
+    
+    
+    
+    
+    
+    
     private NumberUtils() {
         super();
     }
