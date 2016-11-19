@@ -2,7 +2,7 @@
  Building thymeleaf-extras-springsecurity4
  -----------------------------------------
  
- To build thymeleaf-extras-springsecurity4 you will need Maven 2. You can
+ To build thymeleaf-extras-springsecurity4 you will need Maven 3. You can
  get it at:
  
      http://maven.apache.org
