@@ -19,15 +19,12 @@
  */
 package org.thymeleaf.util;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
 
 /**
  * 
@@ -178,18 +175,23 @@ public final class NumberUtils {
         return values.toArray(new Integer[values.size()]);
         
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    private static String formatNumber(
-            final Number target, final Integer minIntegerDigits, final NumberPointType thousandsPointType, final Integer fractionDigits, final NumberPointType decimalPointType, final Locale locale) {
+
+    /**
+     * Formats a number as per the given values.
+     * 
+     * @param target             The number to format.
+     * @param minIntegerDigits   Minimum number digits to return (0 padding).
+     * @param thousandsPointType Character to use for separating number groups.
+     * @param fractionDigits     Minimum number of fraction digits to format to
+     *                           (0 padding).
+     * @param decimalPointType   Character to use for separating decimals.
+     * @param locale             Locale to draw more information from.
+     * @return The number formatted as specified, or {@code null} if the number
+     *         given is {@code null}.
+     */
+    private static String formatNumber(final Number target, final Integer minIntegerDigits,
+        final NumberPointType thousandsPointType, final Integer fractionDigits,
+        final NumberPointType decimalPointType, final Locale locale) {
 
         Validate.notNull(fractionDigits, "Fraction digits cannot be null");
         Validate.notNull(decimalPointType, "Decimal point type cannot be null");
@@ -200,33 +202,20 @@ public final class NumberUtils {
             return null;
         }
 
-        DecimalFormat format = null;
-        
-        if (target instanceof Double || target instanceof Float || target instanceof BigDecimal ||
-            target instanceof Integer || target instanceof Long || target instanceof Byte || target instanceof Short || target instanceof BigInteger) {
-
-            format = (DecimalFormat) NumberFormat.getNumberInstance();
-            format.setMinimumFractionDigits(fractionDigits.intValue());
-            format.setMaximumFractionDigits(fractionDigits.intValue());
-            if (minIntegerDigits != null) {
-                format.setMinimumIntegerDigits(minIntegerDigits.intValue());
-            }
-            format.setDecimalSeparatorAlwaysShown(decimalPointType != NumberPointType.NONE && fractionDigits.intValue() > 0);
-            format.setGroupingUsed(thousandsPointType != NumberPointType.NONE);
-            format.setDecimalFormatSymbols(computeDecimalFormatSymbols(decimalPointType, thousandsPointType, locale));
-                
-        } else {
-            throw new IllegalArgumentException(
-                    "Cannot format object of class \"" + target.getClass().getName() + "\" as a decimal number");
+        DecimalFormat format = (DecimalFormat)NumberFormat.getNumberInstance(locale);
+        format.setMinimumFractionDigits(fractionDigits.intValue());
+        format.setMaximumFractionDigits(fractionDigits.intValue());
+        if (minIntegerDigits != null) {
+            format.setMinimumIntegerDigits(minIntegerDigits.intValue());
         }
+        format.setDecimalSeparatorAlwaysShown(decimalPointType != NumberPointType.NONE && fractionDigits.intValue() > 0);
+        format.setGroupingUsed(thousandsPointType != NumberPointType.NONE);
+        format.setDecimalFormatSymbols(computeDecimalFormatSymbols(decimalPointType, thousandsPointType, locale));
         
         return format.format(target);
-        
     }
-    
 
-    
-    
+
     private static DecimalFormatSymbols computeDecimalFormatSymbols(
             final NumberPointType decimalPointType, final NumberPointType thousandsPointType, final Locale locale) {
 
@@ -278,13 +267,15 @@ public final class NumberUtils {
         return symbols;
         
     }
-    
-    
-    
-    
-    
-    
-    
+
+    /**
+     * Formats a number as a currency value according to the specified locale.
+     * 
+     * @param target The number to format.
+     * @param locale Locale to use for formatting.
+     * @return The number formatted as a currency, or {@code null} if the number
+     *         given is {@code null}.
+     */
     public static String formatCurrency(final Number target, final Locale locale) {
 
         Validate.notNull(locale, "Locale cannot be null");
@@ -293,29 +284,24 @@ public final class NumberUtils {
             return null;
         }
 
-        NumberFormat format = null;
-        
-        if (target instanceof Double || target instanceof Float || target instanceof BigDecimal ||
-            target instanceof Integer || target instanceof Long || target instanceof Byte || target instanceof Short || target instanceof BigInteger) {
+        NumberFormat format = NumberFormat.getCurrencyInstance(locale);
 
-            format = NumberFormat.getCurrencyInstance(locale);
-                
-        } else {
-            throw new IllegalArgumentException(
-                    "Cannot format object of class \"" + target.getClass().getName() + "\" as a currency number");
-        }
-        
         return format.format(target);
-        
     }
-    
-    
-    
-    
-    
-    
-    
-    public static String formatPercent(final Number target, final Integer minIntegerDigits, final Integer fractionDigits, final Locale locale) {
+
+    /**
+     * Formats a number as a percentage value.
+     * 
+     * @param target           The number to format.
+     * @param minIntegerDigits Minimum number of digits to return (0 padding).
+     * @param fractionDigits   Minimum number of fraction digits to return (0
+     *                         padding).
+     * @param locale           Locale to use for formatting.
+     * @return The number formatted as a percentage, or {@code null} if the
+     *         number given is {@code null}.
+     */
+    public static String formatPercent(final Number target, final Integer minIntegerDigits,
+        final Integer fractionDigits, final Locale locale) {
 
         Validate.notNull(fractionDigits, "Fraction digits cannot be null");
         Validate.notNull(locale, "Locale cannot be null");
@@ -324,36 +310,18 @@ public final class NumberUtils {
             return null;
         }
 
-        NumberFormat format = null;
-        
-        if (target instanceof Double || target instanceof Float || target instanceof BigDecimal ||
-            target instanceof Integer || target instanceof Long || target instanceof Byte || target instanceof Short || target instanceof BigInteger) {
-
-            format = NumberFormat.getPercentInstance();
-            format.setMinimumFractionDigits(fractionDigits.intValue());
-            format.setMaximumFractionDigits(fractionDigits.intValue());
-            if (minIntegerDigits != null) {
-                format.setMinimumIntegerDigits(minIntegerDigits.intValue());
-            }
-                
-        } else {
-            throw new IllegalArgumentException(
-                    "Cannot format object of class \"" + target.getClass().getName() + "\" as a percent number");
+        NumberFormat format = NumberFormat.getPercentInstance(locale);
+        format.setMinimumFractionDigits(fractionDigits.intValue());
+        format.setMaximumFractionDigits(fractionDigits.intValue());
+        if (minIntegerDigits != null) {
+            format.setMinimumIntegerDigits(minIntegerDigits.intValue());
         }
-        
+
         return format.format(target);
     }
-    
-    
-    
-    
-    
-    
-    
+
+
     private NumberUtils() {
         super();
     }
-    
-    
-    
 }
