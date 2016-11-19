@@ -1,0 +1,3 @@
+CURRENT
+=======
+- First release of thymeleaf-spring5
