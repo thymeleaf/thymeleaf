@@ -60,12 +60,15 @@ public final class SpringVersionUtils {
             } catch (final Exception e) {
                 throw new ExceptionInInitializerError(
                         "Exception during initialization of Spring versioning utilities. Identified Spring " +
-                                "version is '" + springVersion + "', which does not follow the {major}.{minor}.{...} scheme");
+                        "version is '" + springVersion + "', which does not follow the {major}.{minor}.{...} scheme");
             }
 
         } else {
 
-            if (testClassExistence("org.springframework.context.annotation.ComponentScans")) {
+            if (testClassExistence("org.springframework.core.io.buffer.DataBuffer")) {
+                SPRING_VERSION_MAJOR = 5;
+                SPRING_VERSION_MINOR = 0;
+            } else if (testClassExistence("org.springframework.context.annotation.ComponentScans")) {
                 SPRING_VERSION_MAJOR = 4;
                 SPRING_VERSION_MINOR = 3;
             } else if (testClassExistence("org.springframework.core.annotation.AliasFor")) {
@@ -153,6 +156,11 @@ public final class SpringVersionUtils {
 
     public static boolean isSpring43AtLeast() {
         return SPRING_VERSION_MAJOR > 4 || (SPRING_VERSION_MAJOR == 4 && SPRING_VERSION_MINOR >= 3);
+    }
+
+
+    public static boolean isSpring50AtLeast() {
+        return SPRING_VERSION_MAJOR >= 5;
     }
 
 
