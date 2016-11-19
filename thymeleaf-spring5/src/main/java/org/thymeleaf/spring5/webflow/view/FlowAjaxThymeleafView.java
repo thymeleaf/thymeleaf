@@ -35,13 +35,13 @@ import org.springframework.webflow.execution.View;
 
 /**
  * <p>
- *   Subclass of {@link org.thymeleaf.spring5.view.AjaxThymeleafView} for Spring WebFlow,
+ *   Subclass of {@link org.thymeleaf.spring5.webflow.view.AjaxThymeleafView} for Spring WebFlow,
  *   designed for obtaining the fragments to be rendered via
  *   AJAX in the way needed by Spring WebFlow.
  * </p>
  * <p>
  *   Most people will need to use this class instead of
- *   {@link org.thymeleaf.spring5.view.AjaxThymeleafView} if you are using Spring WebFlow.
+ *   {@link org.thymeleaf.spring5.webflow.view.AjaxThymeleafView} if you are using Spring WebFlow.
  * </p>
 *
 * @author Daniel Fern&aacute;ndez
