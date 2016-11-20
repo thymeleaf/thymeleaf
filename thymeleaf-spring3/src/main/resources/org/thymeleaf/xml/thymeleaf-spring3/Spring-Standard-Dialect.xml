@@ -35,7 +35,7 @@
 		<documentation
 			see-also="fields.hasErrors"
 			reference="Validation and Error Messages"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#validation-and-error-messages">http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#validation-and-error-messages</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#validation-and-error-messages">http://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#validation-and-error-messages</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -45,7 +45,7 @@
 		<documentation
 			see-also="fields.errors"
 			reference="Validation and Error Messages"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#validation-and-error-messages">http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#validation-and-error-messages</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#validation-and-error-messages">http://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#validation-and-error-messages</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -54,7 +54,7 @@
 		class="org.thymeleaf.spring3.processor.AbstractSpringFieldTagProcessor">
 		<documentation
 			reference="Creating a Form"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#creating-a-form">http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#creating-a-form</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#creating-a-form">http://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#creating-a-form</a>
 		]]></documentation>
 		<restrictions
 			tags="input option select textarea"/>
@@ -65,7 +65,7 @@
 		class="org.thymeleaf.spring3.processor.SpringObjectTagProcessor">
 		<documentation
 			reference="Creating a Form"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#creating-a-form">http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#creating-a-form</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#creating-a-form">http://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#creating-a-form</a>
 		]]></documentation>
 	</attribute-processor>
 
