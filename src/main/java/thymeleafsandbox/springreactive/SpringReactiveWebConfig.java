@@ -20,33 +20,40 @@
 package thymeleafsandbox.springreactive;
 
 
+import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.freemarker.SpringTemplateLoader;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewResolver;
-import org.thymeleaf.spring4.SpringTemplateEngine;
-import org.thymeleaf.templateresolver.ITemplateResolver;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import thymeleafsandbox.springreactive.thymeleaf.context.SpringReactiveEngineContextFactory;
 import thymeleafsandbox.springreactive.thymeleaf.linkbuilder.SpringReactiveLinkBuilder;
 import thymeleafsandbox.springreactive.thymeleaf.view.ThymeleafViewResolver;
 
 @Configuration
+@EnableConfigurationProperties(ThymeleafProperties.class)
 public class SpringReactiveWebConfig {
+
+    // TODO * Once there is a Spring Boot starter for thymeleaf-spring5, there would be no need to have
+    // TODO   that @EnableConfigurationProperties annotation or use it for declaring the beans down in the
+    // TODO   "thymeleaf" section below.
 
 
     private ApplicationContext applicationContext;
-    private ITemplateResolver thymeleafTemplateResolver; // auto-configured by Spring Boot
+    private ThymeleafProperties thymeleafProperties;
 
 
 
     public SpringReactiveWebConfig(
             final ApplicationContext applicationContext,
-            final ITemplateResolver thymeleafTemplateResolver) {
+            final ThymeleafProperties thymeleafProperties) {
         super();
         this.applicationContext = applicationContext;
-        this.thymeleafTemplateResolver = thymeleafTemplateResolver;
+        this.thymeleafProperties = thymeleafProperties;
     }
 
 
@@ -89,13 +96,39 @@ public class SpringReactiveWebConfig {
      * --------------------------------------
      */
 
+    // TODO * If there was a Spring Boot starter for thymeleaf-spring5 most probably some or all of these
+    // TODO   resolver and engine beans would not beed to be specifically declared here.
+
+    @Bean
+    public SpringResourceTemplateResolver thymeleafTemplateResolver() {
+
+        final SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
+        resolver.setApplicationContext(this.applicationContext);
+        resolver.setPrefix(this.thymeleafProperties.getPrefix());
+        resolver.setSuffix(this.thymeleafProperties.getSuffix());
+        resolver.setTemplateMode(this.thymeleafProperties.getMode());
+        if (this.thymeleafProperties.getEncoding() != null) {
+            resolver.setCharacterEncoding(this.thymeleafProperties.getEncoding().name());
+        }
+        resolver.setCacheable(this.thymeleafProperties.isCache());
+        final Integer order = this.thymeleafProperties.getTemplateResolverOrder();
+        if (order != null) {
+            resolver.setOrder(order);
+        }
+        resolver.setCheckExistence(this.thymeleafProperties.isCheckTemplate());
+
+        return resolver;
+
+    }
+
+
 
     @Bean
     public SpringTemplateEngine thymeleafTemplateEngine(){
         // We override here the SpringTemplateEngine instance that would otherwise be instantiated by
         // Spring Boot because we want to apply the SpringReactive-specific context factory, link builder...
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.setTemplateResolver(this.thymeleafTemplateResolver);
+        templateEngine.setTemplateResolver(thymeleafTemplateResolver());
         templateEngine.setEngineContextFactory(new SpringReactiveEngineContextFactory());
         templateEngine.setLinkBuilder(new SpringReactiveLinkBuilder());
         return templateEngine;
