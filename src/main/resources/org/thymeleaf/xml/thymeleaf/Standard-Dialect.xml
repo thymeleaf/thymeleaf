@@ -45,7 +45,7 @@
 		<documentation
 			see-also="attrappend attrprepend"
 			reference="Setting Attribute Values"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#setting-attribute-values">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#setting-attribute-values</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#setting-attribute-values">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#setting-attribute-values</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -55,7 +55,7 @@
 		<documentation
 			see-also="attr attrprepend classappend"
 			reference="Appending And Prepending attribute values"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#appending-and-prepending">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#appending-and-prepending</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#appending-and-prepending">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#appending-and-prepending</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -65,7 +65,7 @@
 		<documentation
 			see-also="attr attrappend"
 			reference="Appending And Prepending attribute values"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#appending-and-prepending">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#appending-and-prepending</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#appending-and-prepending">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#appending-and-prepending</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -75,7 +75,7 @@
 		<documentation
 			see-also="switch"
 			reference="Switch Statements"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#switch-statements">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#switch-statements</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#switch-statements">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#switch-statements</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -85,7 +85,7 @@
 		<documentation
 			see-also="attrappend class"
 			reference="Appending And Prepending attribute values"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#appending-and-prepending">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#appending-and-prepending</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#appending-and-prepending">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#appending-and-prepending</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -94,7 +94,7 @@
 		class="org.thymeleaf.standard.processor.StandardEachTagProcessor">
 		<documentation
 			reference="Iteration"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#iteration">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#iteration</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#iteration">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#iteration</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -104,7 +104,7 @@
 		<documentation
 			see-also="include insert replace"
 			reference="Including Template Fragments"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#including-template-fragments">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#including-template-fragments</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -114,7 +114,7 @@
 		<documentation
 			see-also="unless"
 			reference="Simple Conditionals"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#simple-conditionals-if-and-unless">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#simple-conditionals-if-and-unless</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#simple-conditionals-if-and-unless">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#simple-conditionals-if-and-unless</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -124,7 +124,7 @@
 		<documentation
 			see-also="insert replace fragment"
 			reference="Including Template Fragments"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#including-template-fragments">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#including-template-fragments</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -133,7 +133,7 @@
 		class="org.thymeleaf.standard.processor.StandardInlineTextualTagProcessor">
 		<documentation
 			reference="Inlining"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#inlining">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#inlining</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#inlining">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#inlining</a>
 		]]></documentation>
 		<restrictions
 			values="text javascript dart"/>
@@ -145,7 +145,7 @@
 		<documentation
 			see-also="include replace fragment"
 			reference="Including Template Fragments"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#including-template-fragments">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#including-template-fragments</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -162,7 +162,7 @@
 		<documentation
 			see-also="with"
 			reference="Asterisk Syntax"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#expressions-on-selections-asterisk-syntax">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#expressions-on-selections-asterisk-syntax</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#expressions-on-selections-asterisk-syntax">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#expressions-on-selections-asterisk-syntax</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -175,7 +175,7 @@
 		class="org.thymeleaf.standard.processor.StandardRemoveTagProcessor">
 		<documentation
 			reference="Removing Template Fragments"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#removing-template-fragments">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#removing-template-fragments</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#removing-template-fragments">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#removing-template-fragments</a>
 		]]></documentation>
 		<restrictions
 			values="all body tag all-but-first"/>
@@ -187,7 +187,7 @@
 		<documentation
 			see-also="include insert fragment"
 			reference="Including Template Fragments"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#including-template-fragments">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#including-template-fragments</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -197,7 +197,7 @@
         <documentation
             see-also="attrappend style"
 			reference="Appending And Prepending attribute values"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#appending-and-prepending">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#appending-and-prepending</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#appending-and-prepending">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#appending-and-prepending</a>
 		]]></documentation>
     </attribute-processor>
 
@@ -207,7 +207,7 @@
 		<documentation
 			see-also="include insert replace fragment"
 			reference="Including Template Fragments"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#including-template-fragments</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#including-template-fragments">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#including-template-fragments</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -217,7 +217,7 @@
 		<documentation
 			see-also="case if"
 			reference="Switch Statements"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#switch-statements">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#switch-statements</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#switch-statements">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#switch-statements</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -227,7 +227,7 @@
 		<documentation
 			see-also="utext"
 			reference="Using Texts"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#using-texts">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#using-texts</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#using-texts">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#using-texts</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -237,7 +237,7 @@
 		<documentation
 			see-also="if"
 			reference="Simple Conditionals"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#simple-conditionals-if-and-unless">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#simple-conditionals-if-and-unless</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#simple-conditionals-if-and-unless">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#simple-conditionals-if-and-unless</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -247,7 +247,7 @@
 		<documentation
 			see-also="text"
 			reference="Unescaped Text"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#unescaped-text">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#unescaped-text</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#unescaped-text">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#unescaped-text</a>
 		]]></documentation>
 	</attribute-processor>
 
@@ -257,7 +257,7 @@
 		<documentation
 			see-also="object"
 			reference="Local Variables"><![CDATA[
-			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#local-variables">http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#local-variables</a>
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#local-variables">http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#local-variables</a>
 		]]></documentation>
 	</attribute-processor>
 
