@@ -53,7 +53,7 @@ public final class RequestDataValueProcessorUtils {
     private static final boolean canApply;
 
     private static final String SPRING4_DELEGATE_CLASS =
-            "RequestDataValueProcessor4Delegate";
+            "org.thymeleaf.spring5.requestdata.RequestDataValueProcessor4Delegate";
     private static final IRequestDataValueProcessorDelegate spring4Delegate;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestDataValueProcessorUtils.class);
