@@ -50,7 +50,7 @@ import org.thymeleaf.IThrottledTemplateProcessor;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.engine.DataDrivenTemplateIterator;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.spring4.expression.ThymeleafEvaluationContext;
+import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
