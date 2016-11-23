@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
+import org.thymeleaf.Template;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.util.Validate;
 
@@ -41,12 +42,12 @@ import org.thymeleaf.util.Validate;
  * @param <K> The type of the cache keys
  * @param <V> The type of the cache values
  */
-public class StandardCache<K, V> implements ICache<K,V> {
+public final class StandardCache<K, V> implements ICache<K,V> {
 
 
     private static final long REPORT_INTERVAL = 300000L; // 5 minutes
     private static final String REPORT_FORMAT =
-            "[THYMELEAF][*][*][*][CACHE_REPORT] %8s elements | %12s puts | %12s gets | %12s hits | %12s misses - [%s]";
+            "[THYMELEAF][*][*][*][CACHE_REPORT] %8s elements | %12s puts | %12s gets | %12s hits | %12s misses | %.2f hit ratio | %.2f miss ratio - [%s]";
     private volatile long lastExecution = System.currentTimeMillis();
 
     private final String name;
@@ -56,34 +57,35 @@ public class StandardCache<K, V> implements ICache<K,V> {
     private final ICacheEntryValidityChecker<? super K, ? super V> entryValidityChecker;
 
     private final boolean traceExecution;
+    final boolean enableCounters;
+
     private final Logger logger;
 
-    private volatile long getCount;
-    private volatile long putCount;
-    private volatile long hitCount;
-    private volatile long missCount;
-
+    private final AtomicLong getCount;
+    private final AtomicLong putCount;
+    private final AtomicLong hitCount;
+    private final AtomicLong missCount;
 
 
     public StandardCache(final String name, final boolean useSoftReferences,
                          final int initialCapacity, final Logger logger) {
-        this(name, useSoftReferences, initialCapacity, -1, null, logger);
+        this(name, useSoftReferences, initialCapacity, -1, null, logger, false);
     }
 
     public StandardCache(final String name, final boolean useSoftReferences,
                          final int initialCapacity, final ICacheEntryValidityChecker<? super K, ? super V> entryValidityChecker,
                          final Logger logger) {
-        this(name, useSoftReferences, initialCapacity, -1, entryValidityChecker, logger);
+        this(name, useSoftReferences, initialCapacity, -1, entryValidityChecker, logger, false);
     }
 
     public StandardCache(final String name, final boolean useSoftReferences,
                          final int initialCapacity, final int maxSize, final Logger logger) {
-        this(name, useSoftReferences, initialCapacity, maxSize, null, logger);
+        this(name, useSoftReferences, initialCapacity, maxSize, null, logger, false);
     }
 
     public StandardCache(final String name, final boolean useSoftReferences,
                          final int initialCapacity, final int maxSize, final ICacheEntryValidityChecker<? super K, ? super V> entryValidityChecker,
-                         final Logger logger) {
+                         final Logger logger, final boolean enableCounters) {
 
         super();
 
@@ -99,8 +101,15 @@ public class StandardCache<K, V> implements ICache<K,V> {
         this.logger = logger;
         this.traceExecution = (logger != null && logger.isTraceEnabled());
 
+        this.enableCounters = enableCounters;
+
         this.dataContainer =
                 new CacheDataContainer<K,V>(this.name, initialCapacity, maxSize, this.traceExecution, this.logger);
+
+        this.getCount = new AtomicLong(0);
+        this.putCount = new AtomicLong(0);
+        this.hitCount = new AtomicLong(0);
+        this.missCount = new AtomicLong(0);
 
         if (this.logger != null) {
             if (this.maxSize < 0) {
@@ -123,7 +132,7 @@ public class StandardCache<K, V> implements ICache<K,V> {
 
     public void put(final K key, final V value) {
 
-        incrementPutCount();
+        incrementReportEntity(this.putCount);
 
         final CacheEntry<V> entry = new CacheEntry<V>(value, this.useSoftReferences);
 
@@ -150,12 +159,12 @@ public class StandardCache<K, V> implements ICache<K,V> {
 
     public V get(final K key, final ICacheEntryValidityChecker<? super K, ? super V> validityChecker) {
 
-        incrementGetCount();
+        incrementReportEntity(this.getCount);
 
         final CacheEntry<V> resultEntry = this.dataContainer.get(key);
 
         if (resultEntry == null) {
-            incrementMissCount();
+            incrementReportEntity(this.missCount);
             if (this.traceExecution) {
                 this.logger.trace(
                         "[THYMELEAF][{}][{}][CACHE_MISS] Cache miss in cache \"{}\" for key \"{}\".",
@@ -177,7 +186,7 @@ public class StandardCache<K, V> implements ICache<K,V> {
                         "[THYMELEAF][{}][{}][CACHE_MISS] Cache miss in cache \"{}\" for key \"{}\".",
                         new Object[] {TemplateEngine.threadIndex(), this.name, this.name, key});
             }
-            incrementMissCount();
+            incrementReportEntity(this.missCount);
             outputReportIfNeeded();
             return null;
         }
@@ -188,7 +197,7 @@ public class StandardCache<K, V> implements ICache<K,V> {
                     new Object[] {TemplateEngine.threadIndex(), this.name, this.name, key});
         }
 
-        incrementHitCount();
+        incrementReportEntity(this.hitCount);
         outputReportIfNeeded();
         return resultValue;
 
@@ -241,6 +250,12 @@ public class StandardCache<K, V> implements ICache<K,V> {
 
     // -----
 
+    private void incrementReportEntity(final AtomicLong entity) {
+        if (this.traceExecution || this.enableCounters) {
+            entity.incrementAndGet();
+        }
+    }
+
     public String getName() {
         return this.name;
     }
@@ -261,29 +276,28 @@ public class StandardCache<K, V> implements ICache<K,V> {
         return this.dataContainer.size();
     }
 
-    public long getPutCount (){  return putCount;}
-    public long getGetCount (){  return getCount;}
-    public long getHitCount (){  return hitCount;}
-    public long getMissCount (){ return missCount;}
+    public long getPutCount (){  return Long.valueOf(this.putCount.get());}
 
+    public long getGetCount (){  return Long.valueOf(this.getCount.get());}
 
-    private void incrementPutCount (){   putCount++;}
-    private void incrementGetCount (){   getCount++;}
-    private void incrementHitCount (){   hitCount++;}
-    private void incrementMissCount (){  missCount++;}
+    public long getHitCount (){  return Long.valueOf(this.hitCount.get());}
+
+    public long getMissCount (){ return Long.valueOf(this.missCount.get());}
+
 
     public double getHitRatio() {
-        return 1 - getMissRatio();
+        long hitCount = getHitCount();
+        long getCount = getGetCount();
+
+        if ( hitCount == 0 || getCount == 0 )
+            return 0;
+
+        return hitCount / getCount;
     }
 
     public double getMissRatio() {
-        long missCount = getMissCount();
-        long getCount = getGetCount();
-
-        if ( missCount == 0 || getCount == 0 )
-            return 0;
-
-        return  ((double)getMissCount()) / getGetCount(); }
+       return 1 - getHitRatio();
+    }
 
     // -----
 
@@ -295,14 +309,26 @@ public class StandardCache<K, V> implements ICache<K,V> {
             if ((currentTime - this.lastExecution) >= REPORT_INTERVAL) { // first check without need to sync
                 synchronized (this) {
                     if ((currentTime - this.lastExecution) >= REPORT_INTERVAL) {
+
+                        long hitCount = getHitCount();
+                        long missCount = getMissCount();
+                        long putCount = getPutCount();
+                        long getCount = getGetCount();
+
+                        double hitRatio = hitCount / getCount;
+                        double missRatio = 1 - hitRatio;
+
                         this.logger.trace(
                                 String.format(REPORT_FORMAT,
                                         Integer.valueOf(size()),
-                                        this.putCount,
-                                        this.getCount,
-                                        this.hitCount,
-                                        this.missCount,
+                                        putCount,
+                                        getCount,
+                                        hitCount,
+                                        missCount,
+                                        hitRatio,
+                                        missRatio,
                                         this.name));
+
                         this.lastExecution = currentTime;
                     }
                 }

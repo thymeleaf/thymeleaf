@@ -90,7 +90,12 @@ public class StandardCacheManager extends AbstractCacheManager {
      * Default template cache maximum size: 50
      */
     public static final int DEFAULT_TEMPLATE_CACHE_MAX_SIZE = 50;
-    
+
+    /**
+     * Default template cache "enable counters" flag: false
+     */
+    public static final boolean DEFAULT_TEMPLATE_CACHE_ENABLE_COUNTERS = false;
+
     /**
      * Default template cache "use soft references" flag: true
      */
@@ -124,10 +129,15 @@ public class StandardCacheManager extends AbstractCacheManager {
     public static final int DEFAULT_FRAGMENT_CACHE_MAX_SIZE = 300;
     
     /**
+     * Default fragment cache "enable counters" flag: false
+     */
+    public static final boolean DEFAULT_FRAGMENT_CACHE_ENABLE_COUNTERS = false;
+
+    /**
      * Default fragment cache "use soft references" flag: true
      */
     public static final boolean DEFAULT_FRAGMENT_CACHE_USE_SOFT_REFERENCES = true;
-    
+
     /**
      * Default fragment cache logger name: null (default behaviour = org.thymeleaf.TemplateEngine.cache.FRAGMENT_CACHE)
      */
@@ -156,6 +166,11 @@ public class StandardCacheManager extends AbstractCacheManager {
     public static final int DEFAULT_MESSAGE_CACHE_MAX_SIZE = 300;
     
     /**
+     * Default message cache "enable counters" flag: false
+     */
+    public static final boolean DEFAULT_MESSAGE_CACHE_ENABLE_COUNTERS = false;
+
+    /**
      * Default message cache "use soft references" flag: true
      */
     public static final boolean DEFAULT_MESSAGE_CACHE_USE_SOFT_REFERENCES = true;
@@ -170,7 +185,8 @@ public class StandardCacheManager extends AbstractCacheManager {
      */
     public static final ICacheEntryValidityChecker<String,Properties> DEFAULT_MESSAGE_CACHE_VALIDITY_CHECKER = null;
 
-    
+
+
     /**
      * Default expression cache name: "EXPRESSION_CACHE"
      */
@@ -186,6 +202,11 @@ public class StandardCacheManager extends AbstractCacheManager {
      */
     public static final int DEFAULT_EXPRESSION_CACHE_MAX_SIZE = 500;
     
+    /**
+     * Default expression cache "enable counters" flag: false
+     */
+    public static final boolean DEFAULT_EXPRESSION_CACHE_ENABLE_COUNTERS = false;
+
     /**
      * Default expression cache "use soft references" flag: true
      */
@@ -207,6 +228,7 @@ public class StandardCacheManager extends AbstractCacheManager {
     private String templateCacheName = DEFAULT_TEMPLATE_CACHE_NAME;
     private int templateCacheInitialSize = DEFAULT_TEMPLATE_CACHE_INITIAL_SIZE;
     private int templateCacheMaxSize = DEFAULT_TEMPLATE_CACHE_MAX_SIZE;
+    private boolean templateCacheEnableCounters = DEFAULT_TEMPLATE_CACHE_ENABLE_COUNTERS;
     private boolean templateCacheUseSoftReferences = DEFAULT_TEMPLATE_CACHE_USE_SOFT_REFERENCES;
     private String templateCacheLoggerName = DEFAULT_TEMPLATE_CACHE_LOGGER_NAME;
     private ICacheEntryValidityChecker<String,Template> templateCacheValidityChecker = DEFAULT_TEMPLATE_CACHE_VALIDITY_CHECKER;
@@ -214,6 +236,7 @@ public class StandardCacheManager extends AbstractCacheManager {
     private String fragmentCacheName = DEFAULT_FRAGMENT_CACHE_NAME;
     private int fragmentCacheInitialSize = DEFAULT_FRAGMENT_CACHE_INITIAL_SIZE;
     private int fragmentCacheMaxSize = DEFAULT_FRAGMENT_CACHE_MAX_SIZE;
+    private boolean fragmentCacheEnableCounters = DEFAULT_FRAGMENT_CACHE_ENABLE_COUNTERS;
     private boolean fragmentCacheUseSoftReferences = DEFAULT_FRAGMENT_CACHE_USE_SOFT_REFERENCES;
     private String fragmentCacheLoggerName = DEFAULT_FRAGMENT_CACHE_LOGGER_NAME;
     private ICacheEntryValidityChecker<String,List<Node>> fragmentCacheValidityChecker = DEFAULT_FRAGMENT_CACHE_VALIDITY_CHECKER;
@@ -221,6 +244,7 @@ public class StandardCacheManager extends AbstractCacheManager {
     private String messageCacheName = DEFAULT_MESSAGE_CACHE_NAME;
     private int messageCacheInitialSize = DEFAULT_MESSAGE_CACHE_INITIAL_SIZE;
     private int messageCacheMaxSize = DEFAULT_MESSAGE_CACHE_MAX_SIZE;
+    private boolean messageCacheEnableCounters = DEFAULT_MESSAGE_CACHE_ENABLE_COUNTERS;
     private boolean messageCacheUseSoftReferences = DEFAULT_MESSAGE_CACHE_USE_SOFT_REFERENCES;
     private String messageCacheLoggerName = DEFAULT_MESSAGE_CACHE_LOGGER_NAME;
     private ICacheEntryValidityChecker<String,Properties> messageCacheValidityChecker = DEFAULT_MESSAGE_CACHE_VALIDITY_CHECKER;
@@ -228,6 +252,7 @@ public class StandardCacheManager extends AbstractCacheManager {
     private String expressionCacheName = DEFAULT_EXPRESSION_CACHE_NAME;
     private int expressionCacheInitialSize = DEFAULT_EXPRESSION_CACHE_INITIAL_SIZE;
     private int expressionCacheMaxSize = DEFAULT_EXPRESSION_CACHE_MAX_SIZE;
+    private boolean expressionCacheEnableCounters = DEFAULT_EXPRESSION_CACHE_ENABLE_COUNTERS;
     private boolean expressionCacheUseSoftReferences = DEFAULT_EXPRESSION_CACHE_USE_SOFT_REFERENCES;
     private String expressionCacheLoggerName = DEFAULT_EXPRESSION_CACHE_LOGGER_NAME;
     private ICacheEntryValidityChecker<String,Object> expressionCacheValidityChecker = DEFAULT_EXPRESSION_CACHE_VALIDITY_CHECKER;
@@ -238,7 +263,7 @@ public class StandardCacheManager extends AbstractCacheManager {
         super();
     }
 
-    
+
     
     @Override
     protected final ICache<String, Template> initializeTemplateCache() {
@@ -249,7 +274,7 @@ public class StandardCacheManager extends AbstractCacheManager {
         return new StandardCache<String, Template>(
                 getTemplateCacheName(), getTemplateCacheUseSoftReferences(), 
                 getTemplateCacheInitialSize(), maxSize, 
-                getTemplateCacheValidityChecker(), getTemplateCacheLogger());
+                getTemplateCacheValidityChecker(), getTemplateCacheLogger(), getTemplateCacheEnableCounters());
     }
     
     @Override
@@ -261,7 +286,7 @@ public class StandardCacheManager extends AbstractCacheManager {
         return new StandardCache<String, List<Node>>(
                 getFragmentCacheName(), getFragmentCacheUseSoftReferences(), 
                 getFragmentCacheInitialSize(), maxSize, 
-                getFragmentCacheValidityChecker(), getFragmentCacheLogger());
+                getFragmentCacheValidityChecker(), getFragmentCacheLogger(), getFragmentCacheEnableCounters());
     }
 
     
@@ -274,7 +299,7 @@ public class StandardCacheManager extends AbstractCacheManager {
         return new StandardCache<String, Properties>(
                 getMessageCacheName(), getMessageCacheUseSoftReferences(), 
                 getMessageCacheInitialSize(), maxSize, 
-                getMessageCacheValidityChecker(), getMessageCacheLogger());
+                getMessageCacheValidityChecker(), getMessageCacheLogger(), getMessageCacheEnableCounters());
     }
 
     
@@ -287,7 +312,7 @@ public class StandardCacheManager extends AbstractCacheManager {
         return new StandardCache<String, Object>(
                 getExpressionCacheName(), getExpressionCacheUseSoftReferences(), 
                 getExpressionCacheInitialSize(), maxSize, 
-                getExpressionCacheValidityChecker(), getExpressionCacheLogger());
+                getExpressionCacheValidityChecker(), getExpressionCacheLogger(), getExpressionCacheEnableCounters());
     }
     
     
@@ -300,7 +325,11 @@ public class StandardCacheManager extends AbstractCacheManager {
     public boolean getTemplateCacheUseSoftReferences() {
         return this.templateCacheUseSoftReferences;
     }
-    
+
+    private boolean getTemplateCacheEnableCounters() {
+        return this.templateCacheEnableCounters;
+    }
+
     public int getTemplateCacheInitialSize() {
         return this.templateCacheInitialSize;
     }
@@ -335,7 +364,11 @@ public class StandardCacheManager extends AbstractCacheManager {
     public boolean getFragmentCacheUseSoftReferences() {
         return this.fragmentCacheUseSoftReferences;
     }
-    
+
+    private boolean getFragmentCacheEnableCounters() {
+        return this.fragmentCacheEnableCounters;
+    }
+
     public int getFragmentCacheInitialSize() {
         return this.fragmentCacheInitialSize;
     }
@@ -370,7 +403,9 @@ public class StandardCacheManager extends AbstractCacheManager {
     public boolean getMessageCacheUseSoftReferences() {
         return this.messageCacheUseSoftReferences;
     }
-    
+
+    private boolean getMessageCacheEnableCounters() {return this.messageCacheEnableCounters;}
+
     public int getMessageCacheInitialSize() {
         return this.messageCacheInitialSize;
     }
@@ -405,7 +440,11 @@ public class StandardCacheManager extends AbstractCacheManager {
     public boolean getExpressionCacheUseSoftReferences() {
         return this.expressionCacheUseSoftReferences;
     }
-    
+
+    private boolean getExpressionCacheEnableCounters() {
+        return this.expressionCacheEnableCounters;
+    }
+
     public int getExpressionCacheInitialSize() {
         return this.expressionCacheInitialSize;
     }
@@ -458,8 +497,12 @@ public class StandardCacheManager extends AbstractCacheManager {
         this.templateCacheValidityChecker = templateCacheValidityChecker;
     }
 
-    
-    
+    public void setTemplateCacheEnableCounters(boolean templateCacheEnableCounters) {
+        this.templateCacheEnableCounters = templateCacheEnableCounters;
+    }
+
+
+
     public void setFragmentCacheName(final String fragmentCacheName) {
         this.fragmentCacheName = fragmentCacheName;
     }
@@ -482,6 +525,10 @@ public class StandardCacheManager extends AbstractCacheManager {
     
     public void setFragmentCacheValidityChecker(final ICacheEntryValidityChecker<String, List<Node>> fragmentCacheValidityChecker) {
         this.fragmentCacheValidityChecker = fragmentCacheValidityChecker;
+    }
+
+    public void setFragmentCacheEnableCounters(boolean fragmentCacheEnableCounters) {
+        this.fragmentCacheEnableCounters = fragmentCacheEnableCounters;
     }
 
 
@@ -510,8 +557,12 @@ public class StandardCacheManager extends AbstractCacheManager {
         this.messageCacheValidityChecker = messageCacheValidityChecker;
     }
 
-    
-    
+    public void setMessageCacheEnableCounters(boolean messageCacheEnableCounters) {
+        this.messageCacheEnableCounters = messageCacheEnableCounters;
+    }
+
+
+
     public void setExpressionCacheName(final String expressionCacheName) {
         this.expressionCacheName = expressionCacheName;
     }
@@ -536,8 +587,7 @@ public class StandardCacheManager extends AbstractCacheManager {
         this.expressionCacheValidityChecker = expressionCacheValidityChecker;
     }
 
-    
-    
-    
-    
+    public void setExpressionCacheEnableCounters(boolean expressionCacheEnableCounters) {
+        this.expressionCacheEnableCounters = expressionCacheEnableCounters;
+    }
 }
