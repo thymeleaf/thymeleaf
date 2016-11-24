@@ -63,7 +63,7 @@ import org.thymeleaf.standard.expression.StandardExpressions;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 3.0.3
  *
  */
 public class ThymeleafView 

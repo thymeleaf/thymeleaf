@@ -56,7 +56,7 @@ import org.thymeleaf.ITemplateEngine;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 3.0.3
  *
  */
 public class ThymeleafViewResolver 
