@@ -29,10 +29,10 @@ import org.springframework.ui.freemarker.SpringTemplateLoader;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewResolver;
 import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring5.context.reactive.SpringReactiveEngineContextFactory;
+import org.thymeleaf.spring5.linkbuilder.reactive.SpringReactiveLinkBuilder;
+import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
-import thymeleafsandbox.springreactive.thymeleaf.context.SpringReactiveEngineContextFactory;
-import thymeleafsandbox.springreactive.thymeleaf.linkbuilder.SpringReactiveLinkBuilder;
-import thymeleafsandbox.springreactive.thymeleaf.view.ThymeleafViewResolver;
 
 @Configuration
 @EnableConfigurationProperties(ThymeleafProperties.class)
@@ -139,8 +139,8 @@ public class SpringReactiveWebConfig {
      * No limit to output buffer size, non-data-driven (all data fully resolved in context).
      */
     @Bean
-    public ThymeleafViewResolver thymeleafNormalViewResolver(){
-        ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
+    public ThymeleafReactiveViewResolver thymeleafNormalViewResolver(){
+        ThymeleafReactiveViewResolver viewResolver = new ThymeleafReactiveViewResolver();
         viewResolver.setTemplateEngine(thymeleafTemplateEngine());
         viewResolver.setOrder(3);
         viewResolver.setViewNames(new String[] {"thymeleaf/*"});
@@ -152,8 +152,8 @@ public class SpringReactiveWebConfig {
      * Non-data-driven (all data fully resolved in context), but with an established limit to output buffers size.
      */
     @Bean
-    public ThymeleafViewResolver thymeleafBufferedViewResolver(){
-        ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
+    public ThymeleafReactiveViewResolver thymeleafBufferedViewResolver(){
+        ThymeleafReactiveViewResolver viewResolver = new ThymeleafReactiveViewResolver();
         viewResolver.setTemplateEngine(thymeleafTemplateEngine());
         viewResolver.setOrder(2);
         viewResolver.setViewNames(new String[] {"thymeleaf/*buffered*"});
@@ -167,8 +167,8 @@ public class SpringReactiveWebConfig {
      * the engine and Thymeleaf will be executed as a part of the data flow.
      */
     @Bean
-    public ThymeleafViewResolver thymeleafDataDrivenViewResolver(){
-        ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
+    public ThymeleafReactiveViewResolver thymeleafDataDrivenViewResolver(){
+        ThymeleafReactiveViewResolver viewResolver = new ThymeleafReactiveViewResolver();
         viewResolver.setTemplateEngine(thymeleafTemplateEngine());
         viewResolver.setOrder(1);
         viewResolver.setViewNames(new String[] {"thymeleaf/*datadriven*"});
