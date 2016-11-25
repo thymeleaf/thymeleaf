@@ -50,8 +50,8 @@ import org.thymeleaf.IThrottledTemplateProcessor;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.engine.DataDrivenTemplateIterator;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring5.context.reactive.SpringReactiveWebExpressionContext;
+import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
@@ -525,21 +525,61 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
                 final Publisher<Object> contextBoundPublisher = (Publisher<Object>) dataDrivenVariableValue;
 
-                return response.writeWith(createDataDrivenFlow(
-                        templateName, viewTemplateEngine, processMarkupSelectors, context,
-                        contextBoundPublisher, templateDataDrivenChunkSizeElements, throttledIterator,
-                        templateResponseMaxBufferSizeBytes, response.bufferFactory(), charset));
+                final Flux<DataBuffer> dataFlow =
+                        createDataDrivenFlow(
+                                templateName, viewTemplateEngine, processMarkupSelectors, context,
+                                contextBoundPublisher,               // data-driver, Publisher that Thymeleaf will consume
+                                templateDataDrivenChunkSizeElements, // elements in the data-driver will be buffered in List<T> of this size
+                                throttledIterator,                   // iterator in charge of throttling the engine
+                                templateResponseMaxBufferSizeBytes,  // buffer max size limit (can be none: MAX_VALUE)
+                                response.bufferFactory(), charset);
+
+                // No size limit for output buffers has been set, so we will let the
+                // server apply its standard behaviour ("writeWith").
+                if (templateResponseMaxBufferSizeBytes == Integer.MAX_VALUE) {
+                    return response.writeWith(dataFlow);
+                }
+
+                // A limit for output buffers has been set, so we will use "writeAndFlushWith" in order to make
+                // sure that output is flushed after each buffer.
+                return response.writeAndFlushWith(dataFlow.window(1));
 
             }
         }
 
+        // At this point we know the execution is not going to be data-driven, so Thymeleaf will NOT execute
+        // acting as a subscriber of a given Publisher<?>. But we will still need to check if a limit has been
+        // set of the output buffer size, which would mean the server would have to be throttled.
 
         if (templateResponseMaxBufferSizeBytes == Integer.MAX_VALUE) {
-            return response.writeWith(
-                    createNormalOutputDrivenFlow(templateName, viewTemplateEngine, processMarkupSelectors, context, response.bufferFactory(), charset));
+
+            // No limit to be set to the size of output buffers, so the entire output will be rendered to a
+            // single DataBuffer object that will be sent to the output channels.
+
+            final Mono<DataBuffer> dataMono =
+                    createNormalOutputDrivenFlow(
+                            templateName, viewTemplateEngine, processMarkupSelectors, context,
+                            response.bufferFactory(), charset);
+
+            // No size limit for output buffers has been set, so we will let the
+            // server apply its standard behaviour ("writeWith").
+            return response.writeWith(dataMono);
+
         }
-        return response.writeWith(
-                createBufferedOutputDrivenFlow(templateName, viewTemplateEngine, processMarkupSelectors, context, templateResponseMaxBufferSizeBytes, response.bufferFactory(), charset));
+
+        // Given there is a limit in the size of the buffers to be output, we will need to create a more
+        // complex stream of template output, a Flux<DataBuffer> that will publish DataBuffer objects containing
+        // at most the amount of bytes set as limit.
+
+        final Flux<DataBuffer> dataFlow =
+                createBufferedOutputDrivenFlow(
+                        templateName, viewTemplateEngine, processMarkupSelectors, context,
+                        templateResponseMaxBufferSizeBytes, // buffer max size limit
+                        response.bufferFactory(), charset);
+
+        // A limit for output buffers has been set, so we will use "writeAndFlushWith" in order to make
+        // sure that output is flushed after each buffer.
+        return response.writeAndFlushWith(dataFlow.window(1));
 
     }
 
@@ -595,14 +635,14 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
     /*
-     * Creates a Flux<DataBuffer> for processing templates non-data-driven, and also without a limit in the size of
-     * the output buffers.
+     * Creates a Mono<DataBuffer> for processing templates non-data-driven, and also without a limit in the size of
+     * the output buffers. So a single DataBuffer will be output.
      */
-    static Flux<DataBuffer> createNormalOutputDrivenFlow(
+    static Mono<DataBuffer> createNormalOutputDrivenFlow(
             final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
             final DataBufferFactory bufferAllocator, final Charset charset) {
 
-        return Flux.create(
+        return Mono.create(
                 subscriber -> {
 
                     if (logger.isDebugEnabled()) {
@@ -618,8 +658,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                         logger.debug("Finished full execution (unbuffered) of Thymeleaf template [" + templateName + "].");
                     }
 
-                    subscriber.next(dataBuffer);
-                    subscriber.complete();
+                    // This is a Mono<?>, so no need to call "next()" or "complete()"
+                    subscriber.success(dataBuffer);
 
                 });
 
