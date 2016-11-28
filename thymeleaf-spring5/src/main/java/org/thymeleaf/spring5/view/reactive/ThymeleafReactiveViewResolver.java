@@ -110,7 +110,19 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
         return this.templateEngine;
     }
 
-
+    /**
+     * <p>
+     *   Set the template engine object (implementation of {@link ITemplateEngine} to be
+     *   used for processing templates.
+     * </p>
+     * <p>
+     *   Note that this method allows any implementation of {@link ITemplateEngine} to be set, but
+     *   in most scenarios this argument will be an instance of
+     *   {@link org.thymeleaf.spring5.SpringReactiveTemplateEngine}.
+     * </p>
+     *
+     * @param templateEngine the template engine, usually {@link org.thymeleaf.spring5.SpringReactiveTemplateEngine}.
+     */
     public void setTemplateEngine(final ITemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
