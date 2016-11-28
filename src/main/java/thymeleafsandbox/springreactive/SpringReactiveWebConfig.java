@@ -28,9 +28,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.freemarker.SpringTemplateLoader;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewResolver;
+import org.thymeleaf.spring5.SpringReactiveTemplateEngine;
 import org.thymeleaf.spring5.SpringTemplateEngine;
-import org.thymeleaf.spring5.context.reactive.SpringReactiveEngineContextFactory;
-import org.thymeleaf.spring5.linkbuilder.reactive.SpringReactiveLinkBuilder;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
 
@@ -97,7 +96,7 @@ public class SpringReactiveWebConfig {
      */
 
     // TODO * If there was a Spring Boot starter for thymeleaf-spring5 most probably some or all of these
-    // TODO   resolver and engine beans would not beed to be specifically declared here.
+    // TODO   resolver and engine beans would not need to be specifically declared here.
 
     @Bean
     public SpringResourceTemplateResolver thymeleafTemplateResolver() {
@@ -127,10 +126,8 @@ public class SpringReactiveWebConfig {
     public SpringTemplateEngine thymeleafTemplateEngine(){
         // We override here the SpringTemplateEngine instance that would otherwise be instantiated by
         // Spring Boot because we want to apply the SpringReactive-specific context factory, link builder...
-        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        final SpringReactiveTemplateEngine templateEngine = new SpringReactiveTemplateEngine();
         templateEngine.setTemplateResolver(thymeleafTemplateResolver());
-        templateEngine.setEngineContextFactory(new SpringReactiveEngineContextFactory());
-        templateEngine.setLinkBuilder(new SpringReactiveLinkBuilder());
         return templateEngine;
     }
 
@@ -140,7 +137,7 @@ public class SpringReactiveWebConfig {
      */
     @Bean
     public ThymeleafReactiveViewResolver thymeleafNormalViewResolver(){
-        ThymeleafReactiveViewResolver viewResolver = new ThymeleafReactiveViewResolver();
+        final ThymeleafReactiveViewResolver viewResolver = new ThymeleafReactiveViewResolver();
         viewResolver.setTemplateEngine(thymeleafTemplateEngine());
         viewResolver.setOrder(2);
         viewResolver.setViewNames(new String[] {"thymeleaf/*"});
@@ -157,7 +154,7 @@ public class SpringReactiveWebConfig {
      */
     @Bean
     public ThymeleafReactiveViewResolver thymeleafBufferedViewResolver(){
-        ThymeleafReactiveViewResolver viewResolver = new ThymeleafReactiveViewResolver();
+        final ThymeleafReactiveViewResolver viewResolver = new ThymeleafReactiveViewResolver();
         viewResolver.setTemplateEngine(thymeleafTemplateEngine());
         viewResolver.setOrder(1);
         viewResolver.setViewNames(new String[] {"thymeleaf/*buffered*", "thymeleaf/*datadriven*"});
