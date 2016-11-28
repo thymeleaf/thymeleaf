@@ -23,6 +23,38 @@ import org.reactivestreams.Publisher;
 import org.thymeleaf.context.ILazyContextVariable;
 
 /**
+ * <p>
+ *   Interface to be implemented by context variables in the form of <em>reactive data streams</em> which
+ *   should not be resolved before the template executes.
+ * </p>
+ * <p>
+ *   The wrapped <em>data stream</em> variable will usually have the shape of an implementation of the
+ *   {@link Publisher} interface, such as {@link reactor.core.publisher.Flux}.
+ * </p>
+ * <p>
+ *   By being set into the context encapsulated by an object implementing this interface,
+ *   reactive data streams will reach the execution phase of the view layer unresolved, and
+ *   will only be resolved if they are really needed. So data stream variables that the template does not
+ *   really need in the end (because template logic resolves in a way that doesn't make use of them) will never
+ *   need to be consumed at all.
+ * </p>
+ * <p>
+ *   If the variable being added to the context is meant to work as a <strong><em>data-driver</em></strong>, i.e. to
+ *   make the engine execute as a consumer of the data stream and work as a producer of output (effectively turning
+ *   Thymeleaf into just another step in the data stream, converting data into markup output), a subinterface
+ *   of this interface should be used instead: {@link IReactiveDataDriverContextVariable}.
+ * </p>
+ * <p>
+ *   Note this <em>lazy resolution</em> can only be performed when the lazy variable is added to the context as a
+ *   <strong>first-level</strong> variable. i.e. <tt>${lazy}</tt> will work, but <tt>${container.lazy}</tt>
+ *   will not.
+ * </p>
+ * <p>
+ *   The {@link ReactiveLazyContextVariable} class contains a sensible implementation of this interface,
+ *   directly usable in most scenarios.
+ * </p>
+ *
+ * @param <T> the type of the values being returned by the wrapped data stream.
  *
  * @author Daniel Fern&aacute;ndez
  *
@@ -31,6 +63,17 @@ import org.thymeleaf.context.ILazyContextVariable;
  */
 public interface IReactiveLazyContextVariable<T> extends ILazyContextVariable<Iterable<T>> {
 
+    /**
+     * <p>
+     *   Returns the data stream being wrapped.
+     * </p>
+     * <p>
+     *   When returned through this method, the wrapped <em>data stream</em> variable has the shape of an
+     *   implementation of the {@link Publisher} interface, such as {@link reactor.core.publisher.Flux}.
+     * </p>
+     *
+     * @return the wrapped data stream object.
+     */
     public Publisher<T> getDataStream();
 
 }
