@@ -19,9 +19,6 @@
  */
 package org.thymeleaf.spring5.context.reactive;
 
-import org.reactivestreams.Publisher;
-import org.thymeleaf.context.ILazyContextVariable;
-
 /**
  *
  * @author Daniel Fern&aacute;ndez
