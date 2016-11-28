@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.thymeleaf.spring5.context.reactive.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Flux;
 import thymeleafsandbox.springreactive.business.PlaylistEntry;
 import thymeleafsandbox.springreactive.business.repository.PlaylistEntryRepository;
@@ -52,7 +53,7 @@ public class BigList {
 
         final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
         // No need to fully resolve the Publisher! We will just let it drive
-        model.addAttribute("dataSource", playlistFlow);
+        model.addAttribute("dataSource", new ReactiveDataDriverContextVariable<>(playlistFlow, 1000));
 
         return "thymeleaf/biglist-datadriven";
 

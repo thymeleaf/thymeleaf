@@ -31,8 +31,8 @@ import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewRes
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.context.reactive.SpringReactiveEngineContextFactory;
 import org.thymeleaf.spring5.linkbuilder.reactive.SpringReactiveLinkBuilder;
-import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
 
 @Configuration
 @EnableConfigurationProperties(ThymeleafProperties.class)
@@ -142,39 +142,26 @@ public class SpringReactiveWebConfig {
     public ThymeleafReactiveViewResolver thymeleafNormalViewResolver(){
         ThymeleafReactiveViewResolver viewResolver = new ThymeleafReactiveViewResolver();
         viewResolver.setTemplateEngine(thymeleafTemplateEngine());
-        viewResolver.setOrder(3);
+        viewResolver.setOrder(2);
         viewResolver.setViewNames(new String[] {"thymeleaf/*"});
         return viewResolver;
     }
 
     /*
-     * ViewResolver for Thymeleaf templates executing in BUFFERED mode.
-     * Non-data-driven (all data fully resolved in context), but with an established limit to output buffers size.
+     * ViewResolver for Thymeleaf templates executing in BUFFERED or DATA-DRIVEN mode.
+     *
+     * Buffered: non-data-driven (all data fully resolved in context), but with an established limit to output buffers size.
+     *
+     * Data-driven: the "dataSource" variable can be a Publisher<X>, in which case it will drive the execution of
+     *              the engine and Thymeleaf will be executed as a part of the data flow.
      */
     @Bean
     public ThymeleafReactiveViewResolver thymeleafBufferedViewResolver(){
         ThymeleafReactiveViewResolver viewResolver = new ThymeleafReactiveViewResolver();
         viewResolver.setTemplateEngine(thymeleafTemplateEngine());
-        viewResolver.setOrder(2);
-        viewResolver.setViewNames(new String[] {"thymeleaf/*buffered*"});
-        viewResolver.setResponseMaxBufferSizeBytes(16384); // OUTPUT BUFFER size limit
-        return viewResolver;
-    }
-
-    /*
-     * ViewResolver for Thymeleaf templates executing in NORMAL mode
-     * Data-driven: the "dataSource" variable can be a Publisher<X>, in which case it will drive the execution of
-     * the engine and Thymeleaf will be executed as a part of the data flow.
-     */
-    @Bean
-    public ThymeleafReactiveViewResolver thymeleafDataDrivenViewResolver(){
-        ThymeleafReactiveViewResolver viewResolver = new ThymeleafReactiveViewResolver();
-        viewResolver.setTemplateEngine(thymeleafTemplateEngine());
         viewResolver.setOrder(1);
-        viewResolver.setViewNames(new String[] {"thymeleaf/*datadriven*"});
+        viewResolver.setViewNames(new String[] {"thymeleaf/*buffered*", "thymeleaf/*datadriven*"});
         viewResolver.setResponseMaxBufferSizeBytes(16384); // OUTPUT BUFFER size limit
-        viewResolver.setDataDrivenVariableName("dataSource"); // Name of the Publisher<X> that will DRIVE execution
-        viewResolver.setDataDrivenChunkSizeElements(1000); // Size (in elements) of the chunks of published data to be processed
         return viewResolver;
     }
 
