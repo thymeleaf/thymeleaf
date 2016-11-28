@@ -36,7 +36,7 @@ package org.thymeleaf.spring5.context.reactive;
  *   The presence of a variable of this type in the context actually sets the engine into <em>data-driven</em>
  *   mode, and only one of these variables is allowed to appear in the context for template execution.
  *   <strong>Templates executed in <em>data-driven</em> mode are expected to have some kind <em>iteration</em>
- *   on the data-driver variable, normally by means of a <kbd>th:each</kbd> attribute.
+ *   on the data-driver variable</strong>, normally by means of a <tt>th:each</tt> attribute.
  * </p>
  * <p>
  *   Variables of this type have a {@link #getDataChunkSizeElements()} associated property, which describes
