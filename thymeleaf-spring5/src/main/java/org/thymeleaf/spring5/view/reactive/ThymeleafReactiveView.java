@@ -709,7 +709,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
 
-    private DataDriverSpecification findDataDriverInContext(final SpringReactiveWebExpressionContext context) {
+    private static DataDriverSpecification findDataDriverInContext(final SpringReactiveWebExpressionContext context) {
 
         // In SpringReactiveWebExpressionContext, variables are backed by a Map<String,Object>. So this
         // iteration on all the names and many "get()" calls shouldn't be an issue perf-wise.
