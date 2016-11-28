@@ -20,8 +20,7 @@
 package org.thymeleaf.spring5.context.reactive;
 
 import org.reactivestreams.Publisher;
-import org.thymeleaf.context.LazyContextVariable;
-import reactor.core.publisher.Flux;
+import org.thymeleaf.context.ILazyContextVariable;
 
 /**
  *
@@ -30,27 +29,8 @@ import reactor.core.publisher.Flux;
  * @since 3.0.3
  *
  */
-public class ReactiveLazyContextVariable<T>
-        extends LazyContextVariable<Iterable<T>>
-        implements IReactiveLazyContextVariable<T> {
+public interface IReactiveDataDriverContextVariable<T> extends IReactiveLazyContextVariable<T> {
 
-    private final Publisher<T> dataStream;
-
-
-    public ReactiveLazyContextVariable(final Publisher<T> dataStream) {
-        super();
-        this.dataStream = dataStream;
-    }
-
-
-    @Override
-    public final Publisher<T> getDataStream() {
-        return this.dataStream;
-    }
-
-    @Override
-    protected final Iterable<T> loadValue() {
-        return Flux.from(this.dataStream).collectList().block();
-    }
+    public int getDataChunkSizeElements();
 
 }

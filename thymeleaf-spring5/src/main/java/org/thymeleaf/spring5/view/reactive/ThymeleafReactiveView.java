@@ -50,13 +50,14 @@ import org.thymeleaf.IThrottledTemplateProcessor;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.engine.DataDrivenTemplateIterator;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.spring5.context.reactive.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.reactive.SpringReactiveWebExpressionContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
-import org.thymeleaf.util.StringUtils;
+import org.thymeleaf.util.Validate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -74,7 +75,6 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
     protected static final Logger logger = LoggerFactory.getLogger(ThymeleafReactiveView.class);
 
     public static final int DEFAULT_RESPONSE_BUFFER_SIZE_BYTES = Integer.MAX_VALUE;
-    public static final int DEFAULT_DATA_DRIVEN_CHUNK_SIZE_ELEMENTS = 100;
 
 
     private String beanName = null;
@@ -88,13 +88,6 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
     // overriding them with its own view-resolution-wide values.
     private boolean defaultCharsetSet = false;
     private boolean supportedMediaTypesSet = false;
-
-    // These two properties are meant to contain the metadata needed to perform a data-driven
-    // execution of this template: the name of the (iterable) variable on which to bind the data-driven
-    // execution, and the size of the chunks that will be gathered before each partial execution
-    // of the template.
-    private String dataDrivenVariableName = null;
-    private Integer dataDrivenChunkSizeElements = null;
 
     private Set<String> markupSelectors = null;
 
@@ -160,37 +153,6 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
     public void setSupportedMediaTypes(final List<MediaType> supportedMediaTypes) {
         super.setSupportedMediaTypes(supportedMediaTypes);
         this.supportedMediaTypesSet = true;
-    }
-
-
-
-
-    public String getDataDrivenVariableName() {
-        return dataDrivenVariableName;
-    }
-
-
-    public void setDataDrivenVariableName(final String dataDrivenVariableName) {
-        this.dataDrivenVariableName = dataDrivenVariableName;
-    }
-
-
-
-
-    // Default is DEFAULT_DATA_DRIVEN_CHUNK_SIZE_ELEMENTS
-    public int getDataDrivenChunkSizeElements() {
-        return this.dataDrivenChunkSizeElements == null? DEFAULT_DATA_DRIVEN_CHUNK_SIZE_ELEMENTS : this.dataDrivenChunkSizeElements.intValue();
-    }
-
-
-    // We need this one at the ViewResolver to determine if a value has been set at all
-    Integer getNullableDataDrivenBufferSize() {
-        return this.dataDrivenChunkSizeElements;
-    }
-
-
-    public void setDataDrivenChunkSizeElements(final int dataDrivenChunkSizeElements) {
-        this.dataDrivenChunkSizeElements = Integer.valueOf(dataDrivenChunkSizeElements);
     }
 
 
@@ -463,13 +425,11 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
          * COMPUTATION OF TEMPLATE PROCESSING PARAMETERS AND HTTP HEADERS
          * ----------------------------------------------------------------------------------------------------------
          * - At this point we will compute the final values of the different parameters needed for processing the
-         *   template (locale, encoding, buffer and chunk sizes, etc.)
+         *   template (locale, encoding, buffer sizes, etc.)
          * ----------------------------------------------------------------------------------------------------------
          */
 
         final int templateResponseMaxBufferSizeBytes = getResponseMaxBufferSizeBytes();
-        final String templateDataDrivenVariableName = getDataDrivenVariableName();
-        final int templateDataDrivenChunkSizeElements = getDataDrivenChunkSizeElements();
 
         final HttpHeaders responseHeaders = exchange.getResponse().getHeaders();
         final Locale templateLocale = getLocale();
@@ -503,10 +463,10 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
          *        the buffer reaches the specified size, sending it to the output channels with onNext(buffer) and
          *        then waiting until these output channels make the engine resume its work with a new request(n) call.
          *
-         *     3. DATA-DRIVEN: one of the model attributes is a Publisher<X> which name is established at
-         *        the "dataDrivenVariableName" configuration parameter at the View or ViewResolver. In this case,
-         *        the Thymeleaf engine will execute as a response to onNext(List<X>) events triggered by this
-         *        Publisher. A related parameter, "dataDrivenChunkSizeElements" will define the amount of elements
+         *     3. DATA-DRIVEN: one of the model attributes is a Publisher<X> wrapped inside an implementation
+         *        of the IReactiveDataDriverContextVariable<?> interface. In this case, the Thymeleaf engine will
+         *        execute as a response to onNext(List<X>) events triggered by this Publisher. The
+         *        "dataDrivenChunkSizeElements" specified at the model attribute will define the amount of elements
          *        produced by this Publisher that will be buffered into a List<X> before triggering the template
          *        engine each time (which is why Thymeleaf will react on onNext(List<X>) and not onNext(X)). Thymeleaf
          *        will expect to find a "th:each" iteration on the data-driven variable inside the processed template,
@@ -519,35 +479,36 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
          * ----------------------------------------------------------------------------------------------------------
          */
 
-        if (!StringUtils.isEmptyOrWhitespace(templateDataDrivenVariableName)) {
-            final Object dataDrivenVariableValue = context.getVariable(templateDataDrivenVariableName);
-            if (dataDrivenVariableValue != null && dataDrivenVariableValue instanceof Publisher<?>) {
+        final DataDriverSpecification dataDriverSpec = findDataDriverInContext(context);
+        if (dataDriverSpec != null) {
 
-                final DataDrivenTemplateIterator throttledIterator = new DataDrivenTemplateIterator();
-                context.setVariable(templateDataDrivenVariableName, throttledIterator);
+            final String dataDriverVariableName = dataDriverSpec.getContextVariableName();
+            final Publisher<Object> dataDriverStream = dataDriverSpec.getDataStream();
+            final int dataDriverChunkSizeElements = dataDriverSpec.getDataChunkSizeElements();
 
-                final Publisher<Object> contextBoundPublisher = (Publisher<Object>) dataDrivenVariableValue;
+            // We will replace the data-driver ctx variable with a special throttling template iterator
+            final DataDrivenTemplateIterator throttledIterator = new DataDrivenTemplateIterator();
+            context.setVariable(dataDriverVariableName, throttledIterator);
 
-                final Flux<DataBuffer> dataFlow =
-                        createDataDrivenFlow(
-                                templateName, viewTemplateEngine, processMarkupSelectors, context,
-                                contextBoundPublisher,               // data-driver, Publisher that Thymeleaf will consume
-                                templateDataDrivenChunkSizeElements, // elements in the data-driver will be buffered in List<T> of this size
-                                throttledIterator,                   // iterator in charge of throttling the engine
-                                templateResponseMaxBufferSizeBytes,  // buffer max size limit (can be none: MAX_VALUE)
-                                response.bufferFactory(), charset);
+            final Flux<DataBuffer> dataFlow =
+                    createDataDrivenFlow(
+                            templateName, viewTemplateEngine, processMarkupSelectors, context,
+                            dataDriverStream,                    // data-driver, Publisher that Thymeleaf will consume
+                            dataDriverChunkSizeElements,         // elements in the data-driver will be buffered in List<T> of this size
+                            throttledIterator,                   // iterator in charge of throttling the engine
+                            templateResponseMaxBufferSizeBytes,  // buffer max size limit (can be none: MAX_VALUE)
+                            response.bufferFactory(), charset);
 
-                // No size limit for output buffers has been set, so we will let the
-                // server apply its standard behaviour ("writeWith").
-                if (templateResponseMaxBufferSizeBytes == Integer.MAX_VALUE) {
-                    return response.writeWith(dataFlow);
-                }
-
-                // A limit for output buffers has been set, so we will use "writeAndFlushWith" in order to make
-                // sure that output is flushed after each buffer.
-                return response.writeAndFlushWith(dataFlow.window(1));
-
+            // No size limit for output buffers has been set, so we will let the
+            // server apply its standard behaviour ("writeWith").
+            if (templateResponseMaxBufferSizeBytes == Integer.MAX_VALUE) {
+                return response.writeWith(dataFlow);
             }
+
+            // A limit for output buffers has been set, so we will use "writeAndFlushWith" in order to make
+            // sure that output is flushed after each buffer.
+            return response.writeAndFlushWith(dataFlow.window(1));
+
         }
 
         // At this point we know the execution is not going to be data-driven, so Thymeleaf will NOT execute
@@ -743,6 +704,66 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
     private static Optional<Charset> getCharset(final MediaType mediaType) {
         return mediaType != null ? Optional.ofNullable(mediaType.getCharset()) : Optional.empty();
+    }
+
+
+
+
+    private DataDriverSpecification findDataDriverInContext(final SpringReactiveWebExpressionContext context) {
+
+        // In SpringReactiveWebExpressionContext, variables are backed by a Map<String,Object>. So this
+        // iteration on all the names and many "get()" calls shouldn't be an issue perf-wise.
+        DataDriverSpecification dataDriver = null;
+        final Set<String> variableNames = context.getVariableNames();
+        for (final String variableName : variableNames) {
+            final Object variableValue = context.getVariable(variableName);
+            if (variableValue != null && variableValue instanceof IReactiveDataDriverContextVariable<?>) {
+                if (dataDriver != null) {
+                    throw new TemplateProcessingException(
+                            "Only one data-driver variable is allowed to be specified as a model attribute, but " +
+                            "at least two have been identified: '" + dataDriver.getContextVariableName() + "' " +
+                            "and '" + variableName + "'");
+                }
+                final IReactiveDataDriverContextVariable<Object> dataDriverContextVariable =
+                        (IReactiveDataDriverContextVariable<Object>) variableValue;
+                return new DataDriverSpecification(
+                        variableName, dataDriverContextVariable.getDataStream(), dataDriverContextVariable.getDataChunkSizeElements());
+            }
+        }
+        return dataDriver;
+
+    }
+
+
+
+
+    static final class DataDriverSpecification {
+
+        private final String contextVariableName;
+        private final Publisher<Object> dataStream;
+        private final int dataChunkSizeElements;
+
+        public DataDriverSpecification(
+                final String contextVariableName, final Publisher<Object> dataStream, final int dataChunkSizeElements) {
+            super();
+            Validate.isTrue(dataChunkSizeElements > 0, "Data Chunk Size cannot be <= 0 for variable " + contextVariableName);
+            this.contextVariableName = contextVariableName;
+            this.dataStream = dataStream;
+            this.dataChunkSizeElements = dataChunkSizeElements;
+        }
+
+        public String getContextVariableName() {
+            return this.contextVariableName;
+        }
+
+        public Publisher<Object> getDataStream() {
+            return this.dataStream;
+        }
+
+        public int getDataChunkSizeElements() {
+            return this.dataChunkSizeElements;
+        }
+
     }
 
 

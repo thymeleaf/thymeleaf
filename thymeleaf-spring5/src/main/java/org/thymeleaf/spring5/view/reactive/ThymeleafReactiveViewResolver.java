@@ -65,9 +65,6 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
     private String[] excludedViewNames = null;
     private int order = Integer.MAX_VALUE;
 
-    private String dataDrivenVariableName = null;
-    private int dataDrivenChunkSizeElements = ThymeleafReactiveView.DEFAULT_DATA_DRIVEN_CHUNK_SIZE_ELEMENTS;
-
     private final Map<String, Object> staticVariables = new LinkedHashMap<String, Object>(10);
 
 
@@ -149,31 +146,6 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
 
     public int getOrder() {
         return this.order;
-    }
-
-
-
-
-    public String getDataDrivenVariableName() {
-        return dataDrivenVariableName;
-    }
-
-
-    public void setDataDrivenVariableName(final String dataDrivenVariableName) {
-        this.dataDrivenVariableName = dataDrivenVariableName;
-    }
-
-
-
-
-    // Default is DEFAULT_DATA_DRIVEN_CHUNK_SIZE_ELEMENTS
-    public int getDataDrivenChunkSizeElements() {
-        return this.dataDrivenChunkSizeElements;
-    }
-
-
-    public void setDataDrivenChunkSizeElements(final int dataDrivenChunkSizeElements) {
-        this.dataDrivenChunkSizeElements = dataDrivenChunkSizeElements;
     }
 
 
@@ -387,12 +359,6 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
          */
         if (getResponseMaxBufferSizeBytes() != ThymeleafReactiveView.DEFAULT_RESPONSE_BUFFER_SIZE_BYTES && view.getNullableResponseMaxChunkSize() == null) {
             view.setResponseMaxBufferSizeBytes(getResponseMaxBufferSizeBytes());
-        }
-        if (getDataDrivenVariableName() != null && view.getDataDrivenVariableName() == null) {
-            view.setDataDrivenVariableName(getDataDrivenVariableName());
-        }
-        if (getDataDrivenChunkSizeElements() != ThymeleafReactiveView.DEFAULT_DATA_DRIVEN_CHUNK_SIZE_ELEMENTS && view.getNullableDataDrivenBufferSize() == null) {
-            view.setDataDrivenChunkSizeElements(getDataDrivenChunkSizeElements());
         }
 
         return Mono.just(view);

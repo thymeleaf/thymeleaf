@@ -20,8 +20,7 @@
 package org.thymeleaf.spring5.context.reactive;
 
 import org.reactivestreams.Publisher;
-import org.thymeleaf.context.LazyContextVariable;
-import reactor.core.publisher.Flux;
+import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -30,27 +29,28 @@ import reactor.core.publisher.Flux;
  * @since 3.0.3
  *
  */
-public class ReactiveLazyContextVariable<T>
-        extends LazyContextVariable<Iterable<T>>
-        implements IReactiveLazyContextVariable<T> {
+public class ReactiveDataDriverContextVariable<T>
+        extends ReactiveLazyContextVariable<T>
+        implements IReactiveDataDriverContextVariable<T> {
 
-    private final Publisher<T> dataStream;
+    public static final int DEFAULT_DATA_DRIVER_CHUNK_SIZE_ELEMENTS = 100;
+
+    public final int dataChunkSize;
 
 
-    public ReactiveLazyContextVariable(final Publisher<T> dataStream) {
-        super();
-        this.dataStream = dataStream;
+    public ReactiveDataDriverContextVariable(final Publisher<T> dataStream) {
+        this(dataStream, DEFAULT_DATA_DRIVER_CHUNK_SIZE_ELEMENTS);
+    }
+
+    public ReactiveDataDriverContextVariable(final Publisher<T> dataStream, final int dataChunkSizeElements) {
+        super(dataStream);
+        Validate.isTrue(dataChunkSizeElements > 0, "Data Chunk Size cannot be <= 0");
+        this.dataChunkSize = dataChunkSizeElements;
     }
 
 
-    @Override
-    public final Publisher<T> getDataStream() {
-        return this.dataStream;
-    }
-
-    @Override
-    protected final Iterable<T> loadValue() {
-        return Flux.from(this.dataStream).collectList().block();
+    public int getDataChunkSizeElements() {
+        return this.dataChunkSize;
     }
 
 }
