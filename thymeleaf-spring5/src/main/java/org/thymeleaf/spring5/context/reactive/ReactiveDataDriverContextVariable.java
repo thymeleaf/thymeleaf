@@ -54,6 +54,9 @@ import org.thymeleaf.util.Validate;
  *   &lt;/tbody&gt;
  * &lt;/table&gt;
  * </code></pre>
+ * <p>
+ *   This class is NOT thread-safe. Thread-safety is not a requirement for context variables.
+ * </p>
  *
  * @see IReactiveDataDriverContextVariable
  *

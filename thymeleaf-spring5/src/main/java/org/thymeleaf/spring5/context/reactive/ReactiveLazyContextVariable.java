@@ -44,6 +44,9 @@ import reactor.core.publisher.Flux;
  *     return "view";
  * }
  * </code></pre>
+ * <p>
+ *   This class is NOT thread-safe. Thread-safety is not a requirement for context variables.
+ * </p>
  *
  * @see IReactiveLazyContextVariable
  *

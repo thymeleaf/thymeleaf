@@ -27,6 +27,20 @@ import org.thymeleaf.context.IContext;
 import reactor.core.publisher.Mono;
 
 /**
+ * <p>
+ *   Specialization of the {@link IContext} interface to be implemented by contexts used for template
+ *   processing in Spring Web Reactive environments.
+ * </p>
+ * <p>
+ *   Objects implementing this interface add to the usual {@link IContext} data the Spring Web Reactive-related
+ *   artifacts needed to perform functions such as URL rewriting or request/session access.
+ * </p>
+ * <p>
+ *   A basic implementation of this interface is provided by {@link SpringReactiveWebExpressionContext}, but
+ *   there is normally no reason why users should use this interface (or its implementation) directly.
+ * </p>
+ *
+ * @see SpringReactiveWebExpressionContext
  *
  * @author Daniel Fern&aacute;ndez
  *

@@ -28,9 +28,17 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebSession;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.AbstractExpressionContext;
+import org.thymeleaf.context.IExpressionContext;
 import reactor.core.publisher.Mono;
 
 /**
+ * <p>
+ *   Basic Spring Web Reactive-oriented implementation of the {@link IExpressionContext} and
+ *   {@link ISpringReactiveWebContext} interfaces.
+ * </p>
+ * <p>
+ *   This class is not thread-safe, and should not be shared across executions of templates.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *

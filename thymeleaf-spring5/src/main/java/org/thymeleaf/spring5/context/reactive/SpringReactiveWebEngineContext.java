@@ -46,6 +46,18 @@ import org.thymeleaf.util.Validate;
 import reactor.core.publisher.Mono;
 
 /**
+ * <p>
+ *   Basic <b>web</b> implementation of the {@link IEngineContext} interface, based on the Spring Web Reactive
+ *   infrastructure.
+ * </p>
+ * <p>
+ *   This is the context implementation that will be used by default for template processing in Spring Web Reactive
+ *   environments. Note that <b>this is an internal implementation, and there is no reason for users' code to
+ *   directly reference or use it instead of its implemented interfaces</b>.
+ * </p>
+ * <p>
+ *   This class is NOT thread-safe. Thread-safety is not a requirement for context implementations.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
@@ -53,7 +65,7 @@ import reactor.core.publisher.Mono;
  *
  */
 public class SpringReactiveWebEngineContext
-        extends AbstractEngineContext implements IEngineContext, ISpringReactiveWebEngineContext {
+        extends AbstractEngineContext implements IEngineContext, ISpringReactiveWebContext {
 
 
     private static final String PARAM_VARIABLE_NAME = "param";
