@@ -23,6 +23,39 @@ import org.reactivestreams.Publisher;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Basic implementation of the {@link IReactiveDataDriverContextVariable} interface.
+ * </p>
+ * <p>
+ *   This class works very similarly to {@link ReactiveLazyContextVariable} (from which it extends),
+ *   but also marks the variable as a valid <strong>data-driver</strong> for the template, effectively
+ *   putting Thymeleaf in <em>data-driven</em> execution mode.
+ * </p>
+ * <p>
+ *   Example use:
+ * </p>
+ * <pre><code>
+ * &#64;RequestMapping("/something")
+ * public String doSomething(final Model model) {
+ *     final Publisher&lt;Item&gt; data = ...;
+ *     model.addAttribute("data", new ReactiveDataDriverContextVariable&lt;&gt;(data, 100);
+ *     return "view";
+ * }
+ * </code></pre>
+ * <p>
+ *   And then at the template:
+ * </p>
+ * <pre><code>
+ * &lt;table&gt;
+ *   &lt;tbody&gt;
+ *     &lt;tr th:each=&quot;item : ${data}&quot;&gt;
+ *       &lt;td th:text=&quot;${item}&quot;&gt;some item...&lt;/td&gt;
+ *     &lt;/tr&gt;
+ *   &lt;/tbody&gt;
+ * &lt;/table&gt;
+ * </code></pre>
+ *
+ * @see IReactiveDataDriverContextVariable
  *
  * @author Daniel Fern&aacute;ndez
  *
@@ -49,7 +82,7 @@ public class ReactiveDataDriverContextVariable<T>
     }
 
 
-    public int getDataChunkSizeElements() {
+    public int getDataStreamBufferSizeElements() {
         return this.dataChunkSize;
     }
 

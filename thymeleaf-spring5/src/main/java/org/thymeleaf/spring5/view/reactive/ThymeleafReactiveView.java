@@ -484,7 +484,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
             final String dataDriverVariableName = dataDriverSpec.getContextVariableName();
             final Publisher<Object> dataDriverStream = dataDriverSpec.getDataStream();
-            final int dataDriverChunkSizeElements = dataDriverSpec.getDataChunkSizeElements();
+            final int dataDriverBufferSizeElements = dataDriverSpec.getDataStreamBufferSizeElements();
 
             // We will replace the data-driver ctx variable with a special throttling template iterator
             final DataDrivenTemplateIterator throttledIterator = new DataDrivenTemplateIterator();
@@ -494,7 +494,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                     createDataDrivenFlow(
                             templateName, viewTemplateEngine, processMarkupSelectors, context,
                             dataDriverStream,                    // data-driver, Publisher that Thymeleaf will consume
-                            dataDriverChunkSizeElements,         // elements in the data-driver will be buffered in List<T> of this size
+                            dataDriverBufferSizeElements,        // elements in the data-driver will be buffered in List<T> of this size
                             throttledIterator,                   // iterator in charge of throttling the engine
                             templateResponseMaxBufferSizeBytes,  // buffer max size limit (can be none: MAX_VALUE)
                             response.bufferFactory(), charset);
@@ -727,7 +727,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                 final IReactiveDataDriverContextVariable<Object> dataDriverContextVariable =
                         (IReactiveDataDriverContextVariable<Object>) variableValue;
                 return new DataDriverSpecification(
-                        variableName, dataDriverContextVariable.getDataStream(), dataDriverContextVariable.getDataChunkSizeElements());
+                        variableName, dataDriverContextVariable.getDataStream(), dataDriverContextVariable.getDataStreamBufferSizeElements());
             }
         }
         return dataDriver;
@@ -741,15 +741,15 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
         private final String contextVariableName;
         private final Publisher<Object> dataStream;
-        private final int dataChunkSizeElements;
+        private final int dataStreamBufferSizeElements;
 
         public DataDriverSpecification(
-                final String contextVariableName, final Publisher<Object> dataStream, final int dataChunkSizeElements) {
+                final String contextVariableName, final Publisher<Object> dataStream, final int dataStreamBufferSizeElements) {
             super();
-            Validate.isTrue(dataChunkSizeElements > 0, "Data Chunk Size cannot be <= 0 for variable " + contextVariableName);
+            Validate.isTrue(dataStreamBufferSizeElements > 0, "Data Stream Buffer Size cannot be <= 0 for variable " + contextVariableName);
             this.contextVariableName = contextVariableName;
             this.dataStream = dataStream;
-            this.dataChunkSizeElements = dataChunkSizeElements;
+            this.dataStreamBufferSizeElements = dataStreamBufferSizeElements;
         }
 
         public String getContextVariableName() {
@@ -760,8 +760,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
             return this.dataStream;
         }
 
-        public int getDataChunkSizeElements() {
-            return this.dataChunkSizeElements;
+        public int getDataStreamBufferSizeElements() {
+            return this.dataStreamBufferSizeElements;
         }
 
     }

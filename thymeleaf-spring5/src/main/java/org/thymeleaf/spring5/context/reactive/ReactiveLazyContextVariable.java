@@ -24,6 +24,28 @@ import org.thymeleaf.context.LazyContextVariable;
 import reactor.core.publisher.Flux;
 
 /**
+ * <p>
+ *   Basic implementation of the {@link IReactiveLazyContextVariable} interface.
+ * </p>
+ * <p>
+ *   This class keeps a reference on the data stream passed as a constructor argument, and returns it
+ *   through its {@link #getDataStream()} method. If a variable implementing this interface is resolved by
+ *   an expression in the template, it will consume all the values published by the data stream into a
+ *   {@link java.util.List} object, so that it can be used just like any other iterable variable.
+ * </p>
+ * <p>
+ *   Example use:
+ * </p>
+ * <pre><code>
+ * &#64;RequestMapping("/something")
+ * public String doSomething(final Model model) {
+ *     final Publisher&lt;Item&gt; someStream = ...;
+ *     model.addAttribute("someData", new ReactiveLazyContextVariable&lt;&gt;(someStream);
+ *     return "view";
+ * }
+ * </code></pre>
+ *
+ * @see IReactiveLazyContextVariable
  *
  * @author Daniel Fern&aacute;ndez
  *
