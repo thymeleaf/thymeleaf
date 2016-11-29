@@ -34,7 +34,7 @@ import reactor.core.publisher.Mono;
 /**
  * <p>
  *   Basic Spring Web Reactive-oriented implementation of the {@link IExpressionContext} and
- *   {@link ISpringReactiveWebContext} interfaces.
+ *   {@link ISpringWebReactiveContext} interfaces.
  * </p>
  * <p>
  *   This class is not thread-safe, and should not be shared across executions of templates.
@@ -45,24 +45,24 @@ import reactor.core.publisher.Mono;
  * @since 3.0.3
  *
  */
-public class SpringReactiveWebExpressionContext extends AbstractExpressionContext implements ISpringReactiveWebContext {
+public class SpringWebReactiveExpressionContext extends AbstractExpressionContext implements ISpringWebReactiveContext {
 
     private final ServerWebExchange exchange;
 
 
-    public SpringReactiveWebExpressionContext(
+    public SpringWebReactiveExpressionContext(
             final IEngineConfiguration configuration, final ServerWebExchange exchange) {
         super(configuration);
         this.exchange = exchange;
     }
 
-    public SpringReactiveWebExpressionContext(
+    public SpringWebReactiveExpressionContext(
             final IEngineConfiguration configuration, final ServerWebExchange exchange, final Locale locale) {
         super(configuration, locale);
         this.exchange = exchange;
     }
 
-    public SpringReactiveWebExpressionContext(
+    public SpringWebReactiveExpressionContext(
             final IEngineConfiguration configuration,
             final ServerWebExchange exchange,
             final Locale locale, final Map<String, Object> variables) {

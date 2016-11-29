@@ -51,7 +51,7 @@ import org.thymeleaf.context.IContext;
 import org.thymeleaf.engine.DataDrivenTemplateIterator;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.context.reactive.IReactiveDataDriverContextVariable;
-import org.thymeleaf.spring5.context.reactive.SpringReactiveWebExpressionContext;
+import org.thymeleaf.spring5.context.reactive.SpringWebReactiveExpressionContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
@@ -345,8 +345,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
          */
 
         final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
-        final SpringReactiveWebExpressionContext context =
-                new SpringReactiveWebExpressionContext(configuration, exchange, getLocale(), mergedModel);
+        final SpringWebReactiveExpressionContext context =
+                new SpringWebReactiveExpressionContext(configuration, exchange, getLocale(), mergedModel);
 
 
         /*
@@ -709,9 +709,9 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
 
-    private static DataDriverSpecification findDataDriverInContext(final SpringReactiveWebExpressionContext context) {
+    private static DataDriverSpecification findDataDriverInContext(final SpringWebReactiveExpressionContext context) {
 
-        // In SpringReactiveWebExpressionContext, variables are backed by a Map<String,Object>. So this
+        // In SpringWebReactiveExpressionContext, variables are backed by a Map<String,Object>. So this
         // iteration on all the names and many "get()" calls shouldn't be an issue perf-wise.
         DataDriverSpecification dataDriver = null;
         final Set<String> variableNames = context.getVariableNames();

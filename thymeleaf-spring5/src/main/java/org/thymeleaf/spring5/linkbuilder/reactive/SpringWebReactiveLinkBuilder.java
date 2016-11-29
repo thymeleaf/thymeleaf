@@ -29,18 +29,30 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.linkbuilder.AbstractLinkBuilder;
-import org.thymeleaf.spring5.context.reactive.ISpringReactiveWebContext;
+import org.thymeleaf.linkbuilder.ILinkBuilder;
+import org.thymeleaf.spring5.context.reactive.ISpringWebReactiveContext;
 import org.thymeleaf.util.Validate;
 import org.unbescape.uri.UriEscape;
 
 
 /**
+ * <p>
+ *   Spring Web Reactive-based implementation of {@link ILinkBuilder}.
+ * </p>
+ * <p>
+ *   This class will build link URLs using the Spring Web Reactive API and adapting to the needs of this
+ *   type of application.
+ * </p>
+ * <p>
+ *   This implementation will only return <tt>null</tt> at {@link #buildLink(IExpressionContext, String, Map)}
+ *   if the specified <tt>base</tt> argument is <tt>null</tt>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
  * @since 3.0.3
  */
-public class SpringReactiveLinkBuilder extends AbstractLinkBuilder {
+public class SpringWebReactiveLinkBuilder extends AbstractLinkBuilder {
 
     // Note we are making a difference between CONTEXT_RELATIVE and SERVER_RELATIVE, even if this kind of
     // applications won't have a "context path" and therefore server and context relative should behave the same...
@@ -53,7 +65,7 @@ public class SpringReactiveLinkBuilder extends AbstractLinkBuilder {
 
 
 
-    public SpringReactiveLinkBuilder() {
+    public SpringWebReactiveLinkBuilder() {
         super();
     }
 
@@ -116,6 +128,9 @@ public class SpringReactiveLinkBuilder extends AbstractLinkBuilder {
          * templates, parameters, URL fragments...
          */
         StringBuilder linkBase = new StringBuilder(base);
+
+
+        // TODO * Will there be anything similar to a context path in Spring Web Reactive?
 
 
         /*
@@ -429,11 +444,11 @@ public class SpringReactiveLinkBuilder extends AbstractLinkBuilder {
     // TODO * Is there any kind of mechanism for rewriting URLs at the response?
     protected String processLink(final IExpressionContext context, final String link) {
 
-        if (!(context instanceof ISpringReactiveWebContext)) {
+        if (!(context instanceof ISpringWebReactiveContext)) {
             return link;
         }
 
-        final ServerWebExchange exchange = ((ISpringReactiveWebContext)context).getExchange();
+        final ServerWebExchange exchange = ((ISpringWebReactiveContext)context).getExchange();
         final ServerHttpResponse response = exchange.getResponse();
 
         // TODO * Once an URL rewriting mechanism exists, it should be applied here

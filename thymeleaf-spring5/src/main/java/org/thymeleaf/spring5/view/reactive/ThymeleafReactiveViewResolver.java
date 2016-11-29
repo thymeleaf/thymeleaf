@@ -35,6 +35,7 @@ import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.reactive.result.view.ViewResolverSupport;
 import org.thymeleaf.ITemplateEngine;
+import org.thymeleaf.spring5.SpringWebReactiveTemplateEngine;
 import reactor.core.publisher.Mono;
 
 
@@ -116,12 +117,12 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
      *   used for processing templates.
      * </p>
      * <p>
-     *   Note that this method allows any implementation of {@link ITemplateEngine} to be set, but
-     *   in most scenarios this argument will be an instance of
-     *   {@link org.thymeleaf.spring5.SpringReactiveTemplateEngine}.
+     *   Note that this view resolver allows any implementation of {@link ITemplateEngine} to be used, but
+     *   in most scenarios this will be an instance of
+     *   {@link SpringWebReactiveTemplateEngine}.
      * </p>
      *
-     * @param templateEngine the template engine, usually {@link org.thymeleaf.spring5.SpringReactiveTemplateEngine}.
+     * @param templateEngine the template engine, usually {@link SpringWebReactiveTemplateEngine}.
      */
     public void setTemplateEngine(final ITemplateEngine templateEngine) {
         this.templateEngine = templateEngine;

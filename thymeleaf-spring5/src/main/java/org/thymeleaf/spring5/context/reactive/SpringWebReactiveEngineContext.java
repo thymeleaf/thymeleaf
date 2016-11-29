@@ -64,8 +64,8 @@ import reactor.core.publisher.Mono;
  * @since 3.0.3
  *
  */
-public class SpringReactiveWebEngineContext
-        extends AbstractEngineContext implements IEngineContext, ISpringReactiveWebContext {
+public class SpringWebReactiveEngineContext
+        extends AbstractEngineContext implements IEngineContext, ISpringWebReactiveContext {
 
 
     private static final String PARAM_VARIABLE_NAME = "param";
@@ -102,7 +102,7 @@ public class SpringReactiveWebEngineContext
      * @param locale the locale.
      * @param variables the context variables, probably coming from another {@link IContext} implementation.
      */
-    public SpringReactiveWebEngineContext(
+    public SpringWebReactiveEngineContext(
             final IEngineConfiguration configuration,
             final TemplateData templateData,
             final Map<String,Object> templateResolutionAttributes,

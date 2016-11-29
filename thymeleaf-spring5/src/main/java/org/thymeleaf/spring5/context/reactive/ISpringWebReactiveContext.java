@@ -36,18 +36,18 @@ import reactor.core.publisher.Mono;
  *   artifacts needed to perform functions such as URL rewriting or request/session access.
  * </p>
  * <p>
- *   A basic implementation of this interface is provided by {@link SpringReactiveWebExpressionContext}, but
- *   there is normally no reason why users should use this interface (or its implementation) directly.
+ *   A basic implementation of this interface is provided by {@link SpringWebReactiveExpressionContext}, but
+ *   there is normally no reason why users should use this interface (or its implementations) directly.
  * </p>
  *
- * @see SpringReactiveWebExpressionContext
+ * @see SpringWebReactiveExpressionContext
  *
  * @author Daniel Fern&aacute;ndez
  *
  * @since 3.0.3
  *
  */
-public interface ISpringReactiveWebContext extends IContext {
+public interface ISpringWebReactiveContext extends IContext {
 
     /**
      * <p>

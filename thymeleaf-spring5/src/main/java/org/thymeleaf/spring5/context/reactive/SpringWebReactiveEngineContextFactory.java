@@ -30,21 +30,34 @@ import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.IEngineContextFactory;
 import org.thymeleaf.engine.TemplateData;
+import org.thymeleaf.spring5.SpringWebReactiveTemplateEngine;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Spring Web Reactive-based implementation of the {@link IEngineContextFactory} interface.
+ * </p>
+ * <p>
+ *   This factory will examine the <tt>context</tt> being passed as a parameter and, depending on whether
+ *   this context object implements the {@link ISpringWebReactiveContext} interface or not (i.e. whether support
+ *   for Spring Web Reactive should be enabled or not), return a {@link SpringWebReactiveEngineContext} or
+ *   a simple {@link EngineContext} instance as a result.
+ * </p>
+ * <p>
+ *   This is the default factory implementation used by {@link SpringWebReactiveTemplateEngine}.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
  * @since 3.0.3
  *
  */
-public class SpringReactiveEngineContextFactory implements IEngineContextFactory {
+public class SpringWebReactiveEngineContextFactory implements IEngineContextFactory {
 
 
 
 
-    public SpringReactiveEngineContextFactory() {
+    public SpringWebReactiveEngineContextFactory() {
         super();
     }
 
@@ -60,9 +73,9 @@ public class SpringReactiveEngineContextFactory implements IEngineContextFactory
         final Set<String> variableNames = context.getVariableNames();
 
         if (variableNames == null || variableNames.isEmpty()) {
-            if (context instanceof ISpringReactiveWebContext) {
-                final ISpringReactiveWebContext srContext = (ISpringReactiveWebContext)context;
-                return new SpringReactiveWebEngineContext(
+            if (context instanceof ISpringWebReactiveContext) {
+                final ISpringWebReactiveContext srContext = (ISpringWebReactiveContext)context;
+                return new SpringWebReactiveEngineContext(
                         configuration, templateData, templateResolutionAttributes,
                         srContext.getExchange(), srContext.getLocale(), Collections.EMPTY_MAP);
             }
@@ -75,9 +88,9 @@ public class SpringReactiveEngineContextFactory implements IEngineContextFactory
         for (final String variableName : variableNames) {
             variables.put(variableName, context.getVariable(variableName));
         }
-        if (context instanceof ISpringReactiveWebContext) {
-            final ISpringReactiveWebContext srContext = (ISpringReactiveWebContext)context;
-            return new SpringReactiveWebEngineContext(
+        if (context instanceof ISpringWebReactiveContext) {
+            final ISpringWebReactiveContext srContext = (ISpringWebReactiveContext)context;
+            return new SpringWebReactiveEngineContext(
                     configuration, templateData, templateResolutionAttributes,
                     srContext.getExchange(), srContext.getLocale(), variables);
         }

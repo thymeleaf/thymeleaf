@@ -19,8 +19,8 @@
  */
 package org.thymeleaf.spring5;
 
-import org.thymeleaf.spring5.context.reactive.SpringReactiveEngineContextFactory;
-import org.thymeleaf.spring5.linkbuilder.reactive.SpringReactiveLinkBuilder;
+import org.thymeleaf.spring5.context.reactive.SpringWebReactiveEngineContextFactory;
+import org.thymeleaf.spring5.linkbuilder.reactive.SpringWebReactiveLinkBuilder;
 
 
 /**
@@ -30,19 +30,19 @@ import org.thymeleaf.spring5.linkbuilder.reactive.SpringReactiveLinkBuilder;
  * @since 3.0.3
  *
  */
-public class SpringReactiveTemplateEngine extends SpringTemplateEngine {
+public class SpringWebReactiveTemplateEngine extends SpringTemplateEngine {
 
 
-    public SpringReactiveTemplateEngine() {
+    public SpringWebReactiveTemplateEngine() {
 
         super();
         // In Spring Web Reactive environments, we will need to use a special context factory in order to
         // use an environment-tailored implementation of IEngineContext.
-        this.setEngineContextFactory(new SpringReactiveEngineContextFactory());
+        this.setEngineContextFactory(new SpringWebReactiveEngineContextFactory());
         // In Spring Web Reactive environments, we will need to use a special link builder able to adapt
         // the creation of URLs as a result of @{...} expressions in a way that makes sense in this
         // environment.
-        this.setLinkBuilder(new SpringReactiveLinkBuilder());
+        this.setLinkBuilder(new SpringWebReactiveLinkBuilder());
 
     }
 
