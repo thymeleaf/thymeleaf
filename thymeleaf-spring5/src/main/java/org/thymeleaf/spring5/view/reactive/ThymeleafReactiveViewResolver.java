@@ -69,13 +69,14 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
     private final Map<String, Object> staticVariables = new LinkedHashMap<String, Object>(10);
 
 
-    // This will determine whether we will be throttling or not, and if so the size of the buffers that will be produced
+    // This will determine whether we will be throttling or not, and if so the size of the chunks that will be produced
     // by the throttled engine each time the back-pressure mechanism asks for a new "unit" (a new DataBuffer)
     //
     // The value established here will be a default value, which can be overridden by specific views at the
     // ThymeleafReactiveView class
-    private int responseMaxBufferSizeBytes = ThymeleafReactiveView.DEFAULT_RESPONSE_BUFFER_SIZE_BYTES;
-    
+    private int responseMaxChunkSizeBytes = ThymeleafReactiveView.DEFAULT_RESPONSE_CHUNK_SIZE_BYTES;
+
+
     private ITemplateEngine templateEngine;
 
 
@@ -200,14 +201,13 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
 
 
 
-    // Default is Integer.MAX_VALUE, which means we will write the whole response in a single buffer
-    public void setResponseMaxBufferSizeBytes(final int responseMaxBufferSizeBytes) {
-        this.responseMaxBufferSizeBytes = responseMaxBufferSizeBytes;
+    public void setResponseMaxChunkSizeBytes(final int responseMaxChunkSizeBytes) {
+        this.responseMaxChunkSizeBytes = responseMaxChunkSizeBytes;
     }
 
 
-    public int getResponseMaxBufferSizeBytes() {
-        return this.responseMaxBufferSizeBytes;
+    public int getResponseMaxChunkSizeBytes() {
+        return this.responseMaxChunkSizeBytes;
     }
 
 
@@ -370,8 +370,8 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
         /*
          * Set the reactive operation-related flags
          */
-        if (getResponseMaxBufferSizeBytes() != ThymeleafReactiveView.DEFAULT_RESPONSE_BUFFER_SIZE_BYTES && view.getNullableResponseMaxChunkSize() == null) {
-            view.setResponseMaxBufferSizeBytes(getResponseMaxBufferSizeBytes());
+        if (getResponseMaxChunkSizeBytes() != ThymeleafReactiveView.DEFAULT_RESPONSE_CHUNK_SIZE_BYTES && view.getNullableResponseMaxChunkSize() == null) {
+            view.setResponseMaxChunkSizeBytes(getResponseMaxChunkSizeBytes());
         }
 
         return Mono.just(view);

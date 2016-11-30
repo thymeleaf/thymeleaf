@@ -74,7 +74,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
     protected static final Logger logger = LoggerFactory.getLogger(ThymeleafReactiveView.class);
 
-    public static final int DEFAULT_RESPONSE_BUFFER_SIZE_BYTES = Integer.MAX_VALUE;
+    public static final int DEFAULT_RESPONSE_CHUNK_SIZE_BYTES = Integer.MAX_VALUE;
 
 
     private String beanName = null;
@@ -93,13 +93,12 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
 
-    // This will determine whether we will be throttling or not, and if so the maximum size of the buffers that will be
+    // This will determine whether we will be throttling or not, and if so the maximum size of the chunks that will be
     // produced by the throttled engine each time the back-pressure mechanism asks for a new "unit" (a new DataBuffer)
     //
     // The value established here is nullable (and null by default) because it will work as an override of the
     // value established at the ThymeleafReactiveViewResolver for the same purpose.
-    //
-    private Integer responseMaxBufferSizeBytes = null;
+    private Integer responseMaxChunkSizeBytes = null;
 
 
 
@@ -195,20 +194,23 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
 
-    // Default is Integer.MAX_VALUE, which means we will not be throttling at all
-    public int getResponseMaxBufferSizeBytes() {
-        return this.responseMaxBufferSizeBytes == null? DEFAULT_RESPONSE_BUFFER_SIZE_BYTES : this.responseMaxBufferSizeBytes.intValue();
+    // Default is Integer.MAX_VALUE, which means no explicit limit (note there can still be a limit in
+    // the size of the chunks if execution is data driven, as output will be sent to the server after
+    // the processing of each data-driver buffer).
+    public int getResponseMaxChunkSizeBytes() {
+        return this.responseMaxChunkSizeBytes == null?
+                DEFAULT_RESPONSE_CHUNK_SIZE_BYTES : this.responseMaxChunkSizeBytes.intValue();
     }
 
 
     // We need this one at the ViewResolver to determine if a value has been set at all
     Integer getNullableResponseMaxChunkSize() {
-        return this.responseMaxBufferSizeBytes;
+        return this.responseMaxChunkSizeBytes;
     }
 
 
-    public void setResponseMaxBufferSizeBytes(final int responseMaxBufferSizeBytes) {
-        this.responseMaxBufferSizeBytes = Integer.valueOf(responseMaxBufferSizeBytes);
+    public void setResponseMaxChunkSizeBytes(final int responseMaxBufferSizeBytes) {
+        this.responseMaxChunkSizeBytes = Integer.valueOf(responseMaxBufferSizeBytes);
     }
 
 
@@ -429,7 +431,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
          * ----------------------------------------------------------------------------------------------------------
          */
 
-        final int templateResponseMaxBufferSizeBytes = getResponseMaxBufferSizeBytes();
+        final int templateResponseMaxChunkSizeBytes = getResponseMaxChunkSizeBytes();
 
         final HttpHeaders responseHeaders = exchange.getResponse().getHeaders();
         final Locale templateLocale = getLocale();
@@ -447,21 +449,23 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
          * ----------------------------------------------------------------------------------------------------------
          * SET (AND RETURN) THE TEMPLATE PROCESSING Flux<DataBuffer> OBJECTS
          * ----------------------------------------------------------------------------------------------------------
-         * - There are three possible processing mode, for each of which a Flux<DataBuffer> will be created in a
+         * - There are three possible processing mode, for each of which a Publisher<DataBuffer> will be created in a
          *   different way:
          *
-         *     1. NORMAL: Output buffers not limited (templateResponseMaxBufferSizeBytes == Integer.MAX_VALUE) and
+         *     1. FULL: Output buffers not limited (templateResponseMaxChunkSizeBytes == Integer.MAX_VALUE) and
          *        no data-driven execution (no context variable of type Publisher<X> driving the template engine
-         *        execution): In this case Thymeleaf will be executed unthrottled, in normal mode, writing output
+         *        execution): In this case Thymeleaf will be executed unthrottled, in full mode, writing output
          *        to a single DataBuffer instanced before execution, and which will be passed to the output channels
          *        in a single onNext(buffer) call (immediately followed by onComplete()).
          *
-         *     2. BUFFERED: Output buffers limited in size (templateResponseMaxBufferSizeBytes) but no data-driven
+         *     2. CHUNKED: Output buffers limited in size (responseMaxChunkSizeBytes) but no data-driven
          *        execution (no Publisher<X> driving engine execution). All model attributes are expected to be fully
          *        resolved before engine execution (except those implementing Thymeleaf's ILazyContextVariable
-         *        interface) and the Thymeleaf engine will execute in throttled mode, performing a full-stop each time
-         *        the buffer reaches the specified size, sending it to the output channels with onNext(buffer) and
-         *        then waiting until these output channels make the engine resume its work with a new request(n) call.
+         *        interface, including its reactive subinterface IReactiveLazyContextVariable) and the Thymeleaf
+         *        engine will execute in throttled mode, performing a full-stop each time the buffer reaches the
+         *        specified size, sending it to the output channels with onNext(buffer) and then waiting until
+         *        these output channels make the engine resume its work with a new request(n) call. This
+         *        execution mode will request an output flush from the server after producing each buffer.
          *
          *     3. DATA-DRIVEN: one of the model attributes is a Publisher<X> wrapped inside an implementation
          *        of the IReactiveDataDriverContextVariable<?> interface. In this case, the Thymeleaf engine will
@@ -473,9 +477,10 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
          *        and will be executed in throttled mode for the published elements, sending the resulting DataBuffer
          *        (or DataBuffers) to the output channels via onNext(buffer) and stopping until a new onNext(List<X>)
          *        event is triggered. When execution is data-driven, a limit in size can be optionally specified for
-         *        the output buffers (templateResponseMaxBufferSizeBytes) which will make Thymeleaf never send
+         *        the output buffers (responseMaxChunkSizeBytes) which will make Thymeleaf never send
          *        to the output channels a buffer bigger than that (thus splitting the output generated for a List<X>
-         *        of published elements into several buffers if required).
+         *        of published elements into several buffers if required) and also will make Thymeleaf request
+         *        an output flush from the server after producing each buffer.
          * ----------------------------------------------------------------------------------------------------------
          */
 
@@ -496,16 +501,16 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                             dataDriverStream,                    // data-driver, Publisher that Thymeleaf will consume
                             dataDriverBufferSizeElements,        // elements in the data-driver will be buffered in List<T> of this size
                             throttledIterator,                   // iterator in charge of throttling the engine
-                            templateResponseMaxBufferSizeBytes,  // buffer max size limit (can be none: MAX_VALUE)
+                            templateResponseMaxChunkSizeBytes,   // chunk max size limit (can be none: MAX_VALUE)
                             response.bufferFactory(), charset);
 
-            // No size limit for output buffers has been set, so we will let the
+            // No size limit for output chunks has been set, so we will let the
             // server apply its standard behaviour ("writeWith").
-            if (templateResponseMaxBufferSizeBytes == Integer.MAX_VALUE) {
+            if (templateResponseMaxChunkSizeBytes == Integer.MAX_VALUE) {
                 return response.writeWith(dataFlow);
             }
 
-            // A limit for output buffers has been set, so we will use "writeAndFlushWith" in order to make
+            // A limit for output chunks has been set, so we will use "writeAndFlushWith" in order to make
             // sure that output is flushed after each buffer.
             return response.writeAndFlushWith(dataFlow.window(1));
 
@@ -513,35 +518,35 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
         // At this point we know the execution is not going to be data-driven, so Thymeleaf will NOT execute
         // acting as a subscriber of a given Publisher<?>. But we will still need to check if a limit has been
-        // set of the output buffer size, which would mean the server would have to be throttled.
+        // set of the output chunk size, which would mean the server would have to be throttled.
 
-        if (templateResponseMaxBufferSizeBytes == Integer.MAX_VALUE) {
+        if (templateResponseMaxChunkSizeBytes == Integer.MAX_VALUE) {
 
-            // No limit to be set to the size of output buffers, so the entire output will be rendered to a
+            // No limit to be set to the size of output chunks, so the entire output will be rendered to a
             // single DataBuffer object that will be sent to the output channels.
 
             final Mono<DataBuffer> dataMono =
-                    createNormalOutputDrivenFlow(
+                    createFullFlow(
                             templateName, viewTemplateEngine, processMarkupSelectors, context,
                             response.bufferFactory(), charset);
 
-            // No size limit for output buffers has been set, so we will let the
+            // No size limit for output chunks has been set, so we will let the
             // server apply its standard behaviour ("writeWith").
             return response.writeWith(dataMono);
 
         }
 
-        // Given there is a limit in the size of the buffers to be output, we will need to create a more
+        // Given there is a limit in the size of the chunks to be output, we will need to create a more
         // complex stream of template output, a Flux<DataBuffer> that will publish DataBuffer objects containing
         // at most the amount of bytes set as limit.
 
         final Flux<DataBuffer> dataFlow =
-                createBufferedOutputDrivenFlow(
+                createChunkedFlow(
                         templateName, viewTemplateEngine, processMarkupSelectors, context,
-                        templateResponseMaxBufferSizeBytes, // buffer max size limit
+                        templateResponseMaxChunkSizeBytes, // buffer max size limit
                         response.bufferFactory(), charset);
 
-        // A limit for output buffers has been set, so we will use "writeAndFlushWith" in order to make
+        // A limit for output chunks has been set, so we will use "writeAndFlushWith" in order to make
         // sure that output is flushed after each buffer.
         return response.writeAndFlushWith(dataFlow.window(1));
 
@@ -573,9 +578,9 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
     /*
      * Creates a Flux<DataBuffer> for processing templates non-data-driven, but with an established limit in the
-     * size of the output buffers.
+     * size of the output chunks.
      */
-    static Flux<DataBuffer> createBufferedOutputDrivenFlow(
+    static Flux<DataBuffer> createChunkedFlow(
             final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
             final int responseMaxBufferSizeBytes, final DataBufferFactory bufferAllocator, final Charset charset) {
 
@@ -600,9 +605,9 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
     /*
      * Creates a Mono<DataBuffer> for processing templates non-data-driven, and also without a limit in the size of
-     * the output buffers. So a single DataBuffer will be output.
+     * the output chunks. So a single DataBuffer object will be output.
      */
-    static Mono<DataBuffer> createNormalOutputDrivenFlow(
+    static Mono<DataBuffer> createFullFlow(
             final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
             final DataBufferFactory bufferAllocator, final Charset charset) {
 
@@ -610,7 +615,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                 subscriber -> {
 
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Starting full execution (unbuffered) of Thymeleaf template [" + templateName + "].");
+                        logger.debug("Starting execution (FULL mode) of Thymeleaf template [" + templateName + "].");
                     }
 
                     final DataBuffer dataBuffer = bufferAllocator.allocateBuffer();
@@ -619,7 +624,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                     templateEngine.process(templateName, markupSelectors, context, writer);
 
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Finished full execution (unbuffered) of Thymeleaf template [" + templateName + "].");
+                        logger.debug("Finished execution (FULL mode) of Thymeleaf template [" + templateName + "].");
                     }
 
                     // This is a Mono<?>, so no need to call "next()" or "complete()"
@@ -634,7 +639,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
     /*
      * Creates a Flux<DataBuffer> for processing data-driven templates: a Publisher<X> variable will control
-     * the engine, making it output the markup corresponding to each chunk of published data as a part of its own
+     * the engine, making it output the markup corresponding to each buffer of streamed data as a part of its own
      * data publishing flow.
      */
     static Flux<DataBuffer> createDataDrivenFlow(
@@ -642,7 +647,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
             final Publisher<Object> dataDriverPublisher, final int dataDriverChunkSizeElements, final DataDrivenTemplateIterator dataDrivenIterator,
             final int responseMaxBufferSizeBytes, final DataBufferFactory bufferAllocator, final Charset charset) {
 
-        // STEP 1: Create the chunks (flow buffering)
+        // STEP 1: Create the data stream buffers
         final Flux<List<Object>> dataDrivenChunkedFlow = Flux.from(dataDriverPublisher).buffer(dataDriverChunkSizeElements);
 
         // STEP 2: Initialize the (throttled) template engine for each subscriber (normally there will only be one)
@@ -656,8 +661,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                                 ),
                         throttledProcessor -> { /* no need to perform any cleanup operations */ });
 
-        // STEP 3: React to each chunk of published data by creating one or many (concatMap) DataBuffers containing
-        //         the result of processing only that chunk.
+        // STEP 3: React to each buffer of published data by creating one or many (concatMap) DataBuffers containing
+        //         the result of processing only that buffer.
         return dataDrivenWithContextFlow.concatMap(
                 valuesWithContext ->
                         Flux.generate(
