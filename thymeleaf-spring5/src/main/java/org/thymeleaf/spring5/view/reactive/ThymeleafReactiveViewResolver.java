@@ -97,13 +97,27 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
 
 
 
+    /**
+     * <p>
+     *   Create an instance of <tt>ThymeleafReactiveViewResolver</tt>.
+     * </p>
+     */
     public ThymeleafReactiveViewResolver() {
         super();
     }
-    
-    
 
 
+
+
+    /**
+     * <p>
+     *   Set the view class that should be used to create views. This must be a subclass
+     *   of {@link ThymeleafReactiveView}.
+     * </p>
+     *
+     * @param viewClass class that is assignable to the required view class
+     *        (by default, ThymeleafReactiveView).
+     */
     public void setViewClass(final Class<? extends ThymeleafReactiveView> viewClass) {
         if (viewClass == null || !ThymeleafReactiveView.class.isAssignableFrom(viewClass)) {
             throw new IllegalArgumentException(
@@ -117,13 +131,28 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
     protected Class<? extends ThymeleafReactiveView> getViewClass() {
         return this.viewClass;
     }
-    
 
 
 
+
+    /**
+     * <p>
+     *   Returns the Thymeleaf template engine instance (implementation of {@link ITemplateEngine} to be used for the
+     *   execution of templates.
+     * </p>
+     * <p>
+     *   Note that this view resolver allows any implementation of {@link ITemplateEngine} to be used, but
+     *   in most scenarios this will be an instance of
+     *   {@link SpringWebReactiveTemplateEngine}.
+     * </p>
+     *
+     * @return the template engine being used for processing templates,
+     *         usually {@link SpringWebReactiveTemplateEngine}.
+     */
     public ITemplateEngine getTemplateEngine() {
         return this.templateEngine;
     }
+
 
     /**
      * <p>
@@ -141,20 +170,67 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
     public void setTemplateEngine(final ITemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
-    
 
 
 
+
+    /**
+     * <p>
+     *   Return the static variables, which will be available at the context
+     *   every time a view resolved by this ViewResolver is processed.
+     * </p>
+     * <p>
+     *   These static variables are added to the context by the view resolver
+     *   before every view is processed, so that they can be referenced from
+     *   the context like any other context variables, for example:
+     *   <tt>${myStaticVar}</tt>.
+     * </p>
+     *
+     * @return the map of static variables to be set into views' execution.
+     */
     public Map<String,Object> getStaticVariables() {
         return Collections.unmodifiableMap(this.staticVariables);
     }
 
 
+    /**
+     * <p>
+     *   Add a new static variable.
+     * </p>
+     * <p>
+     *   These static variables are added to the context by the view resolver
+     *   before every view is processed, so that they can be referenced from
+     *   the context like any other context variables, for example:
+     *   <tt>${myStaticVar}</tt>.
+     * </p>
+     *
+     * @param name the name of the static variable
+     * @param value the value of the static variable
+     */
     public void addStaticVariable(final String name, final Object value) {
         this.staticVariables.put(name, value);
     }
 
 
+    /**
+     * <p>
+     *   Sets a set of static variables, which will be available at the context
+     *   every time a view resolved by this ViewResolver is processed.
+     * </p>
+     * <p>
+     *   This method <b>does not overwrite</b> the existing static variables, it
+     *   simply adds the ones specify to any variables already registered.
+     * </p>
+     * <p>
+     *   These static variables are added to the context by the view resolver
+     *   before every view is processed, so that they can be referenced from
+     *   the context like any other context variables, for example:
+     *   <tt>${myStaticVar}</tt>.
+     * </p>
+     *
+     *
+     * @param variables the set of variables to be added.
+     */
     public void setStaticVariables(final Map<String, ?> variables) {
         if (variables != null) {
             for (final Map.Entry<String, ?> entry : variables.entrySet()) {
@@ -166,11 +242,36 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
 
 
 
+    /**
+     * <p>
+     *   Specify the order in which this view resolver will be queried.
+     * </p>
+     * <p>
+     *   Spring Web applications can have several view resolvers configured,
+     *   and this <tt>order</tt> property established the order in which
+     *   they will be queried for view resolution.
+     * </p>
+     *
+     * @param order the order in which this view resolver will be asked to resolve
+     *        the view.
+     */
     public void setOrder(final int order) {
         this.order = order;
     }
 
 
+    /**
+     * <p>
+     *   Returns the order in which this view resolver will be queried.
+     * </p>
+     * <p>
+     *   Spring Web applications can have several view resolvers configured,
+     *   and this <tt>order</tt> property established the order in which
+     *   they will be queried for view resolution.
+     * </p>
+     *
+     * @return the order
+     */
     public int getOrder() {
         return this.order;
     }
@@ -216,11 +317,56 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
 
 
 
+    /**
+     * <p>
+     *   Set whether this view resolver should always process forwards and redirects independently of the value of
+     *   the <tt>viewNames</tt> property.
+     * </p>
+     * <p>
+     *   When this flag is set to <tt>true</tt> (default value), any view name that starts with the
+     *   <tt>redirect:</tt> or <tt>forward:</tt> prefixes will be resolved by this ViewResolver even if the view names
+     *   would not match what is established at the <tt>viewNames</tt> property.
+     * </p>
+     * <p>
+     *   Note that the behaviour of <em>resolving</em> view names with these prefixes is exactly the same with this
+     *   flag set to <tt>true</tt> or <tt>false</tt> (perform an HTTP redirect or forward to an internal resource).
+     *   The only difference is whether the prefixes have to be explicitly specified at <tt>viewNames</tt> or not.
+     * </p>
+     * <p>
+     *   Default value is <tt>true</tt>.
+     * </p>
+     *
+     * @param alwaysProcessRedirectAndForward true if redirects and forwards are always processed, false if this will
+     *                                     depend on what is established at the viewNames property.
+     */
     public void setAlwaysProcessRedirectAndForward(final boolean alwaysProcessRedirectAndForward) {
         this.alwaysProcessRedirectAndForward = alwaysProcessRedirectAndForward;
     }
 
 
+    /**
+     * <p>
+     *   Return whether this view resolver should always process forwards and redirects independently of the value of
+     *   the <tt>viewNames</tt> property.
+     * </p>
+     * <p>
+     *   When this flag is set to <tt>true</tt> (default value), any view name that starts with the
+     *   <tt>redirect:</tt> or <tt>forward:</tt> prefixes will be resolved by this ViewResolver even if the view names
+     *   would not match what is established at the <tt>viewNames</tt> property.
+     * </p>
+     * <p>
+     *   Note that the behaviour of <em>resolving</em> view names with these prefixes is exactly the same with this
+     *   flag set to <tt>true</tt> or <tt>false</tt> (perform an HTTP redirect or forward to an internal resource).
+     *   The only difference is whether the prefixes have to be explicitly specified at <tt>viewNames</tt> or not.
+     * </p>
+     * <p>
+     *   Default value is <tt>true</tt>.
+     * </p>
+     *
+     * @return whether redirects and forwards will be always processed by this view resolver or else only when they are
+     *         matched by the <tt>viewNames</tt> property.
+     *
+     */
     public boolean getAlwaysProcessRedirectAndForward() {
         return this.alwaysProcessRedirectAndForward;
     }
@@ -228,11 +374,90 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
 
 
 
+    /**
+     * <p>
+     *   Set the maximum size (in bytes) allowed for the chunks ({@link org.springframework.core.io.buffer.DataBuffer})
+     *   that are produced by the Thymeleaf engine and passed to the server as output.
+     * </p>
+     * <p>
+     *   In Spring Web Reactive applications, Thymeleaf has three modes of operation depending on whether a limit
+     *   has been set for the output chunk size and/or data-driver context variables have been specified:
+     * </p>
+     * <ul>
+     *   <li><em>FULL</em>, when no limit for max chunk size is established and no data-driver context variable
+     *       has been specified. All template output will be generated in memory and then sent to the server's
+     *       output channels as a single {@link org.springframework.core.io.buffer.DataBuffer}.</li>
+     *   <li><em>CHUNKED</em>, when a limit for max chunk size is established but no data-driver context
+     *       variable has been specified. Template output will be generated in chunks of a size equal or less
+     *       than the specified limit (in bytes) and then sent to the server's output channels. After each chunk
+     *       is sent to output, the template engine will stop (thanks to its <em>throttling</em> mechanism), and
+     *       wait for the server to request more chunks by means of reactive <em>backpressure</em>. Note all of
+     *       this mechanism works single-threaded. This execution mode will also force the server to perform
+     *       output flush operations after each chunk is sent from Thymeleaf.</li>
+     *   <li><em>DATA-DRIVEN</em>, when a <em>data-driver</em> variable has been specified at the context
+     *       (implementing {@link org.thymeleaf.spring5.context.reactive.IReactiveDataDriverContextVariable}). This
+     *       variable is expected to contain a <em>data stream</em> (usually in the shape of a
+     *       {@link org.reactivestreams.Publisher} that Thymeleaf will consume, creating markup output as data
+     *       is streamed from this <em>data-driver</em> and letting the output channels of the server throttle
+     *       template engine execution by means of back-pressure. Additionally, depending on whether a value has
+     *       been specified for this property or not, Thymeleaf will never generate
+     *       {@link org.springframework.core.io.buffer.DataBuffer} output chunks larger than the specified size,
+     *       and will request the server to perform an output flush operation after each chunk is produced.</li>
+     * </ul>
+     * <p>
+     *   If this property is set to <tt>-1</tt> or <tt>Integer.MAX_VALUE</tt>, no size limit will be used. Note also
+     *   that there is no limit set by default.
+     * </p>
+     *
+     * @param responseMaxChunkSizeBytes the maximum size in bytes for output chunks
+     *                                  ({@link org.springframework.core.io.buffer.DataBuffer} objects), or
+     *                                  <tt>-1</tt> or <tt>Integer.MAX_VALUE</tt> if no limit is to be used.
+     */
     public void setResponseMaxChunkSizeBytes(final int responseMaxChunkSizeBytes) {
         this.responseMaxChunkSizeBytes = responseMaxChunkSizeBytes;
     }
 
 
+    /**
+     * <p>
+     *   Return the maximum size (in bytes) allowed for the chunks
+     *   ({@link org.springframework.core.io.buffer.DataBuffer}) that are produced by the Thymeleaf engine and passed
+     *   to the server as output.
+     * </p>
+     * <p>
+     *   In Spring Web Reactive applications, Thymeleaf has three modes of operation depending on whether a limit
+     *   has been set for the output chunk size and/or data-driver context variables have been specified:
+     * </p>
+     * <ul>
+     *   <li><em>FULL</em>, when no limit for max chunk size is established and no data-driver context variable
+     *       has been specified. All template output will be generated in memory and then sent to the server's
+     *       output channels as a single {@link org.springframework.core.io.buffer.DataBuffer}.</li>
+     *   <li><em>CHUNKED</em>, when a limit for max chunk size is established but no data-driver context
+     *       variable has been specified. Template output will be generated in chunks of a size equal or less
+     *       than the specified limit (in bytes) and then sent to the server's output channels. After each chunk
+     *       is sent to output, the template engine will stop (thanks to its <em>throttling</em> mechanism), and
+     *       wait for the server to request more chunks by means of reactive <em>backpressure</em>. Note all of
+     *       this mechanism works single-threaded. This execution mode will also force the server to perform
+     *       output flush operations after each chunk is sent from Thymeleaf.</li>
+     *   <li><em>DATA-DRIVEN</em>, when a <em>data-driver</em> variable has been specified at the context
+     *       (implementing {@link org.thymeleaf.spring5.context.reactive.IReactiveDataDriverContextVariable}). This
+     *       variable is expected to contain a <em>data stream</em> (usually in the shape of a
+     *       {@link org.reactivestreams.Publisher} that Thymeleaf will consume, creating markup output as data
+     *       is streamed from this <em>data-driver</em> and letting the output channels of the server throttle
+     *       template engine execution by means of back-pressure. Additionally, depending on whether a value has
+     *       been specified for this property or not, Thymeleaf will never generate
+     *       {@link org.springframework.core.io.buffer.DataBuffer} output chunks larger than the specified size,
+     *       and will request the server to perform an output flush operation after each chunk is produced.</li>
+     * </ul>
+     * <p>
+     *   If this property is set to <tt>-1</tt> or <tt>Integer.MAX_VALUE</tt>, no size limit will be used. Note also
+     *   that there is no limit set by default.
+     * </p>
+     *
+     * @return the maximum size in bytes for output chunks
+     *         ({@link org.springframework.core.io.buffer.DataBuffer} objects), or
+     *         <tt>-1</tt> or <tt>Integer.MAX_VALUE</tt> if no limit is to be used.
+     */
     public int getResponseMaxChunkSizeBytes() {
         return this.responseMaxChunkSizeBytes;
     }
