@@ -67,6 +67,8 @@ public class ReactiveLazyContextVariable<T>
         this.dataStream = dataStream;
     }
 
+    // TODO * Maybe the ReactiveAdapterRegistry infrastructure could be used here in order to be more lenient
+    // TODO   about the type of objects that can be wrapped? (i.e. not only Publisher<?> implementations).
 
     @Override
     public final Publisher<T> getDataStream() {
