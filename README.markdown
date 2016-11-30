@@ -49,18 +49,18 @@
      * `/smalllist.thymeleaf`: *Small* listing using Thymeleaf.
      * `/smalllist.freemarker`: *Small* listing using FreeMarker.
    * *Big* listing (same 8,715 elements repeated 50 times = 435,750 elements):
-     * `/biglist-normal.thymeleaf`: *Big* listing using Thymeleaf, without limiting the size of output buffers and
+     * `/biglist-full.thymeleaf`: *Big* listing using Thymeleaf, without limiting the size of output chunks and
        requiring the full model to be fully resolved in memory before template execution. All output will be created
-       in memory, then sent to the output channels.
-     * `/biglist-buffered.thymeleaf`: *Big* listing using Thymeleaf, limiting the size of output buffers so that
+       in memory as a single `DataBuffer`, then sent to the server's output channels.
+     * `/biglist-chunked.thymeleaf`: *Big* listing using Thymeleaf, limiting the size of output chunks so that
        they will be sent to the output channels as they are filled, letting these output channels ask for more
        in a form of (single-threaded) back-pressure. Model required to be fully resolved in memory
        before template execution.
      * `/biglist-datadriven.thymeleaf`: *Big* listing using Thymeleaf, working in *data-driven* mode so that one
        of the context variables is allowed to be an `org.reactivestreams.Publisher<X>` object and the Thymeleaf engine will
        bind itself to this `Publisher` and work in a *reactive* way as a part of the data flow itself, grouping the
-       data output by the publisher in *chunks* before processing their corresponding part of the template and sending
-       output to the output channels.
+       data output by the publisher in *buffers* before processing their corresponding part of the template and sending
+       output chunks (of a maximum size and generated as data is streamed from the *data-driver*) to the output channels.
      * `/biglist.freemarker`: *Big* listing using FreeMarker. No limit to output buffers can be set. Model has to
        be fully resolved before template execution.
 

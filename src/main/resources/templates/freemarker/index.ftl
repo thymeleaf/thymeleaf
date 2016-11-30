@@ -26,8 +26,8 @@
             <ul>
                 <li><a href="/thymeleaf">Index</a></li>
                 <li><a href="/smalllist.thymeleaf">Small List</a></li>
-                <li><a href="/biglist-normal.thymeleaf">Big List in NORMAL mode</a></li>
-                <li><a href="/biglist-buffered.thymeleaf">Big List in BUFFERED mode</a></li>
+                <li><a href="/biglist-full.thymeleaf">Big List in FULL mode</a></li>
+                <li><a href="/biglist-chunked.thymeleaf">Big List in CHUNKED mode</a></li>
                 <li><a href="/biglist-datadriven.thymeleaf">Big List in DATA-DRIVEN mode</a></li>
             </ul>
         </li>

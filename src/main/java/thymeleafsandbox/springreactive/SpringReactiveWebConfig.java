@@ -28,8 +28,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.freemarker.SpringTemplateLoader;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewResolver;
-import org.thymeleaf.spring5.SpringReactiveTemplateEngine;
 import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring5.SpringWebReactiveTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
 
@@ -126,17 +126,17 @@ public class SpringReactiveWebConfig {
     public SpringTemplateEngine thymeleafTemplateEngine(){
         // We override here the SpringTemplateEngine instance that would otherwise be instantiated by
         // Spring Boot because we want to apply the SpringReactive-specific context factory, link builder...
-        final SpringReactiveTemplateEngine templateEngine = new SpringReactiveTemplateEngine();
+        final SpringWebReactiveTemplateEngine templateEngine = new SpringWebReactiveTemplateEngine();
         templateEngine.setTemplateResolver(thymeleafTemplateResolver());
         return templateEngine;
     }
 
     /*
-     * ViewResolver for Thymeleaf templates executing in NORMAL mode.
-     * No limit to output buffer size, non-data-driven (all data fully resolved in context).
+     * ViewResolver for Thymeleaf templates executing in FULL mode.
+     * No limit to output chunk size, non-data-driven (all data fully resolved in context).
      */
     @Bean
-    public ThymeleafReactiveViewResolver thymeleafNormalViewResolver(){
+    public ThymeleafReactiveViewResolver thymeleafFullModeViewResolver(){
         final ThymeleafReactiveViewResolver viewResolver = new ThymeleafReactiveViewResolver();
         viewResolver.setTemplateEngine(thymeleafTemplateEngine());
         viewResolver.setOrder(2);
@@ -147,18 +147,18 @@ public class SpringReactiveWebConfig {
     /*
      * ViewResolver for Thymeleaf templates executing in BUFFERED or DATA-DRIVEN mode.
      *
-     * Buffered: non-data-driven (all data fully resolved in context), but with an established limit to output buffers size.
+     * CHUNKED: non-data-driven (all data fully resolved in context) but with an established limit to output chunk size.
      *
-     * Data-driven: the "dataSource" variable can be a Publisher<X>, in which case it will drive the execution of
+     * DATA-DRIVEN: the "dataSource" variable can be a Publisher<X>, in which case it will drive the execution of
      *              the engine and Thymeleaf will be executed as a part of the data flow.
      */
     @Bean
-    public ThymeleafReactiveViewResolver thymeleafBufferedViewResolver(){
+    public ThymeleafReactiveViewResolver thymeleafChunkedAndDataDrivenViewResolver(){
         final ThymeleafReactiveViewResolver viewResolver = new ThymeleafReactiveViewResolver();
         viewResolver.setTemplateEngine(thymeleafTemplateEngine());
         viewResolver.setOrder(1);
-        viewResolver.setViewNames(new String[] {"thymeleaf/*buffered*", "thymeleaf/*datadriven*"});
-        viewResolver.setResponseMaxBufferSizeBytes(16384); // OUTPUT BUFFER size limit
+        viewResolver.setViewNames(new String[] {"thymeleaf/*chunked*", "thymeleaf/*datadriven*"});
+        viewResolver.setResponseMaxChunkSizeBytes(16384); // OUTPUT BUFFER size limit
         return viewResolver;
     }
 

@@ -10,7 +10,7 @@
   <body>
 
     <h2>Big Listing (8,715 * 50 = 435,750 entries)</h2>
-    <h3>Mode: <strong>NORMAL</strong></h3>
+    <h3>Mode: <strong>FULL</strong></h3>
 
     <p>Using template engine: <strong>FreeMarker</strong></p>
 

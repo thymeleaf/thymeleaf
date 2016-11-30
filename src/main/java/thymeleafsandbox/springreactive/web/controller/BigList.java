@@ -47,9 +47,23 @@ public class BigList {
 
 
 
+    // Redirecting old names
+    @RequestMapping("/biglist-normal.thymeleaf")
+    public String bigListNormalThymeleaf() {
+        return "redirect:/biglist-full.thymeleaf";
+    }
+
+    // Redirecting old names
+    @RequestMapping("/biglist-buffered.thymeleaf")
+    public String bigListBufferedThymeleaf() {
+        return "redirect:/biglist-chunked.thymeleaf";
+    }
+
+
+
 
     @RequestMapping("/biglist-datadriven.thymeleaf")
-    public String dataDrivenFlowUnbufferedThymeleaf(final Model model) {
+    public String bigListDataDrivenThymeleaf(final Model model) {
 
         final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
         // No need to fully resolve the Publisher! We will just let it drive
@@ -60,8 +74,8 @@ public class BigList {
     }
 
 
-    @RequestMapping("/biglist-buffered.thymeleaf")
-    public String bigListBufferedThymeleaf(final Model model) {
+    @RequestMapping("/biglist-chunked.thymeleaf")
+    public String bigListChunkedThymeleaf(final Model model) {
 
         final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
         // We need to fully resolve the list before executing the template
@@ -69,13 +83,13 @@ public class BigList {
 
         model.addAttribute("dataSource", playlistEntries);
 
-        return "thymeleaf/biglist-buffered";
+        return "thymeleaf/biglist-chunked";
 
     }
 
 
-    @RequestMapping("/biglist-normal.thymeleaf")
-    public String bigListNormalThymeleaf(final Model model) {
+    @RequestMapping("/biglist-full.thymeleaf")
+    public String bigListFullThymeleaf(final Model model) {
 
         final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
         // We need to fully resolve the list before executing the template
@@ -83,7 +97,7 @@ public class BigList {
 
         model.addAttribute("dataSource", playlistEntries);
 
-        return "thymeleaf/biglist-normal";
+        return "thymeleaf/biglist-full";
 
     }
 
