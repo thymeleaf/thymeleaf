@@ -127,7 +127,7 @@ public class ThymeleafViewResolver
      * </p>
      * 
      * @param viewClass class that is assignable to the required view class
-     *        (by default, ThmeleafView).
+     *        (by default, {@link ThymeleafView}).
      */
     public void setViewClass(final Class<? extends AbstractThymeleafView> viewClass) {
         if (viewClass == null || !AbstractThymeleafView.class.isAssignableFrom(viewClass)) {
@@ -250,7 +250,7 @@ public class ThymeleafViewResolver
      *   Specify the order in which this view resolver will be queried.
      * </p>
      * <p>
-     *   Spring MVC applications can have several view resolvers configured,
+     *   Spring Web applications can have several view resolvers configured,
      *   and this <tt>order</tt> property established the order in which
      *   they will be queried for view resolution.
      * </p>
@@ -268,7 +268,7 @@ public class ThymeleafViewResolver
      *   Returns the order in which this view resolver will be queried.
      * </p>
      * <p>
-     *   Spring MVC applications can have several view resolvers configured,
+     *   Spring Web applications can have several view resolvers configured,
      *   and this <tt>order</tt> property established the order in which
      *   they will be queried for view resolution.
      * </p>
@@ -674,7 +674,7 @@ public class ThymeleafViewResolver
             return null;
         }
         vrlogger.trace("[THYMELEAF] View {} will be handled by ThymeleafViewResolver and a " +
-                        "{} instance will be created for it", viewName, this.viewClass.getSimpleName());
+                        "{} instance will be created for it", viewName, getViewClass().getSimpleName());
         return loadView(viewName, locale);
     }
     
