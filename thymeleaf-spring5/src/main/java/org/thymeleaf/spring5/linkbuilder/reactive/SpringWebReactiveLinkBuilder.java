@@ -60,12 +60,12 @@ public class SpringWebReactiveLinkBuilder extends StandardLinkBuilder {
     /**
      * <p>
      *   Compute the context path to be applied to URLs that have been determined to be context-relative (and therefore
-     *   need a context path to be inserted at their beginning).
+     *   might need a context path to be inserted at their beginning).
      * </p>
      * <p>
-     *   By default, this method will obtain the context path from <tt>HttpServletRequest.getContextPath()</tt>,
-     *   throwing an exception if <tt>context</tt> is not an instance of <tt>IWebContext</tt> given context-relative
-     *   URLs are (by default) only allowed in web contexts.
+     *   This method will obtain the context path from <tt>ServerHttpRequest.getContextPath()</tt>,
+     *   throwing an exception if <tt>context</tt> is not an instance of <tt>ISpringWebReactiveContext</tt> given
+     *   context-relative URLs are (by default) only allowed in Spring Web Reactive contexts.
      * </p>
      * <p>
      *   This method can be overridden by any subclasses that want to change this behaviour.
