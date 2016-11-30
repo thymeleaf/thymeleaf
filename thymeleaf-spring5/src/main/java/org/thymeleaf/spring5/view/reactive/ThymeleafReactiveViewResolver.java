@@ -274,7 +274,7 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
             return Mono.empty();
         }
         vrlogger.trace("[THYMELEAF] View {} will be handled by ThymeleafReactiveViewResolver and a " +
-                "{} instance will be created for it", viewName, this.viewClass.getSimpleName());
+                "{} instance will be created for it", viewName, getViewClass().getSimpleName());
         return loadView(viewName, locale);
 
     }
