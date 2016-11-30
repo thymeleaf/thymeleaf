@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,11 +32,13 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.util.PatternMatchUtils;
+import org.springframework.web.reactive.result.view.RedirectView;
 import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.reactive.result.view.ViewResolverSupport;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.spring5.SpringWebReactiveTemplateEngine;
+import org.thymeleaf.util.Validate;
 import reactor.core.publisher.Mono;
 
 
@@ -50,14 +53,24 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
 
     
     private static final Logger vrlogger = LoggerFactory.getLogger(ThymeleafReactiveViewResolver.class);
-    
-    
+
+
+    /**
+     * <p>
+     *   Prefix to be used in view names (returned by controllers) for specifying an
+     *   HTTP redirect.
+     * </p>
+     * <p>
+     *   Value: <tt>redirect:</tt>
+     * </p>
+     */
     public static final String REDIRECT_URL_PREFIX = "redirect:";
-    
+
+    // TODO * Will this still exist in Spring Web Reactive? See https://jira.spring.io/browse/SPR-14537
     public static final String FORWARD_URL_PREFIX = "forward:";
 
-    private boolean redirectContextRelative = true;
-    private boolean redirectHttp10Compatible = true;
+    // This provider function for redirect mirrors what is done at the reactive version of UrlBasedViewResolver
+    private Function<String, RedirectView> redirectViewProvider = url -> new RedirectView(url);
 
     private boolean alwaysProcessRedirectAndForward = true;
 
@@ -164,28 +177,42 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
 
 
 
-
-    public void setRedirectContextRelative(final boolean redirectContextRelative) {
-        this.redirectContextRelative = redirectContextRelative;
+    /**
+     * <p>
+     *   Sets the provider function for creating {@link RedirectView} instances when a redirect
+     *   request is passed to the view resolver.
+     * </p>
+     * <p>
+     *   Note the parameter specified to the function will be the <tt>URL</tt> of the redirect
+     *   (as specified in the view name returned by the controller, without the <tt>redirect:</tt>
+     *   prefix).
+     * </p>
+     *
+     * @param redirectViewProvider the redirect-view provider function.
+     */
+    public void setRedirectViewProvider(final Function<String, RedirectView> redirectViewProvider) {
+        Validate.notNull(redirectViewProvider, "RedirectView provider cannot be null");
+        this.redirectViewProvider = redirectViewProvider;
     }
 
-    
-    public boolean isRedirectContextRelative() {
-        return this.redirectContextRelative;
+
+    /**
+     * <p>
+     *   Returns the provider function for creating {@link RedirectView} instances when a redirect
+     *   request is passed to the view resolver.
+     * </p>
+     * <p>
+     *   Note the parameter specified to the function will be the <tt>URL</tt> of the redirect
+     *   (as specified in the view name returned by the controller, without the <tt>redirect:</tt>
+     *   prefix).
+     * </p>
+     *
+     * @return the redirect-view provider function.
+     */
+    public Function<String, RedirectView> getRedirectViewProvider() {
+        return this.redirectViewProvider;
     }
 
-    
-    
-
-    public void setRedirectHttp10Compatible(final boolean redirectHttp10Compatible) {
-        this.redirectHttp10Compatible = redirectHttp10Compatible;
-    }
-
-    
-    public boolean isRedirectHttp10Compatible() {
-        return this.redirectHttp10Compatible;
-    }
-    
 
 
 
@@ -259,13 +286,16 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
         // Process redirects (HTTP redirects)
         if (viewName.startsWith(REDIRECT_URL_PREFIX)) {
             vrlogger.trace("[THYMELEAF] View \"{}\" is a redirect, and will not be handled directly by ThymeleafReactiveViewResolver.", viewName);
-            // TODO * No "RedirectView" implementation in Spring Reactive yet
-            throw new UnsupportedOperationException("Redirects are not currently supported by ThymeleafReactiveViewResolver");
+            final String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length());
+            final RedirectView view = this.redirectViewProvider.apply(redirectUrl);
+            final RedirectView initializedView =
+                    (RedirectView) getApplicationContext().getAutowireCapableBeanFactory().initializeBean(view, viewName);
+            return Mono.just(initializedView);
         }
         // Process forwards (to JSP resources)
         if (viewName.startsWith(FORWARD_URL_PREFIX)) {
             vrlogger.trace("[THYMELEAF] View \"{}\" is a forward, and will not be handled directly by ThymeleafReactiveViewResolver.", viewName);
-            // TODO * No view forwarding in Spring Reactive yet
+            // TODO * No view forwarding in Spring Reactive yet. See https://jira.spring.io/browse/SPR-14537
             throw new UnsupportedOperationException("Forwards are not currently supported by ThymeleafReactiveViewResolver");
         }
         // Second possible call to check "viewNames": after processing redirects and forwards
