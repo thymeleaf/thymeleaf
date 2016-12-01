@@ -273,13 +273,13 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         final ITemplateEngine viewTemplateEngine = getTemplateEngine();
 
         if (viewTemplateName == null) {
-            throw new IllegalArgumentException("Property 'templateName' is required");
+            return Mono.error(new IllegalArgumentException("Property 'templateName' is required"));
         }
         if (getLocale() == null) {
-            throw new IllegalArgumentException("Property 'locale' is required");
+            return Mono.error(new IllegalArgumentException("Property 'locale' is required"));
         }
         if (viewTemplateEngine == null) {
-            throw new IllegalArgumentException("Property 'thymeleafTemplateEngine' is required");
+            return Mono.error(new IllegalArgumentException("Property 'thymeleafTemplateEngine' is required"));
         }
 
         final ServerHttpResponse response = exchange.getResponse();
@@ -378,7 +378,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                 // By parsing it as a standard expression, we might profit from the expression cache
                 fragmentExpression = (FragmentExpression) parser.parseExpression(context, "~{" + viewTemplateName + "}");
             } catch (final TemplateProcessingException e) {
-                throw new IllegalArgumentException("Invalid template name specification: '" + viewTemplateName + "'");
+                return Mono.error(
+                        new IllegalArgumentException("Invalid template name specification: '" + viewTemplateName + "'"));
             }
 
             final FragmentExpression.ExecutedFragmentExpression fragment =
@@ -393,8 +394,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                 if (fragment.hasSyntheticParameters()) {
                     // We cannot allow synthetic parameters because there is no way to specify them at the template
                     // engine execution!
-                    throw new IllegalArgumentException(
-                            "Parameters in a view specification must be named (non-synthetic): '" + viewTemplateName + "'");
+                    return Mono.error(new IllegalArgumentException(
+                            "Parameters in a view specification must be named (non-synthetic): '" + viewTemplateName + "'"));
                 }
 
                 context.setVariables(nameFragmentParameters);
@@ -407,10 +408,10 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         final Set<String> processMarkupSelectors;
         if (markupSelectors != null && markupSelectors.size() > 0) {
             if (markupSelectorsToRender != null && markupSelectorsToRender.size() > 0) {
-                throw new IllegalArgumentException(
+                return Mono.error(new IllegalArgumentException(
                         "A markup selector has been specified (" + Arrays.asList(markupSelectors) + ") for a view " +
                         "that was already being executed as a fragment (" + Arrays.asList(markupSelectorsToRender) + "). " +
-                        "Only one fragment selection is allowed.");
+                        "Only one fragment selection is allowed."));
             }
             processMarkupSelectors = markupSelectors;
         } else {
@@ -484,7 +485,13 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
          * ----------------------------------------------------------------------------------------------------------
          */
 
-        final DataDriverSpecification dataDriverSpec = findDataDriverInContext(context);
+        final DataDriverSpecification dataDriverSpec;
+        try {
+            dataDriverSpec = findDataDriverInContext(context);
+        } catch (final TemplateProcessingException e) {
+            return Mono.error(e);
+        }
+
         if (dataDriverSpec != null) {
 
             final String dataDriverVariableName = dataDriverSpec.getContextVariableName();
@@ -587,16 +594,27 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         return Flux.generate(
                 () -> initializeThrottledProcessor(templateName, templateEngine, markupSelectors, context),
                 (throttledProcessor, emitter) -> {
+
                     final DataBuffer buffer =
                             (responseMaxBufferSizeBytes != Integer.MAX_VALUE ?
                                     bufferAllocator.allocateBuffer(responseMaxBufferSizeBytes) :
                                     bufferAllocator.allocateBuffer());
-                    throttledProcessor.process(responseMaxBufferSizeBytes, buffer.asOutputStream(), charset);
+
+                    try {
+                        throttledProcessor.process(responseMaxBufferSizeBytes, buffer.asOutputStream(), charset);
+                    } catch (final Throwable t) {
+                        emitter.error(t);
+                        return null;
+                    }
+
                     emitter.next(buffer);
+
                     if (throttledProcessor.isFinished()) {
                         emitter.complete();
                     }
+
                     return throttledProcessor;
+
                 });
     }
 
@@ -621,7 +639,12 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                     final DataBuffer dataBuffer = bufferAllocator.allocateBuffer();
                     final OutputStreamWriter writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset);
 
-                    templateEngine.process(templateName, markupSelectors, context, writer);
+                    try {
+                        templateEngine.process(templateName, markupSelectors, context, writer);
+                    } catch (final Throwable t) {
+                        subscriber.error(t);
+                        return;
+                    }
 
                     if (logger.isDebugEnabled()) {
                         logger.debug("Finished execution (FULL mode) of Thymeleaf template [" + templateName + "].");
@@ -686,8 +709,16 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                                             (responseMaxBufferSizeBytes != Integer.MAX_VALUE?
                                                     bufferAllocator.allocateBuffer(responseMaxBufferSizeBytes) :
                                                     bufferAllocator.allocateBuffer());
-                                    throttledProcessor.process(responseMaxBufferSizeBytes, buffer.asOutputStream(), charset);
+
+                                    try {
+                                        throttledProcessor.process(responseMaxBufferSizeBytes, buffer.asOutputStream(), charset);
+                                    } catch (final Throwable t) {
+                                        emitter.error(t);
+                                        return null;
+                                    }
+
                                     emitter.next(buffer);
+
                                     if (values != null) {
                                         if (!dataDrivenIterator.continueBufferExecution()) {
                                             emitter.complete();
@@ -697,6 +728,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                                             emitter.complete();
                                         }
                                     }
+
                                     return vwc;
 
                                 })

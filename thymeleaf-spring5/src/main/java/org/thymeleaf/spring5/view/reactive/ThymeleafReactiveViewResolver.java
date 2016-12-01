@@ -506,7 +506,7 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
         // First possible call to check "viewNames": before processing redirects and forwards
         if (!this.alwaysProcessRedirectAndForward && !canHandle(viewName, locale)) {
             vrlogger.trace("[THYMELEAF] View \"{}\" cannot be handled by ThymeleafReactiveViewResolver. Passing on to the next resolver in the chain.", viewName);
-            return null;
+            return Mono.empty();
         }
         // Process redirects (HTTP redirects)
         if (viewName.startsWith(REDIRECT_URL_PREFIX)) {
@@ -521,7 +521,7 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
         if (viewName.startsWith(FORWARD_URL_PREFIX)) {
             vrlogger.trace("[THYMELEAF] View \"{}\" is a forward, and will not be handled directly by ThymeleafReactiveViewResolver.", viewName);
             // TODO * No view forwarding in Spring Reactive yet. See https://jira.spring.io/browse/SPR-14537
-            throw new UnsupportedOperationException("Forwards are not currently supported by ThymeleafReactiveViewResolver");
+            return Mono.error(new UnsupportedOperationException("Forwards are not currently supported by ThymeleafReactiveViewResolver"));
         }
         // Second possible call to check "viewNames": after processing redirects and forwards
         if (this.alwaysProcessRedirectAndForward && !canHandle(viewName, locale)) {
