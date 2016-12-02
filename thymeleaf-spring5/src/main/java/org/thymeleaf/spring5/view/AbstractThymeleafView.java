@@ -404,7 +404,7 @@ public abstract class AbstractThymeleafView
         if (model.containsKey(variableName)) {
             throw new ServletException(
                     "Cannot expose request context in model attribute '" + variableName +
-                    "' because of an existing model object of the same name");
+                    "' because an existing model object of the same name");
         }
         model.put(variableName, requestContext);
         
