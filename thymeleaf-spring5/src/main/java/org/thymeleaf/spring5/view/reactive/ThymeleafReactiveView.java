@@ -43,6 +43,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.result.view.AbstractView;
+import org.springframework.web.reactive.result.view.RequestContext;
 import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.ITemplateEngine;
@@ -53,6 +54,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.context.reactive.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.reactive.SpringWebReactiveExpressionContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
+import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
@@ -314,7 +316,10 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
         final ApplicationContext applicationContext = getApplicationContext();
 
-        // TODO * Apply RequestContext equivalent (still does not exist in Spring Reactive)
+        // Initialize RequestContext (reactive version) and add it to the model as another attribute,
+        // so that it can be retrieved from elsewhere.
+        final RequestContext requestContext = new RequestContext(exchange, mergedModel, applicationContext);
+        addRequestContextAsVariable(mergedModel, SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
 
 
         // Expose Thymeleaf's own evaluation context as a model variable
@@ -768,6 +773,22 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
             }
         }
         return dataDriver;
+
+    }
+
+
+
+
+    protected static void addRequestContextAsVariable(
+            final Map<String,Object> model, final String variableName, final RequestContext requestContext)
+            throws TemplateProcessingException {
+
+        if (model.containsKey(variableName)) {
+            throw new TemplateProcessingException(
+                    "Cannot expose request context in model attribute '" + variableName +
+                    "' because an existing model object of the same name");
+        }
+        model.put(variableName, requestContext);
 
     }
 

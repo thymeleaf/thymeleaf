@@ -50,8 +50,7 @@ public class Themes {
 
         super();
         this.locale = context.getLocale();
-        final RequestContext requestContext =
-                (RequestContext) context.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+        final RequestContext requestContext = getRequestContext(context);
         this.theme = requestContext != null ? requestContext.getTheme() : null;
     }
 
@@ -70,4 +69,14 @@ public class Themes {
         }
         return this.theme.getMessageSource().getMessage(code, null, "", this.locale);
     }
+
+
+    // TODO * When there is RequestDataValueProcessor support at the reactive version of RequestContext, we should
+    // TODO   replace this filtering with some kind of abstraction that makes the specific type of RequestContext
+    // TODO   (reactive or mvc) transparent
+    private static RequestContext getRequestContext(final IExpressionContext context) {
+        final Object requestContext =  context.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+        return (requestContext != null && requestContext instanceof RequestContext)? (RequestContext) requestContext : null;
+    }
+
 }

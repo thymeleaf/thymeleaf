@@ -24,6 +24,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.support.RequestContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.exceptions.ConfigurationException;
@@ -96,8 +97,7 @@ public final class RequestDataValueProcessorUtils {
             return action;
         }
 
-        final RequestContext requestContext =
-                (RequestContext) context.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+        final RequestContext requestContext = getRequestContext(context);
         if (requestContext == null) {
             return action;
         }
@@ -121,8 +121,7 @@ public final class RequestDataValueProcessorUtils {
             return value;
         }
 
-        final RequestContext requestContext =
-                (RequestContext) context.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+        final RequestContext requestContext = getRequestContext(context);
         if (requestContext == null) {
             return value;
         }
@@ -145,8 +144,7 @@ public final class RequestDataValueProcessorUtils {
             return null;
         }
 
-        final RequestContext requestContext =
-                (RequestContext) context.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+        final RequestContext requestContext = getRequestContext(context);
         if (requestContext == null) {
             return null;
         }
@@ -169,8 +167,7 @@ public final class RequestDataValueProcessorUtils {
             return url;
         }
 
-        final RequestContext requestContext =
-                (RequestContext) context.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+        final RequestContext requestContext = getRequestContext(context);
         if (requestContext == null) {
             return url;
         }
@@ -185,6 +182,14 @@ public final class RequestDataValueProcessorUtils {
 
     }
 
+
+    // TODO * When there is RequestDataValueProcessor support at the reactive version of RequestContext, we should
+    // TODO   replace this filtering with some kind of abstraction that makes the specific type of RequestContext
+    // TODO   (reactive or mvc) transparent
+    private static RequestContext getRequestContext(final IExpressionContext context) {
+        final Object requestContext =  context.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+        return (requestContext != null && requestContext instanceof RequestContext)? (RequestContext) requestContext : null;
+    }
 
 
 
