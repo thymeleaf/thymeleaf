@@ -86,13 +86,7 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
 
 
     private static boolean isJacksonPresent() {
-        final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(StandardJavaScriptSerializer.class);
-        try {
-            Class.forName("com.fasterxml.jackson.databind.ObjectMapper", false, classLoader);
-            return true;
-        } catch (final ClassNotFoundException e) {
-            return false;
-        }
+        return ClassLoaderUtils.isClassPresent("com.fasterxml.jackson.databind.ObjectMapper");
     }
 
 

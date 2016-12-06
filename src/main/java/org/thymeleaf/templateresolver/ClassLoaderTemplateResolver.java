@@ -63,7 +63,7 @@ public class ClassLoaderTemplateResolver extends AbstractConfigurableTemplateRes
     @Override
     protected ITemplateResource computeTemplateResource(
             final IEngineConfiguration configuration, final String ownerTemplate, final String template, final String resourceName, final String characterEncoding, final Map<String, Object> templateResolutionAttributes) {
-        return new ClassLoaderTemplateResource(this.classLoader, resourceName, characterEncoding);
+        return new ClassLoaderTemplateResource(resourceName, characterEncoding);
     }
 
 }

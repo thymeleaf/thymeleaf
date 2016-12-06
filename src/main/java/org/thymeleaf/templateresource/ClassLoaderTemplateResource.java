@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -46,21 +47,53 @@ import org.thymeleaf.util.Validate;
 public final class ClassLoaderTemplateResource implements ITemplateResource {
 
 
-    private final ClassLoader classLoader;
+    private final ClassLoader optionalClassLoader;
     private final String path;
     private final String characterEncoding;
 
 
+    /**
+     * <p>
+     *   Create a ClassLoader-based template resource, without specifying the specific class loader
+     *   to be used for resolving the resource.
+     * </p>
+     * <p>
+     *   If created this way, the sequence explained in
+     *   {@link org.thymeleaf.util.ClassLoaderUtils#loadResourceAsStream(String)} will be used for resolving
+     *   the resource.
+     * </p>
+     *
+     * @param path the path to the template resource.
+     * @param characterEncoding the character encoding to be used to read the resource.
+     *
+     * @since 3.0.3
+     */
+    public ClassLoaderTemplateResource(final String path, final String characterEncoding) {
+        this(null, path, characterEncoding);
+    }
 
+
+    /**
+     * <p>
+     *   Create a ClassLoader-based template resource, specifying the specific class loader
+     *   to be used for resolving the resource.
+     * </p>
+     *
+     * @param classLoader the class loader to be used for resource resolution.
+     * @param path the path to the template resource.
+     * @param characterEncoding the character encoding to be used to read the resource.
+     *
+     * @since 3.0.3
+     */
     public ClassLoaderTemplateResource(final ClassLoader classLoader, final String path, final String characterEncoding) {
 
         super();
 
-        Validate.notNull(classLoader, "Class Loader cannot be null");
+        // Class Loader CAN be null (will apply the default sequence of class loaders
         Validate.notEmpty(path, "Resource Path cannot be null or empty");
         // Character encoding CAN be null (system default will be used)
 
-        this.classLoader = classLoader;
+        this.optionalClassLoader = classLoader;
         final String cleanPath = TemplateResourceUtils.cleanPath(path);
         this.path = (cleanPath.charAt(0) == '/' ? cleanPath.substring(1) : cleanPath);
         this.characterEncoding = characterEncoding;
@@ -86,9 +119,15 @@ public final class ClassLoaderTemplateResource implements ITemplateResource {
 
     public Reader reader() throws IOException {
 
-        final InputStream inputStream = this.classLoader.getResourceAsStream(this.path);
+        final InputStream inputStream;
+        if (this.optionalClassLoader != null) {
+            inputStream = this.optionalClassLoader.getResourceAsStream(this.path);
+        } else {
+            inputStream = ClassLoaderUtils.findResourceAsStream(this.path);
+        }
+
         if (inputStream == null) {
-            throw new FileNotFoundException(String.format("ClassLoader resource \"%s\" does not exist", this.path));
+            throw new FileNotFoundException(String.format("ClassLoader resource \"%s\" could not be resolved", this.path));
         }
 
         if (!StringUtils.isEmptyOrWhitespace(this.characterEncoding)) {
@@ -107,7 +146,7 @@ public final class ClassLoaderTemplateResource implements ITemplateResource {
         Validate.notEmpty(relativeLocation, "Relative Path cannot be null or empty");
 
         final String fullRelativeLocation = TemplateResourceUtils.computeRelativeLocation(this.path, relativeLocation);
-        return new ClassLoaderTemplateResource(this.classLoader, fullRelativeLocation, this.characterEncoding);
+        return new ClassLoaderTemplateResource(this.optionalClassLoader, fullRelativeLocation, this.characterEncoding);
 
     }
 
@@ -115,7 +154,10 @@ public final class ClassLoaderTemplateResource implements ITemplateResource {
 
 
     public boolean exists() {
-        return (this.classLoader.getResource(this.path) != null);
+        if (this.optionalClassLoader != null) {
+            return (this.optionalClassLoader.getResource(this.path) != null);
+        }
+        return ClassLoaderUtils.isResourcePresent(this.path);
     }
 
 

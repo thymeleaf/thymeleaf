@@ -50,9 +50,8 @@ public final class Thymeleaf {
         String version = null;
         String buildTimestamp = null;
         try {
-            final ClassLoader cl = ClassLoaderUtils.getClassLoader(Thymeleaf.class);
             final Properties properties = new Properties();
-            properties.load(cl.getResourceAsStream("org/thymeleaf/thymeleaf.properties"));
+            properties.load(ClassLoaderUtils.loadResourceAsStream("org/thymeleaf/thymeleaf.properties"));
             version = properties.getProperty("version");
             buildTimestamp = properties.getProperty("build.date");
         } catch (final Exception ignored) {

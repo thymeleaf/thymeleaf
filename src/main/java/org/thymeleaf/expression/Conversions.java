@@ -60,13 +60,12 @@ public final class Conversions {
 
     public Object convert(final Object target, final String className) {
 
-        final ClassLoader cl = ClassLoaderUtils.getClassLoader(Conversions.class);
         try {
-            final Class<?> clazz = cl.loadClass(className);
+            final Class<?> clazz = ClassLoaderUtils.loadClass(className);
             return convert(target, clazz);
         } catch (final ClassNotFoundException e) {
             try {
-                final Class<?> clazz = cl.loadClass("java.lang." + className);
+                final Class<?> clazz = ClassLoaderUtils.loadClass("java.lang." + className);
                 return convert(target, clazz);
             } catch (final ClassNotFoundException ex) {
                 throw new IllegalArgumentException("Cannot convert to class '" + className + "'", e);
