@@ -17,29 +17,35 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring5.naming;
+package org.thymeleaf.spring5.context.mvc;
 
+import org.springframework.ui.context.Theme;
+import org.springframework.web.servlet.support.RequestContext;
+import org.thymeleaf.spring5.context.IThymeleafRequestContext;
+import org.thymeleaf.util.Validate;
 
 /**
- * 
+ *
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 1.0
+ *
+ * @since 3.0.3
  *
  */
-public final class SpringContextVariableNames {
-    
-    
-    public static final String SPRING_REQUEST_CONTEXT = "springRequestContext";
-    public static final String THYMELEAF_REQUEST_CONTEXT = "thymeleafRequestContext";
+public class SpringWebMvcThymeleafRequestContext implements IThymeleafRequestContext {
 
-    public static final String SPRING_BOUND_OBJECT_EXPRESSION = "springBoundObjectExpression";
-    public static final String SPRING_FIELD_BIND_STATUS = "springFieldBindStatus";
+    private final RequestContext requestContext;
 
 
-    
-    private SpringContextVariableNames() {
+    public SpringWebMvcThymeleafRequestContext(final RequestContext requestContext) {
         super();
+        Validate.notNull(requestContext, "Spring Web MVC RequestContext cannot be null");
+        this.requestContext = requestContext;
     }
-    
+
+
+    @Override
+    public Theme getTheme() {
+        return this.requestContext.getTheme();
+    }
+
 }

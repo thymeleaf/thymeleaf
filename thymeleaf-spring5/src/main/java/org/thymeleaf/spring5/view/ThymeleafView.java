@@ -40,6 +40,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.WebExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.spring5.context.mvc.SpringWebMvcThymeleafRequestContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.FragmentExpression;
@@ -226,11 +227,16 @@ public class ThymeleafView
 
         final RequestContext requestContext =
                 new RequestContext(request, response, getServletContext(), mergedModel);
+        final SpringWebMvcThymeleafRequestContext thymeleafRequestContext =
+                new SpringWebMvcThymeleafRequestContext(requestContext);
 
         // For compatibility with ThymeleafView
         addRequestContextAsVariable(mergedModel, SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
         // For compatibility with AbstractTemplateView
         addRequestContextAsVariable(mergedModel, AbstractTemplateView.SPRING_MACRO_REQUEST_CONTEXT_ATTRIBUTE, requestContext);
+        // Add the Thymeleaf RequestContext wrapper that we will be using in this dialect (the bare RequestContext
+        // stays in the context to for compatibility with other dialects)
+        mergedModel.put(SpringContextVariableNames.THYMELEAF_REQUEST_CONTEXT, thymeleafRequestContext);
 
 
         // Expose Thymeleaf's own evaluation context as a model variable

@@ -53,6 +53,7 @@ import org.thymeleaf.engine.DataDrivenTemplateIterator;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.context.reactive.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.reactive.SpringWebReactiveExpressionContext;
+import org.thymeleaf.spring5.context.reactive.SpringWebReactiveThymeleafRequestContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.FragmentExpression;
@@ -319,7 +320,13 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         // Initialize RequestContext (reactive version) and add it to the model as another attribute,
         // so that it can be retrieved from elsewhere.
         final RequestContext requestContext = new RequestContext(exchange, mergedModel, applicationContext);
+        final SpringWebReactiveThymeleafRequestContext thymeleafRequestContext =
+                new SpringWebReactiveThymeleafRequestContext(requestContext);
+
         addRequestContextAsVariable(mergedModel, SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
+        // Add the Thymeleaf RequestContext wrapper that we will be using in this dialect (the bare RequestContext
+        // stays in the context to for compatibility with other dialects)
+        mergedModel.put(SpringContextVariableNames.THYMELEAF_REQUEST_CONTEXT, thymeleafRequestContext);
 
 
         // Expose Thymeleaf's own evaluation context as a model variable

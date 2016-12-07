@@ -23,17 +23,18 @@ package org.thymeleaf.spring5.expression;
 import java.util.Locale;
 
 import org.springframework.ui.context.Theme;
-import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.spring5.context.IThymeleafRequestContext;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 
 /**
  * A utility object, accessed in Thymeleaf templates by the <tt>#themes</tt>
  * expression, that provides the same features as the Spring
  * <tt>&lt;spring:theme</tt> JSP tag.
- * 
+ *
  * @author Emanuel Rabina
+ * @author Daniel Fern&aacute;ndez
  */
 public class Themes {
 
@@ -50,7 +51,7 @@ public class Themes {
 
         super();
         this.locale = context.getLocale();
-        final RequestContext requestContext = getRequestContext(context);
+        final IThymeleafRequestContext requestContext = getRequestContext(context);
         this.theme = requestContext != null ? requestContext.getTheme() : null;
     }
 
@@ -71,12 +72,8 @@ public class Themes {
     }
 
 
-    // TODO * When there is RequestDataValueProcessor support at the reactive version of RequestContext, we should
-    // TODO   replace this filtering with some kind of abstraction that makes the specific type of RequestContext
-    // TODO   (reactive or mvc) transparent
-    private static RequestContext getRequestContext(final IExpressionContext context) {
-        final Object requestContext =  context.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
-        return (requestContext != null && requestContext instanceof RequestContext)? (RequestContext) requestContext : null;
+    private static IThymeleafRequestContext getRequestContext(final IExpressionContext context) {
+        return (IThymeleafRequestContext) context.getVariable(SpringContextVariableNames.THYMELEAF_REQUEST_CONTEXT);
     }
 
 }

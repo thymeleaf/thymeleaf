@@ -17,29 +17,21 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring5.naming;
+package org.thymeleaf.spring5.context;
 
+import org.springframework.ui.context.Theme;
 
 /**
- * 
+ *
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 1.0
+ *
+ * @since 3.0.3
  *
  */
-public final class SpringContextVariableNames {
-    
-    
-    public static final String SPRING_REQUEST_CONTEXT = "springRequestContext";
-    public static final String THYMELEAF_REQUEST_CONTEXT = "thymeleafRequestContext";
-
-    public static final String SPRING_BOUND_OBJECT_EXPRESSION = "springBoundObjectExpression";
-    public static final String SPRING_FIELD_BIND_STATUS = "springFieldBindStatus";
+public interface IThymeleafRequestContext {
 
 
-    
-    private SpringContextVariableNames() {
-        super();
-    }
-    
+    public Theme getTheme();
+
+
 }
