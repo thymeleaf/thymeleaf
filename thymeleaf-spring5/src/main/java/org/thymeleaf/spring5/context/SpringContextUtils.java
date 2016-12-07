@@ -20,8 +20,10 @@
 package org.thymeleaf.spring5.context;
 
 import org.springframework.context.ApplicationContext;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
+import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 
 /**
  * <p>
@@ -40,7 +42,7 @@ public class SpringContextUtils {
 
     /**
      * <p>
-     *   Get the {@link ApplicationContext} from the Thymeleaf template context.
+     *   Get the {@link ApplicationContext} from the Thymeleaf context.
      * </p>
      *
      * @param context the template context
@@ -57,6 +59,31 @@ public class SpringContextUtils {
             return null;
         }
         return evaluationContext.getApplicationContext();
+    }
+
+
+
+    /**
+     * <p>
+     *   Get the {@link IThymeleafRequestContext} from the Thymeleaf context.
+     * </p>
+     * <p>
+     *   The returned object is a wrapper on the Spring request context that hides the fact of this request
+     *   context corresponding to a Spring Web MVC or Spring Web Reactive application.
+     * </p>
+     * <p>
+     *   This will be done by looking for a context variable called
+     *   {@link SpringContextVariableNames#THYMELEAF_REQUEST_CONTEXT}.
+     * </p>
+     *
+     * @param context the context
+     * @return the thymeleaf request context
+     */
+    public static IThymeleafRequestContext getRequestContext(final IExpressionContext context) {
+        if (context == null) {
+            return null;
+        }
+        return (IThymeleafRequestContext) context.getVariable(SpringContextVariableNames.THYMELEAF_REQUEST_CONTEXT);
     }
 
 

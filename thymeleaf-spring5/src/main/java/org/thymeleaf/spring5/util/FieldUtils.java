@@ -33,6 +33,8 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.spring5.context.IThymeleafRequestContext;
+import org.thymeleaf.spring5.context.SpringContextUtils;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
@@ -138,7 +140,7 @@ public final class FieldUtils {
             return Collections.EMPTY_LIST;
         }
 
-        final RequestContext requestContext = getRequestContext(context);
+        final IThymeleafRequestContext requestContext = SpringContextUtils.getRequestContext(context);
         if (requestContext == null) {
             return Collections.EMPTY_LIST;
         }
@@ -288,7 +290,7 @@ public final class FieldUtils {
 
         // This method will return null if no binding is found and optional == true
 
-        final RequestContext requestContext = getRequestContext(context);
+        final IThymeleafRequestContext requestContext = SpringContextUtils.getRequestContext(context);
         if (requestContext == null) {
             return null;
         }
@@ -403,17 +405,6 @@ public final class FieldUtils {
             }
         }
         return true;
-    }
-
-
-
-
-    // TODO * When there is RequestDataValueProcessor support at the reactive version of RequestContext, we should
-    // TODO   replace this filtering with some kind of abstraction that makes the specific type of RequestContext
-    // TODO   (reactive or mvc) transparent
-    private static RequestContext getRequestContext(final IExpressionContext context) {
-        final Object requestContext =  context.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
-        return (requestContext != null && requestContext instanceof RequestContext)? (RequestContext) requestContext : null;
     }
 
 

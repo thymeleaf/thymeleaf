@@ -26,7 +26,7 @@ import org.springframework.ui.context.Theme;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.context.IThymeleafRequestContext;
-import org.thymeleaf.spring5.naming.SpringContextVariableNames;
+import org.thymeleaf.spring5.context.SpringContextUtils;
 
 /**
  * A utility object, accessed in Thymeleaf templates by the <tt>#themes</tt>
@@ -51,7 +51,7 @@ public class Themes {
 
         super();
         this.locale = context.getLocale();
-        final IThymeleafRequestContext requestContext = getRequestContext(context);
+        final IThymeleafRequestContext requestContext = SpringContextUtils.getRequestContext(context);
         this.theme = requestContext != null ? requestContext.getTheme() : null;
     }
 
@@ -71,9 +71,5 @@ public class Themes {
         return this.theme.getMessageSource().getMessage(code, null, "", this.locale);
     }
 
-
-    private static IThymeleafRequestContext getRequestContext(final IExpressionContext context) {
-        return (IThymeleafRequestContext) context.getVariable(SpringContextVariableNames.THYMELEAF_REQUEST_CONTEXT);
-    }
 
 }
