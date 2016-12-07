@@ -24,8 +24,6 @@ import java.util.Map;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.templateresource.ClassLoaderTemplateResource;
 import org.thymeleaf.templateresource.ITemplateResource;
-import org.thymeleaf.util.ClassLoaderUtils;
-import org.thymeleaf.util.Validate;
 
 /**
  * <p>
@@ -49,13 +47,13 @@ public class ClassLoaderTemplateResolver extends AbstractConfigurableTemplateRes
 
 
     public ClassLoaderTemplateResolver() {
-        this(ClassLoaderUtils.getClassLoader(ClassLoaderTemplateResolver.class));
+        this(null);
     }
 
 
     public ClassLoaderTemplateResolver(final ClassLoader classLoader) {
         super();
-        Validate.notNull(classLoader, "Class Loader cannot be null");
+        // Class Loader might be null if we want to apply the default one
         this.classLoader = classLoader;
     }
 
@@ -63,7 +61,7 @@ public class ClassLoaderTemplateResolver extends AbstractConfigurableTemplateRes
     @Override
     protected ITemplateResource computeTemplateResource(
             final IEngineConfiguration configuration, final String ownerTemplate, final String template, final String resourceName, final String characterEncoding, final Map<String, Object> templateResolutionAttributes) {
-        return new ClassLoaderTemplateResource(resourceName, characterEncoding);
+        return new ClassLoaderTemplateResource(this.classLoader, resourceName, characterEncoding);
     }
 
 }
