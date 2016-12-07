@@ -46,12 +46,10 @@ public class Mvc {
 
     static {
 
-        final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(Mvc.class);
-
         final String delegateClassName = NON_SPRING41_MVC_URI_COMPONENTS_BUILDER_DELEGATE_CLASS_NAME;
 
         try {
-            final Class<?> implClass = Class.forName(delegateClassName, true, classLoader);
+            final Class<?> implClass = ClassLoaderUtils.loadClass(delegateClassName);
             mvcUriComponentsBuilderDelegate = (MvcUriComponentsBuilderDelegate) implClass.newInstance();
         } catch (final Exception e) {
             throw new ExceptionInInitializerError(

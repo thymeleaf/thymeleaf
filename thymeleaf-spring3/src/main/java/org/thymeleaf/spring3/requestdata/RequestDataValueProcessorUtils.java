@@ -67,11 +67,9 @@ public final class RequestDataValueProcessorUtils {
         isSpring40AtLeast = SpringVersionUtils.isSpring40AtLeast();
         canApply = isSpring31AtLeast && !isSpring40AtLeast;
 
-        final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(RequestDataValueProcessorUtils.class);
-
         if (isSpring31AtLeast && !isSpring40AtLeast) {
             try {
-                final Class<?> implClass = Class.forName(SPRING31_DELEGATE_CLASS, true, classLoader);
+                final Class<?> implClass = ClassLoaderUtils.loadClass(SPRING31_DELEGATE_CLASS);
                 spring31Delegate = (IRequestDataValueProcessorDelegate) implClass.newInstance();
             } catch (final Exception e) {
                 throw new ExceptionInInitializerError(

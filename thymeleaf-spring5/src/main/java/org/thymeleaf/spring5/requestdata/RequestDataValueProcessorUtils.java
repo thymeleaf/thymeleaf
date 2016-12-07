@@ -64,11 +64,9 @@ public final class RequestDataValueProcessorUtils {
 
         canApply = SpringVersionUtils.isSpring40AtLeast();
 
-        final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(RequestDataValueProcessorUtils.class);
-
         if (canApply) {
             try {
-                final Class<?> implClass = Class.forName(SPRING4_DELEGATE_CLASS, true, classLoader);
+                final Class<?> implClass = ClassLoaderUtils.loadClass(SPRING4_DELEGATE_CLASS);
                 spring4Delegate = (IRequestDataValueProcessorDelegate) implClass.newInstance();
             } catch (final Exception e) {
                 throw new ExceptionInInitializerError(

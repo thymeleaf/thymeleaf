@@ -65,28 +65,28 @@ public final class SpringVersionUtils {
 
         } else {
 
-            if (testClassExistence("org.springframework.core.io.buffer.DataBuffer")) {
+            if (ClassLoaderUtils.isClassPresent("org.springframework.core.io.buffer.DataBuffer")) {
                 SPRING_VERSION_MAJOR = 5;
                 SPRING_VERSION_MINOR = 0;
-            } else if (testClassExistence("org.springframework.context.annotation.ComponentScans")) {
+            } else if (ClassLoaderUtils.isClassPresent("org.springframework.context.annotation.ComponentScans")) {
                 SPRING_VERSION_MAJOR = 4;
                 SPRING_VERSION_MINOR = 3;
-            } else if (testClassExistence("org.springframework.core.annotation.AliasFor")) {
+            } else if (ClassLoaderUtils.isClassPresent("org.springframework.core.annotation.AliasFor")) {
                 SPRING_VERSION_MAJOR = 4;
                 SPRING_VERSION_MINOR = 2;
-            } else if (testClassExistence("org.springframework.cache.annotation.CacheConfig")) {
+            } else if (ClassLoaderUtils.isClassPresent("org.springframework.cache.annotation.CacheConfig")) {
                 SPRING_VERSION_MAJOR = 4;
                 SPRING_VERSION_MINOR = 1;
-            } else if (testClassExistence("org.springframework.core.io.PathResource")) {
+            } else if (ClassLoaderUtils.isClassPresent("org.springframework.core.io.PathResource")) {
                 SPRING_VERSION_MAJOR = 4;
                 SPRING_VERSION_MINOR = 0;
-            } else if (testClassExistence("org.springframework.web.context.request.async.DeferredResult")) {
+            } else if (ClassLoaderUtils.isClassPresent("org.springframework.web.context.request.async.DeferredResult")) {
                 SPRING_VERSION_MAJOR = 3;
                 SPRING_VERSION_MINOR = 2;
-            } else if (testClassExistence("org.springframework.web.servlet.support.RequestDataValueProcessor")) {
+            } else if (ClassLoaderUtils.isClassPresent("org.springframework.web.servlet.support.RequestDataValueProcessor")) {
                 SPRING_VERSION_MAJOR = 3;
                 SPRING_VERSION_MINOR = 1;
-            } else if (testClassExistence("org.springframework.web.bind.annotation.RequestBody")) {
+            } else if (ClassLoaderUtils.isClassPresent("org.springframework.web.bind.annotation.RequestBody")) {
                 SPRING_VERSION_MAJOR = 3;
                 SPRING_VERSION_MINOR = 0;
             } else {
@@ -98,17 +98,7 @@ public final class SpringVersionUtils {
 
         }
 
-    }
 
-
-    private static boolean testClassExistence(final String className) {
-        final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(SpringVersionUtils.class);
-        try {
-            Class.forName(className, false, classLoader);
-            return true;
-        } catch (final Throwable t) {
-            return false;
-        }
     }
 
 
