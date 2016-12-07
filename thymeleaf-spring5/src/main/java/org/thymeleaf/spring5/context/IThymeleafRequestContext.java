@@ -76,5 +76,7 @@ public interface IThymeleafRequestContext {
 
     public Theme getTheme();
 
+    public IThymeleafRequestDataValueProcessor getRequestDataValueProcessor();
+
 
 }

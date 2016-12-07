@@ -21,29 +21,19 @@ package org.thymeleaf.spring5.requestdata;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.context.IWebContext;
-import org.thymeleaf.exceptions.ConfigurationException;
-import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.spring5.context.IThymeleafRequestContext;
+import org.thymeleaf.spring5.context.SpringContextUtils;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
-import org.thymeleaf.spring5.util.SpringVersionUtils;
-import org.thymeleaf.util.ClassLoaderUtils;
 
 
 /**
  * <p>
- *   Utility class used for applying the <tt>org.springframework.web.servlet.support.RequestDataValueProcessor</tt>
- *   interface to URLs and forms output by Thymeleaf.
+ *   Utility class used for applying Spring's <tt>RequestDataValueProcessor</tt>
+ *   mechanism to URLs and forms rendered by Thymeleaf.
  * </p>
- * <p>
- *   This Spring interface only exists since Spring 3.1, but was modified in Spring 4. This class will only
- *   apply this value processor if the version of Spring is 4 or newer.
- * </p>
- * 
+ *
  * @author Daniel Fern&aacute;ndez
  *
  * @since 3.0.3
@@ -51,62 +41,17 @@ import org.thymeleaf.util.ClassLoaderUtils;
  */
 public final class RequestDataValueProcessorUtils {
 
-    private static final boolean canApply;
-
-    private static final String SPRING4_DELEGATE_CLASS =
-            "org.thymeleaf.spring5.requestdata.RequestDataValueProcessor4Delegate";
-    private static final IRequestDataValueProcessorDelegate spring4Delegate;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RequestDataValueProcessorUtils.class);
-
-
-    static {
-
-        canApply = SpringVersionUtils.isSpring40AtLeast();
-
-        if (canApply) {
-            try {
-                final Class<?> implClass = ClassLoaderUtils.loadClass(SPRING4_DELEGATE_CLASS);
-                spring4Delegate = (IRequestDataValueProcessorDelegate) implClass.newInstance();
-            } catch (final Exception e) {
-                throw new ExceptionInInitializerError(
-                        new ConfigurationException(
-                            "Environment has been detected to be at least Spring 4, but thymeleaf could not initialize a " +
-                            "delegate of class \"" + SPRING4_DELEGATE_CLASS + "\"", e));
-            }
-        } else {
-            LOGGER.warn(
-                    "[THYMELEAF] You seem to be using the thymeleaf-spring5 module with a Spring version prior to 4.0. " +
-                    "Even though most features should work OK, support for CSRF protection on websites will be " +
-                    "disabled due to incompatibilities between the different versions of the " +
-                    "RequestDataValueProcessor interface in versions 3.x.");
-            spring4Delegate = null;
-        }
-
-    }
-
-
 
 
     public static String processAction(
             final ITemplateContext context, final String action, final String httpMethod) {
 
-        if (!canApply || !(context instanceof IWebContext)) {
+        final IThymeleafRequestContext thymeleafRequestContext = SpringContextUtils.getRequestContext(context);
+        if (thymeleafRequestContext == null) {
             return action;
         }
 
-        final RequestContext requestContext = getRequestContext(context);
-        if (requestContext == null) {
-            return action;
-        }
-
-        if (spring4Delegate != null) {
-            return spring4Delegate.processAction(requestContext, ((IWebContext)context).getRequest(), action, httpMethod);
-        }
-
-        throw new TemplateProcessingException(
-                "According to the detected Spring version info, a RequestDataValueProcessor delegate should be available, " +
-                "but none seem applicable");
+        return thymeleafRequestContext.getRequestDataValueProcessor().processAction(action, httpMethod);
 
     }
 
@@ -115,22 +60,12 @@ public final class RequestDataValueProcessorUtils {
     public static String processFormFieldValue(
             final ITemplateContext context, final String name, final String value, final String type) {
 
-        if (!canApply || !(context instanceof IWebContext)) {
+        final IThymeleafRequestContext thymeleafRequestContext = SpringContextUtils.getRequestContext(context);
+        if (thymeleafRequestContext == null) {
             return value;
         }
 
-        final RequestContext requestContext = getRequestContext(context);
-        if (requestContext == null) {
-            return value;
-        }
-
-        if (spring4Delegate != null) {
-            return spring4Delegate.processFormFieldValue(requestContext, ((IWebContext)context).getRequest(), name, value, type);
-        }
-
-        throw new TemplateProcessingException(
-                "According to the detected Spring version info, a RequestDataValueProcessor delegate should be available, " +
-                "but none seem applicable");
+        return thymeleafRequestContext.getRequestDataValueProcessor().processFormFieldValue(name, value, type);
 
     }
 
@@ -138,22 +73,12 @@ public final class RequestDataValueProcessorUtils {
 
     public static Map<String, String> getExtraHiddenFields(final ITemplateContext context) {
 
-        if (!canApply || !(context instanceof IWebContext)) {
+        final IThymeleafRequestContext thymeleafRequestContext = SpringContextUtils.getRequestContext(context);
+        if (thymeleafRequestContext == null) {
             return null;
         }
 
-        final RequestContext requestContext = getRequestContext(context);
-        if (requestContext == null) {
-            return null;
-        }
-
-        if (spring4Delegate != null) {
-            return spring4Delegate.getExtraHiddenFields(requestContext, ((IWebContext)context).getRequest());
-        }
-
-        throw new TemplateProcessingException(
-                "According to the detected Spring version info, a RequestDataValueProcessor delegate should be available, " +
-                "but none seem applicable");
+        return thymeleafRequestContext.getRequestDataValueProcessor().getExtraHiddenFields();
 
     }
 
@@ -161,33 +86,15 @@ public final class RequestDataValueProcessorUtils {
 
     public static String processUrl(final ITemplateContext context, final String url) {
 
-        if (!canApply || !(context instanceof IWebContext)) {
+        final IThymeleafRequestContext thymeleafRequestContext = SpringContextUtils.getRequestContext(context);
+        if (thymeleafRequestContext == null) {
             return url;
         }
 
-        final RequestContext requestContext = getRequestContext(context);
-        if (requestContext == null) {
-            return url;
-        }
-
-        if (spring4Delegate != null) {
-            return spring4Delegate.processUrl(requestContext, ((IWebContext)context).getRequest(), url);
-        }
-
-        throw new TemplateProcessingException(
-                "According to the detected Spring version info, a RequestDataValueProcessor delegate should be available, " +
-                "but none seem applicable");
+        return thymeleafRequestContext.getRequestDataValueProcessor().processUrl(url);
 
     }
 
-
-    // TODO * When there is RequestDataValueProcessor support at the reactive version of RequestContext, we should
-    // TODO   replace this filtering with some kind of abstraction that makes the specific type of RequestContext
-    // TODO   (reactive or mvc) transparent
-    private static RequestContext getRequestContext(final IExpressionContext context) {
-        final Object requestContext =  context.getVariable(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
-        return (requestContext != null && requestContext instanceof RequestContext)? (RequestContext) requestContext : null;
-    }
 
 
 

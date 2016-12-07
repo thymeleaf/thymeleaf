@@ -34,6 +34,7 @@ import org.springframework.ui.context.Theme;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.spring5.context.IThymeleafRequestContext;
+import org.thymeleaf.spring5.context.IThymeleafRequestDataValueProcessor;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -47,6 +48,7 @@ public class SpringWebMvcThymeleafRequestContext implements IThymeleafRequestCon
 
     private final RequestContext requestContext;
     private final HttpServletRequest httpServletRequest;
+    private final SpringWebMvcThymeleafRequestDataValueProcessor thymeleafRequestDataValueProcessor;
 
 
     public SpringWebMvcThymeleafRequestContext(
@@ -56,6 +58,9 @@ public class SpringWebMvcThymeleafRequestContext implements IThymeleafRequestCon
         Validate.notNull(httpServletRequest, "HttpServletRequest cannot be null");
         this.requestContext = requestContext;
         this.httpServletRequest = httpServletRequest;
+        this.thymeleafRequestDataValueProcessor =
+                new SpringWebMvcThymeleafRequestDataValueProcessor(
+                        this.requestContext.getRequestDataValueProcessor(), httpServletRequest);
     }
 
 
@@ -199,6 +204,11 @@ public class SpringWebMvcThymeleafRequestContext implements IThymeleafRequestCon
         return this.requestContext.getTheme();
     }
 
+
+    @Override
+    public IThymeleafRequestDataValueProcessor getRequestDataValueProcessor() {
+        return this.thymeleafRequestDataValueProcessor;
+    }
 
 
 
