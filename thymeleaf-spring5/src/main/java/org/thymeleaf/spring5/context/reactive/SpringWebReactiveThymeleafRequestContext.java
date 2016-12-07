@@ -33,6 +33,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.reactive.result.view.RequestContext;
 import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.spring5.context.IThymeleafBindStatus;
 import org.thymeleaf.spring5.context.IThymeleafRequestContext;
 import org.thymeleaf.spring5.context.IThymeleafRequestDataValueProcessor;
 import org.thymeleaf.util.Validate;
@@ -206,6 +207,16 @@ public class SpringWebReactiveThymeleafRequestContext implements IThymeleafReque
     @Override
     public IThymeleafRequestDataValueProcessor getRequestDataValueProcessor() {
         return this.thymeleafRequestDataValueProcessor;
+    }
+
+    @Override
+    public IThymeleafBindStatus getBindStatus(final String path) throws IllegalStateException {
+        return Optional.ofNullable(this.requestContext.getBindStatus(path)).map(SpringWebReactiveThymeleafBindStatus::new).orElse(null);
+    }
+
+    @Override
+    public IThymeleafBindStatus getBindStatus(final String path, final boolean htmlEscape) throws IllegalStateException {
+        return Optional.ofNullable(this.requestContext.getBindStatus(path, htmlEscape)).map(SpringWebReactiveThymeleafBindStatus::new).orElse(null);
     }
 
 

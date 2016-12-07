@@ -78,5 +78,8 @@ public interface IThymeleafRequestContext {
 
     public IThymeleafRequestDataValueProcessor getRequestDataValueProcessor();
 
+    public IThymeleafBindStatus getBindStatus(String path) throws IllegalStateException;
+    public IThymeleafBindStatus getBindStatus(String path, boolean htmlEscape) throws IllegalStateException;
+
 
 }

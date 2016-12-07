@@ -33,6 +33,7 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.ui.context.Theme;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.support.RequestContext;
+import org.thymeleaf.spring5.context.IThymeleafBindStatus;
 import org.thymeleaf.spring5.context.IThymeleafRequestContext;
 import org.thymeleaf.spring5.context.IThymeleafRequestDataValueProcessor;
 import org.thymeleaf.util.Validate;
@@ -208,6 +209,16 @@ public class SpringWebMvcThymeleafRequestContext implements IThymeleafRequestCon
     @Override
     public IThymeleafRequestDataValueProcessor getRequestDataValueProcessor() {
         return this.thymeleafRequestDataValueProcessor;
+    }
+
+    @Override
+    public IThymeleafBindStatus getBindStatus(final String path) throws IllegalStateException {
+        return Optional.ofNullable(this.requestContext.getBindStatus(path)).map(SpringWebMvcThymeleafBindStatus::new).orElse(null);
+    }
+
+    @Override
+    public IThymeleafBindStatus getBindStatus(final String path, final boolean htmlEscape) throws IllegalStateException {
+        return Optional.ofNullable(this.requestContext.getBindStatus(path, htmlEscape)).map(SpringWebMvcThymeleafBindStatus::new).orElse(null);
     }
 
 
