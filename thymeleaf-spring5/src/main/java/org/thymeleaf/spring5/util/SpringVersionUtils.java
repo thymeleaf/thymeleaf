@@ -38,6 +38,9 @@ public final class SpringVersionUtils {
     private static final int SPRING_VERSION_MAJOR;
     private static final int SPRING_VERSION_MINOR;
 
+    private static final boolean SPRING_WEB_MVC_PRESENT;
+    private static final boolean SPRING_WEB_REACTIVE_PRESENT;
+
 
 
     static {
@@ -98,6 +101,9 @@ public final class SpringVersionUtils {
 
         }
 
+        SPRING_WEB_MVC_PRESENT = ClassLoaderUtils.isClassPresent("org.springframework.web.servlet.View");
+        SPRING_WEB_REACTIVE_PRESENT =
+                SPRING_VERSION_MAJOR >= 5 && ClassLoaderUtils.isClassPresent("org.springframework.web.reactive.result.view.View");
 
     }
 
@@ -151,6 +157,16 @@ public final class SpringVersionUtils {
 
     public static boolean isSpring50AtLeast() {
         return SPRING_VERSION_MAJOR >= 5;
+    }
+
+
+    public static boolean isSpringWebMvcPresent() {
+        return SPRING_WEB_MVC_PRESENT;
+    }
+
+
+    public static boolean isSpringWebReactivePresent() {
+        return SPRING_WEB_REACTIVE_PRESENT;
     }
 
 
