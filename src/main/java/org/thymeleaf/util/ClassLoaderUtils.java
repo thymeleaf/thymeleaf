@@ -314,7 +314,7 @@ public final class ClassLoaderUtils {
      *
      * @param resourceName the name of the resource to be obtained.
      * @return an input stream on the resource (null never returned).
-     * @throws ClassNotFoundException if the resource could not be located.
+     * @throws IOException if the resource could not be located.
      *
      * @since 3.0.3
      *
