@@ -19,7 +19,17 @@
  */
 package org.thymeleaf.spring5.context;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TimeZone;
+
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceResolvable;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.ui.context.Theme;
+import org.springframework.validation.Errors;
 
 /**
  *
@@ -30,6 +40,39 @@ import org.springframework.ui.context.Theme;
  */
 public interface IThymeleafRequestContext {
 
+
+    public MessageSource getMessageSource();
+
+    public Map<String, Object> getModel();
+
+    public Locale getLocale();
+    public TimeZone getTimeZone();
+    public void changeLocale(Locale locale);
+    public void changeLocale(Locale locale, TimeZone timeZone);
+
+    public void setDefaultHtmlEscape(boolean defaultHtmlEscape);
+    public boolean isDefaultHtmlEscape();
+    public Boolean getDefaultHtmlEscape();
+
+    public String getContextPath();
+    public String getContextUrl(String relativeUrl);
+    public String getContextUrl(String relativeUrl, Map<String, ?> params);
+    public String getRequestPath();
+    public String getQueryString();
+
+    public String getMessage(String code, String defaultMessage);
+    public String getMessage(String code, Object[] args, String defaultMessage);
+    public String getMessage(String code, List<?> args, String defaultMessage);
+    public String getMessage(String code, Object[] args, String defaultMessage, boolean htmlEscape);
+    public String getMessage(String code) throws NoSuchMessageException;
+    public String getMessage(String code, Object[] args) throws NoSuchMessageException;
+    public String getMessage(String code, List<?> args) throws NoSuchMessageException;
+    public String getMessage(String code, Object[] args, boolean htmlEscape) throws NoSuchMessageException;
+    public String getMessage(MessageSourceResolvable resolvable) throws NoSuchMessageException;
+    public String getMessage(MessageSourceResolvable resolvable, boolean htmlEscape) throws NoSuchMessageException;
+
+    public Optional<Errors> getErrors(String name);
+    public Optional<Errors> getErrors(String name, boolean htmlEscape);
 
     public Theme getTheme();
 
