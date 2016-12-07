@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.spring5.context.mvc;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.ui.context.Theme;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.spring5.context.IThymeleafRequestContext;
@@ -34,12 +36,21 @@ import org.thymeleaf.util.Validate;
 public class SpringWebMvcThymeleafRequestContext implements IThymeleafRequestContext {
 
     private final RequestContext requestContext;
+    private final HttpServletRequest httpServletRequest;
 
 
-    public SpringWebMvcThymeleafRequestContext(final RequestContext requestContext) {
+    public SpringWebMvcThymeleafRequestContext(
+            final RequestContext requestContext, final HttpServletRequest httpServletRequest) {
         super();
         Validate.notNull(requestContext, "Spring Web MVC RequestContext cannot be null");
+        Validate.notNull(httpServletRequest, "HttpServletRequest cannot be null");
         this.requestContext = requestContext;
+        this.httpServletRequest = httpServletRequest;
+    }
+
+
+    public HttpServletRequest getHttpServletRequest() {
+        return this.httpServletRequest;
     }
 
 
@@ -47,5 +58,15 @@ public class SpringWebMvcThymeleafRequestContext implements IThymeleafRequestCon
     public Theme getTheme() {
         return this.requestContext.getTheme();
     }
+
+
+
+
+
+    @Override
+    public String toString() {
+        return this.requestContext.toString();
+    }
+
 
 }

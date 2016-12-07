@@ -21,6 +21,7 @@ package org.thymeleaf.spring5.context.reactive;
 
 import org.springframework.ui.context.Theme;
 import org.springframework.web.reactive.result.view.RequestContext;
+import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.context.IThymeleafRequestContext;
 import org.thymeleaf.util.Validate;
@@ -35,12 +36,21 @@ import org.thymeleaf.util.Validate;
 public class SpringWebReactiveThymeleafRequestContext implements IThymeleafRequestContext {
 
     private final RequestContext requestContext;
+    private final ServerWebExchange serverWebExchange;
 
 
-    public SpringWebReactiveThymeleafRequestContext(final RequestContext requestContext) {
+    public SpringWebReactiveThymeleafRequestContext(
+            final RequestContext requestContext, final ServerWebExchange serverWebExchange) {
         super();
         Validate.notNull(requestContext, "Spring Web MVC RequestContext cannot be null");
+        Validate.notNull(serverWebExchange, "Server Web Exchange cannot be null");
         this.requestContext = requestContext;
+        this.serverWebExchange = serverWebExchange;
+    }
+
+
+    public ServerWebExchange getServerWebExchange() {
+        return this.serverWebExchange;
     }
 
 
@@ -48,5 +58,15 @@ public class SpringWebReactiveThymeleafRequestContext implements IThymeleafReque
     public Theme getTheme() {
         throw new TemplateProcessingException("Themes are not supported in Spring Web Reactive");
     }
+
+
+
+
+
+    @Override
+    public String toString() {
+        return this.requestContext.toString();
+    }
+
 
 }

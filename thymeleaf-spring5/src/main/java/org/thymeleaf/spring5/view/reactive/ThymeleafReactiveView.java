@@ -321,7 +321,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         // so that it can be retrieved from elsewhere.
         final RequestContext requestContext = new RequestContext(exchange, mergedModel, applicationContext);
         final SpringWebReactiveThymeleafRequestContext thymeleafRequestContext =
-                new SpringWebReactiveThymeleafRequestContext(requestContext);
+                new SpringWebReactiveThymeleafRequestContext(requestContext, exchange);
 
         addRequestContextAsVariable(mergedModel, SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
         // Add the Thymeleaf RequestContext wrapper that we will be using in this dialect (the bare RequestContext

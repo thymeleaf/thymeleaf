@@ -228,7 +228,7 @@ public class ThymeleafView
         final RequestContext requestContext =
                 new RequestContext(request, response, getServletContext(), mergedModel);
         final SpringWebMvcThymeleafRequestContext thymeleafRequestContext =
-                new SpringWebMvcThymeleafRequestContext(requestContext);
+                new SpringWebMvcThymeleafRequestContext(requestContext, request);
 
         // For compatibility with ThymeleafView
         addRequestContextAsVariable(mergedModel, SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
