@@ -55,7 +55,7 @@ package org.thymeleaf.spring5.context.reactive;
  * &#64;RequestMapping("/something")
  * public String doSomething(final Model model) {
  *     final Publisher&lt;Item&gt; data = ...;
- *     model.addAttribute("data", new ReactiveDataDriverContextVariable&lt;&gt;(data, 100);
+ *     model.addAttribute("data", new ReactiveDataDriverContextVariable&lt;&gt;(data, 100));
  *     return "view";
  * }
  * </code></pre>

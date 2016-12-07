@@ -60,7 +60,7 @@ import org.thymeleaf.context.ILazyContextVariable;
  * &#64;RequestMapping("/something")
  * public String doSomething(final Model model) {
  *     final Publisher&lt;Item&gt; someStream = ...;
- *     model.addAttribute("someData", new ReactiveLazyContextVariable&lt;&gt;(someStream);
+ *     model.addAttribute("someData", new ReactiveLazyContextVariable&lt;&gt;(someStream));
  *     return "view";
  * }
  * </code></pre>
