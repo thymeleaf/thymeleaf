@@ -28,7 +28,7 @@
   <version>ci</version>
   <name>Thymeleaf Examples - Spring Thyme Seedstarter Manager</name>
 
-  <description>XML/XHTML/HTML5 template engine for Java</description>
+  <description>Modern server-side Java template engine for both web and standalone environments</description>
 
   <licenses>
     <license>
