@@ -46,7 +46,7 @@
   <scm>
     <url>scm:git:git@github.com:thymeleaf/thymeleafexamples-stsm.git</url>
     <connection>scm:git:git@github.com:thymeleaf/thymeleafexamples-stsm.git</connection>
-    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleafexamples-stsmgit</developerConnection>
+    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleafexamples-stsm.git</developerConnection>
   </scm>
   
   <developers>
