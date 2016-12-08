@@ -80,23 +80,26 @@
 		<dependency>
 			<groupId>org.springframework.boot.experimental</groupId>
 			<artifactId>spring-boot-starter-web-reactive</artifactId>
-			<exclusions>
-				<!-- Excluded because we will not be using Tomcat -->
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-tomcat</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
-		<!-- TODO * Undertow being used because of issues in both Tomcat and Netty integrations: -->
-		<!-- TODO     - https://jira.spring.io/browse/SPR-14975 Netty                            -->
-		<!-- TODO     - https://jira.spring.io/browse/SPR-14932 Tomcat                           -->
+		<!-- TODO * Netty cannot be used because of https://jira.spring.io/browse/SPR-14975      -->
+		<!-- TODO * Note also there is no Spring Boot 2.0 starter for Reactive + Netty.          -->
+		<!--<dependency>-->
+			<!--<groupId>io.projectreactor.ipc</groupId>-->
+			<!--<artifactId>reactor-netty</artifactId>-->
+		<!--</dependency>-->
+
 		<dependency>
-			<groupId>io.undertow</groupId>
-			<artifactId>undertow-core</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
 
+		<!-- TODO * There is no Spring Boot starter for Thymeleaf + Spring 5 integration yet.    -->
+		<dependency>
+			<groupId>org.thymeleaf</groupId>
+			<artifactId>thymeleaf-spring5</artifactId>
+			<version>${thymeleaf.version}</version>
+		</dependency>
 
 
 	</dependencies>
