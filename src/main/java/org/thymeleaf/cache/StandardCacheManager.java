@@ -85,7 +85,12 @@ public class StandardCacheManager extends AbstractCacheManager {
      * Default template cache maximum size: 50
      */
     public static final int DEFAULT_TEMPLATE_CACHE_MAX_SIZE = 200;
-    
+
+    /**
+     * Default template cache "enable counters" flag: false
+     */
+    public static final boolean DEFAULT_TEMPLATE_CACHE_ENABLE_COUNTERS = false;
+
     /**
      * Default template cache "use soft references" flag: true
      */
@@ -116,7 +121,12 @@ public class StandardCacheManager extends AbstractCacheManager {
      * Default expression cache maximum size: 500
      */
     public static final int DEFAULT_EXPRESSION_CACHE_MAX_SIZE = 500;
-    
+
+    /**
+     * Default expression cache "enable counters" flag: false
+     */
+    public static final boolean DEFAULT_EXPRESSION_CACHE_ENABLE_COUNTERS = false;
+
     /**
      * Default expression cache "use soft references" flag: true
      */
@@ -138,6 +148,7 @@ public class StandardCacheManager extends AbstractCacheManager {
     private String templateCacheName = DEFAULT_TEMPLATE_CACHE_NAME;
     private int templateCacheInitialSize = DEFAULT_TEMPLATE_CACHE_INITIAL_SIZE;
     private int templateCacheMaxSize = DEFAULT_TEMPLATE_CACHE_MAX_SIZE;
+    private boolean templateCacheEnableCounters = DEFAULT_TEMPLATE_CACHE_ENABLE_COUNTERS;
     private boolean templateCacheUseSoftReferences = DEFAULT_TEMPLATE_CACHE_USE_SOFT_REFERENCES;
     private String templateCacheLoggerName = DEFAULT_TEMPLATE_CACHE_LOGGER_NAME;
     private ICacheEntryValidityChecker<TemplateCacheKey,TemplateModel> templateCacheValidityChecker = DEFAULT_TEMPLATE_CACHE_VALIDITY_CHECKER;
@@ -145,6 +156,7 @@ public class StandardCacheManager extends AbstractCacheManager {
     private String expressionCacheName = DEFAULT_EXPRESSION_CACHE_NAME;
     private int expressionCacheInitialSize = DEFAULT_EXPRESSION_CACHE_INITIAL_SIZE;
     private int expressionCacheMaxSize = DEFAULT_EXPRESSION_CACHE_MAX_SIZE;
+    private boolean expressionCacheEnableCounters = DEFAULT_EXPRESSION_CACHE_ENABLE_COUNTERS;
     private boolean expressionCacheUseSoftReferences = DEFAULT_EXPRESSION_CACHE_USE_SOFT_REFERENCES;
     private String expressionCacheLoggerName = DEFAULT_EXPRESSION_CACHE_LOGGER_NAME;
     private ICacheEntryValidityChecker<ExpressionCacheKey,Object> expressionCacheValidityChecker = DEFAULT_EXPRESSION_CACHE_VALIDITY_CHECKER;
@@ -165,8 +177,8 @@ public class StandardCacheManager extends AbstractCacheManager {
         }
         return new StandardCache<TemplateCacheKey, TemplateModel>(
                 getTemplateCacheName(), getTemplateCacheUseSoftReferences(), 
-                getTemplateCacheInitialSize(), maxSize, 
-                getTemplateCacheValidityChecker(), getTemplateCacheLogger());
+                getTemplateCacheInitialSize(), maxSize,
+                getTemplateCacheValidityChecker(), getTemplateCacheLogger(), getTemplateCacheEnableCounters());
     }
 
     
@@ -178,8 +190,8 @@ public class StandardCacheManager extends AbstractCacheManager {
         }
         return new StandardCache<ExpressionCacheKey, Object>(
                 getExpressionCacheName(), getExpressionCacheUseSoftReferences(), 
-                getExpressionCacheInitialSize(), maxSize, 
-                getExpressionCacheValidityChecker(), getExpressionCacheLogger());
+                getExpressionCacheInitialSize(), maxSize,
+                getExpressionCacheValidityChecker(), getExpressionCacheLogger(), getExpressionCacheEnableCounters());
     }
     
     
@@ -192,7 +204,11 @@ public class StandardCacheManager extends AbstractCacheManager {
     public boolean getTemplateCacheUseSoftReferences() {
         return this.templateCacheUseSoftReferences;
     }
-    
+
+    private boolean getTemplateCacheEnableCounters() {
+        return this.templateCacheEnableCounters;
+    }
+
     public int getTemplateCacheInitialSize() {
         return this.templateCacheInitialSize;
     }
@@ -227,7 +243,11 @@ public class StandardCacheManager extends AbstractCacheManager {
     public boolean getExpressionCacheUseSoftReferences() {
         return this.expressionCacheUseSoftReferences;
     }
-    
+
+    private boolean getExpressionCacheEnableCounters() {
+        return this.expressionCacheEnableCounters;
+    }
+
     public int getExpressionCacheInitialSize() {
         return this.expressionCacheInitialSize;
     }
@@ -280,6 +300,9 @@ public class StandardCacheManager extends AbstractCacheManager {
         this.templateCacheValidityChecker = templateCacheValidityChecker;
     }
 
+    public void setTemplateCacheEnableCounters(boolean templateCacheEnableCounters) {
+        this.templateCacheEnableCounters = templateCacheEnableCounters;
+    }
     
     
     public void setExpressionCacheName(final String expressionCacheName) {
@@ -306,7 +329,9 @@ public class StandardCacheManager extends AbstractCacheManager {
         this.expressionCacheValidityChecker = expressionCacheValidityChecker;
     }
 
-    
+    public void setExpressionCacheEnableCounters(boolean expressionCacheEnableCounters) {
+        this.expressionCacheEnableCounters = expressionCacheEnableCounters;
+    }
     
     
     
