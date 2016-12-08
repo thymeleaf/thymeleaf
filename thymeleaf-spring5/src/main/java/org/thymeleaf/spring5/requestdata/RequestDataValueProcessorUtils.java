@@ -21,11 +21,9 @@ package org.thymeleaf.spring5.requestdata;
 
 import java.util.Map;
 
-import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.spring5.context.IThymeleafRequestContext;
 import org.thymeleaf.spring5.context.SpringContextUtils;
-import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 
 
 /**

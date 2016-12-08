@@ -29,10 +29,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.servlet.support.BindStatus;
-import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.spring5.context.IThymeleafBindStatus;
 import org.thymeleaf.spring5.context.IThymeleafRequestContext;
 import org.thymeleaf.spring5.context.SpringContextUtils;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
@@ -95,7 +94,7 @@ public final class FieldUtils {
 
     private static List<String> computeErrors(final IExpressionContext context, final String fieldExpression) {
 
-        final BindStatus bindStatus = FieldUtils.getBindStatus(context, fieldExpression);
+        final IThymeleafBindStatus bindStatus = FieldUtils.getBindStatus(context, fieldExpression);
         if (bindStatus == null) {
             return Collections.EMPTY_LIST;
         }
@@ -129,8 +128,7 @@ public final class FieldUtils {
     private static List<DetailedError> computeDetailedErrors(
             final IExpressionContext context, final String fieldExpression) {
 
-        final BindStatus bindStatus =
-                FieldUtils.getBindStatus(context, fieldExpression);
+        final IThymeleafBindStatus bindStatus = FieldUtils.getBindStatus(context, fieldExpression);
         if (bindStatus == null) {
             return Collections.EMPTY_LIST;
         }
@@ -210,7 +208,7 @@ public final class FieldUtils {
 
     private static boolean checkErrors(
             final IExpressionContext context, final String expression) {
-        final BindStatus bindStatus = FieldUtils.getBindStatus(context, expression);
+        final IThymeleafBindStatus bindStatus = FieldUtils.getBindStatus(context, expression);
         if (bindStatus == null) {
             throw new TemplateProcessingException(
                     "Could not bind form errors using expression \"" + expression + "\". Please check this " +
@@ -223,13 +221,13 @@ public final class FieldUtils {
 
 
 
-    public static BindStatus getBindStatus(
+    public static IThymeleafBindStatus getBindStatus(
             final IExpressionContext context, final String expression) {
         return getBindStatus(context, false, expression);
     }
 
 
-    public static BindStatus getBindStatus(
+    public static IThymeleafBindStatus getBindStatus(
             final IExpressionContext context,
             final boolean optional, final String expression) {
 
@@ -267,7 +265,7 @@ public final class FieldUtils {
 
 
 
-    public static BindStatus getBindStatusFromParsedExpression(
+    public static IThymeleafBindStatus getBindStatusFromParsedExpression(
             final IExpressionContext context,
             final boolean useSelectionAsRoot, final String expression) {
 
@@ -278,7 +276,7 @@ public final class FieldUtils {
 
 
 
-    public static BindStatus getBindStatusFromParsedExpression(
+    public static IThymeleafBindStatus getBindStatusFromParsedExpression(
             final IExpressionContext context,
             final boolean optional, final boolean useSelectionAsRoot, final String expression) {
 
@@ -304,7 +302,7 @@ public final class FieldUtils {
 
 
         if (!optional) {
-            return new BindStatus(requestContext, completeExpression, false);
+            return requestContext.getBindStatus(completeExpression, false);
         }
 
 
@@ -312,7 +310,7 @@ public final class FieldUtils {
             // Creating an instance of BindStatus for an unbound object results in an (expensive) exception,
             // so we avoid it by checking first. Because the check is a simplification, we still handle the exception.
             try {
-                return new BindStatus(requestContext, completeExpression, false);
+                return requestContext.getBindStatus(completeExpression, false);
             } catch (final NotReadablePropertyException ignored) {
                 return null;
             }
@@ -370,7 +368,7 @@ public final class FieldUtils {
 
 
 
-    private static boolean isBound(final RequestContext requestContext, final String completeExpression) {
+    private static boolean isBound(final IThymeleafRequestContext requestContext, final String completeExpression) {
 
         final int dotPos = completeExpression.indexOf('.');
         if (dotPos == -1) { // Spring only allows second-level binding for conversions! ("x.y", not "x")

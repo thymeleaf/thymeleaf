@@ -27,8 +27,6 @@ import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.springframework.web.servlet.support.BindStatus;
-import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ExpressionCacheKey;
@@ -39,7 +37,9 @@ import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.IExpressionObjects;
+import org.thymeleaf.spring5.context.IThymeleafBindStatus;
 import org.thymeleaf.spring5.util.FieldUtils;
+import org.thymeleaf.spring5.util.SpringValueFormatter;
 import org.thymeleaf.spring5.util.SpringVersionUtils;
 import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardVariableExpression;
@@ -159,12 +159,12 @@ public class SPELVariableExpressionEvaluator
                     // form-backing bean). If this was not detected, the bound object value would be always used
                     // instead of the local variable's
 
-                    final BindStatus bindStatus =
+                    final IThymeleafBindStatus bindStatus =
                             FieldUtils.getBindStatusFromParsedExpression(context, true, useSelectionAsRoot, spelExpression);
 
                     if (bindStatus != null) {
                         // The expression goes against a bound object! Let Spring do its magic for displaying it...
-                        return ValueFormatterWrapper.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), false);
+                        return SpringValueFormatter.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), false);
                     }
 
                 }

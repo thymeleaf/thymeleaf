@@ -21,7 +21,6 @@ package org.thymeleaf.spring5.processor;
 
 import java.util.Arrays;
 
-import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.context.ITemplateContext;
@@ -34,6 +33,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
+import org.thymeleaf.spring5.context.IThymeleafBindStatus;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 import org.thymeleaf.spring5.util.FieldUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
@@ -93,7 +93,7 @@ public final class SpringErrorClassTagProcessor
             final AttributeName attributeName, final String attributeValue,
             final IElementTagStructureHandler structureHandler) {
 
-        final BindStatus bindStatus = computeBindStatus(context, tag);
+        final IThymeleafBindStatus bindStatus = computeBindStatus(context, tag);
         if (bindStatus == null) {
             final AttributeName fieldAttributeName =
                     AttributeNames.forHTMLName(attributeName.getPrefix(), AbstractSpringFieldTagProcessor.ATTR_NAME);
@@ -142,14 +142,14 @@ public final class SpringErrorClassTagProcessor
      * for which a th:field has not been executed, but which should have a "name" attribute (either directly or as
      * the result of executing a th:name) -- in this case, we'll have to build the BuildStatus ourselves.
      */
-    private static BindStatus computeBindStatus(final IExpressionContext context, final IProcessableElementTag tag) {
+    private static IThymeleafBindStatus computeBindStatus(final IExpressionContext context, final IProcessableElementTag tag) {
 
         /*
          * First, try to obtain an already-existing BindStatus resulting from the execution of a th:field attribute
          * in the same element.
          */
-        final BindStatus bindStatus =
-                (BindStatus) context.getVariable(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS);
+        final IThymeleafBindStatus bindStatus =
+                (IThymeleafBindStatus) context.getVariable(SpringContextVariableNames.THYMELEAF_FIELD_BIND_STATUS);
         if (bindStatus != null) {
             return bindStatus;
         }

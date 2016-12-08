@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.AttributeValueQuotes;
@@ -32,6 +31,7 @@ import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
+import org.thymeleaf.spring5.context.IThymeleafBindStatus;
 import org.thymeleaf.spring5.requestdata.RequestDataValueProcessorUtils;
 import org.thymeleaf.standard.util.StandardProcessorUtils;
 
@@ -61,7 +61,7 @@ public final class SpringSelectFieldTagProcessor extends AbstractSpringFieldTagP
     protected void doProcess(final ITemplateContext context,
                              final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
-                             final BindStatus bindStatus, final IElementTagStructureHandler structureHandler) {
+                             final IThymeleafBindStatus bindStatus, final IElementTagStructureHandler structureHandler) {
 
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);

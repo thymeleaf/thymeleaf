@@ -23,8 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.servlet.support.BindStatus;
-import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -34,7 +32,9 @@ import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
+import org.thymeleaf.spring5.context.IThymeleafBindStatus;
 import org.thymeleaf.spring5.requestdata.RequestDataValueProcessorUtils;
+import org.thymeleaf.spring5.util.SpringSelectedValueComparator;
 import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.unbescape.html.HtmlEscape;
 
@@ -65,7 +65,7 @@ public final class SpringInputCheckboxFieldTagProcessor
     protected void doProcess(final ITemplateContext context,
                              final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
-                             final BindStatus bindStatus, final IElementTagStructureHandler structureHandler) {
+                             final IThymeleafBindStatus bindStatus, final IElementTagStructureHandler structureHandler) {
 
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
@@ -96,7 +96,7 @@ public final class SpringInputCheckboxFieldTagProcessor
                         "when binding to non-boolean values");
             }
 
-            checked = SelectedValueComparatorWrapper.isSelected(bindStatus, HtmlEscape.unescapeHtml(value));
+            checked = SpringSelectedValueComparator.isSelected(bindStatus, HtmlEscape.unescapeHtml(value));
 
         }
 

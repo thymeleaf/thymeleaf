@@ -19,14 +19,14 @@
  */
 package org.thymeleaf.spring5.processor;
 
-import org.springframework.web.servlet.support.BindStatus;
-import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
+import org.thymeleaf.spring5.context.IThymeleafBindStatus;
 import org.thymeleaf.spring5.requestdata.RequestDataValueProcessorUtils;
+import org.thymeleaf.spring5.util.SpringSelectedValueComparator;
 import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.unbescape.html.HtmlEscape;
 
@@ -57,7 +57,7 @@ public final class SpringInputRadioFieldTagProcessor extends AbstractSpringField
     protected void doProcess(final ITemplateContext context,
                              final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
-                             final BindStatus bindStatus, final IElementTagStructureHandler structureHandler) {
+                             final IThymeleafBindStatus bindStatus, final IElementTagStructureHandler structureHandler) {
 
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
@@ -71,7 +71,7 @@ public final class SpringInputRadioFieldTagProcessor extends AbstractSpringField
         }
 
         final boolean checked =
-                SelectedValueComparatorWrapper.isSelected(bindStatus, HtmlEscape.unescapeHtml(value));
+                SpringSelectedValueComparator.isSelected(bindStatus, HtmlEscape.unescapeHtml(value));
 
 
         StandardProcessorUtils.setAttribute(structureHandler, this.idAttributeDefinition, ID_ATTR_NAME, id); // No need to escape: this comes from an existing 'id' or from a token

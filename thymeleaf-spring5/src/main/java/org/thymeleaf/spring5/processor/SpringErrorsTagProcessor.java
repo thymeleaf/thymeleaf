@@ -19,15 +19,15 @@
  */
 package org.thymeleaf.spring5.processor;
 
-import org.springframework.web.servlet.support.BindStatus;
-import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
+import org.thymeleaf.spring5.context.IThymeleafBindStatus;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 import org.thymeleaf.spring5.util.FieldUtils;
+import org.thymeleaf.spring5.util.SpringValueFormatter;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.unbescape.html.HtmlEscape;
 
@@ -62,7 +62,7 @@ public final class SpringErrorsTagProcessor extends AbstractAttributeTagProcesso
             final AttributeName attributeName, final String attributeValue,
             final IElementTagStructureHandler structureHandler) {
 
-        final BindStatus bindStatus = FieldUtils.getBindStatus(context, attributeValue);
+        final IThymeleafBindStatus bindStatus = FieldUtils.getBindStatus(context, attributeValue);
 
         if (bindStatus.isError()) {
 
@@ -73,14 +73,14 @@ public final class SpringErrorsTagProcessor extends AbstractAttributeTagProcesso
                 if (i > 0) {
                     strBuilder.append(ERROR_DELIMITER);
                 }
-                final String displayString = ValueFormatterWrapper.getDisplayString(errorMsgs[i], false);
+                final String displayString = SpringValueFormatter.getDisplayString(errorMsgs[i], false);
                 strBuilder.append(HtmlEscape.escapeHtml4Xml(displayString));
             }
 
             structureHandler.setBody(strBuilder.toString(), false);
 
             // Just in case we also have a th:errorclass in this tag
-            structureHandler.setLocalVariable(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS, bindStatus);
+            structureHandler.setLocalVariable(SpringContextVariableNames.THYMELEAF_FIELD_BIND_STATUS, bindStatus);
 
         } else {
 

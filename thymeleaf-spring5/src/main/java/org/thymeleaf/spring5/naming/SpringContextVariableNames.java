@@ -33,8 +33,9 @@ public final class SpringContextVariableNames {
     public static final String SPRING_REQUEST_CONTEXT = "springRequestContext";
     public static final String THYMELEAF_REQUEST_CONTEXT = "thymeleafRequestContext";
 
+    public static final String THYMELEAF_FIELD_BIND_STATUS = "thymeleafFieldBindStatus";
+
     public static final String SPRING_BOUND_OBJECT_EXPRESSION = "springBoundObjectExpression";
-    public static final String SPRING_FIELD_BIND_STATUS = "springFieldBindStatus";
 
 
     

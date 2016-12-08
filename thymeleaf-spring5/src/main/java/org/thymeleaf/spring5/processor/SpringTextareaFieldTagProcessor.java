@@ -19,13 +19,13 @@
  */
 package org.thymeleaf.spring5.processor;
 
-import org.springframework.web.servlet.support.BindStatus;
-import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
+import org.thymeleaf.spring5.context.IThymeleafBindStatus;
 import org.thymeleaf.spring5.requestdata.RequestDataValueProcessorUtils;
+import org.thymeleaf.spring5.util.SpringValueFormatter;
 import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.thymeleaf.util.StringUtils;
 
@@ -51,14 +51,14 @@ public final class SpringTextareaFieldTagProcessor extends AbstractSpringFieldTa
     protected void doProcess(final ITemplateContext context,
                              final IProcessableElementTag tag,
                              final AttributeName attributeName, final String attributeValue,
-                             final BindStatus bindStatus, final IElementTagStructureHandler structureHandler) {
+                             final IThymeleafBindStatus bindStatus, final IElementTagStructureHandler structureHandler) {
 
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
 
         final String id = computeId(context, tag, name, false);
 
-        final String value = ValueFormatterWrapper.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), true);
+        final String value = SpringValueFormatter.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), true);
 
         String processedValue =
                 RequestDataValueProcessorUtils.processFormFieldValue(context, name, value, "textarea");

@@ -20,7 +20,6 @@
 package org.thymeleaf.spring5.processor;
 
 import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeDefinition;
 import org.thymeleaf.engine.AttributeDefinitions;
@@ -29,6 +28,7 @@ import org.thymeleaf.engine.IAttributeDefinitionsAware;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
+import org.thymeleaf.spring5.context.IThymeleafBindStatus;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 import org.thymeleaf.spring5.util.FieldUtils;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -170,11 +170,11 @@ public abstract class AbstractSpringFieldTagProcessor
             structureHandler.removeAttribute(attributeName);
         }
 
-        final BindStatus bindStatus = FieldUtils.getBindStatus(context, attributeValue);
+        final IThymeleafBindStatus bindStatus = FieldUtils.getBindStatus(context, attributeValue);
 
         // We set the BindStatus into a local variable just in case we have more BindStatus-related processors to
         // be applied for the same tag, like for example a th:errorclass
-        structureHandler.setLocalVariable(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS, bindStatus);
+        structureHandler.setLocalVariable(SpringContextVariableNames.THYMELEAF_FIELD_BIND_STATUS, bindStatus);
 
         doProcess(context, tag, attributeName, attributeValue, bindStatus, structureHandler);
 
@@ -188,7 +188,7 @@ public abstract class AbstractSpringFieldTagProcessor
             final IProcessableElementTag tag,
             final AttributeName attributeName,
             final String attributeValue,
-            final BindStatus bindStatus,
+            final IThymeleafBindStatus bindStatus,
             final IElementTagStructureHandler structureHandler);
 
 
