@@ -51,7 +51,7 @@ class SpringWebMvcThymeleafRequestDataValueProcessor implements IThymeleafReques
     public String processAction(final String action, final String httpMethod) {
         if (this.requestDataValueProcessor == null) {
             // The presence of a Request Data Value Processor is optional
-            return httpMethod;
+            return action;
         }
         return this.requestDataValueProcessor.processAction(this.httpServletRequest, action, httpMethod);
     }

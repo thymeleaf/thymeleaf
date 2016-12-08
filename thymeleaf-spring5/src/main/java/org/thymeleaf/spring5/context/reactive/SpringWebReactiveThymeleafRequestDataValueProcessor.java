@@ -43,7 +43,7 @@ class SpringWebReactiveThymeleafRequestDataValueProcessor implements IThymeleafR
 
     @Override
     public String processAction(final String action, final String httpMethod) {
-        return httpMethod;
+        return action;
     }
 
     @Override
