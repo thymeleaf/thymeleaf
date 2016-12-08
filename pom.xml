@@ -28,7 +28,7 @@
   <name>thymeleaf-dist</name>
   <url>http://www.thymeleaf.org</url>
 
-  <description>XML/XHTML/HTML5 template engine for Java</description>
+  <description>Modern server-side Java template engine for both web and standalone environments</description>
 
   <licenses>
     <license>
