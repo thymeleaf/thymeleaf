@@ -85,6 +85,12 @@ public final class StandardCache<K, V> implements ICache<K,V> {
 
     public StandardCache(final String name, final boolean useSoftReferences,
                          final int initialCapacity, final int maxSize, final ICacheEntryValidityChecker<? super K, ? super V> entryValidityChecker,
+                         final Logger logger) {
+        this(name, useSoftReferences, initialCapacity, maxSize, entryValidityChecker, logger, false);
+    }
+
+    public StandardCache(final String name, final boolean useSoftReferences,
+                         final int initialCapacity, final int maxSize, final ICacheEntryValidityChecker<? super K, ? super V> entryValidityChecker,
                          final Logger logger, final boolean enableCounters) {
 
         super();
@@ -101,7 +107,7 @@ public final class StandardCache<K, V> implements ICache<K,V> {
         this.logger = logger;
         this.traceExecution = (logger != null && logger.isTraceEnabled());
 
-        this.enableCounters = enableCounters;
+        this.enableCounters = this.traceExecution || enableCounters;
 
         this.dataContainer =
                 new CacheDataContainer<K,V>(this.name, initialCapacity, maxSize, this.traceExecution, this.logger);
@@ -251,7 +257,7 @@ public final class StandardCache<K, V> implements ICache<K,V> {
     // -----
 
     private void incrementReportEntity(final AtomicLong entity) {
-        if (this.traceExecution || this.enableCounters) {
+        if (this.enableCounters) {
             entity.incrementAndGet();
         }
     }
