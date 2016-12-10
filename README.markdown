@@ -1,9 +1,9 @@
 
-Thymeleaf Examples: Spring Thyme Seedstarter Manager (REACTIVE version)
+Thymeleaf Examples: Spring Thyme Seedstarter Manager (Spring Boot version)
 -----------------------------------------------------------------------
 
- This is a version of the STSM example application based on Spring 5.0,
- Spring Web Reactive and Spring Boot 2.0.
+ This is a version of the STSM example application based on Spring 5.0
+ and Spring Boot 1.4.2.
 
  To learn more:
 
