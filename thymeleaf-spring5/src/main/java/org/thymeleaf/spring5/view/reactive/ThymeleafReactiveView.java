@@ -323,7 +323,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         final SpringWebReactiveThymeleafRequestContext thymeleafRequestContext =
                 new SpringWebReactiveThymeleafRequestContext(requestContext, exchange);
 
-        addRequestContextAsVariable(mergedModel, SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
+        mergedModel.put(SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
         // Add the Thymeleaf RequestContext wrapper that we will be using in this dialect (the bare RequestContext
         // stays in the context to for compatibility with other dialects)
         mergedModel.put(SpringContextVariableNames.THYMELEAF_REQUEST_CONTEXT, thymeleafRequestContext);
@@ -780,22 +780,6 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
             }
         }
         return dataDriver;
-
-    }
-
-
-
-
-    protected static void addRequestContextAsVariable(
-            final Map<String,Object> model, final String variableName, final RequestContext requestContext)
-            throws TemplateProcessingException {
-
-        if (model.containsKey(variableName)) {
-            throw new TemplateProcessingException(
-                    "Cannot expose request context in model attribute '" + variableName +
-                    "' because an existing model object of the same name");
-        }
-        model.put(variableName, requestContext);
 
     }
 
