@@ -34,7 +34,9 @@ import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
@@ -52,6 +54,7 @@ import org.thymeleaf.context.IContext;
 import org.thymeleaf.engine.DataDrivenTemplateIterator;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.context.reactive.IReactiveDataDriverContextVariable;
+import org.thymeleaf.spring5.context.reactive.ReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.reactive.SpringWebReactiveExpressionContext;
 import org.thymeleaf.spring5.context.reactive.SpringWebReactiveThymeleafRequestContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
@@ -344,6 +347,11 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         // TODO   (in the Spring MVC integration, context variables are directly synchronized with HttpServletRequest
         // TODO   attributes for better integration with other view-layer technologies that rely directly on the request)
         // TODO   Would this be an issue here? Shouldn't we be synchronizing with ServerWebExchange attributes?
+
+
+        // Initialize those model attributes that might be instances of ReactiveLazyContextVariable and therefore
+        // need to be set the ReactiveAdapterRegistry.
+        initializeApplicationAwareModel(applicationContext, mergedModel);
 
 
         /*
@@ -780,6 +788,26 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
             }
         }
         return dataDriver;
+
+    }
+
+
+
+
+    private static void initializeApplicationAwareModel(
+            final ApplicationContext applicationContext, final Map<String,Object> model) {
+
+        for (final Object value : model.values()) {
+            if (value instanceof ReactiveDataDriverContextVariable) {
+                try {
+                    final ReactiveAdapterRegistry reactiveAdapterRegistry =
+                            applicationContext.getBean(ReactiveAdapterRegistry.class);
+                    ((ReactiveDataDriverContextVariable)value).setReactiveAdapterRegistry(reactiveAdapterRegistry);
+                } catch (final NoSuchBeanDefinitionException ignored) {
+                    // No registry, but we can live without it (though limited to Flux and Mono)
+                }
+            }
+        }
 
     }
 
