@@ -62,6 +62,21 @@ public abstract class LazyContextVariable<T> implements ILazyContextVariable<T> 
     }
 
 
+    /**
+     * <p>
+     *   Lazily resolve the value.
+     * </p>
+     * <p>
+     *   This will be transparently called by the Thymeleaf engine at template rendering time when an object
+     *   of this class is resolved in a Thymeleaf expression.
+     * </p>
+     * <p>
+     *   Note lazy variables will be resolved just once, and their resolved values will be reused as many times
+     *   as they appear in the template.
+     * </p>
+     *
+     * @return the resolved value.
+     */
     public final T getValue() {
         if (!this.initialized) {
             synchronized (this) {
@@ -75,6 +90,16 @@ public abstract class LazyContextVariable<T> implements ILazyContextVariable<T> 
     }
 
 
+    /**
+     * <p>
+     *   Perform the actual resolution of the variable's value.
+     * </p>
+     * <p>
+     *   This method will be called only once, the first time this variable is resolved.
+     * </p>
+     *
+     * @return the resolved value.
+     */
     protected abstract T loadValue();
 
 }
