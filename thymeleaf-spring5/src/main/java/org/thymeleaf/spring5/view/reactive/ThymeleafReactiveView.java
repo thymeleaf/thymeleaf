@@ -516,20 +516,10 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
         if (dataDriverSpec != null) {
 
-            final String dataDriverVariableName = dataDriverSpec.getVariableName();
-            final Publisher<Object> dataDriverStream = dataDriverSpec.getDataStream();
-            final int dataDriverBufferSizeElements = dataDriverSpec.getDataStreamBufferSizeElements();
-
-            // We will replace the data-driver ctx variable with a special throttling template iterator
-            final DataDrivenTemplateIterator throttledIterator = new DataDrivenTemplateIterator();
-            context.setVariable(dataDriverVariableName, throttledIterator);
-
             final Flux<DataBuffer> dataFlow =
                     createDataDrivenFlow(
                             templateName, viewTemplateEngine, processMarkupSelectors, context,
-                            dataDriverStream,                    // data-driver, Publisher that Thymeleaf will consume
-                            dataDriverBufferSizeElements,        // elements in the data-driver will be buffered in List<T> of this size
-                            throttledIterator,                   // iterator in charge of throttling the engine
+                            dataDriverSpec,                      // data-driver specification
                             templateResponseMaxChunkSizeBytes,   // chunk max size limit (can be none: MAX_VALUE)
                             response.bufferFactory(), charset);
 
@@ -613,6 +603,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
             final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
             final int responseMaxBufferSizeBytes, final DataBufferFactory bufferAllocator, final Charset charset) {
 
+        // Using the throttledProcessor as state in this Flux.generate allows us to delay the initialization of
+        // the throttled processor until the last moment, when output generation is really requested.
         return Flux.generate(
                 () -> initializeThrottledProcessor(templateName, templateEngine, markupSelectors, context),
                 (throttledProcessor, emitter) -> {
@@ -688,14 +680,20 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
      * data publishing flow.
      */
     static Flux<DataBuffer> createDataDrivenFlow(
-            final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
-            final Publisher<Object> dataDriverPublisher, final int dataDriverChunkSizeElements, final DataDrivenTemplateIterator dataDrivenIterator,
+            final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors,
+            final SpringWebReactiveExpressionContext context, final DataDriverSpecification dataDriverSpec,
             final int responseMaxBufferSizeBytes, final DataBufferFactory bufferAllocator, final Charset charset) {
 
-        // STEP 1: Create the data stream buffers
-        final Flux<List<Object>> dataDrivenChunkedFlow = Flux.from(dataDriverPublisher).buffer(dataDriverChunkSizeElements);
+        // STEP 1: Replace the data driver variable with a DataDrivenTemplateIterator
+        final DataDrivenTemplateIterator dataDrivenIterator = new DataDrivenTemplateIterator();
+        context.setVariable(dataDriverSpec.getVariableName(), dataDrivenIterator);
 
-        // STEP 2: Initialize the (throttled) template engine for each subscriber (normally there will only be one)
+        // STEP 2: Create the data stream buffers
+        final Flux<List<Object>> dataDrivenChunkedFlow =
+                Flux.from(dataDriverSpec.getDataStream()).
+                        buffer(dataDriverSpec.getDataStreamBufferSizeElements());
+
+        // STEP 3: Initialize the (throttled) template engine for each subscriber (normally there will only be one)
         final Flux<DataDrivenValuesWithContext> dataDrivenWithContextFlow =
                 Flux.using(
                         () -> initializeThrottledProcessor(templateName, templateEngine, markupSelectors, context),
@@ -706,7 +704,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                                 ),
                         throttledProcessor -> { /* no need to perform any cleanup operations */ });
 
-        // STEP 3: React to each buffer of published data by creating one or many (concatMap) DataBuffers containing
+        // STEP 4: React to each buffer of published data by creating one or many (concatMap) DataBuffers containing
         //         the result of processing only that buffer.
         return dataDrivenWithContextFlow.concatMap(
                 valuesWithContext ->
