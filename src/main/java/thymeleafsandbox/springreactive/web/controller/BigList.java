@@ -67,7 +67,7 @@ public class BigList {
 
         final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
         // No need to fully resolve the Publisher! We will just let it drive
-        model.addAttribute("dataSource", new ReactiveDataDriverContextVariable<>(playlistFlow, 1000));
+        model.addAttribute("dataSource", new ReactiveDataDriverContextVariable(playlistFlow, 1000));
 
         return "thymeleaf/biglist-datadriven";
 
