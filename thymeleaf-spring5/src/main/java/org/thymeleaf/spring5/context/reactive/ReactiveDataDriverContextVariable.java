@@ -20,7 +20,9 @@
 package org.thymeleaf.spring5.context.reactive;
 
 import org.reactivestreams.Publisher;
+import org.springframework.core.ReactiveAdapterRegistry;
 import org.thymeleaf.util.Validate;
+import reactor.core.publisher.Flux;
 
 /**
  * <p>
@@ -30,6 +32,13 @@ import org.thymeleaf.util.Validate;
  *   This class works very similarly to {@link ReactiveLazyContextVariable} (from which it extends),
  *   but also marks the variable as a valid <strong>data-driver</strong> for the template, effectively
  *   putting Thymeleaf in <em>data-driven</em> execution mode.
+ *   <strong>Templates executed in <em>data-driven</em> mode are expected to have some kind <em>iteration</em>
+ *   on the data-driver variable</strong>, normally by means of a <tt>th:each</tt> attribute.
+ * </p>
+ * <p>
+ *   Note that data-driver variables require the reactive asynchronous object they wrap to be
+ *   <strong>multi-valued</strong>. See {@link IReactiveLazyContextVariable#isMultiValued()} for details on what
+ *   this means.
  * </p>
  * <p>
  *   Example use:
@@ -37,8 +46,8 @@ import org.thymeleaf.util.Validate;
  * <pre><code>
  * &#64;RequestMapping("/something")
  * public String doSomething(final Model model) {
- *     final Publisher&lt;Item&gt; data = ...;
- *     model.addAttribute("data", new ReactiveDataDriverContextVariable&lt;&gt;(data, 100));
+ *     final Publisher&lt;Item&gt; data = ...; // This has to be MULTI-VALUED (e.g. Flux)
+ *     model.addAttribute("data", new ReactiveDataDriverContextVariable(data, 100));
  *     return "view";
  * }
  * </code></pre>
@@ -65,28 +74,97 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.3
  *
  */
-public class ReactiveDataDriverContextVariable<T>
-        extends ReactiveLazyContextVariable<T>
-        implements IReactiveDataDriverContextVariable<T> {
+public class ReactiveDataDriverContextVariable
+        extends ReactiveLazyContextVariable
+        implements IReactiveDataDriverContextVariable {
 
+    /**
+     * <p>
+     *   Default chunk size to be applied if none is specified. Value = <tt>100</tt>.
+     * </p>
+     */
     public static final int DEFAULT_DATA_DRIVER_CHUNK_SIZE_ELEMENTS = 100;
 
-    public final int dataChunkSize;
+    private final int dataChunkSize;
 
 
-    public ReactiveDataDriverContextVariable(final Publisher<T> dataStream) {
+    /**
+     * <p>
+     *   Creates a new lazy context variable, wrapping a reactive asynchronous data stream.
+     * </p>
+     * <p>
+     *   Chunk size will be set to {@link #DEFAULT_DATA_DRIVER_CHUNK_SIZE_ELEMENTS}.
+     * </p>
+     * <p>
+     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Stream's
+     *   {@link Publisher} by means of Spring's {@link ReactiveAdapterRegistry} mechanism. If no
+     *   adapter has been registered for the type of the asynchronous object, and exception will be
+     *   thrown during lazy resolution.
+     * </p>
+     * <p>
+     *   Note the specified <tt>dataStream</tt> must be <strong>multi-valued</strong>. See
+     *   {@link IReactiveLazyContextVariable#isMultiValued()}.
+     * </p>
+     * <p>
+     *   Examples of supported implementations are Reactor's {@link Flux} (but not
+     *   {@link reactor.core.publisher.Mono}), and also RxJava's <tt>Observable</tt>
+     *   (but not <tt>Single</tt>).
+     * </p>
+     *
+     * @param dataStream the asynchronous object, which must be convertible to a multi-valued {@link Publisher} by
+     *                    means of Spring's {@link ReactiveAdapterRegistry}.
+     */
+    public ReactiveDataDriverContextVariable(final Object dataStream) {
         this(dataStream, DEFAULT_DATA_DRIVER_CHUNK_SIZE_ELEMENTS);
     }
 
-    public ReactiveDataDriverContextVariable(final Publisher<T> dataStream, final int dataChunkSizeElements) {
+
+    /**
+     * <p>
+     *   Creates a new lazy context variable, wrapping a reactive asynchronous data stream and specifying a
+     *   chunk size.
+     * </p>
+     * <p>
+     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Stream's
+     *   {@link Publisher} by means of Spring's {@link ReactiveAdapterRegistry} mechanism. If no
+     *   adapter has been registered for the type of the asynchronous object, and exception will be
+     *   thrown during lazy resolution.
+     * </p>
+     * <p>
+     *   Note the specified <tt>dataStream</tt> must be <strong>multi-valued</strong>. See
+     *   {@link IReactiveLazyContextVariable#isMultiValued()}.
+     * </p>
+     * <p>
+     *   Examples of supported implementations are Reactor's {@link Flux} (but not
+     *   {@link reactor.core.publisher.Mono}), and also RxJava's <tt>Observable</tt>
+     *   (but not <tt>Single</tt>).
+     * </p>
+     *
+     * @param dataStream the asynchronous object, which must be convertible to a multi-valued {@link Publisher} by
+     *                    means of Spring's {@link ReactiveAdapterRegistry}.
+     * @param dataChunkSizeElements the chunk size to be applied.
+     */
+    public ReactiveDataDriverContextVariable(final Object dataStream, final int dataChunkSizeElements) {
         super(dataStream);
         Validate.isTrue(dataChunkSizeElements > 0, "Data Chunk Size cannot be <= 0");
         this.dataChunkSize = dataChunkSizeElements;
     }
 
 
-    public int getDataStreamBufferSizeElements() {
+    public final int getDataStreamBufferSizeElements() {
         return this.dataChunkSize;
+    }
+
+
+    @Override
+    protected Publisher<Object> loadPublisherValue(final Object asyncObj, final ReactiveAdapterRegistry reactiveAdapterRegistry) {
+        final Publisher<Object> publisher = super.loadPublisherValue(asyncObj, reactiveAdapterRegistry);
+        if (!(publisher instanceof Flux)) {
+            throw new IllegalArgumentException(
+                    "Reactive Data Driver context variable was set single-valued aynchronous object. But data driver " +
+                    "variables must wrap multi-valued data streams (so that they can be iterated at the template");
+        }
+        return publisher;
     }
 
 }

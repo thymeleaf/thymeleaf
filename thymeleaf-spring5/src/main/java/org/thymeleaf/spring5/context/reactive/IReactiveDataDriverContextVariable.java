@@ -21,13 +21,9 @@ package org.thymeleaf.spring5.context.reactive;
 
 /**
  * <p>
- *   Interface to be implemented by context variables wrapping <em>reactive data streams</em> which
- *   are meant to <em>drive</em> the reactive-friendly execution of a template (making Thymeleaf act as a consumer of
- *   this data stream).
- * </p>
- * <p>
- *   The wrapped <em>data stream</em> variable will usually have the shape of an implementation of the
- *   {@link org.reactivestreams.Publisher} interface, such as {@link reactor.core.publisher.Flux}.
+ *   Interface to be implemented by context variables wrapping <em>asynchronous objects</em> in the form
+ *   of <em>reactive data streams</em> which are meant to <em>drive</em> the reactive-friendly execution of a
+ *   template (making Thymeleaf act as a consumer of this data stream).
  * </p>
  * <p>
  *   This interface extends from {@link IReactiveLazyContextVariable} and inherits all of its related
@@ -36,6 +32,11 @@ package org.thymeleaf.spring5.context.reactive;
  *   mode</strong>, and only one of these variables is allowed to appear in the context for template execution.
  *   <strong>Templates executed in <em>data-driven</em> mode are expected to have some kind <em>iteration</em>
  *   on the data-driver variable</strong>, normally by means of a <tt>th:each</tt> attribute.
+ * </p>
+ * <p>
+ *   Note that data-driver variables require the reactive asynchronous object they wrap to be
+ *   <strong>multi-valued</strong>. See {@link IReactiveLazyContextVariable#isMultiValued()} for details on what
+ *   this means.
  * </p>
  * <p>
  *   Variables of this type have a {@link #getDataStreamBufferSizeElements()} property, which describes
@@ -49,13 +50,13 @@ package org.thymeleaf.spring5.context.reactive;
  *   directly usable in most scenarios.
  * </p>
  * <p>
- *   Example use:
+ *   Example use (using {@link ReactiveDataDriverContextVariable}):
  * </p>
  * <pre><code>
  * &#64;RequestMapping("/something")
  * public String doSomething(final Model model) {
- *     final Publisher&lt;Item&gt; data = ...;
- *     model.addAttribute("data", new ReactiveDataDriverContextVariable&lt;&gt;(data, 100));
+ *     final Publisher&lt;Item&gt; data = ...; // This has to be MULTI-VALUED (e.g. Flux)
+ *     model.addAttribute("data", new ReactiveDataDriverContextVariable(data, 100));
  *     return "view";
  * }
  * </code></pre>
@@ -72,14 +73,12 @@ package org.thymeleaf.spring5.context.reactive;
  * &lt;/table&gt;
  * </code></pre>
  *
- * @param <T> the type of the values being returned by the wrapped data stream.
- *
  * @author Daniel Fern&aacute;ndez
  *
  * @since 3.0.3
  *
  */
-public interface IReactiveDataDriverContextVariable<T> extends IReactiveLazyContextVariable<T> {
+public interface IReactiveDataDriverContextVariable extends IReactiveLazyContextVariable {
 
     /**
      * <p>

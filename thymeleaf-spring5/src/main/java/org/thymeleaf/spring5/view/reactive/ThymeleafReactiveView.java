@@ -354,6 +354,15 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         initializeApplicationAwareModel(applicationContext, mergedModel);
 
 
+        // Search the model for a variable that might be meant to act as a data-driver
+        final DataDriverSpecification dataDriverSpec;
+        try {
+            dataDriverSpec = findDataDriverInModel(mergedModel);
+        } catch (final TemplateProcessingException e) {
+            return Mono.error(e);
+        }
+
+
         /*
          * ----------------------------------------------------------------------------------------------------------
          * INSTANTIATION OF THE CONTEXT
@@ -505,16 +514,9 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
          * ----------------------------------------------------------------------------------------------------------
          */
 
-        final DataDriverSpecification dataDriverSpec;
-        try {
-            dataDriverSpec = findDataDriverInContext(context);
-        } catch (final TemplateProcessingException e) {
-            return Mono.error(e);
-        }
-
         if (dataDriverSpec != null) {
 
-            final String dataDriverVariableName = dataDriverSpec.getContextVariableName();
+            final String dataDriverVariableName = dataDriverSpec.getVariableName();
             final Publisher<Object> dataDriverStream = dataDriverSpec.getDataStream();
             final int dataDriverBufferSizeElements = dataDriverSpec.getDataStreamBufferSizeElements();
 
@@ -766,27 +768,39 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
 
-    private static DataDriverSpecification findDataDriverInContext(final SpringWebReactiveExpressionContext context) {
+    private static DataDriverSpecification findDataDriverInModel(final Map<String, Object> model) {
 
         // In SpringWebReactiveExpressionContext, variables are backed by a Map<String,Object>. So this
         // iteration on all the names and many "get()" calls shouldn't be an issue perf-wise.
         DataDriverSpecification dataDriver = null;
-        final Set<String> variableNames = context.getVariableNames();
-        for (final String variableName : variableNames) {
-            final Object variableValue = context.getVariable(variableName);
-            if (variableValue != null && variableValue instanceof IReactiveDataDriverContextVariable<?>) {
+        for (final Map.Entry<String,Object> modelEntry : model.entrySet()) {
+
+            final String variableName = modelEntry.getKey();
+            final Object variableValue = modelEntry.getValue();
+
+            if (variableValue instanceof IReactiveDataDriverContextVariable) {
+
                 if (dataDriver != null) {
                     throw new TemplateProcessingException(
                             "Only one data-driver variable is allowed to be specified as a model attribute, but " +
-                            "at least two have been identified: '" + dataDriver.getContextVariableName() + "' " +
+                            "at least two have been identified: '" + dataDriver.getVariableName() + "' " +
                             "and '" + variableName + "'");
                 }
-                final IReactiveDataDriverContextVariable<Object> dataDriverContextVariable =
-                        (IReactiveDataDriverContextVariable<Object>) variableValue;
+
+                final IReactiveDataDriverContextVariable dataDriverContextVariable =
+                        (IReactiveDataDriverContextVariable) variableValue;
+                if (!dataDriverContextVariable.isMultiValued()) {
+                    throw new TemplateProcessingException(
+                            "Data-driver variables are required to wrap multi-valued data streams, but " +
+                            "a single-valued data stream has been specified as '" + variableName + "'");
+                }
                 return new DataDriverSpecification(
-                        variableName, dataDriverContextVariable.getDataStream(), dataDriverContextVariable.getDataStreamBufferSizeElements());
+                        variableName, dataDriverContextVariable.getAsyncPublisher(),
+                        dataDriverContextVariable.getDataStreamBufferSizeElements());
             }
+
         }
+
         return dataDriver;
 
     }
@@ -816,21 +830,21 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
     static final class DataDriverSpecification {
 
-        private final String contextVariableName;
+        private final String variableName;
         private final Publisher<Object> dataStream;
         private final int dataStreamBufferSizeElements;
 
         public DataDriverSpecification(
-                final String contextVariableName, final Publisher<Object> dataStream, final int dataStreamBufferSizeElements) {
+                final String variableName, final Publisher<Object> dataStream, final int dataStreamBufferSizeElements) {
             super();
-            Validate.isTrue(dataStreamBufferSizeElements > 0, "Data Stream Buffer Size cannot be <= 0 for variable " + contextVariableName);
-            this.contextVariableName = contextVariableName;
+            Validate.isTrue(dataStreamBufferSizeElements > 0, "Data Stream Buffer Size cannot be <= 0 for variable " + variableName);
+            this.variableName = variableName;
             this.dataStream = dataStream;
             this.dataStreamBufferSizeElements = dataStreamBufferSizeElements;
         }
 
-        public String getContextVariableName() {
-            return this.contextVariableName;
+        public String getVariableName() {
+            return this.variableName;
         }
 
         public Publisher<Object> getDataStream() {
