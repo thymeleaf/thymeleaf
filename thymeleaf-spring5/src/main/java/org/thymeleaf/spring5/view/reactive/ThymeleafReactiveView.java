@@ -694,36 +694,39 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                         buffer(dataDriverSpec.getDataStreamBufferSizeElements());
 
         // STEP 3: Initialize the (throttled) template engine for each subscriber (normally there will only be one)
-        final Flux<DataDrivenValuesWithContext> dataDrivenWithContextFlow =
+        final Flux<DataDrivenFluxStep> dataDrivenWithContextFlow =
                 Flux.using(
                         () -> initializeThrottledProcessor(templateName, templateEngine, markupSelectors, context),
                         throttledProcessor ->
                                 Flux.concat(
-                                        dataDrivenChunkedFlow.map(values -> new DataDrivenValuesWithContext(throttledProcessor, values)),
-                                        Mono.just(new DataDrivenValuesWithContext(throttledProcessor, null)) // Will process the part of the template after iteration
+                                        Mono.just(DataDrivenFluxStep.forHead(throttledProcessor)),
+                                        dataDrivenChunkedFlow.map(values -> DataDrivenFluxStep.forBuffer(throttledProcessor, values)),
+                                        Mono.just(DataDrivenFluxStep.forTail(throttledProcessor))
                                 ),
                         throttledProcessor -> { /* no need to perform any cleanup operations */ });
 
         // STEP 4: React to each buffer of published data by creating one or many (concatMap) DataBuffers containing
         //         the result of processing only that buffer.
         return dataDrivenWithContextFlow.concatMap(
-                valuesWithContext ->
-                        Flux.generate(
+                step -> Flux.generate(
                                 () -> {
-
-                                    final List<Object> values = valuesWithContext.getValues();
-                                    if (values != null) {
-                                        dataDrivenIterator.feedBuffer(values);
-                                    } else {
+                                    if (step.isHead()) {
+                                        // Feed with no elements - we just want to output the part of the
+                                        // template that goes before the iteration of the data driver.
+                                        dataDrivenIterator.feedBuffer(Collections.emptyList());
+                                    } else if (step.isDataBuffer()){
+                                        // Value-based execution: we have values and we want to iterate them
+                                        dataDrivenIterator.feedBuffer(step.getValues());
+                                    } else { // step.isTail()
+                                        // Signal feeding complete, indicating this is just meant to output the
+                                        // rest of the template after the iteration of the data friver.
                                         dataDrivenIterator.feedingComplete();
                                     }
-                                    return valuesWithContext;
-
+                                    return step;
                                 },
-                                (vwc, emitter) -> {
+                                (fluxStep, emitter) -> {
 
-                                    final List<Object> values = vwc.getValues();
-                                    final IThrottledTemplateProcessor throttledProcessor = vwc.getThrottledProcessor();
+                                    final IThrottledTemplateProcessor throttledProcessor = fluxStep.getThrottledProcessor();
 
                                     final DataBuffer buffer =
                                             (responseMaxBufferSizeBytes != Integer.MAX_VALUE?
@@ -739,17 +742,20 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
                                     emitter.next(buffer);
 
-                                    if (values != null) {
-                                        if (!dataDrivenIterator.continueBufferExecution()) {
-                                            emitter.complete();
-                                        }
-                                    } else {
-                                        if (throttledProcessor.isFinished()) {
-                                            emitter.complete();
-                                        }
+
+                                    if (!fluxStep.isTail() && !dataDrivenIterator.continueBufferExecution()) {
+                                        // We have finished executing this chunk of items
+                                        emitter.complete();
                                     }
 
-                                    return vwc;
+                                    if (throttledProcessor.isFinished()) {
+                                        // We have finished executing the template, which can happen after
+                                        // finishing iterating all data driver values, or also if we are at the
+                                        // first execution and there was no need to use the data driver at all
+                                        emitter.complete();
+                                    }
+
+                                    return fluxStep;
 
                                 })
 
@@ -858,24 +864,54 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
 
-    static final class DataDrivenValuesWithContext {
+    static final class DataDrivenFluxStep {
 
         private final IThrottledTemplateProcessor throttledProcessor;
         private final List<Object> values;
+        private final boolean head;
+        private final boolean tail;
 
-        public DataDrivenValuesWithContext(
-                final IThrottledTemplateProcessor throttledProcessor, final List<Object> values) {
+
+        static DataDrivenFluxStep forHead(final IThrottledTemplateProcessor throttledProcessor) {
+            return new DataDrivenFluxStep(throttledProcessor, null, true, false);
+        }
+
+        static DataDrivenFluxStep forBuffer(final IThrottledTemplateProcessor throttledProcessor, final List<Object> values) {
+            return new DataDrivenFluxStep(throttledProcessor, values, false, false);
+        }
+
+        static DataDrivenFluxStep forTail(final IThrottledTemplateProcessor throttledProcessor) {
+            return new DataDrivenFluxStep(throttledProcessor, null, false, true);
+        }
+
+        private DataDrivenFluxStep(
+                final IThrottledTemplateProcessor throttledProcessor, final List<Object> values,
+                final boolean head, final boolean tail) {
             super();
             this.throttledProcessor = throttledProcessor;
             this.values = values;
+            this.head = head;
+            this.tail = tail;
         }
 
-        public IThrottledTemplateProcessor getThrottledProcessor() {
+        IThrottledTemplateProcessor getThrottledProcessor() {
             return this.throttledProcessor;
         }
 
-        public List<Object> getValues() {
+        List<Object> getValues() {
             return this.values;
+        }
+
+        boolean isHead() {
+            return this.head;
+        }
+
+        boolean isDataBuffer() {
+            return this.values != null;
+        }
+
+        boolean isTail() {
+            return this.tail;
         }
 
     }
