@@ -80,7 +80,11 @@ final class ThrottledTemplateWriter extends Writer {
                     "but an OutputStream has been specified.", this.templateName, -1, -1, null);
         }
         if (this.adapter == null) {
-            final int adapterOverflowBufferIncrementBytes = (maxOutputInBytes == Integer.MAX_VALUE? 128 : maxOutputInBytes / 8);
+            final int adapterOverflowBufferIncrementBytes =
+                    (maxOutputInBytes == Integer.MAX_VALUE?
+                            128 :
+                            // output size could be too small, so we will set a minimum of 16b, and max of 128b
+                            Math.min(128, Math.max(16, maxOutputInBytes / 8)));
             this.adapter = new ThrottledTemplateWriterOutputStreamAdapter(this.templateName, this.flowController, adapterOverflowBufferIncrementBytes);
             // We cannot directly use a java.io.OutputStreamWriter here because that class uses a CharsetEncoder
             // underneath that always creates a 8192byte (8KB) buffer, and there is no way to configure that.
@@ -105,7 +109,13 @@ final class ThrottledTemplateWriter extends Writer {
             // Last, note that in order to avoid this 'loss of chars' we will combine this with 'flush' calls at the
             // 'isOverflown()' and 'isStopped()' calls.
             final CharsetEncoder charsetEncoder = charset.newEncoder();
-            int channelBufferSize = (maxOutputInBytes == Integer.MAX_VALUE? 1024 : adapterOverflowBufferIncrementBytes * 2);
+            int channelBufferSize =
+                    (maxOutputInBytes == Integer.MAX_VALUE?
+                            1024 :
+                            // Buffers of CharsetEncoders behave strangely (even hanging) when the buffers being
+                            // set are too small to house the encoding of some elements (e.g. 1 or 2 bytes). So we
+                            // will set a minimum of 64b and a max of 512b.
+                            Math.min(512, Math.max(64, adapterOverflowBufferIncrementBytes * 2)));
             final WritableByteChannel channel = Channels.newChannel((ThrottledTemplateWriterOutputStreamAdapter)this.adapter);
             this.writer = Channels.newWriter(channel, charsetEncoder, channelBufferSize);
             // Use of a wrapping BufferedWriter is recommended by OutputStreamWriter javadoc for improving efficiency,
