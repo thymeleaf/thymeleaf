@@ -24,6 +24,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -689,7 +690,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         context.setVariable(dataDriverSpec.getVariableName(), dataDrivenIterator);
 
         // STEP 2: Create the data stream buffers
-        final Flux<List<Object>> dataDrivenChunkedFlow =
+        final Flux<List<Object>> dataDrivenBufferedFlow =
                 Flux.from(dataDriverSpec.getDataStream()).
                         buffer(dataDriverSpec.getDataStreamBufferSizeElements());
 
@@ -697,12 +698,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         final Flux<DataDrivenFluxStep> dataDrivenWithContextFlow =
                 Flux.using(
                         () -> initializeThrottledProcessor(templateName, templateEngine, markupSelectors, context),
-                        throttledProcessor ->
-                                Flux.concat(
-                                        Mono.just(DataDrivenFluxStep.forHead(throttledProcessor)),
-                                        dataDrivenChunkedFlow.map(values -> DataDrivenFluxStep.forBuffer(throttledProcessor, values)),
-                                        Mono.just(DataDrivenFluxStep.forTail(throttledProcessor))
-                                ),
+                        throttledProcessor -> Flux.concat(() -> prepareDataDrivenIterator(throttledProcessor, dataDrivenBufferedFlow)),
                         throttledProcessor -> { /* no need to perform any cleanup operations */ });
 
         // STEP 4: React to each buffer of published data by creating one or many (concatMap) DataBuffers containing
@@ -719,7 +715,11 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                                         dataDrivenIterator.feedBuffer(step.getValues());
                                     } else { // step.isTail()
                                         // Signal feeding complete, indicating this is just meant to output the
-                                        // rest of the template after the iteration of the data friver.
+                                        // rest of the template after the iteration of the data driver. Note there
+                                        // is a case when this phase will still provoke the output of an iteration,
+                                        // and this is when the number of iterations is exactly ONE. In this case,
+                                        // it won't be possible to determine the iteration type (ZERO, ONE, MULTIPLE)
+                                        // until we close it with this 'feedingComplete()'
                                         dataDrivenIterator.feedingComplete();
                                     }
                                     return step;
@@ -740,19 +740,38 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                                         return null;
                                     }
 
+                                    // Buffer created, send it to the output channels
                                     emitter.next(buffer);
 
-
-                                    if (!fluxStep.isTail() && !dataDrivenIterator.continueBufferExecution()) {
-                                        // We have finished executing this chunk of items
-                                        emitter.complete();
-                                    }
-
+                                    // Now it's time to determine if we should execute another time for the same
+                                    // data-driven step or rather we should consider we have done everything possible
+                                    // for this step (e.g. produced all markup for a data stream buffer) and just
+                                    // emit "complete" and go for the next step.
                                     if (throttledProcessor.isFinished()) {
+
                                         // We have finished executing the template, which can happen after
                                         // finishing iterating all data driver values, or also if we are at the
                                         // first execution and there was no need to use the data driver at all
                                         emitter.complete();
+
+                                    } else {
+
+                                        if (fluxStep.isHead() && dataDrivenIterator.hasBeenQueried()) {
+
+                                            // We know everything before the data driven iteration has already been
+                                            // processed because the iterator has been used at least once (i.e. its
+                                            // 'hasNext()' or 'next()' method have been called at least once).
+                                            emitter.complete();
+
+                                        } else if (fluxStep.isDataBuffer() && !dataDrivenIterator.continueBufferExecution()) {
+                                            // We have finished executing this buffer of items and we can go for the
+                                            // next one or maybe the tail.
+                                            emitter.complete();
+                                        }
+                                        // fluxStep.isTail(): nothing to do, as the only reason we would have to emit
+                                        // 'complete' at the tail step would be throttledProcessor.isFinished(), which
+                                        // has been already checked.
+
                                     }
 
                                     return fluxStep;
@@ -760,6 +779,50 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                                 })
 
                 );
+
+    }
+
+
+
+    /*
+     * The idea behind the creation of this iterator is to be able to avoid the resolution of the
+     * data driver stream if the template doesn't really contain any references to it. It might have been
+     * added to the model in error or as a part of a pack of variables added "just in case they are needed", but
+     * the specific logic resolution of the template might end up not needing it. In such case, we need to
+     * make sure that the Thymeleaf engine does not hang after processing all template markup, waiting for
+     * a stream iteration that will never happen.
+     */
+    private static Iterator<Publisher<? extends DataDrivenFluxStep>> prepareDataDrivenIterator(
+            final IThrottledTemplateProcessor throttledProcessor, final Flux<List<Object>> dataDrivenBufferedFlow) {
+
+        final List<Publisher<? extends DataDrivenFluxStep>> steps =
+                Arrays.asList(
+                        // Step 0: head (markup before data stream iteration)
+                        // Step 1: data stream iteration
+                        // Step 2: tail (markup after data stream iteration, or maybe containing one remaining iter)
+                        Mono.just(DataDrivenFluxStep.forHead(throttledProcessor)),
+                        dataDrivenBufferedFlow.map(values -> DataDrivenFluxStep.forBuffer(throttledProcessor, values)),
+                        Mono.just(DataDrivenFluxStep.forTail(throttledProcessor)));
+
+        final Iterator<Publisher<? extends DataDrivenFluxStep>> stepIterator = steps.iterator();
+
+        return new Iterator<Publisher<? extends DataDrivenFluxStep>>() {
+
+            @Override
+            public boolean hasNext() {
+                // This is mainly meant to avoid passing from step 0 (head) to step 1 (data stream) if all markup
+                // has already been processed, which basically means that the data driven stream variable was not
+                // really needed...
+                return !throttledProcessor.isFinished() && stepIterator.hasNext();
+            }
+
+            // TODO * Somehow next() is actually been called in a sort of prefetch, before the head calls complete()
+            @Override
+            public Publisher<? extends DataDrivenFluxStep> next() {
+                return stepIterator.next();
+            }
+
+        };
 
     }
 
