@@ -726,6 +726,13 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                                 },
                                 (fluxStep, emitter) -> {
 
+                                    // TODO * In general, we should make the output traceable, but better do it after
+                                    // TODO   this has been refactored towards the TemplateEngine / FlowExecutor, which
+                                    // TODO   should receive some kind of OutputStream-factory abstraction (with a
+                                    // TODO   default implementation based on DataBufferFactory).
+                                    // TODO
+                                    // TODO * BufferAllocator is now DataBufferFactory
+
                                     final IThrottledTemplateProcessor throttledProcessor = fluxStep.getThrottledProcessor();
 
                                     final DataBuffer buffer =
@@ -740,6 +747,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                                         return null;
                                     }
 
+                                    // TODO * If a wrapping OutputStream is introduced, it should count the written
+                                    // TODO   bytes and let at this point determine if we need to actually emit 'next'.
                                     // Buffer created, send it to the output channels
                                     emitter.next(buffer);
 
