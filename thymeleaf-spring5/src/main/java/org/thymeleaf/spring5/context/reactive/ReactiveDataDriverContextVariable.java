@@ -80,12 +80,12 @@ public class ReactiveDataDriverContextVariable
 
     /**
      * <p>
-     *   Default chunk size to be applied if none is specified. Value = <tt>100</tt>.
+     *   Default buffer size to be applied if none is specified. Value = <tt>100</tt>.
      * </p>
      */
-    public static final int DEFAULT_DATA_DRIVER_CHUNK_SIZE_ELEMENTS = 100;
+    public static final int DEFAULT_DATA_DRIVER_BUFFER_SIZE_ELEMENTS = 100;
 
-    private final int dataChunkSize;
+    private final int dataStreamBufferSizeElements;
 
 
     /**
@@ -93,7 +93,7 @@ public class ReactiveDataDriverContextVariable
      *   Creates a new lazy context variable, wrapping a reactive asynchronous data stream.
      * </p>
      * <p>
-     *   Chunk size will be set to {@link #DEFAULT_DATA_DRIVER_CHUNK_SIZE_ELEMENTS}.
+     *   Buffer size will be set to {@link #DEFAULT_DATA_DRIVER_BUFFER_SIZE_ELEMENTS}.
      * </p>
      * <p>
      *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Stream's
@@ -115,14 +115,14 @@ public class ReactiveDataDriverContextVariable
      *                    means of Spring's {@link ReactiveAdapterRegistry}.
      */
     public ReactiveDataDriverContextVariable(final Object dataStream) {
-        this(dataStream, DEFAULT_DATA_DRIVER_CHUNK_SIZE_ELEMENTS);
+        this(dataStream, DEFAULT_DATA_DRIVER_BUFFER_SIZE_ELEMENTS);
     }
 
 
     /**
      * <p>
      *   Creates a new lazy context variable, wrapping a reactive asynchronous data stream and specifying a
-     *   chunk size.
+     *   buffer size.
      * </p>
      * <p>
      *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Stream's
@@ -142,17 +142,17 @@ public class ReactiveDataDriverContextVariable
      *
      * @param dataStream the asynchronous object, which must be convertible to a multi-valued {@link Publisher} by
      *                    means of Spring's {@link ReactiveAdapterRegistry}.
-     * @param dataChunkSizeElements the chunk size to be applied.
+     * @param dataStreamBufferSizeElements the buffer size to be applied (in elements).
      */
-    public ReactiveDataDriverContextVariable(final Object dataStream, final int dataChunkSizeElements) {
+    public ReactiveDataDriverContextVariable(final Object dataStream, final int dataStreamBufferSizeElements) {
         super(dataStream);
-        Validate.isTrue(dataChunkSizeElements > 0, "Data Chunk Size cannot be <= 0");
-        this.dataChunkSize = dataChunkSizeElements;
+        Validate.isTrue(dataStreamBufferSizeElements > 0, "Data Buffer Size cannot be <= 0");
+        this.dataStreamBufferSizeElements = dataStreamBufferSizeElements;
     }
 
 
     public final int getDataStreamBufferSizeElements() {
-        return this.dataChunkSize;
+        return this.dataStreamBufferSizeElements;
     }
 
 
