@@ -28,7 +28,7 @@ import org.thymeleaf.engine.IteratedGatheringModelProcessable.IterationType;
 
 /**
  * <p>
- *   Throttled implementation of {@link Iterator}, meant to be used in scenarios when an iterated
+ *   Throttled implementation of {@link Iterator}, meant to be queried in scenarios when an iterated
  *   context variable is allowed to be in control of the engine's throttling (i.e. the engine's execution
  *   is <em>data-driven</em>).
  * </p>
@@ -52,6 +52,7 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
     private final List<Object> values;
     private IterationType iterationType;
     private boolean feedingComplete;
+    private boolean queried;
 
 
     public DataDrivenTemplateIterator() {
@@ -59,11 +60,13 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
         this.values = new ArrayList<Object>(10);
         this.iterationType = null;
         this.feedingComplete = false;
+        this.queried = false;
     }
 
 
     @Override
     public boolean hasNext() {
+        this.queried = true;
         if (this.iterationType == null) {
             throw new IllegalStateException("hasNext(): Throttled iterator has not yet computed the iteration type");
         }
@@ -73,6 +76,8 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
 
     @Override
     public Object next() {
+
+        this.queried = true;
 
         if (this.iterationType == null) {
             throw new IllegalStateException("next(): Throttled iterator has not yet computed the iteration type");
@@ -89,6 +94,25 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
     }
 
 
+    /**
+     * <p>
+     *   Returns whether this data driven iterator has been actually queried, i.e., whether its {@link #hasNext()} or
+     *   {@link #next()} methods have been called at least once.
+     * </p>
+     * <p>
+     *   This indicates if the template has actually reached a point at which this iterator has been already
+     *   needed or not.
+     * </p>
+     *
+     * @return <tt>true</tt> if this iterator has been queried, <tt>false</tt> if not.
+     *
+     * @since 3.0.3
+     */
+    public boolean hasBeenQueried() {
+        return this.queried;
+    }
+
+
     @Override
     public void remove() {
         throw new UnsupportedOperationException("remove() is not supported in Throttled Iterator");
@@ -101,6 +125,7 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
 
 
     boolean isPaused() {
+        this.queried = true;
         if (this.iterationType != null) {
             if (!this.values.isEmpty() || this.feedingComplete) {
                 return false;
