@@ -96,7 +96,7 @@ final class ThrottledTemplateWriter extends Writer {
             // will basically work in the same way as an OutputStreamWriter, but by building it manually we will be
             // able to specify the size of the buffer to be used.
             //
-            // And we do not want the buffer at the Writer -> OutputStream converter to completely dissapear, because
+            // And we do not want the buffer at the Writer -> OutputStream converter to completely disappear, because
             // it actually improves the performance of the converter. So we will use the maxOutputInBytes (the size
             // of the output to be obtained from the throttled template the first time) as an approximate measure
             // of what we will need in subsequent calls, and we will to try to adjust the size of the buffer so
