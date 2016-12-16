@@ -257,7 +257,7 @@ public class ThymeleafViewResolver
      * </p>
      * <p>
      *   Spring MVC applications can have several view resolvers configured,
-     *   and this <tt>order</tt> property established the order in which
+     *   and this <tt>order</tt> property establishes the order in which
      *   they will be queried for view resolution.
      * </p>
      * 
@@ -275,7 +275,7 @@ public class ThymeleafViewResolver
      * </p>
      * <p>
      *   Spring MVC applications can have several view resolvers configured,
-     *   and this <tt>order</tt> property established the order in which
+     *   and this <tt>order</tt> property establishes the order in which
      *   they will be queried for view resolution.
      * </p>
      * 
