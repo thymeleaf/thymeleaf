@@ -467,9 +467,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         final HttpHeaders responseHeaders = exchange.getResponse().getHeaders();
         final Locale templateLocale = getLocale();
         if (templateLocale != null) {
-            // TODO * Change this to less-artisan code if the HttpHeaders class at some point in the future allows
-            // TODO   setting the Content-Language at a higher level.
-            responseHeaders.set("Content-Language", templateLocale.toString());
+            responseHeaders.setContentLanguage(templateLocale);
         }
 
         // Get the charset from the selected content type (or use default)
