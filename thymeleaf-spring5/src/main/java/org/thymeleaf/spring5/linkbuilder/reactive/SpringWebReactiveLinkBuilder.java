@@ -108,15 +108,12 @@ public class SpringWebReactiveLinkBuilder extends StandardLinkBuilder {
     @Override
     protected String processLink(final IExpressionContext context, final String link) {
 
-        // TODO * There is still no way to apply URL-encoding to URLs in Spring Web Reactive.
-        // TODO   See https://jira.spring.io/browse/SPR-14529
         if (!(context instanceof ISpringWebReactiveContext)) {
             return link;
         }
 
         final ServerHttpResponse response = ((ISpringWebReactiveContext)context).getResponse();
-
-        return link;
+        return response.encodeUrl(link);
 
     }
 
