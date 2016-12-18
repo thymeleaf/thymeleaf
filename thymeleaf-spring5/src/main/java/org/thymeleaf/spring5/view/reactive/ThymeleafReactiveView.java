@@ -24,7 +24,6 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -697,7 +696,12 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         final Flux<DataDrivenFluxStep> dataDrivenWithContextFlow =
                 Flux.using(
                         () -> initializeThrottledProcessor(templateName, templateEngine, markupSelectors, context),
-                        throttledProcessor -> Flux.concat(() -> prepareDataDrivenIterator(throttledProcessor, dataDrivenBufferedFlow)),
+                        throttledProcessor ->
+                                Flux.concat(
+                                        Mono.just(DataDrivenFluxStep.forHead(throttledProcessor)),
+                                        dataDrivenBufferedFlow.map(values -> DataDrivenFluxStep.forBuffer(throttledProcessor, values)),
+                                        Mono.just(DataDrivenFluxStep.forTail(throttledProcessor))
+                                ),
                         throttledProcessor -> { /* no need to perform any cleanup operations */ });
 
         // STEP 4: React to each buffer of published data by creating one or many (concatMap) DataBuffers containing
@@ -790,50 +794,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
     }
 
-
-
-    /*
-     * The idea behind the creation of this iterator is to be able to avoid the resolution of the
-     * data driver stream if the template doesn't really contain any references to it. It might have been
-     * added to the model in error or as a part of a pack of variables added "just in case they are needed", but
-     * the specific logic resolution of the template might end up not needing it. In such case, we need to
-     * make sure that the Thymeleaf engine does not hang after processing all template markup, waiting for
-     * a stream iteration that will never happen.
-     */
-    private static Iterator<Publisher<? extends DataDrivenFluxStep>> prepareDataDrivenIterator(
-            final IThrottledTemplateProcessor throttledProcessor, final Flux<List<Object>> dataDrivenBufferedFlow) {
-
-        final List<Publisher<? extends DataDrivenFluxStep>> steps =
-                Arrays.asList(
-                        // Step 0: head (markup before data stream iteration)
-                        // Step 1: data stream iteration
-                        // Step 2: tail (markup after data stream iteration, or maybe containing one remaining iter)
-                        Mono.just(DataDrivenFluxStep.forHead(throttledProcessor)),
-                        dataDrivenBufferedFlow.map(values -> DataDrivenFluxStep.forBuffer(throttledProcessor, values)),
-                        Mono.just(DataDrivenFluxStep.forTail(throttledProcessor)));
-
-        final Iterator<Publisher<? extends DataDrivenFluxStep>> stepIterator = steps.iterator();
-
-        return new Iterator<Publisher<? extends DataDrivenFluxStep>>() {
-
-            @Override
-            public boolean hasNext() {
-                // This is mainly meant to avoid passing from step 0 (head) to step 1 (data stream) if all markup
-                // has already been processed, which basically means that the data driven stream variable was not
-                // really needed...
-                return !throttledProcessor.isFinished() && stepIterator.hasNext();
-            }
-
-            // TODO * Somehow next() is actually been called in a sort of prefetch, before the head calls complete()
-            @Override
-            public Publisher<? extends DataDrivenFluxStep> next() {
-                return stepIterator.next();
-            }
-
-        };
-
-    }
-
+    
 
 
     private static Optional<Charset> getCharset(final MediaType mediaType) {
