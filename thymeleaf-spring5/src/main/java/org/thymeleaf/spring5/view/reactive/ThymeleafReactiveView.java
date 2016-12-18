@@ -29,6 +29,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -604,31 +605,36 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
         // Using the throttledProcessor as state in this Flux.generate allows us to delay the initialization of
         // the throttled processor until the last moment, when output generation is really requested.
-        return Flux.generate(
-                () -> initializeThrottledProcessor(templateName, templateEngine, markupSelectors, context),
-                (throttledProcessor, emitter) -> {
+        final Flux<DataBuffer> flow =
+                Flux.generate(
+                    () -> initializeThrottledProcessor(templateName, templateEngine, markupSelectors, context),
+                    (throttledProcessor, emitter) -> {
 
-                    final DataBuffer buffer =
-                            (responseMaxBufferSizeBytes != Integer.MAX_VALUE ?
-                                    bufferAllocator.allocateBuffer(responseMaxBufferSizeBytes) :
-                                    bufferAllocator.allocateBuffer());
+                        final DataBuffer buffer =
+                                (responseMaxBufferSizeBytes != Integer.MAX_VALUE ?
+                                        bufferAllocator.allocateBuffer(responseMaxBufferSizeBytes) :
+                                        bufferAllocator.allocateBuffer());
 
-                    try {
-                        throttledProcessor.process(responseMaxBufferSizeBytes, buffer.asOutputStream(), charset);
-                    } catch (final Throwable t) {
-                        emitter.error(t);
-                        return null;
-                    }
+                        try {
+                            throttledProcessor.process(responseMaxBufferSizeBytes, buffer.asOutputStream(), charset);
+                        } catch (final Throwable t) {
+                            emitter.error(t);
+                            return null;
+                        }
 
-                    emitter.next(buffer);
+                        emitter.next(buffer);
 
-                    if (throttledProcessor.isFinished()) {
-                        emitter.complete();
-                    }
+                        if (throttledProcessor.isFinished()) {
+                            emitter.complete();
+                        }
 
-                    return throttledProcessor;
+                        return throttledProcessor;
 
-                });
+                    });
+
+        // Will add some logging to the data flow
+        return flow.log(ThymeleafReactiveView.class.getName() + ".CHUNKED.OUTPUT", Level.FINEST);
+
     }
 
 
@@ -642,31 +648,35 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
             final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
             final DataBufferFactory bufferAllocator, final Charset charset) {
 
-        return Mono.create(
-                subscriber -> {
+        final Mono<DataBuffer> flow =
+                Mono.create(
+                    subscriber -> {
 
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Starting execution (FULL mode) of Thymeleaf template [" + templateName + "].");
-                    }
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Starting execution (FULL mode) of Thymeleaf template [" + templateName + "].");
+                        }
 
-                    final DataBuffer dataBuffer = bufferAllocator.allocateBuffer();
-                    final OutputStreamWriter writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset);
+                        final DataBuffer dataBuffer = bufferAllocator.allocateBuffer();
+                        final OutputStreamWriter writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset);
 
-                    try {
-                        templateEngine.process(templateName, markupSelectors, context, writer);
-                    } catch (final Throwable t) {
-                        subscriber.error(t);
-                        return;
-                    }
+                        try {
+                            templateEngine.process(templateName, markupSelectors, context, writer);
+                        } catch (final Throwable t) {
+                            subscriber.error(t);
+                            return;
+                        }
 
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Finished execution (FULL mode) of Thymeleaf template [" + templateName + "].");
-                    }
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Finished execution (FULL mode) of Thymeleaf template [" + templateName + "].");
+                        }
 
-                    // This is a Mono<?>, so no need to call "next()" or "complete()"
-                    subscriber.success(dataBuffer);
+                        // This is a Mono<?>, so no need to call "next()" or "complete()"
+                        subscriber.success(dataBuffer);
 
-                });
+                    });
+
+        // Will add some logging to the data flow
+        return flow.log(ThymeleafReactiveView.class.getName() + ".FULL.OUTPUT", Level.FINEST);
 
     }
 
@@ -687,10 +697,11 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         final DataDrivenTemplateIterator dataDrivenIterator = new DataDrivenTemplateIterator();
         context.setVariable(dataDriverSpec.getVariableName(), dataDrivenIterator);
 
-        // STEP 2: Create the data stream buffers
+        // STEP 2: Create the data stream buffers, plus add some logging in order to know how the stream is being used
         final Flux<List<Object>> dataDrivenBufferedFlow =
-                Flux.from(dataDriverSpec.getDataStream()).
-                        buffer(dataDriverSpec.getDataStreamBufferSizeElements());
+                Flux.from(dataDriverSpec.getDataStream())
+                        .buffer(dataDriverSpec.getDataStreamBufferSizeElements())
+                        .log(ThymeleafReactiveView.class.getName() + ".DATA-DRIVEN.INPUT", Level.FINEST);
 
         // STEP 3: Initialize the (throttled) template engine for each subscriber (normally there will only be one)
         final Flux<DataDrivenFluxStep> dataDrivenWithContextFlow =
@@ -706,8 +717,9 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
         // STEP 4: React to each buffer of published data by creating one or many (concatMap) DataBuffers containing
         //         the result of processing only that buffer.
-        return dataDrivenWithContextFlow.concatMap(
-                step -> Flux.generate(
+        final Flux<DataBuffer> flow =
+                dataDrivenWithContextFlow.concatMap(
+                    step -> Flux.generate(
                                 () -> {
                                     if (step.isHead()) {
                                         // Feed with no elements - we just want to output the part of the
@@ -790,7 +802,10 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
                                 })
 
-                );
+                    );
+
+        // Will add some logging to the data flow
+        return flow.log(ThymeleafReactiveView.class.getName() + ".DATA-DRIVEN.OUTPUT", Level.FINEST);
 
     }
 
