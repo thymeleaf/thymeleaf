@@ -19,38 +19,51 @@
  */
 package org.thymeleaf.spring5.context.reactive;
 
+import org.reactivestreams.Publisher;
+
 /**
  * <p>
  *   Interface to be implemented by context variables wrapping <em>asynchronous objects</em> in the form
  *   of <em>reactive data streams</em> which are meant to <em>drive</em> the reactive-friendly execution of a
- *   template (making Thymeleaf act as a consumer of this data stream).
+ *   template.
  * </p>
  * <p>
- *   This interface extends from {@link IReactiveLazyContextVariable} and inherits all of its related
- *   behaviour, but also marks the wrapped variable as a template data-driver.
- *   The presence of a variable of this type in the context actually sets the engine into <strong>data-driven
+ *   The presence of a variable of this type in the context sets the engine into <strong>data-driven
  *   mode</strong>, and only one of these variables is allowed to appear in the context for template execution.
- *   <strong>Templates executed in <em>data-driven</em> mode are expected to have some kind <em>iteration</em>
- *   on the data-driver variable</strong>, normally by means of a <tt>th:each</tt> attribute.
  * </p>
  * <p>
- *   Note that data-driver variables require the reactive asynchronous object they wrap to be
- *   <strong>multi-valued</strong>. See {@link IReactiveLazyContextVariable#isMultiValued()} for details on what
- *   this means.
+ *   Using Reactive Streams terminology, this makes Thymeleaf act as a {@link org.reactivestreams.Processor}, given
+ *   it will be a {@link org.reactivestreams.Subscriber} to the data-driver stream, and at the same time a
+ *   {@link org.reactivestreams.Publisher} of output buffers (usually containing HTML markup).
  * </p>
  * <p>
- *   Variables of this type have a {@link #getDataStreamBufferSizeElements()} property, which describes
- *   the size (in elements) of the buffers that will be created from the data-driver stream before triggering
- *   the execution of the template for the published data. Normally there is no need to execute the template engine
- *   and generate markup for each element of data published by the data stream, so this buffering
- *   prevents Thymeleaf from executing more times than actually needed.
+ *   <strong>Templates executed in <em>data-driven</em> mode are expected to contain some kind <em>iteration</em>
+ *   on the data-driver variable</strong>, normally by means of a <tt>th:each</tt> attribute. This iteration
+ *   should be <em>unique</em>. Also note that, if this iteration is not present (or it doesn't end up being
+ *   executed due to template logic), it is not guaranteed that the data-driven stream will not be consumed anyway
+ *   -at least partially- due to the internal backpressure management mechanisms of the reactor.
+ * </p>
+ * <p>
+ *   Data-driver context variables are required to be <strong>multi-valued</strong>.
+ *   Being <em>multi-valued</em> does not mean to necessarily return more than one value,
+ *   but simply to have the capability to do so. E.g. a {@link reactor.core.publisher.Flux} object will
+ *   be considered <em>multi-valued</em> even if it publishes none or just one result, whereas a
+ *   {@link reactor.core.publisher.Mono} object will be considered <em>single-valued</em>.
+ * </p>
+ * <p>
+ *   Note that this is not directly related to {@link ReactiveLazyContextVariable}, which is instead an
+ *   implementation of the {@link org.thymeleaf.context.ILazyContextVariable} interface and is meant to lazily
+ *   resolve asynchronous data stream variables, but without any added data-driven semantics.
+ * </p>
+ * <p>
+ *   The {@link #getBufferSizeElements()} property describes the size (in elements) of the buffers that
+ *   will be created from the data-driver stream before triggering the execution of the template (for each buffer).
+ *   Normally there is no need to execute the template engine and generate output for each element of data
+ *   published by the data stream, so this buffering prevents Thymeleaf from executing more times than actually needed.
  * </p>
  * <p>
  *   The {@link ReactiveDataDriverContextVariable} class contains a sensible implementation of this interface,
- *   directly usable in most scenarios.
- * </p>
- * <p>
- *   Example use (using {@link ReactiveDataDriverContextVariable}):
+ *   directly usable in most scenarios. Example use:
  * </p>
  * <pre><code>
  * &#64;RequestMapping("/something")
@@ -78,21 +91,32 @@ package org.thymeleaf.spring5.context.reactive;
  * @since 3.0.3
  *
  */
-public interface IReactiveDataDriverContextVariable extends IReactiveLazyContextVariable {
+public interface IReactiveDataDriverContextVariable {
+
+
+    /**
+     * <p>
+     *   Returns the reactive asynchronous object being wrapped, (perhaps) having been re-shaped into a
+     *   {@link Publisher} stream.
+     * </p>
+     *
+     * @return the asynchronous object (as a {@link Publisher}).
+     */
+    public Publisher<Object> getDataStream();
 
     /**
      * <p>
      *   Returns the size (in elements) of the buffers that will be created from the data-driver stream
-     *   before triggering the execution of the template for the published data.
+     *   before triggering the execution of the template (for each buffer).
      * </p>
      * <p>
-     *   Normally there is no need to execute the template engine and generate markup for each element of data
+     *   Normally there is no need to execute the template engine and generate output for each element of data
      *   published by the data stream, so this buffering  prevents Thymeleaf from executing more times
      *   than actually needed.
      * </p>
      *
      * @return the size (in elements) of the buffers to be created for each (partial) execution of the engine.
      */
-    public int getDataStreamBufferSizeElements();
+    public int getBufferSizeElements();
 
 }

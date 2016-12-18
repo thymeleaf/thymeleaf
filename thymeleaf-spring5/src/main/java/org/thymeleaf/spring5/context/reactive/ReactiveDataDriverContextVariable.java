@@ -29,16 +29,17 @@ import reactor.core.publisher.Flux;
  *   Basic implementation of the {@link IReactiveDataDriverContextVariable} interface.
  * </p>
  * <p>
- *   This class works very similarly to {@link ReactiveLazyContextVariable} (from which it extends),
- *   but also marks the variable as a valid <strong>data-driver</strong> for the template, effectively
- *   putting Thymeleaf in <em>data-driven</em> execution mode.
- *   <strong>Templates executed in <em>data-driven</em> mode are expected to have some kind <em>iteration</em>
- *   on the data-driver variable</strong>, normally by means of a <tt>th:each</tt> attribute.
+ *   The <em>reactive data stream</em> wrapped by this class will usually have the shape of an implementation of the
+ *   {@link Publisher} interface, such as {@link reactor.core.publisher.Flux}. But other types of reactive
+ *   artifacts are supported thanks to Spring's {@link org.springframework.core.ReactiveAdapterRegistry}
+ *   mechanism.
  * </p>
  * <p>
- *   Note that data-driver variables require the reactive asynchronous object they wrap to be
- *   <strong>multi-valued</strong>. See {@link IReactiveLazyContextVariable#isMultiValued()} for details on what
- *   this means.
+ *   Data-driver context variables are required to be <strong>multi-valued</strong>.
+ *   Being <em>multi-valued</em> does not mean to necessarily return more than one value,
+ *   but simply to have the capability to do so. E.g. a {@link reactor.core.publisher.Flux} object will
+ *   be considered <em>multi-valued</em> even if it publishes none or just one result, whereas a
+ *   {@link reactor.core.publisher.Mono} object will be considered <em>single-valued</em>.
  * </p>
  * <p>
  *   Example use:
@@ -74,9 +75,7 @@ import reactor.core.publisher.Flux;
  * @since 3.0.3
  *
  */
-public class ReactiveDataDriverContextVariable
-        extends ReactiveLazyContextVariable
-        implements IReactiveDataDriverContextVariable {
+public class ReactiveDataDriverContextVariable implements IReactiveDataDriverContextVariable {
 
     /**
      * <p>
@@ -85,7 +84,9 @@ public class ReactiveDataDriverContextVariable
      */
     public static final int DEFAULT_DATA_DRIVER_BUFFER_SIZE_ELEMENTS = 100;
 
+    private final Object dataStream;
     private final int dataStreamBufferSizeElements;
+    private ReactiveAdapterRegistry adapterRegistry;
 
 
     /**
@@ -102,8 +103,7 @@ public class ReactiveDataDriverContextVariable
      *   thrown during lazy resolution.
      * </p>
      * <p>
-     *   Note the specified <tt>dataStream</tt> must be <strong>multi-valued</strong>. See
-     *   {@link IReactiveLazyContextVariable#isMultiValued()}.
+     *   Note the specified <tt>dataStream</tt> must be <strong>multi-valued</strong>.
      * </p>
      * <p>
      *   Examples of supported implementations are Reactor's {@link Flux} (but not
@@ -125,14 +125,13 @@ public class ReactiveDataDriverContextVariable
      *   buffer size.
      * </p>
      * <p>
-     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Stream's
+     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Streams
      *   {@link Publisher} by means of Spring's {@link ReactiveAdapterRegistry} mechanism. If no
      *   adapter has been registered for the type of the asynchronous object, and exception will be
      *   thrown during lazy resolution.
      * </p>
      * <p>
-     *   Note the specified <tt>dataStream</tt> must be <strong>multi-valued</strong>. See
-     *   {@link IReactiveLazyContextVariable#isMultiValued()}.
+     *   Note the specified <tt>dataStream</tt> must be <strong>multi-valued</strong>.
      * </p>
      * <p>
      *   Examples of supported implementations are Reactor's {@link Flux} (but not
@@ -145,26 +144,52 @@ public class ReactiveDataDriverContextVariable
      * @param dataStreamBufferSizeElements the buffer size to be applied (in elements).
      */
     public ReactiveDataDriverContextVariable(final Object dataStream, final int dataStreamBufferSizeElements) {
-        super(dataStream);
+        super();
+        Validate.notNull(dataStream, "Data stream cannot be null");
         Validate.isTrue(dataStreamBufferSizeElements > 0, "Data Buffer Size cannot be <= 0");
+        this.dataStream = dataStream;
         this.dataStreamBufferSizeElements = dataStreamBufferSizeElements;
     }
 
 
-    public final int getDataStreamBufferSizeElements() {
-        return this.dataStreamBufferSizeElements;
+    /**
+     * <p>
+     *   Sets the {@link ReactiveAdapterRegistry} used for converting (if necessary) the wrapped asynchronous
+     *   object into a {@link Publisher}.
+     * </p>
+     * <p>
+     *   This method is transparently called before template execution in order
+     *   to initialize lazy context variables. It can also be called programmatically, but there is normally
+     *   no reason to do this. If not called at all, only {@link Flux} will be allowed as valid type
+     *   for the wrapped data stream.
+     * </p>
+     *
+     * @param reactiveAdapterRegistry the reactive adapter registry.
+     */
+    public final void setReactiveAdapterRegistry(final ReactiveAdapterRegistry reactiveAdapterRegistry) {
+        // Note the presence of the ReactiveAdapterRegistry is optional, so this method might never be
+        // called. We can only be sure that it will be called if this context variable is part of a model
+        // used for rendering a ThymeleafReactiveView (which, anyway, will be most of the cases).
+        this.adapterRegistry = reactiveAdapterRegistry;
     }
 
 
     @Override
-    protected Publisher<Object> loadPublisherValue(final Object asyncObj, final ReactiveAdapterRegistry reactiveAdapterRegistry) {
-        final Publisher<Object> publisher = super.loadPublisherValue(asyncObj, reactiveAdapterRegistry);
+    public Publisher<Object> getDataStream() {
+        final Publisher<Object> publisher =
+                ReactiveContextVariableUtils.computePublisherValue(this.dataStream, this.adapterRegistry);
         if (!(publisher instanceof Flux)) {
             throw new IllegalArgumentException(
                     "Reactive Data Driver context variable was set single-valued aynchronous object. But data driver " +
                     "variables must wrap multi-valued data streams (so that they can be iterated at the template");
         }
         return publisher;
+    }
+
+
+    @Override
+    public final int getBufferSizeElements() {
+        return this.dataStreamBufferSizeElements;
     }
 
 }

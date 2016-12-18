@@ -56,6 +56,7 @@ import org.thymeleaf.engine.DataDrivenTemplateIterator;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.context.reactive.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.reactive.ReactiveDataDriverContextVariable;
+import org.thymeleaf.spring5.context.reactive.ReactiveLazyContextVariable;
 import org.thymeleaf.spring5.context.reactive.SpringWebReactiveExpressionContext;
 import org.thymeleaf.spring5.context.reactive.SpringWebReactiveThymeleafRequestContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
@@ -863,14 +864,9 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
                 final IReactiveDataDriverContextVariable dataDriverContextVariable =
                         (IReactiveDataDriverContextVariable) variableValue;
-                if (!dataDriverContextVariable.isMultiValued()) {
-                    throw new TemplateProcessingException(
-                            "Data-driver variables are required to wrap multi-valued data streams, but " +
-                            "a single-valued data stream has been specified as '" + variableName + "'");
-                }
                 return new DataDriverSpecification(
-                        variableName, dataDriverContextVariable.getAsyncPublisher(),
-                        dataDriverContextVariable.getDataStreamBufferSizeElements());
+                        variableName, dataDriverContextVariable.getDataStream(),
+                        dataDriverContextVariable.getBufferSizeElements());
             }
 
         }
@@ -885,8 +881,18 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
     private static void initializeApplicationAwareModel(
             final ApplicationContext applicationContext, final Map<String,Object> model) {
 
+        // TODO * This can certainly be improved - and maybe we should do it on the Context, not the Model Map
+
         for (final Object value : model.values()) {
-            if (value instanceof ReactiveDataDriverContextVariable) {
+            if (value instanceof ReactiveLazyContextVariable) {
+                try {
+                    final ReactiveAdapterRegistry reactiveAdapterRegistry =
+                            applicationContext.getBean(ReactiveAdapterRegistry.class);
+                    ((ReactiveLazyContextVariable)value).setReactiveAdapterRegistry(reactiveAdapterRegistry);
+                } catch (final NoSuchBeanDefinitionException ignored) {
+                    // No registry, but we can live without it (though limited to Flux and Mono)
+                }
+            } else if (value instanceof ReactiveDataDriverContextVariable) {
                 try {
                     final ReactiveAdapterRegistry reactiveAdapterRegistry =
                             applicationContext.getBean(ReactiveAdapterRegistry.class);

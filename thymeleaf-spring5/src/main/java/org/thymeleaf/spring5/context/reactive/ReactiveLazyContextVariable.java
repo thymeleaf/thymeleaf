@@ -22,17 +22,27 @@ package org.thymeleaf.spring5.context.reactive;
 import java.util.Collections;
 
 import org.reactivestreams.Publisher;
-import org.springframework.core.ReactiveAdapter;
 import org.springframework.core.ReactiveAdapterRegistry;
+import org.thymeleaf.context.ILazyContextVariable;
 import org.thymeleaf.context.LazyContextVariable;
-import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveView;
 import org.thymeleaf.util.Validate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
  * <p>
- *   Basic implementation of the {@link IReactiveLazyContextVariable} interface.
+ *   Implementation of the {@link org.thymeleaf.context.ILazyContextVariable} interface meant to contain
+ *   a reactive data stream that should not be resolved until view is rendered.
+ * </p>
+ * <p>
+ *   By being added to the context/model wrapped by an object of this class, reactive asynchronous objects will
+ *   reach the execution phase of the view layer unresolved, and will only be resolved if they are really
+ *   needed. So asynchronous variables that the template does not really need in the end (because template
+ *   logic resolves in a way that doesn't make use of them) will never be consumed at all.
+ * </p>
+ * <p>
+ *   Note that <em>resolving</em> this kind of objects means actually <em>blocking</em> and <em>collecting</em>
+ *   its values.
  * </p>
  * <p>
  *   The <em>reactive async object</em> wrapped by this class will usually have the shape of an implementation of the
@@ -42,8 +52,7 @@ import reactor.core.publisher.Mono;
  * </p>
  * <p>
  *   When <em>lazily</em> resolving these variables, this class mirrors the mechanism used by Spring for resolving
- *   asynchronous variables at the model of views (see Spring's
- *   {@link org.springframework.web.reactive.result.view.ViewResolutionResultHandler}):
+ *   asynchronous variables at the model of views:
  * </p>
  * <ul>
  *     <li><tt>Flux&lt;T&gt;</tt> or other <em>multi-valued</em> streams are resolved as
@@ -52,8 +61,10 @@ import reactor.core.publisher.Mono;
  *         <tt>T</tt> so that they are directly referenceable just like any other object.</li>
  * </ul>
  * <p>
- *   See {@link #isMultiValued()} for a better reference of what is considered
- *   <em>multi-valued</em> and <em>single-valued</em>.
+ *   Being <em>multi-valued</em> does not mean to necessarily return more than one value,
+ *   but simply to have the capability to do so. E.g. a {@link reactor.core.publisher.Flux} object will
+ *   be considered <em>multi-valued</em> even if it publishes none or just one result, whereas a
+ *   {@link reactor.core.publisher.Mono} object will be considered <em>single-valued</em>.
  * </p>
  * <p>
  *   Example use:
@@ -64,8 +75,8 @@ import reactor.core.publisher.Mono;
  *
  *     final Publisher&lt;Item&gt; async = ...;
  *
- *     // If async is multi-valued, 'someData' will be usable as if it were of type List&lt;Item&gt;
- *     // If async is single-valued, 'someData' will be usable as if it were of type Item
+ *     // If 'async' is multi-valued, 'someData' will be usable as if it were of type List&lt;Item&gt;
+ *     // If 'async' is single-valued, 'someData' will be usable as if it were of type Item
  *     model.addAttribute("someData", new ReactiveLazyContextVariable(async));
  *
  *     return "view";
@@ -76,7 +87,7 @@ import reactor.core.publisher.Mono;
  *   This class is NOT thread-safe. Thread-safety is not a requirement for context variables.
  * </p>
  *
- * @see IReactiveLazyContextVariable
+ * @see ILazyContextVariable
  *
  * @author Daniel Fern&aacute;ndez
  *
@@ -85,14 +96,9 @@ import reactor.core.publisher.Mono;
  */
 public class ReactiveLazyContextVariable
         extends LazyContextVariable<Object>
-        implements IReactiveLazyContextVariable {
+        implements ILazyContextVariable<Object> {
 
     private final Object asyncObject;
-
-    private volatile boolean publisherInitialized = false;
-    // This Publisher will always be either Flux or Mono
-    private Publisher<Object> asyncPublisher;
-
     private ReactiveAdapterRegistry adapterRegistry;
 
 
@@ -101,7 +107,7 @@ public class ReactiveLazyContextVariable
      *   Creates a new lazy context variable, wrapping a reactive asynchronous object.
      * </p>
      * <p>
-     *   The specified <tt>asyncObject</tt> must be <em>adaptable</em> to a Reactive Stream's
+     *   The specified <tt>asyncObject</tt> must be <em>adaptable</em> to a Reactive Streams
      *   {@link Publisher} by means of Spring's {@link ReactiveAdapterRegistry} mechanism. If no
      *   adapter has been registered for the type of the asynchronous object, and exception will be
      *   thrown during lazy resolution.
@@ -128,9 +134,9 @@ public class ReactiveLazyContextVariable
      *   object into a {@link Publisher}.
      * </p>
      * <p>
-     *   This method is transparently called by {@link ThymeleafReactiveView} during view resolution in order
-     *   to initialize lazy context variables. It can also be called programmatically if no <tt>View</tt>
-     *   is used. If not called at all, only {@link Flux} and {@link Mono} will be allowed as valid types
+     *   This method is transparently called before template execution in order
+     *   to initialize lazy context variables. It can also be called programmatically, but there is normally
+     *   no reason to do this. If not called at all, only {@link Flux} and {@link Mono} will be allowed as valid types
      *   for the wrapped asynchronous object.
      * </p>
      *
@@ -145,106 +151,20 @@ public class ReactiveLazyContextVariable
 
 
     @Override
-    public final Publisher<Object> getAsyncPublisher() {
-        /*
-         * Note the reason we don't initialize the asyncPublisher at constructor time is because at that time we haven't
-         * given Thymeleaf the chance to set the ReactiveAdapterRegistry (which is set at ThymeleafReactiveView).
-         */
-        if (!this.publisherInitialized) {
-            synchronized (this) {
-                if (!this.publisherInitialized) {
-                    this.asyncPublisher = loadPublisherValue(this.asyncObject, this.adapterRegistry);
-                    if (this.asyncPublisher == null ||
-                            !(this.asyncPublisher instanceof Flux || this.asyncPublisher instanceof Mono)) {
-                        throw new IllegalStateException(
-                                "Loaded Publisher Value at " +
-                                ReactiveLazyContextVariable.class.getSimpleName() + " must be non-null, and either " +
-                                Flux.class.getName() + " or " + Mono.class.getName() + ", but was: " +
-                                (this.asyncPublisher == null? "null" : this.asyncPublisher.getClass().getName()));
-                    }
-                    this.publisherInitialized = true;
-                }
-            }
-        }
-        return this.asyncPublisher;
-    }
-
-
-    @Override
-    public final boolean isMultiValued() {
-        final Publisher<Object> publisher = getAsyncPublisher();
-        return publisher instanceof Flux;
-    }
-
-
-    @Override
     protected final Object loadValue() {
         /*
-         * This method should be called when this reactive lazy variable is used as a normal variable (simply to
-         * avoid resolving data streams we won't need for view rendering), but should never be called when this
-         * is used as a data driver (Thymeleaf executed in Data-Driven mode). In such case, the asyncPublisher
-         * will be directly used by the Thymeleaf throttling engine.
+         * First the async object will be 'normalized' into a Publisher (which will ALWAYS be a Flux or a Mono
+         * object), and then we will block in order to collect its values and return, as if the variable was never
+         * async.
          */
-        final Publisher<Object> publisher = getAsyncPublisher();
+        final Publisher<Object> publisher =
+                ReactiveContextVariableUtils.computePublisherValue(this.asyncObject, this.adapterRegistry);
         if (publisher instanceof Flux) {
+            // Data stream is multi-valued
             return ((Flux<Object>)publisher).collectList().defaultIfEmpty(Collections.emptyList()).block();
         }
+        // Data stream is single-valued
         return ((Mono<Object>)publisher).block(); // Will return null if empty, which is OK
-    }
-
-
-    /**
-     * <p>
-     *   Lazily resolve the reactive asynchronous object into a {@link Publisher}.
-     * </p>
-     * <p>
-     *   This method will only be called once, the first time this resolution is needed.
-     * </p>
-     * <p>
-     *   This method can be overridden in order to apply new behaviour to the resolution of lazy reactive variables.
-     * </p>
-     *
-     * @param asyncObj the asynchronous object being wrapped by this lazy variable.
-     * @param reactiveAdapterRegistry the Spring {@link ReactiveAdapterRegistry}.
-     * @return the resolved {@link Publisher}.
-     */
-    protected Publisher<Object> loadPublisherValue(
-            final Object asyncObj, final ReactiveAdapterRegistry reactiveAdapterRegistry) {
-
-        if (asyncObj instanceof Flux<?> || asyncObj instanceof Mono<?>) {
-            // If the async object is a Flux or a Mono, we don't need the ReactiveAdapterRegistry (and we allow
-            // initialization to happen without the registry, which is not possible with other Publisher<?>
-            // implementations.
-            return (Publisher<Object>) asyncObj;
-        }
-
-
-        if (reactiveAdapterRegistry == null) {
-            throw new IllegalArgumentException(
-                    "Could not initialize " + ReactiveLazyContextVariable.class.getSimpleName() + " : " +
-                    "Value is of class " + asyncObj.getClass().getName() +", but no ReactiveAdapterRegistry " +
-                    "has been set so far. This can happen if this context variable is used for rendering a template " +
-                    "without going through a " + ThymeleafReactiveView.class.getSimpleName() + " or if there is no " +
-                    "ReactiveAdapterRegistry bean registered at the application context. In such cases, it is " +
-                    "required that these lazy variables are instances of either " + Flux.class.getName() + " or " +
-                    Mono.class.getName() + ".");
-        }
-
-        final ReactiveAdapter adapter = reactiveAdapterRegistry.getAdapter(null, asyncObj);
-        if (adapter != null) {
-            final Publisher<Object> publisher = adapter.toPublisher(asyncObj);
-            if (adapter.isMultiValue()) {
-                return Flux.from(publisher);
-            } else {
-                return Mono.from(publisher);
-            }
-        }
-
-        throw new IllegalArgumentException(
-                "Value set for " + ReactiveLazyContextVariable.class.getSimpleName() + " context variable " +
-                "is of class " + asyncObj.getClass().getName() +", but the ReactiveAdapterRegistry " +
-                "does not contain a valid adapter able to convert it into a supported reactive data stream.");
-
     }
 
 }
