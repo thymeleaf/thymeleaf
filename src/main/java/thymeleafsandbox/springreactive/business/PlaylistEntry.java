@@ -65,4 +65,9 @@ public class PlaylistEntry {
         return albumTitle;
     }
 
+    @Override
+    public String toString() {
+        return getTrackName();
+    }
+
 }
