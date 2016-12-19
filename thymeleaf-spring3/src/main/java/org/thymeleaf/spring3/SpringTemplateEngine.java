@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.spring3;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.thymeleaf.ITemplateEngine;
@@ -52,8 +51,9 @@ import org.thymeleaf.spring3.messageresolver.SpringMessageResolver;
  * @since 1.0
  *
  */
-public class SpringTemplateEngine extends TemplateEngine
-        implements MessageSourceAware, InitializingBean {
+public class SpringTemplateEngine
+        extends TemplateEngine
+        implements MessageSourceAware {
 
     
     private static final SpringStandardDialect SPRINGSTANDARD_DIALECT = new SpringStandardDialect();
@@ -88,6 +88,7 @@ public class SpringTemplateEngine extends TemplateEngine
      * 
      * @param messageSource the message source to be used by the message resolver
      */
+    @Override
     public void setMessageSource(final MessageSource messageSource) {
         this.messageSource = messageSource;
     }
@@ -104,14 +105,22 @@ public class SpringTemplateEngine extends TemplateEngine
      * @param templateEngineMessageSource the message source to be used by the message resolver
      * @since 2.0.15
      */
+    @Override
     public void setTemplateEngineMessageSource(final MessageSource templateEngineMessageSource) {
         this.templateEngineMessageSource = templateEngineMessageSource;
     }
-    
 
 
 
-    public void afterPropertiesSet() throws Exception {
+
+    @Override
+    protected final void initializeSpecific() {
+
+        // First of all, give the opportunity to subclasses to apply their own configurations
+        initializeSpringSpecific();
+
+        // Once the subclasses have had their opportunity, compute configurations belonging to SpringTemplateEngine
+        super.initializeSpecific();
 
         final MessageSource messageSource =
                 this.templateEngineMessageSource == null ? this.messageSource : this.templateEngineMessageSource;
@@ -128,7 +137,30 @@ public class SpringTemplateEngine extends TemplateEngine
         super.setMessageResolver(messageResolver);
 
     }
-    
 
-    
+
+
+    /**
+     * <p>
+     *   This method performs additional initializations required for a
+     *   <tt>SpringTemplateEngine</tt> subclass instance. This method
+     *   is called before the first execution of
+     *   {@link TemplateEngine#process(String, org.thymeleaf.context.IContext)}
+     *   or {@link TemplateEngine#processThrottled(String, org.thymeleaf.context.IContext)}
+     *   in order to create all the structures required for a quick execution of
+     *   templates.
+     * </p>
+     * <p>
+     *   THIS METHOD IS INTERNAL AND SHOULD <b>NEVER</b> BE CALLED DIRECTLY.
+     * </p>
+     * <p>
+     *   The implementation of this method does nothing, and it is designed
+     *   for being overridden by subclasses of <tt>SpringTemplateEngine</tt>.
+     * </p>
+     */
+    protected void initializeSpringSpecific() {
+        // Nothing to be executed here. Meant for extension
+    }
+
+
 }
