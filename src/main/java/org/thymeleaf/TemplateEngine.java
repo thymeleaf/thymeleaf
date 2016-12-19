@@ -300,7 +300,8 @@ public class TemplateEngine implements ITemplateEngine {
     /**
      * <p>
      *   Internal method that initializes the Template Engine instance. This method
-     *   is called before the first execution of {@link #process(String, IContext)}
+     *   is called before the first execution of {@link TemplateEngine#process(String, IContext)}
+     *   or {@link TemplateEngine#processThrottled(String, IContext)}
      *   in order to create all the structures required for a quick execution of
      *   templates.
      * </p>
@@ -313,7 +314,7 @@ public class TemplateEngine implements ITemplateEngine {
      *   be overridden.
      * </p>
      */
-    void initialize() {
+    final void initialize() {
 
         if (!this.initialized) {
 
@@ -323,19 +324,21 @@ public class TemplateEngine implements ITemplateEngine {
 
                     logger.debug("[THYMELEAF] INITIALIZING TEMPLATE ENGINE");
 
+                    // First of all, give subclasses the opportunity to modify the base configuration
+                    initializeSpecific();
+
                     // We need at least one template resolver at this point - we set the StringTemplateResolver as default
                     if (this.templateResolvers.isEmpty()) {
                         this.templateResolvers.add(new StringTemplateResolver());
                     }
 
+                    // Build the EngineConfiguration object
                     this.configuration =
                             new EngineConfiguration(
                                     this.templateResolvers, this.messageResolvers, this.linkBuilders,
                                     this.dialectConfigurations, this.cacheManager, this.engineContextFactory,
                                     this.decoupledTemplateLogicResolver);
                     ((EngineConfiguration)this.configuration).initialize();
-
-                    initializeSpecific();
 
                     this.initialized = true;
 
@@ -357,10 +360,18 @@ public class TemplateEngine implements ITemplateEngine {
     /**
      * <p>
      *   This method performs additional initializations required for a
-     *   <tt>TemplateEngine</tt>. It is called by {@link #initialize()}.
+     *   <tt>TemplateEngine</tt> subclass instance. This method
+     *   is called before the first execution of
+     *   {@link TemplateEngine#process(String, org.thymeleaf.context.IContext)}
+     *   or {@link TemplateEngine#processThrottled(String, org.thymeleaf.context.IContext)}
+     *   in order to create all the structures required for a quick execution of
+     *   templates.
      * </p>
      * <p>
-     *   The implementation of this method does nothing, and it is designed
+     *   THIS METHOD IS INTERNAL AND SHOULD <b>NEVER</b> BE CALLED DIRECTLY.
+     * </p>
+     * <p>
+     *   The base implementation of this method does nothing, and it is designed
      *   for being overridden by subclasses of <tt>TemplateEngine</tt>.
      * </p>
      */
