@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
-import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.messageresolver.IMessageResolver;
@@ -36,7 +35,7 @@ import org.thymeleaf.spring4.messageresolver.SpringMessageResolver;
 
 /**
  * <p>
- *   Implementation of {@link ITemplateEngine} meant for Spring MVC applications,
+ *   Implementation of {@link ISpringTemplateEngine}, meant for Spring applications,
  *   that establishes by default an instance of {@link SpringStandardDialect}
  *   as a dialect (instead of an instance of {@link org.thymeleaf.standard.StandardDialect}.
  * </p>
@@ -56,7 +55,7 @@ import org.thymeleaf.spring4.messageresolver.SpringMessageResolver;
  */
 public class SpringTemplateEngine 
         extends TemplateEngine 
-        implements MessageSourceAware {
+        implements ISpringTemplateEngine, MessageSourceAware {
 
 
     private static final SpringStandardDialect SPRINGSTANDARD_DIALECT = new SpringStandardDialect();
