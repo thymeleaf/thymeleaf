@@ -40,6 +40,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.WebExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.spring5.ISpringTemplateEngine;
 import org.thymeleaf.spring5.context.mvc.SpringWebMvcThymeleafRequestContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
@@ -194,7 +195,7 @@ public class ThymeleafView
 
         final ServletContext servletContext = getServletContext() ;
         final String viewTemplateName = getTemplateName();
-        final ITemplateEngine viewTemplateEngine = getTemplateEngine();
+        final ISpringTemplateEngine viewTemplateEngine = getTemplateEngine();
 
         if (viewTemplateName == null) {
             throw new IllegalArgumentException("Property 'templateName' is required");

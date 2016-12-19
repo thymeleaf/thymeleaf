@@ -37,6 +37,7 @@ import org.springframework.web.servlet.view.AbstractCachingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.ITemplateEngine;
+import org.thymeleaf.spring5.ISpringTemplateEngine;
 
 
 /**
@@ -104,7 +105,7 @@ public class ThymeleafViewResolver
     private String contentType = null;
     private String characterEncoding = null;
     
-    private ITemplateEngine templateEngine;
+    private ISpringTemplateEngine templateEngine;
 
 
 
@@ -159,7 +160,7 @@ public class ThymeleafViewResolver
      *
      * @return the template engine being used for processing templates.
      */
-    public ITemplateEngine getTemplateEngine() {
+    public ISpringTemplateEngine getTemplateEngine() {
         return this.templateEngine;
     }
 
@@ -172,7 +173,7 @@ public class ThymeleafViewResolver
      *
      * @param templateEngine the template engine to be used
      */
-    public void setTemplateEngine(final ITemplateEngine templateEngine) {
+    public void setTemplateEngine(final ISpringTemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
     
