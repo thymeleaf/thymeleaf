@@ -30,7 +30,9 @@ import org.thymeleaf.spring5.linkbuilder.reactive.SpringWebReactiveLinkBuilder;
  * @since 3.0.3
  *
  */
-public class SpringWebReactiveTemplateEngine extends SpringTemplateEngine {
+public class SpringWebReactiveTemplateEngine
+        extends SpringTemplateEngine
+        implements ISpringWebReactiveTemplateEngine {
 
 
     public SpringWebReactiveTemplateEngine() {

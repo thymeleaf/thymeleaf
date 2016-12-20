@@ -36,8 +36,7 @@ import org.springframework.web.reactive.result.view.RedirectView;
 import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.reactive.result.view.ViewResolverSupport;
-import org.thymeleaf.ITemplateEngine;
-import org.thymeleaf.spring5.SpringWebReactiveTemplateEngine;
+import org.thymeleaf.spring5.ISpringWebReactiveTemplateEngine;
 import org.thymeleaf.util.Validate;
 import reactor.core.publisher.Mono;
 
@@ -90,7 +89,7 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
     private int responseMaxChunkSizeBytes = ThymeleafReactiveView.DEFAULT_RESPONSE_CHUNK_SIZE_BYTES;
 
 
-    private ITemplateEngine templateEngine;
+    private ISpringWebReactiveTemplateEngine templateEngine;
 
 
 
@@ -137,37 +136,27 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
 
     /**
      * <p>
-     *   Returns the Thymeleaf template engine instance (implementation of {@link ITemplateEngine} to be used for the
+     *   Returns the Thymeleaf template engine instance
+     *   (implementation of {@link ISpringWebReactiveTemplateEngine} to be used for the
      *   execution of templates.
      * </p>
-     * <p>
-     *   Note that this view resolver allows any implementation of {@link ITemplateEngine} to be used, but
-     *   in most scenarios this will be an instance of
-     *   {@link SpringWebReactiveTemplateEngine}.
-     * </p>
      *
-     * @return the template engine being used for processing templates,
-     *         usually {@link SpringWebReactiveTemplateEngine}.
+     * @return the template engine being used for processing templates.
      */
-    public ITemplateEngine getTemplateEngine() {
+    public ISpringWebReactiveTemplateEngine getTemplateEngine() {
         return this.templateEngine;
     }
 
 
     /**
      * <p>
-     *   Set the template engine object (implementation of {@link ITemplateEngine} to be
+     *   Set the template engine object (implementation of {@link ISpringWebReactiveTemplateEngine} to be
      *   used for processing templates.
      * </p>
-     * <p>
-     *   Note that this view resolver allows any implementation of {@link ITemplateEngine} to be used, but
-     *   in most scenarios this will be an instance of
-     *   {@link SpringWebReactiveTemplateEngine}.
-     * </p>
      *
-     * @param templateEngine the template engine, usually {@link SpringWebReactiveTemplateEngine}.
+     * @param templateEngine the template engine.
      */
-    public void setTemplateEngine(final ITemplateEngine templateEngine) {
+    public void setTemplateEngine(final ISpringWebReactiveTemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
 

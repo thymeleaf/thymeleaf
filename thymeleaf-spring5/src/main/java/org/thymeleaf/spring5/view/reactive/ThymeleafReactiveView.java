@@ -49,11 +49,11 @@ import org.springframework.web.reactive.result.view.AbstractView;
 import org.springframework.web.reactive.result.view.RequestContext;
 import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.IThrottledTemplateProcessor;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.engine.DataDrivenTemplateIterator;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.spring5.ISpringWebReactiveTemplateEngine;
 import org.thymeleaf.spring5.context.reactive.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.reactive.ReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.reactive.ReactiveLazyContextVariable;
@@ -86,7 +86,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
     private String beanName = null;
-    private ITemplateEngine templateEngine = null;
+    private ISpringWebReactiveTemplateEngine templateEngine = null;
 	private String templateName = null;
     private Locale locale = null;
     private Map<String, Object> staticVariables = null;
@@ -224,12 +224,12 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
 
-    protected ITemplateEngine getTemplateEngine() {
+    protected ISpringWebReactiveTemplateEngine getTemplateEngine() {
         return this.templateEngine;
     }
 
     
-    protected void setTemplateEngine(final ITemplateEngine templateEngine) {
+    protected void setTemplateEngine(final ISpringWebReactiveTemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
 
@@ -278,7 +278,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
             final MediaType contentType, final ServerWebExchange exchange) {
 
         final String viewTemplateName = getTemplateName();
-        final ITemplateEngine viewTemplateEngine = getTemplateEngine();
+        final ISpringWebReactiveTemplateEngine viewTemplateEngine = getTemplateEngine();
 
         if (viewTemplateName == null) {
             return Mono.error(new IllegalArgumentException("Property 'templateName' is required"));
@@ -433,7 +433,6 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
             }
 
-
         }
 
         final Set<String> processMarkupSelectors;
@@ -575,7 +574,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
     static IThrottledTemplateProcessor initializeThrottledProcessor(
-            final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context) {
+            final String templateName, final ISpringWebReactiveTemplateEngine templateEngine,
+            final Set<String> markupSelectors, final IContext context) {
 
         if (logger.isDebugEnabled()) {
             logger.debug("Starting preparation of Thymeleaf template [" + templateName + "].");
@@ -600,7 +600,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
      * size of the output chunks.
      */
     static Flux<DataBuffer> createChunkedFlow(
-            final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
+            final String templateName, final ISpringWebReactiveTemplateEngine templateEngine,
+            final Set<String> markupSelectors, final IContext context,
             final int responseMaxBufferSizeBytes, final DataBufferFactory bufferAllocator, final Charset charset) {
 
         // Using the throttledProcessor as state in this Flux.generate allows us to delay the initialization of
@@ -645,8 +646,9 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
      * the output chunks. So a single DataBuffer object will be output.
      */
     static Mono<DataBuffer> createFullFlow(
-            final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors, final IContext context,
-            final DataBufferFactory bufferAllocator, final Charset charset) {
+            final String templateName, final ISpringWebReactiveTemplateEngine templateEngine,
+            final Set<String> markupSelectors, final IContext context, final DataBufferFactory bufferAllocator,
+            final Charset charset) {
 
         final Mono<DataBuffer> flow =
                 Mono.create(
@@ -689,7 +691,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
      * data publishing flow.
      */
     static Flux<DataBuffer> createDataDrivenFlow(
-            final String templateName, final ITemplateEngine templateEngine, final Set<String> markupSelectors,
+            final String templateName, final ISpringWebReactiveTemplateEngine templateEngine, final Set<String> markupSelectors,
             final SpringWebReactiveExpressionContext context, final DataDriverSpecification dataDriverSpec,
             final int responseMaxBufferSizeBytes, final DataBufferFactory bufferAllocator, final Charset charset) {
 
