@@ -126,7 +126,7 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
         if (this.allProcessingFinished) {
             if (logger.isTraceEnabled()) {
                 logger.trace(
-                        "[THYMELEAF][{}] FINISHED OUTPUT OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}. Maximum overflow was {} {} (overflow buffer grown {} times).",
+                        "[THYMELEAF][{}] Finished throttled processing of template \"{}\" with locale {}. Maximum overflow was {} {} (overflow buffer grown {} times).",
                         new Object[]{TemplateEngine.threadIndex(), this.templateSpec, this.context.getLocale(), Integer.valueOf(this.writer.getMaxOverflowSize()), outputType, this.writer.getOverflowGrowCount() });
             }
         }
@@ -192,7 +192,7 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
             }
 
             if (logger.isTraceEnabled()) {
-                logger.trace("[THYMELEAF][{}] STARTING PROCESS(LIMIT:{} {}) OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}",
+                logger.trace("[THYMELEAF][{}] Starting throttled process (limit:{} {}) of template \"{}\" with locale {}",
                         new Object[]{TemplateEngine.threadIndex(), Integer.valueOf(maxOutput), outputType, this.templateSpec, this.context.getLocale()});
             }
 
@@ -238,8 +238,8 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
             writtenCount = this.writer.getWrittenCount() - initialWrittenCount;
 
             if (logger.isTraceEnabled()) {
-                logger.trace("[THYMELEAF][{}] FINISHED PROCESS(LIMIT:{} {}, OUTPUT: {} {}) OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}",
-                        new Object[]{TemplateEngine.threadIndex(), Integer.valueOf(maxOutput), outputType, Integer.valueOf(this.writer.getWrittenCount()), outputType, this.templateSpec, this.context.getLocale()});
+                logger.trace("[THYMELEAF][{}] Finished throttled process (limit:{} {}, output: {} {}) of template \"{}\" with locale {}",
+                        new Object[]{TemplateEngine.threadIndex(), Integer.valueOf(maxOutput), outputType, Integer.valueOf(writtenCount), outputType, this.templateSpec, this.context.getLocale()});
             }
 
             if (timerLogger.isTraceEnabled()) {
