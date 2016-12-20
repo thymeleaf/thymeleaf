@@ -25,6 +25,7 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.Charset;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,12 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
     private static final String OUTPUT_TYPE_CHARS = "chars";
     private static final String OUTPUT_TYPE_BYTES = "bytes";
 
+    // We will use an AtomicLong in order to generate identifiers. Even if 100 throttled template processors were
+    // generated each millisecond, this would still give us enough unique identifiers for almost 6M years.
+    private static final AtomicLong identifierGenerator = new AtomicLong(0L);
 
+
+    private final String identifier;
     private final TemplateSpec templateSpec;
     private final IEngineContext context;
     private final TemplateModel templateModel;
@@ -76,6 +82,7 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
             final TemplateFlowController flowController,
             final ThrottledTemplateWriter writer) {
         super();
+        this.identifier = Long.toString(identifierGenerator.getAndIncrement());
         this.templateSpec = templateSpec;
         this.context = context;
         this.templateModel = templateModel;
@@ -124,6 +131,22 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
             }
         }
 
+    }
+
+
+
+
+    @Override
+    public String getProcessorIdentifier() {
+        return this.identifier;
+    }
+
+
+
+
+    @Override
+    public TemplateSpec getTemplateSpec() {
+        return this.templateSpec;
     }
 
 

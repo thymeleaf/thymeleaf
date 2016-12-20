@@ -54,6 +54,39 @@ import java.nio.charset.Charset;
  */
 public interface IThrottledTemplateProcessor {
 
+
+    /**
+     * <p>
+     *   Returns an identifier for this processor that should enable the tracing of its executions.
+     * </p>
+     * <p>
+     *   Given <em>throttled</em> processors are often used in reactive environments, in which different executions
+     *   of a throttled processor might be performed by different threads (in a non-interleaved manner), this
+     *   identifier should help identifying at the log trace the specific processor being executed independently
+     *   of the thread ID.
+     * </p>
+     * <p>
+     *   Though it is not completely required that the identifier returned by this method is unique <em>by
+     *   construction</em>, it should be unique enough to be of practical use as an identifier.
+     * </p>
+     *
+     * @return the identifier for this processor object.
+     *
+     * @since 3.0.3
+     */
+    public String getProcessorIdentifier();
+
+    /**
+     * <p>
+     *   Return the {@link TemplateSpec} this <em>throttled</em> template processor object is acting on.
+     * </p>
+     *
+     * @return the template spec.
+     *
+     * @since 3.0.3
+     */
+    public TemplateSpec getTemplateSpec();
+
     /**
      * <p>
      *   Checks whether the processing of the template has already finished.
