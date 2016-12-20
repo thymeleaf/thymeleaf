@@ -500,7 +500,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
          *     3. DATA-DRIVEN: one of the model attributes is a Publisher<X> wrapped inside an implementation
          *        of the IReactiveDataDriverContextVariable<?> interface. In this case, the Thymeleaf engine will
          *        execute as a response to onNext(List<X>) events triggered by this Publisher. The
-         *        "dataDrivenChunkSizeElements" specified at the model attribute will define the amount of elements
+         *        "bufferSizeElements" specified at the model attribute will define the amount of elements
          *        produced by this Publisher that will be buffered into a List<X> before triggering the template
          *        engine each time (which is why Thymeleaf will react on onNext(List<X>) and not onNext(X)). Thymeleaf
          *        will expect to find a "th:each" iteration on the data-driven variable inside the processed template,
