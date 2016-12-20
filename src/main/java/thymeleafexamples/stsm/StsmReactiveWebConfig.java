@@ -25,7 +25,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring5.ISpringWebReactiveTemplateEngine;
 import org.thymeleaf.spring5.SpringWebReactiveTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
@@ -107,7 +107,7 @@ public class StsmReactiveWebConfig {
 
 
     @Bean
-    public SpringTemplateEngine thymeleafTemplateEngine(){
+    public ISpringWebReactiveTemplateEngine thymeleafTemplateEngine(){
         final SpringWebReactiveTemplateEngine templateEngine = new SpringWebReactiveTemplateEngine();
         templateEngine.setTemplateResolver(thymeleafTemplateResolver());
         return templateEngine;
