@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.freemarker.SpringTemplateLoader;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewResolver;
-import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring5.ISpringWebReactiveTemplateEngine;
 import org.thymeleaf.spring5.SpringWebReactiveTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
@@ -123,7 +123,7 @@ public class SpringReactiveWebConfig {
 
 
     @Bean
-    public SpringTemplateEngine thymeleafTemplateEngine(){
+    public ISpringWebReactiveTemplateEngine thymeleafTemplateEngine(){
         // We override here the SpringTemplateEngine instance that would otherwise be instantiated by
         // Spring Boot because we want to apply the SpringReactive-specific context factory, link builder...
         final SpringWebReactiveTemplateEngine templateEngine = new SpringWebReactiveTemplateEngine();
