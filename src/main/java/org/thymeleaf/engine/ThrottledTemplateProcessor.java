@@ -152,38 +152,43 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
 
 
 
-    public void processAll(final Writer writer) {
+    @Override
+    public int processAll(final Writer writer) {
         this.writer.setOutput(writer);
-        process(Integer.MAX_VALUE, OUTPUT_TYPE_CHARS);
+        return process(Integer.MAX_VALUE, OUTPUT_TYPE_CHARS);
     }
 
 
-    public void processAll(final OutputStream outputStream, final Charset charset) {
+    @Override
+    public int processAll(final OutputStream outputStream, final Charset charset) {
         this.writer.setOutput(outputStream, charset, Integer.MAX_VALUE);
-        process(Integer.MAX_VALUE, OUTPUT_TYPE_BYTES);
+        return process(Integer.MAX_VALUE, OUTPUT_TYPE_BYTES);
     }
 
 
 
 
-    public void process(final int maxOutputInChars, final Writer writer) {
+    @Override
+    public int process(final int maxOutputInChars, final Writer writer) {
         this.writer.setOutput(writer);
-        process(maxOutputInChars, OUTPUT_TYPE_CHARS);
+        return process(maxOutputInChars, OUTPUT_TYPE_CHARS);
     }
 
 
-    public void process(final int maxOutputInBytes, final OutputStream outputStream, final Charset charset) {
+    @Override
+    public int process(final int maxOutputInBytes, final OutputStream outputStream, final Charset charset) {
         this.writer.setOutput(outputStream, charset, maxOutputInBytes);
-        process(maxOutputInBytes, OUTPUT_TYPE_BYTES);
+        return process(maxOutputInBytes, OUTPUT_TYPE_BYTES);
     }
 
 
-    private void process(final int maxOutput, final String outputType) {
+    private int process(final int maxOutput, final String outputType) {
 
+        int writtenCount = 0;
         try {
 
             if (this.allProcessingFinished || maxOutput == 0) {
-                return;
+                return 0; // No bytes written
             }
 
             if (logger.isTraceEnabled()) {
@@ -192,6 +197,9 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
             }
 
             final long startNanos = System.nanoTime();
+
+            // Save the initial written count so that we can know at the end how many bytes were written
+            final int initialWrittenCount = this.writer.getWrittenCount();
 
             // Set the new limit for the writer (might provoke overflow being processed)
             this.writer.allow(maxOutput);
@@ -218,6 +226,17 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
 
             final long endNanos = System.nanoTime();
 
+            /*
+             * Finally, flush the writer in order to make sure that everything has been written to output
+             */
+            try {
+                this.writer.flush();
+            } catch (final IOException e) {
+                throw new TemplateOutputException("An error happened while flushing output writer", templateSpec.getTemplate(), -1, -1, e);
+            }
+
+            writtenCount = this.writer.getWrittenCount() - initialWrittenCount;
+
             if (logger.isTraceEnabled()) {
                 logger.trace("[THYMELEAF][{}] FINISHED PROCESS(LIMIT:{} {}, OUTPUT: {} {}) OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}",
                         new Object[]{TemplateEngine.threadIndex(), Integer.valueOf(maxOutput), outputType, Integer.valueOf(this.writer.getWrittenCount()), outputType, this.templateSpec, this.context.getLocale()});
@@ -231,16 +250,7 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
                         new Object[]{
                                 TemplateEngine.threadIndex(),
                                 LoggingUtils.loggifyTemplateName(this.templateSpec.getTemplate()), this.context.getLocale(), elapsed, elapsedMs,
-                                this.templateSpec, this.context.getLocale(), Integer.valueOf(maxOutput), outputType, Integer.valueOf(this.writer.getWrittenCount()), outputType, elapsed, elapsedMs});
-            }
-
-            /*
-             * Finally, flush the writer in order to make sure that everything has been written to output
-             */
-            try {
-                this.writer.flush();
-            } catch (final IOException e) {
-                throw new TemplateOutputException("An error happened while flushing output writer", templateSpec.getTemplate(), -1, -1, e);
+                                this.templateSpec, this.context.getLocale(), Integer.valueOf(maxOutput), outputType, Integer.valueOf(writtenCount), outputType, elapsed, elapsedMs});
             }
 
         } catch (final TemplateOutputException e) {
@@ -270,6 +280,8 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
         }
 
         reportFinish(outputType);
+
+        return writtenCount;
 
     }
 

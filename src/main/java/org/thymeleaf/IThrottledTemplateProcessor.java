@@ -101,8 +101,9 @@ public interface IThrottledTemplateProcessor {
      *   Process the whole template (all parts remaining), with no limit in the amount of chars written to output.
      * </p>
      * @param writer the writer output should be written to.
+     * @return the amount of bytes written to output.
      */
-    public void processAll(final Writer writer);
+    public int processAll(final Writer writer);
 
     /**
      * <p>
@@ -110,8 +111,9 @@ public interface IThrottledTemplateProcessor {
      * </p>
      * @param outputStream the output stream output should be written to.
      * @param charset the charset to be used for encoding the written output into bytes.
+     * @return the amount of bytes written to output.
      */
-    public void processAll(final OutputStream outputStream, final Charset charset);
+    public int processAll(final OutputStream outputStream, final Charset charset);
 
     /**
      * <p>
@@ -121,8 +123,9 @@ public interface IThrottledTemplateProcessor {
      * @param maxOutputInChars the maximum amount of chars that the engine is allowed to output. A number &lt; 0 or
      *                           {@link Integer#MAX_VALUE} will mean "no limit".
      * @param writer the writer output should be written to.
+     * @return the amount of bytes written to output.
      */
-    public void process(final int maxOutputInChars, final Writer writer);
+    public int process(final int maxOutputInChars, final Writer writer);
 
     /**
      * <p>
@@ -133,8 +136,9 @@ public interface IThrottledTemplateProcessor {
      *                           {@link Integer#MAX_VALUE} will mean "no limit".
      * @param outputStream the output stream output should be written to.
      * @param charset the charset to be used for encoding the written output into bytes.
+     * @return the amount of bytes written to output.
      */
-    public void process(final int maxOutputInBytes, final OutputStream outputStream, final Charset charset);
+    public int process(final int maxOutputInBytes, final OutputStream outputStream, final Charset charset);
 
 
 }
