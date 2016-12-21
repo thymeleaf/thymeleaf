@@ -71,7 +71,11 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
 
     private int offset;
     private boolean eventProcessingFinished;
-    private boolean allProcessingFinished;
+
+    // This is signaled as volatile so that several threads can ask whether the processor has finished
+    // avoiding visibility issues (concurrency should not be an issue because we should NEVER have more than
+    // one thread executing the processor at the same time, but thread visibility could still be an issue).
+    private volatile boolean allProcessingFinished;
 
 
     public ThrottledTemplateProcessor(
@@ -113,10 +117,14 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
             return true;
         }
 
-        this.allProcessingFinished =
+        final boolean finished =
                 this.eventProcessingFinished && !this.flowController.processorTemplateHandlerPending && !this.writer.isOverflown();
+        if (finished) {
+            // updating the volatile variable (which would apply a memory barrier) is avoided if unneeded
+            this.allProcessingFinished = finished;
+        }
 
-        return this.allProcessingFinished;
+        return finished;
 
     }
 

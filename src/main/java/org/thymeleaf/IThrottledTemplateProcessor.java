@@ -91,6 +91,13 @@ public interface IThrottledTemplateProcessor {
      * <p>
      *   Checks whether the processing of the template has already finished.
      * </p>
+     * <p>
+     *   NOTE Implementations of this method must be <strong>thread-safe</strong> as, even if executions
+     *   of the throttled processor (calls to <tt>process(...)</tt> methods) should never happen concurrently,
+     *   determining whether a throttled processor has finished or not can happen concurrently from different
+     *   threads as a way of short-cutting the execution of the processor (and avoid excessive consumption of
+     *   upstream data, for example).
+     * </p>
      *
      * @return true if the template has already been fully processed, false if not.
      */
