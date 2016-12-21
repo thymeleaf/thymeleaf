@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.spring5.view.reactive;
 
-import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,7 +28,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -40,7 +38,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -49,12 +46,8 @@ import org.springframework.web.reactive.result.view.AbstractView;
 import org.springframework.web.reactive.result.view.RequestContext;
 import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.IThrottledTemplateProcessor;
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.engine.DataDrivenTemplateIterator;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.ISpringWebReactiveTemplateEngine;
-import org.thymeleaf.spring5.context.reactive.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.reactive.ReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.reactive.ReactiveLazyContextVariable;
 import org.thymeleaf.spring5.context.reactive.SpringWebReactiveExpressionContext;
@@ -65,7 +58,6 @@ import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
-import org.thymeleaf.util.Validate;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -356,15 +348,6 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         initializeApplicationAwareModel(applicationContext, mergedModel);
 
 
-        // Search the model for a variable that might be meant to act as a data-driver
-        final DataDriverSpecification dataDriverSpec;
-        try {
-            dataDriverSpec = findDataDriverInModel(mergedModel);
-        } catch (final TemplateProcessingException e) {
-            return Mono.error(e);
-        }
-
-
         /*
          * ----------------------------------------------------------------------------------------------------------
          * INSTANTIATION OF THE CONTEXT
@@ -513,303 +496,30 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
          * ----------------------------------------------------------------------------------------------------------
          */
 
-        if (dataDriverSpec != null) {
 
-            final Flux<DataBuffer> dataFlow =
-                    createDataDrivenFlow(
-                            templateName, viewTemplateEngine, processMarkupSelectors, context,
-                            dataDriverSpec,                      // data-driver specification
-                            templateResponseMaxChunkSizeBytes,   // chunk max size limit (can be none: MAX_VALUE)
-                            response.bufferFactory(), charset);
-
-            // No size limit for output chunks has been set, so we will let the
-            // server apply its standard behaviour ("writeWith").
-            if (templateResponseMaxChunkSizeBytes == Integer.MAX_VALUE) {
-                return response.writeWith(dataFlow);
-            }
-
-            // A limit for output chunks has been set, so we will use "writeAndFlushWith" in order to make
-            // sure that output is flushed after each buffer.
-            return response.writeAndFlushWith(dataFlow.window(1));
-
-        }
-
-        // At this point we know the execution is not going to be data-driven, so Thymeleaf will NOT execute
-        // acting as a subscriber of a given Publisher<?>. But we will still need to check if a limit has been
-        // set of the output chunk size, which would mean the server would have to be throttled.
+        final Publisher<DataBuffer> stream =
+                viewTemplateEngine.processStream(
+                        templateName, processMarkupSelectors, context, response.bufferFactory(), charset,
+                        templateResponseMaxChunkSizeBytes); // FULL/DATADRIVEN if 0, CHUNKED/DATADRIVEN if not
 
         if (templateResponseMaxChunkSizeBytes == Integer.MAX_VALUE) {
 
-            // No limit to be set to the size of output chunks, so the entire output will be rendered to a
-            // single DataBuffer object that will be sent to the output channels.
-
-            final Mono<DataBuffer> dataMono =
-                    createFullFlow(
-                            templateName, viewTemplateEngine, processMarkupSelectors, context,
-                            response.bufferFactory(), charset);
-
             // No size limit for output chunks has been set, so we will let the
             // server apply its standard behaviour ("writeWith").
-            return response.writeWith(dataMono);
+            return response.writeWith(stream);
 
         }
-
-        // Given there is a limit in the size of the chunks to be output, we will need to create a more
-        // complex stream of template output, a Flux<DataBuffer> that will publish DataBuffer objects containing
-        // at most the amount of bytes set as limit.
-
-        final Flux<DataBuffer> dataFlow =
-                createChunkedFlow(
-                        templateName, viewTemplateEngine, processMarkupSelectors, context,
-                        templateResponseMaxChunkSizeBytes, // buffer max size limit
-                        response.bufferFactory(), charset);
 
         // A limit for output chunks has been set, so we will use "writeAndFlushWith" in order to make
         // sure that output is flushed after each buffer.
-        return response.writeAndFlushWith(dataFlow.window(1));
+        return response.writeAndFlushWith(Flux.from(stream).window(1));
 
     }
 
 
 
 
-    static IThrottledTemplateProcessor initializeThrottledProcessor(
-            final String templateName, final ISpringWebReactiveTemplateEngine templateEngine,
-            final Set<String> markupSelectors, final IContext context) {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Starting preparation of Thymeleaf template [" + templateName + "].");
-        }
-
-        final IThrottledTemplateProcessor throttledProcessor =
-                templateEngine.processThrottled(templateName, markupSelectors, context);
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Finished preparation of Thymeleaf template [" + templateName + "].");
-        }
-
-        return throttledProcessor;
-
-    }
-
-
-
-
-    /*
-     * Creates a Flux<DataBuffer> for processing templates non-data-driven, but with an established limit in the
-     * size of the output chunks.
-     */
-    static Flux<DataBuffer> createChunkedFlow(
-            final String templateName, final ISpringWebReactiveTemplateEngine templateEngine,
-            final Set<String> markupSelectors, final IContext context,
-            final int responseMaxBufferSizeBytes, final DataBufferFactory bufferAllocator, final Charset charset) {
-
-        // Using the throttledProcessor as state in this Flux.generate allows us to delay the initialization of
-        // the throttled processor until the last moment, when output generation is really requested.
-        final Flux<DataBuffer> flow =
-                Flux.generate(
-                    () -> initializeThrottledProcessor(templateName, templateEngine, markupSelectors, context),
-                    (throttledProcessor, emitter) -> {
-
-                        final DataBuffer buffer =
-                                (responseMaxBufferSizeBytes != Integer.MAX_VALUE ?
-                                        bufferAllocator.allocateBuffer(responseMaxBufferSizeBytes) :
-                                        bufferAllocator.allocateBuffer());
-
-                        try {
-                            throttledProcessor.process(responseMaxBufferSizeBytes, buffer.asOutputStream(), charset);
-                        } catch (final Throwable t) {
-                            emitter.error(t);
-                            return null;
-                        }
-
-                        emitter.next(buffer);
-
-                        if (throttledProcessor.isFinished()) {
-                            emitter.complete();
-                        }
-
-                        return throttledProcessor;
-
-                    });
-
-        // Will add some logging to the data flow
-        return flow.log(ThymeleafReactiveView.class.getName() + ".CHUNKED.OUTPUT", Level.FINEST);
-
-    }
-
-
-
-
-    /*
-     * Creates a Mono<DataBuffer> for processing templates non-data-driven, and also without a limit in the size of
-     * the output chunks. So a single DataBuffer object will be output.
-     */
-    static Mono<DataBuffer> createFullFlow(
-            final String templateName, final ISpringWebReactiveTemplateEngine templateEngine,
-            final Set<String> markupSelectors, final IContext context, final DataBufferFactory bufferAllocator,
-            final Charset charset) {
-
-        final Mono<DataBuffer> flow =
-                Mono.create(
-                    subscriber -> {
-
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Starting execution (FULL mode) of Thymeleaf template [" + templateName + "].");
-                        }
-
-                        final DataBuffer dataBuffer = bufferAllocator.allocateBuffer();
-                        final OutputStreamWriter writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset);
-
-                        try {
-                            templateEngine.process(templateName, markupSelectors, context, writer);
-                        } catch (final Throwable t) {
-                            subscriber.error(t);
-                            return;
-                        }
-
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Finished execution (FULL mode) of Thymeleaf template [" + templateName + "].");
-                        }
-
-                        // This is a Mono<?>, so no need to call "next()" or "complete()"
-                        subscriber.success(dataBuffer);
-
-                    });
-
-        // Will add some logging to the data flow
-        return flow.log(ThymeleafReactiveView.class.getName() + ".FULL.OUTPUT", Level.FINEST);
-
-    }
-
-
-
-
-    /*
-     * Creates a Flux<DataBuffer> for processing data-driven templates: a Publisher<X> variable will control
-     * the engine, making it output the markup corresponding to each buffer of streamed data as a part of its own
-     * data publishing flow.
-     */
-    static Flux<DataBuffer> createDataDrivenFlow(
-            final String templateName, final ISpringWebReactiveTemplateEngine templateEngine, final Set<String> markupSelectors,
-            final SpringWebReactiveExpressionContext context, final DataDriverSpecification dataDriverSpec,
-            final int responseMaxBufferSizeBytes, final DataBufferFactory bufferAllocator, final Charset charset) {
-
-        // STEP 1: Replace the data driver variable with a DataDrivenTemplateIterator
-        final DataDrivenTemplateIterator dataDrivenIterator = new DataDrivenTemplateIterator();
-        context.setVariable(dataDriverSpec.getVariableName(), dataDrivenIterator);
-
-        // STEP 2: Create the data stream buffers, plus add some logging in order to know how the stream is being used
-        final Flux<List<Object>> dataDrivenBufferedFlow =
-                Flux.from(dataDriverSpec.getDataStream())
-                        .buffer(dataDriverSpec.getDataStreamBufferSizeElements())
-                        .log(ThymeleafReactiveView.class.getName() + ".DATA-DRIVEN.INPUT", Level.FINEST);
-
-        // STEP 3: Initialize the (throttled) template engine for each subscriber (normally there will only be one)
-        final Flux<DataDrivenFluxStep> dataDrivenWithContextFlow =
-                Flux.using(
-                        () -> initializeThrottledProcessor(templateName, templateEngine, markupSelectors, context),
-                        throttledProcessor ->
-                                Flux.concat(
-                                        Mono.just(DataDrivenFluxStep.forHead(throttledProcessor)),
-                                        dataDrivenBufferedFlow.map(values -> DataDrivenFluxStep.forBuffer(throttledProcessor, values)),
-                                        Mono.just(DataDrivenFluxStep.forTail(throttledProcessor))
-                                ),
-                        throttledProcessor -> { /* no need to perform any cleanup operations */ });
-
-        // STEP 4: React to each buffer of published data by creating one or many (concatMap) DataBuffers containing
-        //         the result of processing only that buffer.
-        final Flux<DataBuffer> flow =
-                dataDrivenWithContextFlow.concatMap(
-                    step -> Flux.generate(
-                                () -> {
-                                    if (step.isHead()) {
-                                        // Feed with no elements - we just want to output the part of the
-                                        // template that goes before the iteration of the data driver.
-                                        dataDrivenIterator.feedBuffer(Collections.emptyList());
-                                    } else if (step.isDataBuffer()){
-                                        // Value-based execution: we have values and we want to iterate them
-                                        dataDrivenIterator.feedBuffer(step.getValues());
-                                    } else { // step.isTail()
-                                        // Signal feeding complete, indicating this is just meant to output the
-                                        // rest of the template after the iteration of the data driver. Note there
-                                        // is a case when this phase will still provoke the output of an iteration,
-                                        // and this is when the number of iterations is exactly ONE. In this case,
-                                        // it won't be possible to determine the iteration type (ZERO, ONE, MULTIPLE)
-                                        // until we close it with this 'feedingComplete()'
-                                        dataDrivenIterator.feedingComplete();
-                                    }
-                                    return step;
-                                },
-                                (fluxStep, emitter) -> {
-
-                                    // TODO * In general, we should make the output traceable, but better do it after
-                                    // TODO   this has been refactored towards the TemplateEngine / FlowExecutor, which
-                                    // TODO   should receive some kind of OutputStream-factory abstraction (with a
-                                    // TODO   default implementation based on DataBufferFactory).
-                                    // TODO
-                                    // TODO * BufferAllocator is now DataBufferFactory
-
-                                    final IThrottledTemplateProcessor throttledProcessor = fluxStep.getThrottledProcessor();
-
-                                    final DataBuffer buffer =
-                                            (responseMaxBufferSizeBytes != Integer.MAX_VALUE?
-                                                    bufferAllocator.allocateBuffer(responseMaxBufferSizeBytes) :
-                                                    bufferAllocator.allocateBuffer());
-
-                                    try {
-                                        throttledProcessor.process(responseMaxBufferSizeBytes, buffer.asOutputStream(), charset);
-                                    } catch (final Throwable t) {
-                                        emitter.error(t);
-                                        return null;
-                                    }
-
-                                    // TODO * If a wrapping OutputStream is introduced, it should count the written
-                                    // TODO   bytes and let at this point determine if we need to actually emit 'next'.
-                                    // Buffer created, send it to the output channels
-                                    emitter.next(buffer);
-
-                                    // Now it's time to determine if we should execute another time for the same
-                                    // data-driven step or rather we should consider we have done everything possible
-                                    // for this step (e.g. produced all markup for a data stream buffer) and just
-                                    // emit "complete" and go for the next step.
-                                    if (throttledProcessor.isFinished()) {
-
-                                        // We have finished executing the template, which can happen after
-                                        // finishing iterating all data driver values, or also if we are at the
-                                        // first execution and there was no need to use the data driver at all
-                                        emitter.complete();
-
-                                    } else {
-
-                                        if (fluxStep.isHead() && dataDrivenIterator.hasBeenQueried()) {
-
-                                            // We know everything before the data driven iteration has already been
-                                            // processed because the iterator has been used at least once (i.e. its
-                                            // 'hasNext()' or 'next()' method have been called at least once).
-                                            emitter.complete();
-
-                                        } else if (fluxStep.isDataBuffer() && !dataDrivenIterator.continueBufferExecution()) {
-                                            // We have finished executing this buffer of items and we can go for the
-                                            // next one or maybe the tail.
-                                            emitter.complete();
-                                        }
-                                        // fluxStep.isTail(): nothing to do, as the only reason we would have to emit
-                                        // 'complete' at the tail step would be throttledProcessor.isFinished(), which
-                                        // has been already checked.
-
-                                    }
-
-                                    return fluxStep;
-
-                                })
-
-                    );
-
-        // Will add some logging to the data flow
-        return flow.log(ThymeleafReactiveView.class.getName() + ".DATA-DRIVEN.OUTPUT", Level.FINEST);
-
-    }
 
     
 
@@ -821,37 +531,6 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
 
-    private static DataDriverSpecification findDataDriverInModel(final Map<String, Object> model) {
-
-        // In SpringWebReactiveExpressionContext, variables are backed by a Map<String,Object>. So this
-        // iteration on all the names and many "get()" calls shouldn't be an issue perf-wise.
-        DataDriverSpecification dataDriver = null;
-        for (final Map.Entry<String,Object> modelEntry : model.entrySet()) {
-
-            final String variableName = modelEntry.getKey();
-            final Object variableValue = modelEntry.getValue();
-
-            if (variableValue instanceof IReactiveDataDriverContextVariable) {
-
-                if (dataDriver != null) {
-                    throw new TemplateProcessingException(
-                            "Only one data-driver variable is allowed to be specified as a model attribute, but " +
-                            "at least two have been identified: '" + dataDriver.getVariableName() + "' " +
-                            "and '" + variableName + "'");
-                }
-
-                final IReactiveDataDriverContextVariable dataDriverContextVariable =
-                        (IReactiveDataDriverContextVariable) variableValue;
-                return new DataDriverSpecification(
-                        variableName, dataDriverContextVariable.getDataStream(),
-                        dataDriverContextVariable.getBufferSizeElements());
-            }
-
-        }
-
-        return dataDriver;
-
-    }
 
 
 
@@ -883,92 +562,6 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
     }
 
-
-
-
-    static final class DataDriverSpecification {
-
-        private final String variableName;
-        private final Publisher<Object> dataStream;
-        private final int dataStreamBufferSizeElements;
-
-        public DataDriverSpecification(
-                final String variableName, final Publisher<Object> dataStream, final int dataStreamBufferSizeElements) {
-            super();
-            Validate.isTrue(dataStreamBufferSizeElements > 0, "Data Stream Buffer Size cannot be <= 0 for variable " + variableName);
-            this.variableName = variableName;
-            this.dataStream = dataStream;
-            this.dataStreamBufferSizeElements = dataStreamBufferSizeElements;
-        }
-
-        public String getVariableName() {
-            return this.variableName;
-        }
-
-        public Publisher<Object> getDataStream() {
-            return this.dataStream;
-        }
-
-        public int getDataStreamBufferSizeElements() {
-            return this.dataStreamBufferSizeElements;
-        }
-
-    }
-
-
-
-
-    static final class DataDrivenFluxStep {
-
-        private final IThrottledTemplateProcessor throttledProcessor;
-        private final List<Object> values;
-        private final boolean head;
-        private final boolean tail;
-
-
-        static DataDrivenFluxStep forHead(final IThrottledTemplateProcessor throttledProcessor) {
-            return new DataDrivenFluxStep(throttledProcessor, null, true, false);
-        }
-
-        static DataDrivenFluxStep forBuffer(final IThrottledTemplateProcessor throttledProcessor, final List<Object> values) {
-            return new DataDrivenFluxStep(throttledProcessor, values, false, false);
-        }
-
-        static DataDrivenFluxStep forTail(final IThrottledTemplateProcessor throttledProcessor) {
-            return new DataDrivenFluxStep(throttledProcessor, null, false, true);
-        }
-
-        private DataDrivenFluxStep(
-                final IThrottledTemplateProcessor throttledProcessor, final List<Object> values,
-                final boolean head, final boolean tail) {
-            super();
-            this.throttledProcessor = throttledProcessor;
-            this.values = values;
-            this.head = head;
-            this.tail = tail;
-        }
-
-        IThrottledTemplateProcessor getThrottledProcessor() {
-            return this.throttledProcessor;
-        }
-
-        List<Object> getValues() {
-            return this.values;
-        }
-
-        boolean isHead() {
-            return this.head;
-        }
-
-        boolean isDataBuffer() {
-            return this.values != null;
-        }
-
-        boolean isTail() {
-            return this.tail;
-        }
-
-    }
 
 
 

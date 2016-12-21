@@ -19,10 +19,17 @@
  */
 package org.thymeleaf.spring5;
 
+import java.nio.charset.Charset;
+import java.util.Set;
+
 import org.reactivestreams.Processor;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferFactory;
+import org.thymeleaf.context.IContext;
+
 
 /**
  * <p>
@@ -80,6 +87,13 @@ import org.reactivestreams.Subscription;
 public interface ISpringWebReactiveTemplateEngine extends ISpringTemplateEngine {
 
 
+    public Publisher<DataBuffer> processStream(
+            final String template, final Set<String> markupSelectors, final IContext context,
+            final DataBufferFactory bufferFactory, final Charset charset);
+
+    public Publisher<DataBuffer> processStream(
+            final String template, final Set<String> markupSelectors, final IContext context,
+            final DataBufferFactory bufferFactory, final Charset charset, final int responseMaxChunkSizeBytes);
 
 
 }
