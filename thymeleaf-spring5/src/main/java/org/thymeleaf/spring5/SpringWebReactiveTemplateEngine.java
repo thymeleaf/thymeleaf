@@ -88,42 +88,7 @@ public class SpringWebReactiveTemplateEngine
     public Publisher<DataBuffer> processStream(
             final String template, final Set<String> markupSelectors, final IContext context,
             final DataBufferFactory bufferFactory, final Charset charset) {
-
-        /*
-         * PERFORM VALIDATIONS
-         */
-        if (template == null) {
-            return Flux.error(new IllegalArgumentException("Template cannot be null"));
-        }
-        if (context == null) {
-            return Flux.error(new IllegalArgumentException("Context cannot be null"));
-        }
-        if (bufferFactory == null) {
-            return Flux.error(new IllegalArgumentException("Buffer Factory cannot be null"));
-        }
-        if (charset == null) {
-            return Flux.error(new IllegalArgumentException("Charset cannot be null"));
-        }
-
-        /*
-         * CHECK FOR DATA-DRIVEN EXECUTION
-         */
-        try {
-            final String dataDriverVariableName = findDataDriverInModel(context);
-            if (dataDriverVariableName != null) {
-                // We should be executing in data-driven mode
-                return createDataDrivenStream(
-                        template, markupSelectors, context, dataDriverVariableName, bufferFactory, charset, Integer.MAX_VALUE);
-            }
-        } catch (final Throwable t) {
-            return Flux.error(t);
-        }
-
-        /*
-         * CREATE A CHUNKED STREAM
-         */
-        return createFullStream(template, markupSelectors, context, bufferFactory, charset);
-
+        return processStream(template, markupSelectors, context, bufferFactory, charset, Integer.MAX_VALUE);
     }
 
 
@@ -174,7 +139,7 @@ public class SpringWebReactiveTemplateEngine
          */
         if (chunkSizeBytes == Integer.MAX_VALUE) {
             // No limit on buffer size, so there is no reason to throttle: using FULL mode instead.
-            return processStream(template, markupSelectors, context, bufferFactory, charset);
+            return createFullStream(template, markupSelectors, context, bufferFactory, charset);
         }
 
         /*
