@@ -84,13 +84,13 @@ class ReactiveContextVariableUtils {
 
         if (reactiveAdapterRegistry == null) {
             throw new IllegalArgumentException(
-                    "Could not initialize " + ReactiveContextVariableUtils.class.getSimpleName() + " : " +
+                    "Could not initialize lazy reactive variable: " +
                     "Value is of class " + asyncObj.getClass().getName() +", but no ReactiveAdapterRegistry " +
-                    "has been set so far. This can happen if this context variable is used for rendering a template " +
+                    "has been set. This can happen if this context variable is used for rendering a template " +
                     "without going through a " + ThymeleafReactiveView.class.getSimpleName() + " or if there is no " +
                     "ReactiveAdapterRegistry bean registered at the application context. In such cases, it is " +
-                    "required that these lazy variables are instances of either " + Flux.class.getName() + " or " +
-                    Mono.class.getName() + ".");
+                    "required that the wrapped lazy variable values are instances of either " +
+                    Flux.class.getName() + " or " + Mono.class.getName() + ".");
         }
 
         final ReactiveAdapter adapter = reactiveAdapterRegistry.getAdapter(null, asyncObj);
