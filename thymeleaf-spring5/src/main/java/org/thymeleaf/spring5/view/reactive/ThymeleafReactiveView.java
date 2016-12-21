@@ -38,6 +38,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -46,6 +47,7 @@ import org.springframework.web.reactive.result.view.AbstractView;
 import org.springframework.web.reactive.result.view.RequestContext;
 import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.ISpringWebReactiveTemplateEngine;
 import org.thymeleaf.spring5.context.reactive.ReactiveDataDriverContextVariable;
@@ -542,32 +544,22 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
 
-
-
-
-
     private static void initializeApplicationAwareModel(
             final ApplicationContext applicationContext, final Map<String,Object> model) {
 
-        // TODO * This can certainly be improved - and maybe we should do it on the Context, not the Model Map
+        final ReactiveAdapterRegistry reactiveAdapterRegistry;
+        try {
+            reactiveAdapterRegistry = applicationContext.getBean(ReactiveAdapterRegistry.class);
+        } catch (final NoSuchBeanDefinitionException ignored) {
+            // No registry, but note that we can live without it (though limited to Flux and Mono)
+            return;
+        }
 
         for (final Object value : model.values()) {
             if (value instanceof ReactiveLazyContextVariable) {
-                try {
-                    final ReactiveAdapterRegistry reactiveAdapterRegistry =
-                            applicationContext.getBean(ReactiveAdapterRegistry.class);
-                    ((ReactiveLazyContextVariable)value).setReactiveAdapterRegistry(reactiveAdapterRegistry);
-                } catch (final NoSuchBeanDefinitionException ignored) {
-                    // No registry, but we can live without it (though limited to Flux and Mono)
-                }
+                ((ReactiveLazyContextVariable)value).setReactiveAdapterRegistry(reactiveAdapterRegistry);
             } else if (value instanceof ReactiveDataDriverContextVariable) {
-                try {
-                    final ReactiveAdapterRegistry reactiveAdapterRegistry =
-                            applicationContext.getBean(ReactiveAdapterRegistry.class);
-                    ((ReactiveDataDriverContextVariable)value).setReactiveAdapterRegistry(reactiveAdapterRegistry);
-                } catch (final NoSuchBeanDefinitionException ignored) {
-                    // No registry, but we can live without it (though limited to Flux and Mono)
-                }
+                ((ReactiveDataDriverContextVariable)value).setReactiveAdapterRegistry(reactiveAdapterRegistry);
             }
         }
 
