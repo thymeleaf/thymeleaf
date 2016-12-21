@@ -42,6 +42,21 @@ import reactor.core.publisher.Mono;
 
 
 /**
+ * <p>
+ *   Implementation of the Spring Web Reactive {@link ViewResolver}
+ *   interface.
+ * </p>
+ * <p>
+ *   View resolvers execute after the controller ends its execution. They receive the name
+ *   of the view to be processed and are in charge of creating (and configuring) the
+ *   corresponding {@link View} object for it.
+ * </p>
+ * <p>
+ *   The {@link View} implementations managed by this class are of type {@link ThymeleafReactiveView}.
+ * </p>
+ *
+ * @see ThymeleafReactiveView
+ * @see ISpringWebReactiveTemplateEngine
  *
  * @author Daniel Fern&aacute;ndez
  *

@@ -41,7 +41,7 @@ import org.thymeleaf.spring5.ISpringTemplateEngine;
 
 /**
  * <p>
- *   Implementation of the Spring MVC {@link org.springframework.web.servlet.ViewResolver}
+ *   Implementation of the Spring Web MVC {@link org.springframework.web.servlet.ViewResolver}
  *   interface.
  * </p>
  * <p>

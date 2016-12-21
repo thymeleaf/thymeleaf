@@ -483,7 +483,13 @@ public class SpringWebReactiveEngineContext
 
 
 
-
+    /*
+     * The variables map used for integration with Spring Web Reactive's ServerWebExchange uses
+     * the attributes stored in this ServerWebExchange as a default, so that if a variable is not
+     * found in the maps managed by the extended EngineContext (which is where it would be if
+     * we had set it from the model or the template itself), the ServerWebExchange attributes will
+     * be queried.
+     */
     private static final class WebExchangeAttributesVariablesMap extends EngineContext {
 
         private final ServerWebExchange exchange;

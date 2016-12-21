@@ -63,6 +63,28 @@ import reactor.core.publisher.Mono;
 
 
 /**
+ * <p>
+ *   Base implementation of the Spring Web Reactive {@link org.springframework.web.reactive.result.view.View}
+ *   interface.
+ * </p>
+ * <p>
+ *   Views represent a template being executed, after being resolved (and
+ *   instantiated) by a {@link org.springframework.web.reactive.result.view.ViewResolver}.
+ * </p>
+ * <p>
+ *   This is the default view implementation resolved by {@link ThymeleafReactiveViewResolver}.
+ * </p>
+ * <p>
+ *   This view needs a {@link ISpringWebReactiveTemplateEngine} for execution, and it will call its
+ *   {@link ISpringWebReactiveTemplateEngine#processStream(String, Set, IContext, DataBufferFactory, Charset, int)}
+ *   method to create the reactive data streams to be used for processing the template. See the documentation
+ *   of this class to know more about the different operation modes available.
+ * </p>
+ *
+ * @see ThymeleafReactiveViewResolver
+ * @see ISpringWebReactiveTemplateEngine
+ * @see ReactiveDataDriverContextVariable
+ * @see org.thymeleaf.spring5.context.reactive.IReactiveDataDriverContextVariable
  *
  * @author Daniel Fern&aacute;ndez
  *
@@ -336,12 +358,6 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                 new ThymeleafEvaluationContext(applicationContext, conversionService);
         mergedModel.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
 
-        // TODO * Throughout this integration we are going to use the non-Web implementations of IContext and IEngineContext,
-        // TODO   which means that model variables will not be synchronized with the attributes map at the ServerWebExchange
-        // TODO   (in the Spring MVC integration, context variables are directly synchronized with HttpServletRequest
-        // TODO   attributes for better integration with other view-layer technologies that rely directly on the request)
-        // TODO   Would this be an issue here? Shouldn't we be synchronizing with ServerWebExchange attributes?
-
 
         // Initialize those model attributes that might be instances of ReactiveLazyContextVariable and therefore
         // need to be set the ReactiveAdapterRegistry.
@@ -500,7 +516,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         final Publisher<DataBuffer> stream =
                 viewTemplateEngine.processStream(
                         templateName, processMarkupSelectors, context, response.bufferFactory(), charset,
-                        templateResponseMaxChunkSizeBytes); // FULL/DATADRIVEN if 0, CHUNKED/DATADRIVEN if not
+                        templateResponseMaxChunkSizeBytes); // FULL/DATADRIVEN if MAX_VALUE, CHUNKED/DATADRIVEN if other
 
         if (templateResponseMaxChunkSizeBytes == Integer.MAX_VALUE) {
 
@@ -517,12 +533,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
     }
 
 
-
-
-
-
     
-
 
     private static Optional<Charset> getCharset(final MediaType mediaType) {
         return mediaType != null ? Optional.ofNullable(mediaType.getCharset()) : Optional.empty();
