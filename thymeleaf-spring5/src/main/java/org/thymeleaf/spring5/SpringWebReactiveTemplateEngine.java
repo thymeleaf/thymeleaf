@@ -46,6 +46,10 @@ import org.thymeleaf.util.LoggingUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import static org.thymeleaf.spring5.SpringWebReactiveTemplateEngine.DataDrivenFluxStep.FluxStepPhase.DATA_DRIVEN_PHASE_BUFFER;
+import static org.thymeleaf.spring5.SpringWebReactiveTemplateEngine.DataDrivenFluxStep.FluxStepPhase.DATA_DRIVEN_PHASE_HEAD;
+import static org.thymeleaf.spring5.SpringWebReactiveTemplateEngine.DataDrivenFluxStep.FluxStepPhase.DATA_DRIVEN_PHASE_TAIL;
+
 
 /**
  *
@@ -211,75 +215,74 @@ public class SpringWebReactiveTemplateEngine
             final String templateName, final Set<String> markupSelectors, final IContext context,
             final DataBufferFactory bufferFactory, final Charset charset, final int responseMaxChunkSizeBytes) {
 
-        final Flux<DataBuffer> stream =
-                Flux.generate(
+        final Flux<DataBuffer> stream = Flux.generate(
 
-                        // Using the throttledProcessor as state in this Flux.generate allows us to delay the
-                        // initialization of the throttled processor until the last moment, when output generation
-                        // is really requested.
-                        () -> new CountingThrottledTemplateProcessor(processThrottled(templateName, markupSelectors, context)),
+                // Using the throttledProcessor as state in this Flux.generate allows us to delay the
+                // initialization of the throttled processor until the last moment, when output generation
+                // is really requested.
+                () -> new CountingThrottledTemplateProcessor(processThrottled(templateName, markupSelectors, context)),
 
-                        // This stream will execute, in a one-by-one (non-interleaved) fashion, the following code
-                        // for each back-pressure request coming from downstream. Each of these steps (chunks) will
-                        // execute the throttled processor once and return its result as a DataBuffer object.
-                        (throttledProcessor, emitter) -> {
+                // This stream will execute, in a one-by-one (non-interleaved) fashion, the following code
+                // for each back-pressure request coming from downstream. Each of these steps (chunks) will
+                // execute the throttled processor once and return its result as a DataBuffer object.
+                (throttledProcessor, emitter) -> {
 
-                            throttledProcessor.startChunk();
+                    throttledProcessor.startChunk();
 
-                            if (logger.isTraceEnabled()) {
-                                logger.trace(
-                                        "[THYMELEAF][{}][{}] STARTING PARTIAL STREAM PROCESS (CHUNKED MODE, IDENTIFIER " +
-                                                "\"{}\", CHUNK {}) FOR TEMPLATE \"{}\" WITH LOCALE {}",
-                                        new Object[]{
-                                                TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
-                                                throttledProcessor.getProcessorIdentifier(), Integer.valueOf(throttledProcessor.getChunkCount()),
-                                                LoggingUtils.loggifyTemplateName(templateName), context.getLocale()});
-                            }
+                    if (logger.isTraceEnabled()) {
+                        logger.trace(
+                                "[THYMELEAF][{}][{}] STARTING PARTIAL STREAM PROCESS (CHUNKED MODE, THROTTLER ID " +
+                                        "\"{}\", CHUNK {}) FOR TEMPLATE \"{}\" WITH LOCALE {}",
+                                new Object[]{
+                                        TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
+                                        throttledProcessor.getProcessorIdentifier(), Integer.valueOf(throttledProcessor.getChunkCount()),
+                                        LoggingUtils.loggifyTemplateName(templateName), context.getLocale()});
+                    }
 
-                            final DataBuffer buffer = bufferFactory.allocateBuffer(responseMaxChunkSizeBytes);
+                    final DataBuffer buffer = bufferFactory.allocateBuffer(responseMaxChunkSizeBytes);
 
-                            final int bytesProduced;
-                            try {
-                                bytesProduced =
-                                        throttledProcessor.process(responseMaxChunkSizeBytes, buffer.asOutputStream(), charset);
-                            } catch (final Throwable t) {
-                                emitter.error(t);
-                                return null;
-                            }
+                    final int bytesProduced;
+                    try {
+                        bytesProduced =
+                                throttledProcessor.process(responseMaxChunkSizeBytes, buffer.asOutputStream(), charset);
+                    } catch (final Throwable t) {
+                        emitter.error(t);
+                        return null;
+                    }
 
-                            if (logger.isTraceEnabled()) {
-                                logger.trace(
-                                        "[THYMELEAF][{}][{}] FINISHED PARTIAL STREAM PROCESS (CHUNKED MODE, IDENTIFIER " +
-                                                "\"{}\", CHUNK {}) FOR TEMPLATE \"{}\" WITH LOCALE {}. PRODUCED {} BYTES",
-                                        new Object[]{
-                                                TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
-                                                throttledProcessor.getProcessorIdentifier(), Integer.valueOf(throttledProcessor.getChunkCount()),
-                                                LoggingUtils.loggifyTemplateName(templateName), context.getLocale(), Integer.valueOf(bytesProduced)});
-                            }
+                    if (logger.isTraceEnabled()) {
+                        logger.trace(
+                                "[THYMELEAF][{}][{}] FINISHED PARTIAL STREAM PROCESS (CHUNKED MODE, THROTTLER ID " +
+                                        "\"{}\", CHUNK {}) FOR TEMPLATE \"{}\" WITH LOCALE {}. PRODUCED {} BYTES",
+                                new Object[]{
+                                        TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
+                                        throttledProcessor.getProcessorIdentifier(), Integer.valueOf(throttledProcessor.getChunkCount()),
+                                        LoggingUtils.loggifyTemplateName(templateName), context.getLocale(), Integer.valueOf(bytesProduced)});
+                    }
 
-                            emitter.next(buffer);
+                    emitter.next(buffer);
 
-                            if (throttledProcessor.isFinished()) {
+                    if (throttledProcessor.isFinished()) {
 
-                                if (logger.isTraceEnabled()) {
-                                    logger.trace(
-                                            "[THYMELEAF][{}][{}] FINISHED ALL STREAM PROCESS (CHUNKED MODE, IDENTIFIER " +
-                                                    "\"{}\") FOR TEMPLATE \"{}\" WITH LOCALE {}. PRODUCED A TOTAL OF {} BYTES IN {} CHUNKS",
-                                            new Object[]{
-                                                    TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
-                                                    throttledProcessor.getProcessorIdentifier(),
-                                                    LoggingUtils.loggifyTemplateName(templateName), context.getLocale(),
-                                                    Long.valueOf(throttledProcessor.getTotalBytesProduced()),
-                                                    Integer.valueOf(throttledProcessor.getChunkCount() + 1)});
-                                }
+                        if (logger.isTraceEnabled()) {
+                            logger.trace(
+                                    "[THYMELEAF][{}][{}] FINISHED ALL STREAM PROCESS (CHUNKED MODE, THROTTLER ID " +
+                                            "\"{}\") FOR TEMPLATE \"{}\" WITH LOCALE {}. PRODUCED A TOTAL OF {} BYTES IN {} CHUNKS",
+                                    new Object[]{
+                                            TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
+                                            throttledProcessor.getProcessorIdentifier(),
+                                            LoggingUtils.loggifyTemplateName(templateName), context.getLocale(),
+                                            Long.valueOf(throttledProcessor.getTotalBytesProduced()),
+                                            Integer.valueOf(throttledProcessor.getChunkCount() + 1)});
+                        }
 
-                                emitter.complete();
+                        emitter.complete();
 
-                            }
+                    }
 
-                            return throttledProcessor;
+                    return throttledProcessor;
 
-                        });
+                });
 
         // Will add some logging to the data stream
         return stream.log(LOG_CATEGORY_CHUNKED_OUTPUT, Level.FINEST);
@@ -298,6 +301,7 @@ public class SpringWebReactiveTemplateEngine
         final IReactiveDataDriverContextVariable dataDriver =
                 (IReactiveDataDriverContextVariable) context.getVariable(dataDriverVariableName);
 
+
         // STEP 2: Replace the data driver variable with a DataDrivenTemplateIterator
         final DataDrivenTemplateIterator dataDrivenIterator = new DataDrivenTemplateIterator();
         if (context instanceof AbstractContext) {
@@ -314,149 +318,213 @@ public class SpringWebReactiveTemplateEngine
             return Flux.error(e);
         }
 
+
         // STEP 3: Create the data stream buffers, plus add some logging in order to know how the stream is being used
         final Flux<List<Object>> dataDrivenBufferedStream =
                 Flux.from(dataDriver.getDataStream())
                         .buffer(dataDriver.getBufferSizeElements())
                         .log(LOG_CATEGORY_DATADRIVEN_INPUT, Level.FINEST);
 
+
         // STEP 4: Initialize the (throttled) template engine for each subscriber (normally there will only be one)
-        final Flux<DataDrivenFluxStep> dataDrivenWithContextStream =
-                Flux.using(
+        final Flux<DataDrivenFluxStep> dataDrivenWithContextStream = Flux.using(
 
-                        // Using the throttledProcessor as state in this Flux.using allows us to delay the
-                        // initialization of the throttled processor until the last moment, when output generation
-                        // is really requested.
-                        () -> new CountingThrottledTemplateProcessor(processThrottled(templateName, markupSelectors, context)),
+                // Using the throttledProcessor as state in this Flux.using allows us to delay the
+                // initialization of the throttled processor until the last moment, when output generation
+                // is really requested.
+                () -> new CountingThrottledTemplateProcessor(processThrottled(templateName, markupSelectors, context)),
 
-                        // This flux will be made by concatenating a step for the head (template before data-driven
-                        // iteration), several steps for the data-driven iteration, and finally a tail (template
-                        // after data-driven iteration).
-                        throttledProcessor ->
-                                Flux.concat(
-                                        Mono.just(DataDrivenFluxStep.forHead(throttledProcessor)),
-                                        dataDrivenBufferedStream.map(values -> DataDrivenFluxStep.forBuffer(throttledProcessor, values)),
-                                        Mono.just(DataDrivenFluxStep.forTail(throttledProcessor))
-                                ),
+                // This flux will be made by concatenating a phase for the head (template before data-driven
+                // iteration), another phase composed of most possibly several steps for the data-driven iteration,
+                // and finally a tail phase (template after data-driven iteration).
+                //
+                // But this concatenation will be done from a Flux created with Flux.generate, so that we have the
+                // opportunity to check if the processor has already signaled that it has finished, and in such
+                // case we might be able to avoid the subscription to the upstream data driver if its iteration is
+                // not needed at the template.
+                throttledProcessor -> Flux.concat(Flux.generate(
+                        () -> DATA_DRIVEN_PHASE_HEAD,
+                        (phase, emitter) -> {
 
-                        // No need to explicitly dispose the throttled template processor.
-                        throttledProcessor -> { /* Nothing to be done here! */ });
+                            // Check if the processor has already signaled it has finished, in which case we
+                            // might be able to avoid the BUFFER phase (if no iteration of the data-driver is present).
+                            //
+                            // *NOTE* we CANNOT GUARANTEE that this will stop the upstream data driver publisher from
+                            // being subscribed to or even consumed, because there is no guarantee that this code
+                            // will be executed for the BUFFER phase after the entire Flux generated downstream
+                            // for the HEAD phase (see STEP 5 in the stream being built). Actually, it might even be
+                            // executed concurrently to one of the steps of a Flux for the HEAD/BUFFER phases, which
+                            // is why the IThrottledProcessor.isFinished() called here needs to be thread-safe.
+                            if (throttledProcessor.isFinished()) {
+                                // We can short-cut, and if we are lucky even avoid the BUFFER phase.
+                                emitter.complete();
+                                return null;
+                            }
+
+                            switch (phase) {
+
+                                case DATA_DRIVEN_PHASE_HEAD:
+                                    emitter.next(Mono.just(DataDrivenFluxStep.forHead(throttledProcessor)));
+                                    return DATA_DRIVEN_PHASE_BUFFER;
+
+                                case DATA_DRIVEN_PHASE_BUFFER:
+                                    emitter.next(dataDrivenBufferedStream.map(values -> DataDrivenFluxStep.forBuffer(throttledProcessor, values)));
+                                    return DATA_DRIVEN_PHASE_TAIL;
+
+                                case DATA_DRIVEN_PHASE_TAIL:
+                                    emitter.next(Mono.just(DataDrivenFluxStep.forTail(throttledProcessor)));
+                                    emitter.complete();
+
+                            }
+
+                            return null;
+
+                        }
+                )),
+
+                // No need to explicitly dispose the throttled template processor.
+                throttledProcessor -> { /* Nothing to be done here! */ });
+
 
         // STEP 5: React to each buffer of published data by creating one or many (concatMap) DataBuffers containing
         //         the result of processing only that buffer.
-        final Flux<DataBuffer> stream =
-                dataDrivenWithContextStream.concatMap(
-                        step -> Flux.generate(
-                                () -> {
-                                    if (step.isHead()) {
-                                        // Feed with no elements - we just want to output the part of the
-                                        // template that goes before the iteration of the data driver.
-                                        dataDrivenIterator.feedBuffer(Collections.emptyList());
-                                    } else if (step.isDataBuffer()){
-                                        // Value-based execution: we have values and we want to iterate them
-                                        dataDrivenIterator.feedBuffer(step.getValues());
-                                    } else { // step.isTail()
-                                        // Signal feeding complete, indicating this is just meant to output the
-                                        // rest of the template after the iteration of the data driver. Note there
-                                        // is a case when this phase will still provoke the output of an iteration,
-                                        // and this is when the number of iterations is exactly ONE. In this case,
-                                        // it won't be possible to determine the iteration type (ZERO, ONE, MULTIPLE)
-                                        // until we close it with this 'feedingComplete()'
-                                        dataDrivenIterator.feedingComplete();
-                                    }
-                                    return step;
-                                },
-                                (fluxStep, emitter) -> {
+        final Flux<DataBuffer> stream = dataDrivenWithContextStream.concatMap(
+                (step) -> Flux.generate(
 
-                                    final CountingThrottledTemplateProcessor throttledProcessor = fluxStep.getThrottledProcessor();
+                        // We set initialize to TRUE as a state, so that the first step executed for this Flux
+                        // performs the initialization of the dataDrivenIterator for the entire Flux. It is a need
+                        // that this initialization is performed when the first step of this Flux is executed,
+                        // because initialization actually consists of a lateral effect on a mutable variable
+                        // (the dataDrivenIterator). And this way we are certain that it is executed in the
+                        // right order, given concatMap guarantees to us that these Fluxes generated here will
+                        // be consumed in the right order and executed one at a time (and the Reactor guarantees us
+                        // that there will be no thread visibility issues between Flux steps).
+                        () -> Boolean.TRUE,
 
-                                    throttledProcessor.startChunk();
+                        // The first time this is executed, initialize will be TRUE. From then on, it will be FALSE
+                        // so that it is the first execution of this that initializes the (mutable) dataDrivenIterator.
+                        (initialize, emitter) -> {
 
-                                    if (logger.isTraceEnabled()) {
-                                        logger.trace(
-                                                "[THYMELEAF][{}][{}] STARTING PARTIAL STREAM PROCESS (DATA-DRIVEN MODE, IDENTIFIER " +
-                                                        "\"{}\", CHUNK {}) FOR TEMPLATE \"{}\" WITH LOCALE {}",
-                                                new Object[]{
-                                                        TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
-                                                        throttledProcessor.getProcessorIdentifier(), Integer.valueOf(throttledProcessor.getChunkCount()),
-                                                        LoggingUtils.loggifyTemplateName(templateName), context.getLocale()});
-                                    }
+                            final CountingThrottledTemplateProcessor throttledProcessor = step.getThrottledProcessor();
 
-                                    final DataBuffer buffer =
-                                            (responseMaxChunkSizeBytes != Integer.MAX_VALUE?
-                                                    bufferFactory.allocateBuffer(responseMaxChunkSizeBytes) :
-                                                    bufferFactory.allocateBuffer());
+                            // Let's check if we can short cut and simply finish execution. Maybe we can avoid consuming
+                            // the data from the upstream data-driver publisher (e.g. if the data-driver variable is
+                            // never actually iterated).
+                            if (throttledProcessor.isFinished()) {
+                                emitter.complete();
+                                return Boolean.FALSE;
+                            }
 
-                                    final int bytesProduced;
-                                    try {
-                                        bytesProduced =
-                                            throttledProcessor.process(responseMaxChunkSizeBytes, buffer.asOutputStream(), charset);
-                                    } catch (final Throwable t) {
-                                        emitter.error(t);
-                                        return null;
-                                    }
+                            // Initialize the dataDrivenIterator. This is a lateral effect, this variable is mutable,
+                            // so it is important to do it here so that we make sure it is executed in the right order.
+                            if (initialize.booleanValue()) {
 
-                                    if (logger.isTraceEnabled()) {
-                                        logger.trace(
-                                                "[THYMELEAF][{}][{}] FINISHED PARTIAL STREAM PROCESS (DATA-DRIVEN MODE, IDENTIFIER " +
-                                                        "\"{}\", CHUNK {}) FOR TEMPLATE \"{}\" WITH LOCALE {}. PRODUCED {} BYTES",
-                                                new Object[]{
-                                                        TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
-                                                        throttledProcessor.getProcessorIdentifier(), Integer.valueOf(throttledProcessor.getChunkCount()),
-                                                        LoggingUtils.loggifyTemplateName(templateName), context.getLocale(), Integer.valueOf(bytesProduced)});
-                                    }
+                                if (step.isHead()) {
+                                    // Feed with no elements - we just want to output the part of the
+                                    // template that goes before the iteration of the data driver.
+                                    dataDrivenIterator.feedBuffer(Collections.emptyList());
+                                } else if (step.isDataBuffer()) {
+                                    // Value-based execution: we have values and we want to iterate them
+                                    dataDrivenIterator.feedBuffer(step.getValues());
+                                } else { // step.isTail()
+                                    // Signal feeding complete, indicating this is just meant to output the
+                                    // rest of the template after the iteration of the data driver. Note there
+                                    // is a case when this phase will still provoke the output of an iteration,
+                                    // and this is when the number of iterations is exactly ONE. In this case,
+                                    // it won't be possible to determine the iteration type (ZERO, ONE, MULTIPLE)
+                                    // until we close it with this 'feedingComplete()'
+                                    dataDrivenIterator.feedingComplete();
+                                }
 
-                                    // Buffer created, send it to the output channels
-                                    emitter.next(buffer);
+                            }
 
-                                    // Now it's time to determine if we should execute another time for the same
-                                    // data-driven step or rather we should consider we have done everything possible
-                                    // for this step (e.g. produced all markup for a data stream buffer) and just
-                                    // emit "complete" and go for the next step.
-                                    if (throttledProcessor.isFinished()) {
+                            // Signal the start of a new chunk (we are counting them for the logs)
+                            throttledProcessor.startChunk();
 
-                                        if (logger.isTraceEnabled()) {
-                                            logger.trace(
-                                                    "[THYMELEAF][{}][{}] FINISHED ALL STREAM PROCESS (DATA-DRIVEN MODE, IDENTIFIER " +
-                                                            "\"{}\") FOR TEMPLATE \"{}\" WITH LOCALE {}. PRODUCED A TOTAL OF {} BYTES IN {} CHUNKS",
-                                                    new Object[]{
-                                                            TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
-                                                            throttledProcessor.getProcessorIdentifier(),
-                                                            LoggingUtils.loggifyTemplateName(templateName), context.getLocale(),
-                                                            Long.valueOf(throttledProcessor.getTotalBytesProduced()),
-                                                            Integer.valueOf(throttledProcessor.getChunkCount() + 1)});
-                                        }
+                            if (logger.isTraceEnabled()) {
+                                logger.trace(
+                                        "[THYMELEAF][{}][{}] STARTING PARTIAL STREAM PROCESS (DATA-DRIVEN MODE, THROTTLER ID " +
+                                                "\"{}\", CHUNK {}) FOR TEMPLATE \"{}\" WITH LOCALE {}",
+                                        new Object[]{
+                                                TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
+                                                throttledProcessor.getProcessorIdentifier(), Integer.valueOf(throttledProcessor.getChunkCount()),
+                                                LoggingUtils.loggifyTemplateName(templateName), context.getLocale()});
+                            }
 
-                                        // We have finished executing the template, which can happen after
-                                        // finishing iterating all data driver values, or also if we are at the
-                                        // first execution and there was no need to use the data driver at all
-                                        emitter.complete();
+                            final DataBuffer buffer =
+                                    (responseMaxChunkSizeBytes != Integer.MAX_VALUE ?
+                                            bufferFactory.allocateBuffer(responseMaxChunkSizeBytes) :
+                                            bufferFactory.allocateBuffer());
 
-                                    } else {
+                            final int bytesProduced;
+                            try {
+                                bytesProduced =
+                                        throttledProcessor.process(responseMaxChunkSizeBytes, buffer.asOutputStream(), charset);
+                            } catch (final Throwable t) {
+                                emitter.error(t);
+                                return Boolean.FALSE;
+                            }
 
-                                        if (fluxStep.isHead() && dataDrivenIterator.hasBeenQueried()) {
+                            if (logger.isTraceEnabled()) {
+                                logger.trace(
+                                        "[THYMELEAF][{}][{}] FINISHED PARTIAL STREAM PROCESS (DATA-DRIVEN MODE, THROTTLER ID " +
+                                                "\"{}\", CHUNK {}) FOR TEMPLATE \"{}\" WITH LOCALE {}. PRODUCED {} BYTES",
+                                        new Object[]{
+                                                TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
+                                                throttledProcessor.getProcessorIdentifier(), Integer.valueOf(throttledProcessor.getChunkCount()),
+                                                LoggingUtils.loggifyTemplateName(templateName), context.getLocale(), Integer.valueOf(bytesProduced)});
+                            }
 
-                                            // We know everything before the data driven iteration has already been
-                                            // processed because the iterator has been used at least once (i.e. its
-                                            // 'hasNext()' or 'next()' method have been called at least once).
-                                            emitter.complete();
+                            // Buffer created, send it to the output channels
+                            emitter.next(buffer);
 
-                                        } else if (fluxStep.isDataBuffer() && !dataDrivenIterator.continueBufferExecution()) {
-                                            // We have finished executing this buffer of items and we can go for the
-                                            // next one or maybe the tail.
-                                            emitter.complete();
-                                        }
-                                        // fluxStep.isTail(): nothing to do, as the only reason we would have to emit
-                                        // 'complete' at the tail step would be throttledProcessor.isFinished(), which
-                                        // has been already checked.
+                            // Now it's time to determine if we should execute another time for the same
+                            // data-driven step or rather we should consider we have done everything possible
+                            // for this step (e.g. produced all markup for a data stream buffer) and just
+                            // emit "complete" and go for the next step.
+                            if (throttledProcessor.isFinished()) {
 
-                                    }
+                                if (logger.isTraceEnabled()) {
+                                    logger.trace(
+                                            "[THYMELEAF][{}][{}] FINISHED ALL STREAM PROCESS (DATA-DRIVEN MODE, THROTTLER ID " +
+                                                    "\"{}\") FOR TEMPLATE \"{}\" WITH LOCALE {}. PRODUCED A TOTAL OF {} BYTES IN {} CHUNKS",
+                                            new Object[]{
+                                                    TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
+                                                    throttledProcessor.getProcessorIdentifier(),
+                                                    LoggingUtils.loggifyTemplateName(templateName), context.getLocale(),
+                                                    Long.valueOf(throttledProcessor.getTotalBytesProduced()),
+                                                    Integer.valueOf(throttledProcessor.getChunkCount() + 1)});
+                                }
 
-                                    return fluxStep;
+                                // We have finished executing the template, which can happen after
+                                // finishing iterating all data driver values, or also if we are at the
+                                // first execution and there was no need to use the data driver at all
+                                emitter.complete();
 
-                                })
+                            } else {
 
-                );
+                                if (step.isHead() && dataDrivenIterator.hasBeenQueried()) {
+
+                                    // We know everything before the data driven iteration has already been
+                                    // processed because the iterator has been used at least once (i.e. its
+                                    // 'hasNext()' or 'next()' method have been called at least once).
+                                    emitter.complete();
+
+                                } else if (step.isDataBuffer() && !dataDrivenIterator.continueBufferExecution()) {
+                                    // We have finished executing this buffer of items and we can go for the
+                                    // next one or maybe the tail.
+                                    emitter.complete();
+                                }
+                                // fluxStep.isTail(): nothing to do, as the only reason we would have to emit
+                                // 'complete' at the tail step would be throttledProcessor.isFinished(), which
+                                // has been already checked.
+
+                            }
+
+                            return Boolean.FALSE;
+
+                        }));
+
 
         // Will add some logging to the data flow
         return stream.log(LOG_CATEGORY_DATADRIVEN_OUTPUT, Level.FINEST);
@@ -550,7 +618,7 @@ public class SpringWebReactiveTemplateEngine
 
 
     /*
-     * This internal class is used for keeping the accounting of the different steps in a data-driven stream:
+     * This internal class is used for keeping the accounting of the different phases in a data-driven stream:
      * head (no value, template before the data-driven iteration), buffer (values, data-driven iteration), and
      * tail (no value, template after the data-driven iteration).
      *
@@ -561,32 +629,32 @@ public class SpringWebReactiveTemplateEngine
      */
     static final class DataDrivenFluxStep {
 
+        enum FluxStepPhase {DATA_DRIVEN_PHASE_HEAD, DATA_DRIVEN_PHASE_BUFFER, DATA_DRIVEN_PHASE_TAIL }
+
         private final CountingThrottledTemplateProcessor throttledProcessor;
         private final List<Object> values;
-        private final boolean head;
-        private final boolean tail;
+        private final FluxStepPhase phase;
 
 
         static DataDrivenFluxStep forHead(final CountingThrottledTemplateProcessor throttledProcessor) {
-            return new DataDrivenFluxStep(throttledProcessor, null, true, false);
+            return new DataDrivenFluxStep(throttledProcessor, null, DATA_DRIVEN_PHASE_HEAD);
         }
 
         static DataDrivenFluxStep forBuffer(final CountingThrottledTemplateProcessor throttledProcessor, final List<Object> values) {
-            return new DataDrivenFluxStep(throttledProcessor, values, false, false);
+            return new DataDrivenFluxStep(throttledProcessor, values, DATA_DRIVEN_PHASE_BUFFER);
         }
 
         static DataDrivenFluxStep forTail(final CountingThrottledTemplateProcessor throttledProcessor) {
-            return new DataDrivenFluxStep(throttledProcessor, null, false, true);
+            return new DataDrivenFluxStep(throttledProcessor, null, DATA_DRIVEN_PHASE_TAIL);
         }
 
         private DataDrivenFluxStep(
                 final CountingThrottledTemplateProcessor throttledProcessor, final List<Object> values,
-                final boolean head, final boolean tail) {
+                final FluxStepPhase phase) {
             super();
             this.throttledProcessor = throttledProcessor;
             this.values = values;
-            this.head = head;
-            this.tail = tail;
+            this.phase = phase;
         }
 
         CountingThrottledTemplateProcessor getThrottledProcessor() {
@@ -598,15 +666,15 @@ public class SpringWebReactiveTemplateEngine
         }
 
         boolean isHead() {
-            return this.head;
+            return this.phase == DATA_DRIVEN_PHASE_HEAD;
         }
 
         boolean isDataBuffer() {
-            return this.values != null;
+            return this.phase == DATA_DRIVEN_PHASE_BUFFER;
         }
 
         boolean isTail() {
-            return this.tail;
+            return this.phase == DATA_DRIVEN_PHASE_TAIL;
         }
 
     }
