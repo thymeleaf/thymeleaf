@@ -60,10 +60,10 @@ public class SpringWebReactiveTemplateEngine
 
 
     private static final Logger logger = LoggerFactory.getLogger(SpringWebReactiveTemplateEngine.class);
-    private static final String LOG_CATEGORY_FULL_OUTPUT = SpringWebReactiveTemplateEngine.class.getName() + ".OUTPUT.FULL";
-    private static final String LOG_CATEGORY_CHUNKED_OUTPUT = SpringWebReactiveTemplateEngine.class.getName() + ".OUTPUT.CHUNKED";
-    private static final String LOG_CATEGORY_DATADRIVEN_INPUT = SpringWebReactiveTemplateEngine.class.getName() + ".INPUT.DATADRIVEN";
-    private static final String LOG_CATEGORY_DATADRIVEN_OUTPUT = SpringWebReactiveTemplateEngine.class.getName() + ".OUTPUT.DATADRIVEN";
+    private static final String LOG_CATEGORY_FULL_OUTPUT = SpringWebReactiveTemplateEngine.class.getName() + ".DOWNSTREAM.FULL";
+    private static final String LOG_CATEGORY_CHUNKED_OUTPUT = SpringWebReactiveTemplateEngine.class.getName() + ".DOWNSTREAM.CHUNKED";
+    private static final String LOG_CATEGORY_DATADRIVEN_INPUT = SpringWebReactiveTemplateEngine.class.getName() + ".UPSTREAM.DATA-DRIVEN";
+    private static final String LOG_CATEGORY_DATADRIVEN_OUTPUT = SpringWebReactiveTemplateEngine.class.getName() + ".DOWNSTREAM.DATA-DRIVEN";
 
 
 
