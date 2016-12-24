@@ -3,7 +3,7 @@
 <html>
 
   <head>
-    <title>Thymeleaf Sandbox: Spring Reactive</title>
+    <title>Thymeleaf Sandbox</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   </head>
 
@@ -35,7 +35,7 @@
             <ul>
                 <li><a href="/freemarker">Index</a></li>
                 <li><a href="/smalllist.freemarker">Small List</a></li>
-                <li><a href="/biglist.freemarker">Big List (in NORMAL mode &mdash; no other available)</a></li>
+                <li><a href="/biglist.freemarker">Big List</a></li>
             </ul>
         </li>
     </ul>

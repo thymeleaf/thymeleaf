@@ -3,14 +3,13 @@
 <html>
 
   <head>
-    <title>Thymeleaf Sandbox: Spring Reactive</title>
+    <title>Thymeleaf Sandbox</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   </head>
 
   <body>
 
-    <h2>Big Listing (8,715 * 50 = 435,750 entries)</h2>
-    <h3>Mode: <strong>FULL</strong></h3>
+    <h2>Big Listing (8,715 * 300 = 2,614,500 entries)</h2>
 
     <p>Using template engine: <strong>FreeMarker</strong></p>
 

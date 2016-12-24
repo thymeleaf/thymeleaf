@@ -47,21 +47,6 @@ public class BigList {
 
 
 
-    // Redirecting old names
-    @RequestMapping("/biglist-normal.thymeleaf")
-    public String bigListNormalThymeleaf() {
-        return "redirect:/biglist-full.thymeleaf";
-    }
-
-    // Redirecting old names
-    @RequestMapping("/biglist-buffered.thymeleaf")
-    public String bigListBufferedThymeleaf() {
-        return "redirect:/biglist-chunked.thymeleaf";
-    }
-
-
-
-
     @RequestMapping("/biglist-datadriven.thymeleaf")
     public String bigListDataDrivenThymeleaf(final Model model) {
 

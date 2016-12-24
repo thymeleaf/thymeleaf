@@ -3,7 +3,7 @@
 <html>
 
   <head>
-    <title>Thymeleaf Sandbox: Spring Reactive</title>
+    <title>Thymeleaf Sandbox</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   </head>
 

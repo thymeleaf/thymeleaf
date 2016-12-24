@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!-- ========================================================================= -->
 <!--                                                                           -->
-<!--   Copyright (c) 2011-2014, The THYMELEAF team (http://www.thymeleaf.org)  -->
+<!--   Copyright (c) 2011-2016, The THYMELEAF team (http://www.thymeleaf.org)  -->
 <!--                                                                           -->
 <!--   Licensed under the Apache License, Version 2.0 (the "License");         -->
 <!--   you may not use this file except in compliance with the License.        -->
@@ -17,214 +16,190 @@
 <!--   permissions and limitations under the License.                          -->
 <!--                                                                           -->
 <!-- ========================================================================= -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>thymeleafsandbox</groupId>
+	<artifactId>biglist-reactive</artifactId>
+	<packaging>jar</packaging>
+	<version>ci</version>
 
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>thymeleafsandbox</groupId>
-  <artifactId>springreactive</artifactId>
-  <packaging>jar</packaging>
-  <version>ci</version>
-  <name>Thymeleaf Sandbox - Spring Reactive</name>
+	<name>Thymeleaf Sandbox - BigList Reactive</name>
+	<description>Thymeleaf Sandbox - BigList Reactive</description>
 
-  <description>Modern server-side Java template engine for both web and standalone environments</description>
+	<!-- Spring Boot parent: experimental Spring Boot Web Reactive -->
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
 
-  <!-- Spring Boot parent: experimental Spring Boot Web Reactive -->
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.0.0.BUILD-SNAPSHOT</version>
-    <relativePath/>
-  </parent>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+	<organization>
+		<name>The THYMELEAF team</name>
+		<url>http://www.thymeleaf.org</url>
+	</organization>
+	
+	<scm>
+		<url>scm:git:git@github.com:thymeleaf/thymeleafsandbox-biglist-reactive.git</url>
+		<connection>scm:git:git@github.com:thymeleaf/thymeleafsandbox-biglist-reactive.git</connection>
+		<developerConnection>scm:git:git@github.com:thymeleaf/thymeleafsandbox-biglist-reactive.git</developerConnection>
+	</scm>
+	
+	<developers>
+		<developer>
+			<id>dfernandez</id>
+			<name>Daniel Fernandez</name>
+			<email>daniel.fernandez AT 11thlabs DOT org</email>
+			<roles>
+				<role>Project admin</role>
+			</roles>
+		 </developer>
+	</developers>
 
-  <organization>
-    <name>The THYMELEAF team</name>
-    <url>http://www.thymeleaf.org</url>
-  </organization>
-  
-  <scm>
-    <url>scm:git:git@github.com:thymeleaf/thymeleafsandbox-springreactive.git</url>
-    <connection>scm:git:git@github.com:thymeleaf/thymeleafsandbox-springreactive.git</connection>
-    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleafsandbox-springreactive.git</developerConnection>
-  </scm>
-  
-  <developers>
-    <developer>
-      <id>dfernandez</id>
-      <name>Daniel Fernandez</name>
-      <email>dfernandez AT users.sourceforge.net</email>
-      <roles>
-        <role>Project admin</role>
-      </roles>
-     </developer>
-  </developers>
-
-
-  <repositories>
-    <repository>
-      <id>sonatype-nexus-snapshots</id>
-      <name>Sonatype Nexus Snapshots</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>spring-snapshots</id>
-      <name>Spring Snapshots</name>
-      <url>https://repo.spring.io/snapshot</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>spring-milestones</id>
-      <name>Spring Milestones</name>
-      <url>https://repo.spring.io/milestone</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>spring-snapshots</id>
-      <name>Spring Snapshots</name>
-      <url>https://repo.spring.io/snapshot</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-    <pluginRepository>
-      <id>spring-milestones</id>
-      <name>Spring Milestones</name>
-      <url>https://repo.spring.io/milestone</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+		<thymeleaf.version>3.0.3-SNAPSHOT</thymeleaf.version>
+		<spring-boot-web-reactive.version>0.1.0.BUILD-SNAPSHOT</spring-boot-web-reactive.version>
+	</properties>
 
 
-  <properties>
-    <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <java.version>1.8</java.version>
-    <spring-boot-web-reactive.version>0.1.0.BUILD-SNAPSHOT</spring-boot-web-reactive.version>
-    <thymeleaf.version>3.0.3-SNAPSHOT</thymeleaf.version>
-  </properties>
-  
-  
-  <build>
+	<dependencyManagement>
 
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-      <resource>
-        <directory>src/main/java</directory>
-        <includes>
-          <include>**/*.properties</include>
-          <include>**/*.xml</include>
-          <include>**/*.html</include>
-        </includes>
-      </resource>
-    </resources>
-        
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-        
-  </build>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot.experimental</groupId>
+				<artifactId>spring-boot-dependencies-web-reactive</artifactId>
+				<version>${spring-boot-web-reactive.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+
+	</dependencyManagement>
 
 
-  <dependencyManagement>
+	<dependencies>
 
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.boot.experimental</groupId>
-        <artifactId>spring-boot-dependencies-web-reactive</artifactId>
-        <version>${spring-boot-web-reactive.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.springframework.boot.experimental</groupId>
+			<artifactId>spring-boot-starter-web-reactive</artifactId>
+			<exclusions>
+				<!-- Excluded because we will be using netty -->
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
-  </dependencyManagement>
+		<dependency>
+			<groupId>io.projectreactor.ipc</groupId>
+			<artifactId>reactor-netty</artifactId>
+		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
 
-  <dependencies>
+		<dependency>
+			<groupId>org.thymeleaf</groupId>
+			<artifactId>thymeleaf-spring5</artifactId>
+			<!-- TODO This would not be necessary when there is a Spring Boot Starter for thymeleaf-spring5 -->
+			<version>${thymeleaf.version}</version>
+		</dependency>
 
-    <dependency>
-      <groupId>org.springframework.boot.experimental</groupId>
-      <artifactId>spring-boot-starter-web-reactive</artifactId>
-      <exclusions>
-        <!-- Excluded because we will be using netty -->
-        <exclusion>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-tomcat</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <!--<dependency>-->
-      <!--<groupId>io.undertow</groupId>-->
-      <!--<artifactId>undertow-core</artifactId>-->
-    <!--</dependency>-->
-
-    <dependency>
-      <groupId>io.projectreactor.ipc</groupId>
-      <artifactId>reactor-netty</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jdbc</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.thymeleaf</groupId>
-      <artifactId>thymeleaf-spring5</artifactId>
-      <!-- TODO This would not be necessary when there is a Spring Boot Starter for thymeleaf-spring5 -->
-      <version>${thymeleaf.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.freemarker</groupId>
-      <artifactId>freemarker</artifactId>
-    </dependency>
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+		</dependency>
 
 
-    <!-- Needed only for the FreemarkerConfigurer -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context-support</artifactId>
-    </dependency>
+		<!-- Needed only for the FreemarkerConfigurer -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+		</dependency>
 
 
-    <dependency>
-      <groupId>org.xerial</groupId>
-      <artifactId>sqlite-jdbc</artifactId>
-    </dependency>
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+		</dependency>
 
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
 
-        
-  </dependencies>
-  
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+
+	<repositories>
+		<repository>
+			<id>sonatype-nexus-snapshots</id>
+			<name>Sonatype Nexus Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+	
 </project>

@@ -35,7 +35,7 @@ import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
 
 @Configuration
 @EnableConfigurationProperties(ThymeleafProperties.class)
-public class SpringReactiveWebConfig {
+public class BigListReactiveWebConfig {
 
     // TODO * Once there is a Spring Boot starter for thymeleaf-spring5, there would be no need to have
     // TODO   that @EnableConfigurationProperties annotation or use it for declaring the beans down in the
@@ -47,7 +47,7 @@ public class SpringReactiveWebConfig {
 
 
 
-    public SpringReactiveWebConfig(
+    public BigListReactiveWebConfig(
             final ApplicationContext applicationContext,
             final ThymeleafProperties thymeleafProperties) {
         super();

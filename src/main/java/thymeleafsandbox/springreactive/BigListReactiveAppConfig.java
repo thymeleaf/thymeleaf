@@ -35,15 +35,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
 @Configuration
-public class SpringReactiveAppConfig implements ApplicationContextAware {
+public class BigListReactiveAppConfig implements ApplicationContextAware {
 
-    private static final Logger logger = LoggerFactory.getLogger(SpringReactiveAppConfig.class);
+    private static final Logger logger = LoggerFactory.getLogger(BigListReactiveAppConfig.class);
 
 
     private ApplicationContext applicationContext;
 
 
-    public SpringReactiveAppConfig() {
+    public BigListReactiveAppConfig() {
         super();
     }
 

@@ -1,19 +1,16 @@
 
- Thymeleaf Sandbox: Spring + Spring Reactive
---------------------------------------------
+ Thymeleaf Sandbox: BigList, Spring Web Reactive
+------------------------------------------------
  
  This is a sandbox application, only used internally for development.
 
      
 ## Contents
 
- This sandbox repository contains:
- 
-   * A first implementation of the artifacts required for integrating Thymeleaf as a template engine for 
-     [Spring Reactive](https://github.com/spring-projects/spring-reactive). Package
-     `thymeleafsandbox.springreactive.thymeleaf`
-   * A sample Spring Reactive application using both Thymeleaf and FreeMarker in order to test several parts
-     of this integration.
+ This sandbox repository contains an example application meant to test the use Thymeleaf rendering
+ for very large amounts of markup using Spring Boot and Spring Web Reactive (in comparison to Spring Web MVC).
+
+ See also: https://github.com/thymeleaf/thymeleafsandbox-biglist-mvc
 
 
 ## Building
@@ -30,10 +27,6 @@
  
      mvn spring-boot:run
 
- Or, from an IDE, just launch the class:
-
-     thymeleafsandbox.springreactive.Application
-
  Once started, the application should be available at:
  
      http://localhost:8080
@@ -48,7 +41,7 @@
    * *Small* listing (8,715 elements, based on the MIT-licensed *Chinook* database for SQLite):
      * `/smalllist.thymeleaf`: *Small* listing using Thymeleaf.
      * `/smalllist.freemarker`: *Small* listing using FreeMarker.
-   * *Big* listing (same 8,715 elements repeated 50 times = 435,750 elements):
+   * *Big* listing (same 8,715 elements repeated 300 times = 2,614,500 elements):
      * `/biglist-full.thymeleaf`: *Big* listing using Thymeleaf, without limiting the size of output chunks and
        requiring the full model to be fully resolved in memory before template execution. All output will be created
        in memory as a single `DataBuffer`, then sent to the server's output channels.
