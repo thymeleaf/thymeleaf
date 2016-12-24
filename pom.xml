@@ -108,15 +108,20 @@
 			<artifactId>reactor-netty</artifactId>
 		</dependency>
 
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
+    </dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 
+    <!-- TODO * There is no Spring Boot starter for Thymeleaf + Spring 5 integration yet.    -->
 		<dependency>
 			<groupId>org.thymeleaf</groupId>
 			<artifactId>thymeleaf-spring5</artifactId>
-			<!-- TODO This would not be necessary when there is a Spring Boot Starter for thymeleaf-spring5 -->
 			<version>${thymeleaf.version}</version>
 		</dependency>
 
@@ -164,6 +169,13 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+    <repository>
+      <id>jboss</id>
+      <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
 		<repository>
 			<id>spring-snapshots</id>
 			<name>Spring Snapshots</name>
