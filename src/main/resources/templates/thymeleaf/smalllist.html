@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <title>Thymeleaf Sandbox</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+
+  <body>
+
+    <h2>Small Listing (8,715 entries)</h2>
+
+    <p>Using template engine: <strong>Thymeleaf</strong></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Playlist ID</th>
+          <th>Playlist Name</th>
+          <th>Track Name</th>
+          <th>Artist Name</th>
+          <th>Album Title</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="e : ${entries}">
+          <td th:text="${e.playlistId}">...</td>
+          <td th:text="${e.playlistName}">...</td>
+          <td th:text="${e.trackName}">...</td>
+          <td th:text="${e.artistName}">...</td>
+          <td th:text="${e.albumTitle}">...</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </body>
+
+</html>
