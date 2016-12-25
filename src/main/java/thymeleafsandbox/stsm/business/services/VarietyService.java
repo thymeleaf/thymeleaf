@@ -17,35 +17,34 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.stsm.web.conversion;
+package thymeleafsandbox.stsm.business.services;
 
-import java.text.ParseException;
-import java.util.Locale;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.Formatter;
-import thymeleafexamples.stsm.business.entities.Variety;
-import thymeleafexamples.stsm.business.services.VarietyService;
+import org.springframework.stereotype.Service;
+import thymeleafsandbox.stsm.business.entities.Variety;
+import thymeleafsandbox.stsm.business.entities.repositories.VarietyRepository;
 
-
-public class VarietyFormatter implements Formatter<Variety> {
-
+@Service
+public class VarietyService {
+    
     @Autowired
-    private VarietyService varietyService;
-
-
-    public VarietyFormatter() {
+    private VarietyRepository varietyRepository;
+    
+    
+    public VarietyService() {
         super();
     }
-
-    public Variety parse(final String text, final Locale locale) throws ParseException {
-        final Integer varietyId = Integer.valueOf(text);
-        return this.varietyService.findById(varietyId);
+    
+    
+    
+    public List<Variety> findAll() {
+        return this.varietyRepository.findAll();
     }
 
-
-    public String print(final Variety object, final Locale locale) {
-        return (object != null ? object.getId().toString() : "");
+    public Variety findById(final Integer id) {
+        return this.varietyRepository.findById(id);
     }
-
+    
 }

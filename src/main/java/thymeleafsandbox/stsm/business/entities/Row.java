@@ -17,34 +17,45 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.stsm.business.entities;
+package thymeleafsandbox.stsm.business.entities;
 
 
 
-public class Variety {
+public class Row {
 
-    private Integer id = null;
-    private String name = null;
+    private Variety variety = null;
+    private Integer seedsPerCell = null;
     
     
-    public Variety() {
+    
+    
+    public Row() {
         super();
     }
 
 
-    public Integer getId() {
-        return this.id;
-    }
-    public void setId(final Integer id) {
-        this.id = id;
+    public Variety getVariety() {
+        return this.variety;
     }
 
 
-    public String getName() {
-        return this.name;
+    public void setVariety(final Variety variety) {
+        this.variety = variety;
     }
-    public void setName(final String name) {
-        this.name = name;
+
+    public Integer getSeedsPerCell() {
+        return this.seedsPerCell;
     }
+
+    public void setSeedsPerCell(final Integer seedsPerCell) {
+        this.seedsPerCell = seedsPerCell;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Row [variety=" + this.variety + ", seedsPerCell=" + this.seedsPerCell + "]";
+    }
+
     
 }

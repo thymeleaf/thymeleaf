@@ -17,34 +17,34 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.stsm.business.services;
+package thymeleafsandbox.stsm.business.entities;
 
-import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import thymeleafexamples.stsm.business.entities.Variety;
-import thymeleafexamples.stsm.business.entities.repositories.VarietyRepository;
 
-@Service
-public class VarietyService {
-    
-    @Autowired
-    private VarietyRepository varietyRepository; 
+public class Variety {
+
+    private Integer id = null;
+    private String name = null;
     
     
-    public VarietyService() {
+    public Variety() {
         super();
     }
-    
-    
-    
-    public List<Variety> findAll() {
-        return this.varietyRepository.findAll();
+
+
+    public Integer getId() {
+        return this.id;
+    }
+    public void setId(final Integer id) {
+        this.id = id;
     }
 
-    public Variety findById(final Integer id) {
-        return this.varietyRepository.findById(id);
+
+    public String getName() {
+        return this.name;
+    }
+    public void setName(final String name) {
+        this.name = name;
     }
     
 }

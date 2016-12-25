@@ -17,37 +17,34 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.stsm.business.entities.repositories;
+package thymeleafsandbox.stsm.business.services;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.stereotype.Repository;
-import thymeleafexamples.stsm.business.entities.SeedStarter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import thymeleafsandbox.stsm.business.entities.SeedStarter;
+import thymeleafsandbox.stsm.business.entities.repositories.SeedStarterRepository;
 
-
-@Repository
-public class SeedStarterRepository {
-
-    private final List<SeedStarter> seedStarters = new ArrayList<SeedStarter>();
+@Service
+public class SeedStarterService {
+    
+    @Autowired
+    private SeedStarterRepository seedstarterRepository;
     
     
-    
-    public SeedStarterRepository() {
+    public SeedStarterService() {
         super();
     }
     
     
     
     public List<SeedStarter> findAll() {
-        return new ArrayList<SeedStarter>(this.seedStarters);
+        return this.seedstarterRepository.findAll();
     }
 
-    
     public void add(final SeedStarter seedStarter) {
-        this.seedStarters.add(seedStarter);
+        this.seedstarterRepository.add(seedStarter);
     }
-    
-    
     
 }

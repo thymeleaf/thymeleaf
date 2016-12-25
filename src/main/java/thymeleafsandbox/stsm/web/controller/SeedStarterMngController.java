@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.stsm.web.controller;
+package thymeleafsandbox.stsm.web.controller;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -30,13 +30,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import thymeleafexamples.stsm.business.entities.Feature;
-import thymeleafexamples.stsm.business.entities.Row;
-import thymeleafexamples.stsm.business.entities.SeedStarter;
-import thymeleafexamples.stsm.business.entities.Type;
-import thymeleafexamples.stsm.business.entities.Variety;
-import thymeleafexamples.stsm.business.services.SeedStarterService;
-import thymeleafexamples.stsm.business.services.VarietyService;
+import thymeleafsandbox.stsm.business.entities.Feature;
+import thymeleafsandbox.stsm.business.entities.Row;
+import thymeleafsandbox.stsm.business.entities.SeedStarter;
+import thymeleafsandbox.stsm.business.entities.Type;
+import thymeleafsandbox.stsm.business.entities.Variety;
+import thymeleafsandbox.stsm.business.services.SeedStarterService;
+import thymeleafsandbox.stsm.business.services.VarietyService;
 
 
 @Controller
