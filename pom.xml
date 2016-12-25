@@ -22,13 +22,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>thymeleafexamples</groupId>
+	<groupId>thymeleafsandbox</groupId>
 	<artifactId>stsm-reactive</artifactId>
 	<version>ci</version>
 	<packaging>jar</packaging>
 
-	<name>Thymeleaf Examples - Spring Thyme Seedstarter Manager (Reactive Version)</name>
-	<description>Modern server-side Java template engine for both web and standalone environments</description>
+	<name>Thymeleaf Sandbox - STSM Reactive</name>
+	<description>Thymeleaf Sandbox - STSM Reactive</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -37,57 +37,78 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
-	<organization>
-		<name>The THYMELEAF team</name>
-		<url>http://www.thymeleaf.org</url>
-	</organization>
-
-	<scm>
-		<url>scm:git:git@github.com:thymeleaf/thymeleafexamples-stsm-reactive.git</url>
-		<connection>scm:git:git@github.com:thymeleaf/thymeleafexamples-stsm-reactive.git</connection>
-		<developerConnection>scm:git:git@github.com:thymeleaf/thymeleafexamples-stsm-reactive.git</developerConnection>
-	</scm>
-
-	<developers>
-		<developer>
-			<id>dfernandez</id>
-			<name>Daniel Fernandez</name>
-			<email>daniel.fernandez AT 11thlabs DOT org</email>
-			<roles>
-				<role>Project admin</role>
-			</roles>
-		</developer>
-	</developers>
+  <organization>
+    <name>The THYMELEAF team</name>
+    <url>http://www.thymeleaf.org</url>
+  </organization>
+  
+  <scm>
+    <url>scm:git:git@github.com:thymeleaf/thymeleafsandbox-stsm-reactive.git</url>
+    <connection>scm:git:git@github.com:thymeleaf/thymeleafsandbox-stsm-reactive.git</connection>
+    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleafsandbox-stsm-reactive.git</developerConnection>
+  </scm>
+  
+  <developers>
+    <developer>
+      <id>dfernandez</id>
+      <name>Daniel Fernandez</name>
+      <email>daniel.fernandez AT 11thlabs DOT org</email>
+      <roles>
+        <role>Project admin</role>
+      </roles>
+     </developer>
+  </developers>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-		<spring-boot-web-reactive.version>0.1.0.BUILD-SNAPSHOT</spring-boot-web-reactive.version>
 		<thymeleaf.version>3.0.3-SNAPSHOT</thymeleaf.version>
+		<spring-boot-web-reactive.version>0.1.0.BUILD-SNAPSHOT</spring-boot-web-reactive.version>
 	</properties>
+
+
+	<dependencyManagement>
+
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot.experimental</groupId>
+				<artifactId>spring-boot-dependencies-web-reactive</artifactId>
+				<version>${spring-boot-web-reactive.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+
+	</dependencyManagement>
+
 
 	<dependencies>
 
 		<dependency>
 			<groupId>org.springframework.boot.experimental</groupId>
 			<artifactId>spring-boot-starter-web-reactive</artifactId>
+			<exclusions>
+				<!-- Excluded because we will be using netty -->
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
-		<!-- TODO * Netty cannot be used because of https://jira.spring.io/browse/SPR-14975      -->
-		<!-- TODO * Note also there is no Spring Boot 2.0 starter for Reactive + Netty.          -->
-		<!--<dependency>-->
-			<!--<groupId>io.projectreactor.ipc</groupId>-->
-			<!--<artifactId>reactor-netty</artifactId>-->
-		<!--</dependency>-->
+		<dependency>
+			<groupId>io.projectreactor.ipc</groupId>
+			<artifactId>reactor-netty</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -101,20 +122,7 @@
 			<version>${thymeleaf.version}</version>
 		</dependency>
 
-
 	</dependencies>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.boot.experimental</groupId>
-				<artifactId>spring-boot-dependencies-web-reactive</artifactId>
-				<version>${spring-boot-web-reactive.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<build>
 		<plugins>
