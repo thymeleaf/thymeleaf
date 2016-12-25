@@ -26,7 +26,7 @@ import thymeleafsandbox.stsm.web.conversion.DateFormatter;
 import thymeleafsandbox.stsm.web.conversion.VarietyFormatter;
 
 @Configuration
-public class StsmBootWebConfig {
+public class StsmMvcWebConfig {
 
 
     /*
