@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.stsm;
+package thymeleafsandbox.stsm;
 
 
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafProperties;
@@ -29,8 +29,8 @@ import org.thymeleaf.spring5.ISpringWebReactiveTemplateEngine;
 import org.thymeleaf.spring5.SpringWebReactiveTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
-import thymeleafexamples.stsm.web.conversion.DateFormatter;
-import thymeleafexamples.stsm.web.conversion.VarietyFormatter;
+import thymeleafsandbox.stsm.web.conversion.DateFormatter;
+import thymeleafsandbox.stsm.web.conversion.VarietyFormatter;
 
 @Configuration
 @EnableConfigurationProperties(ThymeleafProperties.class)

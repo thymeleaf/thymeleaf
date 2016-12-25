@@ -17,35 +17,40 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.stsm.business.entities;
+package thymeleafsandbox.stsm.business.entities;
 
 
-public enum Type {
+
+public enum Feature {
     
-    PLASTIC("PLASTIC"), 
-    WOOD("WOOD");
+    SEEDSTARTER_SPECIFIC_SUBSTRATE("SEEDSTARTER_SPECIFIC_SUBSTRATE"), 
+    FERTILIZER("FERTILIZER"), 
+    PH_CORRECTOR("PH_CORRECTOR");
+
     
-    
-    public static final Type[] ALL = { PLASTIC, WOOD };
+    public static final Feature[] ALL = { SEEDSTARTER_SPECIFIC_SUBSTRATE, FERTILIZER, PH_CORRECTOR };
     
     
     private final String name;
 
     
-    public static Type forName(final String name) {
+    
+    public static Feature forName(final String name) {
         if (name == null) {
-            throw new IllegalArgumentException("Name cannot be null for type");
+            throw new IllegalArgumentException("Name cannot be null for feature");
         }
-        if (name.toUpperCase().equals("PLASTIC")) {
-            return PLASTIC;
-        } else if (name.toUpperCase().equals("WOOD")) {
-            return WOOD;
+        if (name.toUpperCase().equals("SEEDSTARTER_SPECIFIC_SUBSTRATE")) {
+            return SEEDSTARTER_SPECIFIC_SUBSTRATE;
+        } else if (name.toUpperCase().equals("FERTILIZER")) {
+            return FERTILIZER;
+        } else if (name.toUpperCase().equals("PH_CORRECTOR")) {
+            return PH_CORRECTOR;
         }
-        throw new IllegalArgumentException("Name \"" + name + "\" does not correspond to any Type");
+        throw new IllegalArgumentException("Name \"" + name + "\" does not correspond to any Feature");
     }
     
     
-    private Type(final String name) {
+    private Feature(final String name) {
         this.name = name;
     }
     
@@ -58,6 +63,5 @@ public enum Type {
     public String toString() {
         return getName();
     }
-    
     
 }
