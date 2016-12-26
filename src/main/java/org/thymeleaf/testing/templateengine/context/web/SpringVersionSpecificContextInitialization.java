@@ -43,9 +43,11 @@ final class SpringVersionSpecificContextInitialization {
     private static final String PACKAGE_NAME = SpringVersionSpecificContextInitialization.class.getPackage().getName();
     private static final String SPRING3_DELEGATE_CLASS = PACKAGE_NAME + ".Spring3VersionSpecificContextInitializer";
     private static final String SPRING4_DELEGATE_CLASS = PACKAGE_NAME + ".Spring4VersionSpecificContextInitializer";
+    private static final String SPRING5_DELEGATE_CLASS = PACKAGE_NAME + ".Spring5VersionSpecificContextInitializer";
 
     private static final ISpringVersionSpecificContextInitializer spring3Delegate;
     private static final ISpringVersionSpecificContextInitializer spring4Delegate;
+    private static final ISpringVersionSpecificContextInitializer spring5Delegate;
 
 
 
@@ -54,12 +56,29 @@ final class SpringVersionSpecificContextInitialization {
 
         final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(SpringVersionSpecificContextInitialization.class);
 
-        if (SpringVersionUtils.isSpring40AtLeast()) {
+        if (SpringVersionUtils.isSpring50AtLeast()) {
+
+            LOG.trace("[THYMELEAF][TESTING] Spring 5.0+ found on classpath. Initializing testing system for using Spring 5 in tests");
+
+            try {
+                final Class<?> implClass = Class.forName(SPRING5_DELEGATE_CLASS, true, classLoader);
+                spring5Delegate = (ISpringVersionSpecificContextInitializer) implClass.newInstance();
+                spring4Delegate = null;
+                spring3Delegate = null;
+            } catch (final Exception e) {
+                throw new ExceptionInInitializerError(
+                        new ConfigurationException(
+                                "Environment has been detected to be at least Spring 5, but thymeleaf could not initialize a " +
+                                "delegate of class \"" + SPRING4_DELEGATE_CLASS + "\"", e));
+            }
+
+        } else if (SpringVersionUtils.isSpring40AtLeast()) {
 
             LOG.trace("[THYMELEAF][TESTING] Spring 4.0+ found on classpath. Initializing testing system for using Spring 4 in tests");
 
             try {
                 final Class<?> implClass = Class.forName(SPRING4_DELEGATE_CLASS, true, classLoader);
+                spring5Delegate = null;
                 spring4Delegate = (ISpringVersionSpecificContextInitializer) implClass.newInstance();
                 spring3Delegate = null;
             } catch (final Exception e) {
@@ -75,8 +94,9 @@ final class SpringVersionSpecificContextInitialization {
 
             try {
                 final Class<?> implClass = Class.forName(SPRING3_DELEGATE_CLASS, true, classLoader);
-                spring3Delegate = (ISpringVersionSpecificContextInitializer) implClass.newInstance();
+                spring5Delegate = null;
                 spring4Delegate = null;
+                spring3Delegate = (ISpringVersionSpecificContextInitializer) implClass.newInstance();
             } catch (final Exception e) {
                 throw new ConfigurationException(
                         "Environment has been detected to be Spring 3.x, but thymeleaf could not initialize a " +
@@ -98,6 +118,11 @@ final class SpringVersionSpecificContextInitialization {
             final ApplicationContext applicationContext, final ConversionService conversionService,
             final Map<String,Object> variables) {
 
+        if (spring5Delegate != null) {
+            spring5Delegate.versionSpecificAdditionalVariableProcessing(applicationContext, conversionService, variables);
+            return;
+        }
+
         if (spring4Delegate != null) {
             spring4Delegate.versionSpecificAdditionalVariableProcessing(applicationContext, conversionService, variables);
             return;
@@ -110,7 +135,7 @@ final class SpringVersionSpecificContextInitialization {
 
         throw new ConfigurationException(
                 "The testing infrastructure could not create initializer for the specific version of Spring being" +
-                "used. Currently Spring 3.0, 3.1, 3.2 and 4.x are supported.");
+                "used. Currently Spring 3.0, 3.1, 3.2, 4.x and 5.x are supported.");
 
     }
 
@@ -120,6 +145,11 @@ final class SpringVersionSpecificContextInitialization {
             final ApplicationContext applicationContext, final HttpServletRequest request,
             final HttpServletResponse response, final ServletContext servletContext,
             final Locale locale, final Map<String,Object> variables) {
+
+        if (spring5Delegate != null) {
+            return spring4Delegate.versionSpecificCreateContextInstance(
+                    applicationContext, request, response, servletContext, locale, variables);
+        }
 
         if (spring4Delegate != null) {
             return spring4Delegate.versionSpecificCreateContextInstance(
@@ -133,7 +163,7 @@ final class SpringVersionSpecificContextInitialization {
 
         throw new ConfigurationException(
                 "The testing infrastructure could not create initializer for the specific version of Spring being" +
-                "used. Currently Spring 3.0, 3.1, 3.2 and 4.x are supported.");
+                "used. Currently Spring 3.0, 3.1, 3.2, 4.x and 5.x are supported.");
 
     }
 

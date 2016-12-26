@@ -107,7 +107,7 @@
     <maven.compile.source>1.6</maven.compile.source>
     <maven.compile.target>1.6</maven.compile.target>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <thymeleaf.version>3.0.0.RELEASE</thymeleaf.version>
+    <thymeleaf.version>3.0.3-SNAPSHOT</thymeleaf.version>
     <attoparser.version>2.0.0.RELEASE</attoparser.version>
     <servlet-api.version>2.5</servlet-api.version>
     <mockito.version>1.10.19</mockito.version>
@@ -253,20 +253,27 @@
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf</artifactId>
-      <version>3.0.0.RELEASE</version>
+      <version>${thymeleaf.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-spring3</artifactId>
-      <version>3.0.0.RELEASE</version>
+      <version>${thymeleaf.version}</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-spring4</artifactId>
-      <version>3.0.0.RELEASE</version>
+      <version>${thymeleaf.version}</version>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.thymeleaf</groupId>
+      <artifactId>thymeleaf-spring5</artifactId>
+      <version>${thymeleaf.version}</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
@@ -274,7 +281,7 @@
     <dependency>
       <groupId>org.attoparser</groupId>
       <artifactId>attoparser</artifactId>
-      <version>2.0.0.BETA3</version>
+      <version>${attoparser.version}</version>
       <scope>compile</scope>
     </dependency>
     
