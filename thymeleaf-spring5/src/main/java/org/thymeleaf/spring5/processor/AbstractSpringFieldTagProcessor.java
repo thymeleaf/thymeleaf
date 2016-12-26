@@ -25,6 +25,7 @@ import org.thymeleaf.engine.AttributeDefinition;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IAttributeDefinitionsAware;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
@@ -171,6 +172,13 @@ public abstract class AbstractSpringFieldTagProcessor
         }
 
         final IThymeleafBindStatus bindStatus = FieldUtils.getBindStatus(context, attributeValue);
+
+        if (bindStatus == null) {
+            throw new TemplateProcessingException(
+                    "Cannot process attribute '" + attributeName + "': no associated BindStatus could be found for " +
+                    "the intended form binding operations. This can be due to the lack of a proper management of the " +
+                    "Spring RequestContext, which is usually done through the ThymeleafView or ThymeleafReactiveView");
+        }
 
         // We set the BindStatus into a local variable just in case we have more BindStatus-related processors to
         // be applied for the same tag, like for example a th:errorclass
