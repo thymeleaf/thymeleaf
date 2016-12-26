@@ -116,20 +116,24 @@ final class SpringVersionSpecificContextInitialization {
 
     static void versionSpecificAdditionalVariableProcessing(
             final ApplicationContext applicationContext, final ConversionService conversionService,
+            final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
             final Map<String,Object> variables) {
 
         if (spring5Delegate != null) {
-            spring5Delegate.versionSpecificAdditionalVariableProcessing(applicationContext, conversionService, variables);
+            spring5Delegate.versionSpecificAdditionalVariableProcessing(
+                    applicationContext, conversionService, request, response, servletContext, variables);
             return;
         }
 
         if (spring4Delegate != null) {
-            spring4Delegate.versionSpecificAdditionalVariableProcessing(applicationContext, conversionService, variables);
+            spring4Delegate.versionSpecificAdditionalVariableProcessing(
+                    applicationContext, conversionService, request, response, servletContext, variables);
             return;
         }
 
         if (spring3Delegate != null) {
-            spring3Delegate.versionSpecificAdditionalVariableProcessing(applicationContext, conversionService, variables);
+            spring3Delegate.versionSpecificAdditionalVariableProcessing(
+                    applicationContext, conversionService, request, response, servletContext, variables);
             return;
         }
 
@@ -147,7 +151,7 @@ final class SpringVersionSpecificContextInitialization {
             final Locale locale, final Map<String,Object> variables) {
 
         if (spring5Delegate != null) {
-            return spring4Delegate.versionSpecificCreateContextInstance(
+            return spring5Delegate.versionSpecificCreateContextInstance(
                     applicationContext, request, response, servletContext, locale, variables);
         }
 

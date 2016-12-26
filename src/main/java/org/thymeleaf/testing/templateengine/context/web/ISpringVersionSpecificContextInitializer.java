@@ -36,6 +36,7 @@ interface ISpringVersionSpecificContextInitializer {
 
     void versionSpecificAdditionalVariableProcessing(
             final ApplicationContext applicationContext, final ConversionService conversionService,
+            final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
             final Map<String,Object> variables);
 
 

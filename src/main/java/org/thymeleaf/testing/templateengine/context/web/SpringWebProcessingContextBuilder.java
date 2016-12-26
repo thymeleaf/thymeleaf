@@ -144,7 +144,7 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
          * SPRING-VERSION-SPECIFIC INITIALIZATIONS
          */
         SpringVersionSpecificContextInitialization.
-                versionSpecificAdditionalVariableProcessing(appCtx, conversionService, variables);
+                versionSpecificAdditionalVariableProcessing(appCtx, conversionService, request, response, servletContext, variables);
 
 
         /*

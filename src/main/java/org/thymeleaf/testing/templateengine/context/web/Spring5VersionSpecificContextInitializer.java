@@ -32,6 +32,7 @@ import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.context.WebContext;
+import org.thymeleaf.spring5.context.mvc.SpringWebMvcThymeleafRequestContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 
@@ -41,6 +42,7 @@ final class Spring5VersionSpecificContextInitializer implements ISpringVersionSp
 
     public void versionSpecificAdditionalVariableProcessing(
             final ApplicationContext applicationContext, final ConversionService conversionService,
+            final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
             final Map<String, Object> variables) {
 
         /*
@@ -49,6 +51,13 @@ final class Spring5VersionSpecificContextInitializer implements ISpringVersionSp
         final RequestContext requestContext =
                 (RequestContext) variables.get(AbstractTemplateView.SPRING_MACRO_REQUEST_CONTEXT_ATTRIBUTE);
         variables.put(SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
+
+        /*
+         * THYMELEAF REQUEST CONTEXT
+         */
+        final SpringWebMvcThymeleafRequestContext thymeleafRequestContext =
+                new SpringWebMvcThymeleafRequestContext(requestContext, request);
+        variables.put(SpringContextVariableNames.THYMELEAF_REQUEST_CONTEXT, thymeleafRequestContext);
 
         /*
          * EVALUATION CONTEXT
