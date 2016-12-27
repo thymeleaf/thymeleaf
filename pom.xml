@@ -109,7 +109,7 @@
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <thymeleaf.version>3.0.3-SNAPSHOT</thymeleaf.version>
     <attoparser.version>2.0.0.RELEASE</attoparser.version>
-    <servlet-api.version>2.5</servlet-api.version>
+    <servlet-api.version>3.1.0</servlet-api.version>
     <mockito.version>1.10.19</mockito.version>
     <springframework.version>3.0.7.RELEASE</springframework.version>
     <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
@@ -300,7 +300,7 @@
 
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <artifactId>javax.servlet-api</artifactId>
       <version>${servlet-api.version}</version>
       <scope>compile</scope>
     </dependency>
