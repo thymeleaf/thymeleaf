@@ -54,14 +54,12 @@ final class SpringVersionSpecificContextInitialization {
 
     static {
 
-        final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(SpringVersionSpecificContextInitialization.class);
-
         if (SpringVersionUtils.isSpring50AtLeast()) {
 
             LOG.trace("[THYMELEAF][TESTING] Spring 5.0+ found on classpath. Initializing testing system for using Spring 5 in tests");
 
             try {
-                final Class<?> implClass = Class.forName(SPRING5_DELEGATE_CLASS, true, classLoader);
+                final Class<?> implClass = ClassLoaderUtils.loadClass(SPRING5_DELEGATE_CLASS);
                 spring5Delegate = (ISpringVersionSpecificContextInitializer) implClass.newInstance();
                 spring4Delegate = null;
                 spring3Delegate = null;
@@ -77,7 +75,7 @@ final class SpringVersionSpecificContextInitialization {
             LOG.trace("[THYMELEAF][TESTING] Spring 4.0+ found on classpath. Initializing testing system for using Spring 4 in tests");
 
             try {
-                final Class<?> implClass = Class.forName(SPRING4_DELEGATE_CLASS, true, classLoader);
+                final Class<?> implClass = ClassLoaderUtils.loadClass(SPRING4_DELEGATE_CLASS);
                 spring5Delegate = null;
                 spring4Delegate = (ISpringVersionSpecificContextInitializer) implClass.newInstance();
                 spring3Delegate = null;
@@ -93,21 +91,23 @@ final class SpringVersionSpecificContextInitialization {
             LOG.trace("[THYMELEAF][TESTING] Spring 3.x found on classpath. Initializing testing system for using Spring 3 in tests");
 
             try {
-                final Class<?> implClass = Class.forName(SPRING3_DELEGATE_CLASS, true, classLoader);
+                final Class<?> implClass = ClassLoaderUtils.loadClass(SPRING3_DELEGATE_CLASS);
                 spring5Delegate = null;
                 spring4Delegate = null;
                 spring3Delegate = (ISpringVersionSpecificContextInitializer) implClass.newInstance();
             } catch (final Exception e) {
-                throw new ConfigurationException(
-                        "Environment has been detected to be Spring 3.x, but thymeleaf could not initialize a " +
-                        "delegate of class \"" + SPRING3_DELEGATE_CLASS + "\"", e);
+                throw new ExceptionInInitializerError(
+                        new ConfigurationException(
+                            "Environment has been detected to be Spring 3.x, but thymeleaf could not initialize a " +
+                            "delegate of class \"" + SPRING3_DELEGATE_CLASS + "\"", e));
             }
 
         } else {
 
-            throw new ConfigurationException(
-                    "The testing infrastructure could not create initializer for the specific version of Spring being" +
-                            "used. Currently Spring 3.0, 3.1, 3.2 and 4.x are supported.");
+            throw new ExceptionInInitializerError(
+                    new ConfigurationException(
+                        "The testing infrastructure could not create initializer for the specific version of Spring being" +
+                        "used. Currently Spring 3.0, 3.1, 3.2 and 4.x are supported."));
 
         }
 
