@@ -35,6 +35,9 @@ public final class SpringVersionUtils {
     private static final int SPRING_VERSION_MAJOR;
     private static final int SPRING_VERSION_MINOR;
 
+    private static final boolean SPRING_WEB_MVC_PRESENT;
+    private static final boolean SPRING_WEB_REACTIVE_PRESENT;
+
 
 
     static {
@@ -57,30 +60,33 @@ public final class SpringVersionUtils {
             } catch (final Exception e) {
                 throw new ExceptionInInitializerError(
                         "Exception during initialization of Spring versioning utilities. Identified Spring " +
-                        "version is '" + springVersion + "', which does not follow the {major}.{minor}.{...} scheme");
+                                "version is '" + springVersion + "', which does not follow the {major}.{minor}.{...} scheme");
             }
 
         } else {
 
-            if (testClassExistence("org.springframework.context.annotation.ComponentScans")) {
+            if (ClassLoaderUtils.isClassPresent("org.springframework.core.io.buffer.DataBuffer")) {
+                SPRING_VERSION_MAJOR = 5;
+                SPRING_VERSION_MINOR = 0;
+            } else if (ClassLoaderUtils.isClassPresent("org.springframework.context.annotation.ComponentScans")) {
                 SPRING_VERSION_MAJOR = 4;
                 SPRING_VERSION_MINOR = 3;
-            } else if (testClassExistence("org.springframework.core.annotation.AliasFor")) {
+            } else if (ClassLoaderUtils.isClassPresent("org.springframework.core.annotation.AliasFor")) {
                 SPRING_VERSION_MAJOR = 4;
                 SPRING_VERSION_MINOR = 2;
-            } else if (testClassExistence("org.springframework.cache.annotation.CacheConfig")) {
+            } else if (ClassLoaderUtils.isClassPresent("org.springframework.cache.annotation.CacheConfig")) {
                 SPRING_VERSION_MAJOR = 4;
                 SPRING_VERSION_MINOR = 1;
-            } else if (testClassExistence("org.springframework.core.io.PathResource")) {
+            } else if (ClassLoaderUtils.isClassPresent("org.springframework.core.io.PathResource")) {
                 SPRING_VERSION_MAJOR = 4;
                 SPRING_VERSION_MINOR = 0;
-            } else if (testClassExistence("org.springframework.web.context.request.async.DeferredResult")) {
+            } else if (ClassLoaderUtils.isClassPresent("org.springframework.web.context.request.async.DeferredResult")) {
                 SPRING_VERSION_MAJOR = 3;
                 SPRING_VERSION_MINOR = 2;
-            } else if (testClassExistence("org.springframework.web.servlet.support.RequestDataValueProcessor")) {
+            } else if (ClassLoaderUtils.isClassPresent("org.springframework.web.servlet.support.RequestDataValueProcessor")) {
                 SPRING_VERSION_MAJOR = 3;
                 SPRING_VERSION_MINOR = 1;
-            } else if (testClassExistence("org.springframework.web.bind.annotation.RequestBody")) {
+            } else if (ClassLoaderUtils.isClassPresent("org.springframework.web.bind.annotation.RequestBody")) {
                 SPRING_VERSION_MAJOR = 3;
                 SPRING_VERSION_MINOR = 0;
             } else {
@@ -92,17 +98,10 @@ public final class SpringVersionUtils {
 
         }
 
-    }
+        SPRING_WEB_MVC_PRESENT = ClassLoaderUtils.isClassPresent("org.springframework.web.servlet.View");
+        SPRING_WEB_REACTIVE_PRESENT =
+                SPRING_VERSION_MAJOR >= 5 && ClassLoaderUtils.isClassPresent("org.springframework.web.reactive.result.view.View");
 
-
-    private static boolean testClassExistence(final String className) {
-        final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(org.thymeleaf.spring4.util.SpringVersionUtils.class);
-        try {
-            Class.forName(className, false, classLoader);
-            return true;
-        } catch (final Throwable t) {
-            return false;
-        }
     }
 
 
@@ -150,6 +149,21 @@ public final class SpringVersionUtils {
 
     public static boolean isSpring43AtLeast() {
         return SPRING_VERSION_MAJOR > 4 || (SPRING_VERSION_MAJOR == 4 && SPRING_VERSION_MINOR >= 3);
+    }
+
+
+    public static boolean isSpring50AtLeast() {
+        return SPRING_VERSION_MAJOR >= 5;
+    }
+
+
+    public static boolean isSpringWebMvcPresent() {
+        return SPRING_WEB_MVC_PRESENT;
+    }
+
+
+    public static boolean isSpringWebReactivePresent() {
+        return SPRING_WEB_REACTIVE_PRESENT;
     }
 
 
