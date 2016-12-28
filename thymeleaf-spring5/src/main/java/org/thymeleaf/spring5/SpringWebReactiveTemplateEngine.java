@@ -24,6 +24,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -32,14 +33,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebSession;
 import org.thymeleaf.IThrottledTemplateProcessor;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.AbstractContext;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.engine.DataDrivenTemplateIterator;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.context.reactive.IReactiveDataDriverContextVariable;
+import org.thymeleaf.spring5.context.reactive.ISpringWebReactiveContext;
 import org.thymeleaf.spring5.context.reactive.SpringWebReactiveEngineContextFactory;
 import org.thymeleaf.spring5.linkbuilder.reactive.SpringWebReactiveLinkBuilder;
 import org.thymeleaf.util.LoggingUtils;
@@ -304,19 +309,7 @@ public class SpringWebReactiveTemplateEngine
 
         // STEP 2: Replace the data driver variable with a DataDrivenTemplateIterator
         final DataDrivenTemplateIterator dataDrivenIterator = new DataDrivenTemplateIterator();
-        if (context instanceof AbstractContext) {
-            ((AbstractContext)context).setVariable(dataDriverVariableName, dataDrivenIterator);
-        } else if (context instanceof IEngineContext) {
-            ((IEngineContext)context).setVariable(dataDriverVariableName, dataDrivenIterator);
-        } else {
-            final Exception e =
-                    new IllegalArgumentException(
-                            "In order to execute in Data-Driven mode, context must be of a " +
-                            "known mutable implementation: it should either extend " +
-                            AbstractContext.class.getName() + " or implement the " +
-                            IEngineContext.class.getName() + " interface");
-            return Flux.error(e);
-        }
+        final IContext wrappedContext = applyDataDriverWrapper(context, dataDriverVariableName, dataDrivenIterator);
 
 
         // STEP 3: Create the data stream buffers, plus add some logging in order to know how the stream is being used
@@ -332,7 +325,7 @@ public class SpringWebReactiveTemplateEngine
                 // Using the throttledProcessor as state in this Flux.using allows us to delay the
                 // initialization of the throttled processor until the last moment, when output generation
                 // is really requested.
-                () -> new CountingThrottledTemplateProcessor(processThrottled(templateName, markupSelectors, context)),
+                () -> new CountingThrottledTemplateProcessor(processThrottled(templateName, markupSelectors, wrappedContext)),
 
                 // This flux will be made by concatenating a phase for the head (template before data-driven
                 // iteration), another phase composed of most possibly several steps for the data-driven iteration,
@@ -534,6 +527,38 @@ public class SpringWebReactiveTemplateEngine
 
 
 
+    /*
+     * This method will apply a wrapper on the data driver variable so that a DataDrivenTemplateIterator takes
+     * the place of the original data-driver variable. This is done via a wrapper in order to not perform such a
+     * strong modification on the original context object. Even if context objects should not be reused among template
+     * engine executions, when a non-IEngineContext implementation is used we will let that degree of liberty to the
+     * user just in case.
+     */
+    private static IContext applyDataDriverWrapper(
+            final IContext context, final String dataDriverVariableName,
+            final DataDrivenTemplateIterator dataDrivenTemplateIterator) {
+
+        // This is an IEngineContext, a very internal, low-level context implementation, so let's simply modify it
+        if (context instanceof IEngineContext) {
+            ((IEngineContext)context).setVariable(dataDriverVariableName, dataDrivenTemplateIterator);
+            return context;
+        }
+
+        // Not an IEngineContext, but might still be an ISpringWebReactiveContext and we don't want to lose that info
+        if (context instanceof ISpringWebReactiveContext) {
+            return new DataDrivenSpringWebReactiveContextWrapper(
+                    (ISpringWebReactiveContext)context, dataDriverVariableName, dataDrivenTemplateIterator);
+        }
+
+        // Not a recognized context interface: just use a default implementation
+        return new DataDrivenContextWrapper(context, dataDriverVariableName, dataDrivenTemplateIterator);
+
+
+    }
+
+
+
+
     private static String findDataDriverInModel(final IContext context) {
 
         // In SpringWebReactiveExpressionContext (used most of the times), variables are backed by a
@@ -675,6 +700,97 @@ public class SpringWebReactiveTemplateEngine
 
         boolean isTail() {
             return this.phase == DATA_DRIVEN_PHASE_TAIL;
+        }
+
+    }
+
+
+
+    /*
+     * This wrapper of an ISpringWebReactiveContext is meant to wrap the original context object sent to the
+     * template engine while hiding the data driver variable, returning a DataDrivenTemplateIterator in its place.
+     */
+    static class DataDrivenSpringWebReactiveContextWrapper
+            extends DataDrivenContextWrapper implements ISpringWebReactiveContext {
+
+        private final ISpringWebReactiveContext context;
+
+        DataDrivenSpringWebReactiveContextWrapper(
+                final ISpringWebReactiveContext context, final String dataDriverVariableName,
+                final DataDrivenTemplateIterator dataDrivenTemplateIterator) {
+            super(context, dataDriverVariableName, dataDrivenTemplateIterator);
+            this.context = context;
+        }
+
+        @Override
+        public ServerHttpRequest getRequest() {
+            return this.context.getRequest();
+        }
+
+        @Override
+        public ServerHttpResponse getResponse() {
+            return this.context.getResponse();
+        }
+
+        @Override
+        public Mono<WebSession> getSession() {
+            return this.context.getSession();
+        }
+
+        @Override
+        public ServerWebExchange getExchange() {
+            return this.context.getExchange();
+        }
+
+    }
+
+
+
+    /*
+     * This wrapper of an IContext (non-SpringWebReactive-specific) is meant to wrap the original context object sent
+     * to the template engine while hiding the data driver variable, returning a DataDrivenTemplateIterator in
+     * its place.
+     */
+    static class DataDrivenContextWrapper implements IContext {
+
+        private final IContext context;
+        private final String dataDriverVariableName;
+        private final DataDrivenTemplateIterator dataDrivenTemplateIterator;
+
+        DataDrivenContextWrapper(
+                final IContext context, final String dataDriverVariableName,
+                final DataDrivenTemplateIterator dataDrivenTemplateIterator) {
+            super();
+            this.context = context;
+            this.dataDriverVariableName = dataDriverVariableName;
+            this.dataDrivenTemplateIterator = dataDrivenTemplateIterator;
+        }
+
+        public IContext getWrappedContext() {
+            return this.context;
+        }
+
+        @Override
+        public Locale getLocale() {
+            return this.context.getLocale();
+        }
+
+        @Override
+        public boolean containsVariable(final String name) {
+            return this.context.containsVariable(name);
+        }
+
+        @Override
+        public Set<String> getVariableNames() {
+            return this.context.getVariableNames();
+        }
+
+        @Override
+        public Object getVariable(final String name) {
+            if (this.dataDriverVariableName.equals(name)) {
+                return this.dataDrivenTemplateIterator;
+            }
+            return this.context.getVariable(name);
         }
 
     }
