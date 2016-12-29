@@ -33,14 +33,14 @@ import thymeleafsandbox.springreactive.business.repository.PlaylistEntryReposito
 
 
 @Controller
-public class BigList {
+public class ThymeleafController {
 
 
     private PlaylistEntryRepository playlistEntryRepository;
 
 
 
-    public BigList() {
+    public ThymeleafController() {
         super();
     }
 
@@ -52,9 +52,21 @@ public class BigList {
 
 
 
+    @RequestMapping({"/", "/thymeleaf"})
+    public String index() {
+        return "thymeleaf/index";
+    }
+
+
+    @RequestMapping("/smalllist.thymeleaf")
+    public String smallList(final Model model) {
+        model.addAttribute("entries", this.playlistEntryRepository.findAllPlaylistEntries());
+        return "thymeleaf/smalllist";
+    }
+
 
     @RequestMapping("/biglist-datadriven.thymeleaf")
-    public String bigListDataDrivenThymeleaf(final Model model) {
+    public String bigListDataDriven(final Model model) {
 
         final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
         // No need to fully resolve the Publisher! We will just let it drive
@@ -66,7 +78,7 @@ public class BigList {
 
 
     @RequestMapping("/biglist-chunked.thymeleaf")
-    public String bigListChunkedThymeleaf(final Model model) {
+    public String bigListChunked(final Model model) {
 
         final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
         // We need to fully resolve the list before executing the template
@@ -80,7 +92,7 @@ public class BigList {
 
 
     @RequestMapping("/biglist-full.thymeleaf")
-    public String bigListFullThymeleaf(final Model model) {
+    public String bigListFull(final Model model) {
 
         final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
         // We need to fully resolve the list before executing the template
@@ -89,20 +101,6 @@ public class BigList {
         model.addAttribute("dataSource", playlistEntries);
 
         return "thymeleaf/biglist-full";
-
-    }
-
-
-    @RequestMapping("/biglist.freemarker")
-    public String bigListFreeMarker(final Model model) {
-
-        final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
-        // We need to fully resolve the list before executing the template
-        final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).collectList().block();
-
-        model.addAttribute("dataSource", playlistEntries);
-
-        return "freemarker/biglist";
 
     }
 

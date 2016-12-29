@@ -19,22 +19,28 @@
  */
 package thymeleafsandbox.springreactive.web.controller;
 
+import java.util.List;
+
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.thymeleaf.spring5.context.reactive.ReactiveDataDriverContextVariable;
+import reactor.core.publisher.Flux;
+import thymeleafsandbox.springreactive.business.PlaylistEntry;
 import thymeleafsandbox.springreactive.business.repository.PlaylistEntryRepository;
 
 
 @Controller
-public class SmallList {
+public class FreeMarkerController {
 
 
     private PlaylistEntryRepository playlistEntryRepository;
 
 
 
-    public SmallList() {
+    public FreeMarkerController() {
         super();
     }
 
@@ -46,19 +52,30 @@ public class SmallList {
 
 
 
-
-    @RequestMapping("/smalllist.thymeleaf")
-    public String smallListThymeleaf(final Model model) {
-        model.addAttribute("entries", this.playlistEntryRepository.findAllPlaylistEntries());
-        return "thymeleaf/smalllist";
+    @RequestMapping("/freemarker")
+    public String index() {
+        return "freemarker/index";
     }
 
 
     @RequestMapping("/smalllist.freemarker")
-    public String smallListFreeMarker(final Model model) {
+    public String smallList(final Model model) {
         model.addAttribute("entries", this.playlistEntryRepository.findAllPlaylistEntries());
         return "freemarker/smalllist";
     }
 
+
+    @RequestMapping("/biglist.freemarker")
+    public String bigList(final Model model) {
+
+        final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
+        // We need to fully resolve the list before executing the template
+        final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).collectList().block();
+
+        model.addAttribute("dataSource", playlistEntries);
+
+        return "freemarker/biglist";
+
+    }
 
 }
