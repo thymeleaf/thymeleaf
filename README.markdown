@@ -41,6 +41,7 @@
    * *Small* listing (8,715 elements, based on the MIT-licensed *Chinook* database for SQLite):
      * `/smalllist.thymeleaf`: *Small* listing using Thymeleaf.
      * `/smalllist.freemarker`: *Small* listing using FreeMarker.
+     * `/smalllist.json`: *Small* listing in JSON.
    * *Big* listing (same 8,715 elements repeated 300 times = 2,614,500 elements):
      * `/biglist-full.thymeleaf`: *Big* listing using Thymeleaf, without limiting the size of output chunks and
        requiring the full model to be fully resolved in memory before template execution. All output will be created
@@ -56,6 +57,7 @@
        output chunks (of a maximum size and generated as data is streamed from the *data-driver*) to the output channels.
      * `/biglist.freemarker`: *Big* listing using FreeMarker. No limit to output buffers can be set. Model has to
        be fully resolved before template execution.
+     * `/biglist.json`: *Big* listing in JSON.
 
  
  

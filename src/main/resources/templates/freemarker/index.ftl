@@ -38,6 +38,12 @@
                 <li><a href="/biglist.freemarker">Big List</a></li>
             </ul>
         </li>
+        <li>JSON:
+            <ul>
+                <li><a href="/smalllist.json">Small List</a></li>
+                <li><a href="/biglist.json">Big List</a></li>
+            </ul>
+        </li>
     </ul>
 
   </body>
