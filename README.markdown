@@ -41,9 +41,11 @@
    * *Small* listing (8,715 elements, based on the MIT-licensed *Chinook* database for SQLite):
      * `/smalllist.thymeleaf`: *Small* listing using Thymeleaf.
      * `/smalllist.freemarker`: *Small* listing using FreeMarker.
+     * `/smalllist.json`: *Small* listing in JSON.
    * *Big* listing (same 8,715 elements repeated 300 times = 2,614,500 elements):
      * `/biglist.thymeleaf`: *Big* listing using Thymeleaf.
      * `/biglist.freemarker`: *Big* listing using FreeMarker.
+     * `/biglist.json`: *Big* listing in JSON.
 
  
  
