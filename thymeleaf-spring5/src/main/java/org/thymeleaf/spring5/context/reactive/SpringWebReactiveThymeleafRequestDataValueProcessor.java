@@ -20,7 +20,10 @@
 package org.thymeleaf.spring5.context.reactive;
 
 import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.web.reactive.result.view.RequestDataValueProcessor;
+import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.spring5.context.IThymeleafRequestDataValueProcessor;
 
 /**
@@ -32,33 +35,50 @@ import org.thymeleaf.spring5.context.IThymeleafRequestDataValueProcessor;
  */
 class SpringWebReactiveThymeleafRequestDataValueProcessor implements IThymeleafRequestDataValueProcessor {
 
-    /*
-     * TODO * The RequestDataValueProcessor mechanism is not yet implemented in Spring Web Reactive.
-     * TODO   For the moment, all methods here are basically no-ops. See https://jira.spring.io/browse/SPR-15001
-     */
+    private final RequestDataValueProcessor requestDataValueProcessor;
+    private final ServerWebExchange exchange;
 
-    SpringWebReactiveThymeleafRequestDataValueProcessor() {
+    SpringWebReactiveThymeleafRequestDataValueProcessor(
+            final Optional<RequestDataValueProcessor> requestDataValueProcessor, final ServerWebExchange exchange) {
         super();
+        this.requestDataValueProcessor = requestDataValueProcessor.orElse(null);
+        this.exchange = exchange;
     }
 
     @Override
     public String processAction(final String action, final String httpMethod) {
-        return action;
+        if (this.requestDataValueProcessor == null) {
+            // The presence of a Request Data Value Processor is optional
+            return action;
+        }
+        return this.requestDataValueProcessor.processAction(this.exchange, action, httpMethod);
     }
 
     @Override
     public String processFormFieldValue(final String name, final String value, final String type) {
-        return value;
+        if (this.requestDataValueProcessor == null) {
+            // The presence of a Request Data Value Processor is optional
+            return value;
+        }
+        return this.requestDataValueProcessor.processFormFieldValue(this.exchange, name, value, type);
     }
 
     @Override
     public Map<String, String> getExtraHiddenFields() {
-        return null;
+        if (this.requestDataValueProcessor == null) {
+            // The presence of a Request Data Value Processor is optional
+            return null;
+        }
+        return this.requestDataValueProcessor.getExtraHiddenFields(this.exchange);
     }
 
     @Override
     public String processUrl(final String url) {
-        return url;
+        if (this.requestDataValueProcessor == null) {
+            // The presence of a Request Data Value Processor is optional
+            return url;
+        }
+        return this.requestDataValueProcessor.processUrl(this.exchange, url);
     }
 
 }

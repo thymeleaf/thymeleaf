@@ -55,11 +55,13 @@ public class SpringWebReactiveThymeleafRequestContext implements IThymeleafReque
     public SpringWebReactiveThymeleafRequestContext(
             final RequestContext requestContext, final ServerWebExchange serverWebExchange) {
         super();
-        Validate.notNull(requestContext, "Spring Web MVC RequestContext cannot be null");
+        Validate.notNull(requestContext, "Spring Web Reactive RequestContext cannot be null");
         Validate.notNull(serverWebExchange, "Server Web Exchange cannot be null");
         this.requestContext = requestContext;
         this.serverWebExchange = serverWebExchange;
-        this.thymeleafRequestDataValueProcessor = new SpringWebReactiveThymeleafRequestDataValueProcessor();
+        this.thymeleafRequestDataValueProcessor =
+                new SpringWebReactiveThymeleafRequestDataValueProcessor(
+                        this.requestContext.getRequestDataValueProcessor(), this.serverWebExchange);
     }
 
 
