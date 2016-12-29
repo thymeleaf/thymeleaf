@@ -21,7 +21,6 @@ package thymeleafsandbox.springreactive.business.repository;
 
 import java.util.List;
 
-import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -75,7 +74,7 @@ public class PlaylistEntryRepository {
     }
 
 
-    public Publisher<PlaylistEntry> findLargeCollectionPlaylistEntries() {
+    public Flux<PlaylistEntry> findLargeCollectionPlaylistEntries() {
 
         return Flux.fromIterable(
                 this.jdbcTemplate.query(

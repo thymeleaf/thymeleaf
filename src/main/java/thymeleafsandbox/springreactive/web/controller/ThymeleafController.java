@@ -21,7 +21,6 @@ package thymeleafsandbox.springreactive.web.controller;
 
 import java.util.List;
 
-import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -68,9 +67,9 @@ public class ThymeleafController {
     @RequestMapping("/biglist-datadriven.thymeleaf")
     public String bigListDataDriven(final Model model) {
 
-        final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
+        final Flux<PlaylistEntry> playlistStream = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
         // No need to fully resolve the Publisher! We will just let it drive
-        model.addAttribute("dataSource", new ReactiveDataDriverContextVariable(playlistFlow, 1000));
+        model.addAttribute("dataSource", new ReactiveDataDriverContextVariable(playlistStream, 1000));
 
         return "thymeleaf/biglist-datadriven";
 
@@ -80,9 +79,9 @@ public class ThymeleafController {
     @RequestMapping("/biglist-chunked.thymeleaf")
     public String bigListChunked(final Model model) {
 
-        final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
+        final Flux<PlaylistEntry> playlistStream = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
         // We need to fully resolve the list before executing the template
-        final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).collectList().block();
+        final List<PlaylistEntry> playlistEntries = playlistStream.collectList().block();
 
         model.addAttribute("dataSource", playlistEntries);
 
@@ -94,9 +93,9 @@ public class ThymeleafController {
     @RequestMapping("/biglist-full.thymeleaf")
     public String bigListFull(final Model model) {
 
-        final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
+        final Flux<PlaylistEntry> playlistStream = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
         // We need to fully resolve the list before executing the template
-        final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).collectList().block();
+        final List<PlaylistEntry> playlistEntries = playlistStream.collectList().block();
 
         model.addAttribute("dataSource", playlistEntries);
 

@@ -21,12 +21,10 @@ package thymeleafsandbox.springreactive.web.controller;
 
 import java.util.List;
 
-import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.thymeleaf.spring5.context.reactive.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Flux;
 import thymeleafsandbox.springreactive.business.PlaylistEntry;
 import thymeleafsandbox.springreactive.business.repository.PlaylistEntryRepository;
@@ -68,9 +66,9 @@ public class FreeMarkerController {
     @RequestMapping("/biglist.freemarker")
     public String bigList(final Model model) {
 
-        final Publisher<PlaylistEntry> playlistFlow = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
+        final Flux<PlaylistEntry> playlistStream = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
         // We need to fully resolve the list before executing the template
-        final List<PlaylistEntry> playlistEntries = Flux.from(playlistFlow).collectList().block();
+        final List<PlaylistEntry> playlistEntries = playlistStream.collectList().block();
 
         model.addAttribute("dataSource", playlistEntries);
 
