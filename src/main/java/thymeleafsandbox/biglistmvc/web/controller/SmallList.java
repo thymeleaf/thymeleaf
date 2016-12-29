@@ -30,7 +30,6 @@ import thymeleafsandbox.biglistmvc.business.repository.PlaylistEntryRepository;
 public class SmallList {
 
 
-    @Autowired
     private PlaylistEntryRepository playlistEntryRepository;
 
 
@@ -38,6 +37,13 @@ public class SmallList {
     public SmallList() {
         super();
     }
+
+
+    @Autowired
+    public void setPlaylistEntryRepository(final PlaylistEntryRepository playlistEntryRepository) {
+        this.playlistEntryRepository = playlistEntryRepository;
+    }
+
 
 
 

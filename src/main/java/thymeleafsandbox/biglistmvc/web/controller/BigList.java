@@ -33,7 +33,6 @@ import thymeleafsandbox.biglistmvc.business.repository.PlaylistEntryRepository;
 public class BigList {
 
 
-    @Autowired
     private PlaylistEntryRepository playlistEntryRepository;
 
 
@@ -41,6 +40,13 @@ public class BigList {
     public BigList() {
         super();
     }
+
+
+    @Autowired
+    public void setPlaylistEntryRepository(final PlaylistEntryRepository playlistEntryRepository) {
+        this.playlistEntryRepository = playlistEntryRepository;
+    }
+
 
 
 
