@@ -43,10 +43,7 @@ import thymeleafsandbox.stsm.business.services.VarietyService;
 public class SeedStarterMngController {
 
 
-    @Autowired
     private VarietyService varietyService;
-    
-    @Autowired
     private SeedStarterService seedStarterService;
     
     
@@ -55,8 +52,21 @@ public class SeedStarterMngController {
         super();
     }
 
-    
-    
+
+    @Autowired
+    public void setVarietyService(final VarietyService varietyService) {
+        this.varietyService = varietyService;
+    }
+
+
+    @Autowired
+    public void setSeedStarterService(final SeedStarterService seedStarterService) {
+        this.seedStarterService = seedStarterService;
+    }
+
+
+
+
     @ModelAttribute("allTypes")
     public List<Type> populateTypes() {
         return Arrays.asList(Type.ALL);
