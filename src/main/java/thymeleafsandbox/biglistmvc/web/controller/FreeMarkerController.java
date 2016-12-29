@@ -30,14 +30,14 @@ import thymeleafsandbox.biglistmvc.business.repository.PlaylistEntryRepository;
 
 
 @Controller
-public class BigList {
+public class FreeMarkerController {
 
 
     private PlaylistEntryRepository playlistEntryRepository;
 
 
 
-    public BigList() {
+    public FreeMarkerController() {
         super();
     }
 
@@ -49,15 +49,16 @@ public class BigList {
 
 
 
+    @RequestMapping("/freemarker")
+    public String index() {
+        return "freemarker/index";
+    }
 
-    @RequestMapping("/biglist.thymeleaf")
-    public String bigListThymeleaf(final Model model) {
 
-        final Iterator<PlaylistEntry> playlistEntries = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
-        model.addAttribute("dataSource", playlistEntries);
-
-        return "thymeleaf/biglist";
-
+    @RequestMapping("/smalllist.freemarker")
+    public String smallList(final Model model) {
+        model.addAttribute("entries", this.playlistEntryRepository.findAllPlaylistEntries());
+        return "freemarker/smalllist";
     }
 
 

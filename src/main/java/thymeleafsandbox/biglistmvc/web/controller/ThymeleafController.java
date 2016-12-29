@@ -19,22 +19,25 @@
  */
 package thymeleafsandbox.biglistmvc.web.controller;
 
+import java.util.Iterator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import thymeleafsandbox.biglistmvc.business.PlaylistEntry;
 import thymeleafsandbox.biglistmvc.business.repository.PlaylistEntryRepository;
 
 
 @Controller
-public class SmallList {
+public class ThymeleafController {
 
 
     private PlaylistEntryRepository playlistEntryRepository;
 
 
 
-    public SmallList() {
+    public ThymeleafController() {
         super();
     }
 
@@ -46,19 +49,27 @@ public class SmallList {
 
 
 
+    @RequestMapping({"/", "/thymeleaf"})
+    public String index() {
+        return "thymeleaf/index";
+    }
+
 
     @RequestMapping("/smalllist.thymeleaf")
-    public String smallListThymeleaf(final Model model) {
+    public String smallList(final Model model) {
         model.addAttribute("entries", this.playlistEntryRepository.findAllPlaylistEntries());
         return "thymeleaf/smalllist";
     }
 
 
-    @RequestMapping("/smalllist.freemarker")
-    public String smallListFreeMarker(final Model model) {
-        model.addAttribute("entries", this.playlistEntryRepository.findAllPlaylistEntries());
-        return "freemarker/smalllist";
-    }
+    @RequestMapping("/biglist.thymeleaf")
+    public String bigList(final Model model) {
 
+        final Iterator<PlaylistEntry> playlistEntries = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
+        model.addAttribute("dataSource", playlistEntries);
+
+        return "thymeleaf/biglist";
+
+    }
 
 }
