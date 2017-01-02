@@ -40,10 +40,12 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.SerializableString;
 import com.fasterxml.jackson.core.io.CharacterEscapes;
 import com.fasterxml.jackson.core.io.SerializedString;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.DateUtils;
@@ -79,6 +81,9 @@ import org.unbescape.json.JsonEscapeType;
 public final class StandardJavaScriptSerializer implements IStandardJavaScriptSerializer {
 
     private static final Logger logger = LoggerFactory.getLogger(StandardJavaScriptSerializer.class);
+
+    // This will be used to conditionally initialize support for JSR310 (java.time) serialization in Jackson
+    private static final String JACKSON_JAVA_TIME_MODULE_CLASS_NAME = "com.fasterxml.jackson.datatype.jsr310.JavaTimeModule";
 
 
     private final IStandardJavaScriptSerializer delegate;
@@ -138,13 +143,33 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
 
 
         JacksonStandardJavaScriptSerializer() {
+
             super();
+
             this.mapper = new ObjectMapper();
             this.mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             this.mapper.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
             this.mapper.enable(JsonGenerator.Feature.ESCAPE_NON_ASCII);
             this.mapper.getFactory().setCharacterEscapes(new JacksonThymeleafCharacterEscapes());
             this.mapper.setDateFormat(new JacksonThymeleafISO8601DateFormat());
+
+            /*
+             * Now try to (conditionally) initialize support for Jackson serialization of JSR310 (java.time) objects,
+             * by making use of the 'jackson-datatype-jsr310' optional dependency.
+             */
+            final Class<?> javaTimeModuleClass = ClassLoaderUtils.findClass(JACKSON_JAVA_TIME_MODULE_CLASS_NAME);
+            if (javaTimeModuleClass != null) {
+                // JSR310 support for Jackson is present in classpath
+                try {
+                    this.mapper.registerModule((Module)javaTimeModuleClass.newInstance());
+                    this.mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+                } catch (final InstantiationException e) {
+                    throw new ConfigurationException("Exception while trying to initialize JSR310 support for Jackson", e);
+                } catch (final IllegalAccessException e) {
+                    throw new ConfigurationException("Exception while trying to initialize JSR310 support for Jackson", e);
+                }
+            }
+
         }
 
 
