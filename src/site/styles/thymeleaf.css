@@ -689,11 +689,12 @@ code *::-moz-selection {
 	background: #690;
 }
 
-/*.token.comment,
+.token.comment,
 .token.prolog,
 .token.doctype,
 .token.cdata {
-}*/
+	color: #cf9a49;
+}
 
 .token.punctuation {
 	color: #b9bdb6;
