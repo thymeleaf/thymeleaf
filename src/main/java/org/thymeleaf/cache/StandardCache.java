@@ -281,21 +281,30 @@ public final class StandardCache<K, V> implements ICache<K,V> {
         return this.dataContainer.size();
     }
 
-    public long getPutCount (){  return Long.valueOf(this.putCount.get());}
+    public long getPutCount() {
+        return this.putCount.get();
+    }
 
-    public long getGetCount (){  return Long.valueOf(this.getCount.get());}
+    public long getGetCount() {
+        return this.getCount.get();
+    }
 
-    public long getHitCount (){  return Long.valueOf(this.hitCount.get());}
+    public long getHitCount() {
+        return this.hitCount.get();
+    }
 
-    public long getMissCount (){ return Long.valueOf(this.missCount.get());}
+    public long getMissCount(){
+        return this.missCount.get();
+    }
 
 
     public double getHitRatio() {
         long hitCount = getHitCount();
         long getCount = getGetCount();
 
-        if ( hitCount == 0 || getCount == 0 )
+        if (hitCount == 0 || getCount == 0) {
             return 0;
+        }
 
         return hitCount / getCount;
     }
