@@ -4,6 +4,7 @@
 - Fixed text parser wrongly recognizing comment start prefixes ('/*') even if inside JavaScript/CSS literals.
 - Fixed #numbers.sequence(from,to) throwing an exception if from > to (bad computation of 'step' argument).
 - Fixed OGNL expressions calling the 'hashCode()' method instead of accessing a public 'code' property.
+- Improved JavaScript serialization: allow Jackson to (optionally) serialise JSR310 dates as ISO8601
 - Updated AttoParser dependency to 2.0.2.RELEASE.
 - Updated OGNL dependency to 3.1.12.
 
