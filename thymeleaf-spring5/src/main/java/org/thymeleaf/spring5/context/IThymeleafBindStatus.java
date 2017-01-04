@@ -30,9 +30,6 @@ import org.springframework.validation.Errors;
  *   <tt>BindStatus</tt>.
  * </p>
  *
- * @see org.thymeleaf.spring5.context.mvc.SpringWebMvcThymeleafBindStatus
- * @see org.thymeleaf.spring5.context.reactive.SpringWebReactiveThymeleafBindStatus
- *
  * @author Daniel Fern&aacute;ndez
  *
  * @since 3.0.3

@@ -28,9 +28,6 @@ import java.util.Map;
  *   <tt>RequestDataValueProcessor</tt>.
  * </p>
  *
- * @see org.thymeleaf.spring5.context.mvc.SpringWebMvcThymeleafRequestDataValueProcessor
- * @see org.thymeleaf.spring5.context.reactive.SpringWebReactiveThymeleafRequestDataValueProcessor
- *
  * @author Daniel Fern&aacute;ndez
  *
  * @since 3.0.3
