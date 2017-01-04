@@ -27,6 +27,12 @@ import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.spring5.context.IThymeleafRequestDataValueProcessor;
 
 /**
+ * <p>
+ *   Implementation of the {@link IThymeleafRequestDataValueProcessor} interface, meant to wrap a Spring
+ *   {@link RequestDataValueProcessor} object.
+ * </p>
+ *
+ * @see RequestDataValueProcessor
  *
  * @author Daniel Fern&aacute;ndez
  *

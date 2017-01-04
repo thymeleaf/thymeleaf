@@ -39,6 +39,12 @@ import org.thymeleaf.spring5.context.IThymeleafRequestDataValueProcessor;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Implementation of the {@link IThymeleafRequestContext} interface, meant to wrap a Spring
+ *   {@link RequestContext} object.
+ * </p>
+ *
+ * @see RequestContext
  *
  * @author Daniel Fern&aacute;ndez
  *

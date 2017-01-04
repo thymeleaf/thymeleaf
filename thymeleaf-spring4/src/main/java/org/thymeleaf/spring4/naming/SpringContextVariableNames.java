@@ -21,7 +21,11 @@ package org.thymeleaf.spring4.naming;
 
 
 /**
- * 
+ * <p>
+ *   Static class holding the names of context variables meant to have a special
+ *   use inside the framework.
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 1.0

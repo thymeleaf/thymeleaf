@@ -57,6 +57,12 @@ import static org.thymeleaf.spring5.SpringWebReactiveTemplateEngine.DataDrivenFl
 
 
 /**
+ * <p>
+ *   Standard implementation of {@link ISpringWebReactiveTemplateEngine}, and default
+ *   template engine implementation to be used in Spring Web Reactive environments.
+ * </p>
+ *
+ * @see ISpringWebReactiveTemplateEngine
  *
  * @author Daniel Fern&aacute;ndez
  * 

@@ -27,6 +27,12 @@ import org.thymeleaf.spring5.context.IThymeleafBindStatus;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Implementation of the {@link IThymeleafBindStatus} interface, meant to wrap a Spring
+ *   {@link BindStatus} object.
+ * </p>
+ *
+ * @see BindStatus
  *
  * @author Daniel Fern&aacute;ndez
  *

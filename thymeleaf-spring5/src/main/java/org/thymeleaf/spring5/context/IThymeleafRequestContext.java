@@ -32,6 +32,14 @@ import org.springframework.ui.context.Theme;
 import org.springframework.validation.Errors;
 
 /**
+ * <p>
+ *   This interface is meant to abstract a Spring <tt>RequestContext</tt>, without the client code
+ *   needing to know if it is a Spring Web MVC or Spring Web Reactive implementation of this
+ *   <tt>RequestContext</tt>.
+ * </p>
+ *
+ * @see org.thymeleaf.spring5.context.mvc.SpringWebMvcThymeleafRequestContext
+ * @see org.thymeleaf.spring5.context.reactive.SpringWebReactiveThymeleafRequestContext
  *
  * @author Daniel Fern&aacute;ndez
  *

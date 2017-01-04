@@ -24,6 +24,14 @@ import java.beans.PropertyEditor;
 import org.springframework.validation.Errors;
 
 /**
+ * <p>
+ *   This interface is meant to abstract a Spring <tt>BindStatus</tt>, without the client code
+ *   needing to know if it is a Spring Web MVC or Spring Web Reactive implementation of this
+ *   <tt>BindStatus</tt>.
+ * </p>
+ *
+ * @see org.thymeleaf.spring5.context.mvc.SpringWebMvcThymeleafBindStatus
+ * @see org.thymeleaf.spring5.context.reactive.SpringWebReactiveThymeleafBindStatus
  *
  * @author Daniel Fern&aacute;ndez
  *

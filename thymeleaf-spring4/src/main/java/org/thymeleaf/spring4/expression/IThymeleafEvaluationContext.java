@@ -23,6 +23,11 @@ import org.springframework.expression.EvaluationContext;
 import org.thymeleaf.expression.IExpressionObjects;
 
 /**
+ * <p>
+ *   Interface for Thymeleaf-specific implementations of {@link EvaluationContext}.
+ * </p>
+ *
+ * @see ThymeleafEvaluationContext
  *
  * @author Daniel Fern&aacute;ndez
  *

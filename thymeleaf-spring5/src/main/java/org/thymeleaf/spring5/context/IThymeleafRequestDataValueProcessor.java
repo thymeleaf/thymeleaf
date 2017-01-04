@@ -22,6 +22,14 @@ package org.thymeleaf.spring5.context;
 import java.util.Map;
 
 /**
+ * <p>
+ *   This interface is meant to abstract a Spring <tt>RequestDataValueProcessor</tt>, without the client code
+ *   needing to know if it is a Spring Web MVC or Spring Web Reactive implementation of this
+ *   <tt>RequestDataValueProcessor</tt>.
+ * </p>
+ *
+ * @see org.thymeleaf.spring5.context.mvc.SpringWebMvcThymeleafRequestDataValueProcessor
+ * @see org.thymeleaf.spring5.context.reactive.SpringWebReactiveThymeleafRequestDataValueProcessor
  *
  * @author Daniel Fern&aacute;ndez
  *

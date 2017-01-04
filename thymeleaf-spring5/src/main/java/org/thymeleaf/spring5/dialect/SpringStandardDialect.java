@@ -64,6 +64,9 @@ import org.thymeleaf.templatemode.TemplateMode;
  *   <tt>th:*</tt> processors, expression objects, etc. for Spring-enabled environments.
  * </p>
  * <p>
+ *   This dialect is valid both for Spring Web MVC and Spring Web Reactive environments.
+ * </p>
+ * <p>
  *   Note this dialect uses <strong>SpringEL</strong> as an expression language and adds some Spring-specific
  *   features on top of {@link StandardDialect}, like <tt>th:field</tt> or Spring-related expression objects.
  * </p>
