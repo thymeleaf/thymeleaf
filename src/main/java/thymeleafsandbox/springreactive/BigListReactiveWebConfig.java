@@ -158,7 +158,7 @@ public class BigListReactiveWebConfig {
         viewResolver.setTemplateEngine(thymeleafTemplateEngine());
         viewResolver.setOrder(1);
         viewResolver.setViewNames(new String[] {"thymeleaf/*chunked*", "thymeleaf/*datadriven*"});
-        viewResolver.setResponseMaxChunkSizeBytes(16384); // OUTPUT BUFFER size limit
+        viewResolver.setResponseMaxChunkSizeBytes(8192); // OUTPUT BUFFER size limit
         return viewResolver;
     }
 
