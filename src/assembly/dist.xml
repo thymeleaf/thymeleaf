@@ -32,6 +32,13 @@
       </includes>
     </fileSet>
     <fileSet>
+      <directory>${basedir}/../thymeleaf-spring/thymeleaf-spring5/target/checkout/thymeleaf-spring5/target/apidocs/</directory>
+      <outputDirectory>/apidocs/thymeleaf-spring5/</outputDirectory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
       <directory>${basedir}/../thymeleaf/target/checkout/target/</directory>
       <outputDirectory>/dist</outputDirectory>
       <includes>
@@ -56,6 +63,15 @@
         <include>thymeleaf-spring4-${project.version}.jar</include>
         <include>thymeleaf-spring4-${project.version}-javadoc.jar</include>
         <include>thymeleaf-spring4-${project.version}-sources.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${basedir}/../thymeleaf-spring/thymeleaf-spring5/target/checkout/thymeleaf-spring5/target/</directory>
+      <outputDirectory>/dist</outputDirectory>
+      <includes>
+        <include>thymeleaf-spring5-${project.version}.jar</include>
+        <include>thymeleaf-spring5-${project.version}-javadoc.jar</include>
+        <include>thymeleaf-spring5-${project.version}-sources.jar</include>
       </includes>
     </fileSet>
     <fileSet>

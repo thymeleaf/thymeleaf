@@ -24,7 +24,7 @@
   <groupId>org.thymeleaf</groupId>
   <artifactId>thymeleaf-dist</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.3-SNAPSHOT</version>
+  <version>3.0.3.RELEASE</version>
   <name>thymeleaf-dist</name>
   <url>http://www.thymeleaf.org</url>
 
@@ -163,6 +163,13 @@
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-spring4</artifactId>
       <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.thymeleaf</groupId>
+      <artifactId>thymeleaf-spring5</artifactId>
+      <version>3.0.3.M1</version>
       <scope>compile</scope>
     </dependency>
 
