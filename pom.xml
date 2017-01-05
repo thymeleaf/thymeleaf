@@ -273,7 +273,7 @@
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-spring5</artifactId>
-      <version>${thymeleaf.version}</version>
+      <version>3.0.3.M1</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
