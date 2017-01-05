@@ -107,8 +107,8 @@
     <maven.compile.source>1.6</maven.compile.source>
     <maven.compile.target>1.6</maven.compile.target>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <thymeleaf.version>3.0.3-SNAPSHOT</thymeleaf.version>
-    <attoparser.version>2.0.0.RELEASE</attoparser.version>
+    <thymeleaf.version>3.0.3.RELEASE</thymeleaf.version>
+    <attoparser.version>2.0.2.RELEASE</attoparser.version>
     <servlet-api.version>3.1.0</servlet-api.version>
     <mockito.version>1.10.19</mockito.version>
     <springframework.version>3.0.7.RELEASE</springframework.version>

@@ -14,7 +14,7 @@ This is an auxiliary testing library, not directly a part of the Thymeleaf core 
 
 Current versions:
 
-  * **3.0.1.RELEASE** - for Thymeleaf 3.0 (requires 3.0.0+)
+  * **3.0.2.RELEASE** - for Thymeleaf 3.0 (requires 3.0.3+)
   * **2.1.4.RELEASE** - for Thymeleaf 2.1 (requires 2.1.2+)
 
 
@@ -27,8 +27,8 @@ This software is licensed under the [Apache License 2.0](http://www.apache.org/l
 Requirements (3.0.x)
 --------------------
 
-  *   Thymeleaf **3.0.0+**
-  *   Attoparser **2.0.0.RELEASE+**
+  *   Thymeleaf **3.0.3+**
+  *   Attoparser **2.0.2.RELEASE+**
 
 
 Maven info
