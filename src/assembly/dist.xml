@@ -95,6 +95,7 @@
         <exclude>org.thymeleaf:thymeleaf</exclude>
         <exclude>org.thymeleaf:thymeleaf-spring3</exclude>
         <exclude>org.thymeleaf:thymeleaf-spring4</exclude>
+        <exclude>org.thymeleaf:thymeleaf-spring5</exclude>
         <exclude>org.thymeleaf:thymeleaf-dist</exclude>
       </excludes>
     </dependencySet>
