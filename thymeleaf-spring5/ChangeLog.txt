@@ -1,3 +1,5 @@
-3.0.3
-=====
-- First release of thymeleaf-spring5
+3.0.3.M1
+========
+- First release of thymeleaf-spring5, includes
+  * Support for Spring 5 Web MVC
+  * Support for Spring 5 Web Reactive
