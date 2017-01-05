@@ -108,6 +108,7 @@
     <maven.compile.target>1.6</maven.compile.target>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <thymeleaf.version>3.0.3.RELEASE</thymeleaf.version>
+    <thymeleaf-spring5.version>3.0.3.M1</thymeleaf-spring5.version>
     <attoparser.version>2.0.2.RELEASE</attoparser.version>
     <servlet-api.version>3.1.0</servlet-api.version>
     <mockito.version>1.10.19</mockito.version>
@@ -273,7 +274,7 @@
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-spring5</artifactId>
-      <version>${thymeleaf.version}</version>
+      <version>${thymeleaf-spring5.version}</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
