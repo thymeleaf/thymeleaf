@@ -24,7 +24,7 @@
   <groupId>org.thymeleaf</groupId>
   <artifactId>thymeleaf-testing</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.2.RELEASE</version>
+  <version>3.0.3-SNAPSHOT</version>
   <name>thymeleaf-testing</name>
   <url>http://www.thymeleaf.org</url>
 
@@ -47,7 +47,7 @@
     <url>scm:git:git@github.com:thymeleaf/thymeleaf-testing.git</url>
     <connection>scm:git:git@github.com:thymeleaf/thymeleaf-testing.git</connection>
     <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf-testing.git</developerConnection>
-    <tag>thymeleaf-testing-3.0.2.RELEASE</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <developers>
