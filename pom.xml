@@ -97,7 +97,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <springframework.version>4.3.3.RELEASE</springframework.version>
-        <thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
+        <thymeleaf.version>3.0.3.RELEASE</thymeleaf.version>
     </properties>
 
     <build>
