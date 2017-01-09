@@ -113,12 +113,48 @@ final class TextParsingUtil {
 
     }
 
+
+    static int findNextLiteralEnd(
+            final char[] text, final int offset, final int maxi,
+            final int[] locator, final char literalMarker) {
+
+        char c;
+
+        int colIndex = offset;
+
+        int i = offset;
+        int n = (maxi - offset);
+
+        while (n-- != 0) {
+
+            c = text[i];
+
+            if (c == '\n') {
+                colIndex = i;
+                locator[1] = 0;
+                locator[0]++;
+            } else if (i > offset && c == literalMarker) {
+                if (isLiteralDelimiter(text, offset, i)) {
+                    locator[1] += (i - colIndex);
+                    return i;
+                }
+            }
+
+            i++;
+
+        }
+
+        locator[1] += (maxi - colIndex);
+        return -1;
+
+    }
+
     
 
 
     static int findNextStructureStartOrLiteralMarker(
             final char[] text, final int offset, final int maxi, 
-            final int[] locator, final char literalMarker) {
+            final int[] locator, final boolean processCommentsAndLiterals) {
 
         char c;
 
@@ -135,13 +171,18 @@ final class TextParsingUtil {
                 colIndex = i;
                 locator[1] = 0;
                 locator[0]++;
-            } else if (c == '[' || c == '/') { // '[' is for elements, '/' is for comments (/*...*/)
+            } else if (c == '[') { // '[' is for elements
                 locator[1] += (i - colIndex);
                 return i;
-            } else if (c == '\'' || c == '"') { // literal markers
-                if (literalMarker == 0 || isLiteralFinished(text, offset, i, literalMarker)) { // either not in literal, or it matches the open one
+            } else if (processCommentsAndLiterals) {
+                if (c == '/') { // '/' is for comments (/*...*/)
                     locator[1] += (i - colIndex);
                     return i;
+                } else if (c == '\'' || c == '"') { // literal markers
+                    if (isLiteralDelimiter(text, offset, i)) { // check it is not escaped
+                        locator[1] += (i - colIndex);
+                        return i;
+                    }
                 }
             }
 
@@ -155,11 +196,7 @@ final class TextParsingUtil {
     }
 
 
-    private static boolean isLiteralFinished(
-            final char[] text, final int offset, final int i, final char literalMarker) {
-        if (literalMarker == 0 || text[i] != literalMarker) {
-            return false;
-        }
+    private static boolean isLiteralDelimiter(final char[] text, final int offset, final int i) {
         int escapes = 0;
         int j = i - 1;
         while (j >= offset && text[j--] == '\\') {

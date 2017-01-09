@@ -39,9 +39,8 @@ final class TextParser {
 
 
     private final BufferPool pool;
-    private final boolean processComments;
+    private final boolean processCommentsAndLiterals;
     private final boolean standardDialectPresent;
-    private final String standardDialectPrefix;
 
 
 
@@ -50,13 +49,12 @@ final class TextParser {
 
 
     TextParser(final int poolSize, final int bufferSize,
-               final boolean processComments,
-               final boolean standardDialectPresent, final String standardDialectPrefix) {
+               final boolean processCommentsAndLiterals,
+               final boolean standardDialectPresent) {
         super();
         this.pool = new BufferPool(poolSize, bufferSize);
-        this.processComments = processComments;
+        this.processCommentsAndLiterals = processCommentsAndLiterals;
         this.standardDialectPresent = standardDialectPresent;
-        this.standardDialectPrefix = standardDialectPrefix;
     }
 
 
@@ -95,7 +93,7 @@ final class TextParser {
 
         // If comment processing is active (for JAVASCRIPT and CSS template modes), we need to look inside comments and
         // check if they are only wrapping elements or inlined expressions, in which case we will need to unwrap them.
-        if (this.processComments) {
+        if (this.processCommentsAndLiterals) {
             handlerChain = new CommentProcessorTextHandler(this.standardDialectPresent, handlerChain);
         }
 
@@ -272,6 +270,7 @@ final class TextParser {
         boolean inOpenElement = false;
         boolean inCloseElement = false;
         boolean inComment = false;
+        boolean inLiteral = false;
 
         int tagStart;
         int tagEnd;
@@ -281,11 +280,13 @@ final class TextParser {
             currentLine = locator[0];
             currentCol = locator[1];
 
-            inStructure = (inOpenElement || inCloseElement || inComment);
+            inStructure = (inOpenElement || inCloseElement || inComment || inLiteral);
 
             if (!inStructure) {
 
-                tagStart = TextParsingUtil.findNextStructureStartOrLiteralMarker(buffer, i, maxi, locator, status.literalMarker);
+                tagStart =
+                        TextParsingUtil.findNextStructureStartOrLiteralMarker(
+                                buffer, i, maxi, locator, this.processCommentsAndLiterals);
 
                 if (tagStart == -1) {
 
@@ -293,68 +294,64 @@ final class TextParser {
                     status.line = currentLine;
                     status.col = currentCol;
                     status.inStructure = false;
-                    // No changes to be done to the literal marker
+                    status.literalMarker = (char)0;
                     return;
 
                 }
 
                 c = buffer[tagStart];
 
-                if (c == '\'' || c == '"') {
-                    // We just found a literal start/end
-                    status.literalMarker = (status.literalMarker > 0? (char)0 : c);
-
-                } else {
-
-                    inOpenElement = TextParsingElementUtil.isOpenElementStart(buffer, tagStart, maxi);
-                    if (!inOpenElement) {
-                        inCloseElement = TextParsingElementUtil.isCloseElementStart(buffer, tagStart, maxi);
-                        if (!inCloseElement && this.processComments && status.literalMarker == 0) {
-                            // Note we are not processing comments if we are inside a literal
+                inOpenElement = TextParsingElementUtil.isOpenElementStart(buffer, tagStart, maxi);
+                if (!inOpenElement) {
+                    inCloseElement = TextParsingElementUtil.isCloseElementStart(buffer, tagStart, maxi);
+                    if (!inCloseElement) {
+                        if (this.processCommentsAndLiterals) {
                             inComment = TextParsingCommentUtil.isCommentStart(buffer, tagStart, maxi);
+                            if (!inComment) {
+                                inLiteral = (c == '\'' || c == '"');
+                                status.literalMarker = c;
+                            }
                         }
                     }
-
-                    inStructure = (inOpenElement || inCloseElement || inComment);
-
                 }
+
+                inStructure = (inOpenElement || inCloseElement || inComment || inLiteral);
 
                 while (!inStructure) {
                     // We found a '[' or a '/', but it cannot be considered beginning of any known structure
                     // Or also it could have been a character starting or ending a literal
 
                     ParsingLocatorUtil.countChar(locator, c);
-                    tagStart = TextParsingUtil.findNextStructureStartOrLiteralMarker(buffer, tagStart + 1, maxi, locator, status.literalMarker);
+                    tagStart =
+                            TextParsingUtil.findNextStructureStartOrLiteralMarker(
+                                    buffer, tagStart + 1, maxi, locator, this.processCommentsAndLiterals);
 
                     if (tagStart == -1) {
                         status.offset = current;
                         status.line = currentLine;
                         status.col = currentCol;
                         status.inStructure = false;
-                        // No changes to be done to the literal marker
+                        status.literalMarker = (char)0;
                         return;
                     }
 
                     c = buffer[tagStart];
 
-                    if (c == '\'' || c == '"') {
-                        // We just found a literal start/end
-                        status.literalMarker = (status.literalMarker > 0? (char)0 : c);
-
-                    } else {
-
-                        inOpenElement = TextParsingElementUtil.isOpenElementStart(buffer, tagStart, maxi);
-                        if (!inOpenElement) {
-                            inCloseElement = TextParsingElementUtil.isCloseElementStart(buffer, tagStart, maxi);
-                            if (!inCloseElement && this.processComments && status.literalMarker == 0) {
-                                // Note we are not processing comments if we are inside a literal
+                    inOpenElement = TextParsingElementUtil.isOpenElementStart(buffer, tagStart, maxi);
+                    if (!inOpenElement) {
+                        inCloseElement = TextParsingElementUtil.isCloseElementStart(buffer, tagStart, maxi);
+                        if (!inCloseElement) {
+                            if (this.processCommentsAndLiterals) {
                                 inComment = TextParsingCommentUtil.isCommentStart(buffer, tagStart, maxi);
+                                if (!inComment) {
+                                    inLiteral = (c == '\'' || c == '"');
+                                    status.literalMarker = c;
+                                }
                             }
                         }
-
-                        inStructure = (inOpenElement || inCloseElement || inComment);
-
                     }
+
+                    inStructure = (inOpenElement || inCloseElement || inComment || inLiteral);
 
                 }
 
@@ -375,6 +372,7 @@ final class TextParser {
 
 
                 tagEnd =
+                        inLiteral? TextParsingUtil.findNextLiteralEnd(buffer, i, maxi, locator, status.literalMarker) :
                         inComment? TextParsingUtil.findNextCommentEnd(buffer, i, maxi, locator) :
                                    TextParsingUtil.findNextStructureEndAvoidQuotes(buffer, i, maxi, locator);
 
@@ -384,7 +382,7 @@ final class TextParser {
                     status.line = currentLine;
                     status.col = currentCol;
                     status.inStructure = true;
-                    // No changes to be done to the literal marker
+                    status.literalMarker = (char)0; // We reset this anyway, because we will try to parse it fully again
                     return;
                 }
 
@@ -416,13 +414,21 @@ final class TextParser {
 
                     inComment = false;
 
+                } else if (inLiteral) {
+                    // This is a literal
+
+                    handler.handleText(buffer, current, (tagEnd - current) + 1, currentLine, currentCol);
+
+                    inLiteral = false;
+                    status.literalMarker = (char)0;
+
                 } else {
 
                     throw new IllegalStateException("Illegal parsing state: structure is not of a recognized type");
 
                 }
 
-                // The ']' char will be considered as processed too
+                // The ']', '/' or literal-delimiter char will be considered as processed too
                 ParsingLocatorUtil.countChar(locator, buffer[tagEnd]);
 
                 current = tagEnd + 1;
@@ -436,6 +442,7 @@ final class TextParser {
         status.line = locator[0];
         status.col = locator[1];
         status.inStructure = false;
+        status.literalMarker = (char)0;
 
     }
 

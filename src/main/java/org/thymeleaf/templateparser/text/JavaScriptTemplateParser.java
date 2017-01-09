@@ -28,9 +28,8 @@ package org.thymeleaf.templateparser.text;
 public final class JavaScriptTemplateParser extends AbstractTextTemplateParser {
 
 
-    public JavaScriptTemplateParser(final int bufferPoolSize, final int bufferSize,
-                                    final boolean standardDialectPresent, final String standardDialectPrefix) {
-        super(bufferPoolSize, bufferSize, true, standardDialectPresent, standardDialectPrefix);
+    public JavaScriptTemplateParser(final int bufferPoolSize, final int bufferSize, final boolean standardDialectPresent) {
+        super(bufferPoolSize, bufferSize, true, standardDialectPresent);
     }
 
     
