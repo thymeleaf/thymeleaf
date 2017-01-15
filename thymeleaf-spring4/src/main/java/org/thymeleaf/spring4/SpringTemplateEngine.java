@@ -58,6 +58,8 @@ public class SpringTemplateEngine
         implements ISpringTemplateEngine, MessageSourceAware {
 
 
+    private static final SpringStandardDialect SPRINGSTANDARD_DIALECT = new SpringStandardDialect();
+
     private MessageSource messageSource = null;
     private MessageSource templateEngineMessageSource = null;
 
@@ -67,7 +69,7 @@ public class SpringTemplateEngine
     public SpringTemplateEngine() {
         super();
         // This will set the SpringStandardDialect, overriding the Standard one set in the super constructor
-        super.setDialect(new SpringStandardDialect());
+        super.setDialect(SPRINGSTANDARD_DIALECT);
     }
 
 
