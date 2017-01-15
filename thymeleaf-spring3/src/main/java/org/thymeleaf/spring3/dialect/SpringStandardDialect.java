@@ -88,8 +88,8 @@ public class SpringStandardDialect extends StandardDialect {
 
 
 
-    private final IExpressionObjectFactory SPRING_STANDARD_EXPRESSION_OBJECTS_FACTORY = new SpringStandardExpressionObjectFactory();
-    private final IStandardConversionService SPRING_STANDARD_CONVERSION_SERVICE = new SpringStandardConversionService();
+    private volatile IExpressionObjectFactory expressionObjectFactory = null;
+    private volatile IStandardConversionService conversionService = null;
     
     
     
@@ -110,13 +110,21 @@ public class SpringStandardDialect extends StandardDialect {
 
     @Override
     public IStandardConversionService getConversionService() {
-        return SPRING_STANDARD_CONVERSION_SERVICE;
+        IStandardConversionService s = this.conversionService;
+        if (s == null) {
+            this.conversionService = s = new SpringStandardConversionService();
+        }
+        return s;
     }
 
 
     @Override
     public IExpressionObjectFactory getExpressionObjectFactory() {
-        return SPRING_STANDARD_EXPRESSION_OBJECTS_FACTORY;
+        IExpressionObjectFactory f = this.expressionObjectFactory;
+        if (f == null) {
+            this.expressionObjectFactory = f = new SpringStandardExpressionObjectFactory();
+        }
+        return f;
     }
 
 
