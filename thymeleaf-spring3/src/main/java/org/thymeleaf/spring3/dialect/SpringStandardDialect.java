@@ -87,9 +87,9 @@ public class SpringStandardDialect extends StandardDialect {
     public static final int PROCESSOR_PRECEDENCE = 1000;
 
 
-
-    private final IExpressionObjectFactory SPRING_STANDARD_EXPRESSION_OBJECTS_FACTORY = new SpringStandardExpressionObjectFactory();
-    private final IStandardConversionService SPRING_STANDARD_CONVERSION_SERVICE = new SpringStandardConversionService();
+    // These variables will be initialized lazily following the model applied in the extended StandardDialect.
+    private IExpressionObjectFactory expressionObjectFactory = null;
+    private IStandardConversionService conversionService = null;
     
     
     
@@ -110,13 +110,19 @@ public class SpringStandardDialect extends StandardDialect {
 
     @Override
     public IStandardConversionService getConversionService() {
-        return SPRING_STANDARD_CONVERSION_SERVICE;
+        if (this.conversionService == null) {
+            this.conversionService = new SpringStandardConversionService();
+        }
+        return this.conversionService;
     }
 
 
     @Override
     public IExpressionObjectFactory getExpressionObjectFactory() {
-        return SPRING_STANDARD_EXPRESSION_OBJECTS_FACTORY;
+        if (this.expressionObjectFactory == null) {
+            this.expressionObjectFactory = new SpringStandardExpressionObjectFactory();
+        }
+        return this.expressionObjectFactory;
     }
 
 

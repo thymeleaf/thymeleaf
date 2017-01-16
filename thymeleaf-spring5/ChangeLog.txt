@@ -1,3 +1,8 @@
+3.0.4.M2
+========
+- Improved startup times at the template engine by means of lazy initialization of dialect artifacts.
+
+
 3.0.3.M1
 ========
 - First release of thymeleaf-spring5, includes

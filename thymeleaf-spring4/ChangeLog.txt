@@ -1,3 +1,8 @@
+3.0.4
+=====
+- Improved startup times at the template engine by means of lazy initialization of dialect artifacts.
+
+
 3.0.3
 =====
 - Improved JavaDoc API.
