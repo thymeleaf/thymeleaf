@@ -122,17 +122,22 @@ public class StandardDialect
     public static final int PROCESSOR_PRECEDENCE = 1000;
 
 
-    private final IExpressionObjectFactory STANDARD_EXPRESSION_OBJECTS_FACTORY = new StandardExpressionObjectFactory();
-
-
     // We will avoid setting this variableExpressionEvaluator variable to "OgnlVariableExpressionEvaluator.INSTANCE"
     // in order to not cause this OGNL-related class to initialize, therefore introducing a forced dependency on OGNL
     // to Spring users (who don't need OGNL at all).
     private IStandardVariableExpressionEvaluator variableExpressionEvaluator = null;
-    private IStandardExpressionParser expressionParser = new StandardExpressionParser();
-    private IStandardConversionService conversionService = new StandardConversionService();
-    private IStandardJavaScriptSerializer javaScriptSerializer = new StandardJavaScriptSerializer(true);
-    private IStandardCSSSerializer cssSerializer = new StandardCSSSerializer();
+
+    // These variables will be initialized lazily if needed (because no value is set to them via their setters)
+    // This should improve startup times (esp. Jackson for the JS serializer) and avoid losing time initializing
+    // objects that might not be used after all if they are overridden via setter.
+    private IStandardExpressionParser expressionParser = null;
+    private IStandardConversionService conversionService = null;
+    private IStandardJavaScriptSerializer javaScriptSerializer = null;
+    private IStandardCSSSerializer cssSerializer = null;
+
+    // Note this is not settable - just lazily initialized
+    private IExpressionObjectFactory expressionObjectFactory = null;
+
 
 
 
@@ -216,6 +221,9 @@ public class StandardDialect
      * @return the Standard Expression Parser object.
      */
     public IStandardExpressionParser getExpressionParser() {
+        if (this.expressionParser == null) {
+            this.expressionParser = new StandardExpressionParser();
+        }
         return this.expressionParser;
     }
 
@@ -256,6 +264,9 @@ public class StandardDialect
      * @return the Standard Conversion Service object.
      */
     public IStandardConversionService getConversionService() {
+        if (this.conversionService == null) {
+            this.conversionService = new StandardConversionService();
+        }
         return this.conversionService;
     }
 
@@ -296,6 +307,9 @@ public class StandardDialect
      * @return the Standard JavaScript Serializer object.
      */
     public IStandardJavaScriptSerializer getJavaScriptSerializer() {
+        if (this.javaScriptSerializer == null) {
+            this.javaScriptSerializer = new StandardJavaScriptSerializer(true);
+        }
         return this.javaScriptSerializer;
     }
 
@@ -335,6 +349,9 @@ public class StandardDialect
      * @return the Standard CSS Serializer object.
      */
     public IStandardCSSSerializer getCSSSerializer() {
+        if (this.cssSerializer == null) {
+            this.cssSerializer = new StandardCSSSerializer();
+        }
         return this.cssSerializer;
     }
 
@@ -391,7 +408,10 @@ public class StandardDialect
 
 
     public IExpressionObjectFactory getExpressionObjectFactory() {
-        return STANDARD_EXPRESSION_OBJECTS_FACTORY;
+        if (this.expressionObjectFactory == null) {
+            this.expressionObjectFactory = new StandardExpressionObjectFactory();
+        }
+        return this.expressionObjectFactory;
     }
 
 

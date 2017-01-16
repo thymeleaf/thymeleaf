@@ -2,6 +2,7 @@
 =====
 - Fixed possible bad parsing of comment start/end delimiters in JavaScript and CSS inlining when the 2K buffer
   used at the Text Parser happened to end in the middle of a JavaScript/CSS text literal.
+- Improved startup times at the template engine by means of lazy initialization of dialect artifacts.
 
 
 3.0.3
