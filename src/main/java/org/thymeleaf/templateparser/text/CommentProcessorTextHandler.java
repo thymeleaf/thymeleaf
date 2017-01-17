@@ -48,13 +48,27 @@ final class CommentProcessorTextHandler extends AbstractChainedTextHandler {
     private final boolean standardDialectPresent;
 
     private boolean filterTexts = false;
-    private int[] locator = new int[2];
+    private char[] filteredTextBuffer = null;
+    private int filteredTextSize = 0;
+    private int[] filteredTextLocator = null;
 
 
     CommentProcessorTextHandler(final boolean standardDialectPresent, final ITextHandler handler) {
         super(handler);
         this.standardDialectPresent = standardDialectPresent;
     }
+
+
+
+
+    @Override
+    public void handleDocumentEnd(
+            final long endTimeNanos, final long totalTimeNanos, final int line, final int col)
+            throws TextParseException {
+        processFilteredTexts();
+        super.handleDocumentEnd(endTimeNanos, totalTimeNanos, line, col);
+    }
+
 
 
 
@@ -66,7 +80,7 @@ final class CommentProcessorTextHandler extends AbstractChainedTextHandler {
             final int line, final int col)
             throws TextParseException {
 
-        this.filterTexts = false;
+        processFilteredTexts();
 
         /*
          * FIRST STEP: Quickly determine if we actually need to do anything with this comment. We will process
@@ -176,26 +190,63 @@ final class CommentProcessorTextHandler extends AbstractChainedTextHandler {
             throws TextParseException {
 
         if (this.filterTexts) {
-
-            this.locator[0] = line;
-            this.locator[1] = col;
-            final int maxi = offset + len;
-
-            final int filterOffset = computeFilterOffset(buffer, offset, maxi, this.locator);
-
-            if (filterOffset < maxi) {
-                super.handleText(buffer, filterOffset, (maxi - filterOffset), this.locator[0], this.locator[1]);
-                this.filterTexts = false;
-            }
-
+            // We are filtering, so we will be accumulating texts until a different, non-text event comes, and
+            // then start processing and see until which position we really have to filter out.
+            filterText(buffer, offset, len, line, col);
             return;
-
         }
 
         super.handleText(buffer, offset, len, line, col);
 
     }
 
+
+    private void filterText(final char[] buffer, final int offset, final int len, final int line, final int col) {
+
+        // We need to put the filtered text into the buffer, which we might have to create or grow first
+        if (this.filteredTextBuffer == null) {
+            this.filteredTextBuffer = new char[Math.max(256, len)];
+            this.filteredTextSize = 0;
+            this.filteredTextLocator = new int[2];
+        } else if (this.filteredTextSize + len > this.filteredTextBuffer.length) {
+            final char[] newFilteredTextBuffer =
+                    new char[Math.max(this.filteredTextBuffer.length + 256, this.filteredTextSize + len)];
+            System.arraycopy(this.filteredTextBuffer, 0, newFilteredTextBuffer, 0, this.filteredTextSize);
+            this.filteredTextBuffer = newFilteredTextBuffer;
+        }
+
+        System.arraycopy(buffer, offset, this.filteredTextBuffer, this.filteredTextSize, len);
+        this.filteredTextSize += len;
+
+        this.filteredTextLocator[0] = line;
+        this.filteredTextLocator[1] = col;
+
+    }
+
+
+    private void processFilteredTexts() throws TextParseException {
+
+        if (!this.filterTexts) {
+            return;
+        }
+
+        final int filterOffset =
+                computeFilterOffset(this.filteredTextBuffer, 0, this.filteredTextSize, this.filteredTextLocator);
+
+        if (filterOffset < this.filteredTextSize) {
+            // We filter out until filterOffset, and create a text event for the rest of the text
+            super.handleText(
+                    this.filteredTextBuffer,
+                    filterOffset,
+                    (this.filteredTextSize - filterOffset),
+                    this.filteredTextLocator[0],
+                    this.filteredTextLocator[1]);
+        } // else need to filter out ALL the texts until the next structure
+
+        this.filteredTextSize = 0;
+        this.filterTexts = false;
+
+    }
 
 
 
@@ -205,7 +256,7 @@ final class CommentProcessorTextHandler extends AbstractChainedTextHandler {
             final int nameOffset, final int nameLen, final boolean minimized,
             final int line, final int col)
             throws TextParseException {
-        this.filterTexts = false;
+        processFilteredTexts();
         super.handleStandaloneElementStart(buffer, nameOffset, nameLen, minimized, line, col);
     }
 
@@ -216,7 +267,7 @@ final class CommentProcessorTextHandler extends AbstractChainedTextHandler {
             final int nameOffset, final int nameLen,
             final int line, final int col)
             throws TextParseException {
-        this.filterTexts = false;
+        processFilteredTexts();
         super.handleOpenElementStart(buffer, nameOffset, nameLen, line, col);
     }
 
@@ -227,7 +278,7 @@ final class CommentProcessorTextHandler extends AbstractChainedTextHandler {
             final int nameOffset, final int nameLen,
             final int line, final int col)
             throws TextParseException {
-        this.filterTexts = false;
+        processFilteredTexts();
         super.handleCloseElementStart(buffer, nameOffset, nameLen, line, col);
     }
 
