@@ -91,6 +91,14 @@ abstract class AbstractGatheringModelProcessable implements IGatheringModelProce
     }
 
 
+    public final void resetGatheredSkipFlagsAfterNoIterations() {
+        if (this.buildTimeSkipBody == SkipBody.PROCESS_ONE_ELEMENT) {
+            this.modelController.skip(SkipBody.SKIP_ELEMENTS, this.buildTimeSkipCloseTag);
+        } else {
+            this.modelController.skip(this.buildTimeSkipBody, this.buildTimeSkipCloseTag);
+        }
+    }
+
     public final void resetGatheredSkipFlags() {
         this.modelController.skip(this.buildTimeSkipBody, this.buildTimeSkipCloseTag);
     }

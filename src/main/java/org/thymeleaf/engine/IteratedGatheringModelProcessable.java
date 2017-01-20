@@ -203,6 +203,15 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
                 this.iter++;
                 this.iterOffset = 0;
 
+            } else {
+
+                // There were no iterations, but we need to reset the skip values anyway. However,
+                // given there will be no iteration being processed (which is the process in charge of resetting
+                // the skip flags after each iteration), we will need to manually check whether the skip
+                // flags were previously set to all-but-first, and in such case avoid the next element from
+                // being processed by setting skip to skip_elements.
+                resetGatheredSkipFlagsAfterNoIterations();
+
             }
 
         }
