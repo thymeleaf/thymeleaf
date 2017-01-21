@@ -162,7 +162,7 @@ import org.thymeleaf.util.Validate;
  *   Creating a {@link org.thymeleaf.context.Context} instance is very simple:
  * </p>
  * <code>
- *   final IContext ctx = new Context();<br>
+ *   final Context ctx = new Context();<br>
  *   ctx.setVariable("allItems", items);
  * </code>
  * <p>
@@ -171,7 +171,7 @@ import org.thymeleaf.util.Validate;
  *   {@link javax.servlet.ServletContext} objects as constructor arguments: 
  * </p>
  * <code>
- *   final IContext ctx = new WebContext(request, servletContext);<br>
+ *   final Context ctx = new WebContext(request, servletContext);<br>
  *   ctx.setVariable("allItems", items);
  * </code>
  * <p>
