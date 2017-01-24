@@ -160,14 +160,14 @@ import org.thymeleaf.util.Validate;
  *   Creating a {@link org.thymeleaf.context.Context} instance is very simple:
  * </p>
  * <code>
- *   final IContext ctx = new Context();<br>
+ *   final Context ctx = new Context();<br>
  *   ctx.setVariable("allItems", items);
  * </code>
  * <p>
  *   If you want, you can also specify the locale to be used for processing the template:
  * </p>
  * <code>
- *   final IContext ctx = new Context(new Locale("gl","ES"));<br>
+ *   final Context ctx = new Context(new Locale("gl","ES"));<br>
  *   ctx.setVariable("allItems", items);
  * </code>
  * <p>
