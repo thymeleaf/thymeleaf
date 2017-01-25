@@ -31,7 +31,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.4.3.RELEASE</version>
+		<version>2.0.0.BUILD-SNAPSHOT</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -70,7 +70,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 		<thymeleaf.version>3.0.4-SNAPSHOT</thymeleaf.version>
-		<thymeleaf-layout-dialect.version>2.0.4</thymeleaf-layout-dialect.version>
+		<!-- Once thymeleaf-spring5 goes GA, this property should disappear -->
+		<thymeleaf-spring5.version>3.0.4-SNAPSHOT</thymeleaf-spring5.version>
 	</properties>
 
 
