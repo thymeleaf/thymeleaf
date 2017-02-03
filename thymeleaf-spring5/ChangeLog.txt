@@ -1,6 +1,8 @@
 3.0.4.M2
 ========
 - Improved startup times at the template engine by means of lazy initialization of dialect artifacts.
+- Improve behaviour of SpringContextUtils.getApplicationContext(): avoided cast exception when ApplicationContext
+  is not available.
 
 
 3.0.3.M1
