@@ -21,6 +21,7 @@ package org.thymeleaf.spring4.context;
 
 import org.springframework.context.ApplicationContext;
 import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.spring4.expression.IThymeleafEvaluationContext;
 import org.thymeleaf.spring4.expression.ThymeleafEvaluationContext;
 
 /**
@@ -42,21 +43,33 @@ public class SpringContextUtils {
      * <p>
      *   Get the {@link ApplicationContext} from the Thymeleaf template context.
      * </p>
+     * <p>
+     *   Note that the application context might not be always accessible (and thus this method
+     *   can return <tt>null</tt>). Application Context will be accessible when the template is being executed
+     *   as a Spring View, or else when an object of class {@link ThymeleafEvaluationContext} has been
+     *   explicitly set into the {@link ITemplateContext} <tt>context</tt> with variable name
+     *   {@link ThymeleafEvaluationContext#THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME}.
+     * </p>
      *
-     * @param context the template context
-     * @return the application context
+     * @param context the template context.
+     * @return the application context, or <tt>null</tt> if it could not be accessed.
      */
     public static ApplicationContext getApplicationContext(final ITemplateContext context) {
         if (context == null) {
             return null;
         }
-        // The ThymeleafEvaluationContext is set into the model by ThymeleafView
-        final ThymeleafEvaluationContext evaluationContext =
-                (ThymeleafEvaluationContext) context.getVariable(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME);
-        if (evaluationContext == null) {
+        // The ThymeleafEvaluationContext is set into the model by ThymeleafView (or wrapped by the SPEL evaluator)
+        final IThymeleafEvaluationContext evaluationContext =
+                (IThymeleafEvaluationContext) context.getVariable(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME);
+        if (evaluationContext == null || !(evaluationContext instanceof ThymeleafEvaluationContext)) {
             return null;
         }
-        return evaluationContext.getApplicationContext();
+        // Only when the evaluation context is a ThymeleafEvaluationContext we can access the ApplicationContext.
+        // The reason is it could also be a wrapper on another EvaluationContext implementation, created at the
+        // SPELVariableExpressionEvaluator on-the-fly (where ApplicationContext is not available because there might
+        // even not exist one), instead of at ThymeleafView (where we are sure we are executing a Spring View and
+        // have an ApplicationContext available).
+        return ((ThymeleafEvaluationContext)evaluationContext).getApplicationContext();
     }
 
 
