@@ -3,6 +3,8 @@
 - Fixed possible bad parsing of comment start/end delimiters in JavaScript and CSS inlining when the 2K buffer
   used at the Text Parser happened to end in the middle of a JavaScript/CSS text literal.
 - Fixed bad behaviour of th:remove="all-but-first" in combination with a th:each on a zero-element collection.
+- Fixed custom HTML5 elements with no suffix in their names ("<tag->", which are allowed by the Custom
+  Element spec) provoking an exception.
 - Improved startup times at the template engine by means of lazy initialization of dialect artifacts.
 - Added '/content()' selector to Markup Selector syntax so that the whole contents of a fragment can be
   selected, excluding the matched tag.
