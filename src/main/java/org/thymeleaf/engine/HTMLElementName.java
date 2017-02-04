@@ -37,8 +37,11 @@ public final class HTMLElementName extends ElementName {
 
         final boolean hasPrefix = prefix != null && prefix.length() > 0;
 
+        // No-suffix element names are allowed by the HTML5 Custom Element specification ("<tag->" is valid),
+        // so we will just normalize to the empty string so that we treat them in the same way as no-name
+        // elements in the textual template modes.
         final String nameElementName =
-                (elementName == null || elementName.length() == 0)? null : elementName.toLowerCase();
+                (elementName == null || elementName.length() == 0)? "" : elementName.toLowerCase();
 
         final String namePrefix;
         final String completeNamespacedElementName;
