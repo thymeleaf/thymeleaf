@@ -50,8 +50,8 @@ public final class AuthorizeAttrProcessor extends AbstractStandardConditionalVis
 
 
 
-    public AuthorizeAttrProcessor(final String dialectPrefix, final String attrName) {
-        super(TemplateMode.HTML, dialectPrefix, attrName, ATTR_PRECEDENCE);
+    public AuthorizeAttrProcessor(final TemplateMode templateMode, final String dialectPrefix, final String attrName) {
+        super(templateMode, dialectPrefix, attrName, ATTR_PRECEDENCE);
     }
 
 
