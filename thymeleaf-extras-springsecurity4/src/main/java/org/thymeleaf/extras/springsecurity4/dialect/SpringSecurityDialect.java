@@ -76,14 +76,23 @@ public class SpringSecurityDialect
 
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
 
-        processors.add(new AuthenticationAttrProcessor(TemplateMode.HTML, dialectPrefix));
-        // synonym (sec:authorize = sec:authorize-expr) for similarity with
-        // "authorize-url" and "autorize-acl"
-        processors.add(new AuthorizeAttrProcessor(TemplateMode.HTML, dialectPrefix, AuthorizeAttrProcessor.ATTR_NAME));
-        processors.add(new AuthorizeAttrProcessor(TemplateMode.HTML, dialectPrefix, AuthorizeAttrProcessor.ATTR_NAME_EXPR));
-        processors.add(new AuthorizeUrlAttrProcessor(TemplateMode.HTML, dialectPrefix));
-        processors.add(new AuthorizeAclAttrProcessor(TemplateMode.HTML, dialectPrefix));
-        processors.add(new StandardXmlNsTagProcessor(TemplateMode.HTML, dialectPrefix));
+        final TemplateMode[] templateModes =
+                new TemplateMode[] {
+                        TemplateMode.HTML, TemplateMode.XML,
+                        TemplateMode.TEXT, TemplateMode.JAVASCRIPT, TemplateMode.CSS };
+
+        for (final TemplateMode templateMode : templateModes) {
+
+            processors.add(new AuthenticationAttrProcessor(templateMode, dialectPrefix));
+            // synonym (sec:authorize = sec:authorize-expr) for similarity with
+            // "authorize-url" and "autorize-acl"
+            processors.add(new AuthorizeAttrProcessor(templateMode, dialectPrefix, AuthorizeAttrProcessor.ATTR_NAME));
+            processors.add(new AuthorizeAttrProcessor(templateMode, dialectPrefix, AuthorizeAttrProcessor.ATTR_NAME_EXPR));
+            processors.add(new AuthorizeUrlAttrProcessor(templateMode, dialectPrefix));
+            processors.add(new AuthorizeAclAttrProcessor(templateMode, dialectPrefix));
+            processors.add(new StandardXmlNsTagProcessor(templateMode, dialectPrefix));
+
+        }
 
         return processors;
 
