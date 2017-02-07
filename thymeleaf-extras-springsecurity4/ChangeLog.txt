@@ -1,3 +1,8 @@
+3.0.2
+=====
+- Make processors in the SpringSecurity Dialect apply to all template modes - not just HTML.
+
+
 3.0.1
 =====
 - Adapt the mechanism to retrieve the WebApplicationContext to newer versions (non-root attribute names).
