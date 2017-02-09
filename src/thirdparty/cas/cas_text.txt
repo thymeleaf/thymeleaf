@@ -1,0 +1,3 @@
+Apereo CAS provides enterprise single sign-on for the web and attempts to be a comprehensive platform for authentication and authorization needs.
+ 
+Starting with version 5, CAS has entirely embraced Thymeleaf as its main UI templating/rendering engine. We wanted to find a platform that was open source, license-friendly to CAS, lightweight and modern. As changing the CAS look and feel is one of the most common deployment considerations, we also wanted the UI engine to not require a ton of programming expertise for beginners, and unlike the old JSP model, be flexible to run in any browser without any upfront hassle. Thymeleaf fit the criteria perfectly, and of course built-in support via Spring Boot was certainly very good encouragement and reassurance.
