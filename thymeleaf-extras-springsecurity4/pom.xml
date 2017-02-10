@@ -24,7 +24,7 @@
   <groupId>org.thymeleaf.extras</groupId>
   <artifactId>thymeleaf-extras-springsecurity4</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.2.RELEASE</version>
+  <version>3.0.3-SNAPSHOT</version>
   <name>thymeleaf-extras-springsecurity4</name>
   <url>http://www.thymeleaf.org</url>
 
@@ -47,7 +47,7 @@
     <url>scm:git:git@github.com:thymeleaf/thymeleaf-extras-springsecurity.git</url>
     <connection>scm:git:git@github.com:thymeleaf/thymeleaf-extras-springsecurity.git</connection>
     <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf-extras-springsecurity.git</developerConnection>
-    <tag>thymeleaf-extras-springsecurity4-3.0.2.RELEASE</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <developers>
@@ -310,7 +310,7 @@
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-spring5</artifactId>
-      <version>3.0.3.M1</version>
+      <version>3.0.4-SNAPSHOT</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
