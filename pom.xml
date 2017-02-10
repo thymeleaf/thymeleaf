@@ -93,7 +93,7 @@
     <springframework.version>4.3.4.RELEASE</springframework.version>
     <springsecurity.version>4.2.0.RELEASE</springsecurity.version>
     <thymeleaf.version>3.0.3.RELEASE</thymeleaf.version>
-    <thymeleafspringsecurity4.version>3.0.1.RELEASE</thymeleafspringsecurity4.version>
+    <thymeleafspringsecurity4.version>3.0.2.RELEASE</thymeleafspringsecurity4.version>
   </properties>
 
   <build>
