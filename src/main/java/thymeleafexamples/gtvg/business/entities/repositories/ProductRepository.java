@@ -21,8 +21,6 @@ package thymeleafexamples.gtvg.business.entities.repositories;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,47 +147,13 @@ public class ProductRepository {
     
     
     public List<Product> findAll() {
-        return new SlowList<Product>(this.productsById.values());
+        return new ArrayList<Product>(this.productsById.values());
     }
     
     public Product findById(final Integer id) {
         return this.productsById.get(id);
     }
     
-
-
-    static final class SlowList<T> extends ArrayList<T> {
-
-        public SlowList(final Collection<? extends T> c) {
-            super(c);
-        }
-
-        @Override
-        public Iterator<T> iterator() {
-            final Iterator<T> iterator = super.iterator();
-            return new Iterator<T>() {
-                public boolean hasNext() {
-                    return iterator.hasNext();
-                }
-
-                public void remove() {
-                    iterator.remove();
-                }
-
-                public T next() {
-                    try {
-                        Thread.currentThread().sleep(10L);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    return iterator.next();
-                }
-            };
-
-        }
-
-    }
-
 
     
 }
