@@ -1,0 +1,144 @@
+Thymeleaf User Survey 2017
+==========================
+
+Welcome to the Thymeleaf User Survey 2017, which will run throughout the month of January 2017. 
+
+We would love to hear a bit from how you are using Thymeleaf, so that we can we get a better view on the current status, and the plans our users have for Thymeleaf in 2017.
+
+Please note this survey is meant for current USERS of Thymeleaf, so we expect you to be using Thymeleaf either for development or already in production.
+
+This won't take you long: it's only 12 brief questions, and you will help us a lot. 
+
+This survey is fully ANONYMOUS.
+
+Versions
+========
+
+1. Which version of Thymeleaf are you mainly using for development?
+
+ * Thymeleaf 3.0
+ * Thymeleaf 2.1
+ * Thymeleaf 2.0
+ * Thymeleaf 1.1
+ * Thymeleaf 1.0
+ * I'm not using Thymeleaf for development
+
+2. Which version/s of Thymeleaf are you currently using in production?
+
+ - Thymeleaf 3.0
+ - Thymeleaf 2.1
+ - Thymeleaf 2.0
+ - Thymeleaf 1.1
+ - Thymeleaf 1.0
+
+3. Which version of Java (or other JVM language) are you mainly using for development?
+
+ * Java 8
+ * Java 7
+ * Java 6
+ * Java 5
+ * Groovy
+ * Scala
+ * Clojure
+ * Kotlin
+ * Other...
+
+4. Have you already migrated to Thymeleaf 3.0 / planning to do it in 2017?
+
+ * Already using Thymeleaf 3.0
+ * Planning to migrate in 2017
+ * Will migrate whenever Spring Boot does (Thymeleaf 3.0 will be default in Spring Boot 2.0)
+ * No plans for using Thymeleaf 3.0
+
+Environment and Usage
+=====================
+
+5. If using Thymeleaf in web applications, how is the UI of these applications rendered?
+
+ * UI is rendered at the server side only
+ * Both server-side and client-side technologies are used for rendering the UI
+ * Not using it for web applications
+
+6. What application framework/s do you normally use Thymeleaf with?
+
+ - Spring Boot
+ - Spring MVC (without Boot)
+ - JHipster
+ - Vert.x
+ - Ratpack
+ - Wisdom
+ - Play
+ - Apache Sling
+ - Other...
+
+7. What client-side technology/ies do you usually combine Thymeleaf with (if any)?
+
+ - AngularJS
+ - React
+ - Polymer
+ - jQuery
+ - Bootstrap
+ - D3
+ - Other...
+
+8. Have you ever used (or plan to use in 2017) Thymeleaf for generating output other than an HTML UI? If so, for...
+
+ - HTML email templates
+ - Text email templates
+ - CSS Style Sheets
+ - JavaScript files
+ - XML rendering
+ - Other...
+
+9. Have you ever used (or plan to use in 2017) Thymeleaf with a Reactive web framework?
+
+ - Spring 5 Web Reactive
+ - Vert.x
+ - Ratpack
+ - Other...
+
+10. Which is your preferred layout / template composition method for Thymeleaf?
+
+ * I don't do template composition
+ * Thymeleaf 3.0 Fragment Expressions (~{...}, th:insert, th:replace, etc.)
+ * Thymeleaf 2.1 includes/replaces (th:include, th:replace)
+ * Thymeleaf Layout Dialect
+ * Apache Tiles
+ * Other...
+
+Conclusion
+==========
+
+11. Would you recommend Thymeleaf to you friends or colleagues?
+
+ * 10 - YES! Very likely
+ * 9
+ * 8
+ * 7
+ * 6
+ * 5
+ * 4
+ * 3
+ * 2
+ * 1 - NO! Very unlikely :(
+
+12. Anything else you would like to tell us about Thymeleaf? (won't be published)
+
+ [Free text]
+
+
+THANKS! This ends the survey, but before you go...
+--------------------------------------------------
+
+One last thing: Would you like to help Thymeleaf A LOT MORE?
+
+If your company, commercial product, open source project or public website is using Thymeleaf in production, it would be awesome if you could give us permission to mention it at the "Who's using Thymeleaf?" page on our website: http://www.thymeleaf.org/whoisusingthymeleaf.html
+
+Doing so is very easy: simply fill in this other form and we will contact you: https://docs.google.com/forms/d/e/1FAIpQLSc6NM3bppNhkOBtlDMUgR9zzzGE1kBvnsmyBA75nhFQQABOFA/viewform
+
+And don't forget to click on SUBMIT below this text!
+
+Thanks so much.
+
+
+
