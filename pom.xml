@@ -94,8 +94,8 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>org.springframework.boot.experimental</groupId>
-			<artifactId>spring-boot-starter-web-reactive</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
 			<exclusions>
 				<!-- Excluded because we will be using netty -->
 				<exclusion>
