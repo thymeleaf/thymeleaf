@@ -124,7 +124,7 @@
     <maven.compile.source>1.8</maven.compile.source>
     <maven.compile.target>1.8</maven.compile.target>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <springframework.version>5.0.0.M4</springframework.version>
+    <springframework.version>5.0.0.BUILD-SNAPSHOT</springframework.version>
     <springwebflow.version>2.4.4.RELEASE</springwebflow.version>
     <slf4j.version>1.6.6</slf4j.version>
   </properties>
@@ -319,7 +319,7 @@
 
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-web-reactive</artifactId>
+      <artifactId>spring-webflux</artifactId>
       <version>${springframework.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
