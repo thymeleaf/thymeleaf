@@ -32,7 +32,7 @@ import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.context.WebContext;
-import org.thymeleaf.spring5.context.mvc.SpringWebMvcThymeleafRequestContext;
+import org.thymeleaf.spring5.context.webmvc.SpringWebMvcThymeleafRequestContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 
