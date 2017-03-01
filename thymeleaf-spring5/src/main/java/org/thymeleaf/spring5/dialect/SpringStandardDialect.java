@@ -64,7 +64,7 @@ import org.thymeleaf.templatemode.TemplateMode;
  *   <tt>th:*</tt> processors, expression objects, etc. for Spring-enabled environments.
  * </p>
  * <p>
- *   This dialect is valid both for Spring WebMVC and Spring Webflux environments.
+ *   This dialect is valid both for Spring WebMVC and Spring WebFlux environments.
  * </p>
  * <p>
  *   Note this dialect uses <strong>SpringEL</strong> as an expression language and adds some Spring-specific

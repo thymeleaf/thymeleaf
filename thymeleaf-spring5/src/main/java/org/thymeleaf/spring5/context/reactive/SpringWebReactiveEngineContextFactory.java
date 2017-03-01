@@ -35,12 +35,12 @@ import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   Spring Webflux-based implementation of the {@link IEngineContextFactory} interface.
+ *   Spring WebFlux-based implementation of the {@link IEngineContextFactory} interface.
  * </p>
  * <p>
  *   This factory will examine the <tt>context</tt> being passed as a parameter and, depending on whether
  *   this context object implements the {@link ISpringWebReactiveContext} interface or not (i.e. whether support
- *   for Spring Webflux should be enabled or not), return a {@link SpringWebReactiveEngineContext} or
+ *   for Spring WebFlux should be enabled or not), return a {@link SpringWebReactiveEngineContext} or
  *   a simple {@link EngineContext} instance as a result.
  * </p>
  * <p>

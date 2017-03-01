@@ -43,7 +43,7 @@ import reactor.core.publisher.Mono;
 
 /**
  * <p>
- *   Implementation of the Spring Webflux {@link ViewResolver}
+ *   Implementation of the Spring WebFlux {@link ViewResolver}
  *   interface.
  * </p>
  * <p>
@@ -80,7 +80,7 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
      */
     public static final String REDIRECT_URL_PREFIX = "redirect:";
 
-    // TODO * Will this still exist in Spring Webflux? See https://jira.spring.io/browse/SPR-14537
+    // TODO * Will this still exist in Spring WebFlux? See https://jira.spring.io/browse/SPR-14537
     public static final String FORWARD_URL_PREFIX = "forward:";
 
     // This provider function for redirect mirrors what is done at the reactive version of UrlBasedViewResolver
@@ -384,7 +384,7 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
      *   that are produced by the Thymeleaf engine and passed to the server as output.
      * </p>
      * <p>
-     *   In Spring Webflux applications, Thymeleaf has three modes of operation depending on whether a limit
+     *   In Spring WebFlux applications, Thymeleaf has three modes of operation depending on whether a limit
      *   has been set for the output chunk size and/or data-driver context variables have been specified:
      * </p>
      * <ul>
@@ -429,7 +429,7 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
      *   to the server as output.
      * </p>
      * <p>
-     *   In Spring Webflux applications, Thymeleaf has three modes of operation depending on whether a limit
+     *   In Spring WebFlux applications, Thymeleaf has three modes of operation depending on whether a limit
      *   has been set for the output chunk size and/or data-driver context variables have been specified:
      * </p>
      * <ul>

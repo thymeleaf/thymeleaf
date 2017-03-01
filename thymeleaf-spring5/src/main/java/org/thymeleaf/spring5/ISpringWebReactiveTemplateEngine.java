@@ -33,7 +33,7 @@ import org.thymeleaf.context.IContext;
 
 /**
  * <p>
- *   Sub-interface of {@link ISpringTemplateEngine} meant for Spring Webflux applications, adding
+ *   Sub-interface of {@link ISpringTemplateEngine} meant for Spring WebFlux applications, adding
  *   methods specifically needed for the execution of templates in a reactive-friendly way.
  * </p>
  * <p>

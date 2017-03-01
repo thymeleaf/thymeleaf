@@ -32,10 +32,10 @@ import org.thymeleaf.spring5.context.reactive.ISpringWebReactiveContext;
 
 /**
  * <p>
- *   Spring Webflux-based implementation of {@link ILinkBuilder}.
+ *   Spring WebFlux-based implementation of {@link ILinkBuilder}.
  * </p>
  * <p>
- *   This class will build link URLs using the Spring Webflux API and adapting to the needs of this
+ *   This class will build link URLs using the Spring WebFlux API and adapting to the needs of this
  *   type of application.
  * </p>
  * <p>
@@ -65,7 +65,7 @@ public class SpringWebReactiveLinkBuilder extends StandardLinkBuilder {
      * <p>
      *   This method will obtain the context path from <tt>ServerHttpRequest.getContextPath()</tt>,
      *   throwing an exception if <tt>context</tt> is not an instance of <tt>ISpringWebReactiveContext</tt> given
-     *   context-relative URLs are (by default) only allowed in Spring Webflux contexts.
+     *   context-relative URLs are (by default) only allowed in Spring WebFlux contexts.
      * </p>
      * <p>
      *   This method can be overridden by any subclasses that want to change this behaviour.
@@ -86,7 +86,7 @@ public class SpringWebReactiveLinkBuilder extends StandardLinkBuilder {
                     "used for executing the engine implements the " + ISpringWebReactiveContext.class.getName() + " interface");
         }
 
-        // If it is context-relative, it has to be a Spring Webflux-based context
+        // If it is context-relative, it has to be a Spring WebFlux-based context
         final ServerHttpRequest request = ((ISpringWebReactiveContext)context).getRequest();
         return request.getContextPath();
 

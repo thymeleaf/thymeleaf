@@ -33,7 +33,7 @@ import reactor.core.publisher.Mono;
 
 /**
  * <p>
- *   Basic Spring Webflux-oriented implementation of the {@link IExpressionContext} and
+ *   Basic Spring WebFlux-oriented implementation of the {@link IExpressionContext} and
  *   {@link ISpringWebReactiveContext} interfaces.
  * </p>
  * <p>

@@ -26,7 +26,7 @@ import org.springframework.validation.Errors;
 /**
  * <p>
  *   This interface is meant to abstract a Spring <tt>BindStatus</tt>, without the client code
- *   needing to know if it is a Spring WebMVC or Spring Webflux implementation of this
+ *   needing to know if it is a Spring WebMVC or Spring WebFlux implementation of this
  *   <tt>BindStatus</tt>.
  * </p>
  *
