@@ -30,7 +30,7 @@ import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.IEngineContextFactory;
 import org.thymeleaf.engine.TemplateData;
-import org.thymeleaf.spring5.SpringWebReactiveTemplateEngine;
+import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -44,7 +44,7 @@ import org.thymeleaf.util.Validate;
  *   a simple {@link EngineContext} instance as a result.
  * </p>
  * <p>
- *   This is the default factory implementation used by {@link SpringWebReactiveTemplateEngine}.
+ *   This is the default factory implementation used by {@link SpringWebFluxTemplateEngine}.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez

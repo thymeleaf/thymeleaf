@@ -73,18 +73,18 @@ import org.thymeleaf.context.IContext;
  *     </li>
  * </ol>
  * <p>
- *   The {@link SpringWebReactiveTemplateEngine} implementation of this interface (or a subclass) should be used
+ *   The {@link SpringWebFluxTemplateEngine} implementation of this interface (or a subclass) should be used
  *   in almost every case, but this interface improves testability of these artifacts.
  * </p>
  *
- * @see SpringWebReactiveTemplateEngine
+ * @see SpringWebFluxTemplateEngine
  *
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 3.0.3
  *
  */
-public interface ISpringWebReactiveTemplateEngine extends ISpringTemplateEngine {
+public interface ISpringWebFluxTemplateEngine extends ISpringTemplateEngine {
 
 
     public Publisher<DataBuffer> processStream(

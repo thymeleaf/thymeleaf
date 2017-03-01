@@ -51,39 +51,39 @@ import org.thymeleaf.util.LoggingUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static org.thymeleaf.spring5.SpringWebReactiveTemplateEngine.DataDrivenFluxStep.FluxStepPhase.DATA_DRIVEN_PHASE_BUFFER;
-import static org.thymeleaf.spring5.SpringWebReactiveTemplateEngine.DataDrivenFluxStep.FluxStepPhase.DATA_DRIVEN_PHASE_HEAD;
-import static org.thymeleaf.spring5.SpringWebReactiveTemplateEngine.DataDrivenFluxStep.FluxStepPhase.DATA_DRIVEN_PHASE_TAIL;
+import static org.thymeleaf.spring5.SpringWebFluxTemplateEngine.DataDrivenFluxStep.FluxStepPhase.DATA_DRIVEN_PHASE_BUFFER;
+import static org.thymeleaf.spring5.SpringWebFluxTemplateEngine.DataDrivenFluxStep.FluxStepPhase.DATA_DRIVEN_PHASE_HEAD;
+import static org.thymeleaf.spring5.SpringWebFluxTemplateEngine.DataDrivenFluxStep.FluxStepPhase.DATA_DRIVEN_PHASE_TAIL;
 
 
 /**
  * <p>
- *   Standard implementation of {@link ISpringWebReactiveTemplateEngine}, and default
+ *   Standard implementation of {@link ISpringWebFluxTemplateEngine}, and default
  *   template engine implementation to be used in Spring WebFlux environments.
  * </p>
  *
- * @see ISpringWebReactiveTemplateEngine
+ * @see ISpringWebFluxTemplateEngine
  *
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 3.0.3
  *
  */
-public class SpringWebReactiveTemplateEngine
+public class SpringWebFluxTemplateEngine
         extends SpringTemplateEngine
-        implements ISpringWebReactiveTemplateEngine {
+        implements ISpringWebFluxTemplateEngine {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(SpringWebReactiveTemplateEngine.class);
-    private static final String LOG_CATEGORY_FULL_OUTPUT = SpringWebReactiveTemplateEngine.class.getName() + ".DOWNSTREAM.FULL";
-    private static final String LOG_CATEGORY_CHUNKED_OUTPUT = SpringWebReactiveTemplateEngine.class.getName() + ".DOWNSTREAM.CHUNKED";
-    private static final String LOG_CATEGORY_DATADRIVEN_INPUT = SpringWebReactiveTemplateEngine.class.getName() + ".UPSTREAM.DATA-DRIVEN";
-    private static final String LOG_CATEGORY_DATADRIVEN_OUTPUT = SpringWebReactiveTemplateEngine.class.getName() + ".DOWNSTREAM.DATA-DRIVEN";
+    private static final Logger logger = LoggerFactory.getLogger(SpringWebFluxTemplateEngine.class);
+    private static final String LOG_CATEGORY_FULL_OUTPUT = SpringWebFluxTemplateEngine.class.getName() + ".DOWNSTREAM.FULL";
+    private static final String LOG_CATEGORY_CHUNKED_OUTPUT = SpringWebFluxTemplateEngine.class.getName() + ".DOWNSTREAM.CHUNKED";
+    private static final String LOG_CATEGORY_DATADRIVEN_INPUT = SpringWebFluxTemplateEngine.class.getName() + ".UPSTREAM.DATA-DRIVEN";
+    private static final String LOG_CATEGORY_DATADRIVEN_OUTPUT = SpringWebFluxTemplateEngine.class.getName() + ".DOWNSTREAM.DATA-DRIVEN";
 
 
 
 
-    public SpringWebReactiveTemplateEngine() {
+    public SpringWebFluxTemplateEngine() {
 
         super();
         // In Spring WebFlux environments, we will need to use a special context factory in order to
@@ -552,7 +552,7 @@ public class SpringWebReactiveTemplateEngine
 
         // Not an IEngineContext, but might still be an ISpringWebFluxContext and we don't want to lose that info
         if (context instanceof ISpringWebFluxContext) {
-            return new DataDrivenSpringWebReactiveContextWrapper(
+            return new DataDrivenSpringWebFluxContextWrapper(
                     (ISpringWebFluxContext)context, dataDriverVariableName, dataDrivenTemplateIterator);
         }
 
@@ -716,12 +716,12 @@ public class SpringWebReactiveTemplateEngine
      * This wrapper of an ISpringWebFluxContext is meant to wrap the original context object sent to the
      * template engine while hiding the data driver variable, returning a DataDrivenTemplateIterator in its place.
      */
-    static class DataDrivenSpringWebReactiveContextWrapper
+    static class DataDrivenSpringWebFluxContextWrapper
             extends DataDrivenContextWrapper implements ISpringWebFluxContext {
 
         private final ISpringWebFluxContext context;
 
-        DataDrivenSpringWebReactiveContextWrapper(
+        DataDrivenSpringWebFluxContextWrapper(
                 final ISpringWebFluxContext context, final String dataDriverVariableName,
                 final DataDrivenTemplateIterator dataDrivenTemplateIterator) {
             super(context, dataDriverVariableName, dataDrivenTemplateIterator);
@@ -753,7 +753,7 @@ public class SpringWebReactiveTemplateEngine
 
 
     /*
-     * This wrapper of an IContext (non-SpringWebReactive-specific) is meant to wrap the original context object sent
+     * This wrapper of an IContext (non-SpringWebFlux-specific) is meant to wrap the original context object sent
      * to the template engine while hiding the data driver variable, returning a DataDrivenTemplateIterator in
      * its place.
      */

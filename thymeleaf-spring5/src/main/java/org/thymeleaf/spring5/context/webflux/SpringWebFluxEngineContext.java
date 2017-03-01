@@ -86,7 +86,7 @@ public class SpringWebFluxEngineContext
     /**
      * <p>
      *   Creates a new instance of this {@link IEngineContext} implementation binding engine execution to
-     *   the Spring Reactive request handling mechanisms, mainly modelled by {@link ServerWebExchange}.
+     *   the Spring WebFlux request handling mechanisms, mainly modelled by {@link ServerWebExchange}.
      * </p>
      * <p>
      *   Note that implementations of {@link IEngineContext} are not meant to be used in order to call

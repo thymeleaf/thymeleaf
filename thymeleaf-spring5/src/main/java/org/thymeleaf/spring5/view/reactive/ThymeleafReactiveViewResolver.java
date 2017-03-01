@@ -36,7 +36,7 @@ import org.springframework.web.reactive.result.view.RedirectView;
 import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.reactive.result.view.ViewResolverSupport;
-import org.thymeleaf.spring5.ISpringWebReactiveTemplateEngine;
+import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
 import org.thymeleaf.util.Validate;
 import reactor.core.publisher.Mono;
 
@@ -56,7 +56,7 @@ import reactor.core.publisher.Mono;
  * </p>
  *
  * @see ThymeleafReactiveView
- * @see ISpringWebReactiveTemplateEngine
+ * @see ISpringWebFluxTemplateEngine
  *
  * @author Daniel Fern&aacute;ndez
  *
@@ -104,7 +104,7 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
     private int responseMaxChunkSizeBytes = ThymeleafReactiveView.DEFAULT_RESPONSE_CHUNK_SIZE_BYTES;
 
 
-    private ISpringWebReactiveTemplateEngine templateEngine;
+    private ISpringWebFluxTemplateEngine templateEngine;
 
 
 
@@ -152,26 +152,26 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
     /**
      * <p>
      *   Returns the Thymeleaf template engine instance
-     *   (implementation of {@link ISpringWebReactiveTemplateEngine} to be used for the
+     *   (implementation of {@link ISpringWebFluxTemplateEngine} to be used for the
      *   execution of templates.
      * </p>
      *
      * @return the template engine being used for processing templates.
      */
-    public ISpringWebReactiveTemplateEngine getTemplateEngine() {
+    public ISpringWebFluxTemplateEngine getTemplateEngine() {
         return this.templateEngine;
     }
 
 
     /**
      * <p>
-     *   Set the template engine object (implementation of {@link ISpringWebReactiveTemplateEngine} to be
+     *   Set the template engine object (implementation of {@link ISpringWebFluxTemplateEngine} to be
      *   used for processing templates.
      * </p>
      *
      * @param templateEngine the template engine.
      */
-    public void setTemplateEngine(final ISpringWebReactiveTemplateEngine templateEngine) {
+    public void setTemplateEngine(final ISpringWebFluxTemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
 
@@ -524,7 +524,7 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
         // Process forwards (to JSP resources)
         if (viewName.startsWith(FORWARD_URL_PREFIX)) {
             vrlogger.trace("[THYMELEAF] View \"{}\" is a forward, and will not be handled directly by ThymeleafReactiveViewResolver.", viewName);
-            // TODO * No view forwarding in Spring Reactive yet. See https://jira.spring.io/browse/SPR-14537
+            // TODO * No view forwarding in Spring WebFlux yet. See https://jira.spring.io/browse/SPR-14537
             return Mono.error(new UnsupportedOperationException("Forwards are not currently supported by ThymeleafReactiveViewResolver"));
         }
         // Second possible call to check "viewNames": after processing redirects and forwards

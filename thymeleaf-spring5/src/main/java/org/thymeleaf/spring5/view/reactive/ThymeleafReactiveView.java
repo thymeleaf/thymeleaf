@@ -49,7 +49,7 @@ import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.spring5.ISpringWebReactiveTemplateEngine;
+import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.ReactiveLazyContextVariable;
 import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
@@ -78,14 +78,14 @@ import reactor.core.publisher.Mono;
  *   This is the default view implementation resolved by {@link ThymeleafReactiveViewResolver}.
  * </p>
  * <p>
- *   This view needs a {@link ISpringWebReactiveTemplateEngine} for execution, and it will call its
- *   {@link ISpringWebReactiveTemplateEngine#processStream(String, Set, IContext, DataBufferFactory, Charset, int)}
+ *   This view needs a {@link ISpringWebFluxTemplateEngine} for execution, and it will call its
+ *   {@link ISpringWebFluxTemplateEngine#processStream(String, Set, IContext, DataBufferFactory, Charset, int)}
  *   method to create the reactive data streams to be used for processing the template. See the documentation
  *   of this class to know more about the different operation modes available.
  * </p>
  *
  * @see ThymeleafReactiveViewResolver
- * @see ISpringWebReactiveTemplateEngine
+ * @see ISpringWebFluxTemplateEngine
  * @see ReactiveDataDriverContextVariable
  * @see IReactiveDataDriverContextVariable
  *
@@ -103,7 +103,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
     private String beanName = null;
-    private ISpringWebReactiveTemplateEngine templateEngine = null;
+    private ISpringWebFluxTemplateEngine templateEngine = null;
 	private String templateName = null;
     private Locale locale = null;
     private Map<String, Object> staticVariables = null;
@@ -241,12 +241,12 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
 
-    protected ISpringWebReactiveTemplateEngine getTemplateEngine() {
+    protected ISpringWebFluxTemplateEngine getTemplateEngine() {
         return this.templateEngine;
     }
 
     
-    protected void setTemplateEngine(final ISpringWebReactiveTemplateEngine templateEngine) {
+    protected void setTemplateEngine(final ISpringWebFluxTemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
 
@@ -295,7 +295,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
             final MediaType contentType, final ServerWebExchange exchange) {
 
         final String viewTemplateName = getTemplateName();
-        final ISpringWebReactiveTemplateEngine viewTemplateEngine = getTemplateEngine();
+        final ISpringWebFluxTemplateEngine viewTemplateEngine = getTemplateEngine();
 
         if (viewTemplateName == null) {
             return Mono.error(new IllegalArgumentException("Property 'templateName' is required"));
@@ -375,7 +375,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
          * - The reason it is an ExpressionContext and not a Context is that before executing the template itself,
          *   we might need to use it for computing the markup selectors (if "template :: selector" was specified).
          * - The reason it is not a WebExpressionContext is that this class is linked to the Servlet API, which
-         *   might not be present in a Spring Reactive environment.
+         *   might not be present in a Spring WebFlux environment.
          * ----------------------------------------------------------------------------------------------------------
          */
 
