@@ -70,23 +70,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 		<thymeleaf.version>3.0.4-SNAPSHOT</thymeleaf.version>
-		<spring-boot-web-reactive.version>0.1.0.BUILD-SNAPSHOT</spring-boot-web-reactive.version>
 	</properties>
-
-
-	<dependencyManagement>
-
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.boot.experimental</groupId>
-				<artifactId>spring-boot-dependencies-web-reactive</artifactId>
-				<version>${spring-boot-web-reactive.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-
-	</dependencyManagement>
 
 
 	<dependencies>
