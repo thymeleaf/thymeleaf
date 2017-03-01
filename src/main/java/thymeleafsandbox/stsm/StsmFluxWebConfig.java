@@ -25,8 +25,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.thymeleaf.spring5.ISpringWebReactiveTemplateEngine;
-import org.thymeleaf.spring5.SpringWebReactiveTemplateEngine;
+import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
+import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
 import thymeleafsandbox.stsm.web.conversion.DateFormatter;
@@ -34,7 +34,7 @@ import thymeleafsandbox.stsm.web.conversion.VarietyFormatter;
 
 @Configuration
 @EnableConfigurationProperties(ThymeleafProperties.class)
-public class StsmReactiveWebConfig {
+public class StsmFluxWebConfig {
 
     // TODO * Once there is a Spring Boot starter for thymeleaf-spring5, there would be no need to have
     // TODO   that @EnableConfigurationProperties annotation or use it for declaring the beans down in the
@@ -46,7 +46,7 @@ public class StsmReactiveWebConfig {
 
 
 
-    public StsmReactiveWebConfig(
+    public StsmFluxWebConfig(
             final ApplicationContext applicationContext,
             final ThymeleafProperties thymeleafProperties) {
         super();
@@ -107,8 +107,8 @@ public class StsmReactiveWebConfig {
 
 
     @Bean
-    public ISpringWebReactiveTemplateEngine thymeleafTemplateEngine(){
-        final SpringWebReactiveTemplateEngine templateEngine = new SpringWebReactiveTemplateEngine();
+    public ISpringWebFluxTemplateEngine thymeleafTemplateEngine(){
+        final SpringWebFluxTemplateEngine templateEngine = new SpringWebFluxTemplateEngine();
         templateEngine.setTemplateResolver(thymeleafTemplateResolver());
         return templateEngine;
     }
