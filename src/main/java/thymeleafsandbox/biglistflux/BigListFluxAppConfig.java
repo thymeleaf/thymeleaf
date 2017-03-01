@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafsandbox.springreactive;
+package thymeleafsandbox.biglistflux;
 
 
 import java.io.IOException;
@@ -35,15 +35,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
 @Configuration
-public class BigListReactiveAppConfig implements ApplicationContextAware {
+public class BigListFluxAppConfig implements ApplicationContextAware {
 
-    private static final Logger logger = LoggerFactory.getLogger(BigListReactiveAppConfig.class);
+    private static final Logger logger = LoggerFactory.getLogger(BigListFluxAppConfig.class);
 
 
     private ApplicationContext applicationContext;
 
 
-    public BigListReactiveAppConfig() {
+    public BigListFluxAppConfig() {
         super();
     }
 

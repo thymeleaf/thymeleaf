@@ -17,14 +17,14 @@
  * 
  * =============================================================================
  */
-package thymeleafsandbox.springreactive.web.controller;
+package thymeleafsandbox.biglistflux.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
-import thymeleafsandbox.springreactive.business.PlaylistEntry;
-import thymeleafsandbox.springreactive.business.repository.PlaylistEntryRepository;
+import thymeleafsandbox.biglistflux.business.PlaylistEntry;
+import thymeleafsandbox.biglistflux.business.repository.PlaylistEntryRepository;
 
 
 @RestController

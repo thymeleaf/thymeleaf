@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafsandbox.springreactive.business.repository;
+package thymeleafsandbox.biglistflux.business.repository;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
-import thymeleafsandbox.springreactive.business.PlaylistEntry;
+import thymeleafsandbox.biglistflux.business.PlaylistEntry;
 
 
 @Repository

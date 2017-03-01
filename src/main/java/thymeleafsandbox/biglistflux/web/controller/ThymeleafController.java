@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafsandbox.springreactive.web.controller;
+package thymeleafsandbox.biglistflux.web.controller;
 
 import java.util.List;
 
@@ -25,10 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.thymeleaf.spring5.context.reactive.ReactiveDataDriverContextVariable;
+import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Flux;
-import thymeleafsandbox.springreactive.business.PlaylistEntry;
-import thymeleafsandbox.springreactive.business.repository.PlaylistEntryRepository;
+import thymeleafsandbox.biglistflux.business.PlaylistEntry;
+import thymeleafsandbox.biglistflux.business.repository.PlaylistEntryRepository;
 
 
 @Controller

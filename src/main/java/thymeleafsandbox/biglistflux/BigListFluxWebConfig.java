@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafsandbox.springreactive;
+package thymeleafsandbox.biglistflux;
 
 
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafProperties;
@@ -28,14 +28,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.freemarker.SpringTemplateLoader;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewResolver;
-import org.thymeleaf.spring5.ISpringWebReactiveTemplateEngine;
-import org.thymeleaf.spring5.SpringWebReactiveTemplateEngine;
+import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
+import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
 
 @Configuration
 @EnableConfigurationProperties(ThymeleafProperties.class)
-public class BigListReactiveWebConfig {
+public class BigListFluxWebConfig {
 
     // TODO * Once there is a Spring Boot starter for thymeleaf-spring5, there would be no need to have
     // TODO   that @EnableConfigurationProperties annotation or use it for declaring the beans down in the
@@ -47,7 +47,7 @@ public class BigListReactiveWebConfig {
 
 
 
-    public BigListReactiveWebConfig(
+    public BigListFluxWebConfig(
             final ApplicationContext applicationContext,
             final ThymeleafProperties thymeleafProperties) {
         super();
@@ -123,10 +123,10 @@ public class BigListReactiveWebConfig {
 
 
     @Bean
-    public ISpringWebReactiveTemplateEngine thymeleafTemplateEngine(){
+    public ISpringWebFluxTemplateEngine thymeleafTemplateEngine(){
         // We override here the SpringTemplateEngine instance that would otherwise be instantiated by
-        // Spring Boot because we want to apply the SpringReactive-specific context factory, link builder...
-        final SpringWebReactiveTemplateEngine templateEngine = new SpringWebReactiveTemplateEngine();
+        // Spring Boot because we want to apply the SpringWebFlux-specific context factory, link builder...
+        final SpringWebFluxTemplateEngine templateEngine = new SpringWebFluxTemplateEngine();
         templateEngine.setTemplateResolver(thymeleafTemplateResolver());
         return templateEngine;
     }

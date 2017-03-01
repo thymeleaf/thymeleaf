@@ -1,6 +1,6 @@
 
- Thymeleaf Sandbox: BigList, Spring Web Reactive
-------------------------------------------------
+ Thymeleaf Sandbox: BigList, Spring WebFlux
+-------------------------------------------
  
  This is a sandbox application, only used internally for development.
 
@@ -8,7 +8,7 @@
 ## Contents
 
  This sandbox repository contains an example application meant to test the use Thymeleaf rendering
- for very large amounts of markup using Spring Boot and Spring Web Reactive (in comparison to Spring Web MVC).
+ for very large amounts of markup using Spring Boot and Spring WebFlux (in comparison to Spring Web MVC).
 
  See also: https://github.com/thymeleaf/thymeleafsandbox-biglist-mvc
 

@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafsandbox.springreactive;
+package thymeleafsandbox.biglistflux;
 
 
 import org.springframework.boot.SpringApplication;
@@ -26,11 +26,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-public class BigListReactiveApplication {
+public class BigListFluxApplication {
 
 
     public static void main(String[] args) {
-        SpringApplication.run(BigListReactiveApplication.class, args);
+        SpringApplication.run(BigListFluxApplication.class, args);
     }
 
 }
