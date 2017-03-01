@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring5.context.reactive;
+package org.thymeleaf.spring5.context.webmvc;
 
 import java.util.List;
 import java.util.Locale;
@@ -25,14 +25,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.ui.context.Theme;
 import org.springframework.validation.Errors;
-import org.springframework.web.reactive.result.view.RequestContext;
-import org.springframework.web.server.ServerWebExchange;
-import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.spring5.context.IThymeleafBindStatus;
 import org.thymeleaf.spring5.context.IThymeleafRequestContext;
 import org.thymeleaf.spring5.context.IThymeleafRequestDataValueProcessor;
@@ -51,28 +51,28 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.3
  *
  */
-public class SpringWebReactiveThymeleafRequestContext implements IThymeleafRequestContext {
+public class SpringWebMvcThymeleafRequestContext implements IThymeleafRequestContext {
 
     private final RequestContext requestContext;
-    private final ServerWebExchange serverWebExchange;
-    private final SpringWebReactiveThymeleafRequestDataValueProcessor thymeleafRequestDataValueProcessor;
+    private final HttpServletRequest httpServletRequest;
+    private final SpringWebMvcThymeleafRequestDataValueProcessor thymeleafRequestDataValueProcessor;
 
 
-    public SpringWebReactiveThymeleafRequestContext(
-            final RequestContext requestContext, final ServerWebExchange serverWebExchange) {
+    public SpringWebMvcThymeleafRequestContext(
+            final RequestContext requestContext, final HttpServletRequest httpServletRequest) {
         super();
-        Validate.notNull(requestContext, "Spring WebFlux RequestContext cannot be null");
-        Validate.notNull(serverWebExchange, "Server Web Exchange cannot be null");
+        Validate.notNull(requestContext, "Spring WebMVC RequestContext cannot be null");
+        Validate.notNull(httpServletRequest, "HttpServletRequest cannot be null");
         this.requestContext = requestContext;
-        this.serverWebExchange = serverWebExchange;
+        this.httpServletRequest = httpServletRequest;
         this.thymeleafRequestDataValueProcessor =
-                new SpringWebReactiveThymeleafRequestDataValueProcessor(
-                        this.requestContext.getRequestDataValueProcessor(), this.serverWebExchange);
+                new SpringWebMvcThymeleafRequestDataValueProcessor(
+                        this.requestContext.getRequestDataValueProcessor(), httpServletRequest);
     }
 
 
-    public ServerWebExchange getServerWebExchange() {
-        return this.serverWebExchange;
+    public HttpServletRequest getHttpServletRequest() {
+        return this.httpServletRequest;
     }
 
 
@@ -138,7 +138,7 @@ public class SpringWebReactiveThymeleafRequestContext implements IThymeleafReque
 
     @Override
     public String getRequestPath() {
-        return this.requestContext.getRequestPath();
+        return this.requestContext.getRequestUri();
     }
 
     @Override
@@ -198,17 +198,17 @@ public class SpringWebReactiveThymeleafRequestContext implements IThymeleafReque
 
     @Override
     public Optional<Errors> getErrors(final String name) {
-        return this.requestContext.getErrors(name);
+        return Optional.ofNullable(this.requestContext.getErrors(name));
     }
 
     @Override
     public Optional<Errors> getErrors(final String name, final boolean htmlEscape) {
-        return this.requestContext.getErrors(name, htmlEscape);
+        return Optional.ofNullable(this.requestContext.getErrors(name, htmlEscape));
     }
 
     @Override
     public Theme getTheme() {
-        throw new TemplateProcessingException("Themes are not supported in Thymeleaf's Spring WebFlux integration");
+        return this.requestContext.getTheme();
     }
 
 
@@ -219,12 +219,12 @@ public class SpringWebReactiveThymeleafRequestContext implements IThymeleafReque
 
     @Override
     public IThymeleafBindStatus getBindStatus(final String path) throws IllegalStateException {
-        return Optional.ofNullable(this.requestContext.getBindStatus(path)).map(SpringWebReactiveThymeleafBindStatus::new).orElse(null);
+        return Optional.ofNullable(this.requestContext.getBindStatus(path)).map(SpringWebMvcThymeleafBindStatus::new).orElse(null);
     }
 
     @Override
     public IThymeleafBindStatus getBindStatus(final String path, final boolean htmlEscape) throws IllegalStateException {
-        return Optional.ofNullable(this.requestContext.getBindStatus(path, htmlEscape)).map(SpringWebReactiveThymeleafBindStatus::new).orElse(null);
+        return Optional.ofNullable(this.requestContext.getBindStatus(path, htmlEscape)).map(SpringWebMvcThymeleafBindStatus::new).orElse(null);
     }
 
 

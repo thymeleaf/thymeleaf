@@ -51,7 +51,7 @@ import org.thymeleaf.context.IContext;
  *        execution (no {@link Publisher} driving engine execution). All context variables are
  *        expected to be fully resolved before engine execution -except those implementing Thymeleaf's
  *        {@link org.thymeleaf.context.ILazyContextVariable} interface, including its reactive implementation
- *        {@link org.thymeleaf.spring5.context.reactive.ReactiveLazyContextVariable}- and the Thymeleaf
+ *        {@link org.thymeleaf.spring5.context.webflux.ReactiveLazyContextVariable}- and the Thymeleaf
  *        engine will execute in <em>throttled</em> mode, performing a full-stop each time the output buffer reaches
  *        the specified size, sending it to the output channels with {@link Subscriber#onNext(Object)} and then
  *        waiting until these output channels make the engine resume its work with a new
@@ -59,7 +59,7 @@ import org.thymeleaf.context.IContext;
  *     </li>
  *     <li><strong>Data-Driven</strong>: one of the context variables is a reactive
  *        {@link Publisher} data stream wrapped inside an implementation
- *        of the {@link org.thymeleaf.spring5.context.reactive.IReactiveDataDriverContextVariable} interface. In
+ *        of the {@link org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable} interface. In
  *        this case, Thymeleaf will act as a {@link Subscriber} of this data stream and a
  *        {@link Publisher} of output buffers (the combination of which turns Thymeleaf into a {@link Processor}
  *        in Reactive Streams terminology). Thymeleaf will execute as a response to

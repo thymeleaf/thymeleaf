@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring5.context.mvc;
+package org.thymeleaf.spring5.context.webmvc;
 
 import java.beans.PropertyEditor;
 

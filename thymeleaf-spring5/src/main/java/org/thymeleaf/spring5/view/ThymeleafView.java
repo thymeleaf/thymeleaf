@@ -40,7 +40,7 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.WebExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.ISpringTemplateEngine;
-import org.thymeleaf.spring5.context.mvc.SpringWebMvcThymeleafRequestContext;
+import org.thymeleaf.spring5.context.webmvc.SpringWebMvcThymeleafRequestContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.FragmentExpression;

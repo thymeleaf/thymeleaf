@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring5.context.reactive;
+package org.thymeleaf.spring5.context.webflux;
 
 import java.util.Locale;
 import java.util.Map;
@@ -34,7 +34,7 @@ import reactor.core.publisher.Mono;
 /**
  * <p>
  *   Basic Spring WebFlux-oriented implementation of the {@link IExpressionContext} and
- *   {@link ISpringWebReactiveContext} interfaces.
+ *   {@link ISpringWebFluxContext} interfaces.
  * </p>
  * <p>
  *   This class is not thread-safe, and should not be shared across executions of templates.
@@ -45,24 +45,24 @@ import reactor.core.publisher.Mono;
  * @since 3.0.3
  *
  */
-public class SpringWebReactiveExpressionContext extends AbstractExpressionContext implements ISpringWebReactiveContext {
+public class SpringWebFluxExpressionContext extends AbstractExpressionContext implements ISpringWebFluxContext {
 
     private final ServerWebExchange exchange;
 
 
-    public SpringWebReactiveExpressionContext(
+    public SpringWebFluxExpressionContext(
             final IEngineConfiguration configuration, final ServerWebExchange exchange) {
         super(configuration);
         this.exchange = exchange;
     }
 
-    public SpringWebReactiveExpressionContext(
+    public SpringWebFluxExpressionContext(
             final IEngineConfiguration configuration, final ServerWebExchange exchange, final Locale locale) {
         super(configuration, locale);
         this.exchange = exchange;
     }
 
-    public SpringWebReactiveExpressionContext(
+    public SpringWebFluxExpressionContext(
             final IEngineConfiguration configuration,
             final ServerWebExchange exchange,
             final Locale locale, final Map<String, Object> variables) {

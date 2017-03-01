@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring5.context.reactive;
+package org.thymeleaf.spring5.context.webflux;
 
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -36,18 +36,18 @@ import reactor.core.publisher.Mono;
  *   artifacts needed to perform functions such as URL rewriting or request/session access.
  * </p>
  * <p>
- *   A basic implementation of this interface is provided by {@link SpringWebReactiveExpressionContext}, but
+ *   A basic implementation of this interface is provided by {@link SpringWebFluxExpressionContext}, but
  *   there is normally no reason why users should use this interface (or its implementations) directly.
  * </p>
  *
- * @see SpringWebReactiveExpressionContext
+ * @see SpringWebFluxExpressionContext
  *
  * @author Daniel Fern&aacute;ndez
  *
  * @since 3.0.3
  *
  */
-public interface ISpringWebReactiveContext extends IContext {
+public interface ISpringWebFluxContext extends IContext {
 
     /**
      * <p>

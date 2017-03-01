@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring5.context.reactive;
+package org.thymeleaf.spring5.context.webflux;
 
 import java.beans.PropertyEditor;
 
@@ -39,12 +39,12 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.3
  *
  */
-class SpringWebReactiveThymeleafBindStatus implements IThymeleafBindStatus {
+class SpringWebFluxThymeleafBindStatus implements IThymeleafBindStatus {
 
     private final BindStatus bindStatus;
 
 
-    SpringWebReactiveThymeleafBindStatus(final BindStatus bindStatus) {
+    SpringWebFluxThymeleafBindStatus(final BindStatus bindStatus) {
         super();
         Validate.notNull(bindStatus, "BindStatus cannot be null");
         this.bindStatus = bindStatus;

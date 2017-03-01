@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring5.context.reactive;
+package org.thymeleaf.spring5.context.webflux;
 
 import org.reactivestreams.Publisher;
 import org.springframework.core.ReactiveAdapter;

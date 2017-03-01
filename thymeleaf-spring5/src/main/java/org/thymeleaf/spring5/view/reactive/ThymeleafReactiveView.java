@@ -50,10 +50,11 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.ISpringWebReactiveTemplateEngine;
-import org.thymeleaf.spring5.context.reactive.ReactiveDataDriverContextVariable;
-import org.thymeleaf.spring5.context.reactive.ReactiveLazyContextVariable;
-import org.thymeleaf.spring5.context.reactive.SpringWebReactiveExpressionContext;
-import org.thymeleaf.spring5.context.reactive.SpringWebReactiveThymeleafRequestContext;
+import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
+import org.thymeleaf.spring5.context.webflux.ReactiveLazyContextVariable;
+import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
+import org.thymeleaf.spring5.context.webflux.SpringWebFluxExpressionContext;
+import org.thymeleaf.spring5.context.webflux.SpringWebFluxThymeleafRequestContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.FragmentExpression;
@@ -86,7 +87,7 @@ import reactor.core.publisher.Mono;
  * @see ThymeleafReactiveViewResolver
  * @see ISpringWebReactiveTemplateEngine
  * @see ReactiveDataDriverContextVariable
- * @see org.thymeleaf.spring5.context.reactive.IReactiveDataDriverContextVariable
+ * @see IReactiveDataDriverContextVariable
  *
  * @author Daniel Fern&aacute;ndez
  *
@@ -341,8 +342,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         // Initialize RequestContext (reactive version) and add it to the model as another attribute,
         // so that it can be retrieved from elsewhere.
         final RequestContext requestContext = new RequestContext(exchange, mergedModel, applicationContext);
-        final SpringWebReactiveThymeleafRequestContext thymeleafRequestContext =
-                new SpringWebReactiveThymeleafRequestContext(requestContext, exchange);
+        final SpringWebFluxThymeleafRequestContext thymeleafRequestContext =
+                new SpringWebFluxThymeleafRequestContext(requestContext, exchange);
 
         mergedModel.put(SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
         // Add the Thymeleaf RequestContext wrapper that we will be using in this dialect (the bare RequestContext
@@ -379,8 +380,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
          */
 
         final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
-        final SpringWebReactiveExpressionContext context =
-                new SpringWebReactiveExpressionContext(configuration, exchange, getLocale(), mergedModel);
+        final SpringWebFluxExpressionContext context =
+                new SpringWebFluxExpressionContext(configuration, exchange, getLocale(), mergedModel);
 
 
         /*

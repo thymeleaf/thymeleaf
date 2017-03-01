@@ -43,9 +43,9 @@ import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.engine.DataDrivenTemplateIterator;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.spring5.context.reactive.IReactiveDataDriverContextVariable;
-import org.thymeleaf.spring5.context.reactive.ISpringWebReactiveContext;
-import org.thymeleaf.spring5.context.reactive.SpringWebReactiveEngineContextFactory;
+import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
+import org.thymeleaf.spring5.context.webflux.ISpringWebFluxContext;
+import org.thymeleaf.spring5.context.webflux.SpringWebFluxEngineContextFactory;
 import org.thymeleaf.spring5.linkbuilder.reactive.SpringWebReactiveLinkBuilder;
 import org.thymeleaf.util.LoggingUtils;
 import reactor.core.publisher.Flux;
@@ -88,7 +88,7 @@ public class SpringWebReactiveTemplateEngine
         super();
         // In Spring WebFlux environments, we will need to use a special context factory in order to
         // use an environment-tailored implementation of IEngineContext.
-        this.setEngineContextFactory(new SpringWebReactiveEngineContextFactory());
+        this.setEngineContextFactory(new SpringWebFluxEngineContextFactory());
         // In Spring WebFlux environments, we will need to use a special link builder able to adapt
         // the creation of URLs as a result of @{...} expressions in a way that makes sense in this
         // environment.
@@ -550,10 +550,10 @@ public class SpringWebReactiveTemplateEngine
             return context;
         }
 
-        // Not an IEngineContext, but might still be an ISpringWebReactiveContext and we don't want to lose that info
-        if (context instanceof ISpringWebReactiveContext) {
+        // Not an IEngineContext, but might still be an ISpringWebFluxContext and we don't want to lose that info
+        if (context instanceof ISpringWebFluxContext) {
             return new DataDrivenSpringWebReactiveContextWrapper(
-                    (ISpringWebReactiveContext)context, dataDriverVariableName, dataDrivenTemplateIterator);
+                    (ISpringWebFluxContext)context, dataDriverVariableName, dataDrivenTemplateIterator);
         }
 
         // Not a recognized context interface: just use a default implementation
@@ -567,7 +567,7 @@ public class SpringWebReactiveTemplateEngine
 
     private static String findDataDriverInModel(final IContext context) {
 
-        // In SpringWebReactiveExpressionContext (used most of the times), variables are backed by a
+        // In SpringWebFluxExpressionContext (used most of the times), variables are backed by a
         // Map<String,Object>. So this iteration on all the names and many "getVariable()" calls
         // shouldn't be an issue perf-wise.
 
@@ -713,16 +713,16 @@ public class SpringWebReactiveTemplateEngine
 
 
     /*
-     * This wrapper of an ISpringWebReactiveContext is meant to wrap the original context object sent to the
+     * This wrapper of an ISpringWebFluxContext is meant to wrap the original context object sent to the
      * template engine while hiding the data driver variable, returning a DataDrivenTemplateIterator in its place.
      */
     static class DataDrivenSpringWebReactiveContextWrapper
-            extends DataDrivenContextWrapper implements ISpringWebReactiveContext {
+            extends DataDrivenContextWrapper implements ISpringWebFluxContext {
 
-        private final ISpringWebReactiveContext context;
+        private final ISpringWebFluxContext context;
 
         DataDrivenSpringWebReactiveContextWrapper(
-                final ISpringWebReactiveContext context, final String dataDriverVariableName,
+                final ISpringWebFluxContext context, final String dataDriverVariableName,
                 final DataDrivenTemplateIterator dataDrivenTemplateIterator) {
             super(context, dataDriverVariableName, dataDrivenTemplateIterator);
             this.context = context;

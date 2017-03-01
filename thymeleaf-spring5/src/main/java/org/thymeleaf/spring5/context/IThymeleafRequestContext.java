@@ -30,6 +30,7 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.ui.context.Theme;
 import org.springframework.validation.Errors;
+import org.thymeleaf.spring5.context.webflux.SpringWebFluxThymeleafRequestContext;
 
 /**
  * <p>
@@ -38,8 +39,8 @@ import org.springframework.validation.Errors;
  *   <tt>RequestContext</tt>.
  * </p>
  *
- * @see org.thymeleaf.spring5.context.mvc.SpringWebMvcThymeleafRequestContext
- * @see org.thymeleaf.spring5.context.reactive.SpringWebReactiveThymeleafRequestContext
+ * @see org.thymeleaf.spring5.context.webmvc.SpringWebMvcThymeleafRequestContext
+ * @see SpringWebFluxThymeleafRequestContext
  *
  * @author Daniel Fern&aacute;ndez
  *

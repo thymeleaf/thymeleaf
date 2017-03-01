@@ -399,7 +399,7 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
      *       this mechanism works single-threaded. This execution mode will also force the server to perform
      *       output flush operations after each chunk is sent from Thymeleaf.</li>
      *   <li><em>DATA-DRIVEN</em>, when a <em>data-driver</em> variable has been specified at the context
-     *       (implementing {@link org.thymeleaf.spring5.context.reactive.IReactiveDataDriverContextVariable}). This
+     *       (implementing {@link org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable}). This
      *       variable is expected to contain a <em>data stream</em> (usually in the shape of a
      *       {@link org.reactivestreams.Publisher} that Thymeleaf will consume, creating markup output as data
      *       is streamed from this <em>data-driver</em> and letting the output channels of the server throttle
@@ -444,7 +444,7 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
      *       this mechanism works single-threaded. This execution mode will also force the server to perform
      *       output flush operations after each chunk is sent from Thymeleaf.</li>
      *   <li><em>DATA-DRIVEN</em>, when a <em>data-driver</em> variable has been specified at the context
-     *       (implementing {@link org.thymeleaf.spring5.context.reactive.IReactiveDataDriverContextVariable}). This
+     *       (implementing {@link org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable}). This
      *       variable is expected to contain a <em>data stream</em> (usually in the shape of a
      *       {@link org.reactivestreams.Publisher} that Thymeleaf will consume, creating markup output as data
      *       is streamed from this <em>data-driver</em> and letting the output channels of the server throttle

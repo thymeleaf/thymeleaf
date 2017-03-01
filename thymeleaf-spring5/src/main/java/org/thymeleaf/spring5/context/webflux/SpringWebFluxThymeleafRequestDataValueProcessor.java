@@ -17,13 +17,13 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.spring5.context.mvc;
+package org.thymeleaf.spring5.context.webflux;
 
 import java.util.Map;
+import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.web.servlet.support.RequestDataValueProcessor;
+import org.springframework.web.reactive.result.view.RequestDataValueProcessor;
+import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.spring5.context.IThymeleafRequestDataValueProcessor;
 
 /**
@@ -39,18 +39,16 @@ import org.thymeleaf.spring5.context.IThymeleafRequestDataValueProcessor;
  * @since 3.0.3
  *
  */
-class SpringWebMvcThymeleafRequestDataValueProcessor implements IThymeleafRequestDataValueProcessor {
-
+class SpringWebFluxThymeleafRequestDataValueProcessor implements IThymeleafRequestDataValueProcessor {
 
     private final RequestDataValueProcessor requestDataValueProcessor;
-    private final HttpServletRequest httpServletRequest;
+    private final ServerWebExchange exchange;
 
-
-    SpringWebMvcThymeleafRequestDataValueProcessor(
-            final RequestDataValueProcessor requestDataValueProcessor, final HttpServletRequest httpServletRequest) {
+    SpringWebFluxThymeleafRequestDataValueProcessor(
+            final Optional<RequestDataValueProcessor> requestDataValueProcessor, final ServerWebExchange exchange) {
         super();
-        this.requestDataValueProcessor = requestDataValueProcessor;
-        this.httpServletRequest = httpServletRequest;
+        this.requestDataValueProcessor = requestDataValueProcessor.orElse(null);
+        this.exchange = exchange;
     }
 
     @Override
@@ -59,7 +57,7 @@ class SpringWebMvcThymeleafRequestDataValueProcessor implements IThymeleafReques
             // The presence of a Request Data Value Processor is optional
             return action;
         }
-        return this.requestDataValueProcessor.processAction(this.httpServletRequest, action, httpMethod);
+        return this.requestDataValueProcessor.processAction(this.exchange, action, httpMethod);
     }
 
     @Override
@@ -68,7 +66,7 @@ class SpringWebMvcThymeleafRequestDataValueProcessor implements IThymeleafReques
             // The presence of a Request Data Value Processor is optional
             return value;
         }
-        return this.requestDataValueProcessor.processFormFieldValue(this.httpServletRequest, name, value, type);
+        return this.requestDataValueProcessor.processFormFieldValue(this.exchange, name, value, type);
     }
 
     @Override
@@ -77,7 +75,7 @@ class SpringWebMvcThymeleafRequestDataValueProcessor implements IThymeleafReques
             // The presence of a Request Data Value Processor is optional
             return null;
         }
-        return this.requestDataValueProcessor.getExtraHiddenFields(this.httpServletRequest);
+        return this.requestDataValueProcessor.getExtraHiddenFields(this.exchange);
     }
 
     @Override
@@ -86,7 +84,7 @@ class SpringWebMvcThymeleafRequestDataValueProcessor implements IThymeleafReques
             // The presence of a Request Data Value Processor is optional
             return url;
         }
-        return this.requestDataValueProcessor.processUrl(this.httpServletRequest, url);
+        return this.requestDataValueProcessor.processUrl(this.exchange, url);
     }
 
 }

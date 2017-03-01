@@ -27,7 +27,7 @@ import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.linkbuilder.ILinkBuilder;
 import org.thymeleaf.linkbuilder.StandardLinkBuilder;
-import org.thymeleaf.spring5.context.reactive.ISpringWebReactiveContext;
+import org.thymeleaf.spring5.context.webflux.ISpringWebFluxContext;
 
 
 /**
@@ -64,7 +64,7 @@ public class SpringWebReactiveLinkBuilder extends StandardLinkBuilder {
      * </p>
      * <p>
      *   This method will obtain the context path from <tt>ServerHttpRequest.getContextPath()</tt>,
-     *   throwing an exception if <tt>context</tt> is not an instance of <tt>ISpringWebReactiveContext</tt> given
+     *   throwing an exception if <tt>context</tt> is not an instance of <tt>ISpringWebFluxContext</tt> given
      *   context-relative URLs are (by default) only allowed in Spring WebFlux contexts.
      * </p>
      * <p>
@@ -80,14 +80,14 @@ public class SpringWebReactiveLinkBuilder extends StandardLinkBuilder {
     protected String computeContextPath(
             final IExpressionContext context, final String base, final Map<String, Object> parameters) {
 
-        if (!(context instanceof ISpringWebReactiveContext)) {
+        if (!(context instanceof ISpringWebFluxContext)) {
             throw new TemplateProcessingException(
                     "Link base \"" + base + "\" cannot be context relative (/...) unless the context " +
-                    "used for executing the engine implements the " + ISpringWebReactiveContext.class.getName() + " interface");
+                    "used for executing the engine implements the " + ISpringWebFluxContext.class.getName() + " interface");
         }
 
         // If it is context-relative, it has to be a Spring WebFlux-based context
-        final ServerHttpRequest request = ((ISpringWebReactiveContext)context).getRequest();
+        final ServerHttpRequest request = ((ISpringWebFluxContext)context).getRequest();
         return request.getContextPath();
 
     }
@@ -108,11 +108,11 @@ public class SpringWebReactiveLinkBuilder extends StandardLinkBuilder {
     @Override
     protected String processLink(final IExpressionContext context, final String link) {
 
-        if (!(context instanceof ISpringWebReactiveContext)) {
+        if (!(context instanceof ISpringWebFluxContext)) {
             return link;
         }
 
-        final ServerHttpResponse response = ((ISpringWebReactiveContext)context).getResponse();
+        final ServerHttpResponse response = ((ISpringWebFluxContext)context).getResponse();
         return response.encodeUrl(link);
 
     }

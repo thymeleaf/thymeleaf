@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring5.context.reactive;
+package org.thymeleaf.spring5.context.webflux;
 
 import java.util.AbstractList;
 import java.util.Collection;
@@ -64,8 +64,8 @@ import reactor.core.publisher.Mono;
  * @since 3.0.3
  *
  */
-public class SpringWebReactiveEngineContext
-        extends AbstractEngineContext implements IEngineContext, ISpringWebReactiveContext {
+public class SpringWebFluxEngineContext
+        extends AbstractEngineContext implements IEngineContext, ISpringWebFluxContext {
 
 
     private static final String PARAM_VARIABLE_NAME = "param";
@@ -102,7 +102,7 @@ public class SpringWebReactiveEngineContext
      * @param locale the locale.
      * @param variables the context variables, probably coming from another {@link IContext} implementation.
      */
-    public SpringWebReactiveEngineContext(
+    public SpringWebFluxEngineContext(
             final IEngineConfiguration configuration,
             final TemplateData templateData,
             final Map<String,Object> templateResolutionAttributes,
