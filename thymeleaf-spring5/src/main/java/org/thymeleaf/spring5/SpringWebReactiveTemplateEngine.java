@@ -59,7 +59,7 @@ import static org.thymeleaf.spring5.SpringWebReactiveTemplateEngine.DataDrivenFl
 /**
  * <p>
  *   Standard implementation of {@link ISpringWebReactiveTemplateEngine}, and default
- *   template engine implementation to be used in Spring Web Reactive environments.
+ *   template engine implementation to be used in Spring Webflux environments.
  * </p>
  *
  * @see ISpringWebReactiveTemplateEngine
@@ -86,10 +86,10 @@ public class SpringWebReactiveTemplateEngine
     public SpringWebReactiveTemplateEngine() {
 
         super();
-        // In Spring Web Reactive environments, we will need to use a special context factory in order to
+        // In Spring Webflux environments, we will need to use a special context factory in order to
         // use an environment-tailored implementation of IEngineContext.
         this.setEngineContextFactory(new SpringWebReactiveEngineContextFactory());
-        // In Spring Web Reactive environments, we will need to use a special link builder able to adapt
+        // In Spring Webflux environments, we will need to use a special link builder able to adapt
         // the creation of URLs as a result of @{...} expressions in a way that makes sense in this
         // environment.
         this.setLinkBuilder(new SpringWebReactiveLinkBuilder());

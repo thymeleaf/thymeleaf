@@ -51,7 +51,7 @@ import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
  * <p>
- *   Base implementation of the Spring Web MVC {@link org.springframework.web.servlet.View}
+ *   Base implementation of the Spring WebMVC {@link org.springframework.web.servlet.View}
  *   interface.
  * </p>
  * <p>

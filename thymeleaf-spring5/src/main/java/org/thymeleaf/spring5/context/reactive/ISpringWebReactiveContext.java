@@ -29,10 +29,10 @@ import reactor.core.publisher.Mono;
 /**
  * <p>
  *   Specialization of the {@link IContext} interface to be implemented by contexts used for template
- *   processing in Spring Web Reactive environments.
+ *   processing in Spring Webflux environments.
  * </p>
  * <p>
- *   Objects implementing this interface add to the usual {@link IContext} data the Spring Web Reactive-related
+ *   Objects implementing this interface add to the usual {@link IContext} data the Spring Webflux-related
  *   artifacts needed to perform functions such as URL rewriting or request/session access.
  * </p>
  * <p>

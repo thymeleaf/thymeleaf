@@ -82,7 +82,7 @@ public class SpringContextUtils {
      * </p>
      * <p>
      *   The returned object is a wrapper on the Spring request context that hides the fact of this request
-     *   context corresponding to a Spring Web MVC or Spring Web Reactive application.
+     *   context corresponding to a Spring WebMVC or Spring Webflux application.
      * </p>
      * <p>
      *   This will be done by looking for a context variable called

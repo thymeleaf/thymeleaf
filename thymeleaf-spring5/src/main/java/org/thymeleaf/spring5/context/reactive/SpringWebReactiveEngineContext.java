@@ -47,11 +47,11 @@ import reactor.core.publisher.Mono;
 
 /**
  * <p>
- *   Basic <b>web</b> implementation of the {@link IEngineContext} interface, based on the Spring Web Reactive
+ *   Basic <b>web</b> implementation of the {@link IEngineContext} interface, based on the Spring Webflux
  *   infrastructure.
  * </p>
  * <p>
- *   This is the context implementation that will be used by default for template processing in Spring Web Reactive
+ *   This is the context implementation that will be used by default for template processing in Spring Webflux
  *   environments. Note that <b>this is an internal implementation, and there is no reason for users' code to
  *   directly reference or use it instead of its implemented interfaces</b>.
  * </p>
@@ -484,7 +484,7 @@ public class SpringWebReactiveEngineContext
 
 
     /*
-     * The variables map used for integration with Spring Web Reactive's ServerWebExchange uses
+     * The variables map used for integration with Spring Webflux's ServerWebExchange uses
      * the attributes stored in this ServerWebExchange as a default, so that if a variable is not
      * found in the maps managed by the extended EngineContext (which is where it would be if
      * we had set it from the model or the template itself), the ServerWebExchange attributes will

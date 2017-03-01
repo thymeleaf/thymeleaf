@@ -66,7 +66,7 @@ import reactor.core.publisher.Mono;
 
 /**
  * <p>
- *   Base implementation of the Spring Web Reactive {@link org.springframework.web.reactive.result.view.View}
+ *   Base implementation of the Spring Webflux {@link org.springframework.web.reactive.result.view.View}
  *   interface.
  * </p>
  * <p>

@@ -61,7 +61,7 @@ public class SpringWebMvcThymeleafRequestContext implements IThymeleafRequestCon
     public SpringWebMvcThymeleafRequestContext(
             final RequestContext requestContext, final HttpServletRequest httpServletRequest) {
         super();
-        Validate.notNull(requestContext, "Spring Web MVC RequestContext cannot be null");
+        Validate.notNull(requestContext, "Spring WebMVC RequestContext cannot be null");
         Validate.notNull(httpServletRequest, "HttpServletRequest cannot be null");
         this.requestContext = requestContext;
         this.httpServletRequest = httpServletRequest;

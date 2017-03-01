@@ -61,7 +61,7 @@ public class SpringWebReactiveThymeleafRequestContext implements IThymeleafReque
     public SpringWebReactiveThymeleafRequestContext(
             final RequestContext requestContext, final ServerWebExchange serverWebExchange) {
         super();
-        Validate.notNull(requestContext, "Spring Web Reactive RequestContext cannot be null");
+        Validate.notNull(requestContext, "Spring Webflux RequestContext cannot be null");
         Validate.notNull(serverWebExchange, "Server Web Exchange cannot be null");
         this.requestContext = requestContext;
         this.serverWebExchange = serverWebExchange;
@@ -208,7 +208,7 @@ public class SpringWebReactiveThymeleafRequestContext implements IThymeleafReque
 
     @Override
     public Theme getTheme() {
-        throw new TemplateProcessingException("Themes are not supported in Spring Web Reactive");
+        throw new TemplateProcessingException("Themes are not supported in Thymeleaf's Spring Webflux integration");
     }
 
 
