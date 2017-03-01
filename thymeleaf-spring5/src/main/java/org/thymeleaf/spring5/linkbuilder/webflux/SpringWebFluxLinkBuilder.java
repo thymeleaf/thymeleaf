@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.spring5.linkbuilder.reactive;
+package org.thymeleaf.spring5.linkbuilder.webflux;
 
 import java.util.Map;
 
@@ -47,11 +47,11 @@ import org.thymeleaf.spring5.context.webflux.ISpringWebFluxContext;
  *
  * @since 3.0.3
  */
-public class SpringWebReactiveLinkBuilder extends StandardLinkBuilder {
+public class SpringWebFluxLinkBuilder extends StandardLinkBuilder {
 
 
 
-    public SpringWebReactiveLinkBuilder() {
+    public SpringWebFluxLinkBuilder() {
         super();
     }
 

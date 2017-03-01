@@ -46,7 +46,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.ISpringWebFluxContext;
 import org.thymeleaf.spring5.context.webflux.SpringWebFluxEngineContextFactory;
-import org.thymeleaf.spring5.linkbuilder.reactive.SpringWebReactiveLinkBuilder;
+import org.thymeleaf.spring5.linkbuilder.webflux.SpringWebFluxLinkBuilder;
 import org.thymeleaf.util.LoggingUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -92,7 +92,7 @@ public class SpringWebReactiveTemplateEngine
         // In Spring WebFlux environments, we will need to use a special link builder able to adapt
         // the creation of URLs as a result of @{...} expressions in a way that makes sense in this
         // environment.
-        this.setLinkBuilder(new SpringWebReactiveLinkBuilder());
+        this.setLinkBuilder(new SpringWebFluxLinkBuilder());
 
     }
 
