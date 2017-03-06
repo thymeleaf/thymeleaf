@@ -314,12 +314,16 @@ final class ThrottledTemplateWriterWriterAdapter
 
     @Override
     public void flush() throws IOException {
+        // No need to control overflow here. The fact that this has overflow will be used as a flag to determine
+        // that further write operations are actually needed by means of the isOverflown() method.
         this.writer.flush();
     }
 
 
     @Override
     public void close() throws IOException {
+        // This will normally be NEVER called, as Thymeleaf will not call close() on its Writers/OutputStreams
+        // (only flush() is guaranteed to be called at the end).
         this.writer.close();
     }
 
