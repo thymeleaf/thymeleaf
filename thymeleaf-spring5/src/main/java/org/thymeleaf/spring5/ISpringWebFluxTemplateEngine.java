@@ -28,6 +28,7 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
+import org.springframework.http.MediaType;
 import org.thymeleaf.context.IContext;
 
 
@@ -89,11 +90,11 @@ public interface ISpringWebFluxTemplateEngine extends ISpringTemplateEngine {
 
     public Publisher<DataBuffer> processStream(
             final String template, final Set<String> markupSelectors, final IContext context,
-            final DataBufferFactory bufferFactory, final Charset charset);
+            final DataBufferFactory bufferFactory, final MediaType mediaType, final Charset charset);
 
     public Publisher<DataBuffer> processStream(
             final String template, final Set<String> markupSelectors, final IContext context,
-            final DataBufferFactory bufferFactory, final Charset charset, final int responseMaxChunkSizeBytes);
+            final DataBufferFactory bufferFactory, final MediaType mediaType, final Charset charset, final int responseMaxChunkSizeBytes);
 
 
 }

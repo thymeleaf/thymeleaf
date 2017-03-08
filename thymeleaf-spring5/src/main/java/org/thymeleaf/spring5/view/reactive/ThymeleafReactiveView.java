@@ -50,9 +50,9 @@ import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
+import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.ReactiveLazyContextVariable;
-import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.SpringWebFluxExpressionContext;
 import org.thymeleaf.spring5.context.webflux.SpringWebFluxThymeleafRequestContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
@@ -518,7 +518,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
         final Publisher<DataBuffer> stream =
                 viewTemplateEngine.processStream(
-                        templateName, processMarkupSelectors, context, response.bufferFactory(), charset,
+                        templateName, processMarkupSelectors, context, response.bufferFactory(), contentType, charset,
                         templateResponseMaxChunkSizeBytes); // FULL/DATADRIVEN if MAX_VALUE, CHUNKED/DATADRIVEN if other
 
         if (templateResponseMaxChunkSizeBytes == Integer.MAX_VALUE) {

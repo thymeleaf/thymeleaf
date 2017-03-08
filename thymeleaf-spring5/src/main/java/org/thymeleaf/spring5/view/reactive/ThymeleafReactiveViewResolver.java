@@ -412,6 +412,10 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
      *   If this property is set to <tt>-1</tt> or <tt>Integer.MAX_VALUE</tt>, no size limit will be used. Note also
      *   that there is no limit set by default.
      * </p>
+     * <p>
+     *   Also note that this parameter will be ignored when returning SSE (Server-Sent Events), as buffer size in such
+     *   case will adapt to the size of each returned element (plus its SSE metadata).
+     * </p>
      *
      * @param responseMaxChunkSizeBytes the maximum size in bytes for output chunks
      *                                  ({@link org.springframework.core.io.buffer.DataBuffer} objects), or
@@ -456,6 +460,10 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
      * <p>
      *   If this property is set to <tt>-1</tt> or <tt>Integer.MAX_VALUE</tt>, no size limit will be used. Note also
      *   that there is no limit set by default.
+     * </p>
+     * <p>
+     *   Also note that this parameter will be ignored when returning SSE (Server-Sent Events), as buffer size in such
+     *   case will adapt to the size of each returned element (plus its SSE metadata).
      * </p>
      *
      * @return the maximum size in bytes for output chunks

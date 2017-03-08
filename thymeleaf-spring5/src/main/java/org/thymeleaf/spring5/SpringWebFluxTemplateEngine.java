@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
+import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ServerWebExchange;
@@ -48,6 +49,7 @@ import org.thymeleaf.spring5.context.webflux.ISpringWebFluxContext;
 import org.thymeleaf.spring5.context.webflux.SpringWebFluxEngineContextFactory;
 import org.thymeleaf.spring5.linkbuilder.webflux.SpringWebFluxLinkBuilder;
 import org.thymeleaf.util.LoggingUtils;
+import org.thymeleaf.util.SSEOutputStream;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -102,15 +104,16 @@ public class SpringWebFluxTemplateEngine
     @Override
     public Publisher<DataBuffer> processStream(
             final String template, final Set<String> markupSelectors, final IContext context,
-            final DataBufferFactory bufferFactory, final Charset charset) {
-        return processStream(template, markupSelectors, context, bufferFactory, charset, Integer.MAX_VALUE);
+            final DataBufferFactory bufferFactory, final MediaType mediaType, final Charset charset) {
+        return processStream(template, markupSelectors, context, bufferFactory, mediaType, charset, Integer.MAX_VALUE);
     }
 
 
     @Override
     public Publisher<DataBuffer> processStream(
             final String template, final Set<String> markupSelectors, final IContext context,
-            final DataBufferFactory bufferFactory, final Charset charset, final int responseMaxChunkSizeBytes) {
+            final DataBufferFactory bufferFactory, final MediaType mediaType, final Charset charset,
+            final int responseMaxChunkSizeBytes) {
 
         /*
          * PERFORM VALIDATIONS
@@ -124,6 +127,9 @@ public class SpringWebFluxTemplateEngine
         if (bufferFactory == null) {
             return Flux.error(new IllegalArgumentException("Buffer Factory cannot be null"));
         }
+        if (mediaType == null) {
+            return Flux.error(new IllegalArgumentException("Media Type cannot be null"));
+        }
         if (charset == null) {
             return Flux.error(new IllegalArgumentException("Charset cannot be null"));
         }
@@ -135,6 +141,9 @@ public class SpringWebFluxTemplateEngine
         // Normalize the chunk size in bytes (MAX_VALUE == no limit)
         final int chunkSizeBytes = (responseMaxChunkSizeBytes < 0? Integer.MAX_VALUE : responseMaxChunkSizeBytes);
 
+        // Determine whether we have been asked to return data as SSE (Server-Sent Events)
+        final boolean sse =  MediaType.TEXT_EVENT_STREAM.includes(mediaType);
+
         /*
          * CHECK FOR DATA-DRIVEN EXECUTION
          */
@@ -143,10 +152,18 @@ public class SpringWebFluxTemplateEngine
             if (dataDriverVariableName != null) {
                 // We should be executing in data-driven mode
                 return createDataDrivenStream(
-                        template, markupSelectors, context, dataDriverVariableName, bufferFactory, charset, chunkSizeBytes);
+                        template, markupSelectors, context, dataDriverVariableName, bufferFactory, charset, chunkSizeBytes, sse);
             }
         } catch (final Throwable t) {
             return Flux.error(t);
+        }
+
+        // Check if we need to fail here: If SSE has been requested, a data-driver variable is mandatory
+        if (sse) {
+            return Flux.error(new TemplateProcessingException(
+                    "SSE mode has been requested ('Accept: text/event-stream') but no data-driver variable has been " +
+                    "added to the model/context. In order to perform SSE rendering, a variable implementing the " +
+                    IReactiveDataDriverContextVariable.class.getName() + " interface is required."));
         }
 
         /*
@@ -306,11 +323,12 @@ public class SpringWebFluxTemplateEngine
     private Flux<DataBuffer> createDataDrivenStream(
             final String templateName, final Set<String> markupSelectors, final IContext context,
             final String dataDriverVariableName, final DataBufferFactory bufferFactory, final Charset charset,
-            final int responseMaxChunkSizeBytes) {
+            final int responseMaxChunkSizeBytes, final boolean sse) {
 
         // STEP 1: Obtain the data-driver variable
         final IReactiveDataDriverContextVariable dataDriver =
                 (IReactiveDataDriverContextVariable) context.getVariable(dataDriverVariableName);
+        final int bufferSizeElements = dataDriver.getBufferSizeElements();
 
 
         // STEP 2: Replace the data driver variable with a DataDrivenTemplateIterator
@@ -321,7 +339,7 @@ public class SpringWebFluxTemplateEngine
         // STEP 3: Create the data stream buffers, plus add some logging in order to know how the stream is being used
         final Flux<List<Object>> dataDrivenBufferedStream =
                 Flux.from(dataDriver.getDataStream())
-                        .buffer(dataDriver.getBufferSizeElements())
+                        .buffer(bufferSizeElements)
                         .log(LOG_CATEGORY_DATADRIVEN_INPUT, Level.FINEST);
 
 
@@ -367,7 +385,16 @@ public class SpringWebFluxTemplateEngine
                                     return DATA_DRIVEN_PHASE_BUFFER;
 
                                 case DATA_DRIVEN_PHASE_BUFFER:
-                                    emitter.next(dataDrivenBufferedStream.map(values -> DataDrivenFluxStep.forBuffer(throttledProcessor, values)));
+                                    if (!sse || bufferSizeElements == 1) {
+                                        // Not doing SSE, or doing SSE with buffer size = 1, so we just create
+                                        // one step per list of values
+                                        emitter.next(dataDrivenBufferedStream.map(values -> DataDrivenFluxStep.forBuffer(throttledProcessor, values)));
+                                    } else {
+                                        // Doing SSE with buffer size > 1. We will need to partition our buffers
+                                        // because SSE requires one output buffer per element (incl. some metadata)
+                                        emitter.next(dataDrivenBufferedStream.concatMap(
+                                                values -> Flux.fromIterable(values).map(value -> DataDrivenFluxStep.forBuffer(throttledProcessor, Collections.singletonList(value)))));
+                                    }
                                     return DATA_DRIVEN_PHASE_TAIL;
 
                                 case DATA_DRIVEN_PHASE_TAIL:
@@ -450,15 +477,35 @@ public class SpringWebFluxTemplateEngine
                                                 LoggingUtils.loggifyTemplateName(templateName), context.getLocale()});
                             }
 
+                            // If we are doing SSE, buffer size limit will not be applied. Each buffer will contain one
+                            // element plus its corresponding SSE metadata.
+                            final int chunkSizeBytes = (sse? Integer.MAX_VALUE : responseMaxChunkSizeBytes);
+
                             final DataBuffer buffer =
-                                    (responseMaxChunkSizeBytes != Integer.MAX_VALUE ?
-                                            bufferFactory.allocateBuffer(responseMaxChunkSizeBytes) :
+                                    (chunkSizeBytes != Integer.MAX_VALUE ?
+                                            bufferFactory.allocateBuffer(chunkSizeBytes) :
                                             bufferFactory.allocateBuffer());
 
                             final int bytesProduced;
                             try {
+
+                                OutputStream outputStream = buffer.asOutputStream();
+
+                                // If SSE, create the output stream that will add the metadata and start the event
+                                if (sse) {
+                                    outputStream = new SSEOutputStream(outputStream, charset);
+                                    final String eventType = step.isHead()? "head" : step.isTail()? "tail" : "data";
+                                    ((SSEOutputStream)outputStream).startEvent(null, eventType);
+                                }
+
                                 bytesProduced =
-                                        throttledProcessor.process(responseMaxChunkSizeBytes, buffer.asOutputStream(), charset);
+                                        throttledProcessor.process(chunkSizeBytes, outputStream, charset);
+
+                                // If SSE, finish the event properly
+                                if (sse) {
+                                    ((SSEOutputStream)outputStream).endEvent();
+                                }
+
                             } catch (final Throwable t) {
                                 emitter.error(t);
                                 return Boolean.FALSE;
@@ -475,7 +522,12 @@ public class SpringWebFluxTemplateEngine
                             }
 
                             // Buffer created, send it to the output channels
-                            emitter.next(buffer);
+                            if (sse && bytesProduced == 0) {
+                                // This avoids sending empty events to the client
+                                emitter.next(bufferFactory.allocateBuffer(0));
+                            } else {
+                                emitter.next(buffer);
+                            }
 
                             // Now it's time to determine if we should execute another time for the same
                             // data-driven step or rather we should consider we have done everything possible
