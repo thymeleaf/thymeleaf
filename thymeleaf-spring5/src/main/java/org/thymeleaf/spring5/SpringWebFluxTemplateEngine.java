@@ -558,7 +558,8 @@ public class SpringWebFluxTemplateEngine
 
                                     // We know everything before the data driven iteration has already been
                                     // processed because the iterator has been used at least once (i.e. its
-                                    // 'hasNext()' or 'next()' method have been called at least once).
+                                    // 'hasNext()' or 'next()' method have been called at least once). This will
+                                    // mean we can switch to the buffer phase.
                                     emitter.complete();
 
                                 } else if (step.isDataBuffer() && !dataDrivenIterator.continueBufferExecution()) {
