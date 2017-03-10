@@ -24,8 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.thymeleaf.engine.IteratedGatheringModelProcessable.IterationType;
-
 /**
  * <p>
  *   Throttled implementation of {@link Iterator}, meant to be queried in scenarios when an iterated
@@ -50,26 +48,23 @@ import org.thymeleaf.engine.IteratedGatheringModelProcessable.IterationType;
 public final class DataDrivenTemplateIterator implements Iterator<Object> {
 
     private final List<Object> values;
-    private IterationType iterationType;
     private boolean feedingComplete;
     private boolean queried;
 
 
     public DataDrivenTemplateIterator() {
+
         super();
         this.values = new ArrayList<Object>(10);
-        this.iterationType = null;
         this.feedingComplete = false;
         this.queried = false;
+
     }
 
 
     @Override
     public boolean hasNext() {
         this.queried = true;
-        if (this.iterationType == null) {
-            throw new IllegalStateException("hasNext(): Throttled iterator has not yet computed the iteration type");
-        }
         return !this.values.isEmpty();
     }
 
@@ -78,10 +73,6 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
     public Object next() {
 
         this.queried = true;
-
-        if (this.iterationType == null) {
-            throw new IllegalStateException("next(): Throttled iterator has not yet computed the iteration type");
-        }
 
         if (this.values.isEmpty()) {
             throw new NoSuchElementException();
@@ -101,7 +92,7 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
      * </p>
      * <p>
      *   This indicates if the template has actually reached a point at which this iterator has been already
-     *   needed or not.
+     *   needed or not. The typical use of this is to be able to switch between the "head" and the "data/buffer" phase.
      * </p>
      *
      * @return <tt>true</tt> if this iterator has been queried, <tt>false</tt> if not.
@@ -119,43 +110,24 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
     }
 
 
-    IterationType getIterationType() {
-        return this.iterationType;
-    }
-
 
     boolean isPaused() {
         this.queried = true;
-        if (this.iterationType != null) {
-            if (!this.values.isEmpty() || this.feedingComplete) {
-                return false;
-            }
-        }
-        return true;
+        return this.values.isEmpty() && !this.feedingComplete;
     }
 
 
     public boolean continueBufferExecution() {
-        return this.iterationType != null && !this.values.isEmpty();
+        return !this.values.isEmpty();
     }
 
 
     public void feedBuffer(final List<Object> newElements) {
         this.values.addAll(newElements);
-        if (this.iterationType == null && this.values.size() >= 2) {
-            this.iterationType = IterationType.MULTIPLE;
-        }
     }
 
     public void feedingComplete() {
         this.feedingComplete = true;
-        if (this.iterationType == null) {
-            if (this.values.isEmpty()) {
-                this.iterationType = IterationType.ZERO;
-            } else {
-                this.iterationType = IterationType.ONE;
-            }
-        }
     }
 
 
