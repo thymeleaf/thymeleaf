@@ -79,7 +79,7 @@ import reactor.core.publisher.Mono;
  * </p>
  * <p>
  *   This view needs a {@link ISpringWebFluxTemplateEngine} for execution, and it will call its
- *   {@link ISpringWebFluxTemplateEngine#processStream(String, Set, IContext, DataBufferFactory, Charset, int)}
+ *   {@link ISpringWebFluxTemplateEngine#processStream(String, Set, IContext, DataBufferFactory, MediaType, Charset, int)}
  *   method to create the reactive data streams to be used for processing the template. See the documentation
  *   of this class to know more about the different operation modes available.
  * </p>
