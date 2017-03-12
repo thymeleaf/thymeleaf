@@ -61,7 +61,6 @@ public final class SSEOutputStream extends OutputStream {
     private final static byte[] SSE_DATA_PREFIX_UTF_8 = SSE_DATA_PREFIX.getBytes(CHARSET_UTF_8);
     private final static byte[] SSE_DATA_PREFIX_ISO_8859_1 = SSE_DATA_PREFIX.getBytes(CHARSET_ISO_8859_1);
 
-    private final OutputStream outputStream;
     private final Charset charset;
 
     // We will use these in order to avoid creating these prefixes byte[]'s once and again for the most common encodings
@@ -69,20 +68,24 @@ public final class SSEOutputStream extends OutputStream {
     private final byte[] sse_event_prefix;
     private final byte[] sse_data_prefix;
 
+    // The output stream we are writing to can actually be switched for a different one, as the same SSE event
+    // can be output to more than one output buffer (if the max size of the buffer is not large enough to accomodate
+    // the event.
+    private OutputStream outputStream = null;
+
+    private String id = null;
+    private String event = null;
+
     private boolean eventHasMeta = false;
     private boolean newEvent = true;
 
 
 
-    public SSEOutputStream(final OutputStream outputStream, final Charset charset) {
+    public SSEOutputStream(final Charset charset) {
         super();
-        if (outputStream == null) {
-            throw new IllegalArgumentException("OutputStream cannot be null");
-        }
         if (charset == null) {
             throw new IllegalArgumentException("Charset cannot be null");
         }
-        this.outputStream = outputStream;
         this.charset = charset;
         if (this.charset.equals(CHARSET_UTF_8)) {
             this.sse_id_prefix = SSE_ID_PREFIX_UTF_8;
@@ -110,29 +113,43 @@ public final class SSEOutputStream extends OutputStream {
     }
 
 
-    public void startEvent(final String id, final String event) throws IOException {
+    public void setBufferOutputStream(final OutputStream outputStream) {
+        if (outputStream == null) {
+            throw new IllegalArgumentException("OutputStream cannot be null");
+        }
+        this.outputStream = outputStream;
+    }
+
+
+    public void startEvent(final String id, final String event) {
+        this.newEvent = true;
+        this.id = id;
+        this.event = event;
+    }
+
+
+    private void doStartEvent() throws IOException {
         this.eventHasMeta = false;
-        if (id != null) {
+        if (this.id != null) {
             // Write the "id" field
-            if (id.indexOf('\n') != -1) {
+            if (this.id.indexOf('\n') != -1) {
                 throw new IllegalArgumentException("ID for SSE event cannot contain a newline (\\n) character");
             }
             this.outputStream.write(this.sse_id_prefix);
-            this.outputStream.write(id.getBytes(this.charset));
+            this.outputStream.write(this.id.getBytes(this.charset));
             this.outputStream.write(0xA);
             this.eventHasMeta = true;
         }
-        if (event != null) {
+        if (this.event != null) {
             // Write the "event" field
-            if (event.indexOf('\n') != -1) {
+            if (this.event.indexOf('\n') != -1) {
                 throw new IllegalArgumentException("Event for SSE event cannot contain a newline (\\n) character");
             }
             this.outputStream.write(this.sse_event_prefix);
-            this.outputStream.write(event.getBytes(this.charset));
+            this.outputStream.write(this.event.getBytes(this.charset));
             this.outputStream.write(0xA);
             this.eventHasMeta = true;
         }
-        this.newEvent = true;
     }
 
 
@@ -151,6 +168,7 @@ public final class SSEOutputStream extends OutputStream {
     public void write(final int b) throws IOException {
 
         if (this.newEvent) {
+            doStartEvent();
             this.outputStream.write(this.sse_data_prefix);
             this.newEvent = false;
         }
@@ -177,6 +195,7 @@ public final class SSEOutputStream extends OutputStream {
         }
 
         if (this.newEvent) {
+            doStartEvent();
             this.outputStream.write(this.sse_data_prefix);
             this.newEvent = false;
         }
