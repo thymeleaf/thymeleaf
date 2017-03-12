@@ -462,6 +462,14 @@ public class SpringWebFluxTemplateEngine
                                     dataDrivenIterator.feedingComplete();
                                 }
 
+                                // If SSE, create the output stream that will add the metadata and start the event
+                                if (sse) {
+                                    final SSEOutputStream sseOutputStream = new SSEOutputStream(charset);
+                                    step.setSseOutputStream(sseOutputStream);
+                                    final String eventType = step.isHead()? "head" : step.isTail()? "tail" : "data";
+                                    sseOutputStream.startEvent(null, eventType);
+                                }
+
                             }
 
                             // Signal the start of a new chunk (we are counting them for the logs)
@@ -477,13 +485,9 @@ public class SpringWebFluxTemplateEngine
                                                 LoggingUtils.loggifyTemplateName(templateName), context.getLocale()});
                             }
 
-                            // If we are doing SSE, buffer size limit will not be applied. Each buffer will contain one
-                            // element plus its corresponding SSE metadata.
-                            final int chunkSizeBytes = (sse? Integer.MAX_VALUE : responseMaxChunkSizeBytes);
-
                             final DataBuffer buffer =
-                                    (chunkSizeBytes != Integer.MAX_VALUE ?
-                                            bufferFactory.allocateBuffer(chunkSizeBytes) :
+                                    (responseMaxChunkSizeBytes != Integer.MAX_VALUE ?
+                                            bufferFactory.allocateBuffer(responseMaxChunkSizeBytes) :
                                             bufferFactory.allocateBuffer());
 
                             final int bytesProduced;
@@ -491,25 +495,20 @@ public class SpringWebFluxTemplateEngine
 
                                 OutputStream outputStream = buffer.asOutputStream();
 
-                                // If SSE, create the output stream that will add the metadata and start the event
+                                // If SSE, wrap the output stream with the SSE output stream
                                 if (sse) {
-                                    outputStream = new SSEOutputStream(outputStream, charset);
-                                    final String eventType = step.isHead()? "head" : step.isTail()? "tail" : "data";
-                                    ((SSEOutputStream)outputStream).startEvent(null, eventType);
+                                    step.getSseOutputStream().setBufferOutputStream(outputStream);
+                                    outputStream = step.getSseOutputStream();
                                 }
 
                                 bytesProduced =
-                                        throttledProcessor.process(chunkSizeBytes, outputStream, charset);
-
-                                // If SSE, finish the event properly
-                                if (sse) {
-                                    ((SSEOutputStream)outputStream).endEvent();
-                                }
+                                        throttledProcessor.process(responseMaxChunkSizeBytes, outputStream, charset);
 
                             } catch (final Throwable t) {
                                 emitter.error(t);
                                 return Boolean.FALSE;
                             }
+
 
                             if (logger.isTraceEnabled()) {
                                 logger.trace(
@@ -521,18 +520,12 @@ public class SpringWebFluxTemplateEngine
                                                 LoggingUtils.loggifyTemplateName(templateName), context.getLocale(), Integer.valueOf(bytesProduced)});
                             }
 
-                            // Buffer created, send it to the output channels
-                            if (sse && bytesProduced == 0) {
-                                // This avoids sending empty events to the client
-                                emitter.next(bufferFactory.allocateBuffer(0));
-                            } else {
-                                emitter.next(buffer);
-                            }
 
                             // Now it's time to determine if we should execute another time for the same
                             // data-driven step or rather we should consider we have done everything possible
                             // for this step (e.g. produced all markup for a data stream buffer) and just
                             // emit "complete" and go for the next step.
+                            boolean stepFinished = false;
                             if (throttledProcessor.isFinished()) {
 
                                 if (logger.isTraceEnabled()) {
@@ -550,7 +543,7 @@ public class SpringWebFluxTemplateEngine
                                 // We have finished executing the template, which can happen after
                                 // finishing iterating all data driver values, or also if we are at the
                                 // first execution and there was no need to use the data driver at all
-                                emitter.complete();
+                                stepFinished = true;
 
                             } else {
 
@@ -560,18 +553,41 @@ public class SpringWebFluxTemplateEngine
                                     // processed because the iterator has been used at least once (i.e. its
                                     // 'hasNext()' or 'next()' method have been called at least once). This will
                                     // mean we can switch to the buffer phase.
-                                    emitter.complete();
+                                    stepFinished = true;
 
                                 } else if (step.isDataBuffer() && !dataDrivenIterator.continueBufferExecution()) {
+                                    // TODO continue means no items pending?
                                     // We have finished executing this buffer of items and we can go for the
                                     // next one or maybe the tail.
-                                    emitter.complete();
+                                    stepFinished = true;
                                 }
                                 // fluxStep.isTail(): nothing to do, as the only reason we would have to emit
                                 // 'complete' at the tail step would be throttledProcessor.isFinished(), which
                                 // has been already checked.
 
                             }
+
+
+                            // If SSE and step is finished, finish also the event properly
+                            if (sse && stepFinished) {
+                                try {
+                                    step.getSseOutputStream().endEvent();
+                                } catch (final Throwable t) {
+                                    emitter.error(t);
+                                    return Boolean.FALSE;
+                                }
+                            }
+
+
+                            // Buffer has now everything it should, so send it to the output channels
+                            emitter.next(buffer);
+
+
+                            // If step finished, we have ot emit 'complete' now
+                            if (stepFinished) {
+                                emitter.complete();
+                            }
+
 
                             return Boolean.FALSE;
 
@@ -719,6 +735,8 @@ public class SpringWebFluxTemplateEngine
         private final List<Object> values;
         private final FluxStepPhase phase;
 
+        private SSEOutputStream sseOutputStream = null;
+
 
         static DataDrivenFluxStep forHead(final CountingThrottledTemplateProcessor throttledProcessor) {
             return new DataDrivenFluxStep(throttledProcessor, null, DATA_DRIVEN_PHASE_HEAD);
@@ -761,6 +779,13 @@ public class SpringWebFluxTemplateEngine
             return this.phase == DATA_DRIVEN_PHASE_TAIL;
         }
 
+        public SSEOutputStream getSseOutputStream() {
+            return this.sseOutputStream;
+        }
+
+        public void setSseOutputStream(final SSEOutputStream sseOutputStream) {
+            this.sseOutputStream = sseOutputStream;
+        }
     }
 
 
