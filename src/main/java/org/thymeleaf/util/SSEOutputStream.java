@@ -88,20 +88,20 @@ public final class SSEOutputStream extends OutputStream {
         }
         this.charset = charset;
         if (this.charset.equals(CHARSET_UTF_8)) {
-            this.sse_id_prefix = SSE_ID_PREFIX_UTF_8;
-            this.sse_event_prefix = SSE_EVENT_PREFIX_UTF_8;
-            this.sse_data_prefix = SSE_DATA_PREFIX_UTF_8;
-        } else if (this.charset.equals(CHARSET_ISO_8859_1)) {
-            this.sse_id_prefix = SSE_ID_PREFIX_ISO_8859_1;
-            this.sse_event_prefix = SSE_EVENT_PREFIX_ISO_8859_1;
-            this.sse_data_prefix = SSE_DATA_PREFIX_ISO_8859_1;
-        } else {
-            final byte[] newline = "\n".getBytes(this.charset);
-            if (newline.length != 1 || newline[0] != 0xA) {
-                // We will base line-breaking in the appearance of line feeds as (char)10, so we cannot allow
-                // encodings in which line feed is signaled by more than one byte (UTF-16, UTF-16BE, UTF-16LE) or
-                // any others where the line feed character is not represented by byte 0xA.
-                throw new UnsupportedOperationException(
+                        this.sse_id_prefix = SSE_ID_PREFIX_UTF_8;
+                this.sse_event_prefix = SSE_EVENT_PREFIX_UTF_8;
+                this.sse_data_prefix = SSE_DATA_PREFIX_UTF_8;
+            } else if (this.charset.equals(CHARSET_ISO_8859_1)) {
+                this.sse_id_prefix = SSE_ID_PREFIX_ISO_8859_1;
+                this.sse_event_prefix = SSE_EVENT_PREFIX_ISO_8859_1;
+                this.sse_data_prefix = SSE_DATA_PREFIX_ISO_8859_1;
+            } else {
+                final byte[] newline = "\n".getBytes(this.charset);
+                if (newline.length != 1 || newline[0] != 0xA) {
+                    // We will base line-breaking in the appearance of line feeds as (char)10, so we cannot allow
+                    // encodings in which line feed is signaled by more than one byte (UTF-16, UTF-16BE, UTF-16LE) or
+                    // any others where the line feed character is not represented by byte 0xA.
+                    throw new UnsupportedOperationException(
                     "Encoding \"" + this.charset + "\" is not allowed for Server-Sent Events (SSE). Only encodings " +
                     "that encode the new line character U+000A as a single byte with value 10 can be used. " +
                     "Examples: UTF-8, ISO889-1, Shift-JIS, etc.");

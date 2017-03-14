@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.LoggingUtils;
 import org.thymeleaf.util.Validate;
@@ -63,12 +64,17 @@ import org.thymeleaf.util.Validate;
  */
 public final class TemplateSpec implements Serializable {
 
-    private static final long serialVersionUID = 81254123L;
+    private static final long serialVersionUID = 51214133L;
+
+    private static String CONTENT_TYPE_HTML = "text/html";
+    private static String CONTENT_TYPE_SSE = "text/event-stream";
+    private static String CONTENT_TYPE_DEFAULT = CONTENT_TYPE_HTML;
 
     private final String template;
     private final Set<String> templateSelectors;
     private final TemplateMode templateMode;
     private final Map<String,Object> templateResolutionAttributes;
+    private final String outputContentType;
 
 
     /**
@@ -93,7 +99,7 @@ public final class TemplateSpec implements Serializable {
      * @param templateMode the template mode to be forced, can be null.
      */
     public TemplateSpec(final String template, final TemplateMode templateMode) {
-        this(template, null, templateMode, null);
+        this(template, null, templateMode, null, null);
     }
 
 
@@ -126,13 +132,13 @@ public final class TemplateSpec implements Serializable {
      * @param templateResolutionAttributes the template resolution attributes, can be null.
      */
     public TemplateSpec(final String template, final Map<String, Object> templateResolutionAttributes) {
-        this(template, null, null, templateResolutionAttributes);
+        this(template, null, null, templateResolutionAttributes, null);
     }
 
 
     /**
      * <p>
-     *   Build a new object of this class, specifying all its attributes.
+     *   Build a new object of this class, specifying most of its attributes but not a content type.
      * </p>
      * <p>
      *   The <em>template</em> usually represents the <em>template name</em>, but can be the entire template
@@ -172,6 +178,64 @@ public final class TemplateSpec implements Serializable {
     public TemplateSpec(
             final String template, final Set<String> templateSelectors, final TemplateMode templateMode,
             final Map<String, Object> templateResolutionAttributes) {
+        this(template, templateSelectors, templateMode, templateResolutionAttributes, null);
+    }
+
+
+    /**
+     * <p>
+     *   Build a new object of this class, specifying all its attributes.
+     * </p>
+     * <p>
+     *   The <em>template</em> usually represents the <em>template name</em>, but can be the entire template
+     *   contents if the template is meant to be specified as a String and resolved by a
+     *   {@link org.thymeleaf.templateresolver.StringTemplateResolver}.
+     * </p>
+     * <p>
+     *   Template selectors allow the possibility to process only a part of the specified template, expressing
+     *   this selection in a syntax similar to jQuery, CSS or XPath selectors. Note this is only available for
+     *   <em>markup template modes</em> (<tt>HTML</tt>, <tt>XML</tt>). For more info on <em>template selectors</em>
+     *   syntax, have a look at <a href="http://www.attoparser.org">AttoParser</a>'s <em>markup selectors</em>
+     *   documentation.
+     * </p>
+     * <p>
+     *   The template mode only needs to be specified in cases when we want to <em>force</em> a template
+     *   mode to be used for a template, independently of the mode that is selected for it by the configured
+     *   template resolvers.
+     * </p>
+     * <p>
+     *   The template resolution attributes are meant to be passed to the template resolvers (see
+     *   {@link org.thymeleaf.templateresolver.ITemplateResolver} during template resolution, as a way
+     *   of configuring their execution for the template being processed.
+     * </p>
+     * <p>
+     *   Note that template resolution attributes are considered a part of the <em>identifier</em> of a template,
+     *   so they will be used as a part of the keys for cached templates. <strong>It is therefore
+     *   required that template attribute maps contain values with valid {@link #equals(Object)}
+     *   and {@link #hashCode()} implementations</strong>. Therefore, using simple (and fast)
+     *   <tt>Map&lt;String,String&gt;</tt> maps is the recommended option.
+     * </p>
+     * <p>
+     *   By default, content type is <tt>text/html</tt>. Note that only a few content types are actually supported
+     *   (e.g. <tt>text/html</tt>, <tt>text/event-stream</tt>). No parameters (after <tt>;</tt>, like <tt>charset</tt>)
+     *   are supported.
+     * </p>
+     * <p>
+     *   Content type <tt>text/event-stream</tt> is only supported in data-driven, <em>throttled</em> scenarios
+     *   (i.e. data-driven reactive-friendly executions).
+     * </p>
+     *
+     * @param template the template (usually the template name), required.
+     * @param templateSelectors the template selectors to be applied on the template.
+     * @param templateMode the template mode to be forced, can be null.
+     * @param templateResolutionAttributes the template resolution attributes, can be null.
+     * @param outputContentType the content type expected for output, without parameters.
+     *
+     * @since 3.0.4
+     */
+    public TemplateSpec(
+            final String template, final Set<String> templateSelectors, final TemplateMode templateMode,
+            final Map<String, Object> templateResolutionAttributes, final String outputContentType) {
 
         super();
 
@@ -198,6 +262,13 @@ public final class TemplateSpec implements Serializable {
         this.templateResolutionAttributes =
                 (templateResolutionAttributes != null && !templateResolutionAttributes.isEmpty()?
                         Collections.unmodifiableMap(new HashMap<String, Object>(templateResolutionAttributes)) : null);
+
+        this.outputContentType =
+                outputContentType == null? CONTENT_TYPE_DEFAULT : outputContentType.toLowerCase();
+        if (!this.outputContentType.equals(CONTENT_TYPE_HTML) && !this.outputContentType.equals(CONTENT_TYPE_SSE)) {
+            throw new TemplateProcessingException("Unsupported output content type specified: " + outputContentType +
+                    ". Currently only " + CONTENT_TYPE_HTML + " and  " + CONTENT_TYPE_SSE + " are supported.");
+        }
 
     }
 
@@ -317,6 +388,24 @@ public final class TemplateSpec implements Serializable {
     }
 
 
+    /**
+     * <p>
+     *   Returns the content type (MIME type) to be used for template output.
+     * </p>
+     * <p>
+     *   Setting this to a value other than <tt>text/html</tt> might change specific behaviours in the engine.
+     *   By default, <tt>text/html</tt> will be used.
+     * </p>
+     * <p>
+     *   Note content type parameters will be ignored (only the mime type itself will be used).
+     * </p>
+     *
+     * @return the output content type.
+     */
+    public String getOutputContentType() {
+        return this.outputContentType;
+    }
+
 
 
     @Override
@@ -337,6 +426,9 @@ public final class TemplateSpec implements Serializable {
         if (this.templateMode != that.templateMode) {
             return false;
         }
+        if (!this.outputContentType.equals(that.outputContentType)) {
+            return false;
+        }
         // Note how it is important that template resolution attribute values correctly implement equals() and hashCode()
         return !(this.templateResolutionAttributes != null ? !this.templateResolutionAttributes.equals(that.templateResolutionAttributes) : that.templateResolutionAttributes != null);
     }
@@ -347,6 +439,7 @@ public final class TemplateSpec implements Serializable {
         int result = this.template.hashCode();
         result = 31 * result + (this.templateSelectors != null ? this.templateSelectors.hashCode() : 0);
         result = 31 * result + (this.templateMode != null ? this.templateMode.hashCode() : 0);
+        result = 31 * result + (this.outputContentType != null ? this.outputContentType.hashCode() : 0);
         result = 31 * result + (this.templateResolutionAttributes != null ? this.templateResolutionAttributes.hashCode() : 0);
         return result;
     }
@@ -370,6 +463,11 @@ public final class TemplateSpec implements Serializable {
             strBuilder.append(" (");
             strBuilder.append(this.templateResolutionAttributes);
             strBuilder.append(")");
+        }
+        if (this.outputContentType != null) {
+            strBuilder.append(" [");
+            strBuilder.append(this.outputContentType);
+            strBuilder.append("]");
         }
         return strBuilder.toString();
     }

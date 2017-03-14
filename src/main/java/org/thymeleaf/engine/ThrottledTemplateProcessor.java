@@ -39,13 +39,20 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.LoggingUtils;
 
 /**
+ * <p>
+ *   Standard implementation of {@link IThrottledTemplateProcessor}.
+ * </p>
+ * <p>
+ *   This class is for <strong>internal</strong> use only. There is usually no reason why user's code should directly
+ *   reference it.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 3.0.0
  *
  */
-final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
+public final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(TemplateEngine.class);
     private static final Logger timerLogger = LoggerFactory.getLogger(TemplateEngine.TIMER_LOGGER_NAME);
@@ -78,7 +85,7 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
     private volatile boolean allProcessingFinished;
 
 
-    public ThrottledTemplateProcessor(
+    ThrottledTemplateProcessor(
             final TemplateSpec templateSpec,
             final IEngineContext context,
             final TemplateModel templateModel, final ITemplateHandler templateHandler,
@@ -100,6 +107,10 @@ final class ThrottledTemplateProcessor implements IThrottledTemplateProcessor {
     }
 
 
+
+    public IThrottledTemplateWriterControl getThrottledTemplateWriterControl() {
+        return this.writer;
+    }
 
 
 

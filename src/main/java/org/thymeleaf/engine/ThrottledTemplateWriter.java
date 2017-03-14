@@ -36,7 +36,7 @@ import org.thymeleaf.exceptions.TemplateOutputException;
  * @since 3.0.0
  *
  */
-final class ThrottledTemplateWriter extends Writer {
+class ThrottledTemplateWriter extends Writer implements IThrottledTemplateWriterControl {
 
     private final String templateName;
     private final TemplateFlowController flowController;
@@ -128,7 +128,7 @@ final class ThrottledTemplateWriter extends Writer {
 
 
 
-    boolean isOverflown() throws IOException {
+    public boolean isOverflown() throws IOException {
         if (this.flushable) {
             // We need this flushing because OutputStreamWriter bufferizes, and given we might be taking account of
             // the output bytes at an OutputStream implementation in a level below this OutputStreamWriter, we could
@@ -139,7 +139,7 @@ final class ThrottledTemplateWriter extends Writer {
         return this.adapter.isOverflown();
     }
 
-    boolean isStopped() throws IOException {
+    public boolean isStopped() throws IOException {
         if (this.flushable) {
             // We need this flushing because OutputStreamWriter bufferizes, and given we might be taking account of
             // the output bytes at an OutputStream implementation in a level below this OutputStreamWriter, we could
@@ -151,17 +151,17 @@ final class ThrottledTemplateWriter extends Writer {
     }
 
 
-    int getWrittenCount() {
+    public int getWrittenCount() {
         return this.adapter.getWrittenCount();
     }
 
 
-    int getMaxOverflowSize() {
+    public int getMaxOverflowSize() {
         return this.adapter.getMaxOverflowSize();
     }
 
 
-    int getOverflowGrowCount() {
+    public int getOverflowGrowCount() {
         return this.adapter.getOverflowGrowCount();
     }
 

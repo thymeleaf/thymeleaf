@@ -367,7 +367,7 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
         this.context.decreaseLevel();
 
         /*
-         * If we reached this point, it's before we were able to complete the iteration
+         * If we reached this point, it's because we were able to complete the iteration
          */
         return true;
 

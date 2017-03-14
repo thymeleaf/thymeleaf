@@ -704,10 +704,16 @@ public final class TemplateManager {
 
 
         /*
-         * Instantiate the throttling artifacts
+         * Instantiate the throttling artifacts, including the throttled writer, which might be only for
          */
         final TemplateFlowController flowController = new TemplateFlowController();
-        final ThrottledTemplateWriter throttledTemplateWriter = new ThrottledTemplateWriter(template, flowController);
+
+        final ThrottledTemplateWriter throttledTemplateWriter;
+        if ("text/event-stream".equals(templateSpec.getOutputContentType())) {
+            throttledTemplateWriter = new SSEThrottledTemplateWriter(template, flowController);
+        } else {
+            throttledTemplateWriter = new ThrottledTemplateWriter(template, flowController);
+        }
 
 
         /*
