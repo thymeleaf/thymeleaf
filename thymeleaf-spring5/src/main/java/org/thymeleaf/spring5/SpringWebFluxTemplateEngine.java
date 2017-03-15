@@ -22,7 +22,6 @@ package org.thymeleaf.spring5;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -40,16 +39,19 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebSession;
 import org.thymeleaf.IThrottledTemplateProcessor;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.TemplateSpec;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.engine.DataDrivenTemplateIterator;
+import org.thymeleaf.engine.ISSEThrottledTemplateWriterControl;
+import org.thymeleaf.engine.IThrottledTemplateWriterControl;
+import org.thymeleaf.engine.ThrottledTemplateProcessor;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.ISpringWebFluxContext;
 import org.thymeleaf.spring5.context.webflux.SpringWebFluxEngineContextFactory;
 import org.thymeleaf.spring5.linkbuilder.webflux.SpringWebFluxLinkBuilder;
 import org.thymeleaf.util.LoggingUtils;
-import org.thymeleaf.util.SSEOutputStream;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -248,7 +250,10 @@ public class SpringWebFluxTemplateEngine
                 // Using the throttledProcessor as state in this Flux.generate allows us to delay the
                 // initialization of the throttled processor until the last moment, when output generation
                 // is really requested.
-                () -> new CountingThrottledTemplateProcessor(processThrottled(templateName, markupSelectors, context)),
+                // NOTE 'sse' is specified as 'false' because SSE is only allowed in data-driven mode. Also, no
+                // data-driven iterator is available (we are in chunked mode).
+                () -> new StreamThrottledTemplateProcessor(
+                        processThrottled(templateName, markupSelectors, context), null, false),
 
                 // This stream will execute, in a one-by-one (non-interleaved) fashion, the following code
                 // for each back-pressure request coming from downstream. Each of these steps (chunks) will
@@ -349,7 +354,11 @@ public class SpringWebFluxTemplateEngine
                 // Using the throttledProcessor as state in this Flux.using allows us to delay the
                 // initialization of the throttled processor until the last moment, when output generation
                 // is really requested.
-                () -> new CountingThrottledTemplateProcessor(processThrottled(templateName, markupSelectors, wrappedContext)),
+                () -> {
+                        final String outputContentType = sse? "text/event-stream" : "text/html";
+                        final TemplateSpec templateSpec = new TemplateSpec(templateName, markupSelectors, null, null, outputContentType);
+                        return new StreamThrottledTemplateProcessor(processThrottled(templateSpec, wrappedContext), dataDrivenIterator, sse);
+                      },
 
                 // This flux will be made by concatenating a phase for the head (template before data-driven
                 // iteration), another phase composed of most possibly several steps for the data-driven iteration,
@@ -385,16 +394,7 @@ public class SpringWebFluxTemplateEngine
                                     return DATA_DRIVEN_PHASE_BUFFER;
 
                                 case DATA_DRIVEN_PHASE_BUFFER:
-                                    if (!sse || bufferSizeElements == 1) {
-                                        // Not doing SSE, or doing SSE with buffer size = 1, so we just create
-                                        // one step per list of values
-                                        emitter.next(dataDrivenBufferedStream.map(values -> DataDrivenFluxStep.forBuffer(throttledProcessor, values)));
-                                    } else {
-                                        // Doing SSE with buffer size > 1. We will need to partition our buffers
-                                        // because SSE requires one output buffer per element (incl. some metadata)
-                                        emitter.next(dataDrivenBufferedStream.concatMap(
-                                                values -> Flux.fromIterable(values).map(value -> DataDrivenFluxStep.forBuffer(throttledProcessor, Collections.singletonList(value)))));
-                                    }
+                                    emitter.next(dataDrivenBufferedStream.map(values -> DataDrivenFluxStep.forBuffer(throttledProcessor, values)));
                                     return DATA_DRIVEN_PHASE_TAIL;
 
                                 case DATA_DRIVEN_PHASE_TAIL:
@@ -431,7 +431,8 @@ public class SpringWebFluxTemplateEngine
                         // so that it is the first execution of this that initializes the (mutable) dataDrivenIterator.
                         (initialize, emitter) -> {
 
-                            final CountingThrottledTemplateProcessor throttledProcessor = step.getThrottledProcessor();
+                            final StreamThrottledTemplateProcessor throttledProcessor = step.getThrottledProcessor();
+                            final DataDrivenTemplateIterator dataDrivenTemplateIterator = throttledProcessor.getDataDrivenTemplateIterator();
 
                             // Let's check if we can short cut and simply finish execution. Maybe we can avoid consuming
                             // the data from the upstream data-driver publisher (e.g. if the data-driver variable is
@@ -448,10 +449,10 @@ public class SpringWebFluxTemplateEngine
                                 if (step.isHead()) {
                                     // Feed with no elements - we just want to output the part of the
                                     // template that goes before the iteration of the data driver.
-                                    dataDrivenIterator.feedBuffer(Collections.emptyList());
+                                    dataDrivenTemplateIterator.startHead();
                                 } else if (step.isDataBuffer()) {
                                     // Value-based execution: we have values and we want to iterate them
-                                    dataDrivenIterator.feedBuffer(step.getValues());
+                                    dataDrivenTemplateIterator.feedBuffer(step.getValues());
                                 } else { // step.isTail()
                                     // Signal feeding complete, indicating this is just meant to output the
                                     // rest of the template after the iteration of the data driver. Note there
@@ -459,15 +460,8 @@ public class SpringWebFluxTemplateEngine
                                     // and this is when the number of iterations is exactly ONE. In this case,
                                     // it won't be possible to determine the iteration type (ZERO, ONE, MULTIPLE)
                                     // until we close it with this 'feedingComplete()'
-                                    dataDrivenIterator.feedingComplete();
-                                }
-
-                                // If SSE, create the output stream that will add the metadata and start the event
-                                if (sse) {
-                                    final SSEOutputStream sseOutputStream = new SSEOutputStream(charset);
-                                    step.setSseOutputStream(sseOutputStream);
-                                    final String eventType = step.isHead()? "head" : step.isTail()? "tail" : "data";
-                                    sseOutputStream.startEvent(null, eventType);
+                                    dataDrivenTemplateIterator.feedingComplete();
+                                    dataDrivenTemplateIterator.startTail();
                                 }
 
                             }
@@ -493,16 +487,8 @@ public class SpringWebFluxTemplateEngine
                             final int bytesProduced;
                             try {
 
-                                OutputStream outputStream = buffer.asOutputStream();
-
-                                // If SSE, wrap the output stream with the SSE output stream
-                                if (sse) {
-                                    step.getSseOutputStream().setBufferOutputStream(outputStream);
-                                    outputStream = step.getSseOutputStream();
-                                }
-
                                 bytesProduced =
-                                        throttledProcessor.process(responseMaxChunkSizeBytes, outputStream, charset);
+                                        throttledProcessor.process(responseMaxChunkSizeBytes, buffer.asOutputStream(), charset);
 
                             } catch (final Throwable t) {
                                 emitter.error(t);
@@ -525,7 +511,7 @@ public class SpringWebFluxTemplateEngine
                             // data-driven step or rather we should consider we have done everything possible
                             // for this step (e.g. produced all markup for a data stream buffer) and just
                             // emit "complete" and go for the next step.
-                            boolean stepFinished = false;
+                            boolean phaseFinished = false;
                             if (throttledProcessor.isFinished()) {
 
                                 if (logger.isTraceEnabled()) {
@@ -543,23 +529,24 @@ public class SpringWebFluxTemplateEngine
                                 // We have finished executing the template, which can happen after
                                 // finishing iterating all data driver values, or also if we are at the
                                 // first execution and there was no need to use the data driver at all
-                                stepFinished = true;
+                                phaseFinished = true;
+                                dataDrivenTemplateIterator.finishStep();
 
                             } else {
 
-                                if (step.isHead() && dataDrivenIterator.hasBeenQueried()) {
+                                if (step.isHead() && dataDrivenTemplateIterator.hasBeenQueried()) {
 
                                     // We know everything before the data driven iteration has already been
                                     // processed because the iterator has been used at least once (i.e. its
                                     // 'hasNext()' or 'next()' method have been called at least once). This will
                                     // mean we can switch to the buffer phase.
-                                    stepFinished = true;
+                                    phaseFinished = true;
+                                    dataDrivenTemplateIterator.finishStep();
 
-                                } else if (step.isDataBuffer() && !dataDrivenIterator.continueBufferExecution()) {
-                                    // TODO continue means no items pending?
+                                } else if (step.isDataBuffer() && !dataDrivenTemplateIterator.continueBufferExecution()) {
                                     // We have finished executing this buffer of items and we can go for the
                                     // next one or maybe the tail.
-                                    stepFinished = true;
+                                    phaseFinished = true;
                                 }
                                 // fluxStep.isTail(): nothing to do, as the only reason we would have to emit
                                 // 'complete' at the tail step would be throttledProcessor.isFinished(), which
@@ -567,24 +554,18 @@ public class SpringWebFluxTemplateEngine
 
                             }
 
-
-                            // If SSE and step is finished, finish also the event properly
-                            if (sse && stepFinished) {
-                                try {
-                                    step.getSseOutputStream().endEvent();
-                                } catch (final Throwable t) {
-                                    emitter.error(t);
-                                    return Boolean.FALSE;
-                                }
-                            }
-
+                            // Compute if the output for this step has been already finished (i.e. not only the
+                            // processing of the model's events, but also any existing overflows). This has to be
+                            // queried BEFORE the buffer is emitted.
+                            final boolean stepOutputFinished = dataDrivenTemplateIterator.isStepOutputFinished();
 
                             // Buffer has now everything it should, so send it to the output channels
                             emitter.next(buffer);
 
 
-                            // If step finished, we have ot emit 'complete' now
-                            if (stepFinished) {
+                            // If step finished, we have ot emit 'complete' now, giving the opportunity to execute
+                            // again if processing has finished, but we still have some overflow to be flushed
+                            if (phaseFinished && stepOutputFinished) {
                                 emitter.complete();
                             }
 
@@ -668,24 +649,59 @@ public class SpringWebFluxTemplateEngine
 
     /*
      * This internal class is meant to be used in multi-step streams so that an account on the total
-     * number of bytes and steps/chunks can be kept.
+     * number of bytes and steps/chunks can be kept, and also other aspects such as SSE event management can be offered.
      *
      * NOTE there is no need to synchronize these variables, even if different steps/chunks might be executed
      * (non-concurrently) by different threads, because Reactive Streams implementations like Reactor should
      * take care to establish the adequate thread synchronization/memory barriers at their asynchronous boundaries,
      * thus avoiding thread visibility issues.
      */
-    static class CountingThrottledTemplateProcessor {
+    static class StreamThrottledTemplateProcessor {
 
         private final IThrottledTemplateProcessor throttledProcessor;
+        private final DataDrivenTemplateIterator dataDrivenTemplateIterator;
         private int chunkCount;
         private long totalBytesProduced;
 
-        CountingThrottledTemplateProcessor(final IThrottledTemplateProcessor throttledProcessor) {
+        StreamThrottledTemplateProcessor(
+                final IThrottledTemplateProcessor throttledProcessor,
+                final DataDrivenTemplateIterator dataDrivenTemplateIterator,
+                final boolean sse) {
+
             super();
+
             this.throttledProcessor = throttledProcessor;
+            this.dataDrivenTemplateIterator = dataDrivenTemplateIterator;
+
+            final IThrottledTemplateWriterControl writerControl;
+            if (this.throttledProcessor instanceof ThrottledTemplateProcessor) {
+                writerControl = ((ThrottledTemplateProcessor) this.throttledProcessor).getThrottledTemplateWriterControl();
+            } else {
+                writerControl = null;
+            }
+
+            if (sse) {
+                if (writerControl == null || !(writerControl instanceof ISSEThrottledTemplateWriterControl)) {
+                    throw new TemplateProcessingException(
+                            "Cannot process template in Server-Sent Events (SSE) mode: template writer is not SSE capable. " +
+                            "Either SSE content type has not been declared at the " + TemplateSpec.class.getSimpleName() + " or " +
+                            "an implementation of " + IThrottledTemplateProcessor.class.getName() + " other than " +
+                            ThrottledTemplateProcessor.class.getName() + " is being used.");
+                }
+                if (this.dataDrivenTemplateIterator == null) {
+                    throw new TemplateProcessingException(
+                            "Cannot process template in Server-Sent Events (SSE) mode: a data-driven template iterator " +
+                                    "is required in context in order to apply SSE.");
+                }
+            }
+
+            if (this.dataDrivenTemplateIterator != null) {
+                this.dataDrivenTemplateIterator.setWriterControl(writerControl);
+            }
+
             this.chunkCount = -1; // First chunk will be considered number 0
             this.totalBytesProduced = 0L;
+
         }
 
         int process(final int maxOutputInBytes, final OutputStream outputStream, final Charset charset) {
@@ -714,6 +730,10 @@ public class SpringWebFluxTemplateEngine
             return this.totalBytesProduced;
         }
 
+        DataDrivenTemplateIterator getDataDrivenTemplateIterator() {
+            return this.dataDrivenTemplateIterator;
+        }
+
     }
 
 
@@ -731,27 +751,25 @@ public class SpringWebFluxTemplateEngine
 
         enum FluxStepPhase {DATA_DRIVEN_PHASE_HEAD, DATA_DRIVEN_PHASE_BUFFER, DATA_DRIVEN_PHASE_TAIL }
 
-        private final CountingThrottledTemplateProcessor throttledProcessor;
+        private final StreamThrottledTemplateProcessor throttledProcessor;
         private final List<Object> values;
         private final FluxStepPhase phase;
 
-        private SSEOutputStream sseOutputStream = null;
 
-
-        static DataDrivenFluxStep forHead(final CountingThrottledTemplateProcessor throttledProcessor) {
+        static DataDrivenFluxStep forHead(final StreamThrottledTemplateProcessor throttledProcessor) {
             return new DataDrivenFluxStep(throttledProcessor, null, DATA_DRIVEN_PHASE_HEAD);
         }
 
-        static DataDrivenFluxStep forBuffer(final CountingThrottledTemplateProcessor throttledProcessor, final List<Object> values) {
+        static DataDrivenFluxStep forBuffer(final StreamThrottledTemplateProcessor throttledProcessor, final List<Object> values) {
             return new DataDrivenFluxStep(throttledProcessor, values, DATA_DRIVEN_PHASE_BUFFER);
         }
 
-        static DataDrivenFluxStep forTail(final CountingThrottledTemplateProcessor throttledProcessor) {
+        static DataDrivenFluxStep forTail(final StreamThrottledTemplateProcessor throttledProcessor) {
             return new DataDrivenFluxStep(throttledProcessor, null, DATA_DRIVEN_PHASE_TAIL);
         }
 
         private DataDrivenFluxStep(
-                final CountingThrottledTemplateProcessor throttledProcessor, final List<Object> values,
+                final StreamThrottledTemplateProcessor throttledProcessor, final List<Object> values,
                 final FluxStepPhase phase) {
             super();
             this.throttledProcessor = throttledProcessor;
@@ -759,7 +777,7 @@ public class SpringWebFluxTemplateEngine
             this.phase = phase;
         }
 
-        CountingThrottledTemplateProcessor getThrottledProcessor() {
+        StreamThrottledTemplateProcessor getThrottledProcessor() {
             return this.throttledProcessor;
         }
 
@@ -779,13 +797,6 @@ public class SpringWebFluxTemplateEngine
             return this.phase == DATA_DRIVEN_PHASE_TAIL;
         }
 
-        public SSEOutputStream getSseOutputStream() {
-            return this.sseOutputStream;
-        }
-
-        public void setSseOutputStream(final SSEOutputStream sseOutputStream) {
-            this.sseOutputStream = sseOutputStream;
-        }
     }
 
 
