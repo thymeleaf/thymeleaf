@@ -258,7 +258,7 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
             /*
              * Initialize the iteration, if we are at the beginning of it
              */
-            if (this.iterOffset == 0) {
+            if (this.iterModel == null && this.iterOffset == 0) {
 
                 /*
                  * Increase the iteration counter
@@ -293,7 +293,6 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
             this.iter++;
             this.iterOffset = 0;
             this.iterModel = null;
-
 
             /*
              * Check if, after this iteration, the data driven iterator (if there is one) is signaling us that it is
@@ -345,6 +344,13 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
              */
             prepareProcessing();
 
+            /*
+             * Signal the data driven iterator that the execution of this particular iteration will start
+             */
+            if (this.dataDrivenIterator != null) {
+                this.dataDrivenIterator.startIteration();
+            }
+
         }
 
         /*
@@ -365,6 +371,14 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
          * the local variables
          */
         this.context.decreaseLevel();
+
+        /*
+         * Signal the data driven iterator that the execution of this particular iteration has finished completely
+         * (though we still might have some contents overflown in the output buffers)
+         */
+        if (this.dataDrivenIterator != null) {
+            this.dataDrivenIterator.finishIteration();
+        }
 
         /*
          * If we reached this point, it's because we were able to complete the iteration
