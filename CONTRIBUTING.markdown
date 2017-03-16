@@ -22,7 +22,7 @@ Anyone, with the unique condition that he/she must be a **private individual**, 
 his/her own name, and not being endorsed in their contributed work by any company or government.
 
 Note that this condition will not only refer to the ownership of the effort invested in contributing
-to the project, but also to the fact that *no private or public company will be mentioned as a a part
+to the project, but also to the fact that *no private or public company will be mentioned as a part
 of your contribution on the project's website or code*, including but not limited to web/email addresses
 or package names.
 
