@@ -211,11 +211,14 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
              */
             if (!this.iterationModels.isEmpty()) { // Will only be empty if we have zero iterations
 
+                boolean iterationIsNew = false;
+
                 if (this.iterModel == null) {
                     this.iterModel = this.iterationModels.modelFirst;
+                    iterationIsNew = true;
                 }
 
-                if (!processIterationModel(flowController)) {
+                if (!processIterationModel(flowController, iterationIsNew)) {
                     // We were NOT able to finish processing the iteration model - something stopped us (buffer size),
                     // so we just need to return false and wait for this to be executed again.
                     // Note that we do NOT set the iterModel back to null because we will need to finish processing it later
@@ -255,6 +258,8 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
          */
         while (this.iterModel != null || this.iterator.hasNext()) {
 
+            boolean iterationIsNew = false;
+
             /*
              * Initialize the iteration, if we are at the beginning of it
              */
@@ -270,6 +275,8 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
                  */
                 this.iterStatusVariable.current = this.iterator.next();
 
+                iterationIsNew = true;
+
             }
 
             /*
@@ -283,7 +290,7 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
             /*
              * Perform the iteration
              */
-            if (!processIterationModel(flowController)) {
+            if (!processIterationModel(flowController, iterationIsNew)) {
                 // We were NOT able to finish processing the iteration model - something stopped us (buffer size),
                 // so we just need to return false and wait for this to be executed again.
                 // Note that we do NOT set the iterModel back to null because we will need to finish processing it later
@@ -323,9 +330,9 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
 
 
 
-    private boolean processIterationModel(final TemplateFlowController flowController) {
+    private boolean processIterationModel(final TemplateFlowController flowController, final boolean iterationIsNew) {
 
-        if (this.iterOffset == 0) {
+        if (iterationIsNew) {
 
             /*
              * Increase the engine context level, so that we can store the needed local variables there
