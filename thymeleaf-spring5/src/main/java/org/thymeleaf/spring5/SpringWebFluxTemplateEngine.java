@@ -48,6 +48,7 @@ import org.thymeleaf.engine.IThrottledTemplateWriterControl;
 import org.thymeleaf.engine.ThrottledTemplateProcessor;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
+import org.thymeleaf.spring5.context.webflux.IReactiveSSEDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.ISpringWebFluxContext;
 import org.thymeleaf.spring5.context.webflux.SpringWebFluxEngineContextFactory;
 import org.thymeleaf.spring5.linkbuilder.webflux.SpringWebFluxLinkBuilder;
@@ -253,7 +254,7 @@ public class SpringWebFluxTemplateEngine
                 // NOTE 'sse' is specified as 'false' because SSE is only allowed in data-driven mode. Also, no
                 // data-driven iterator is available (we are in chunked mode).
                 () -> new StreamThrottledTemplateProcessor(
-                        processThrottled(templateName, markupSelectors, context), null, false),
+                        processThrottled(templateName, markupSelectors, context), null, 0L, false),
 
                 // This stream will execute, in a one-by-one (non-interleaved) fashion, the following code
                 // for each back-pressure request coming from downstream. Each of these steps (chunks) will
@@ -334,6 +335,9 @@ public class SpringWebFluxTemplateEngine
         final IReactiveDataDriverContextVariable dataDriver =
                 (IReactiveDataDriverContextVariable) context.getVariable(dataDriverVariableName);
         final int bufferSizeElements = dataDriver.getBufferSizeElements();
+        final long firstEventID =
+                (dataDriver instanceof IReactiveSSEDataDriverContextVariable?
+                        ((IReactiveSSEDataDriverContextVariable) dataDriver).getFirstEventID() : 0L);
 
 
         // STEP 2: Replace the data driver variable with a DataDrivenTemplateIterator
@@ -357,7 +361,8 @@ public class SpringWebFluxTemplateEngine
                 () -> {
                         final String outputContentType = sse? "text/event-stream" : "text/html";
                         final TemplateSpec templateSpec = new TemplateSpec(templateName, markupSelectors, null, null, outputContentType);
-                        return new StreamThrottledTemplateProcessor(processThrottled(templateSpec, wrappedContext), dataDrivenIterator, sse);
+                        return new StreamThrottledTemplateProcessor(
+                                processThrottled(templateSpec, wrappedContext), dataDrivenIterator, firstEventID, sse);
                       },
 
                 // This flux will be made by concatenating a phase for the head (template before data-driven
@@ -504,6 +509,12 @@ public class SpringWebFluxTemplateEngine
                                                 TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
                                                 throttledProcessor.getProcessorIdentifier(), Integer.valueOf(throttledProcessor.getChunkCount()),
                                                 LoggingUtils.loggifyTemplateName(templateName), context.getLocale(), Integer.valueOf(bytesProduced)});
+                            }
+
+
+                            // If we produced no bytes, then let's avoid skipping an event number from the sequence
+                            if (bytesProduced == 0) {
+                                dataDrivenTemplateIterator.takeBackLastEventID();
                             }
 
 
@@ -666,7 +677,7 @@ public class SpringWebFluxTemplateEngine
         StreamThrottledTemplateProcessor(
                 final IThrottledTemplateProcessor throttledProcessor,
                 final DataDrivenTemplateIterator dataDrivenTemplateIterator,
-                final boolean sse) {
+                final long firstEventID, final boolean sse) {
 
             super();
 
@@ -697,6 +708,7 @@ public class SpringWebFluxTemplateEngine
 
             if (this.dataDrivenTemplateIterator != null) {
                 this.dataDrivenTemplateIterator.setWriterControl(writerControl);
+                this.dataDrivenTemplateIterator.setFirstSSEEventID(firstEventID);
             }
 
             this.chunkCount = -1; // First chunk will be considered number 0

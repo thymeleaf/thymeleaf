@@ -26,7 +26,8 @@ import reactor.core.publisher.Flux;
 
 /**
  * <p>
- *   Basic implementation of the {@link IReactiveDataDriverContextVariable} interface.
+ *   Basic implementation of the {@link IReactiveDataDriverContextVariable} interface, including also
+ *   the extensions specified in {@link IReactiveSSEDataDriverContextVariable}.
  * </p>
  * <p>
  *   The <em>reactive data stream</em> wrapped by this class will usually have the shape of an implementation of the
@@ -65,17 +66,22 @@ import reactor.core.publisher.Flux;
  * &lt;/table&gt;
  * </code></pre>
  * <p>
+ *   For more information on the way this class would work in SSE (Server-Sent Event) scenarios, see
+ *   {@link IReactiveSSEDataDriverContextVariable}.
+ * </p>
+ * <p>
  *   This class is NOT thread-safe. Thread-safety is not a requirement for context variables.
  * </p>
  *
  * @see IReactiveDataDriverContextVariable
+ * @see IReactiveSSEDataDriverContextVariable
  *
  * @author Daniel Fern&aacute;ndez
  *
  * @since 3.0.3
  *
  */
-public class ReactiveDataDriverContextVariable implements IReactiveDataDriverContextVariable {
+public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriverContextVariable {
 
     /**
      * <p>
@@ -84,8 +90,17 @@ public class ReactiveDataDriverContextVariable implements IReactiveDataDriverCon
      */
     public static final int DEFAULT_DATA_DRIVER_BUFFER_SIZE_ELEMENTS = 100;
 
+    /**
+     * <p>
+     *   Default value for the first event ID (for SSE scenarios). Value = <tt>0</tt>.
+     * </p>
+     */
+    public static final long DEFAULT_FIRST_EVENT_ID = 0L;
+
+
     private final Object dataStream;
     private final int dataStreamBufferSizeElements;
+    private final long firstEventID;
     private ReactiveAdapterRegistry adapterRegistry;
 
 
@@ -115,7 +130,7 @@ public class ReactiveDataDriverContextVariable implements IReactiveDataDriverCon
      *                    means of Spring's {@link ReactiveAdapterRegistry}.
      */
     public ReactiveDataDriverContextVariable(final Object dataStream) {
-        this(dataStream, DEFAULT_DATA_DRIVER_BUFFER_SIZE_ELEMENTS);
+        this(dataStream, DEFAULT_DATA_DRIVER_BUFFER_SIZE_ELEMENTS, DEFAULT_FIRST_EVENT_ID);
     }
 
 
@@ -144,11 +159,46 @@ public class ReactiveDataDriverContextVariable implements IReactiveDataDriverCon
      * @param dataStreamBufferSizeElements the buffer size to be applied (in elements).
      */
     public ReactiveDataDriverContextVariable(final Object dataStream, final int dataStreamBufferSizeElements) {
+        this(dataStream, dataStreamBufferSizeElements, DEFAULT_FIRST_EVENT_ID);
+    }
+
+
+    /**
+     * <p>
+     *   Creates a new lazy context variable, wrapping a reactive asynchronous data stream and specifying a
+     *   buffer size and a value for the ID of the first event generated in SSE scenarios.
+     * </p>
+     * <p>
+     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Streams
+     *   {@link Publisher} by means of Spring's {@link ReactiveAdapterRegistry} mechanism. If no
+     *   adapter has been registered for the type of the asynchronous object, and exception will be
+     *   thrown during lazy resolution.
+     * </p>
+     * <p>
+     *   Note the specified <tt>dataStream</tt> must be <strong>multi-valued</strong>.
+     * </p>
+     * <p>
+     *   Examples of supported implementations are Reactor's {@link Flux} (but not
+     *   {@link reactor.core.publisher.Mono}), and also RxJava's <tt>Observable</tt>
+     *   (but not <tt>Single</tt>).
+     * </p>
+     *
+     * @param dataStream the asynchronous object, which must be convertible to a multi-valued {@link Publisher} by
+     *                    means of Spring's {@link ReactiveAdapterRegistry}.
+     * @param dataStreamBufferSizeElements the buffer size to be applied (in elements).
+     * @param firstEventID the first value to be used as event ID in SSE scenarios (if applies).
+     *
+     * @since 3.0.4
+     */
+    public ReactiveDataDriverContextVariable(
+            final Object dataStream, final int dataStreamBufferSizeElements, final long firstEventID) {
         super();
         Validate.notNull(dataStream, "Data stream cannot be null");
         Validate.isTrue(dataStreamBufferSizeElements > 0, "Data Buffer Size cannot be <= 0");
+        Validate.isTrue(firstEventID >= 0L, "First Event ID cannot be < 0");
         this.dataStream = dataStream;
         this.dataStreamBufferSizeElements = dataStreamBufferSizeElements;
+        this.firstEventID = firstEventID;
     }
 
 
@@ -190,6 +240,12 @@ public class ReactiveDataDriverContextVariable implements IReactiveDataDriverCon
     @Override
     public final int getBufferSizeElements() {
         return this.dataStreamBufferSizeElements;
+    }
+
+
+    @Override
+    public final long getFirstEventID() {
+        return this.firstEventID;
     }
 
 }
