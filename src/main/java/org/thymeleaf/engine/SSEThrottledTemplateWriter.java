@@ -57,16 +57,6 @@ class SSEThrottledTemplateWriter extends ThrottledTemplateWriter implements ISSE
 
     private void doStartEvent() throws IOException {
         this.eventHasMeta = false;
-        if (this.id != null) {
-            // Write the "id" field
-            if (this.id.indexOf('\n') != -1) {
-                throw new IllegalArgumentException("ID for SSE event cannot contain a newline (\\n) character");
-            }
-            super.write(SSE_ID_PREFIX);
-            super.write(this.id.toCharArray());
-            super.write('\n');
-            this.eventHasMeta = true;
-        }
         if (this.event != null) {
             // Write the "event" field
             if (this.event.indexOf('\n') != -1) {
@@ -74,6 +64,16 @@ class SSEThrottledTemplateWriter extends ThrottledTemplateWriter implements ISSE
             }
             super.write(SSE_EVENT_PREFIX);
             super.write(this.event.toCharArray());
+            super.write('\n');
+            this.eventHasMeta = true;
+        }
+        if (this.id != null) {
+            // Write the "id" field
+            if (this.id.indexOf('\n') != -1) {
+                throw new IllegalArgumentException("ID for SSE event cannot contain a newline (\\n) character");
+            }
+            super.write(SSE_ID_PREFIX);
+            super.write(this.id.toCharArray());
             super.write('\n');
             this.eventHasMeta = true;
         }
