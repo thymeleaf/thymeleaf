@@ -53,6 +53,7 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
     private final List<Object> values;
     private IThrottledTemplateWriterControl writerControl;
     private ISSEThrottledTemplateWriterControl sseControl;
+    private long sseEventID;
     private boolean inStep;
     private boolean feedingComplete;
     private boolean queried;
@@ -64,6 +65,7 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
         this.values = new ArrayList<Object>(10);
         this.writerControl = null;
         this.sseControl = null;
+        this.sseEventID = 0L;
         this.inStep = false;
         this.feedingComplete = false;
         this.queried = false;
@@ -77,6 +79,17 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
             this.sseControl = (ISSEThrottledTemplateWriterControl) this.writerControl;
         } else {
             this.sseControl = null;
+        }
+    }
+
+
+    public void setFirstSSEEventID(final long firstSSEEventID) {
+        this.sseEventID = firstSSEEventID;
+    }
+
+    public void takeBackLastEventID() {
+        if (this.sseEventID > 0L) {
+            this.sseEventID--;
         }
     }
 
@@ -107,7 +120,8 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
     public void startIteration() {
         this.inStep = true;
         if (this.sseControl != null) {
-            this.sseControl.startEvent(null, "data");
+            this.sseControl.startEvent(Long.toString(this.sseEventID), "data");
+            this.sseEventID++;
         }
     }
 
@@ -163,7 +177,8 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
     public void startHead() {
         this.inStep = true;
         if (this.sseControl != null) {
-            this.sseControl.startEvent(null, "head");
+            this.sseControl.startEvent(Long.toString(this.sseEventID), "head");
+            this.sseEventID++;
         }
     }
 
@@ -175,7 +190,8 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
     public void startTail() {
         this.inStep = true;
         if (this.sseControl != null) {
-            this.sseControl.startEvent(null, "tail");
+            this.sseControl.startEvent(Long.toString(this.sseEventID), "tail");
+            this.sseEventID++;
         }
     }
 
