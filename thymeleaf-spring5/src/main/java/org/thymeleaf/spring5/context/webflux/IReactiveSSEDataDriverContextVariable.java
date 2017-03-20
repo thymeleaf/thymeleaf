@@ -39,7 +39,8 @@ package org.thymeleaf.spring5.context.webflux;
  * <ul>
  *     <li>Header (<tt>event: head</tt>), a single event containing all the markup previous to the iterated
  *         data (if any).</li>
- *     <li>Data (<tt>event: data</tt>), a series of n events, one for each value produced by the data driver.</li>
+ *     <li>Data message (<tt>event: message</tt>), a series of n events, one for each value produced by the
+ *         data driver.</li>
  *     <li>Tail (<tt>event: tail</tt>), a single event containing all the markup following the last iterated
  *         piece of data (if any).</li>
  * </ul>
