@@ -50,6 +50,11 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  */
 public final class DataDrivenTemplateIterator implements Iterator<Object> {
 
+    private static final String SSE_HEAD_EVENT_TYPE = "head";
+    private static final String SSE_MESSAGE_EVENT_TYPE = "message";
+    private static final String SSE_TAIL_EVENT_TYPE = "tail";
+
+
     private final List<Object> values;
     private IThrottledTemplateWriterControl writerControl;
     private ISSEThrottledTemplateWriterControl sseControl;
@@ -120,7 +125,7 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
     public void startIteration() {
         this.inStep = true;
         if (this.sseControl != null) {
-            this.sseControl.startEvent(Long.toString(this.sseEventID), "data");
+            this.sseControl.startEvent(Long.toString(this.sseEventID), SSE_MESSAGE_EVENT_TYPE);
             this.sseEventID++;
         }
     }
@@ -177,7 +182,7 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
     public void startHead() {
         this.inStep = true;
         if (this.sseControl != null) {
-            this.sseControl.startEvent(Long.toString(this.sseEventID), "head");
+            this.sseControl.startEvent(Long.toString(this.sseEventID), SSE_HEAD_EVENT_TYPE);
             this.sseEventID++;
         }
     }
@@ -190,7 +195,7 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
     public void startTail() {
         this.inStep = true;
         if (this.sseControl != null) {
-            this.sseControl.startEvent(Long.toString(this.sseEventID), "tail");
+            this.sseControl.startEvent(Long.toString(this.sseEventID), SSE_TAIL_EVENT_TYPE);
             this.sseEventID++;
         }
     }
