@@ -80,7 +80,7 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
      */
     public static final String REDIRECT_URL_PREFIX = "redirect:";
 
-    // TODO * Will this still exist in Spring WebFlux? See https://jira.spring.io/browse/SPR-14537
+    // TODO * Will this exist in future versions of Spring WebFlux? See https://jira.spring.io/browse/SPR-14537
     public static final String FORWARD_URL_PREFIX = "forward:";
 
     // This provider function for redirect mirrors what is done at the reactive version of UrlBasedViewResolver
