@@ -19,8 +19,10 @@
  */
 package org.thymeleaf.spring5.view.reactive;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
@@ -31,6 +33,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.http.MediaType;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.reactive.result.view.RedirectView;
 import org.springframework.web.reactive.result.view.View;
@@ -83,6 +86,12 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
     // TODO * Will this exist in future versions of Spring WebFlux? See https://jira.spring.io/browse/SPR-14537
     public static final String FORWARD_URL_PREFIX = "forward:";
 
+    // Supported media types are:
+    //     * The default HTML one: text/html;charset=UTF-8
+    //     * SSE (Sever-Sent Events): text/event-stream
+    private static final List<MediaType> SUPPORTED_MEDIA_TYPES =
+            Arrays.asList(new MediaType[] { ViewResolverSupport.DEFAULT_CONTENT_TYPE, MediaType.TEXT_EVENT_STREAM });
+
     // This provider function for redirect mirrors what is done at the reactive version of UrlBasedViewResolver
     private Function<String, RedirectView> redirectViewProvider = url -> new RedirectView(url);
 
@@ -118,6 +127,7 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
      */
     public ThymeleafReactiveViewResolver() {
         super();
+        setSupportedMediaTypes(SUPPORTED_MEDIA_TYPES);
     }
 
 
