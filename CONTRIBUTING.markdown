@@ -22,7 +22,7 @@ Anyone, with the unique condition that he/she must be a **private individual**, 
 his/her own name, and not being endorsed in their contributed work by any company or government.
 
 Note that this condition will not only refer to the ownership of the effort invested in contributing
-to the project, but also to the fact that *no private or public company will be mentioned as a part
+to the project but also to the fact that *no private or public company will be mentioned as a part
 of your contribution on the project's website or code*, including but not limited to web/email addresses
 or package names.
 
@@ -75,11 +75,11 @@ About the code you contribute
   - Number autoboxing and/or autounboxing is forbidden.
   - Every class should define a constructor, even if it is the no-argument constructor, and include a call to `super()`.
   - Every non-nullable argument in a public method should be first validated with a `Validate.notNull(...)` call.
-  - All method parameters should be declared as `final`, so that they cannot be changed in the method.
+  - All method parameters should be declared as `final` so that they cannot be changed.
   - Include `/* ... */` comments for every algorithm you develop with a minimum of complexity. *"Minimum
     of complexity"* usually means you had to take some design decisions in order to write it the way you did. Do
     not write obvious comments.
-  - All public methods and classes directly available to users (i.e. public) should have comprehensive JavaDoc comments.
+  - All public methods and classes directly available to users should have comprehensive JavaDoc comments.
 
 ### Detailed HTML/XML code quality standards:
 
@@ -146,7 +146,7 @@ may cover more than one software project managed by Thymeleaf.
   * _"Submit"_ means any form of electronic, verbal, or written communication sent to Thymeleaf or its
     representatives, including but not limited to electronic mailing lists, source code control systems,
     and issue tracking systems that are managed by, or on behalf of, Thymeleaf for the purpose of discussing
-    and improving the Material, but excluding communication that is conspicuously marked or
+    and improving the Material but excluding communication that is conspicuously marked or
     otherwise designated in writing by you as _"Not a Contribution."
   * _"Submission Date"_ means the date on which you submit a Contribution to Thymeleaf.
   * _"Effective Date"_ means the date you execute this agreement or the date You first submit a
