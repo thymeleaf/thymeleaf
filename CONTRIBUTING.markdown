@@ -147,7 +147,7 @@ may cover more than one software project managed by Thymeleaf.
     representatives, including but not limited to electronic mailing lists, source code control systems,
     and issue tracking systems that are managed by, or on behalf of, Thymeleaf for the purpose of discussing
     and improving the Material but excluding communication that is conspicuously marked or
-    otherwise designated in writing by you as _"Not a Contribution."
+    otherwise designated in writing by you as _"Not a Contribution."_
   * _"Submission Date"_ means the date on which you submit a Contribution to Thymeleaf.
   * _"Effective Date"_ means the date you execute this agreement or the date You first submit a
     Contribution to Thymeleaf, whichever is earlier.
