@@ -68,28 +68,28 @@ About the code you contribute
   - All comments, names of classes and variables, log messages, etc. must be **in English**.
   - All `.java` files must include the standard Thymeleaf copyright header.
   - All your code should follow the Java Code Conventions regarding variable/method/class naming.
-  - Maximum line size is 120 characters.
+  - Maximum line length is 120 characters.
   - Indentation should be made with 4 spaces, not tabs.
   - Line feeds should be UNIX-like (`\n`).
-  - All .java source files should be pure ASCII. All .properties files should be ISO-8859-1.
+  - All `.java` source files should be pure ASCII. All `.properties` files should be ISO-8859-1.
   - Number autoboxing and/or autounboxing is forbidden.
-  - Every class should define a constructor, even if it is the default one, and include a call to `super()`.
+  - Every class should define a constructor, even if it is the no-argument constructor, and include a call to `super()`.
   - Every non-nullable argument in a public method should be first validated with a `Validate.notNull(...)` call.
-  - All method arguments should include the `final` modifier, so that their value is never changed.
+  - All method parameters should be declared as `final`, so that they cannot be changed in the method.
   - Include `/* ... */` comments for every algorithm you develop with a minimum of complexity. *"Minimum
     of complexity"* usually means you had to take some design decisions in order to write it the way you did. Do
     not write obvious comments.
-  - All public methods and classes directly available to users (i.e. public) should have comprehensive javadoc.
+  - All public methods and classes directly available to users (i.e. public) should have comprehensive JavaDoc comments.
 
 ### Detailed HTML/XML code quality standards:
 
   - All tags, CSS styles, file names, etc. must be **in English**.
-  - Lower case should be prefered for HTML/XML artifacts. The only exceptions are `DOCTYPE` and `CDATA` clauses.
+  - Lower case should be preferred for HTML/XML artifacts. The only exceptions are `DOCTYPE` and `CDATA` clauses.
   - All HTML code should be XML-valid (i.e. all tags should be closed, attributes surrounded by commas, etc.)
-  - Maximum line size is 120 characters.
+  - Maximum line length is 120 characters.
   - Indentation should be made with 4 spaces, not tabs.
   - Line feeds should be UNIX-like (`\n`).
-  - All .html and .xml source files should be pure ASCII, even if _content-type_ is set to a different encoding.
+  - All `.html` and `.xml` source files should be pure ASCII, even if _content-type_ is set to a different encoding.
   - All XHTML self-closing (minimized) tags should have a space before `/>` (the XHTML standards say so!).
   - All inline scripts must be enclosed inside a commented `<![CDATA[...]]>` block.
 
@@ -102,9 +102,9 @@ Note the following only applies to documentation/articles meant to be published 
   - All documentation artifacts, including articles, must be written **in correct English**.
   - Your name and email will be displayed as *"author"* of any documentation artifacts you create.
   - Topic and text structure must be first discussed and agreed upon with the project members.
-  - Project members may edit and make small changes to your texts --of which you will be informed-- before
+  - Project members may edit and make small changes to your texts&mdash;of which you will be informed&mdash;before
     publishing them.
-  - Format and visual styles must adhere to the thymeleaf website standards, of which you will be informed
+  - Format and visual styles must adhere to the Thymeleaf website standards, of which you will be informed
     by the project members.
 
 
