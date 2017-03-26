@@ -19,6 +19,7 @@
  */
 package thymeleafsandbox.sseflux.business.repository;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,22 +59,6 @@ public class PlaylistEntryRepository {
     }
 
 
-    public List<PlaylistEntry> findAllPlaylistEntries() {
-
-        return this.jdbcTemplate.query(
-                QUERY_FIND_ALL_PLAYLIST_ENTRIES,
-                (resultSet, i) -> {
-                    return new PlaylistEntry(
-                            Integer.valueOf(resultSet.getInt("playlistID")),
-                            resultSet.getString("playlistName"),
-                            resultSet.getString("trackName"),
-                            resultSet.getString("artistName"),
-                            resultSet.getString("albumTitle"));
-                });
-
-    }
-
-
     public Flux<PlaylistEntry> findLargeCollectionPlaylistEntries() {
 
         return Flux.fromIterable(
@@ -86,7 +71,7 @@ public class PlaylistEntryRepository {
                                 resultSet.getString("trackName"),
                                 resultSet.getString("artistName"),
                                 resultSet.getString("albumTitle"));
-                    })).repeat(300);
+                    })).repeat(300).delay(Duration.ofSeconds(1L));
 
     }
 

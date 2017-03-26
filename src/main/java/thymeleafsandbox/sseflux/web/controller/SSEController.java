@@ -62,7 +62,7 @@ public class SSEController {
         final Flux<PlaylistEntry> playlistStream = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
 
         final IReactiveDataDriverContextVariable dataDriver =
-                new ReactiveDataDriverContextVariable(playlistStream, 1000, 1);
+                new ReactiveDataDriverContextVariable(playlistStream, 1, 1);
 
         model.addAttribute("data", dataDriver);
 
