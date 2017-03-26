@@ -35,7 +35,7 @@
  
    * Index page:
      * `/`: HTML interface requesting SSE events via an `EventSource` JavaScript object
-     
+     * `/events`: Returns the events being used (needs `Accept: text/event-stream` header)
 
  
  
