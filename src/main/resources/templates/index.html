@@ -11,7 +11,23 @@
 
     <h2>Spring WebFlux - Thymeleaf Sandbox application</h2>
 
+    <table>
+      <tbody id="dataTable">
 
+      </tbody>
+    </table>
+
+
+    <script>
+
+      var dataTable = document.getElementById("dataTable");
+
+      var source = new EventSource("/events");
+      source.addEventListener("message", function(event) {
+         dataTable.innerHTML = event.data + dataTable.innerHTML;
+      });
+
+    </script>
 
   </body>
   
