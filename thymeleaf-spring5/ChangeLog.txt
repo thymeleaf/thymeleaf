@@ -3,6 +3,8 @@
 - Improved startup times at the template engine by means of lazy initialization of dialect artifacts.
 - Improve behaviour of SpringContextUtils.getApplicationContext(): avoided cast exception when ApplicationContext
   is not available.
+- Added support for rendering Server-Sent Events (SSE) with content-type "text/event-stream" in Spring 5 WebFlux
+  when Thymeleaf is executing in reactive-friendly data-driven mode.
 
 
 3.0.3.M1
