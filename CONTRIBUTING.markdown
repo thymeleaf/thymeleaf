@@ -3,7 +3,7 @@ Contributing to Thymeleaf: Terms and Conditions
 
 ------------------------------------------------------------------------------
 
-Do you want to contribute your work to thymeleaf? Well, then first and most important: **THANK YOU!**
+Do you want to contribute your work to Thymeleaf? Well, then first and most important: **THANK YOU!**
 
 Now, in order to accept your contribution, there are some terms you must expressly agree with, so please
 read them carefully. They might look a bit cumbersome, but they are here just in order to protect
@@ -102,7 +102,7 @@ Note the following only applies to documentation/articles meant to be published 
   - Topic and text structure must be first discussed and agreed upon with the project members.
   - Project members may edit and make small changes to your texts --of which you will be informed-- before
     publishing them.
-  - Format and visual styles must adhere to the thymeleaf website standards, of which you will be informed
+  - Format and visual styles must adhere to the Thymeleaf website standards, of which you will be informed
     by the project members.
 
 
