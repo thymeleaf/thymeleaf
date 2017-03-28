@@ -5,6 +5,7 @@
   is not available.
 - Added support for rendering Server-Sent Events (SSE) with content-type "text/event-stream" in Spring 5 WebFlux
   when Thymeleaf is executing in reactive-friendly data-driven mode.
+- Updated Spring Framework dependency to 5.0.0.M5.
 
 
 3.0.3.M1
