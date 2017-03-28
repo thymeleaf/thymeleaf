@@ -24,7 +24,7 @@
   <groupId>org.thymeleaf</groupId>
   <artifactId>thymeleaf-testing</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.3-SNAPSHOT</version>
+  <version>3.0.3.RELEASE</version>
   <name>thymeleaf-testing</name>
   <url>http://www.thymeleaf.org</url>
 
@@ -47,7 +47,7 @@
     <url>scm:git:git@github.com:thymeleaf/thymeleaf-testing.git</url>
     <connection>scm:git:git@github.com:thymeleaf/thymeleaf-testing.git</connection>
     <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf-testing.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>thymeleaf-testing-3.0.3.RELEASE</tag>
   </scm>
 
   <developers>
@@ -254,27 +254,27 @@
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf</artifactId>
-      <version>${thymeleaf.version}</version>
+      <version>3.0.4.RELEASE</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-spring3</artifactId>
-      <version>${thymeleaf.version}</version>
+      <version>3.0.4.RELEASE</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-spring4</artifactId>
-      <version>${thymeleaf.version}</version>
+      <version>3.0.4.RELEASE</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-spring5</artifactId>
-      <version>${thymeleaf-spring5.version}</version>
+      <version>3.0.4.M2</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
@@ -282,7 +282,7 @@
     <dependency>
       <groupId>org.attoparser</groupId>
       <artifactId>attoparser</artifactId>
-      <version>${attoparser.version}</version>
+      <version>2.0.3.RELEASE</version>
       <scope>compile</scope>
     </dependency>
     
