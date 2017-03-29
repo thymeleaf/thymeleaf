@@ -257,8 +257,8 @@ final class TextParser {
 
         final int[] locator = new int[] {status.line, status.col};
 
-        int currentLine;
-        int currentCol;
+        int currentLine = locator[0];
+        int currentCol = locator[1];
 
         final int maxi = offset + len;
         int i = offset;
@@ -272,23 +272,20 @@ final class TextParser {
         boolean inComment = false;
         boolean inLiteral = false;
 
-        int tagStart;
-        int tagEnd;
+        int pos = i;
+        int tagStart = i;
+        int tagEnd = i;
 
         while (i < maxi) {
-
-            currentLine = locator[0];
-            currentCol = locator[1];
 
             inStructure = (inOpenElement || inCloseElement || inComment || inLiteral);
 
             if (!inStructure) {
 
-                tagStart =
-                        TextParsingUtil.findNextStructureStartOrLiteralMarker(
+                pos = TextParsingUtil.findNextStructureStartOrLiteralMarker(
                                 buffer, i, maxi, locator, this.processCommentsAndLiterals);
 
-                if (tagStart == -1) {
+                if (pos == -1) {
 
                     status.offset = current;
                     status.line = currentLine;
@@ -299,14 +296,14 @@ final class TextParser {
 
                 }
 
-                c = buffer[tagStart];
+                c = buffer[pos];
 
-                inOpenElement = TextParsingElementUtil.isOpenElementStart(buffer, tagStart, maxi);
+                inOpenElement = TextParsingElementUtil.isOpenElementStart(buffer, pos, maxi);
                 if (!inOpenElement) {
-                    inCloseElement = TextParsingElementUtil.isCloseElementStart(buffer, tagStart, maxi);
+                    inCloseElement = TextParsingElementUtil.isCloseElementStart(buffer, pos, maxi);
                     if (!inCloseElement) {
                         if (this.processCommentsAndLiterals) {
-                            inComment = TextParsingCommentUtil.isCommentStart(buffer, tagStart, maxi);
+                            inComment = TextParsingCommentUtil.isCommentStart(buffer, pos, maxi);
                             if (!inComment) {
                                 inLiteral = (c == '\'' || c == '"');
                                 status.literalMarker = c;
@@ -317,16 +314,21 @@ final class TextParser {
 
                 inStructure = (inOpenElement || inCloseElement || inComment || inLiteral);
 
+                if (inStructure && !inLiteral) {
+                    // We won't advance the "structure start" pointer if this is just a literal because we want
+                    // to send literals as parts of their larger containing texts, not separately
+                    tagStart = pos;
+                }
+
                 while (!inStructure) {
                     // We found a '[' or a '/', but it cannot be considered beginning of any known structure
                     // Or also it could have been a character starting or ending a literal
 
                     ParsingLocatorUtil.countChar(locator, c);
-                    tagStart =
-                            TextParsingUtil.findNextStructureStartOrLiteralMarker(
-                                    buffer, tagStart + 1, maxi, locator, this.processCommentsAndLiterals);
+                    pos = TextParsingUtil.findNextStructureStartOrLiteralMarker(
+                                    buffer, pos + 1, maxi, locator, this.processCommentsAndLiterals);
 
-                    if (tagStart == -1) {
+                    if (pos == -1) {
                         status.offset = current;
                         status.line = currentLine;
                         status.col = currentCol;
@@ -335,14 +337,14 @@ final class TextParser {
                         return;
                     }
 
-                    c = buffer[tagStart];
+                    c = buffer[pos];
 
-                    inOpenElement = TextParsingElementUtil.isOpenElementStart(buffer, tagStart, maxi);
+                    inOpenElement = TextParsingElementUtil.isOpenElementStart(buffer, pos, maxi);
                     if (!inOpenElement) {
-                        inCloseElement = TextParsingElementUtil.isCloseElementStart(buffer, tagStart, maxi);
+                        inCloseElement = TextParsingElementUtil.isCloseElementStart(buffer, pos, maxi);
                         if (!inCloseElement) {
                             if (this.processCommentsAndLiterals) {
-                                inComment = TextParsingCommentUtil.isCommentStart(buffer, tagStart, maxi);
+                                inComment = TextParsingCommentUtil.isCommentStart(buffer, pos, maxi);
                                 if (!inComment) {
                                     inLiteral = (c == '\'' || c == '"');
                                     status.literalMarker = c;
@@ -352,6 +354,12 @@ final class TextParser {
                     }
 
                     inStructure = (inOpenElement || inCloseElement || inComment || inLiteral);
+
+                    if (inStructure && !inLiteral) {
+                        // We won't advance the "structure start" pointer if this is just a literal because we want
+                        // to send literals as parts of their larger containing texts, not separately
+                        tagStart = pos;
+                    }
 
                 }
 
@@ -365,18 +373,23 @@ final class TextParser {
 
                 }
 
-                current = tagStart;
-                i = current;
+                if (tagStart == pos) {
+                    // Only advance current and the line+col pointers if we have actually found something
+                    current = tagStart;
+                    currentLine = locator[0];
+                    currentCol = locator[1];
+                }
+                i = pos;
 
             } else {
 
 
-                tagEnd =
+                pos =
                         inLiteral? TextParsingUtil.findNextLiteralEnd(buffer, i, maxi, locator, status.literalMarker) :
                         inComment? TextParsingUtil.findNextCommentEnd(buffer, i, maxi, locator) :
                                    TextParsingUtil.findNextStructureEndAvoidQuotes(buffer, i, maxi, locator);
 
-                if (tagEnd < 0) {
+                if (pos < 0) {
                     // This is an unfinished structure
                     status.offset = current;
                     status.line = currentLine;
@@ -388,6 +401,8 @@ final class TextParser {
 
                 if (inOpenElement) {
                     // This is a open/standalone tag (to be determined by looking at the antepenultimate character)
+
+                    tagEnd = pos;
 
                     if ((buffer[tagEnd - 1] == '/')) {
                         TextParsingElementUtil.
@@ -402,6 +417,8 @@ final class TextParser {
                 } else if (inCloseElement) {
                     // This is a closing tag
 
+                    tagEnd = pos;
+
                     TextParsingElementUtil.
                             parseCloseElement(buffer, current, (tagEnd - current) + 1, currentLine, currentCol, handler);
 
@@ -410,6 +427,8 @@ final class TextParser {
                 } else if (inComment) {
                     // This is a comment! (obviously ;-))
 
+                    tagEnd = pos;
+
                     TextParsingCommentUtil.parseComment(buffer, current, (tagEnd - current) + 1, currentLine, currentCol, handler);
 
                     inComment = false;
@@ -417,7 +436,7 @@ final class TextParser {
                 } else if (inLiteral) {
                     // This is a literal
 
-                    handler.handleText(buffer, current, (tagEnd - current) + 1, currentLine, currentCol);
+                    // tagEnd is NOT set to pos, because we won't be sending any events, just cancelling the "literal" mode
 
                     inLiteral = false;
                     status.literalMarker = (char)0;
@@ -429,18 +448,23 @@ final class TextParser {
                 }
 
                 // The ']', '/' or literal-delimiter char will be considered as processed too
-                ParsingLocatorUtil.countChar(locator, buffer[tagEnd]);
+                ParsingLocatorUtil.countChar(locator, buffer[pos]);
 
-                current = tagEnd + 1;
-                i = current;
+                if (tagEnd == pos) {
+                    // Only advance current and the line+col pointers if we have actually found something
+                    current = tagEnd + 1;
+                    currentLine = locator[0];
+                    currentCol = locator[1];
+                }
+                i = pos + 1;
 
             }
 
         }
 
         status.offset = current;
-        status.line = locator[0];
-        status.col = locator[1];
+        status.line = currentLine;
+        status.col = currentCol;
         status.inStructure = false;
         status.literalMarker = (char)0;
 
