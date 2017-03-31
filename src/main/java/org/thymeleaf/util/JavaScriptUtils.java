@@ -48,13 +48,24 @@ public final class JavaScriptUtils {
         return StringUtils.escapeJavaScript(str);
     }
 
-
-
+    public static interface JsonSerializer {
+        String toJsonString(Object object);
+    }
+    
+    private static JsonSerializer jsonSerializer;
+    
+    public static void setJsonSerializer(JsonSerializer jsonSerializer) {
+        HardwareModule.jsonSerializer = jsonSerializer;
+    }
 
     public static String print(final Object object) {
-        final StringBuilder output = new StringBuilder();
-        print(output, object);
-        return output.toString();
+        if (jsonSerializer != null) {
+            return jsonSerializer.toJsonString(object);
+        } else {
+            final StringBuilder output = new StringBuilder();
+            print(output, object);
+            return output.toString();
+        }
     }
 
 
