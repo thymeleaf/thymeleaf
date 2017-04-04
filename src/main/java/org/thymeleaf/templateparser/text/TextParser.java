@@ -269,7 +269,8 @@ final class TextParser {
 
         boolean inOpenElement = false;
         boolean inCloseElement = false;
-        boolean inComment = false;
+        boolean inCommentBlock = false;
+        boolean inCommentLine = false;
         boolean inLiteral = false;
 
         int pos = i;
@@ -278,7 +279,7 @@ final class TextParser {
 
         while (i < maxi) {
 
-            inStructure = (inOpenElement || inCloseElement || inComment || inLiteral);
+            inStructure = (inOpenElement || inCloseElement || inCommentBlock || inCommentLine || inLiteral);
 
             if (!inStructure) {
 
@@ -303,16 +304,19 @@ final class TextParser {
                     inCloseElement = TextParsingElementUtil.isCloseElementStart(buffer, pos, maxi);
                     if (!inCloseElement) {
                         if (this.processCommentsAndLiterals) {
-                            inComment = TextParsingCommentUtil.isCommentStart(buffer, pos, maxi);
-                            if (!inComment) {
-                                inLiteral = (c == '\'' || c == '"');
-                                status.literalMarker = c;
+                            inCommentBlock = TextParsingCommentUtil.isCommentBlockStart(buffer, pos, maxi);
+                            if (!inCommentBlock) {
+                                inCommentLine = TextParsingCommentUtil.isCommentLineStart(buffer, pos, maxi);
+                                if (!inCommentLine) {
+                                    inLiteral = (c == '\'' || c == '"');
+                                    status.literalMarker = c;
+                                }
                             }
                         }
                     }
                 }
 
-                inStructure = (inOpenElement || inCloseElement || inComment || inLiteral);
+                inStructure = (inOpenElement || inCloseElement || inCommentBlock || inCommentLine || inLiteral);
 
                 if (inStructure && !inLiteral) {
                     // We won't advance the "structure start" pointer if this is just a literal because we want
@@ -344,16 +348,19 @@ final class TextParser {
                         inCloseElement = TextParsingElementUtil.isCloseElementStart(buffer, pos, maxi);
                         if (!inCloseElement) {
                             if (this.processCommentsAndLiterals) {
-                                inComment = TextParsingCommentUtil.isCommentStart(buffer, pos, maxi);
-                                if (!inComment) {
-                                    inLiteral = (c == '\'' || c == '"');
-                                    status.literalMarker = c;
+                                inCommentBlock = TextParsingCommentUtil.isCommentBlockStart(buffer, pos, maxi);
+                                if (!inCommentBlock) {
+                                    inCommentLine = TextParsingCommentUtil.isCommentLineStart(buffer, pos, maxi);
+                                    if (!inCommentLine) {
+                                        inLiteral = (c == '\'' || c == '"');
+                                        status.literalMarker = c;
+                                    }
                                 }
                             }
                         }
                     }
 
-                    inStructure = (inOpenElement || inCloseElement || inComment || inLiteral);
+                    inStructure = (inOpenElement || inCloseElement || inCommentBlock || inCommentLine || inLiteral);
 
                     if (inStructure && !inLiteral) {
                         // We won't advance the "structure start" pointer if this is just a literal because we want
@@ -385,9 +392,13 @@ final class TextParser {
 
 
                 pos =
-                        inLiteral? TextParsingUtil.findNextLiteralEnd(buffer, i, maxi, locator, status.literalMarker) :
-                        inComment? TextParsingUtil.findNextCommentEnd(buffer, i, maxi, locator) :
-                                   TextParsingUtil.findNextStructureEndAvoidQuotes(buffer, i, maxi, locator);
+                        inLiteral?
+                                TextParsingUtil.findNextLiteralEnd(buffer, i, maxi, locator, status.literalMarker) :
+                        inCommentBlock?
+                                TextParsingUtil.findNextCommentBlockEnd(buffer, i, maxi, locator) :
+                        inCommentLine?
+                                TextParsingUtil.findNextCommentLineEnd(buffer, i, maxi, locator) :
+                                TextParsingUtil.findNextStructureEndAvoidQuotes(buffer, i, maxi, locator);
 
                 if (pos < 0) {
                     // This is an unfinished structure
@@ -424,14 +435,24 @@ final class TextParser {
 
                     inCloseElement = false;
 
-                } else if (inComment) {
-                    // This is a comment! (obviously ;-))
+                } else if (inCommentBlock) {
+                    // Comment blocks will be parsed as such because they may contain 'natural' inlined expressions
 
                     tagEnd = pos;
 
                     TextParsingCommentUtil.parseComment(buffer, current, (tagEnd - current) + 1, currentLine, currentCol, handler);
 
-                    inComment = false;
+                    inCommentBlock = false;
+
+                } else if (inCommentLine) {
+                    // Note that comment lines will not be parsed in a special way, only as mere texts, because they
+                    // cannot contain 'natural' inlined expressions (though they may contain normal inlined expressions)
+
+                    tagEnd = pos;
+
+                    handler.handleText(buffer, current, (tagEnd - current) + 1, currentLine, currentCol);
+
+                    inCommentLine = false;
 
                 } else if (inLiteral) {
                     // This is a literal

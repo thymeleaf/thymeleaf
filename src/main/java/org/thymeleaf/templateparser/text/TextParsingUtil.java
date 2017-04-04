@@ -80,7 +80,7 @@ final class TextParsingUtil {
     }
 
 
-    static int findNextCommentEnd(
+    static int findNextCommentBlockEnd(
             final char[] text, final int offset, final int maxi,
             final int[] locator) {
 
@@ -100,6 +100,36 @@ final class TextParsingUtil {
                 locator[1] = 0;
                 locator[0]++;
             } else if (i > offset && c == '/' && text[i - 1] == '*') {
+                locator[1] += (i - colIndex);
+                return i;
+            }
+
+            i++;
+
+        }
+
+        locator[1] += (maxi - colIndex);
+        return -1;
+
+    }
+
+
+    static int findNextCommentLineEnd(
+            final char[] text, final int offset, final int maxi,
+            final int[] locator) {
+
+        char c;
+
+        int colIndex = offset;
+
+        int i = offset;
+        int n = (maxi - offset);
+
+        while (n-- != 0) {
+
+            c = text[i];
+
+            if (c == '\n') {
                 locator[1] += (i - colIndex);
                 return i;
             }
@@ -175,7 +205,7 @@ final class TextParsingUtil {
                 locator[1] += (i - colIndex);
                 return i;
             } else if (processCommentsAndLiterals) {
-                if (c == '/') { // '/' is for comments (/*...*/)
+                if (c == '/') { // '/' is for comments (/*...*/, //...\n)
                     locator[1] += (i - colIndex);
                     return i;
                 } else if (c == '\'' || c == '"') { // literal markers

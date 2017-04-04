@@ -44,7 +44,7 @@ final class TextParsingCommentUtil {
             final ITextHandler handler)
             throws TextParseException {
 
-        if (len < 4 || !isCommentStart(buffer, offset, offset + len) || !isCommentEnd(buffer, (offset + len) - 2, offset + len)) {
+        if (len < 4 || !isCommentBlockStart(buffer, offset, offset + len) || !isCommentBlockEnd(buffer, (offset + len) - 2, offset + len)) {
             throw new TextParseException(
                     "Could not parse as a well-formed Comment: \"" + new String(buffer, offset, len) + "\"", line, col);
         }
@@ -63,16 +63,25 @@ final class TextParsingCommentUtil {
 
 
     
-    static boolean isCommentStart(final char[] buffer, final int offset, final int maxi) {
+    static boolean isCommentBlockStart(final char[] buffer, final int offset, final int maxi) {
         return ((maxi - offset > 1) &&
                     buffer[offset] == '/' &&
                     buffer[offset + 1] == '*');
     }
 
 
-    static boolean isCommentEnd(final char[] buffer, final int offset, final int maxi) {
+    static boolean isCommentBlockEnd(final char[] buffer, final int offset, final int maxi) {
         return ((maxi - offset > 1) &&
                 buffer[offset] == '*' &&
+                buffer[offset + 1] == '/');
+    }
+
+
+
+
+    static boolean isCommentLineStart(final char[] buffer, final int offset, final int maxi) {
+        return ((maxi - offset > 1) &&
+                buffer[offset] == '/' &&
                 buffer[offset + 1] == '/');
     }
 
