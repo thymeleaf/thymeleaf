@@ -356,7 +356,9 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         // Note Spring's EvaluationContexts are NOT THREAD-SAFE (in exchange for SpelExpressions being thread-safe).
         // That's why we need to create a new EvaluationContext for each request / template execution, even if it is
         // quite expensive to create because of requiring the initialization of several ConcurrentHashMaps.
-        final ConversionService conversionService = applicationContext.getBean(ConversionService.class);
+        final ConversionService conversionService =
+                applicationContext.getBeanNamesForType(ConversionService.class).length > 0?
+                        applicationContext.getBean(ConversionService.class): null;
         final ThymeleafEvaluationContext evaluationContext =
                 new ThymeleafEvaluationContext(applicationContext, conversionService);
         mergedModel.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
