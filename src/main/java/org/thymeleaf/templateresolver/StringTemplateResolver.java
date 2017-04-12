@@ -70,7 +70,7 @@ public class StringTemplateResolver extends AbstractTemplateResolver {
 
     /**
      * <p>
-     *   Default value for the <i>cacheable</i> flag: false.
+     *   Default value for the <i>cacheable</i> flag: {@value DEFAULT_CACHEABLE}
      * </p>
      */
     public static final boolean DEFAULT_CACHEABLE = false;

@@ -69,7 +69,7 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
 
     /**
      * <p>
-     *   Default value for the <i>cacheable</i> flag: true.
+     *   Default value for the <i>cacheable</i> flag: {@value DEFAULT_CACHEABLE}.
      * </p>
      */
     public static final boolean DEFAULT_CACHEABLE = true;

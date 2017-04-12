@@ -58,7 +58,7 @@ public final class StandardDecoupledTemplateLogicResolver implements IDecoupledT
 
     /**
      * <p>
-     *   Default suffix applied to the relative resources resolved: <tt>.th.xml</tt>
+     *   Default suffix applied to the relative resources resolved: {@value DECOUPLED_TEMPLATE_LOGIC_FILE_SUFFIX}
      * </p>
      */
     public static final String DECOUPLED_TEMPLATE_LOGIC_FILE_SUFFIX = ".th.xml";
