@@ -284,7 +284,27 @@ public abstract class Node implements Serializable {
         }
         return this.nodeProperties.get(name);
     }
-    
+
+    /**
+     * <p>
+     *   Returns the value of a specific <i>node property</i>, or <tt>null</tt>
+     *   if the property has not been set or the property cannot be cast to <tt>Class</tt>
+     * </p>
+     *
+     * @param name the name of the property to be retrieved
+     * @param clazz the <tt>Class</tt> the property should be cast to
+     * @param <T> the type of the property class
+     * @return the value of the property
+     * @see #getNodeProperty(String)
+     */
+    public <T> T getNodeProperty(final String name, Class<T> clazz) {
+        final Object nodeProperty = getNodeProperty(name);
+        try {
+            return clazz.cast(nodeProperty);
+        } catch (ClassCastException e) {
+            return null;
+        }
+    }
 
     /**
      * <p>
