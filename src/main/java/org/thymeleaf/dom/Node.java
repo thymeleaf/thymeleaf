@@ -1163,7 +1163,7 @@ public abstract class Node implements Serializable {
         int contentsHash() {
             //noinspection MagicNumber
             final int prime = 31;
-            int result = super.hashCode();
+            int result = 17;
             result = prime * result + System.identityHashCode(this);
             for (final Map.Entry<String,Object> entry : this.entrySet()) {
                 final String key = entry.getKey();
