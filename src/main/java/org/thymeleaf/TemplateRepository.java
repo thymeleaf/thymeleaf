@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.cache.ICache;
@@ -190,26 +189,25 @@ public final class TemplateRepository {
 
         final String templateName = templateProcessingParameters.getTemplateName();
 
-        if (this.templateCache != null) {
-            final Template cached = 
-                this.templateCache.get(templateName);
-            if (cached != null) {
-                return cached.createDuplicate();
-            }
-        }
-        
         final Configuration configuration = templateProcessingParameters.getConfiguration();
         final Set<ITemplateResolver> templateResolvers = configuration.getTemplateResolvers();
         TemplateResolution templateResolution = null;
         InputStream templateInputStream = null;
         
+        String resourceName = null;
         for (final ITemplateResolver templateResolver : templateResolvers) {
                 
                 templateResolution = templateResolver.resolveTemplate(templateProcessingParameters);
                 
                 if (templateResolution != null) {
                     
-                    final String resourceName = templateResolution.getResourceName();
+                    resourceName = templateResolution.getResourceName();
+                    if (this.templateCache != null) {
+                        final Template cached = this.templateCache.get(buildCacheKey(templateName, resourceName));
+                        if (cached != null) {
+                            return cached.createDuplicate();
+                        }
+                    }
 
                     final IResourceResolver resourceResolver = templateResolution.getResourceResolver();
                     
@@ -288,7 +286,7 @@ public final class TemplateRepository {
 
         if (this.templateCache != null) {
             if (templateResolution.getValidity().isCacheable()) {
-                this.templateCache.put(templateName, template);
+                this.templateCache.put(buildCacheKey(templateName, resourceName), template);
                 return template.createDuplicate();
             }
         }
@@ -297,7 +295,9 @@ public final class TemplateRepository {
         
     }
 
-    
+    private String buildCacheKey(String templateName, String resourceName) {
+        return templateName+"##"+resourceName;
+    }
 
     /**
      * <p>
