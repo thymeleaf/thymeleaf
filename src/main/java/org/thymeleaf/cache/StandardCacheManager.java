@@ -72,27 +72,27 @@ public class StandardCacheManager extends AbstractCacheManager {
 
     
     /**
-     * Default template cache name: {@value DEFAULT_TEMPLATE_CACHE_NAME}
+     * Default template cache name: {@value}
      */
     public static final String DEFAULT_TEMPLATE_CACHE_NAME = "TEMPLATE_CACHE";
     
     /**
-     * Default template cache initial size: {@value DEFAULT_TEMPLATE_CACHE_INITIAL_SIZE}
+     * Default template cache initial size: {@value}
      */
     public static final int DEFAULT_TEMPLATE_CACHE_INITIAL_SIZE = 20;
     
     /**
-     * Default template cache maximum size: {@value DEFAULT_TEMPLATE_CACHE_MAX_SIZE}
+     * Default template cache maximum size: {@value}
      */
     public static final int DEFAULT_TEMPLATE_CACHE_MAX_SIZE = 200;
 
     /**
-     * Default template cache "enable counters" flag: {@value DEFAULT_TEMPLATE_CACHE_ENABLE_COUNTERS}
+     * Default template cache "enable counters" flag: {@value}
      */
     public static final boolean DEFAULT_TEMPLATE_CACHE_ENABLE_COUNTERS = false;
 
     /**
-     * Default template cache "use soft references" flag: {@value DEFAULT_TEMPLATE_CACHE_USE_SOFT_REFERENCES}
+     * Default template cache "use soft references" flag: {@value}
      */
     public static final boolean DEFAULT_TEMPLATE_CACHE_USE_SOFT_REFERENCES = true;
     
@@ -108,27 +108,27 @@ public class StandardCacheManager extends AbstractCacheManager {
 
     
     /**
-     * Default expression cache name: {@value DEFAULT_EXPRESSION_CACHE_NAME}
+     * Default expression cache name: {@value}
      */
     public static final String DEFAULT_EXPRESSION_CACHE_NAME = "EXPRESSION_CACHE";
     
     /**
-     * Default expression cache initial size: {@value DEFAULT_EXPRESSION_CACHE_INITIAL_SIZE}
+     * Default expression cache initial size: {@value}
      */
     public static final int DEFAULT_EXPRESSION_CACHE_INITIAL_SIZE = 100;
     
     /**
-     * Default expression cache maximum size: {@value DEFAULT_EXPRESSION_CACHE_MAX_SIZE}
+     * Default expression cache maximum size: {@value}
      */
     public static final int DEFAULT_EXPRESSION_CACHE_MAX_SIZE = 500;
 
     /**
-     * Default expression cache "enable counters" flag: {@value DEFAULT_EXPRESSION_CACHE_ENABLE_COUNTERS}
+     * Default expression cache "enable counters" flag: {@value}
      */
     public static final boolean DEFAULT_EXPRESSION_CACHE_ENABLE_COUNTERS = false;
 
     /**
-     * Default expression cache "use soft references" flag: {@value DEFAULT_EXPRESSION_CACHE_USE_SOFT_REFERENCES}
+     * Default expression cache "use soft references" flag: {@value}
      */
     public static final boolean DEFAULT_EXPRESSION_CACHE_USE_SOFT_REFERENCES = true;
     

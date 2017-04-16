@@ -19,11 +19,6 @@
  */
 package org.thymeleaf.templateresolver;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.cache.AlwaysValidCacheEntryValidity;
 import org.thymeleaf.cache.ICacheEntryValidity;
@@ -34,6 +29,11 @@ import org.thymeleaf.templateresource.ITemplateResource;
 import org.thymeleaf.util.PatternSpec;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -69,7 +69,7 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
 
     /**
      * <p>
-     *   Default value for the <i>cacheable</i> flag: {@value DEFAULT_CACHEABLE}.
+     *   Default value for the <i>cacheable</i> flag: {@value}.
      * </p>
      */
     public static final boolean DEFAULT_CACHEABLE = true;
