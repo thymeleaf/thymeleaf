@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.templateresolver;
 
-import java.util.Map;
-
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.cache.AlwaysValidCacheEntryValidity;
 import org.thymeleaf.cache.ICacheEntryValidity;
@@ -31,6 +29,8 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresource.ITemplateResource;
 import org.thymeleaf.templateresource.StringTemplateResource;
 import org.thymeleaf.util.Validate;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -70,7 +70,7 @@ public class StringTemplateResolver extends AbstractTemplateResolver {
 
     /**
      * <p>
-     *   Default value for the <i>cacheable</i> flag: false.
+     *   Default value for the <i>cacheable</i> flag: {@value}
      * </p>
      */
     public static final boolean DEFAULT_CACHEABLE = false;

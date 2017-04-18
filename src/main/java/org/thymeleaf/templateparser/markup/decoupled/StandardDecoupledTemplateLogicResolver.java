@@ -19,11 +19,11 @@
  */
 package org.thymeleaf.templateparser.markup.decoupled;
 
-import java.util.Set;
-
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresource.ITemplateResource;
+
+import java.util.Set;
 
 /**
  * <p>
@@ -58,7 +58,7 @@ public final class StandardDecoupledTemplateLogicResolver implements IDecoupledT
 
     /**
      * <p>
-     *   Default suffix applied to the relative resources resolved: <tt>.th.xml</tt>
+     *   Default suffix applied to the relative resources resolved: {@value}
      * </p>
      */
     public static final String DECOUPLED_TEMPLATE_LOGIC_FILE_SUFFIX = ".th.xml";
