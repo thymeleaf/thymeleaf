@@ -2,6 +2,9 @@
 =====
 - Fixed bad interaction of literal parsing in javascript inlining introduced in 3.0.4, causing inlined expressions
   containing literals ('...') to not be adequately parsed, and therefore not executed at all.
+- Fixed bad parsing of '/content()' selector (AttoParser) in some scenarios, leading to suboptimal execution of
+  this type of fragment selection.
+- Updated AttoParser dependency to 2.0.4.RELEASE.
 
 
 3.0.4
