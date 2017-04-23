@@ -154,6 +154,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
         // We will check types first instead of events in order to (many times) avoid creating an immutably-wrapped
         // event object when calling "model.get(pos)"
 
+        boolean signatureApplied = false;
         final ITemplateEvent firstEvent = (fragmentModel.size() > 2 ? fragmentModel.get(1) : null);
         if (firstEvent != null && IProcessableElementTag.class.isAssignableFrom(firstEvent.getClass())) {
 
@@ -173,6 +174,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
                         // Reshape the fragment parameters into the ones that we will actually use, according to the signature
                         fragmentParameters = FragmentSignatureUtils.processParameters(fragmentSignature, fragmentParameters, fragment.hasSyntheticParameters());
+                        signatureApplied = true;
 
                     }
 
@@ -180,6 +182,16 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
 
             }
 
+        }
+
+        // If no signature applied, we must check if the parameters map contains synthetic parameters. If so,
+        // we should raise an exception because not doing so could provoke confusion in users who would see parameters
+        // not being applied, maybe not realising there was no signature assignation involved.
+        if (!signatureApplied && fragment.hasSyntheticParameters()) {
+            throw new TemplateProcessingException(
+                    "Fragment '" + attributeValue + "' specifies synthetic (unnamed) parameters, but the resolved fragment " +
+                    "does not match a fragment signature (th:fragment,data-th-fragment) which could apply names to " +
+                    "the specified parameters.");
         }
 
 
