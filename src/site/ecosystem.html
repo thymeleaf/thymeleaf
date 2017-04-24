@@ -10,11 +10,15 @@
 	<link rel="icon" href="images/favicon.ico"/>
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,400italic,700,700italic"/>
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic,700italic"/>
-	<link rel="stylesheet" href="styles/normalize.css" media="screen"/>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/2.1.3/normalize.min.css" media="screen"/>
 	<link rel="stylesheet" href="styles/thymeleaf.css" media="screen"/>
 
-	<script src="scripts/dumbqueryselector.js" defer></script>
-	<script src="scripts/prism.js" defer data-manual></script>
+	<script src="https://unpkg.com/dumb-query-selector@3.0.0/dumb-query-selector.js" defer></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/components/prism-core.min.js" defer data-manual></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/components/prism-markup.min.js" defer></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/components/prism-clike.min.js" defer></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/components/prism-java.min.js" defer></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
 	<script src="scripts/thymeleaf.js" defer></script>
 </head>
 
@@ -527,6 +531,21 @@
 					conditional fragments (<code>th:if</code>/<code>th:unless</code>) on
 					their prototypes, improving the experience of Natural Template
 					development.</p>
+				</section>
+
+				<section class="subsection">
+					<header>
+						<h3>
+							<a id="thymeleaf-fragment" href="#thymeleaf-fragment" class="anchor"></a>
+							thymeleaf-fragment.js
+						</h3>
+					</header>
+					<p class="community-authors">by <a href="https://www.blackpepper.co.uk/">Black Pepper Software</a></p>
+					<p><a href="https://github.com/BlackPepperSoftware/thymeleaf-fragment.js">https://github.com/BlackPepperSoftware/thymeleaf-fragment.js</a></p>
+
+					<p>thymeleaf-fragment.js provides a simple script that only processes <code>th:include</code>,
+					<code>th:insert</code> and <code>th:replace</code> attributes using jQuery. This allows natural
+					templates that use fragments to be viewed in the browser as static prototypes.</p>
 				</section>
 
 				<section class="subsection">

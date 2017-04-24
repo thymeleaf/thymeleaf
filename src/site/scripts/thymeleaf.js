@@ -17,10 +17,6 @@
 (function() {
 	'use strict';
 
-	var $ = DumbQuerySelector.$;
-	var $$ = DumbQuerySelector.$$;
-
-
 	/**
 	 * Swaps HTML characters for their entity codes so that they can be displayed
 	 * in `<code>` sections.
