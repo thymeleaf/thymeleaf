@@ -1,0 +1,3 @@
+Travelcompositor aims to be a multidestination trip planner with a one stop shop process, this way customers can book their whole trip in only one session including multiple services such as flights, hotels, transfers, car rental, activities or insurance.
+
+We use Thymleaf to generate emails and PDF markup on the fly. It's been a very useful tool for us, since we can easily leverage our existing CDI beans or custom message resources. Also, designers and developers can work with the same templates at the same time, allowing us to work faster.
