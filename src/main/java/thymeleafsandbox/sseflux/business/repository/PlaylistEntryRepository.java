@@ -71,7 +71,7 @@ public class PlaylistEntryRepository {
                                 resultSet.getString("trackName"),
                                 resultSet.getString("artistName"),
                                 resultSet.getString("albumTitle"));
-                    })).repeat(300).delay(Duration.ofSeconds(1L));
+                    })).repeat(300).delayElements(Duration.ofSeconds(1L));
 
     }
 
