@@ -87,7 +87,7 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
 
     private static final Set<String> RECOGNIZED_TEMPLATE_FILE_SUFFIXES =
             new HashSet<String>(Arrays.asList(
-                    ".html", ".htm", ".xhtml", ".xml", ".js", ".json", ".css", ".rss", ".atom"));
+                    ".html", ".htm", ".xhtml", ".xml", ".js", ".json", ".css", ".rss", ".atom", ".txt"));
 
     
     private String prefix = null;
@@ -155,7 +155,7 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      *   Note that this suffix may not be applied to the template name if the template name
      *   already ends in a known file name suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
      *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
-     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>. If this behaviour needs to be overridden so
+     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>. If this behaviour needs to be overridden so
      *   that suffix is always applied, the {@link #setForceSuffix(boolean)} will need to be set.
      * </p>
      *
@@ -175,7 +175,7 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      *   Note that this suffix may not be applied to the template name if the template name
      *   already ends in a known file name suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
      *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
-     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>. If this behaviour needs to be overridden so
+     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>. If this behaviour needs to be overridden so
      *   that suffix is always applied, the {@link #setForceSuffix(boolean)} will need to be set.
      * </p>
      *
@@ -195,7 +195,7 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      *   When forced, suffix will be appended to the template name even if the template
      *   name ends in a known suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
      *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
-     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>.
+     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>.
      * </p>
      * <p>Default value is <tt><b>false</b></tt></p>.
      *
@@ -216,7 +216,7 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      *   When forced, suffix will be appended to the template name even if the template
      *   name ends in a known suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
      *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
-     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>.
+     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>.
      * </p>
      * <p>Default value is <tt><b>false</b></tt></p>.
      *
