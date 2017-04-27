@@ -19,6 +19,13 @@
  */
 package org.thymeleaf.templateresolver;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.cache.AlwaysValidCacheEntryValidity;
 import org.thymeleaf.cache.ICacheEntryValidity;
@@ -29,11 +36,6 @@ import org.thymeleaf.templateresource.ITemplateResource;
 import org.thymeleaf.util.PatternSpec;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -82,9 +84,15 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      */
     public static final Long DEFAULT_CACHE_TTL_MS = null;
 
+
+    private static final Set<String> RECOGNIZED_TEMPLATE_FILE_SUFFIXES =
+            new HashSet<String>(Arrays.asList(
+                    ".html", ".htm", ".xhtml", ".xml", ".js", ".json", ".css", ".rss", ".atom"));
+
     
     private String prefix = null;
     private String suffix = null;
+    private boolean forceSuffix = false;
     private String characterEncoding = null;
     private TemplateMode templateMode = DEFAULT_TEMPLATE_MODE;
     private boolean cacheable = DEFAULT_CACHEABLE;
@@ -136,14 +144,21 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
     public final void setPrefix(final String prefix) {
         this.prefix = prefix;
     }
-    
+
 
     /**
      * <p>
      *   Returns the (optional) suffix to be added to all template names in order
      *   to convert <i>template names</i> into <i>resource names</i>. 
      * </p>
-     * 
+     * <p>
+     *   Note that this suffix may not be applied to the template name if the template name
+     *   already ends in a known file name suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
+     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
+     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>. If this behaviour needs to be overridden so
+     *   that suffix is always applied, the {@link #setForceSuffix(boolean)} will need to be set.
+     * </p>
+     *
      * @return the suffix.
      */
     public final String getSuffix() {
@@ -156,13 +171,62 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      *   Sets a new (optional) suffix to be added to all template names in order
      *   to convert <i>template names</i> into <i>resource names</i>.
      * </p>
-     * 
+     * <p>
+     *   Note that this suffix may not be applied to the template name if the template name
+     *   already ends in a known file name suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
+     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
+     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>. If this behaviour needs to be overridden so
+     *   that suffix is always applied, the {@link #setForceSuffix(boolean)} will need to be set.
+     * </p>
+     *
      * @param suffix the suffix to be set.
      */
     public final void setSuffix(final String suffix) {
         this.suffix = suffix;
     }
-    
+
+
+    /**
+     * <p>
+     *   Returns whether the application of the suffix should be forced on the template
+     *   name.
+     * </p>
+     * <p>
+     *   When forced, suffix will be appended to the template name even if the template
+     *   name ends in a known suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
+     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
+     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>.
+     * </p>
+     * <p>Default value is <tt><b>false</b></tt></p>.
+     *
+     * @return whether the suffix will be forced or not.
+     * @since 3.0.6
+     */
+    public final boolean getForceSuffix() {
+        return this.forceSuffix;
+    }
+
+
+    /**
+     * <p>
+     *   Sets whether the application of the suffix should be forced on the template
+     *   name.
+     * </p>
+     * <p>
+     *   When forced, suffix will be appended to the template name even if the template
+     *   name ends in a known suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
+     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
+     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>.
+     * </p>
+     * <p>Default value is <tt><b>false</b></tt></p>.
+     *
+     * @param forceSuffix whether the suffix should be forced or not.
+     * @since 3.0.6
+     */
+    public final void setForceSuffix(final boolean forceSuffix) {
+        this.forceSuffix = forceSuffix;
+    }
+
 
     /**
      * <p>
@@ -1123,14 +1187,58 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      * @param templateAliases the template aliases map.
      * @param templateResolutionAttributes the template resolution attributes, if any. Might be null.
      * @return the resource name that should be used for resolving
+     * @deprecated in 3.0.6. Use {@link #computeResourceName(IEngineConfiguration, String, String, String, String, boolean, Map, Map)} instead.
+     *             Will be removed in Thymeleaf 3.2.
      */
+    @Deprecated
     protected String computeResourceName(
             final IEngineConfiguration configuration, final String ownerTemplate, final String template,
             final String prefix, final String suffix, final Map<String, String> templateAliases,
             final Map<String, Object> templateResolutionAttributes) {
 
+        return computeResourceName(
+                configuration, ownerTemplate, template, prefix, suffix, false, templateAliases,
+                templateResolutionAttributes);
+
+    }
+
+
+
+
+
+
+    /**
+     * <p>
+     *   Computes the resource name that will be used for resolving, from the template name and other
+     *   parameters configured at this <em>configurable</em> resolver.
+     * </p>
+     * <p>
+     *   This method can be overridden by subclasses that need to modify the standard way in which the
+     *   name of the template resource is computed by default before passing it to the real resource
+     *   resolution mechanism (in method {@link #computeTemplateResource(IEngineConfiguration, String, String, String, String, Map)}
+     * </p>
+     * <p>
+     *   By default, the resource name will be created by first applying the <em>template aliases</em>, and then
+     *   adding <em>prefix</em> and <em>suffix</em> to the specified <em>template</em> (template name).
+     * </p>
+     *
+     * @param configuration the engine configuration in use.
+     * @param ownerTemplate the owner template, if the resource being computed is a fragment. Might be null.
+     * @param template the template (normally the template name, except for String templates).
+     * @param prefix the prefix to be applied.
+     * @param suffix the suffix to be applied.
+     * @param templateAliases the template aliases map.
+     * @param templateResolutionAttributes the template resolution attributes, if any. Might be null.
+     * @return the resource name that should be used for resolving
+     * @since 3.0.6
+     */
+    protected String computeResourceName(
+            final IEngineConfiguration configuration, final String ownerTemplate, final String template,
+            final String prefix, final String suffix, final boolean forceSuffix,
+            final Map<String, String> templateAliases, final Map<String, Object> templateResolutionAttributes) {
+
         Validate.notNull(template, "Template name cannot be null");
-        
+
         String unaliasedName = templateAliases.get(template);
         if (unaliasedName == null) {
             unaliasedName = template;
@@ -1139,26 +1247,37 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
         final boolean hasPrefix = !StringUtils.isEmptyOrWhitespace(prefix);
         final boolean hasSuffix = !StringUtils.isEmptyOrWhitespace(suffix);
 
-        if (!hasPrefix && !hasSuffix){
+        final boolean shouldApplySuffix =
+                hasSuffix && (forceSuffix || !hasRecognizedSuffix(unaliasedName));
+
+        if (!hasPrefix && !shouldApplySuffix){
             return unaliasedName;
         }
 
-        if (!hasPrefix) { // hasSuffix
+        if (!hasPrefix) { // shouldApplySuffix
             return unaliasedName + suffix;
         }
 
-        if (!hasSuffix) { // hasPrefix
+        if (!shouldApplySuffix) { // hasPrefix
             return prefix + unaliasedName;
         }
 
-        // hasPrefix && hasSuffix
+        // hasPrefix && shouldApplySuffix
         return prefix + unaliasedName + suffix;
 
     }
-    
-    
-    
-    
+
+
+    private static boolean hasRecognizedSuffix(final String templateName) {
+        final int pointPos = templateName.lastIndexOf('.');
+        if (pointPos < 0) {
+            return false;
+        }
+        return RECOGNIZED_TEMPLATE_FILE_SUFFIXES.contains(templateName.substring(pointPos));
+    }
+
+
+
     
 
     @Override
@@ -1217,7 +1336,7 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
     @Override
     protected final ITemplateResource computeTemplateResource(final IEngineConfiguration configuration, final String ownerTemplate, final String template, final Map<String, Object> templateResolutionAttributes) {
         final String resourceName =
-                computeResourceName(configuration, ownerTemplate, template, this.prefix, this.suffix, this.templateAliases, templateResolutionAttributes);
+                computeResourceName(configuration, ownerTemplate, template, this.prefix, this.suffix, this.forceSuffix, this.templateAliases, templateResolutionAttributes);
         return computeTemplateResource(configuration, ownerTemplate, template, resourceName, this.characterEncoding, templateResolutionAttributes);
     }
 
