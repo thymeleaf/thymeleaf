@@ -5,6 +5,7 @@
   this type of fragment selection.
 - Fixed prevent fragments without a signature being called with unnamed parameters.
 - Added allow template suffix to be applied only if template name doesn't already have a known file extension.
+- Added apply template mode depending on template resource extension during resolution.
 - Updated AttoParser dependency to 2.0.4.RELEASE.
 
 

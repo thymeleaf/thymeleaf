@@ -85,9 +85,18 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
     public static final Long DEFAULT_CACHE_TTL_MS = null;
 
 
-    private static final Set<String> RECOGNIZED_TEMPLATE_FILE_SUFFIXES =
-            new HashSet<String>(Arrays.asList(
-                    ".html", ".htm", ".xhtml", ".xml", ".js", ".json", ".css", ".rss", ".atom", ".txt"));
+    private static final Set<String> RECOGNIZED_TEMPLATE_FILE_SUFFIXES_HTML =
+            new HashSet<String>(Arrays.asList(".html", ".htm", ".xhtml"));
+    private static final Set<String> RECOGNIZED_TEMPLATE_FILE_SUFFIXES_XML =
+            new HashSet<String>(Arrays.asList(".xml", ".rss", ".atom"));
+    private static final Set<String> RECOGNIZED_TEMPLATE_FILE_SUFFIXES_JAVASCRIPT =
+            new HashSet<String>(Arrays.asList(".js", ".json"));
+    private static final Set<String> RECOGNIZED_TEMPLATE_FILE_SUFFIXES_CSS =
+            new HashSet<String>(Arrays.asList(".css"));
+    private static final Set<String> RECOGNIZED_TEMPLATE_FILE_SUFFIXES_TEXT =
+            new HashSet<String>(Arrays.asList(".txt"));
+
+    private static final Set<String> RECOGNIZED_TEMPLATE_FILE_SUFFIXES;
 
     
     private String prefix = null;
@@ -95,6 +104,7 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
     private boolean forceSuffix = false;
     private String characterEncoding = null;
     private TemplateMode templateMode = DEFAULT_TEMPLATE_MODE;
+    private boolean forceTemplateMode = false;
     private boolean cacheable = DEFAULT_CACHEABLE;
     private Long cacheTTLMs = DEFAULT_CACHE_TTL_MS;
 
@@ -110,7 +120,18 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
     private final PatternSpec cacheablePatternSpec = new PatternSpec();
     private final PatternSpec nonCacheablePatternSpec = new PatternSpec();
     
-    
+
+
+    static {
+        RECOGNIZED_TEMPLATE_FILE_SUFFIXES = new HashSet<String>(11, 1.0f);
+        RECOGNIZED_TEMPLATE_FILE_SUFFIXES.addAll(RECOGNIZED_TEMPLATE_FILE_SUFFIXES_HTML);
+        RECOGNIZED_TEMPLATE_FILE_SUFFIXES.addAll(RECOGNIZED_TEMPLATE_FILE_SUFFIXES_XML);
+        RECOGNIZED_TEMPLATE_FILE_SUFFIXES.addAll(RECOGNIZED_TEMPLATE_FILE_SUFFIXES_JAVASCRIPT);
+        RECOGNIZED_TEMPLATE_FILE_SUFFIXES.addAll(RECOGNIZED_TEMPLATE_FILE_SUFFIXES_CSS);
+        RECOGNIZED_TEMPLATE_FILE_SUFFIXES.addAll(RECOGNIZED_TEMPLATE_FILE_SUFFIXES_TEXT);
+    }
+
+
                    
     public AbstractConfigurableTemplateResolver() {
         super();
@@ -263,7 +284,14 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      *   {@link #setHtml5TemplateModePatterns(Set)}, etc.) are also set, they have higher
      *   priority than the template mode set here (this would act as a <i>default</i>).
      * </p>
-     * 
+     * <p>
+     *   Note that this template mode also may not be applied if the template resource name
+     *   ends in a known file name suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
+     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
+     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>. If this behaviour needs to be overridden so
+     *   that template name is always applied, the {@link #setForceTemplateMode(boolean)} will need to be set.
+     * </p>
+     *
      * @return the template mode to be used.
      */
     public final TemplateMode getTemplateMode() {
@@ -276,9 +304,16 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      *   Sets the template mode to be applied to templates resolved by this resolver.
      * </p>
      * <p>
-     *   If <i>template mode patterns</i> (see {@link #setXhtmlTemplateModePatterns(Set)}, 
+     *   If <i>template mode patterns</i> (see {@link #setXhtmlTemplateModePatterns(Set)},
      *   {@link #setHtml5TemplateModePatterns(Set)}, etc.) are also set, they have higher
      *   priority than the template mode set here (this would act as a <i>default</i>).
+     * </p>
+     * <p>
+     *   Note that this template mode also may not be applied if the template resource name
+     *   ends in a known file name suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
+     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
+     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>. If this behaviour needs to be overridden so
+     *   that template name is always applied, the {@link #setForceTemplateMode(boolean)} will need to be set.
      * </p>
      *
      * @param templateMode the template mode.
@@ -302,6 +337,13 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      *   {@link #setHtml5TemplateModePatterns(Set)}, etc.) are also set, they have higher
      *   priority than the template mode set here (this would act as a <i>default</i>).
      * </p>
+     * <p>
+     *   Note that this template mode also may not be applied if the template resource name
+     *   ends in a known file name suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
+     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
+     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>. If this behaviour needs to be overridden so
+     *   that template name is always applied, the {@link #setForceTemplateMode(boolean)} will need to be set.
+     * </p>
      *
      * @param templateMode the template mode.
      */
@@ -311,6 +353,50 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
         // Spring will recognized the property as TemplateMode-typed and simply ignore this setter.
         Validate.notNull(templateMode, "Cannot set a null template mode value");
         this.templateMode = TemplateMode.parse(templateMode);
+    }
+
+
+    /**
+     * <p>
+     *   Returns whether the configured template mode should be forced instead of attempting
+     *   a <em>smart</em> template mode resolution based on template resource name.
+     * </p>
+     * <p>
+     *   When forced, the configured template mode ({@link #setTemplateMode(TemplateMode)} will
+     *   be applied even if the template resource name ends in a known suffix:
+     *   <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
+     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
+     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>.
+     * </p>
+     * <p>Default value is <tt><b>false</b></tt></p>.
+     *
+     * @return whether the suffix will be forced or not.
+     * @since 3.0.6
+     */
+    public final boolean getForceTemplateMode() {
+        return this.forceTemplateMode;
+    }
+
+
+    /**
+     * <p>
+     *   Sets whether the configured template mode should be forced instead of attempting
+     *   a <em>smart</em> template mode resolution based on template resource name.
+     * </p>
+     * <p>
+     *   When forced, the configured template mode ({@link #setTemplateMode(TemplateMode)} will
+     *   be applied even if the template resource name ends in a known suffix:
+     *   <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
+     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
+     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>.
+     * </p>
+     * <p>Default value is <tt><b>false</b></tt></p>.
+     *
+     * @param forceTemplateMode whether the configured template mode should be forced or not.
+     * @since 3.0.6
+     */
+    public final void setForceTemplateMode(final boolean forceTemplateMode) {
+        this.forceTemplateMode = forceTemplateMode;
     }
 
 
@@ -1281,8 +1367,10 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
     
 
     @Override
-    protected TemplateMode computeTemplateMode(final IEngineConfiguration configuration, final String ownerTemplate, final String template, final Map<String, Object> templateResolutionAttributes) {
-    
+    protected TemplateMode computeTemplateMode(
+            final IEngineConfiguration configuration, final String ownerTemplate,
+            final String template, final Map<String, Object> templateResolutionAttributes) {
+
         if (this.xmlTemplateModePatternSpec.matches(template)) {
             return TemplateMode.XML;
         }
@@ -1301,9 +1389,40 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
         if (this.rawTemplateModePatternSpec.matches(template)) {
             return TemplateMode.RAW;
         }
+
+        if (!this.forceTemplateMode) {
+
+            final String templateResourceName =
+                    computeResourceName(
+                            configuration, ownerTemplate, template,
+                            this.prefix, this.suffix, this.forceSuffix, this.templateAliases,
+                            templateResolutionAttributes);
+
+            final int pointPos = templateResourceName.lastIndexOf('.');
+            if (pointPos >= 0) {
+
+                final String templateResourceNameSuffix = templateResourceName.substring(pointPos);
+
+                if (RECOGNIZED_TEMPLATE_FILE_SUFFIXES_HTML.contains(templateResourceNameSuffix)) {
+                    return TemplateMode.HTML;
+                } else if (RECOGNIZED_TEMPLATE_FILE_SUFFIXES_XML.contains(templateResourceNameSuffix)) {
+                    return TemplateMode.XML;
+                } else if (RECOGNIZED_TEMPLATE_FILE_SUFFIXES_JAVASCRIPT.contains(templateResourceNameSuffix)) {
+                    return TemplateMode.JAVASCRIPT;
+                } else if (RECOGNIZED_TEMPLATE_FILE_SUFFIXES_CSS.contains(templateResourceNameSuffix)) {
+                    return TemplateMode.CSS;
+                } else if (RECOGNIZED_TEMPLATE_FILE_SUFFIXES_TEXT.contains(templateResourceNameSuffix)) {
+                    return TemplateMode.TEXT;
+                }
+
+            }
+
+        }
+
         return getTemplateMode();
+
     }
-    
+
     
     
 
