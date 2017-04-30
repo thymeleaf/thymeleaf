@@ -1313,6 +1313,7 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      * @param template the template (normally the template name, except for String templates).
      * @param prefix the prefix to be applied.
      * @param suffix the suffix to be applied.
+     * @param forceSuffix whether the suffix should be forced or not.
      * @param templateAliases the template aliases map.
      * @param templateResolutionAttributes the template resolution attributes, if any. Might be null.
      * @return the resource name that should be used for resolving
