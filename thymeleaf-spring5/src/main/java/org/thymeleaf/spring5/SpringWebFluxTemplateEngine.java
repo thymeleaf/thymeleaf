@@ -359,8 +359,9 @@ public class SpringWebFluxTemplateEngine
                 // initialization of the throttled processor until the last moment, when output generation
                 // is really requested.
                 () -> {
-                        final String outputContentType = sse? "text/event-stream" : "text/html";
-                        final TemplateSpec templateSpec = new TemplateSpec(templateName, markupSelectors, null, null, outputContentType);
+                        final String outputContentType = sse? "text/event-stream" : null;
+                        final TemplateSpec templateSpec =
+                                new TemplateSpec(templateName, markupSelectors, outputContentType, null);
                         return new StreamThrottledTemplateProcessor(
                                 processThrottled(templateSpec, wrappedContext), dataDrivenIterator, firstEventID, sse);
                       },
