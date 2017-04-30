@@ -709,7 +709,7 @@ public final class TemplateManager {
         final TemplateFlowController flowController = new TemplateFlowController();
 
         final ThrottledTemplateWriter throttledTemplateWriter;
-        if ("text/event-stream".equals(templateSpec.getOutputContentType())) {
+        if (templateSpec.isOutputSSE()) {
             throttledTemplateWriter = new SSEThrottledTemplateWriter(template, flowController);
         } else {
             throttledTemplateWriter = new ThrottledTemplateWriter(template, flowController);

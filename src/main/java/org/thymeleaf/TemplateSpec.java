@@ -20,13 +20,14 @@
 package org.thymeleaf;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.LoggingUtils;
 import org.thymeleaf.util.Validate;
@@ -66,15 +67,44 @@ public final class TemplateSpec implements Serializable {
 
     private static final long serialVersionUID = 51214133L;
 
-    private static String CONTENT_TYPE_HTML = "text/html";
-    private static String CONTENT_TYPE_SSE = "text/event-stream";
-    private static String CONTENT_TYPE_DEFAULT = CONTENT_TYPE_HTML;
+    private static Set<String> MIME_TYPES_HTML =
+            new HashSet<String>(Arrays.asList("text/html", "application/xhtml+xml"));
+    private static Set<String> MIME_TYPES_XML =
+            new HashSet<String>(Arrays.asList("application/xml"));
+    private static Set<String> MIME_TYPES_JAVASCRIPT =
+            new HashSet<String>(Arrays.asList(
+                    "application/javascript", "application/x-javascript", "application/ecmascript",
+                    "text/javascript", "text/ecmascript", "application/json"));
+    private static Set<String> MIME_TYPES_CSS =
+            new HashSet<String>(Arrays.asList("text/css"));
+    private static Set<String> MIME_TYPES_TEXT =
+            new HashSet<String>(Arrays.asList("text/plain"));
+    private static String MIME_TYPE_SSE = "text/event-stream";
+
+    private static Set<String> MIME_TYPES_ALL;
+
 
     private final String template;
     private final Set<String> templateSelectors;
     private final TemplateMode templateMode;
     private final Map<String,Object> templateResolutionAttributes;
     private final String outputContentType;
+    private final boolean outputSSE;
+
+
+
+    static {
+
+        MIME_TYPES_ALL = new HashSet<String>(12, 1.0f);
+        MIME_TYPES_ALL.addAll(MIME_TYPES_HTML);
+        MIME_TYPES_ALL.addAll(MIME_TYPES_XML);
+        MIME_TYPES_ALL.addAll(MIME_TYPES_JAVASCRIPT);
+        MIME_TYPES_ALL.addAll(MIME_TYPES_CSS);
+        MIME_TYPES_ALL.addAll(MIME_TYPES_TEXT);
+        MIME_TYPES_ALL.add(MIME_TYPE_SSE);
+
+    }
+
 
 
     /**
@@ -100,6 +130,50 @@ public final class TemplateSpec implements Serializable {
      */
     public TemplateSpec(final String template, final TemplateMode templateMode) {
         this(template, null, templateMode, null, null);
+    }
+
+
+    /**
+     * <p>
+     *   Build a new object of this class, specifying <em>template</em> and also <em>output content type</em>
+     *   (MIME type). Most of the times this will force a template mode for template execution
+     *   (e.g. <tt>text/html</tt>, <tt>application/javascript</tt>), but not always (e.g. <tt>text/event-stream</tt>).
+     * </p>
+     * <p>
+     *   The <em>template</em> normally represents the <em>template name</em>, but can be the entire template
+     *   contents if the template is meant to be specified as a String and resolved by a
+     *   {@link org.thymeleaf.templateresolver.StringTemplateResolver}.
+     * </p>
+     * <p>
+     *   Supported relations between template mode and output content type are:
+     * </p>
+     * <ul>
+     *     <li>HTML: <tt>text/html</tt>, <tt>application/xhtml+xml</tt></li>
+     *     <li>XML: <tt>application/xml</tt></li>
+     *     <li>JAVASCRIPT: <tt>application/javascript</tt>, <tt>application/x-javascript</tt>,
+     *                     <tt>application/ecmascript</tt>, <tt>text/javascript</tt>,
+     *                     <tt>text/ecmascript</tt>, <tt>application/json</tt></li>
+     *     <li>CSS: <tt>text/css</tt></li>
+     *     <li>TEXT: <tt>text/plain</tt></li>
+     * </ul>
+     * <p>
+     *   The <tt>text/event-stream</tt> content type will also be supported, but will have no effect in
+     *   forcing a template mode. Instead, it will put the engine into Server-Sent Event (SSE) output mode.
+     * </p>
+     * <p>
+     *   Note content type parameters will be ignored (only the mime type itself will be used).
+     * </p>
+     * <p>
+     *   This constructor will set no <em>template selectors</em> or <em>template resolution attributes</em>.
+     * </p>
+     *
+     * @param template the template (usually the template name), required.
+     * @param outputContentType the expected output content type, can be null.
+     *
+     * @since 3.0.6
+     */
+    public TemplateSpec(final String template, final String outputContentType) {
+        this(template, null, null, outputContentType, null);
     }
 
 
@@ -132,13 +206,14 @@ public final class TemplateSpec implements Serializable {
      * @param templateResolutionAttributes the template resolution attributes, can be null.
      */
     public TemplateSpec(final String template, final Map<String, Object> templateResolutionAttributes) {
-        this(template, null, null, templateResolutionAttributes, null);
+        this(template, null, null, null, templateResolutionAttributes);
     }
 
 
     /**
      * <p>
-     *   Build a new object of this class, specifying most of its attributes but not a content type.
+     *   Build a new object of this class, specifying a template mode that should be forced for template
+     *   execution, ignoring the mode resolved by template resolvers.
      * </p>
      * <p>
      *   The <em>template</em> usually represents the <em>template name</em>, but can be the entire template
@@ -178,13 +253,15 @@ public final class TemplateSpec implements Serializable {
     public TemplateSpec(
             final String template, final Set<String> templateSelectors, final TemplateMode templateMode,
             final Map<String, Object> templateResolutionAttributes) {
-        this(template, templateSelectors, templateMode, templateResolutionAttributes, null);
+        this(template, templateSelectors, templateMode, null, templateResolutionAttributes);
     }
 
 
     /**
      * <p>
-     *   Build a new object of this class, specifying all its attributes.
+     *   Build a new object of this class, specifying an output content type (MIME type). Most of the times this
+     *   will force a template mode for template execution (e.g. <tt>text/html</tt>, <tt>application/javascript</tt>),
+     *   but not always (e.g. <tt>text/event-stream</tt>).
      * </p>
      * <p>
      *   The <em>template</em> usually represents the <em>template name</em>, but can be the entire template
@@ -199,14 +276,28 @@ public final class TemplateSpec implements Serializable {
      *   documentation.
      * </p>
      * <p>
-     *   The template mode only needs to be specified in cases when we want to <em>force</em> a template
-     *   mode to be used for a template, independently of the mode that is selected for it by the configured
-     *   template resolvers.
-     * </p>
-     * <p>
      *   The template resolution attributes are meant to be passed to the template resolvers (see
      *   {@link org.thymeleaf.templateresolver.ITemplateResolver} during template resolution, as a way
      *   of configuring their execution for the template being processed.
+     * </p>
+     * <p>
+     *   Supported relations between template mode and output content type are:
+     * </p>
+     * <ul>
+     *     <li>HTML: <tt>text/html</tt>, <tt>application/xhtml+xml</tt></li>
+     *     <li>XML: <tt>application/xml</tt></li>
+     *     <li>JAVASCRIPT: <tt>application/javascript</tt>, <tt>application/x-javascript</tt>,
+     *                     <tt>application/ecmascript</tt>, <tt>text/javascript</tt>,
+     *                     <tt>text/ecmascript</tt>, <tt>application/json</tt></li>
+     *     <li>CSS: <tt>text/css</tt></li>
+     *     <li>TEXT: <tt>text/plain</tt></li>
+     * </ul>
+     * <p>
+     *   The <tt>text/event-stream</tt> content type will also be supported, but will have no effect in
+     *   forcing a template mode. Instead, it will put the engine into Server-Sent Event (SSE) output mode.
+     * </p>
+     * <p>
+     *   Note content type parameters will be ignored (only the mime type itself will be used).
      * </p>
      * <p>
      *   Note that template resolution attributes are considered a part of the <em>identifier</em> of a template,
@@ -215,34 +306,49 @@ public final class TemplateSpec implements Serializable {
      *   and {@link #hashCode()} implementations</strong>. Therefore, using simple (and fast)
      *   <tt>Map&lt;String,String&gt;</tt> maps is the recommended option.
      * </p>
+     *
+     * @param template the template (usually the template name), required.
+     * @param templateSelectors the template selectors to be applied on the template.
+     * @param outputContentType the expected output content type, can be null.
+     * @param templateResolutionAttributes the template resolution attributes, can be null.
+     *
+     * @since 3.0.6
+     */
+    public TemplateSpec(
+            final String template, final Set<String> templateSelectors, final String outputContentType,
+            final Map<String, Object> templateResolutionAttributes) {
+        this(template, templateSelectors, null, outputContentType, templateResolutionAttributes);
+    }
+
+
+    /**
      * <p>
-     *   By default, content type is <tt>text/html</tt>. Note that only a few content types are actually supported
-     *   (e.g. <tt>text/html</tt>, <tt>text/event-stream</tt>). No parameters (after <tt>;</tt>, like <tt>charset</tt>)
-     *   are supported.
-     * </p>
-     * <p>
-     *   Content type <tt>text/event-stream</tt> is only supported in data-driven, <em>throttled</em> scenarios
-     *   (i.e. data-driven reactive-friendly executions).
+     *   Build a new object of this class, specifying all its attributes.
      * </p>
      *
      * @param template the template (usually the template name), required.
      * @param templateSelectors the template selectors to be applied on the template.
      * @param templateMode the template mode to be forced, can be null.
+     * @param outputContentType the expected output content type, can be null.
      * @param templateResolutionAttributes the template resolution attributes, can be null.
-     * @param outputContentType the content type expected for output, without parameters.
      *
      * @since 3.0.4
      */
-    public TemplateSpec(
-            final String template, final Set<String> templateSelectors, final TemplateMode templateMode,
-            final Map<String, Object> templateResolutionAttributes, final String outputContentType) {
+    TemplateSpec(
+            final String template, final Set<String> templateSelectors,
+            final TemplateMode templateMode, final String outputContentType,
+            final Map<String, Object> templateResolutionAttributes) {
 
         super();
 
         Validate.notNull(template, "Template cannot be null");
+        Validate.isTrue(templateMode == null || outputContentType == null,
+                "If template mode or output content type are specified, the other one cannot");
         // templateSelectors CAN be null
         // templateMode CAN be null
+        // outputContentType CAN be null
         // templateResolutionAttributes CAN be null
+        // ONLY one of templateMode or outputContentType can be not-null
 
         this.template = template;
         if (templateSelectors != null && !templateSelectors.isEmpty()) {
@@ -258,19 +364,65 @@ public final class TemplateSpec implements Serializable {
         } else {
             this.templateSelectors = null;
         }
-        this.templateMode = templateMode;
+
         this.templateResolutionAttributes =
                 (templateResolutionAttributes != null && !templateResolutionAttributes.isEmpty()?
                         Collections.unmodifiableMap(new HashMap<String, Object>(templateResolutionAttributes)) : null);
 
-        this.outputContentType =
-                outputContentType == null? CONTENT_TYPE_DEFAULT : outputContentType.toLowerCase();
-        if (!this.outputContentType.equals(CONTENT_TYPE_HTML) && !this.outputContentType.equals(CONTENT_TYPE_SSE)) {
-            throw new TemplateProcessingException("Unsupported output content type specified: " + outputContentType +
-                    ". Currently only " + CONTENT_TYPE_HTML + " and  " + CONTENT_TYPE_SSE + " are supported.");
+        this.outputContentType = outputContentType;
+        final String mimeType = computeMimeType(this.outputContentType);
+        final TemplateMode mimeComputedTemplateMode = computeTemplateModeFromMimeType(mimeType);
+
+        if (mimeComputedTemplateMode != null) {
+            this.templateMode = mimeComputedTemplateMode;
+        } else {
+            this.templateMode = templateMode;
         }
 
+        this.outputSSE = (mimeType != null && MIME_TYPE_SSE.equals(mimeType));
+
     }
+
+
+    private String computeMimeType(final String outputContentType) {
+        if (outputContentType == null || outputContentType.trim().length() == 0) {
+            return null;
+        }
+        String mimeType = outputContentType.trim().toLowerCase();
+        final int semicolonPos = mimeType.indexOf(';');
+        if (semicolonPos != -1) {
+            mimeType = mimeType.substring(0, semicolonPos);
+        }
+        if (!MIME_TYPES_ALL.contains(mimeType)) {
+            // Unrecognized, won't do anything about this
+            return null;
+        }
+        return mimeType;
+    }
+
+
+    private TemplateMode computeTemplateModeFromMimeType(final String mimeType) {
+        if (mimeType == null) {
+            return null;
+        }
+        if (MIME_TYPES_HTML.contains(mimeType)) {
+            return TemplateMode.JAVASCRIPT;
+        }
+        if (MIME_TYPES_XML.contains(mimeType)) {
+            return TemplateMode.XML;
+        }
+        if (MIME_TYPES_JAVASCRIPT.contains(mimeType)) {
+            return TemplateMode.JAVASCRIPT;
+        }
+        if (MIME_TYPES_CSS.contains(mimeType)) {
+            return TemplateMode.CSS;
+        }
+        if (MIME_TYPES_TEXT.contains(mimeType)) {
+            return TemplateMode.TEXT;
+        }
+        return null;
+    }
+
 
 
     /**
@@ -390,20 +542,52 @@ public final class TemplateSpec implements Serializable {
 
     /**
      * <p>
-     *   Returns the content type (MIME type) to be used for template output.
+     *   Returns the output content type (MIME type). Most of the times this
+     *   will force a template mode for template execution (e.g. <tt>text/html</tt>, <tt>application/javascript</tt>),
+     *   but not always (e.g. <tt>text/event-stream</tt>).
      * </p>
      * <p>
-     *   Setting this to a value other than <tt>text/html</tt> might change specific behaviours in the engine.
-     *   By default, <tt>text/html</tt> will be used.
+     *   Supported relations between template mode and output content type are:
+     * </p>
+     * <ul>
+     *     <li>HTML: <tt>text/html</tt>, <tt>application/xhtml+xml</tt></li>
+     *     <li>XML: <tt>application/xml</tt></li>
+     *     <li>JAVASCRIPT: <tt>application/javascript</tt>, <tt>application/x-javascript</tt>,
+     *                     <tt>application/ecmascript</tt>, <tt>text/javascript</tt>,
+     *                     <tt>text/ecmascript</tt>, <tt>application/json</tt></li>
+     *     <li>CSS: <tt>text/css</tt></li>
+     *     <li>TEXT: <tt>text/plain</tt></li>
+     * </ul>
+     * <p>
+     *   The <tt>text/event-stream</tt> content type will also be supported, but will have no effect in
+     *   forcing a template mode. Instead, it will put the engine into Server-Sent Event (SSE) output mode.
      * </p>
      * <p>
      *   Note content type parameters will be ignored (only the mime type itself will be used).
      * </p>
      *
-     * @return the output content type.
+     * @return the output content type, or <tt>null</tt> if none was specified.
      */
     public String getOutputContentType() {
         return this.outputContentType;
+    }
+
+
+    /**
+     * <p>
+     *   Returns whether output should be Server-Sent Events (SSE) or not.
+     * </p>
+     * <p>
+     *   Server-Sent Events mode is enabled by setting the <tt>text/event-stream</tt> mime type
+     *   as *output content type* constructor argument.
+     * </p>
+     *
+     * @return true if output is supposed to be done via Server-Sent Events (SSE), false if not.
+     *
+     * @since 3.0.6
+     */
+    public boolean isOutputSSE() {
+        return this.outputSSE;
     }
 
 

@@ -1045,12 +1045,12 @@ public class TemplateEngine implements ITemplateEngine {
 
 
     public final String process(final String template, final IContext context) {
-        return process(new TemplateSpec(template, null, null, null), context);
+        return process(new TemplateSpec(template, null, null, null,null), context);
     }
 
 
     public final String process(final String template, final Set<String> templateSelectors, final IContext context) {
-        return process(new TemplateSpec(template, templateSelectors, null, null), context);
+        return process(new TemplateSpec(template, templateSelectors, null, null,null), context);
     }
 
 
@@ -1064,12 +1064,12 @@ public class TemplateEngine implements ITemplateEngine {
 
 
     public final void process(final String template, final IContext context, final Writer writer) {
-        process(new TemplateSpec(template, null, null, null), context, writer);
+        process(new TemplateSpec(template, null, null, null,null), context, writer);
     }
 
 
     public final void process(final String template, final Set<String> templateSelectors, final IContext context, final Writer writer) {
-        process(new TemplateSpec(template, templateSelectors, null, null), context, writer);
+        process(new TemplateSpec(template, templateSelectors, null,  null,null), context, writer);
     }
 
 
@@ -1150,12 +1150,12 @@ public class TemplateEngine implements ITemplateEngine {
 
 
     public final IThrottledTemplateProcessor processThrottled(final String template, final IContext context) {
-        return processThrottled(new TemplateSpec(template, null, null, null), context);
+        return processThrottled(new TemplateSpec(template, null, null, null, null), context);
     }
 
 
     public final IThrottledTemplateProcessor processThrottled(final String template, final Set<String> templateSelectors, final IContext context) {
-        return processThrottled(new TemplateSpec(template, templateSelectors, null, null), context);
+        return processThrottled(new TemplateSpec(template, templateSelectors, null, null, null), context);
     }
 
 
