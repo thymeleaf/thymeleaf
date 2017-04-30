@@ -4,8 +4,9 @@
 - Fixed bad parsing of '/content()' selector (AttoParser) in some scenarios, leading to suboptimal execution of
   this type of fragment selection.
 - Fixed prevent fragments without a signature being called with unnamed parameters.
-- Added allow template suffix to be applied only if template name doesn't already have a known file extension.
-- Added apply template mode depending on template resource extension during resolution.
+- Added allowing template suffix to be applied only if template name doesn't already have a known file extension.
+- Added applicaiton of template mode depending on template resource extension during resolution.
+- Improved the way output content type and template mode relate to each other (made exclusive) in TemplateSpec.
 - Updated AttoParser dependency to 2.0.4.RELEASE.
 
 
