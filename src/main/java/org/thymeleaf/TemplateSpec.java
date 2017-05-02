@@ -20,15 +20,14 @@
 package org.thymeleaf;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.ContentTypeUtils;
 import org.thymeleaf.util.LoggingUtils;
 import org.thymeleaf.util.Validate;
 
@@ -67,23 +66,6 @@ public final class TemplateSpec implements Serializable {
 
     private static final long serialVersionUID = 51214133L;
 
-    private static Set<String> MIME_TYPES_HTML =
-            new HashSet<String>(Arrays.asList("text/html", "application/xhtml+xml"));
-    private static Set<String> MIME_TYPES_XML =
-            new HashSet<String>(Arrays.asList("application/xml"));
-    private static Set<String> MIME_TYPES_JAVASCRIPT =
-            new HashSet<String>(Arrays.asList(
-                    "application/javascript", "application/x-javascript", "application/ecmascript",
-                    "text/javascript", "text/ecmascript", "application/json"));
-    private static Set<String> MIME_TYPES_CSS =
-            new HashSet<String>(Arrays.asList("text/css"));
-    private static Set<String> MIME_TYPES_TEXT =
-            new HashSet<String>(Arrays.asList("text/plain"));
-    private static String MIME_TYPE_SSE = "text/event-stream";
-
-    private static Set<String> MIME_TYPES_ALL;
-
-
     private final String template;
     private final Set<String> templateSelectors;
     private final TemplateMode templateMode;
@@ -92,18 +74,6 @@ public final class TemplateSpec implements Serializable {
     private final boolean outputSSE;
 
 
-
-    static {
-
-        MIME_TYPES_ALL = new HashSet<String>(12, 1.0f);
-        MIME_TYPES_ALL.addAll(MIME_TYPES_HTML);
-        MIME_TYPES_ALL.addAll(MIME_TYPES_XML);
-        MIME_TYPES_ALL.addAll(MIME_TYPES_JAVASCRIPT);
-        MIME_TYPES_ALL.addAll(MIME_TYPES_CSS);
-        MIME_TYPES_ALL.addAll(MIME_TYPES_TEXT);
-        MIME_TYPES_ALL.add(MIME_TYPE_SSE);
-
-    }
 
 
 
@@ -370,57 +340,18 @@ public final class TemplateSpec implements Serializable {
                         Collections.unmodifiableMap(new HashMap<String, Object>(templateResolutionAttributes)) : null);
 
         this.outputContentType = outputContentType;
-        final String mimeType = computeMimeType(this.outputContentType);
-        final TemplateMode mimeComputedTemplateMode = computeTemplateModeFromMimeType(mimeType);
 
-        if (mimeComputedTemplateMode != null) {
-            this.templateMode = mimeComputedTemplateMode;
+        final TemplateMode computedTemplateMode =
+                ContentTypeUtils.computeTemplateModeForContentType(this.outputContentType);
+
+        if (computedTemplateMode != null) {
+            this.templateMode = computedTemplateMode;
         } else {
             this.templateMode = templateMode;
         }
 
-        this.outputSSE = (mimeType != null && MIME_TYPE_SSE.equals(mimeType));
+        this.outputSSE = ContentTypeUtils.isContentTypeSSE(this.outputContentType);
 
-    }
-
-
-    private String computeMimeType(final String outputContentType) {
-        if (outputContentType == null || outputContentType.trim().length() == 0) {
-            return null;
-        }
-        String mimeType = outputContentType.trim().toLowerCase();
-        final int semicolonPos = mimeType.indexOf(';');
-        if (semicolonPos != -1) {
-            mimeType = mimeType.substring(0, semicolonPos);
-        }
-        if (!MIME_TYPES_ALL.contains(mimeType)) {
-            // Unrecognized, won't do anything about this
-            return null;
-        }
-        return mimeType;
-    }
-
-
-    private TemplateMode computeTemplateModeFromMimeType(final String mimeType) {
-        if (mimeType == null) {
-            return null;
-        }
-        if (MIME_TYPES_HTML.contains(mimeType)) {
-            return TemplateMode.JAVASCRIPT;
-        }
-        if (MIME_TYPES_XML.contains(mimeType)) {
-            return TemplateMode.XML;
-        }
-        if (MIME_TYPES_JAVASCRIPT.contains(mimeType)) {
-            return TemplateMode.JAVASCRIPT;
-        }
-        if (MIME_TYPES_CSS.contains(mimeType)) {
-            return TemplateMode.CSS;
-        }
-        if (MIME_TYPES_TEXT.contains(mimeType)) {
-            return TemplateMode.TEXT;
-        }
-        return null;
     }
 
 

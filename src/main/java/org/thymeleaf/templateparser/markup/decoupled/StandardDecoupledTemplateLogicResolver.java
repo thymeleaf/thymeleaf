@@ -19,11 +19,11 @@
  */
 package org.thymeleaf.templateparser.markup.decoupled;
 
+import java.util.Set;
+
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresource.ITemplateResource;
-
-import java.util.Set;
 
 /**
  * <p>

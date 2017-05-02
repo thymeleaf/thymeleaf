@@ -19,10 +19,8 @@
  */
 package org.thymeleaf.templateresolver;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,6 +31,7 @@ import org.thymeleaf.cache.NonCacheableCacheEntryValidity;
 import org.thymeleaf.cache.TTLCacheEntryValidity;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresource.ITemplateResource;
+import org.thymeleaf.util.ContentTypeUtils;
 import org.thymeleaf.util.PatternSpec;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
@@ -85,20 +84,6 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
     public static final Long DEFAULT_CACHE_TTL_MS = null;
 
 
-    private static final Set<String> RECOGNIZED_TEMPLATE_FILE_SUFFIXES_HTML =
-            new HashSet<String>(Arrays.asList(".html", ".htm", ".xhtml"));
-    private static final Set<String> RECOGNIZED_TEMPLATE_FILE_SUFFIXES_XML =
-            new HashSet<String>(Arrays.asList(".xml", ".rss", ".atom"));
-    private static final Set<String> RECOGNIZED_TEMPLATE_FILE_SUFFIXES_JAVASCRIPT =
-            new HashSet<String>(Arrays.asList(".js", ".json"));
-    private static final Set<String> RECOGNIZED_TEMPLATE_FILE_SUFFIXES_CSS =
-            new HashSet<String>(Arrays.asList(".css"));
-    private static final Set<String> RECOGNIZED_TEMPLATE_FILE_SUFFIXES_TEXT =
-            new HashSet<String>(Arrays.asList(".txt"));
-
-    private static final Set<String> RECOGNIZED_TEMPLATE_FILE_SUFFIXES;
-
-    
     private String prefix = null;
     private String suffix = null;
     private boolean forceSuffix = false;
@@ -122,17 +107,8 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
     
 
 
-    static {
-        RECOGNIZED_TEMPLATE_FILE_SUFFIXES = new HashSet<String>(11, 1.0f);
-        RECOGNIZED_TEMPLATE_FILE_SUFFIXES.addAll(RECOGNIZED_TEMPLATE_FILE_SUFFIXES_HTML);
-        RECOGNIZED_TEMPLATE_FILE_SUFFIXES.addAll(RECOGNIZED_TEMPLATE_FILE_SUFFIXES_XML);
-        RECOGNIZED_TEMPLATE_FILE_SUFFIXES.addAll(RECOGNIZED_TEMPLATE_FILE_SUFFIXES_JAVASCRIPT);
-        RECOGNIZED_TEMPLATE_FILE_SUFFIXES.addAll(RECOGNIZED_TEMPLATE_FILE_SUFFIXES_CSS);
-        RECOGNIZED_TEMPLATE_FILE_SUFFIXES.addAll(RECOGNIZED_TEMPLATE_FILE_SUFFIXES_TEXT);
-    }
 
 
-                   
     public AbstractConfigurableTemplateResolver() {
         super();
     }
@@ -1335,7 +1311,7 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
         final boolean hasSuffix = !StringUtils.isEmptyOrWhitespace(suffix);
 
         final boolean shouldApplySuffix =
-                hasSuffix && (forceSuffix || !hasRecognizedSuffix(unaliasedName));
+                hasSuffix && (forceSuffix || !ContentTypeUtils.hasRecognizedFileExtension(unaliasedName));
 
         if (!hasPrefix && !shouldApplySuffix){
             return unaliasedName;
@@ -1352,15 +1328,6 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
         // hasPrefix && shouldApplySuffix
         return prefix + unaliasedName + suffix;
 
-    }
-
-
-    private static boolean hasRecognizedSuffix(final String templateName) {
-        final int pointPos = templateName.lastIndexOf('.');
-        if (pointPos < 0) {
-            return false;
-        }
-        return RECOGNIZED_TEMPLATE_FILE_SUFFIXES.contains(templateName.substring(pointPos));
     }
 
 
@@ -1399,23 +1366,10 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
                             this.prefix, this.suffix, this.forceSuffix, this.templateAliases,
                             templateResolutionAttributes);
 
-            final int pointPos = templateResourceName.lastIndexOf('.');
-            if (pointPos >= 0) {
-
-                final String templateResourceNameSuffix = templateResourceName.substring(pointPos);
-
-                if (RECOGNIZED_TEMPLATE_FILE_SUFFIXES_HTML.contains(templateResourceNameSuffix)) {
-                    return TemplateMode.HTML;
-                } else if (RECOGNIZED_TEMPLATE_FILE_SUFFIXES_XML.contains(templateResourceNameSuffix)) {
-                    return TemplateMode.XML;
-                } else if (RECOGNIZED_TEMPLATE_FILE_SUFFIXES_JAVASCRIPT.contains(templateResourceNameSuffix)) {
-                    return TemplateMode.JAVASCRIPT;
-                } else if (RECOGNIZED_TEMPLATE_FILE_SUFFIXES_CSS.contains(templateResourceNameSuffix)) {
-                    return TemplateMode.CSS;
-                } else if (RECOGNIZED_TEMPLATE_FILE_SUFFIXES_TEXT.contains(templateResourceNameSuffix)) {
-                    return TemplateMode.TEXT;
-                }
-
+            final TemplateMode autoResolvedTemplateMode =
+                    ContentTypeUtils.computeTemplateModeForTemplateName(templateResourceName);
+            if (autoResolvedTemplateMode != null) {
+                return autoResolvedTemplateMode;
             }
 
         }
