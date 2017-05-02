@@ -256,6 +256,23 @@ public final class ContentTypeUtils {
     }
 
 
+    public static TemplateMode computeTemplateModeForRequestPath(final String requestPath) {
+
+        final String fileExtension = computeFileExtensionFromRequestPath(requestPath);
+        if (fileExtension == null) {
+            return null;
+        }
+
+        final String mimeType = MIME_TYPE_BY_FILE_EXTENSION.get(fileExtension);
+        if (mimeType == null) {
+            return null;
+        }
+
+        return TEMPLATE_MODE_BY_MIME_TYPE.get(mimeType);
+
+    }
+
+
     public static boolean hasRecognizedFileExtension(final String templateName) {
 
         final String fileExtension = computeFileExtensionFromTemplateName(templateName);
@@ -271,6 +288,32 @@ public final class ContentTypeUtils {
     public static String computeContentTypeForTemplateName(final String templateName, final Charset charset) {
 
         final String fileExtension = computeFileExtensionFromTemplateName(templateName);
+        if (fileExtension == null) {
+            return null;
+        }
+
+        final String mimeType = MIME_TYPE_BY_FILE_EXTENSION.get(fileExtension);
+        if (mimeType == null) {
+            return null;
+        }
+
+        final ContentType contentType = ContentType.parseContentType(mimeType);
+        if (contentType == null) {
+            return null;
+        }
+
+        if (charset != null) {
+            contentType.setCharset(charset);
+        }
+
+        return contentType.toString();
+
+    }
+
+
+    public static String computeContentTypeForRequestPath(final String requestPath, final Charset charset) {
+
+        final String fileExtension = computeFileExtensionFromRequestPath(requestPath);
         if (fileExtension == null) {
             return null;
         }
@@ -323,6 +366,40 @@ public final class ContentTypeUtils {
         }
 
         return templateName.substring(pointPos).toLowerCase(Locale.US).trim();
+
+    }
+
+
+    private static String computeFileExtensionFromRequestPath(final String requestPath) {
+
+        String path = requestPath;
+
+        final int questionMarkPos = path.indexOf('?');
+        if (questionMarkPos != -1) {
+            path = path.substring(0, questionMarkPos);
+        }
+
+        final int hashPos = path.indexOf('#');
+        if (hashPos != -1) {
+            path = path.substring(0, hashPos);
+        }
+
+        final int semicolonPos = path.indexOf(';');
+        if (semicolonPos != -1) {
+            path = path.substring(0, semicolonPos);
+        }
+
+        final int slashPos = path.lastIndexOf('/');
+        if (slashPos != -1) {
+            path = path.substring(slashPos + 1);
+        }
+
+        final int dotPos = path.lastIndexOf('.');
+        if (dotPos != -1) {
+            return path.substring(dotPos);
+        }
+
+        return null; // no useful extension
 
     }
 
@@ -444,5 +521,5 @@ public final class ContentTypeUtils {
 
     }
 
-    
+
 }
