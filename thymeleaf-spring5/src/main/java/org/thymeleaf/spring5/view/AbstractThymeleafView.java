@@ -32,7 +32,6 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.spring5.ISpringTemplateEngine;
 import org.thymeleaf.spring5.SpringTemplateEngine;
-import org.thymeleaf.templatemode.TemplateMode;
 
 
 /**
@@ -70,6 +69,7 @@ public abstract class AbstractThymeleafView
     private String contentType = DEFAULT_CONTENT_TYPE;
     private boolean contentTypeSet = false;
     private boolean forceContentType = false;
+    private boolean forceContentTypeSet = false;
     private String characterEncoding = null;
     private ISpringTemplateEngine templateEngine = null;
 	private String templateName = null;
@@ -205,6 +205,17 @@ public abstract class AbstractThymeleafView
      */
     public void setForceContentType(final boolean forceContentType) {
         this.forceContentType = forceContentType;
+        this.forceContentTypeSet = true;
+    }
+
+
+    /*
+     * Internally used (by ThymeleafViewResolver) in order to know whether a value
+     * for the "force content type" flag has been explicitly set or not.
+     * @since 3.0.6
+     */
+    protected boolean isForceContentTypeSet() {
+        return this.forceContentTypeSet;
     }
 
     

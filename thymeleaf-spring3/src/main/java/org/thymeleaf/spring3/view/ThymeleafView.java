@@ -20,6 +20,7 @@
 package org.thymeleaf.spring3.view;
 
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ import org.thymeleaf.context.WebExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
+import org.thymeleaf.spring3.util.SpringContentTypeUtils;
 import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
@@ -323,13 +325,29 @@ public class ThymeleafView
 
 
         response.setLocale(templateLocale);
-        if (templateContentType != null) {
-            response.setContentType(templateContentType);
+
+        if (!getForceContentType()) {
+
+            final String computedContentType =
+                    SpringContentTypeUtils.computeViewContentType(
+                            templateName,
+                            (templateContentType != null? templateContentType : DEFAULT_CONTENT_TYPE),
+                            (templateCharacterEncoding != null? Charset.forName(templateCharacterEncoding) : null));
+
+            response.setContentType(computedContentType);
+
         } else {
-            response.setContentType(DEFAULT_CONTENT_TYPE);
-        }
-        if (templateCharacterEncoding != null) {
-            response.setCharacterEncoding(templateCharacterEncoding);
+            // We will force the content type parameters without trying to make smart assumptions over them
+
+            if (templateContentType != null) {
+                response.setContentType(templateContentType);
+            } else {
+                response.setContentType(DEFAULT_CONTENT_TYPE);
+            }
+            if (templateCharacterEncoding != null) {
+                response.setCharacterEncoding(templateCharacterEncoding);
+            }
+
         }
         
         viewTemplateEngine.process(templateName, processMarkupSelectors, context, response.getWriter());
