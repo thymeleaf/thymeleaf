@@ -48,7 +48,7 @@ public final class ContentTypeUtils {
 
     // We will consider the XHTML MIME type as HTML because nobody ever really used application/xhtml+xml (IE's fault)
     private static final String[] MIME_TYPES_HTML = new String[] {"text/html", "application/xhtml+xml"};
-    private static final String[] MIME_TYPES_XML = new String[] {"application/xml"};
+    private static final String[] MIME_TYPES_XML = new String[] {"text/xml", "application/xml"};
     private static final String[] MIME_TYPES_RSS = new String[] {"application/rss+xml"};
     private static final String[] MIME_TYPES_ATOM = new String[] {"application/atom+xml"};
     private static final String[] MIME_TYPES_JAVASCRIPT =
