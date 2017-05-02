@@ -1,3 +1,8 @@
+3.0.6
+=====
+- Added automatic negotiation of ContentType at the ViewResolver depending on view name (file extension).
+
+
 3.0.5
 =====
 - (No changes)
