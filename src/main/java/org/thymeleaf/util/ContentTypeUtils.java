@@ -48,7 +48,10 @@ public final class ContentTypeUtils {
 
     // We will consider the XHTML MIME type as HTML because nobody ever really used application/xhtml+xml (IE's fault)
     private static final String[] MIME_TYPES_HTML = new String[] {"text/html", "application/xhtml+xml"};
-    private static final String[] MIME_TYPES_XML = new String[] {"text/xml", "application/xml"};
+    // Even if "text/xml" might seem more versatile than "application/xml", the latter is chosen as default here
+    // for consistency with Spring Framework (Spring 5's media type negotiation applies "application/xml" to the
+    // ".xml" extension).
+    private static final String[] MIME_TYPES_XML = new String[] {"application/xml", "text/xml"};
     private static final String[] MIME_TYPES_RSS = new String[] {"application/rss+xml"};
     private static final String[] MIME_TYPES_ATOM = new String[] {"application/atom+xml"};
     private static final String[] MIME_TYPES_JAVASCRIPT =
