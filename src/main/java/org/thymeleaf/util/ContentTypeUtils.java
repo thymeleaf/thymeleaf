@@ -46,18 +46,25 @@ import org.thymeleaf.templatemode.TemplateMode;
 public final class ContentTypeUtils {
 
 
+    // We will consider the XHTML MIME type as HTML because nobody ever really used application/xhtml+xml (IE's fault)
     private static final String[] MIME_TYPES_HTML = new String[] {"text/html", "application/xhtml+xml"};
     private static final String[] MIME_TYPES_XML = new String[] {"application/xml"};
+    private static final String[] MIME_TYPES_RSS = new String[] {"application/rss+xml"};
+    private static final String[] MIME_TYPES_ATOM = new String[] {"application/atom+xml"};
     private static final String[] MIME_TYPES_JAVASCRIPT =
             new String[] {"application/javascript", "application/x-javascript", "application/ecmascript",
-                          "text/javascript", "text/ecmascript", "application/json"};
+                          "text/javascript", "text/ecmascript"};
+    private static final String[] MIME_TYPES_JSON = new String[] {"application/json"};
     private static final String[] MIME_TYPES_CSS = new String[] {"text/css"};
     private static final String[] MIME_TYPES_TEXT = new String[] {"text/plain"};
     private static final String[] MIME_TYPES_SSE = new String[] {"text/event-stream"};
 
     private static final String[] FILE_EXTENSIONS_HTML = new String[] {".html", ".htm", ".xhtml"};
-    private static final String[] FILE_EXTENSIONS_XML = new String[] {".xml", ".rss", ".atom"};
-    private static final String[] FILE_EXTENSIONS_JAVASCRIPT = new String[] {".js", ".json"};
+    private static final String[] FILE_EXTENSIONS_XML = new String[] {".xml"};
+    private static final String[] FILE_EXTENSIONS_RSS = new String[] {".rss"};
+    private static final String[] FILE_EXTENSIONS_ATOM = new String[] {".atom"};
+    private static final String[] FILE_EXTENSIONS_JAVASCRIPT = new String[] {".js"};
+    private static final String[] FILE_EXTENSIONS_JSON = new String[] {".json"};
     private static final String[] FILE_EXTENSIONS_CSS = new String[] {".css"};
     private static final String[] FILE_EXTENSIONS_TEXT = new String[] {".txt"};
 
@@ -69,15 +76,24 @@ public final class ContentTypeUtils {
 
     static {
 
-        final Map<String,String> normalizedMimeTypes = new HashMap<String, String>(15, 1.0f);
+        final Map<String,String> normalizedMimeTypes = new HashMap<String, String>(20, 1.0f);
         for (final String type : MIME_TYPES_HTML) {
             normalizedMimeTypes.put(type, MIME_TYPES_HTML[0]);
         }
         for (final String type : MIME_TYPES_XML) {
             normalizedMimeTypes.put(type, MIME_TYPES_XML[0]);
         }
+        for (final String type : MIME_TYPES_RSS) {
+            normalizedMimeTypes.put(type, MIME_TYPES_RSS[0]);
+        }
+        for (final String type : MIME_TYPES_ATOM) {
+            normalizedMimeTypes.put(type, MIME_TYPES_ATOM[0]);
+        }
         for (final String type : MIME_TYPES_JAVASCRIPT) {
             normalizedMimeTypes.put(type, MIME_TYPES_JAVASCRIPT[0]);
+        }
+        for (final String type : MIME_TYPES_JSON) {
+            normalizedMimeTypes.put(type, MIME_TYPES_JSON[0]);
         }
         for (final String type : MIME_TYPES_CSS) {
             normalizedMimeTypes.put(type, MIME_TYPES_CSS[0]);
@@ -91,15 +107,24 @@ public final class ContentTypeUtils {
         NORMALIZED_MIME_TYPES = Collections.unmodifiableMap(normalizedMimeTypes);
 
 
-        final Map<String,String> mimeTypesByExtension = new HashMap<String, String>(15, 1.0f);
+        final Map<String,String> mimeTypesByExtension = new HashMap<String, String>(20, 1.0f);
         for (final String type : FILE_EXTENSIONS_HTML) {
             mimeTypesByExtension.put(type, MIME_TYPES_HTML[0]);
         }
         for (final String type : FILE_EXTENSIONS_XML) {
             mimeTypesByExtension.put(type, MIME_TYPES_XML[0]);
         }
+        for (final String type : FILE_EXTENSIONS_RSS) {
+            mimeTypesByExtension.put(type, MIME_TYPES_RSS[0]);
+        }
+        for (final String type : FILE_EXTENSIONS_ATOM) {
+            mimeTypesByExtension.put(type, MIME_TYPES_ATOM[0]);
+        }
         for (final String type : FILE_EXTENSIONS_JAVASCRIPT) {
             mimeTypesByExtension.put(type, MIME_TYPES_JAVASCRIPT[0]);
+        }
+        for (final String type : FILE_EXTENSIONS_JSON) {
+            mimeTypesByExtension.put(type, MIME_TYPES_JSON[0]);
         }
         for (final String type : FILE_EXTENSIONS_CSS) {
             mimeTypesByExtension.put(type, MIME_TYPES_CSS[0]);
@@ -110,10 +135,13 @@ public final class ContentTypeUtils {
         MIME_TYPE_BY_FILE_EXTENSION = Collections.unmodifiableMap(mimeTypesByExtension);
 
 
-        final Map<String,TemplateMode> templateModeByMimeType = new HashMap<String,TemplateMode>(8, 1.0f);
+        final Map<String,TemplateMode> templateModeByMimeType = new HashMap<String,TemplateMode>(10, 1.0f);
         templateModeByMimeType.put(MIME_TYPES_HTML[0], TemplateMode.HTML);
         templateModeByMimeType.put(MIME_TYPES_XML[0], TemplateMode.XML);
+        templateModeByMimeType.put(MIME_TYPES_RSS[0], TemplateMode.XML);
+        templateModeByMimeType.put(MIME_TYPES_ATOM[0], TemplateMode.XML);
         templateModeByMimeType.put(MIME_TYPES_JAVASCRIPT[0], TemplateMode.JAVASCRIPT);
+        templateModeByMimeType.put(MIME_TYPES_JSON[0], TemplateMode.JAVASCRIPT);
         templateModeByMimeType.put(MIME_TYPES_CSS[0], TemplateMode.CSS);
         templateModeByMimeType.put(MIME_TYPES_TEXT[0], TemplateMode.TEXT);
         TEMPLATE_MODE_BY_MIME_TYPE = Collections.unmodifiableMap(templateModeByMimeType);
@@ -122,31 +150,51 @@ public final class ContentTypeUtils {
 
 
     public static boolean isContentTypeHTML(final String contentType) {
-        return computeTemplateModeForContentType(contentType) == TemplateMode.HTML;
+        return isContentType(contentType, MIME_TYPES_HTML[0]);
     }
 
 
     public static boolean isContentTypeXML(final String contentType) {
-        return computeTemplateModeForContentType(contentType) == TemplateMode.XML;
+        return isContentType(contentType, MIME_TYPES_XML[0]);
+    }
+
+
+    public static boolean isContentTypeRSS(final String contentType) {
+        return isContentType(contentType, MIME_TYPES_RSS[0]);
+    }
+
+
+    public static boolean isContentTypeAtom(final String contentType) {
+        return isContentType(contentType, MIME_TYPES_ATOM[0]);
     }
 
 
     public static boolean isContentTypeJavaScript(final String contentType) {
-        return computeTemplateModeForContentType(contentType) == TemplateMode.JAVASCRIPT;
+        return isContentType(contentType, MIME_TYPES_JAVASCRIPT[0]);
+    }
+
+
+    public static boolean isContentTypeJSON(final String contentType) {
+        return isContentType(contentType, MIME_TYPES_JSON[0]);
     }
 
 
     public static boolean isContentTypeCSS(final String contentType) {
-        return computeTemplateModeForContentType(contentType) == TemplateMode.CSS;
+        return isContentType(contentType, MIME_TYPES_CSS[0]);
     }
 
 
     public static boolean isContentTypeText(final String contentType) {
-        return computeTemplateModeForContentType(contentType) == TemplateMode.TEXT;
+        return isContentType(contentType, MIME_TYPES_TEXT[0]);
     }
 
 
     public static boolean isContentTypeSSE(final String contentType) {
+        return isContentType(contentType, MIME_TYPES_SSE[0]);
+    }
+
+
+    private static boolean isContentType(final String contentType, final String matcher) {
 
         if (contentType == null || contentType.trim().length() == 0) {
             return false;
@@ -162,7 +210,7 @@ public final class ContentTypeUtils {
             return false;
         }
 
-        return normalisedMimeType.equals(MIME_TYPES_SSE[0]);
+        return normalisedMimeType.equals(matcher);
 
     }
 
