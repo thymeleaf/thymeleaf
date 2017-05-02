@@ -68,6 +68,7 @@ public abstract class AbstractThymeleafView
     private String beanName = null;
     private String contentType = DEFAULT_CONTENT_TYPE;
     private boolean contentTypeSet = false;
+    private boolean forceContentType = false;
     private String characterEncoding = null;
     private ITemplateEngine templateEngine = null;
 	private String templateName = null;
@@ -158,6 +159,51 @@ public abstract class AbstractThymeleafView
      */
     protected boolean isContentTypeSet() {
         return this.contentTypeSet;
+    }
+
+
+
+    /**
+     * <p>
+     *   Returns whether the configured content type should be forced instead of attempting
+     *   a <em>smart</em> content type application based on template name.
+     * </p>
+     * <p>
+     *   When forced, the configured content type ({@link #setForceContentType(boolean)})  will
+     *   be applied even if the template name ends in a known suffix:
+     *   <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
+     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
+     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>.
+     * </p>
+     * <p>Default value is <tt><b>false</b></tt></p>.
+     *
+     * @return whether the content type will be forced or not.
+     * @since 3.0.6
+     */
+    public boolean getForceContentType() {
+        return this.forceContentType;
+    }
+
+
+    /**
+     * <p>
+     *   Sets whether the configured content type should be forced instead of attempting
+     *   a <em>smart</em> content type application based on template name.
+     * </p>
+     * <p>
+     *   When forced, the configured content type ({@link #setForceContentType(boolean)})  will
+     *   be applied even if the template name ends in a known suffix:
+     *   <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
+     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
+     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>.
+     * </p>
+     * <p>Default value is <tt><b>false</b></tt></p>.
+     *
+     * @param forceContentType whether the configured template mode should be forced or not.
+     * @since 3.0.6
+     */
+    public void setForceContentType(final boolean forceContentType) {
+        this.forceContentType = forceContentType;
     }
 
     
