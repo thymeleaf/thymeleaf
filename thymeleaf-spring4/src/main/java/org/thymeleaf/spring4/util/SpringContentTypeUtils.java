@@ -23,6 +23,8 @@ import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.http.MediaType;
+import org.springframework.web.servlet.View;
 import org.thymeleaf.util.ContentTypeUtils;
 
 
@@ -48,6 +50,20 @@ public final class SpringContentTypeUtils {
         if (request == null) {
             throw new IllegalArgumentException("Request cannot be null");
         }
+
+
+        // First we will check if there is a content type already resolved by Spring's own content negotiation
+        // mechanism (see ContentNegotiatingViewResolver, which is autoconfigured in Spring Boot)
+        final MediaType negotiatedMediaType = (MediaType) request.getAttribute(View.SELECTED_CONTENT_TYPE);
+        if (negotiatedMediaType != null && negotiatedMediaType.isConcrete()) {
+            final Charset negotiatedCharset = negotiatedMediaType.getCharSet();
+            if (negotiatedCharset != null) {
+                return negotiatedMediaType.toString();
+            } else {
+                return ContentTypeUtils.combineContentTypeAndCharset(negotiatedMediaType.toString(), defaultCharset);
+            }
+        }
+
 
         // We will apply the default charset here because, after all, we are in an HTTP environment, and
         // the way charset is specified in HTTP is as a parameter in the same Content-Type HTTP header.
