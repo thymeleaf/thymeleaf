@@ -43,6 +43,12 @@ public final class SpringSecurityVersionUtils {
 
         String springSecurityVersion = SpringSecurityCoreVersion.getVersion();
 
+        // We will first compute the package name root for the spring framework in order to improve resilience
+        // against dependency renaming operations.
+        final String securityCorePackageName = SpringSecurityCoreVersion.class.getPackage().getName();
+        final String springSecurityPackageName =
+                securityCorePackageName.substring(0, securityCorePackageName.length() - 5); // - ".core"
+
         // There might be times when SpringVersion cannot determine the version due to CL restrictions (see doc)
         if (springSecurityVersion != null) {
 
@@ -64,15 +70,15 @@ public final class SpringSecurityVersionUtils {
 
         } else {
 
-            if (testClassExistence("org.springframework.security.jackson2.SecurityJackson2Modules")) {
+            if (testClassExistence(springSecurityPackageName + ".jackson2.SecurityJackson2Modules")) {
                 SPRING_SECURITY_VERSION_MAJOR = 4;
                 SPRING_SECURITY_VERSION_MINOR = 2;
-            } else if (testClassExistence("org.springframework.security.core.annotation.AuthenticationPrincipal")) {
+            } else if (testClassExistence(springSecurityPackageName + ".core.annotation.AuthenticationPrincipal")) {
                 // There are no new classes at the core of Spring Security 4.1, so we will check for a new
                 // "expression()" attribute method in the AuthenticationPrincipal annotation, which was added in 4.0
 
                 final Class<?> authenticationPrincipalClass =
-                        getClass("org.springframework.security.core.annotation.AuthenticationPrincipal");
+                        getClass(springSecurityPackageName + ".core.annotation.AuthenticationPrincipal");
                 final Method[] methods = authenticationPrincipalClass.getDeclaredMethods();
                 boolean hasExpressionAttribute = false;
                 for (int i = 0; i < methods.length; i++) {
@@ -89,13 +95,13 @@ public final class SpringSecurityVersionUtils {
                     SPRING_SECURITY_VERSION_MINOR = 0;
                 }
 
-            } else if (testClassExistence("org.springframework.security.access.method.P")) {
+            } else if (testClassExistence(springSecurityPackageName + ".access.method.P")) {
                 SPRING_SECURITY_VERSION_MAJOR = 3;
                 SPRING_SECURITY_VERSION_MINOR = 2;
-            } else if (testClassExistence("org.springframework.security.provisioning.MutableUserDetails")) {
+            } else if (testClassExistence(springSecurityPackageName + ".provisioning.MutableUserDetails")) {
                 SPRING_SECURITY_VERSION_MAJOR = 3;
                 SPRING_SECURITY_VERSION_MINOR = 1;
-            } else if (testClassExistence("org.springframework.security.access.expression.method.AbstractExpressionBasedMethodConfigAttribute")) {
+            } else if (testClassExistence(springSecurityPackageName + ".access.expression.method.AbstractExpressionBasedMethodConfigAttribute")) {
                 SPRING_SECURITY_VERSION_MAJOR = 3;
                 SPRING_SECURITY_VERSION_MINOR = 0;
             } else {

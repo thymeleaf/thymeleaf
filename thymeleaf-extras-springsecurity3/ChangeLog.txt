@@ -1,3 +1,9 @@
+3.0.3
+=====
+- Improved instances of static class loading by making references package-relative for better resilience
+  to package renaming.
+
+
 3.0.2
 =====
 - Make processors in the SpringSecurity Dialect apply to all template modes - not just HTML.
