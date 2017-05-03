@@ -1,6 +1,8 @@
 3.0.6.M4
 ========
 - Added automatic negotiation of ContentType at the ViewResolver depending on view name (file extension).
+- Improved instances of static class loading by making references package-relative for better resilience
+  to package renaming.
 
 
 3.0.5.M3

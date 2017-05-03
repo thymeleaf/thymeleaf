@@ -55,7 +55,7 @@ public final class RequestDataValueProcessorUtils {
     private static final boolean isSpring40AtLeast;
 
     private static final String SPRING31_DELEGATE_CLASS =
-            "org.thymeleaf.spring3.requestdata.RequestDataValueProcessor31Delegate";
+            RequestDataValueProcessorUtils.class.getPackage().getName() + ".RequestDataValueProcessor31Delegate";
     private static final IRequestDataValueProcessorDelegate spring31Delegate;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestDataValueProcessorUtils.class);

@@ -47,6 +47,11 @@ public final class SpringVersionUtils {
 
         String springVersion = SpringVersion.getVersion();
 
+        // We will first compute the package name root for the spring framework in order to improve resilience
+        // against dependency renaming operations.
+        final String corePackageName = SpringVersion.class.getPackage().getName();
+        final String springPackageName = corePackageName.substring(0, corePackageName.length() - 5); // - ".core"
+
         // There might be times when SpringVersion cannot determine the version due to CL restrictions (see doc)
         if (springVersion != null) {
 
@@ -68,28 +73,28 @@ public final class SpringVersionUtils {
 
         } else {
 
-            if (ClassLoaderUtils.isClassPresent("org.springframework.core.io.buffer.DataBuffer")) {
+            if (ClassLoaderUtils.isClassPresent(springPackageName + ".core.io.buffer.DataBuffer")) {
                 SPRING_VERSION_MAJOR = 5;
                 SPRING_VERSION_MINOR = 0;
-            } else if (ClassLoaderUtils.isClassPresent("org.springframework.context.annotation.ComponentScans")) {
+            } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".context.annotation.ComponentScans")) {
                 SPRING_VERSION_MAJOR = 4;
                 SPRING_VERSION_MINOR = 3;
-            } else if (ClassLoaderUtils.isClassPresent("org.springframework.core.annotation.AliasFor")) {
+            } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".core.annotation.AliasFor")) {
                 SPRING_VERSION_MAJOR = 4;
                 SPRING_VERSION_MINOR = 2;
-            } else if (ClassLoaderUtils.isClassPresent("org.springframework.cache.annotation.CacheConfig")) {
+            } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".cache.annotation.CacheConfig")) {
                 SPRING_VERSION_MAJOR = 4;
                 SPRING_VERSION_MINOR = 1;
-            } else if (ClassLoaderUtils.isClassPresent("org.springframework.core.io.PathResource")) {
+            } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".core.io.PathResource")) {
                 SPRING_VERSION_MAJOR = 4;
                 SPRING_VERSION_MINOR = 0;
-            } else if (ClassLoaderUtils.isClassPresent("org.springframework.web.context.request.async.DeferredResult")) {
+            } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".web.context.request.async.DeferredResult")) {
                 SPRING_VERSION_MAJOR = 3;
                 SPRING_VERSION_MINOR = 2;
-            } else if (ClassLoaderUtils.isClassPresent("org.springframework.web.servlet.support.RequestDataValueProcessor")) {
+            } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".web.servlet.support.RequestDataValueProcessor")) {
                 SPRING_VERSION_MAJOR = 3;
                 SPRING_VERSION_MINOR = 1;
-            } else if (ClassLoaderUtils.isClassPresent("org.springframework.web.bind.annotation.RequestBody")) {
+            } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".web.bind.annotation.RequestBody")) {
                 SPRING_VERSION_MAJOR = 3;
                 SPRING_VERSION_MINOR = 0;
             } else {
@@ -101,9 +106,9 @@ public final class SpringVersionUtils {
 
         }
 
-        SPRING_WEB_MVC_PRESENT = ClassLoaderUtils.isClassPresent("org.springframework.web.servlet.View");
+        SPRING_WEB_MVC_PRESENT = ClassLoaderUtils.isClassPresent(springPackageName + ".web.servlet.View");
         SPRING_WEB_REACTIVE_PRESENT =
-                SPRING_VERSION_MAJOR >= 5 && ClassLoaderUtils.isClassPresent("org.springframework.web.reactive.result.view.View");
+                SPRING_VERSION_MAJOR >= 5 && ClassLoaderUtils.isClassPresent(springPackageName + ".web.reactive.result.view.View");
 
     }
 
