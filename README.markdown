@@ -210,3 +210,16 @@ Finally, there is an attribute for checking authorization using Spring Security'
 
 In this attribute, both domain object and permission specifications are considered
 to be thymeleaf *Standard Expressions*.
+
+
+### Namespace
+
+The namespace for both Spring 3 and 4 versions of this dialect is `http://www.thymeleaf.org/extras/spring-security`.
+
+```html
+	<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+```
+
+Getting the namespace incorrect won't impact processing of your template. It might however impact your IDE when 
+it comes to things like suggestions/auto-completion in your templates.
+
