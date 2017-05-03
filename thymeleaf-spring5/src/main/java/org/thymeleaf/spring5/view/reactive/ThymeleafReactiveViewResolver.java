@@ -86,11 +86,25 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
     // TODO * Will this exist in future versions of Spring WebFlux? See https://jira.spring.io/browse/SPR-14537
     public static final String FORWARD_URL_PREFIX = "forward:";
 
-    // Supported media types are:
-    //     * The default HTML one: text/html;charset=UTF-8
-    //     * SSE (Sever-Sent Events): text/event-stream
+    // Supported media types are all those defined at org.thymeleaf.util.ContentTypeUtils
+    // Note that Spring will automatically perform content type negotiation based on the request query and a (possible)
+    // HTTP Accept header, so there is no additional operation needed at the Thymeleaf side (template mode will
+    // not be forced from the View/ViewResolvers side, but instead will be left to the template resolvers, which
+    // might apply their own file extension suffix-based mechanism for a certain degree of auto-resolution).
     private static final List<MediaType> SUPPORTED_MEDIA_TYPES =
-            Arrays.asList(new MediaType[] { ViewResolverSupport.DEFAULT_CONTENT_TYPE, MediaType.TEXT_EVENT_STREAM });
+            Arrays.asList(new MediaType[] {
+                    MediaType.TEXT_HTML, MediaType.APPLICATION_XHTML_XML, // HTML
+                    MediaType.APPLICATION_XML, MediaType.TEXT_XML,        // XML
+                    MediaType.APPLICATION_RSS_XML,                        // RSS
+                    MediaType.APPLICATION_ATOM_XML,                       // ATOM
+                    new MediaType("application", "javascript"),           // JAVASCRIPT
+                    new MediaType("application", "ecmascript"),           //
+                    new MediaType("text", "javascript"),                  //
+                    new MediaType("text", "ecmascript"),                  //
+                    MediaType.APPLICATION_JSON,                           // JSON
+                    new MediaType("text", "css"),                         // CSS
+                    MediaType.TEXT_PLAIN,                                 // TEXT
+                    MediaType.TEXT_EVENT_STREAM});                        // SERVER-SENT EVENTS (SSE)
 
     // This provider function for redirect mirrors what is done at the reactive version of UrlBasedViewResolver
     private Function<String, RedirectView> redirectViewProvider = url -> new RedirectView(url);
