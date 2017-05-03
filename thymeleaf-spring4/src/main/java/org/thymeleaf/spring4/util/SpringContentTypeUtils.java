@@ -21,6 +21,8 @@ package org.thymeleaf.spring4.util;
 
 import java.nio.charset.Charset;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.thymeleaf.util.ContentTypeUtils;
 
 
@@ -41,10 +43,10 @@ public final class SpringContentTypeUtils {
 
 
     public static String computeViewContentType(
-            final String viewName, final String defaultContentType, final Charset defaultCharset) {
+            final HttpServletRequest request, final String defaultContentType, final Charset defaultCharset) {
 
-        if (viewName == null || viewName.trim().length() == 0) {
-            throw new IllegalArgumentException("View name cannot be null or empty");
+        if (request == null) {
+            throw new IllegalArgumentException("Request cannot be null");
         }
 
         // We will apply the default charset here because, after all, we are in an HTTP environment, and
@@ -57,15 +59,16 @@ public final class SpringContentTypeUtils {
         final Charset combinedCharset =
                 ContentTypeUtils.computeCharsetFromContentType(combinedContentType);
 
-        // If the viewName offers clues on the content type that would be more appropriate, just use it
-        final String viewNameContentType =
-                ContentTypeUtils.computeContentTypeForTemplateName(viewName, combinedCharset);
-
-        if (viewNameContentType == null) {
-            return combinedContentType;
+        // If the request path offers clues on the content type that would be more appropriate (because it
+        // ends in ".html", ".xml", ".js", etc.), just use it
+        final String requestPathContentType =
+                ContentTypeUtils.computeContentTypeForRequestPath(request.getRequestURI(), combinedCharset);
+        if (requestPathContentType != null) {
+            return requestPathContentType;
         }
 
-        return viewNameContentType;
+        // No way to determine a better/more specific content-type, so just return the (adequately combined) defaults
+        return combinedContentType;
 
     }
 
