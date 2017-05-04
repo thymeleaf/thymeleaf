@@ -82,16 +82,22 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
 
     private static final Logger logger = LoggerFactory.getLogger(StandardJavaScriptSerializer.class);
 
-    // This will be used to conditionally initialize support for JSR310 (java.time) serialization in Jackson
-    private static final String JACKSON_JAVA_TIME_MODULE_CLASS_NAME = "com.fasterxml.jackson.datatype.jsr310.JavaTimeModule";
-
 
     private final IStandardJavaScriptSerializer delegate;
 
 
 
-    private static boolean isJacksonPresent() {
-        return ClassLoaderUtils.isClassPresent("com.fasterxml.jackson.databind.ObjectMapper");
+    private String computeJacksonPackageNameIfPresent() {
+        // We will try to know whether Jackson is present in a way that is as resilient as possible with
+        // dependency package renaming, so we will return the package name.
+        try {
+            final Class<?> objectMapperClass = ObjectMapper.class;
+            final String objectMapperPackageName = objectMapperClass.getPackage().getName();
+            return objectMapperPackageName.substring(0, objectMapperPackageName.length() - ".databind".length());
+        } catch (final Throwable ignored) {
+            // Nothing bad - simply Jackson is not in the classpath
+            return null;
+        }
     }
 
 
@@ -102,11 +108,13 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
 
         IStandardJavaScriptSerializer newDelegate = null;
 
-        if (useJacksonIfAvailable && isJacksonPresent()) {
+        final String jacksonPrefix = (useJacksonIfAvailable? computeJacksonPackageNameIfPresent() : null);
+
+        if (jacksonPrefix != null) {
 
             try {
 
-                newDelegate = new JacksonStandardJavaScriptSerializer();
+                newDelegate = new JacksonStandardJavaScriptSerializer(jacksonPrefix);
 
             } catch (final Exception e) {
                 handleErrorLoggingOnJacksonInitialization(e);
@@ -142,7 +150,7 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
         private final ObjectMapper mapper;
 
 
-        JacksonStandardJavaScriptSerializer() {
+        JacksonStandardJavaScriptSerializer(final String jacksonPrefix) {
 
             super();
 
@@ -157,7 +165,8 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
              * Now try to (conditionally) initialize support for Jackson serialization of JSR310 (java.time) objects,
              * by making use of the 'jackson-datatype-jsr310' optional dependency.
              */
-            final Class<?> javaTimeModuleClass = ClassLoaderUtils.findClass(JACKSON_JAVA_TIME_MODULE_CLASS_NAME);
+            final Class<?> javaTimeModuleClass =
+                    ClassLoaderUtils.findClass(jacksonPrefix + ".datatype.jsr310.JavaTimeModule");
             if (javaTimeModuleClass != null) {
                 // JSR310 support for Jackson is present in classpath
                 try {
