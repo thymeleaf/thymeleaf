@@ -1,11 +1,11 @@
 3.0.6
 =====
-- Fixed unclosed quote in JavaScript/CSS comments breaks parsing (wrongly considered literal starts).
+- Fixed unclosed quote in JavaScript/CSS comments breaking parsing (wrongly considered literal starts).
 - Fixed bad parsing of '/content()' selector (AttoParser) in some scenarios, leading to suboptimal execution of
   this type of fragment selection.
 - Fixed prevent fragments without a signature being called with unnamed parameters.
 - Added allowing template suffix to be applied only if template name doesn't already have a known file extension.
-- Added applicaiton of template mode depending on template resource extension during resolution.
+- Added application of template mode depending on template resource extension during resolution.
 - Improved the way output content type and template mode relate to each other (made exclusive) in TemplateSpec.
 - Improved instances of dynamic class loading by making references package-relative for better resilience
   to package renaming.
