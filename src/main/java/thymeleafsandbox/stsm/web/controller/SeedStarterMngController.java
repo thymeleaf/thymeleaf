@@ -29,7 +29,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 import thymeleafsandbox.stsm.business.entities.Feature;
 import thymeleafsandbox.stsm.business.entities.Row;
 import thymeleafsandbox.stsm.business.entities.SeedStarter;
@@ -86,43 +87,76 @@ public class SeedStarterMngController {
     public List<SeedStarter> populateSeedStarters() {
         return this.seedStarterService.findAll();
     }
-    
-    
-    
+
+
+    /*
+     * NOTE that in this reactive version of STSM we cannot select the controller method to be executed
+     * depending on the presence of a specific request parameter (using the "param" attribute of the
+     * @RequestMapping annotation) because WebFlux does not include as "request parameters" data
+     * coming from forms (see https://jira.spring.io/browse/SPR-15508 ). Doing so would mean blocking
+     * for the time the framework needs for reading the request payload, which goes against the
+     * general reactiveness of the architecture.
+     *
+     * So the ways to access data from form are, either include then as a part of form-backing bean
+     * (in this case SeedStarter), or using exchange.getFormData(). In this case, modifying a model entity
+     * like SeedStarter because of a very specific need of the user interface (adding the "save",
+     * "addRow" or "removeRow" parameters in order to modify the form's structure from the server) would
+     * not be very elegant, so instead we will read exchange.getFormData() and direct to a different
+     * inner (private) controller method depending on the presence of these fields in the form data
+     * coming from the client.
+     */
+
     @RequestMapping({"/","/seedstartermng"})
-    public String showSeedstarters(final SeedStarter seedStarter) {
-        seedStarter.setDatePlanted(Calendar.getInstance().getTime());
-        return "seedstartermng";
+    public Mono<String> doSeedstarter(
+            final SeedStarter seedStarter, final BindingResult bindingResult, final ModelMap model,
+            final ServerWebExchange exchange) {
+
+        return exchange.getFormData().flatMap(
+                formData -> {
+                    if (formData.containsKey("save")) {
+                        return saveSeedstarter(seedStarter,  bindingResult, model);
+                    }
+                    if (formData.containsKey("addRow")) {
+                        return addRow(seedStarter, bindingResult);
+                    }
+                    if (formData.containsKey("removeRow")) {
+                        final int rowId = Integer.parseInt(formData.getFirst("removeRow"));
+                        return removeRow(seedStarter, bindingResult, rowId);
+                    }
+                    return showSeedstarters(seedStarter);
+                });
+
     }
-    
-    
-    
-    @RequestMapping(value="/seedstartermng", params={"save"})
-    public String saveSeedstarter(final SeedStarter seedStarter, final BindingResult bindingResult, final ModelMap model) {
+
+
+    private Mono<String> showSeedstarters(final SeedStarter seedStarter) {
+        seedStarter.setDatePlanted(Calendar.getInstance().getTime());
+        return Mono.just("seedstartermng");
+    }
+
+
+    private Mono<String> saveSeedstarter(final SeedStarter seedStarter, final BindingResult bindingResult, final ModelMap model) {
         if (bindingResult.hasErrors()) {
-            return "seedstartermng";
+            return Mono.just("seedstartermng");
         }
         this.seedStarterService.add(seedStarter);
         model.clear();
-        return "redirect:/seedstartermng";
+        return Mono.just("redirect:/seedstartermng");
     }
-    
 
-    
-    @RequestMapping(value="/seedstartermng", params={"addRow"})
-    public String addRow(final SeedStarter seedStarter, final BindingResult bindingResult) {
+
+    private Mono<String> addRow(final SeedStarter seedStarter, final BindingResult bindingResult) {
         seedStarter.getRows().add(new Row());
-        return "seedstartermng";
+        return Mono.just("seedstartermng");
     }
     
     
-    @RequestMapping(value="/seedstartermng", params={"removeRow"})
-    public String removeRow(
+    private Mono<String> removeRow(
             final SeedStarter seedStarter,
             final BindingResult bindingResult,
-            @RequestParam(value = "removeRow", required = false) Integer rowId) {
-        seedStarter.getRows().remove(rowId.intValue());
-        return "seedstartermng";
+            final int rowId) {
+        seedStarter.getRows().remove(rowId);
+        return Mono.just("seedstartermng");
     }
 
 
