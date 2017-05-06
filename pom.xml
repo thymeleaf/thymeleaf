@@ -69,9 +69,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-		<thymeleaf.version>3.0.6-SNAPSHOT</thymeleaf.version>
+		<thymeleaf.version>3.0.7-SNAPSHOT</thymeleaf.version>
 		<!-- Once thymeleaf-spring5 goes GA, this property should disappear -->
-		<thymeleaf-spring5.version>3.0.6-SNAPSHOT</thymeleaf-spring5.version>
+		<thymeleaf-spring5.version>3.0.7-SNAPSHOT</thymeleaf-spring5.version>
 	</properties>
 
 
