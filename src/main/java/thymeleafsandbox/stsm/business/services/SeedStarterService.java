@@ -19,10 +19,10 @@
  */
 package thymeleafsandbox.stsm.business.services;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import thymeleafsandbox.stsm.business.entities.SeedStarter;
 import thymeleafsandbox.stsm.business.entities.repositories.SeedStarterRepository;
 
@@ -39,12 +39,13 @@ public class SeedStarterService {
     
     
     
-    public List<SeedStarter> findAll() {
+    public Flux<SeedStarter> findAll() {
         return this.seedstarterRepository.findAll();
     }
 
-    public void add(final SeedStarter seedStarter) {
-        this.seedstarterRepository.add(seedStarter);
+    public Mono<Void> add(final SeedStarter seedStarter) {
+        return this.seedstarterRepository.add(seedStarter);
     }
-    
+
+
 }

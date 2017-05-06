@@ -30,6 +30,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import thymeleafsandbox.stsm.business.entities.Feature;
 import thymeleafsandbox.stsm.business.entities.Row;
@@ -79,12 +80,12 @@ public class SeedStarterMngController {
     }
     
     @ModelAttribute("allVarieties")
-    public List<Variety> populateVarieties() {
+    public Flux<Variety> populateVarieties() {
         return this.varietyService.findAll();
     }
     
     @ModelAttribute("allSeedStarters")
-    public List<SeedStarter> populateSeedStarters() {
+    public Flux<SeedStarter> populateSeedStarters() {
         return this.seedStarterService.findAll();
     }
 
@@ -139,9 +140,9 @@ public class SeedStarterMngController {
         if (bindingResult.hasErrors()) {
             return Mono.just("seedstartermng");
         }
-        this.seedStarterService.add(seedStarter);
-        model.clear();
-        return Mono.just("redirect:/seedstartermng");
+        return this.seedStarterService.add(seedStarter)
+                .then(Mono.fromRunnable(() -> model.clear()))
+                .then(Mono.just("redirect:/seedstartermng"));
     }
 
 

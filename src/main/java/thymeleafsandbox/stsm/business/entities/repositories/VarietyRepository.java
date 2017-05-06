@@ -19,12 +19,12 @@
  */
 package thymeleafsandbox.stsm.business.entities.repositories;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import thymeleafsandbox.stsm.business.entities.Variety;
 
 
@@ -68,14 +68,18 @@ public class VarietyRepository {
         
     }
     
+    /*
+     * There is no real need to make these return Publishers instead of
+     * values directly, but we will do it anyway to emulate an environment
+     * in which data is obtained from a reactive data source.
+     */
     
-    
-    public List<Variety> findAll() {
-        return new ArrayList<Variety>(this.varietiesById.values());
+    public Flux<Variety> findAll() {
+        return Flux.fromIterable(this.varietiesById.values());
     }
     
-    public Variety findById(final Integer id) {
-        return this.varietiesById.get(id);
+    public Mono<Variety> findById(final Integer id) {
+        return Mono.fromCallable(() -> this.varietiesById.get(id));
     }
     
     

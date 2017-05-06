@@ -40,7 +40,8 @@ public class VarietyFormatter implements Formatter<Variety> {
 
     public Variety parse(final String text, final Locale locale) throws ParseException {
         final Integer varietyId = Integer.valueOf(text);
-        return this.varietyService.findById(varietyId);
+        // There is no Formatter API yet that allows us to return a Publisher, so we need to block
+        return this.varietyService.findById(varietyId).block();
     }
 
 

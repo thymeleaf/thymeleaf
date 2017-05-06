@@ -19,10 +19,10 @@
  */
 package thymeleafsandbox.stsm.business.services;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import thymeleafsandbox.stsm.business.entities.Variety;
 import thymeleafsandbox.stsm.business.entities.repositories.VarietyRepository;
 
@@ -39,11 +39,11 @@ public class VarietyService {
     
     
     
-    public List<Variety> findAll() {
+    public Flux<Variety> findAll() {
         return this.varietyRepository.findAll();
     }
 
-    public Variety findById(final Integer id) {
+    public Mono<Variety> findById(final Integer id) {
         return this.varietyRepository.findById(id);
     }
     

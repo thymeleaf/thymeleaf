@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import thymeleafsandbox.stsm.business.entities.SeedStarter;
 
 
@@ -38,14 +40,21 @@ public class SeedStarterRepository {
     }
     
     
-    
-    public List<SeedStarter> findAll() {
-        return new ArrayList<SeedStarter>(this.seedStarters);
+
+    /*
+     * There is no real need to make these return Publishers instead of
+     * values directly, but we will do it anyway to emulate an environment
+     * in which data is obtained from a reactive data source.
+     */
+
+
+    public Flux<SeedStarter> findAll() {
+        return Flux.fromIterable(this.seedStarters);
     }
 
     
-    public void add(final SeedStarter seedStarter) {
-        this.seedStarters.add(seedStarter);
+    public Mono<Void> add(final SeedStarter seedStarter) {
+        return Mono.fromRunnable(() -> this.seedStarters.add(seedStarter));
     }
     
     
