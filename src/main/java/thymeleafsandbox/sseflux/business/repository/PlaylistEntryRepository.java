@@ -20,7 +20,6 @@
 package thymeleafsandbox.sseflux.business.repository;
 
 import java.time.Duration;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
