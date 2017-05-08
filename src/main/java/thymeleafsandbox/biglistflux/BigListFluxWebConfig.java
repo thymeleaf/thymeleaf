@@ -20,8 +20,6 @@
 package thymeleafsandbox.biglistflux;
 
 
-import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,30 +27,19 @@ import org.springframework.ui.freemarker.SpringTemplateLoader;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewResolver;
 import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
-import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
-import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
 
 @Configuration
-@EnableConfigurationProperties(ThymeleafProperties.class)
 public class BigListFluxWebConfig {
-
-    // TODO * Once there is a Spring Boot starter for thymeleaf-spring5, there would be no need to have
-    // TODO   that @EnableConfigurationProperties annotation or use it for declaring the beans down in the
-    // TODO   "thymeleaf" section below.
 
 
     private ApplicationContext applicationContext;
-    private ThymeleafProperties thymeleafProperties;
 
 
 
-    public BigListFluxWebConfig(
-            final ApplicationContext applicationContext,
-            final ThymeleafProperties thymeleafProperties) {
+    public BigListFluxWebConfig(final ApplicationContext applicationContext) {
         super();
         this.applicationContext = applicationContext;
-        this.thymeleafProperties = thymeleafProperties;
     }
 
 
@@ -95,50 +82,18 @@ public class BigListFluxWebConfig {
      * --------------------------------------
      */
 
-    // TODO * If there was a Spring Boot starter for thymeleaf-spring5 most probably some or all of these
-    // TODO   resolver and engine beans would not need to be specifically declared here.
-
-    @Bean
-    public SpringResourceTemplateResolver thymeleafTemplateResolver() {
-
-        final SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
-        resolver.setApplicationContext(this.applicationContext);
-        resolver.setPrefix(this.thymeleafProperties.getPrefix());
-        resolver.setSuffix(this.thymeleafProperties.getSuffix());
-        resolver.setTemplateMode(this.thymeleafProperties.getMode());
-        if (this.thymeleafProperties.getEncoding() != null) {
-            resolver.setCharacterEncoding(this.thymeleafProperties.getEncoding().name());
-        }
-        resolver.setCacheable(this.thymeleafProperties.isCache());
-        final Integer order = this.thymeleafProperties.getTemplateResolverOrder();
-        if (order != null) {
-            resolver.setOrder(order);
-        }
-        resolver.setCheckExistence(this.thymeleafProperties.isCheckTemplate());
-
-        return resolver;
-
-    }
-
-
-
-    @Bean
-    public ISpringWebFluxTemplateEngine thymeleafTemplateEngine(){
-        // We override here the SpringTemplateEngine instance that would otherwise be instantiated by
-        // Spring Boot because we want to apply the SpringWebFlux-specific context factory, link builder...
-        final SpringWebFluxTemplateEngine templateEngine = new SpringWebFluxTemplateEngine();
-        templateEngine.setTemplateResolver(thymeleafTemplateResolver());
-        return templateEngine;
-    }
 
     /*
      * ViewResolver for Thymeleaf templates executing in FULL mode.
      * No limit to output chunk size, non-data-driven (all data fully resolved in context).
+     *
+     * NOTE the "thymeleafReactiveViewResolver" bean name is being used here in order to override the
+     * ViewResolver auto-configured at the ThymeleafAutoConfiguration class from the spring-boot-starter-thymeleaf
      */
     @Bean
-    public ThymeleafReactiveViewResolver thymeleafFullModeViewResolver(){
+    public ThymeleafReactiveViewResolver thymeleafReactiveViewResolver(final ISpringWebFluxTemplateEngine templateEngine){
         final ThymeleafReactiveViewResolver viewResolver = new ThymeleafReactiveViewResolver();
-        viewResolver.setTemplateEngine(thymeleafTemplateEngine());
+        viewResolver.setTemplateEngine(templateEngine);
         viewResolver.setOrder(2);
         viewResolver.setViewNames(new String[] {"thymeleaf/*"});
         return viewResolver;
@@ -153,9 +108,9 @@ public class BigListFluxWebConfig {
      *              the engine and Thymeleaf will be executed as a part of the data flow.
      */
     @Bean
-    public ThymeleafReactiveViewResolver thymeleafChunkedAndDataDrivenViewResolver(){
+    public ThymeleafReactiveViewResolver thymeleafChunkedAndDataDrivenViewResolver(final ISpringWebFluxTemplateEngine templateEngine){
         final ThymeleafReactiveViewResolver viewResolver = new ThymeleafReactiveViewResolver();
-        viewResolver.setTemplateEngine(thymeleafTemplateEngine());
+        viewResolver.setTemplateEngine(templateEngine);
         viewResolver.setOrder(1);
         viewResolver.setViewNames(new String[] {"thymeleaf/*chunked*", "thymeleaf/*datadriven*"});
         viewResolver.setResponseMaxChunkSizeBytes(8192); // OUTPUT BUFFER size limit

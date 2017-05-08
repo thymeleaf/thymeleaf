@@ -70,6 +70,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 		<thymeleaf.version>3.0.7-SNAPSHOT</thymeleaf.version>
+		<thymeleaf-spring5.version>3.0.7-SNAPSHOT</thymeleaf-spring5.version>
 	</properties>
 
 
@@ -97,11 +98,9 @@
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 
-    <!-- TODO * There is no Spring Boot starter for Thymeleaf + Spring 5 integration yet.    -->
 		<dependency>
-			<groupId>org.thymeleaf</groupId>
-			<artifactId>thymeleaf-spring5</artifactId>
-			<version>${thymeleaf.version}</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 
 		<dependency>
