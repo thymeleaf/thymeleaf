@@ -24,10 +24,12 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.Formatter;
+import org.springframework.stereotype.Component;
 import thymeleafsandbox.stsm.business.entities.Variety;
 import thymeleafsandbox.stsm.business.services.VarietyService;
 
 
+@Component
 public class VarietyFormatter implements Formatter<Variety> {
 
     @Autowired
