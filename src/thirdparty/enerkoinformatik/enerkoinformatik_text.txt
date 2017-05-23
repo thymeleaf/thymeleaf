@@ -1,0 +1,5 @@
+ENERKO INFORMATIK provides software and services in the energy sector for over 25 years. Our product EnSupply deals with offer management and price calculation in the utility sector. At it’s core it uses time series information to forecast energy usage and calculate prices based on hedging or price forward curves.
+
+Thymeleaf is used to render the frontend, e-mail templates and also Handlebar fragments for the dynamic part of our EnSupply frontend. Even though Thymeleaf has a huge number of features, its learning curve is relatively flat. Due to its good integration into the Spring ecosystem can be productive from day one on. ENERKO INFORMATIK also uses Thymeleaf as the rendering engine with JBake to generate their homepage.
+
+LINK: https://www.enerko-informatik.de
