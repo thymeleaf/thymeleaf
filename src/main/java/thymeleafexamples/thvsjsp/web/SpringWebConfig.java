@@ -96,6 +96,7 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter implements Applicat
     @Bean
     public ThymeleafViewResolver thymeleafViewResolver(){
         ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
+        viewResolver.setContentType("text/html;encoding=utf-8");
         viewResolver.setTemplateEngine(templateEngine());
         viewResolver.setViewNames(new String[] {"index","*th"});
         viewResolver.setOrder(Integer.valueOf(1));
