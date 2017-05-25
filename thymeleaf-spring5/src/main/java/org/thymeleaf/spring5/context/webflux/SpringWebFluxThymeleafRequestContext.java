@@ -198,12 +198,12 @@ public class SpringWebFluxThymeleafRequestContext implements IThymeleafRequestCo
 
     @Override
     public Optional<Errors> getErrors(final String name) {
-        return this.requestContext.getErrors(name);
+        return Optional.ofNullable(this.requestContext.getErrors(name));
     }
 
     @Override
     public Optional<Errors> getErrors(final String name, final boolean htmlEscape) {
-        return this.requestContext.getErrors(name, htmlEscape);
+        return Optional.ofNullable(this.requestContext.getErrors(name, htmlEscape));
     }
 
     @Override

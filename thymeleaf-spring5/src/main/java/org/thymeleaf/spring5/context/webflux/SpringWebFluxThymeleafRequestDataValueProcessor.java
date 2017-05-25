@@ -20,7 +20,6 @@
 package org.thymeleaf.spring5.context.webflux;
 
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.web.reactive.result.view.RequestDataValueProcessor;
 import org.springframework.web.server.ServerWebExchange;
@@ -45,9 +44,9 @@ class SpringWebFluxThymeleafRequestDataValueProcessor implements IThymeleafReque
     private final ServerWebExchange exchange;
 
     SpringWebFluxThymeleafRequestDataValueProcessor(
-            final Optional<RequestDataValueProcessor> requestDataValueProcessor, final ServerWebExchange exchange) {
+            final RequestDataValueProcessor requestDataValueProcessor, final ServerWebExchange exchange) {
         super();
-        this.requestDataValueProcessor = requestDataValueProcessor.orElse(null);
+        this.requestDataValueProcessor = requestDataValueProcessor;
         this.exchange = exchange;
     }
 
