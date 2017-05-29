@@ -131,7 +131,7 @@ This is a legally binding document, so please read it carefully before agreeing 
 may cover more than one software project managed by Thymeleaf.
 
 
-###1. Definitions
+### 1. Definitions
 
   * _"Thymeleaf"_ means the "Thymeleaf Project organization and members".
   * _"You"_ means the individual who submits a Contribution to Thymeleaf.
@@ -154,9 +154,9 @@ may cover more than one software project managed by Thymeleaf.
     Contribution to Thymeleaf, whichever is earlier.
 
 
-###2. Grant of Rights
+### 2. Grant of Rights
 
-####2.1. Copyright License
+#### 2.1. Copyright License
 
   * (a) You retain ownership of the copyright in your Contribution and have the same rights to use or
         license the Contribution which you would have had without entering into the agreement.
@@ -166,7 +166,7 @@ may cover more than one software project managed by Thymeleaf.
         reproduce, modify, display, perform and distribute the Contribution as part of the Material; provided
         that this license is conditioned upon compliance with Section 2.3.
 
-####2.2 Patent License
+#### 2.2 Patent License
 
 For patent claims including, without limitation, method, process, and apparatus claims which you
 own, control or have the right to grant, now or in the future, you grant to Thymeleaf a perpetual, worldwide,
@@ -177,29 +177,29 @@ portions of such combination). This license is granted only to the extent that t
 licensed rights infringes such patent claims; and provided that this license is conditioned upon
 compliance with Section 2.3.
 
-####2.3 Outbound License
+#### 2.3 Outbound License
 
 As a condition on the grant of rights in Sections 2.1 and 2.2, Thymeleaf agrees to license the Contribution only
 under the terms of the Apache License 2.0 (including any right to adopt any future version of this license if
 permitted).
 
-####2.4 Moral Rights
+#### 2.4 Moral Rights
 
 If moral rights apply to the Contribution, to the maximum extent permitted by law, you waive and agree not
 to assert such moral rights against Thymeleaf or its successors in interest, or any of our licensees, either
 direct or indirect.
 
-####2.5 Thymeleaf Rights
+#### 2.5 Thymeleaf Rights
 
 You acknowledge that Thymeleaf is not obligated to use your Contribution as part of the
 Material and may decide to include any Contributions Thymeleaf considers appropriate.
 
-####2.6 Reservation of Rights
+#### 2.6 Reservation of Rights
 
 Any rights not expressly assigned or licensed under this section are expressly reserved by you.
 
 
-###3. Agreement
+### 3. Agreement
 
 You confirm that:
 
@@ -212,7 +212,7 @@ You confirm that:
         sign the Agreement.
 
 
-###4. Disclaimer
+### 4. Disclaimer
 
 EXCEPT FOR THE EXPRESS WARRANTIES IN SECTION 3, THE CONTRIBUTION IS PROVIDED "AS IS". MORE PARTICULARLY,
 ALL EXPRESS OR IMPLIED WARRANTIES INCLUDING, WITHOUT LIMITATION, ANY IMPLIED WARRANTY OF MERCHANTABILITY,
@@ -221,7 +221,7 @@ THYMELEAF TO YOU. TO THE EXTENT THAT ANY SUCH WARRANTIES CANNOT BE DISCLAIMED, S
 DURATION TO THE MINIMUM PERIOD PERMITTED BY LAW.
 
 
-###5. Consequential Damage Waiver
+### 5. Consequential Damage Waiver
 
 TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT WILL YOU OR THYMELEAF BE LIABLE FOR ANY LOSS OF
 PROFITS, LOSS OF ANTICIPATED SAVINGS, LOSS OF DATA, INDIRECT, SPECIAL, INCIDENTAL, CONSEQUENTIAL AND EXEMPLARY
@@ -229,7 +229,7 @@ DAMAGES ARISING OUT OF THIS AGREEMENT REGARDLESS OF THE LEGAL OR EQUITABLE THEOR
 UPON WHICH THE CLAIM IS BASED.
 
 
-###6. Miscellaneous
+### 6. Miscellaneous
 
   * 6.1 This Agreement will be governed by and construed in accordance with the laws of Spain excluding its
         conflicts of law provisions. Under certain circumstances, the governing law in this section might be
