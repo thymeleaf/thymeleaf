@@ -117,6 +117,8 @@ public final class StandardTextTagProcessor extends AbstractStandardExpressionAt
             case HTML:
                 return HtmlEscape.escapeHtml4Xml(input);
             case XML:
+                // Note we are outputting a body content here, so it is important that we use the version
+                // of XML escaping meant for content, not attributes (slight differences)
                 return XmlEscape.escapeXml10(input);
             default:
                 throw new TemplateProcessingException(

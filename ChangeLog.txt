@@ -1,5 +1,7 @@
 3.0.7
 =====
+- Improved escaping of attributes in XML template mode: \t, \n and \r now being always escaped in order to prevent
+  them being normalised into white spaces by XML parsers when reading (which would be according to the spec).
 - Updated Unbescape dependency to 1.1.5.RELEASE.
 
 

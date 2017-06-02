@@ -38,7 +38,6 @@ import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EscapedAttributeUtils;
-import org.unbescape.html.HtmlEscape;
 
 /**
  *
@@ -96,7 +95,7 @@ public final class StandardDefaultAttributesTagProcessor
                 if (TextUtil.equals(templateMode.isCaseSensitive(), attributeName.getPrefix(), this.dialectPrefix)) {
 
                     // We will process each 'default' attribute separately
-                    processDefaultAttribute(context, tag, attribute, structureHandler);
+                    processDefaultAttribute(getTemplateMode(), context, tag, attribute, structureHandler);
 
                 }
             }
@@ -108,6 +107,7 @@ public final class StandardDefaultAttributesTagProcessor
 
 
     private static void processDefaultAttribute(
+            final TemplateMode templateMode,
             final ITemplateContext context,
             final IProcessableElementTag tag, final IAttribute attribute,
             final IElementTagStructureHandler structureHandler) {
@@ -179,7 +179,8 @@ public final class StandardDefaultAttributesTagProcessor
             /*
              * Compute the new attribute value
              */
-            final String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? null : expressionResult.toString());
+            final String newAttributeValue =
+                    EscapedAttributeUtils.escapeAttribute(templateMode, expressionResult == null ? null : expressionResult.toString());
 
             /*
              * Set the new value, removing the attribute completely if the expression evaluated to null

@@ -125,6 +125,8 @@ public final class LazyEscapingCharSequence extends AbstractLazyCharSequence {
                     return;
                 case XML:
                     if (this.input != null) {
+                        // Note we are outputting a body content here, so it is important that we use the version
+                        // of XML escaping meant for content, not attributes (slight differences)
                         XmlEscape.escapeXml10(this.input.toString(), writer);
                     }
                     return;

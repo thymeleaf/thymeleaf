@@ -38,7 +38,48 @@ public final class EscapedAttributeUtils {
 
 
 
+    public static String escapeAttribute(final TemplateMode templateMode, final String input) {
+
+        if (input == null) {
+            return null;
+        }
+
+        Validate.notNull(templateMode, "Template mode cannot be null");
+
+        /*
+         * Depending on the template mode that we are using, we might be receiving element attributes escaped in
+         * different ways.
+         *
+         * HTML and XML have their own escaping/unescaping rules, which we can easily apply by means
+         * of the corresponding Unbescape utility methods. TEXT, JAVASCRIPT and CSS are left out because there are no
+         * attributes to be output in those modes as such.
+         *
+         * There is no standard way to escape/unescape in TEXT modes, but given TEXT mode is many times used for
+         * markup (HTML or XML templates or inlined fragments), we will use HTML escaping/unescaping for TEXT mode.
+         * Besides, this is consistent with the fact that TEXT-mode escaped output will also be HTML-escaped by
+         * processors and inlining utilities in the Standard Dialects.
+         */
+        switch (templateMode) {
+
+            case HTML:
+                return HtmlEscape.escapeHtml4Xml(input);
+            case XML:
+                return XmlEscape.escapeXml10Attribute(input);
+            default:
+                throw new TemplateProcessingException(
+                        "Unrecognized template mode " + templateMode + ". Cannot produce escaped attributes for " +
+                        "this template mode.");
+        }
+
+    }
+
+
+
     public static String unescapeAttribute(final TemplateMode templateMode, final String input) {
+
+        if (input == null) {
+            return null;
+        }
 
         Validate.notNull(templateMode, "Template mode cannot be null");
 

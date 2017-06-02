@@ -28,8 +28,8 @@ import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.EscapedAttributeUtils;
 import org.thymeleaf.util.Validate;
-import org.unbescape.html.HtmlEscape;
 
 /**
  *
@@ -93,7 +93,8 @@ public abstract class AbstractStandardDoubleAttributeModifierTagProcessor
             final Object expressionResult,
             final IElementTagStructureHandler structureHandler) {
 
-        final String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? null : expressionResult.toString());
+        final String newAttributeValue =
+                EscapedAttributeUtils.escapeAttribute(getTemplateMode(), expressionResult == null ? null : expressionResult.toString());
 
         // These attributes might be "removable if empty", in which case we would simply remove the target attributes...
         if (this.removeIfEmpty && (newAttributeValue == null || newAttributeValue.length() == 0)) {

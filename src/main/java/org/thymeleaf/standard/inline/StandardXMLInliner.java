@@ -42,6 +42,8 @@ public final class StandardXMLInliner extends AbstractStandardInliner {
         if (input == null) {
             return "";
         }
+        // Note we are outputting a body content here, so it is important that we use the version
+        // of XML escaping meant for content, not attributes (slight differences)
         return XmlEscape.escapeXml10(input.toString());
     }
 

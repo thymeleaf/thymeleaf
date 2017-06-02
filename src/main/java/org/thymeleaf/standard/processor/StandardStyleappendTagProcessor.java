@@ -28,8 +28,8 @@ import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.EscapedAttributeUtils;
 import org.thymeleaf.util.Validate;
-import org.unbescape.html.HtmlEscape;
 
 /**
  *
@@ -79,7 +79,8 @@ public final class StandardStyleappendTagProcessor
             final Object expressionResult,
             final IElementTagStructureHandler structureHandler) {
 
-        String newAttributeValue = HtmlEscape.escapeHtml4Xml(expressionResult == null ? null : expressionResult.toString());
+        String newAttributeValue =
+                EscapedAttributeUtils.escapeAttribute(getTemplateMode(), expressionResult == null ? null : expressionResult.toString());
 
         // If we are not adding anything, we'll just leave it untouched
         if (newAttributeValue != null && newAttributeValue.length() > 0) {
