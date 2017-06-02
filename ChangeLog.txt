@@ -1,3 +1,8 @@
+3.0.7
+=====
+- Updated Unbescape dependency to 1.1.5.RELEASE.
+
+
 3.0.6
 =====
 - Fixed unclosed quote in JavaScript/CSS comments breaking parsing (wrongly considered literal starts).
