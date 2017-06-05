@@ -134,6 +134,7 @@ final class TextParser {
             status.line = 1;
             status.col = 1;
             status.inStructure = false;
+            status.inCommentLine = false;
             status.literalMarker = (char)0;
 
             while (cont) {
@@ -202,7 +203,9 @@ final class TextParser {
 
             if (lastLen > 0) {
 
-                if (status.inStructure) {
+                // Note that comment lines will not be parsed in a special way, only as mere texts, because they
+                // cannot contain 'natural' inlined expressions (though they may contain normal inlined expressions)
+                if (status.inStructure && !status.inCommentLine) {
                     throw new TextParseException(
                             "Incomplete structure: \"" + new String(buffer, lastStart, lastLen) + "\"", status.line, status.col);
                 }
@@ -292,6 +295,7 @@ final class TextParser {
                     status.line = currentLine;
                     status.col = currentCol;
                     status.inStructure = false;
+                    status.inCommentLine = false;
                     status.literalMarker = (char)0;
                     return;
 
@@ -337,6 +341,7 @@ final class TextParser {
                         status.line = currentLine;
                         status.col = currentCol;
                         status.inStructure = false;
+                        status.inCommentLine = false;
                         status.literalMarker = (char)0;
                         return;
                     }
@@ -406,6 +411,7 @@ final class TextParser {
                     status.line = currentLine;
                     status.col = currentCol;
                     status.inStructure = true;
+                    status.inCommentLine = inCommentLine;
                     status.literalMarker = (char)0; // We reset this anyway, because we will try to parse it fully again
                     return;
                 }
@@ -473,7 +479,7 @@ final class TextParser {
 
                 if (tagEnd == pos) {
                     // Only advance current and the line+col pointers if we have actually found something
-                    current = tagEnd + 1;
+                    current = tagEnd + 1; 
                     currentLine = locator[0];
                     currentCol = locator[1];
                 }
@@ -487,6 +493,7 @@ final class TextParser {
         status.line = currentLine;
         status.col = currentCol;
         status.inStructure = false;
+        status.inCommentLine = false;
         status.literalMarker = (char)0;
 
     }

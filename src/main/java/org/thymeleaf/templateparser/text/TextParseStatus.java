@@ -35,6 +35,7 @@ final class TextParseStatus {
     int line;
     int col;
     boolean inStructure;
+    boolean inCommentLine;
     char literalMarker;
 
 
