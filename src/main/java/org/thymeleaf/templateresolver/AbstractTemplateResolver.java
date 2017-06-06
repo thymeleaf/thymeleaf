@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.cache.ICacheEntryValidity;
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresource.ITemplateResource;
 import org.thymeleaf.util.PatternSpec;
@@ -217,7 +218,7 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      * </p>
      * <p>
      *   If this <em>existence check</em> is enabled and a resource is determined to not exist,
-     *   {@link ITemplateResolver#resolveTemplate(IEngineConfiguration, String, String, Map)} will return <tt>null</tt>.
+     *   {@link ITemplateResolver#resolveTemplate(IEngineConfiguration, IContext, String, String, Map)} will return <tt>null</tt>.
      * </p>
      *
      * @return <tt>true</tt> if resource existence will be checked, <tt>false</tt> if not
@@ -252,7 +253,7 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      * </p>
      * <p>
      *   If this <em>existence check</em> is enabled and a resource is determined to not exist,
-     *   {@link ITemplateResolver#resolveTemplate(IEngineConfiguration, String, String, Map)} will return <tt>null</tt>.
+     *   {@link ITemplateResolver#resolveTemplate(IEngineConfiguration, IContext, String, String, Map)} will return <tt>null</tt>.
      * </p>
      *
      * @param checkExistence <tt>true</tt> if resource existence should be checked, <tt>false</tt> if not
@@ -340,9 +341,10 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
 
 
     public final TemplateResolution resolveTemplate(
-            final IEngineConfiguration configuration,
-            final String ownerTemplate, final String template,
-            final Map<String, Object> templateResolutionAttributes) {
+        final IEngineConfiguration configuration,
+        final IContext context,
+        final String ownerTemplate, final String template,
+        final Map<String, Object> templateResolutionAttributes) {
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
         // ownerTemplate CAN be null

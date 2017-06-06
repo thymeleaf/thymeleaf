@@ -22,6 +22,7 @@ package org.thymeleaf.templateresolver;
 import java.util.Map;
 
 import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresource.ITemplateResource;
 
@@ -142,6 +143,7 @@ public interface ITemplateResolver {
      * </p>
      * 
      * @param configuration the engine configuration.
+     * @param context the context
      * @param ownerTemplate the containing template from which we want to resolve a new one as a fragment. Can be null.
      * @param template the template to be resolved (usually its name).
      * @param templateResolutionAttributes the template resolution attributes to be used (usually coming from a
@@ -150,8 +152,9 @@ public interface ITemplateResolver {
      *         template could not be resolved.
      */
     public TemplateResolution resolveTemplate(
-            final IEngineConfiguration configuration,
-            final String ownerTemplate, final String template,
-            final Map<String, Object> templateResolutionAttributes);
+        final IEngineConfiguration configuration,
+        final IContext context,
+        final String ownerTemplate, final String template,
+        final Map<String, Object> templateResolutionAttributes);
 
 }
