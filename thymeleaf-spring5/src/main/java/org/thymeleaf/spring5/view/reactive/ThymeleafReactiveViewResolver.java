@@ -30,9 +30,12 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.MediaType;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.reactive.result.view.RedirectView;
@@ -66,7 +69,9 @@ import reactor.core.publisher.Mono;
  * @since 3.0.3
  *
  */
-public class ThymeleafReactiveViewResolver extends ViewResolverSupport implements ViewResolver {
+public class ThymeleafReactiveViewResolver
+        extends ViewResolverSupport
+        implements ViewResolver, ApplicationContextAware {
 
     
     private static final Logger vrlogger = LoggerFactory.getLogger(ThymeleafReactiveViewResolver.class);
@@ -106,6 +111,9 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
                     MediaType.TEXT_PLAIN,                                 // TEXT
                     MediaType.TEXT_EVENT_STREAM});                        // SERVER-SENT EVENTS (SSE)
 
+
+    private ApplicationContext applicationContext;
+
     // This provider function for redirect mirrors what is done at the reactive version of UrlBasedViewResolver
     private Function<String, RedirectView> redirectViewProvider = url -> new RedirectView(url);
 
@@ -142,6 +150,19 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
     public ThymeleafReactiveViewResolver() {
         super();
         setSupportedMediaTypes(SUPPORTED_MEDIA_TYPES);
+    }
+
+
+
+
+    @Override
+    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+
+    public ApplicationContext getApplicationContext() {
+        return this.applicationContext;
     }
 
 
@@ -668,7 +689,5 @@ public class ThymeleafReactiveViewResolver extends ViewResolverSupport implement
         return Mono.just(view);
 
     }
-
-
 
 }
