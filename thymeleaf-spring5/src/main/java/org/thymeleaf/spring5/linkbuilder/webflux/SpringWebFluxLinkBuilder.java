@@ -88,7 +88,7 @@ public class SpringWebFluxLinkBuilder extends StandardLinkBuilder {
 
         // If it is context-relative, it has to be a Spring WebFlux-based context
         final ServerHttpRequest request = ((ISpringWebFluxContext)context).getRequest();
-        return request.getContextPath();
+        return request.getPath().contextPath().value();
 
     }
 
