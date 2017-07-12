@@ -1,3 +1,9 @@
+3.0.7.RC1
+=========
+- Fixed exception being thrown when more than one ConversionService is available at the application context
+  (e.g. in scenarios where Spring Cloud Stream is present).
+
+
 3.0.6.M4
 ========
 - Added automatic negotiation of ContentType at the ViewResolver depending on view name (file extension).

@@ -100,6 +100,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
     protected static final Logger logger = LoggerFactory.getLogger(ThymeleafReactiveView.class);
 
     public static final int DEFAULT_RESPONSE_CHUNK_SIZE_BYTES = Integer.MAX_VALUE;
+    private static final String WEBFLUX_CONVERSION_SERVICE_NAME = "webFluxConversionService";
 
 
     private String beanName = null;
@@ -357,8 +358,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         // That's why we need to create a new EvaluationContext for each request / template execution, even if it is
         // quite expensive to create because of requiring the initialization of several ConcurrentHashMaps.
         final ConversionService conversionService =
-                applicationContext.getBeanNamesForType(ConversionService.class).length > 0?
-                        applicationContext.getBean(ConversionService.class): null;
+                applicationContext.containsBean(WEBFLUX_CONVERSION_SERVICE_NAME)?
+                        (ConversionService)applicationContext.getBean(WEBFLUX_CONVERSION_SERVICE_NAME): null;
         final ThymeleafEvaluationContext evaluationContext =
                 new ThymeleafEvaluationContext(applicationContext, conversionService);
         mergedModel.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
