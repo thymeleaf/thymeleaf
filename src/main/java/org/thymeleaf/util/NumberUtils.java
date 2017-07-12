@@ -151,19 +151,19 @@ public final class NumberUtils {
             return new Integer[] {Integer.valueOf(iFrom)};
         }
 
-        if (iStep == 0 || (iStep > 0 && iFrom > iTo) || (iStep < 0 && iFrom < iTo)) {
+        if (iStep == 0) {
             // with iStep == 0, this would only be valid if iFrom == iTo, which it isn't - the rest are impossible
             throw new IllegalArgumentException("Cannot create sequence from " + iFrom + " to " + iTo + " with step " + iStep);
         }
 
         final List<Integer> values = new ArrayList<Integer>(10);
-        if (iFrom < iTo) {
+        if (iFrom < iTo && iStep > 0) {
             int i = iFrom;
             while (i <= iTo) {
                 values.add(Integer.valueOf(i));
                 i += iStep;
             }
-        } else {
+        } else if (iFrom > iTo && iStep < 0){
             // iFrom > iTo
             int i = iFrom;
             while (i >= iTo) {

@@ -3,6 +3,8 @@
 - Fixed JavaScript line comment (//) parsing breaks when EOF comes before \n (script ends in the comment line).
 - Improved escaping of attributes in XML template mode: \t, \n and \r now being always escaped in order to prevent
   them being normalised into white spaces by XML parsers when reading (which would be according to the spec).
+- Improved #numbers.sequence(...) behaviour so that zero-element sequences are now returned when it is not possible
+  to get from the initial to the final values using the specified step (was returning an error).
 - Updated Unbescape dependency to 1.1.5.RELEASE.
 
 
