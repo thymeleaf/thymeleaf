@@ -62,6 +62,7 @@ public final class  SpringActionTagProcessor
     private static final String TYPE_ATTR_NAME = "type";
     private static final String NAME_ATTR_NAME = "name";
     private static final String VALUE_ATTR_NAME = "value";
+    private static final String METHOD_ATTR_DEFAULT_VALUE = "GET";
 
     private AttributeDefinition targetAttributeDefinition;
     private AttributeDefinition methodAttributeDefinition;
@@ -100,7 +101,8 @@ public final class  SpringActionTagProcessor
 
         // But before setting the 'action' attribute, we need to verify the 'method' attribute and let the
         // RequestDataValueProcessor act on it.
-        final String httpMethod = tag.getAttributeValue(this.methodAttributeDefinition.getAttributeName());
+        final String methodAttributeValue = tag.getAttributeValue(this.methodAttributeDefinition.getAttributeName());
+        final String httpMethod = methodAttributeValue == null ? METHOD_ATTR_DEFAULT_VALUE : methodAttributeValue;
 
         // Let RequestDataValueProcessor modify the attribute value if needed
         newAttributeValue = RequestDataValueProcessorUtils.processAction(context, newAttributeValue, httpMethod);
