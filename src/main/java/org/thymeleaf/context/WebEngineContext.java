@@ -386,7 +386,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
                 return true;
             }
             final Enumeration<String> attributeNames = this.session.getAttributeNames();
-            return attributeNames.hasMoreElements();
+            return !attributeNames.hasMoreElements();
         }
 
         @Override
@@ -483,7 +483,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
         @Override
         public boolean isEmpty() {
             final Enumeration<String> attributeNames = this.servletContext.getAttributeNames();
-            return attributeNames.hasMoreElements();
+            return !attributeNames.hasMoreElements();
         }
 
         @Override
