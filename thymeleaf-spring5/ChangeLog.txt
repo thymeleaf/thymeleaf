@@ -1,3 +1,10 @@
+3.0.8
+=====
+- Fix RequestDataValueProcessor being called without a default "action" attribute (with GET value) for
+  forms that included th:action, which resulted in CSRF token being added as a request parameter to the URL
+  in some scenarios.
+
+
 3.0.7.RC1
 =========
 - Fixed exception being thrown when more than one ConversionService is available at the application context
