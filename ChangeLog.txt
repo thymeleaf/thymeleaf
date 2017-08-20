@@ -1,3 +1,9 @@
+3.0.8
+=====
+- Fixed WebEngineContext returning wrong boolean values for ServletContextAttributesMap#isEmpty() and
+  SessionAttributesMap#isEmpty().
+
+
 3.0.7
 =====
 - Fixed JavaScript line comment (//) parsing breaks when EOF comes before \n (script ends in the comment line).
