@@ -50,6 +50,16 @@
 	</attribute-processor>
 
 	<attribute-processor
+		name="uerrors"
+		class="org.thymeleaf.spring4.processor.SpringUErrorsTagProcessor">
+		<documentation
+			see-also="fields.errors"
+			reference="Validation and Error Messages"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#validation-and-error-messages">http://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#validation-and-error-messages</a>
+		]]></documentation>
+	</attribute-processor>
+
+	<attribute-processor
 		name="field"
 		class="org.thymeleaf.spring4.processor.AbstractSpringFieldTagProcessor">
 		<documentation

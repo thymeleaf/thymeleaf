@@ -3,6 +3,8 @@
 - Fix RequestDataValueProcessor being called without a default "action" attribute (with GET value) for
   forms that included th:action, which resulted in CSRF token being added as a request parameter to the URL
   in some scenarios.
+- Added "th:uerrors" attribute in order to easily output all selected errors without escaping the error
+  messages.
 
 
 3.0.7

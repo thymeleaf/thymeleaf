@@ -46,6 +46,7 @@ import org.thymeleaf.spring5.processor.SpringOptionInSelectFieldTagProcessor;
 import org.thymeleaf.spring5.processor.SpringSelectFieldTagProcessor;
 import org.thymeleaf.spring5.processor.SpringSrcTagProcessor;
 import org.thymeleaf.spring5.processor.SpringTextareaFieldTagProcessor;
+import org.thymeleaf.spring5.processor.SpringUErrorsTagProcessor;
 import org.thymeleaf.spring5.processor.SpringValueTagProcessor;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.standard.expression.IStandardConversionService;
@@ -262,6 +263,7 @@ public class SpringStandardDialect extends StandardDialect {
         processors.add(new SpringValueTagProcessor(dialectPrefix));
         processors.add(new SpringObjectTagProcessor(dialectPrefix));
         processors.add(new SpringErrorsTagProcessor(dialectPrefix));
+        processors.add(new SpringUErrorsTagProcessor(dialectPrefix));
         processors.add(new SpringInputGeneralFieldTagProcessor(dialectPrefix));
         processors.add(new SpringInputPasswordFieldTagProcessor(dialectPrefix));
         processors.add(new SpringInputCheckboxFieldTagProcessor(dialectPrefix));
