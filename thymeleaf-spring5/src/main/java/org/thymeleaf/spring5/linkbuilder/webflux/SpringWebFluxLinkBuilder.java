@@ -22,7 +22,7 @@ package org.thymeleaf.spring5.linkbuilder.webflux;
 import java.util.Map;
 
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.linkbuilder.ILinkBuilder;
@@ -112,8 +112,8 @@ public class SpringWebFluxLinkBuilder extends StandardLinkBuilder {
             return link;
         }
 
-        final ServerHttpResponse response = ((ISpringWebFluxContext)context).getResponse();
-        return response.encodeUrl(link);
+        final ServerWebExchange exchange = ((ISpringWebFluxContext)context).getExchange();
+        return exchange.transformUrl(link);
 
     }
 
