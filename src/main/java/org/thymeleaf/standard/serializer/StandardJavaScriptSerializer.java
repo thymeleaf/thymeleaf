@@ -209,6 +209,8 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
      */
     private static final class JacksonThymeleafISO8601DateFormat extends DateFormat {
 
+        private static final long serialVersionUID = 1354081220093875129L;
+
         /*
          * This SimpleDateFormat defines an almost-ISO8601 formatter.
          *
@@ -245,6 +247,13 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
                     "JacksonThymeleafISO8601DateFormat should never be asked for a 'parse' operation");
         }
 
+
+        @Override
+        public Object clone() {
+            JacksonThymeleafISO8601DateFormat other = (JacksonThymeleafISO8601DateFormat) super.clone();
+            other.dateFormat = (SimpleDateFormat) dateFormat.clone();
+            return other;
+        }
 
 
     }
