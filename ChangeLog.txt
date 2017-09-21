@@ -4,6 +4,7 @@
   SessionAttributesMap#isEmpty().
 - Fixed DateFormat implementation being used for Jackson-based serialization of dates not implementing
   clone() properly, which could result in thread-safety issues on the underlying SimpleDateFormat instance.
+- Updated SLF4j dependency to 1.7.25.
 
 
 3.0.7
