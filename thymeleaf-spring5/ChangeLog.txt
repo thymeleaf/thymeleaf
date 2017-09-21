@@ -5,6 +5,7 @@
   in some scenarios.
 - Added "th:uerrors" attribute in order to easily output all selected errors without escaping the error
   messages.
+- Updated SLF4j dependency to 1.7.25.
 
 
 3.0.7.RC1
