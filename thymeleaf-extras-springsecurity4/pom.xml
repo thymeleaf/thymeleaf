@@ -118,7 +118,7 @@
     <servlet-api.version>2.5</servlet-api.version>
     <thymeleaf.version>3.0.3.RELEASE</thymeleaf.version>
     <springsecurity.version>4.0.0.RELEASE</springsecurity.version>
-    <slf4j.version>1.6.6</slf4j.version>
+    <slf4j.version>1.7.25</slf4j.version>
   </properties>
 
 
