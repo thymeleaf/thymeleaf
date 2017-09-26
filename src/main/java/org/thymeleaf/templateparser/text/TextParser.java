@@ -314,6 +314,7 @@ final class TextParser {
                                 if (!inCommentLine) {
                                     inLiteral = (c == '\''
                                               || c == '"'
+                                              || c == '`'
                                               || TextParsingLiteralUtil.isRegexLiteralStart(buffer, pos, maxi));
                                     status.literalMarker = (inLiteral ? c : (char) 0);
                                 }
@@ -361,6 +362,7 @@ final class TextParser {
                                     if (!inCommentLine) {
                                         inLiteral = (c == '\''
                                                 || c == '"'
+                                                || c == '`'
                                                 || TextParsingLiteralUtil.isRegexLiteralStart(buffer, pos, maxi));
                                         status.literalMarker = (inLiteral ? c : (char) 0);
                                     }

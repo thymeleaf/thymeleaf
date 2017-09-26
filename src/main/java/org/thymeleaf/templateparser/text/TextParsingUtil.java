@@ -205,10 +205,10 @@ final class TextParsingUtil {
                 locator[1] += (i - colIndex);
                 return i;
             } else if (processCommentsAndLiterals) {
-                if (c == '/') { // '/' is for comments (/*...*/, //...\n)
+                if (c == '/') { // '/' is for comments (/*...*/, //...\n) or regexp literals (/.../g)
                     locator[1] += (i - colIndex);
                     return i;
-                } else if (c == '\'' || c == '"') { // literal markers
+                } else if (c == '\'' || c == '"' || c == '`') { // literal markers (',") and template literals (`)
                     if (isLiteralDelimiter(text, offset, i)) { // check it is not escaped
                         locator[1] += (i - colIndex);
                         return i;
