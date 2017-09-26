@@ -312,8 +312,10 @@ final class TextParser {
                             if (!inCommentBlock) {
                                 inCommentLine = TextParsingCommentUtil.isCommentLineStart(buffer, pos, maxi);
                                 if (!inCommentLine) {
-                                    inLiteral = (c == '\'' || c == '"');
-                                    status.literalMarker = c;
+                                    inLiteral = (c == '\''
+                                              || c == '"'
+                                              || TextParsingLiteralUtil.isRegexLiteralStart(buffer, pos, maxi));
+                                    status.literalMarker = (inLiteral ? c : (char) 0);
                                 }
                             }
                         }
@@ -357,8 +359,10 @@ final class TextParser {
                                 if (!inCommentBlock) {
                                     inCommentLine = TextParsingCommentUtil.isCommentLineStart(buffer, pos, maxi);
                                     if (!inCommentLine) {
-                                        inLiteral = (c == '\'' || c == '"');
-                                        status.literalMarker = c;
+                                        inLiteral = (c == '\''
+                                                || c == '"'
+                                                || TextParsingLiteralUtil.isRegexLiteralStart(buffer, pos, maxi));
+                                        status.literalMarker = (inLiteral ? c : (char) 0);
                                     }
                                 }
                             }
