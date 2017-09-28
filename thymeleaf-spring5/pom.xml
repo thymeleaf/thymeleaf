@@ -100,23 +100,6 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
-    <!-- TODO: These two should be removed once Spring 5.0.0.RELEASE is out and we stop using milestones or snapshots -->
-    <repository>
-      <id>spring-snapshots</id>
-      <name>Spring Snapshots</name>
-      <url>https://repo.spring.io/snapshot</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>spring-milestones</id>
-      <name>Spring Milestones</name>
-      <url>https://repo.spring.io/milestone</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
   </repositories>
 
 
@@ -124,7 +107,7 @@
     <maven.compile.source>1.8</maven.compile.source>
     <maven.compile.target>1.8</maven.compile.target>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <springframework.version>5.0.0.BUILD-SNAPSHOT</springframework.version>
+    <springframework.version>5.0.0.RELEASE</springframework.version>
     <springwebflow.version>2.4.4.RELEASE</springwebflow.version>
     <slf4j.version>1.7.25</slf4j.version>
   </properties>
