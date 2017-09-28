@@ -67,7 +67,16 @@ abstract class BlockAwareReader extends Reader {
 
         int read = readBytes(cbuf, off, len);
         if (read <= 0) {
+
+            if (read < 0 && this.insideComment) {
+                // We have reached the end of the input but a block structure has been left unfinished, which
+                // can lead to unexpected results --- better to throw an exception.
+                throw new IOException(
+                        "Unfinished block structure " + new String(this.prefix) + "..." + new String(this.suffix));
+            }
+
             return read;
+
         }
 
 
