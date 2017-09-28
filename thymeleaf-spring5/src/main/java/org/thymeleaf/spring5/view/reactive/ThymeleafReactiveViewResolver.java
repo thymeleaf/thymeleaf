@@ -522,23 +522,101 @@ public class ThymeleafReactiveViewResolver
 
 
 
+    /**
+     * <p>
+     *   Specify a set of name patterns that will applied to determine whether a view name
+     *   returned by a controller will be resolved by this resolver or not.
+     * </p>
+     * <p>
+     *   In applications configuring several view resolvers &ndash;for example, one for Thymeleaf
+     *   and another one for JSP+JSTL legacy pages&ndash;, this property establishes when
+     *   a view will be considered to be resolved by this view resolver and when Spring should
+     *   simply ask the next resolver in the chain &ndash;according to its <tt>order</tt>&ndash;
+     *   instead.
+     * </p>
+     * <p>
+     *   The specified view name patterns can be complete view names, but can also use
+     *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
+     * </p>
+     * <p>
+     *   Also note that these view name patterns are checked <i>before</i> applying any prefixes
+     *   or suffixes to the view name, so they should not include these. Usually therefore, you
+     *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
+     * </p>
+     *
+     * @param viewNames the view names (actually view name patterns)
+     * @see PatternMatchUtils#simpleMatch(String[], String)
+     */
     public void setViewNames(final String[] viewNames) {
         this.viewNames = viewNames;
     }
 
 
+    /**
+     * <p>
+     *   Return the set of name patterns that will applied to determine whether a view name
+     *   returned by a controller will be resolved by this resolver or not.
+     * </p>
+     * <p>
+     *   In applications configuring several view resolvers &ndash;for example, one for Thymeleaf
+     *   and another one for JSP+JSTL legacy pages&ndash;, this property establishes when
+     *   a view will be considered to be resolved by this view resolver and when Spring should
+     *   simply ask the next resolver in the chain &ndash;according to its <tt>order</tt>&ndash;
+     *   instead.
+     * </p>
+     * <p>
+     *   The specified view name patterns can be complete view names, but can also use
+     *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
+     * </p>
+     * <p>
+     *   Also note that these view name patterns are checked <i>before</i> applying any prefixes
+     *   or suffixes to the view name, so they should not include these. Usually therefore, you
+     *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
+     * </p>
+     *
+     * @return the view name patterns
+     * @see PatternMatchUtils#simpleMatch(String[], String)
+     */
     public String[] getViewNames() {
         return this.viewNames;
     }
-    
-    
 
-    
+
+
+
+    /**
+     * <p>
+     *   Specify names of views &ndash;patterns, in fact&ndash; that cannot
+     *   be handled by this view resolver.
+     * </p>
+     * <p>
+     *   These patterns can be specified in the same format as those in
+     *   {@link #setViewNames(String[])}, but work as an <i>exclusion list</i>.
+     * </p>
+     *
+     * @param excludedViewNames the view names to be excluded (actually view name patterns)
+     * @see #setViewNames(String[])
+     * @see PatternMatchUtils#simpleMatch(String[], String)
+     */
     public void setExcludedViewNames(final String[] excludedViewNames) {
         this.excludedViewNames = excludedViewNames;
     }
 
 
+    /**
+     * <p>
+     *   Returns the names of views &ndash;patterns, in fact&ndash; that cannot
+     *   be handled by this view resolver.
+     * </p>
+     * <p>
+     *   These patterns can be specified in the same format as those in
+     *   {@link #setViewNames(String[])}, but work as an <i>exclusion list</i>.
+     * </p>
+     *
+     * @return the excluded view name patterns
+     * @see #getViewNames()
+     * @see PatternMatchUtils#simpleMatch(String[], String)
+     */
     public String[] getExcludedViewNames() {
         return this.excludedViewNames;
     }
