@@ -56,7 +56,7 @@ public class BigListFluxWebConfig {
     public FreeMarkerConfigurer freeMarkerConfig() {
         // Note this is the reactive version of FreeMarker's configuration, so there is no auto-configuration yet.
         final FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
-        freeMarkerConfigurer.setPreTemplateLoaders(new SpringTemplateLoader(this.applicationContext, "/templates/"));
+        freeMarkerConfigurer.setPreTemplateLoaders(new SpringTemplateLoader(this.applicationContext, "classpath:/templates/"));
         return freeMarkerConfigurer;
     }
 
