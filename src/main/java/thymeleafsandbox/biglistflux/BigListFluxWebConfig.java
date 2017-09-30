@@ -84,35 +84,22 @@ public class BigListFluxWebConfig {
 
 
     /*
-     * ViewResolver for Thymeleaf templates executing in FULL mode.
-     * No limit to output chunk size, non-data-driven (all data fully resolved in context).
+     * ViewResolver for Thymeleaf templates.
      *
-     * NOTE the "thymeleafReactiveViewResolver" bean name is being used here in order to override the
-     * ViewResolver auto-configured at the ThymeleafAutoConfiguration class from the spring-boot-starter-thymeleaf
+     * Note that views which name matches "*chunked*" or "*datadriven*" will be processed as CHUNKED (or as DATA-DRIVEN
+     * but with a maximum output chunk size).
      */
-    @Bean
-    public ThymeleafReactiveViewResolver thymeleafReactiveViewResolver(final ISpringWebFluxTemplateEngine templateEngine){
-        final ThymeleafReactiveViewResolver viewResolver = new ThymeleafReactiveViewResolver();
-        viewResolver.setTemplateEngine(templateEngine);
-        viewResolver.setOrder(2);
-        viewResolver.setViewNames(new String[] {"thymeleaf/*"});
-        return viewResolver;
-    }
-
-    /*
-     * ViewResolver for Thymeleaf templates executing in BUFFERED or DATA-DRIVEN mode.
-     *
-     * CHUNKED: non-data-driven (all data fully resolved in context) but with an established limit to output chunk size.
-     *
-     * DATA-DRIVEN: the "dataSource" variable can be a Publisher<X>, in which case it will drive the execution of
-     *              the engine and Thymeleaf will be executed as a part of the data flow.
-     */
+    // TODO * Normal Spring Boot ThymeleafAutoConfiguration should be enough once Spring Boot adds properties
+    // TODO   "spring.thymeleaf.reactive.chunked-mode-view-names" and "spring.thymeleaf.reactive.full-mode-view-names"
     @Bean
     public ThymeleafReactiveViewResolver thymeleafChunkedAndDataDrivenViewResolver(final ISpringWebFluxTemplateEngine templateEngine){
         final ThymeleafReactiveViewResolver viewResolver = new ThymeleafReactiveViewResolver();
         viewResolver.setTemplateEngine(templateEngine);
         viewResolver.setOrder(1);
-        viewResolver.setViewNames(new String[] {"thymeleaf/*chunked*", "thymeleaf/*datadriven*"});
+        // The maximum size for output chunks will be applied to the "biglist-chunked" and "biglist-datadriven"
+        // templates. Note that datadriven executions flush output after each partial execution anyway, but setting
+        // them as "chunked" here makes sure no chunk (even if from a data-driven execution) exceeds the specified size
+        viewResolver.setChunkedModeViewNames(new String[] { "thymeleaf/*chunked*", "thymeleaf/*datadriven*"});
         viewResolver.setResponseMaxChunkSizeBytes(8192); // OUTPUT BUFFER size limit
         return viewResolver;
     }
