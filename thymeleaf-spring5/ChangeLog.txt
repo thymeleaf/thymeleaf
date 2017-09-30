@@ -7,6 +7,8 @@
 - Added "fullModeViewNames" and "chunkedModeViewNames" properties to ThymeleafReactiveViewResolver so that
   the way the "maxResponseChunkSize" property is applied to templates can be fine-tuned. Templates can now be forced
   to be executed in FULL mode, or specific sets of templates can be selected to be the only ones executed as CHUNKED.
+- Added the SpringWebFluxContext class as a base implementation of ISpringWebFluxContext, useful for calling the
+  SpringWebFluxTemplateEngine cleanly from outside a ThymeleafReactiveView.
 - Updated Spring Framework dependencies to 5.0.0.RELEASE.
 - Updated SLF4j dependency to 1.7.25.
 
