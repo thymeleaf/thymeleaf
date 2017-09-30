@@ -484,26 +484,26 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
         /*
-         * ----------------------------------------------------------------------------------------------------------
+         * -----------------------------------------------------------------------------------------------------------
          * SET (AND RETURN) THE TEMPLATE PROCESSING Flux<DataBuffer> OBJECTS
-         * ----------------------------------------------------------------------------------------------------------
-         * - There are three possible processing mode, for each of which a Publisher<DataBuffer> will be created in a
+         * -----------------------------------------------------------------------------------------------------------
+         * - There are three possible processing modes, for each of which a Publisher<DataBuffer> will be created in a
          *   different way:
          *
-         *     1. FULL: Output buffers not limited (templateResponseMaxChunkSizeBytes == Integer.MAX_VALUE) and
+         *     1. FULL: Output chunks not limited in size (templateResponseMaxChunkSizeBytes == Integer.MAX_VALUE) and
          *        no data-driven execution (no context variable of type Publisher<X> driving the template engine
          *        execution): In this case Thymeleaf will be executed unthrottled, in full mode, writing output
-         *        to a single DataBuffer instanced before execution, and which will be passed to the output channels
-         *        in a single onNext(buffer) call (immediately followed by onComplete()).
+         *        to a single DataBuffer chunk instanced before execution, and which will be passed to the output
+         *        channels in a single onNext(buffer) call (immediately followed by onComplete()).
          *
-         *     2. CHUNKED: Output buffers limited in size (responseMaxChunkSizeBytes) but no data-driven
+         *     2. CHUNKED: Output chunks limited in size (responseMaxChunkSizeBytes) but no data-driven
          *        execution (no Publisher<X> driving engine execution). All model attributes are expected to be fully
          *        resolved before engine execution (except those implementing Thymeleaf's ILazyContextVariable
          *        interface, including its reactive implementation ReactiveLazyContextVariable) and the Thymeleaf
-         *        engine will execute in throttled mode, performing a full-stop each time the buffer reaches the
-         *        specified size, sending it to the output channels with onNext(buffer) and then waiting until
+         *        engine will execute in throttled mode, performing a full-stop each time the chunk reaches the
+         *        specified size, sending it to the output channels with onNext(chunk) and then waiting until
          *        these output channels make the engine resume its work with a new request(n) call. This
-         *        execution mode will request an output flush from the server after producing each buffer.
+         *        execution mode will request an output flush from the server after producing each chunk.
          *
          *     3. DATA-DRIVEN: one of the model attributes is a Publisher<X> wrapped inside an implementation
          *        of the IReactiveDataDriverContextVariable<?> interface. In this case, the Thymeleaf engine will
@@ -513,12 +513,12 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
          *        engine each time (which is why Thymeleaf will react on onNext(List<X>) and not onNext(X)). Thymeleaf
          *        will expect to find a "th:each" iteration on the data-driven variable inside the processed template,
          *        and will be executed in throttled mode for the published elements, sending the resulting DataBuffer
-         *        (or DataBuffers) to the output channels via onNext(buffer) and stopping until a new onNext(List<X>)
+         *        output chunks to the output channels via onNext(chunk) and stopping until a new onNext(List<X>)
          *        event is triggered. When execution is data-driven, a limit in size can be optionally specified for
-         *        the output buffers (responseMaxChunkSizeBytes) which will make Thymeleaf never send
-         *        to the output channels a buffer bigger than that (thus splitting the output generated for a List<X>
-         *        of published elements into several buffers if required) and also will make Thymeleaf request
-         *        an output flush from the server after producing each buffer.
+         *        the output chunks (responseMaxChunkSizeBytes) which will make Thymeleaf never send
+         *        to the output channels a chunk bigger than that (thus splitting the output generated for a List<X>
+         *        of published elements into several chunks if required). When executing in DATA-DRIVEN mode,
+         *        Thymeleaf will always request flushing of the output channels after producing each chunk.
          * ----------------------------------------------------------------------------------------------------------
          */
 
