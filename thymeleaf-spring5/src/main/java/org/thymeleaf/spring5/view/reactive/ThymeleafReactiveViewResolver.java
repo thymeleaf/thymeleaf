@@ -60,6 +60,50 @@ import reactor.core.publisher.Mono;
  * <p>
  *   The {@link View} implementations managed by this class are of type {@link ThymeleafReactiveView}.
  * </p>
+ * <p>
+ *   In Spring WebFlux applications, Thymeleaf has three modes of operation depending on whether a limit
+ *   has been set for the output chunk size and/or data-driver context variables have been specified:
+ * </p>
+ * <ul>
+ *   <li><em>FULL</em>, when no limit for max chunk size is established ({@link #setResponseMaxChunkSizeBytes(int)})
+ *       and no data-driver context variable has been specified. All template output will be generated in memory
+ *       as a single chunk (a single {@link org.springframework.core.io.buffer.DataBuffer} object)
+ *       and then sent to the server's output channels. In this mode, the Thymeleaf template engine
+ *       works <em>unthrottled</em>, which may benefit performance in some scenarios with small templates,
+ *       at the cost of a higher memory consumption.</li>
+ *   <li><em>CHUNKED</em>, when a limit for max chunk size is established ({@link #setResponseMaxChunkSizeBytes(int)})
+ *       but no data-driver context variable has been specified. Template output will be generated in chunks of a
+ *       size equal or less than the specified limit (in bytes) and then sent to the server's output channels.
+ *       After each chunk is emitted, the template engine will stop (thanks to its <em>throttling</em> mechanism), and
+ *       wait for the server to request more chunks by means of reactive <em>backpressure</em>. Note
+ *       this mechanism works single-threaded. When using this execution mode, the response will be configured
+ *       by this {@link ViewResolver} so that each output chunk emitted provokes a <b>flush</b> operation at the
+ *       server output channels (so that partial content is sent to the browser/client).</li>
+ *   <li><em>DATA-DRIVEN</em>, when a <em>data-driver</em> variable has been specified at the context
+ *       (implementing {@link org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable}). This
+ *       variable is expected to contain a <em>data stream</em> (usually in the shape of a
+ *       {@link org.reactivestreams.Publisher} that Thymeleaf will consume, creating markup output as data
+ *       is streamed from this <em>data-driver</em> and letting the output channels throttle
+ *       template engine execution by means of back-pressure. When working in this mode, the response will be
+ *       configured by this {@link ViewResolver} so that the server output channels are flushed after each
+ *       engine execution (which will happen for each <em>buffer</em> (of configurable size) of elements
+ *       collected from the <em>data-driver</em> stream. Additionally, if a value has been set for this
+ *       <tt>responseMaxChunkSizeBytes</tt> property, the emitted
+ *       {@link org.springframework.core.io.buffer.DataBuffer} output chunks will never exceed this size,
+ *       and therefore more than one chunk could be emitted for each buffer of <em>data-driver</em> elements.</li>
+ * </ul>
+ * <p>
+ *   Also note that the properties set by means of {@link #setFullModeViewNames(String[])} and
+ *   {@link #setChunkedModeViewNames(String[])} also influence and fine-tune which templates are
+ *   executed in <tt>FULL</tt> or <tt>CHUNKED</tt> mode (they have no effect on <tt>DATA-DRIVEN</tt>).
+ * </p>
+ * <p>
+ *   Also note that {@link ThymeleafReactiveView} objects can be specifically configured to be executed in
+ *   <tt>CHUNKED</tt> mode by instantiating prototypes of them for the desired view names and setting a
+ *   per-view max chunk size by means of {@link ThymeleafReactiveView#setResponseMaxChunkSizeBytes(int)}. If this
+ *   is set to {@link Integer#MAX_VALUE}, they will be effectively configured to execute in <tt>FULL</tt> mode. This
+ *   per-view setting will always have higher precedence than the one performed at the {@link ViewResolver} level.
+ * </p>
  *
  * @see ThymeleafReactiveView
  * @see ISpringWebFluxTemplateEngine
@@ -134,6 +178,8 @@ public class ThymeleafReactiveViewResolver
     // ThymeleafReactiveView class
     private int responseMaxChunkSizeBytes = ThymeleafReactiveView.DEFAULT_RESPONSE_CHUNK_SIZE_BYTES;
 
+    private String[] fullModeViewNames = null;
+    private String[] chunkedModeViewNames = null;
 
     private ISpringWebFluxTemplateEngine templateEngine;
 
@@ -434,25 +480,37 @@ public class ThymeleafReactiveViewResolver
      * </p>
      * <ul>
      *   <li><em>FULL</em>, when no limit for max chunk size is established and no data-driver context variable
-     *       has been specified. All template output will be generated in memory and then sent to the server's
-     *       output channels as a single {@link org.springframework.core.io.buffer.DataBuffer}.</li>
+     *       has been specified. All template output will be generated in memory as a single chunk
+     *       (a single {@link org.springframework.core.io.buffer.DataBuffer} object)
+     *       and then sent to the server's output channels. In this mode, the Thymeleaf template engine
+     *       works <em>unthrottled</em>, which may benefit performance in some scenarios with small templates,
+     *       at the cost of a higher memory consumption.</li>
      *   <li><em>CHUNKED</em>, when a limit for max chunk size is established but no data-driver context
      *       variable has been specified. Template output will be generated in chunks of a size equal or less
      *       than the specified limit (in bytes) and then sent to the server's output channels. After each chunk
-     *       is sent to output, the template engine will stop (thanks to its <em>throttling</em> mechanism), and
-     *       wait for the server to request more chunks by means of reactive <em>backpressure</em>. Note all of
-     *       this mechanism works single-threaded. This execution mode will also force the server to perform
-     *       output flush operations after each chunk is sent from Thymeleaf.</li>
+     *       is emitted, the template engine will stop (thanks to its <em>throttling</em> mechanism), and
+     *       wait for the server to request more chunks by means of reactive <em>backpressure</em>. Note
+     *       this mechanism works single-threaded. When using this execution mode, the response will be configured
+     *       by this {@link ViewResolver} so that each output chunk emitted provokes a <b>flush</b> operation at the
+     *       server output channels (so that partial content is sent to the browser/client).</li>
      *   <li><em>DATA-DRIVEN</em>, when a <em>data-driver</em> variable has been specified at the context
      *       (implementing {@link org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable}). This
      *       variable is expected to contain a <em>data stream</em> (usually in the shape of a
      *       {@link org.reactivestreams.Publisher} that Thymeleaf will consume, creating markup output as data
-     *       is streamed from this <em>data-driver</em> and letting the output channels of the server throttle
-     *       template engine execution by means of back-pressure. Additionally, depending on whether a value has
-     *       been specified for this property or not, Thymeleaf will never generate
-     *       {@link org.springframework.core.io.buffer.DataBuffer} output chunks larger than the specified size,
-     *       and will request the server to perform an output flush operation after each chunk is produced.</li>
+     *       is streamed from this <em>data-driver</em> and letting the output channels throttle
+     *       template engine execution by means of back-pressure. When working in this mode, the response will be
+     *       configured by this {@link ViewResolver} so that the server output channels are flushed after each
+     *       engine execution (which will happen for each <em>buffer</em> (of configurable size) of elements
+     *       collected from the <em>data-driver</em> stream. Additionally, if a value has been set for this
+     *       <tt>responseMaxChunkSizeBytes</tt> property, the emitted
+     *       {@link org.springframework.core.io.buffer.DataBuffer} output chunks will never exceed this size,
+     *       and therefore more than one chunk could be emitted for each buffer of <em>data-driver</em> elements.</li>
      * </ul>
+     * <p>
+     *   Also note that the properties set by means of {@link #setFullModeViewNames(String[])} and
+     *   {@link #setChunkedModeViewNames(String[])} also influence and fine-tune which templates are
+     *   executed in <tt>FULL</tt> or <tt>CHUNKED</tt> mode (they have no effect on <tt>DATA-DRIVEN</tt>).
+     * </p>
      * <p>
      *   If this property is set to <tt>-1</tt> or <tt>Integer.MAX_VALUE</tt>, no size limit will be used. Note also
      *   that there is no limit set by default.
@@ -483,25 +541,42 @@ public class ThymeleafReactiveViewResolver
      * </p>
      * <ul>
      *   <li><em>FULL</em>, when no limit for max chunk size is established and no data-driver context variable
-     *       has been specified. All template output will be generated in memory and then sent to the server's
-     *       output channels as a single {@link org.springframework.core.io.buffer.DataBuffer}.</li>
+     *       has been specified. All template output will be generated in memory as a single chunk
+     *       (a single {@link org.springframework.core.io.buffer.DataBuffer} object)
+     *       and then sent to the server's output channels. In this mode, the Thymeleaf template engine
+     *       works <em>unthrottled</em>, which may benefit performance in some scenarios with small templates,
+     *       at the cost of a higher memory consumption.</li>
      *   <li><em>CHUNKED</em>, when a limit for max chunk size is established but no data-driver context
      *       variable has been specified. Template output will be generated in chunks of a size equal or less
      *       than the specified limit (in bytes) and then sent to the server's output channels. After each chunk
-     *       is sent to output, the template engine will stop (thanks to its <em>throttling</em> mechanism), and
-     *       wait for the server to request more chunks by means of reactive <em>backpressure</em>. Note all of
-     *       this mechanism works single-threaded. This execution mode will also force the server to perform
-     *       output flush operations after each chunk is sent from Thymeleaf.</li>
+     *       is emitted, the template engine will stop (thanks to its <em>throttling</em> mechanism), and
+     *       wait for the server to request more chunks by means of reactive <em>backpressure</em>. Note
+     *       this mechanism works single-threaded. When using this execution mode, the response will be configured
+     *       by this {@link ViewResolver} so that each output chunk emitted provokes a <b>flush</b> operation at the
+     *       server output channels (so that partial content is sent to the browser/client).</li>
      *   <li><em>DATA-DRIVEN</em>, when a <em>data-driver</em> variable has been specified at the context
      *       (implementing {@link org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable}). This
      *       variable is expected to contain a <em>data stream</em> (usually in the shape of a
      *       {@link org.reactivestreams.Publisher} that Thymeleaf will consume, creating markup output as data
-     *       is streamed from this <em>data-driver</em> and letting the output channels of the server throttle
-     *       template engine execution by means of back-pressure. Additionally, depending on whether a value has
-     *       been specified for this property or not, Thymeleaf will never generate
-     *       {@link org.springframework.core.io.buffer.DataBuffer} output chunks larger than the specified size,
-     *       and will request the server to perform an output flush operation after each chunk is produced.</li>
+     *       is streamed from this <em>data-driver</em> and letting the output channels throttle
+     *       template engine execution by means of back-pressure. When working in this mode, the response will be
+     *       configured by this {@link ViewResolver} so that the server output channels are flushed after each
+     *       engine execution (which will happen for each <em>buffer</em> (of configurable size) of elements
+     *       collected from the <em>data-driver</em> stream. Additionally, if a value has been set for this
+     *       <tt>responseMaxChunkSizeBytes</tt> property, the emitted
+     *       {@link org.springframework.core.io.buffer.DataBuffer} output chunks will never exceed this size,
+     *       and therefore more than one chunk could be emitted for each buffer of <em>data-driver</em> elements.</li>
      * </ul>
+     * <p>
+     *   Also note that the properties set by means of {@link #setFullModeViewNames(String[])} and
+     *   {@link #setChunkedModeViewNames(String[])} also influence and fine-tune which templates are
+     *   executed in <tt>FULL</tt> or <tt>CHUNKED</tt> mode (they have no effect on <tt>DATA-DRIVEN</tt>).
+     * </p>
+     * <p>
+     *   Also note that the properties set by means of {@link #setFullModeViewNames(String[])} and
+     *   {@link #setChunkedModeViewNames(String[])} also influence and fine-tune which templates are
+     *   executed in <tt>FULL</tt> or <tt>CHUNKED</tt> mode (they have no effect on <tt>DATA-DRIVEN</tt>).
+     * </p>
      * <p>
      *   If this property is set to <tt>-1</tt> or <tt>Integer.MAX_VALUE</tt>, no size limit will be used. Note also
      *   that there is no limit set by default.
@@ -539,7 +614,7 @@ public class ThymeleafReactiveViewResolver
      *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
      * </p>
      * <p>
-     *   Also note that these view name patterns are checked <i>before</i> applying any prefixes
+     *   Also note that these view name patterns are checked <em>before</em> applying any prefixes
      *   or suffixes to the view name, so they should not include these. Usually therefore, you
      *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
      * </p>
@@ -569,7 +644,7 @@ public class ThymeleafReactiveViewResolver
      *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
      * </p>
      * <p>
-     *   Also note that these view name patterns are checked <i>before</i> applying any prefixes
+     *   Also note that these view name patterns are checked <em>before</em> applying any prefixes
      *   or suffixes to the view name, so they should not include these. Usually therefore, you
      *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
      * </p>
@@ -591,7 +666,7 @@ public class ThymeleafReactiveViewResolver
      * </p>
      * <p>
      *   These patterns can be specified in the same format as those in
-     *   {@link #setViewNames(String[])}, but work as an <i>exclusion list</i>.
+     *   {@link #setViewNames(String[])}, but work as an <em>exclusion list</em>.
      * </p>
      *
      * @param excludedViewNames the view names to be excluded (actually view name patterns)
@@ -610,7 +685,7 @@ public class ThymeleafReactiveViewResolver
      * </p>
      * <p>
      *   These patterns can be specified in the same format as those in
-     *   {@link #setViewNames(String[])}, but work as an <i>exclusion list</i>.
+     *   {@link #setViewNames(String[])}, but work as an <em>exclusion list</em>.
      * </p>
      *
      * @return the excluded view name patterns
@@ -620,7 +695,217 @@ public class ThymeleafReactiveViewResolver
     public String[] getExcludedViewNames() {
         return this.excludedViewNames;
     }
-    
+
+
+
+
+    /**
+     * <p>
+     *   Specify a set of name patterns that be will applied to determine whether a view is to be processed
+     *   in <tt>FULL</tt> mode even if a maximum response chunk size has been defined.
+     * </p>
+     * <p>
+     *   When a response maximum chunk size has been set by means of {@link #setResponseMaxChunkSizeBytes(int)},
+     *   this parameter allows the possibility to exclude some views from being applied this maximum size
+     *   and therefore be executed in <tt>FULL</tt> mode, in just one template engine execution in-memory.
+     * </p>
+     * <p>
+     *   This is useful when a maximum chunk size has been set but some pages are actually small enough to benefit
+     *   from the performance gain of executing the template engine <em>unthrottled</em>, even if this means
+     *   producing the entire output in memory before sending it to the output channels.
+     * </p>
+     * <p>
+     *   When a response maximum chunk size has not been set by means of {@link #setResponseMaxChunkSizeBytes(int)},
+     *   this parameter has no effect at all.
+     * </p>
+     * <p>
+     *   When a response maximum chunk size has been set by means of {@link #setResponseMaxChunkSizeBytes(int)},
+     *   but a value has also been set to the <tt>chunkedModeViewNames</tt> parameter by means of
+     *   {@link #setChunkedModeViewNames(String[])} method, this parameter has no effect at all, as only the views
+     *   specified in the latter parameter will be processed in <tt>CHUNKED</tt> mode.
+     * </p>
+     * <p>
+     *   Also note that, if a view specified here to be executed as <tt>FULL</tt> is executed with a
+     *   <em>data-driver</em> variable included in the model, the <tt>DATA-DRIVEN</tt> execution mode will be
+     *   automatically selected instead, and output chunks will be flushed after each execution of the engine for
+     *   each buffer of elements obtained from the <em>data-driver</em> stream.
+     * </p>
+     * <p>
+     *   The specified view name patterns can be complete view names, but can also use
+     *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
+     * </p>
+     * <p>
+     *   Also note that these view name patterns are checked <em>before</em> applying any prefixes
+     *   or suffixes to the view name, so they should not include these. Usually therefore, you
+     *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
+     * </p>
+     *
+     * @param fullModeViewNames the view names (actually view name patterns)
+     * @see #setResponseMaxChunkSizeBytes(int)
+     * @see #setChunkedModeViewNames(String[])
+     * @see PatternMatchUtils#simpleMatch(String[], String)
+     *
+     * @since 3.0.8
+     */
+    public void setFullModeViewNames(final String[] fullModeViewNames) {
+        this.fullModeViewNames = fullModeViewNames;
+    }
+
+
+    /**
+     * <p>
+     *   Returns the set of name patterns that will be applied to determine whether a view is to be processed
+     *   in <tt>FULL</tt> mode even if a maximum response chunk size has been defined.
+     * </p>
+     * <p>
+     *   When a response maximum chunk size has been set by means of {@link #setResponseMaxChunkSizeBytes(int)},
+     *   this parameter allows the possibility to exclude some views from being applied this maximum size
+     *   and therefore be executed in <tt>FULL</tt> mode, in just one template engine execution in-memory.
+     * </p>
+     * <p>
+     *   This is useful when a maximum chunk size has been set but some pages are actually small enough to benefit
+     *   from the performance gain of executing the template engine <em>unthrottled</em>, even if this means
+     *   producing the entire output in memory before sending it to the output channels.
+     * </p>
+     * <p>
+     *   When a response maximum chunk size has not been set by means of {@link #setResponseMaxChunkSizeBytes(int)},
+     *   this parameter has no effect at all.
+     * </p>
+     * <p>
+     *   When a response maximum chunk size has been set by means of {@link #setResponseMaxChunkSizeBytes(int)},
+     *   but a value has also been set to the <tt>chunkedModeViewNames</tt> parameter by means of
+     *   {@link #setChunkedModeViewNames(String[])} method, this parameter has no effect at all, as only the views
+     *   specified in the latter parameter will be processed in <tt>CHUNKED</tt> mode.
+     * </p>
+     * <p>
+     *   Also note that, if a view specified here to be executed as <tt>FULL</tt> is executed with a
+     *   <em>data-driver</em> variable included in the model, the <tt>DATA-DRIVEN</tt> execution mode will be
+     *   automatically selected instead, and output chunks will be flushed after each execution of the engine for
+     *   each buffer of elements obtained from the <em>data-driver</em> stream.
+     * </p>
+     * <p>
+     *   The specified view name patterns can be complete view names, but can also use
+     *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
+     * </p>
+     * <p>
+     *   Also note that these view name patterns are checked <em>before</em> applying any prefixes
+     *   or suffixes to the view name, so they should not include these. Usually therefore, you
+     *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
+     * </p>
+     *
+     * @return the view name patterns
+     * @see #setResponseMaxChunkSizeBytes(int)
+     * @see #setChunkedModeViewNames(String[])
+     * @see PatternMatchUtils#simpleMatch(String[], String)
+     *
+     * @since 3.0.8
+     */
+    public String[] getFullModeViewNames() {
+        return this.fullModeViewNames;
+    }
+
+
+
+
+    /**
+     * <p>
+     *   Specify a set of name patterns that will be applied to determine whether a view is to be processed
+     *   in <tt>CHUNKED</tt> mode (assuming a maximum response chunk size has been defined).
+     * </p>
+     * <p>
+     *   This parameter only has effect if a maximum response chunk size has been set by means of
+     *   {@link #setResponseMaxChunkSizeBytes(int)}. If that is the case, then <strong>only</strong> the views
+     *   which name matches the patterns specified here will be executed in <tt>CHUNKED</tt> mode using the
+     *   maximum output chunk size that has been configured. All other views will be executed in <tt>FULL</tt>
+     *   mode.
+     * </p>
+     * <p>
+     *   This is useful when a maximum chunk size has been set but it is only needed to apply for certain specific
+     *   views, normally the larger templates in output size.
+     * </p>
+     * <p>
+     *   When a response maximum chunk size has not been set by means of {@link #setResponseMaxChunkSizeBytes(int)},
+     *   this parameter has no effect at all.
+     * </p>
+     * <p>
+     *   Also note that, if a view specified here to be executed as <tt>CHUNKED</tt> is executed with a
+     *   <em>data-driver</em> variable included in the model, the <tt>DATA-DRIVEN</tt> execution mode will be
+     *   automatically selected instead, and output chunks will be flushed after each execution of the engine for
+     *   each buffer of elements obtained from the <em>data-driver</em> stream. But in this case, the maximum chunk
+     *   size will also apply and, if any of these data-driven chunks exceeds this size, it will be divided into
+     *   several output chunks.
+     * </p>
+     * <p>
+     *   The specified view name patterns can be complete view names, but can also use
+     *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
+     * </p>
+     * <p>
+     *   Also note that these view name patterns are checked <em>before</em> applying any prefixes
+     *   or suffixes to the view name, so they should not include these. Usually therefore, you
+     *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
+     * </p>
+     *
+     * @param chunkedModeViewNames the view names (actually view name patterns)
+     * @see #setResponseMaxChunkSizeBytes(int)
+     * @see #setFullModeViewNames(String[])
+     * @see PatternMatchUtils#simpleMatch(String[], String)
+     *
+     * @since 3.0.8
+     */
+    public void setChunkedModeViewNames(final String[] chunkedModeViewNames) {
+        this.chunkedModeViewNames = chunkedModeViewNames;
+    }
+
+
+    /**
+     * <p>
+     *   Return the set of name patterns that will be applied to determine whether a view is to be processed
+     *   in <tt>CHUNKED</tt> mode (assuming a maximum response chunk size has been defined).
+     * </p>
+     * <p>
+     *   This parameter only has effect if a maximum response chunk size has been set by means of
+     *   {@link #setResponseMaxChunkSizeBytes(int)}. If that is the case, then <strong>only</strong> the views
+     *   which name matches the patterns specified here will be executed in <tt>CHUNKED</tt> mode using the
+     *   maximum output chunk size that has been configured. All other views will be executed in <tt>FULL</tt>
+     *   mode.
+     * </p>
+     * <p>
+     *   This is useful when a maximum chunk size has been set but it is only needed to apply for certain specific
+     *   views, normally the larger templates in output size.
+     * </p>
+     * <p>
+     *   When a response maximum chunk size has not been set by means of {@link #setResponseMaxChunkSizeBytes(int)},
+     *   this parameter has no effect at all.
+     * </p>
+     * <p>
+     *   Also note that, if a view specified here to be executed as <tt>CHUNKED</tt> is executed with a
+     *   <em>data-driver</em> variable included in the model, the <tt>DATA-DRIVEN</tt> execution mode will be
+     *   automatically selected instead, and output chunks will be flushed after each execution of the engine for
+     *   each buffer of elements obtained from the <em>data-driver</em> stream. But in this case, the maximum chunk
+     *   size will also apply and, if any of these data-driven chunks exceeds this size, it will be divided into
+     *   several output chunks.
+     * </p>
+     * <p>
+     *   The specified view name patterns can be complete view names, but can also use
+     *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
+     * </p>
+     * <p>
+     *   Also note that these view name patterns are checked <em>before</em> applying any prefixes
+     *   or suffixes to the view name, so they should not include these. Usually therefore, you
+     *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
+     * </p>
+     *
+     * @return the view name patterns
+     * @see #setResponseMaxChunkSizeBytes(int)
+     * @see #setFullModeViewNames(String[])
+     * @see PatternMatchUtils#simpleMatch(String[], String)
+     *
+     * @since 3.0.8
+     */
+    public String[] getChunkedModeViewNames() {
+        return this.chunkedModeViewNames;
+    }
+
     
     
 
@@ -631,7 +916,46 @@ public class ThymeleafReactiveViewResolver
                 (viewNamesNotToBeProcessed == null || !PatternMatchUtils.simpleMatch(viewNamesNotToBeProcessed, viewName)));
     }
     
-    
+
+    protected boolean shouldUseChunkedExecution(final String viewName) {
+
+        final int viewResponseMaxChunkSizeBytes = getResponseMaxChunkSizeBytes();
+        final String[] viewChunkedModeViewNames = getChunkedModeViewNames();
+        final String[] viewFullModeViewNames = getFullModeViewNames();
+
+        if (viewResponseMaxChunkSizeBytes == ThymeleafReactiveView.DEFAULT_RESPONSE_CHUNK_SIZE_BYTES) {
+            // No response max chunk size has been set, so no possibility to use CHUNKED execution
+            if (viewChunkedModeViewNames != null) {
+                vrlogger.warn("[THYMELEAF] A set of view names to be executed in CHUNKED mode has been specified, " +
+                        "but no response max chunk size has been specified, so this configuration parameter " +
+                        "has no practical effect (no way to configure CHUNKED mode from the ViewResolver). Please " +
+                        "fix your configuration.");
+            }
+            if (viewFullModeViewNames != null) {
+                vrlogger.warn("[THYMELEAF] A set of view names to be executed in FULL mode has been specified, " +
+                        "but no response max chunk size has been specified, so the former configuration parameter " +
+                        "has no practical effect (all templates will actually be executed as FULL). Please " +
+                        "fix your configuration.");
+            }
+            return false;
+        }
+
+        if (viewChunkedModeViewNames != null) {
+            // A specific set of views to be processed in CHUNKED mode has been specified, so only that
+            // set will determine whether CHUNKED should be used or not
+            return PatternMatchUtils.simpleMatch(viewChunkedModeViewNames, viewName);
+        }
+
+        if (viewFullModeViewNames != null) {
+            // A specific set of views to be processed in FULL mode has been specified, so we will not apply
+            // CHUNKED if this view matches the names in such set
+            return !PatternMatchUtils.simpleMatch(viewFullModeViewNames, viewName);
+        }
+
+        return true;
+
+    }
+
 
 
 
@@ -733,7 +1057,6 @@ public class ThymeleafReactiveViewResolver
 
         }
 
-
         view.setTemplateEngine(getTemplateEngine());
         view.setStaticVariables(getStaticVariables());
 
@@ -760,7 +1083,12 @@ public class ThymeleafReactiveViewResolver
         /*
          * Set the reactive operation-related flags
          */
-        if (getResponseMaxChunkSizeBytes() != ThymeleafReactiveView.DEFAULT_RESPONSE_CHUNK_SIZE_BYTES && view.getNullableResponseMaxChunkSize() == null) {
+
+        // We determine if there is actually a reason for using chunked execution for this specific view name,
+        // based on the ViewResolver configuration
+        final boolean shouldUseChunkedExecution = shouldUseChunkedExecution(viewName);
+
+        if (shouldUseChunkedExecution && view.getNullableResponseMaxChunkSize() == null) {
             view.setResponseMaxChunkSizeBytes(getResponseMaxChunkSizeBytes());
         }
 

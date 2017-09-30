@@ -99,7 +99,11 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
     protected static final Logger logger = LoggerFactory.getLogger(ThymeleafReactiveView.class);
 
+    /**
+     * By default, no max response chunk size is set. Value = {@link Integer#MAX_VALUE}
+     */
     public static final int DEFAULT_RESPONSE_CHUNK_SIZE_BYTES = Integer.MAX_VALUE;
+
     private static final String WEBFLUX_CONVERSION_SERVICE_NAME = "webFluxConversionService";
 
 
