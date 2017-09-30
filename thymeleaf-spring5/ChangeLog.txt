@@ -3,8 +3,10 @@
 - Fix RequestDataValueProcessor being called without a default "action" attribute (with GET value) for
   forms that included th:action, which resulted in CSRF token being added as a request parameter to the URL
   in some scenarios.
-- Added "th:uerrors" attribute in order to easily output all selected errors without escaping the error
-  messages.
+- Added "th:uerrors" attribute in order to easily output all selected errors without escaping the error messages.
+- Added "fullModeViewNames" and "chunkedModeViewNames" properties to ThymeleafReactiveViewResolver so that
+  the way the "maxResponseChunkSize" property is applied to templates can be fine-tuned. Templates can now be forced
+  to be executed in FULL mode, or specific sets of templates can be selected to be the only ones executed as CHUNKED.
 - Updated Spring Framework dependencies to 5.0.0.RELEASE.
 - Updated SLF4j dependency to 1.7.25.
 
