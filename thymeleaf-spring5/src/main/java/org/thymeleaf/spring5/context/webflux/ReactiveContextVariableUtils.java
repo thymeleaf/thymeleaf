@@ -30,17 +30,6 @@ import reactor.core.publisher.Mono;
  * <p>
  *   Utility class used by reactive context variable container/wrappers.
  * </p>
- * <p>
- *   The main aim of this class is to mirror the mechanism used by Spring for resolving
- *   asynchronous variables at the model of views (see Spring's
- *   {@link org.springframework.web.reactive.result.view.ViewResolutionResultHandler}):
- * </p>
- * <ul>
- *     <li><tt>Flux&lt;T&gt;</tt> or other <em>multi-valued</em> streams are resolved as
- *         <tt>List&lt;T&gt;</tt> so that they are <em>iterable</em>.</li>
- *     <li><tt>Mono&lt;T&gt;</tt> or other <em>single-valued</em> streams are resolved as
- *         <tt>T</tt> so that they are directly referenceable just like any other object.</li>
- * </ul>
  *
  * @author Daniel Fern&aacute;ndez
  *
@@ -56,7 +45,7 @@ class ReactiveContextVariableUtils {
      *   Lazily resolve the reactive asynchronous object into a {@link Publisher}.
      * </p>
      * <p>
-     *   The main aim of this class is to mirror the mechanism used by Spring for resolving
+     *   The main aim of this method is to mirror the mechanism used by Spring for resolving
      *   asynchronous variables at the model of views (see Spring's
      *   {@link org.springframework.web.reactive.result.view.ViewResolutionResultHandler}):
      * </p>
