@@ -374,6 +374,10 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         initializeApplicationAwareModel(applicationContext, mergedModel);
 
 
+        // Determine if we have a data-driver variable, and therefore will need to configure flushing of output chunks
+        final boolean dataDriven = containsDataDriver(mergedModel);
+
+
         /*
          * ----------------------------------------------------------------------------------------------------------
          * INSTANTIATION OF THE CONTEXT
@@ -528,16 +532,16 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                         templateName, processMarkupSelectors, context, response.bufferFactory(), contentType, charset,
                         templateResponseMaxChunkSizeBytes); // FULL/DATADRIVEN if MAX_VALUE, CHUNKED/DATADRIVEN if other
 
-        if (templateResponseMaxChunkSizeBytes == Integer.MAX_VALUE) {
+        if (templateResponseMaxChunkSizeBytes == Integer.MAX_VALUE && !dataDriven) {
 
-            // No size limit for output chunks has been set, so we will let the
+            // No size limit for output chunks has been set (FULL mode), so we will let the
             // server apply its standard behaviour ("writeWith").
             return response.writeWith(stream);
 
         }
 
-        // A limit for output chunks has been set, so we will use "writeAndFlushWith" in order to make
-        // sure that output is flushed after each buffer.
+        // Either we are in DATA-DRIVEN mode or a limit for output chunks has been set (CHUNKED mode), so we will
+        // use "writeAndFlushWith" in order to make sure that output is flushed after each buffer.
         return response.writeAndFlushWith(Flux.from(stream).window(1));
 
     }
@@ -573,6 +577,27 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
     }
 
+
+
+
+    /*
+     * With this method we try to quickly determine whether a DataDriver variable has been set into the Model.
+     */
+    private boolean containsDataDriver(final Map<String, Object> mergedModel) {
+
+        if (mergedModel == null || mergedModel.size() == 0) {
+            return false;
+        }
+
+        for (final Object variableValue: mergedModel.values()) {
+            if (variableValue instanceof IReactiveDataDriverContextVariable) {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
 
 
 
