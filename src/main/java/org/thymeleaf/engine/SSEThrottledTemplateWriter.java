@@ -34,8 +34,8 @@ class SSEThrottledTemplateWriter extends ThrottledTemplateWriter implements ISSE
     private final static char[] SSE_EVENT_PREFIX = "event: ".toCharArray();
     private final static char[] SSE_DATA_PREFIX = "data: ".toCharArray();
 
-    private String id = null;
-    private String event = null;
+    private char[] id = null;
+    private char[] event = null;
 
     private boolean eventHasMeta = false;
     private boolean newEvent = true;
@@ -48,7 +48,9 @@ class SSEThrottledTemplateWriter extends ThrottledTemplateWriter implements ISSE
 
 
 
-    public void startEvent(final String id, final String event) {
+    public void startEvent(final char[] id, final char[] event) {
+        // char[] are mutable but this is not an issue as this class is package-protected and the code from
+        // which this method is called is under control
         this.newEvent = true;
         this.id = id;
         this.event = event;
@@ -59,21 +61,21 @@ class SSEThrottledTemplateWriter extends ThrottledTemplateWriter implements ISSE
         this.eventHasMeta = false;
         if (this.event != null) {
             // Write the "event" field
-            if (this.event.indexOf('\n') != -1) {
+            if (!checkTokenValid(this.event)) {
                 throw new IllegalArgumentException("Event for SSE event cannot contain a newline (\\n) character");
             }
             super.write(SSE_EVENT_PREFIX);
-            super.write(this.event.toCharArray());
+            super.write(this.event);
             super.write('\n');
             this.eventHasMeta = true;
         }
         if (this.id != null) {
             // Write the "id" field
-            if (this.id.indexOf('\n') != -1) {
+            if (!checkTokenValid(this.id)) {
                 throw new IllegalArgumentException("ID for SSE event cannot contain a newline (\\n) character");
             }
             super.write(SSE_ID_PREFIX);
-            super.write(this.id.toCharArray());
+            super.write(this.id);
             super.write('\n');
             this.eventHasMeta = true;
         }
@@ -210,6 +212,19 @@ class SSEThrottledTemplateWriter extends ThrottledTemplateWriter implements ISSE
     }
 
 
+    // Used to check internally that neither event names nor IDs contain line feeds
+    private static boolean checkTokenValid(final char[] token) {
+        if (token == null || token.length == 0) {
+            return true;
+        }
+        for (int i = 0; i < token.length; i++) {
+            if (token[i] == '\n') {
+                return false;
+            }
+
+        }
+        return true;
+    }
 
 
 }

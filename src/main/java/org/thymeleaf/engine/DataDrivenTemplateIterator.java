@@ -50,15 +50,17 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  */
 public final class DataDrivenTemplateIterator implements Iterator<Object> {
 
-    private static final String SSE_HEAD_EVENT_TYPE = "head";
-    private static final String SSE_MESSAGE_EVENT_TYPE = "message";
-    private static final String SSE_TAIL_EVENT_TYPE = "tail";
+    private static final char[] SSE_HEAD_EVENT_NAME = "head".toCharArray();
+    private static final char[] SSE_MESSAGE_EVENT_NAME = "message".toCharArray();
+    private static final char[] SSE_TAIL_EVENT_NAME = "tail".toCharArray();
 
 
     private final List<Object> values;
     private IThrottledTemplateWriterControl writerControl;
     private ISSEThrottledTemplateWriterControl sseControl;
-    private long sseEventID;
+    private char[] sseEventsPrefix;
+    private char[] sseEventsComposedMessageEventName; // Used to cache the prefixed name of the most used type
+    private long sseEventsID;
     private boolean inStep;
     private boolean feedingComplete;
     private boolean queried;
@@ -70,7 +72,9 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
         this.values = new ArrayList<Object>(10);
         this.writerControl = null;
         this.sseControl = null;
-        this.sseEventID = 0L;
+        this.sseEventsPrefix = null;
+        this.sseEventsComposedMessageEventName = null;
+        this.sseEventsID = 0L;
         this.inStep = false;
         this.feedingComplete = false;
         this.queried = false;
@@ -88,13 +92,19 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
     }
 
 
-    public void setFirstSSEEventID(final long firstSSEEventID) {
-        this.sseEventID = firstSSEEventID;
+    public void setSseEventsPrefix(final String sseEventsPrefix) {
+        this.sseEventsPrefix =
+                (sseEventsPrefix == null || sseEventsPrefix.length() == 0? null : sseEventsPrefix.toCharArray());
+        this.sseEventsComposedMessageEventName = composeToken(SSE_MESSAGE_EVENT_NAME);
+    }
+
+    public void setSseEventsFirstID(final long sseEventsFirstID) {
+        this.sseEventsID = sseEventsFirstID;
     }
 
     public void takeBackLastEventID() {
-        if (this.sseEventID > 0L) {
-            this.sseEventID--;
+        if (this.sseEventsID > 0L) {
+            this.sseEventsID--;
         }
     }
 
@@ -125,8 +135,10 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
     public void startIteration() {
         this.inStep = true;
         if (this.sseControl != null) {
-            this.sseControl.startEvent(Long.toString(this.sseEventID), SSE_MESSAGE_EVENT_TYPE);
-            this.sseEventID++;
+            final char[] id = composeToken(Long.toString(this.sseEventsID).toCharArray());
+            final char[] event = this.sseEventsComposedMessageEventName;
+            this.sseControl.startEvent(id, event);
+            this.sseEventsID++;
         }
     }
 
@@ -182,8 +194,10 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
     public void startHead() {
         this.inStep = true;
         if (this.sseControl != null) {
-            this.sseControl.startEvent(Long.toString(this.sseEventID), SSE_HEAD_EVENT_TYPE);
-            this.sseEventID++;
+            final char[] id = composeToken(Long.toString(this.sseEventsID).toCharArray());
+            final char[] event = composeToken(SSE_HEAD_EVENT_NAME);
+            this.sseControl.startEvent(id, event);
+            this.sseEventsID++;
         }
     }
 
@@ -195,8 +209,10 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
     public void startTail() {
         this.inStep = true;
         if (this.sseControl != null) {
-            this.sseControl.startEvent(Long.toString(this.sseEventID), SSE_TAIL_EVENT_TYPE);
-            this.sseEventID++;
+            final char[] id = composeToken(Long.toString(this.sseEventsID).toCharArray());
+            final char[] event = composeToken(SSE_TAIL_EVENT_NAME);
+            this.sseControl.startEvent(id, event);
+            this.sseEventsID++;
         }
     }
 
@@ -232,5 +248,16 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
     }
 
 
+
+    private char[] composeToken(final char[] token) {
+        if (this.sseEventsPrefix == null) {
+            return token;
+        }
+        final char[] result = new char[this.sseEventsPrefix.length + 1 + token.length];
+        System.arraycopy(this.sseEventsPrefix, 0, result, 0, this.sseEventsPrefix.length);
+        result[this.sseEventsPrefix.length] = '_';
+        System.arraycopy(token, 0, result, this.sseEventsPrefix.length + 1, token.length);
+        return result;
+    }
 
 }

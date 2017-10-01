@@ -38,7 +38,7 @@ import java.io.IOException;
  */
 public interface ISSEThrottledTemplateWriterControl extends IThrottledTemplateWriterControl {
 
-    void startEvent(final String id, final String event);
+    void startEvent(final char[] id, final char[] event);
     void endEvent() throws IOException;
 
 }
