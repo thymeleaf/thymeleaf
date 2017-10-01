@@ -99,7 +99,7 @@ public class BigListFluxWebConfig {
         // The maximum size for output chunks will be applied to the "biglist-chunked" and "biglist-datadriven"
         // templates. Note that datadriven executions flush output after each partial execution anyway, but setting
         // them as "chunked" here makes sure no chunk (even if from a data-driven execution) exceeds the specified size
-        viewResolver.setChunkedModeViewNames(new String[] { "thymeleaf/*chunked*", "thymeleaf/*datadriven*"});
+        viewResolver.setChunkedModeViewNames(new String[] { "thymeleaf/*chunked*" });
         viewResolver.setResponseMaxChunkSizeBytes(8192); // OUTPUT BUFFER size limit
         return viewResolver;
     }
