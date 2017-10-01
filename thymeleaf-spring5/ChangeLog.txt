@@ -11,6 +11,9 @@
   output chunk produced (even if no max response chunk size has been set).
 - Added the SpringWebFluxContext class as a base implementation of ISpringWebFluxContext, useful for calling the
   SpringWebFluxTemplateEngine cleanly from outside a ThymeleafReactiveView.
+- Added the capability to set a prefix to the names and IDs of SSE events, so that HTML events coming from different
+  executions of Thymeleaf in DATA-DRIVEN mode can be combined at the controller for UI composition in a single
+  event stream and then easily discriminated at the JavaScript side by the corresponding EventSource objects.
 - Updated Spring Framework dependencies to 5.0.0.RELEASE.
 - Updated SLF4j dependency to 1.7.25.
 
