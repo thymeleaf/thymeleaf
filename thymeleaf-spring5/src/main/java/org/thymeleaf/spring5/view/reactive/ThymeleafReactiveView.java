@@ -369,13 +369,10 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         mergedModel.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
 
 
-        // Initialize those model attributes that might be instances of ReactiveLazyContextVariable and therefore
-        // need to be set the ReactiveAdapterRegistry.
-        initializeApplicationAwareModel(applicationContext, mergedModel);
-
-
         // Determine if we have a data-driver variable, and therefore will need to configure flushing of output chunks
-        final boolean dataDriven = containsDataDriver(mergedModel);
+        // Also, initialize those model attributes that might be instances of ReactiveLazyContextVariable and therefore
+        // need to be set the ReactiveAdapterRegistry.
+        final boolean dataDriven = checkDataDrivennessAndInitializeReactiveModel(applicationContext, mergedModel);
 
 
         /*
@@ -556,49 +553,66 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
 
-    private static void initializeApplicationAwareModel(
-            final ApplicationContext applicationContext, final Map<String,Object> model) {
+    private static boolean checkDataDrivennessAndInitializeReactiveModel(
+            final ApplicationContext applicationContext, final Map<String,Object> mergedModel) {
 
-        final ReactiveAdapterRegistry reactiveAdapterRegistry;
-        try {
-            reactiveAdapterRegistry = applicationContext.getBean(ReactiveAdapterRegistry.class);
-        } catch (final NoSuchBeanDefinitionException ignored) {
-            // No registry, but note that we can live without it (though limited to Flux and Mono)
-            return;
-        }
-
-        for (final Object value : model.values()) {
-            if (value instanceof ReactiveLazyContextVariable) {
-                ((ReactiveLazyContextVariable)value).setReactiveAdapterRegistry(reactiveAdapterRegistry);
-            } else if (value instanceof ReactiveDataDriverContextVariable) {
-                ((ReactiveDataDriverContextVariable)value).setReactiveAdapterRegistry(reactiveAdapterRegistry);
-            }
-        }
-
-    }
-
-
-
-
-    /*
-     * With this method we try to quickly determine whether a DataDriver variable has been set into the Model.
-     */
-    private boolean containsDataDriver(final Map<String, Object> mergedModel) {
+	    // This method will perform two operations on the Model, in order to initialise its reactive variables
+        // (if found): 1. Check if there is a data-driver variable (so that DATA-DRIVEN mode is used) and 2. Initialise
+        // all lazy reactive variables of the specific implementation that allows it so that they can use the reactive
+        // adapter registry to convert reactive streams into Flux/Mono
 
         if (mergedModel == null || mergedModel.size() == 0) {
             return false;
         }
 
-        for (final Object variableValue: mergedModel.values()) {
-            if (variableValue instanceof IReactiveDataDriverContextVariable) {
-                return true;
+        ReactiveAdapterRegistry reactiveAdapterRegistry = null;
+
+        boolean dataDriven = false;
+
+        for (final Object value : mergedModel.values()) {
+
+            if (value instanceof ReactiveLazyContextVariable) {
+
+                // We try to get the ReactiveAdapterRegistry bean from the context only if really needed
+                if (reactiveAdapterRegistry == null) {
+                    reactiveAdapterRegistry = getReactiveAdapterRegistry(applicationContext);
+                }
+
+                ((ReactiveLazyContextVariable)value).setReactiveAdapterRegistry(reactiveAdapterRegistry);
+
+            } else if (value instanceof IReactiveDataDriverContextVariable) {
+
+                dataDriven = true;
+
+                if (value instanceof ReactiveDataDriverContextVariable) {
+
+                    // We try to get the ReactiveAdapterRegistry bean from the context only if really needed
+                    if (reactiveAdapterRegistry == null) {
+                        reactiveAdapterRegistry = getReactiveAdapterRegistry(applicationContext);
+                    }
+
+                    ((ReactiveDataDriverContextVariable)value).setReactiveAdapterRegistry(reactiveAdapterRegistry);
+
+                }
+
             }
         }
 
-        return false;
+        return dataDriven;
 
     }
 
+
+    private static ReactiveAdapterRegistry getReactiveAdapterRegistry(final ApplicationContext applicationContext) {
+	    if (applicationContext != null) {
+            try {
+                return applicationContext.getBean(ReactiveAdapterRegistry.class);
+            } catch (final NoSuchBeanDefinitionException ignored) {
+                // No registry, but note that we can live without it (though limited to Flux and Mono)
+            }
+        }
+        return null;
+    }
 
 
 }
