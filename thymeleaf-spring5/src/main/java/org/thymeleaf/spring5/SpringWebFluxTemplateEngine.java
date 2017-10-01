@@ -254,7 +254,7 @@ public class SpringWebFluxTemplateEngine
                 // NOTE 'sse' is specified as 'false' because SSE is only allowed in data-driven mode. Also, no
                 // data-driven iterator is available (we are in chunked mode).
                 () -> new StreamThrottledTemplateProcessor(
-                        processThrottled(templateName, markupSelectors, context), null, 0L, false),
+                        processThrottled(templateName, markupSelectors, context), null, null, 0L, false),
 
                 // This stream will execute, in a one-by-one (non-interleaved) fashion, the following code
                 // for each back-pressure request coming from downstream. Each of these steps (chunks) will
@@ -331,13 +331,16 @@ public class SpringWebFluxTemplateEngine
             final String dataDriverVariableName, final DataBufferFactory bufferFactory, final Charset charset,
             final int responseMaxChunkSizeBytes, final boolean sse) {
 
-        // STEP 1: Obtain the data-driver variable
+        // STEP 1: Obtain the data-driver variable and its metadata
         final IReactiveDataDriverContextVariable dataDriver =
                 (IReactiveDataDriverContextVariable) context.getVariable(dataDriverVariableName);
         final int bufferSizeElements = dataDriver.getBufferSizeElements();
-        final long firstEventID =
+        final String sseEventsPrefix =
                 (dataDriver instanceof IReactiveSSEDataDriverContextVariable?
-                        ((IReactiveSSEDataDriverContextVariable) dataDriver).getFirstEventID() : 0L);
+                        ((IReactiveSSEDataDriverContextVariable) dataDriver).getSseEventsPrefix() : null);
+        final long sseEventsID =
+                (dataDriver instanceof IReactiveSSEDataDriverContextVariable?
+                        ((IReactiveSSEDataDriverContextVariable) dataDriver).getSseEventsFirstID() : 0L);
 
 
         // STEP 2: Replace the data driver variable with a DataDrivenTemplateIterator
@@ -363,7 +366,7 @@ public class SpringWebFluxTemplateEngine
                         final TemplateSpec templateSpec =
                                 new TemplateSpec(templateName, markupSelectors, outputContentType, null);
                         return new StreamThrottledTemplateProcessor(
-                                processThrottled(templateSpec, wrappedContext), dataDrivenIterator, firstEventID, sse);
+                                processThrottled(templateSpec, wrappedContext), dataDrivenIterator, sseEventsPrefix, sseEventsID, sse);
                       },
 
                 // This flux will be made by concatenating a phase for the head (template before data-driven
@@ -678,7 +681,7 @@ public class SpringWebFluxTemplateEngine
         StreamThrottledTemplateProcessor(
                 final IThrottledTemplateProcessor throttledProcessor,
                 final DataDrivenTemplateIterator dataDrivenTemplateIterator,
-                final long firstEventID, final boolean sse) {
+                final String sseEventsPrefix, final long sseEventsFirstID, final boolean sse) {
 
             super();
 
@@ -709,7 +712,8 @@ public class SpringWebFluxTemplateEngine
 
             if (this.dataDrivenTemplateIterator != null) {
                 this.dataDrivenTemplateIterator.setWriterControl(writerControl);
-                this.dataDrivenTemplateIterator.setFirstSSEEventID(firstEventID);
+                this.dataDrivenTemplateIterator.setSseEventsPrefix(sseEventsPrefix);
+                this.dataDrivenTemplateIterator.setSseEventsFirstID(sseEventsFirstID);
             }
 
             this.chunkCount = -1; // First chunk will be considered number 0

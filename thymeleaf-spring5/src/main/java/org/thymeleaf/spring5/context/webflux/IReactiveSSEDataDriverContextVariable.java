@@ -26,26 +26,37 @@ package org.thymeleaf.spring5.context.webflux;
  *   template in SSE (Server-Sent Event) mode.
  * </p>
  * <p>
- *   This interface adds to {@link IReactiveDataDriverContextVariable} the possibility to specify the first ID value
- *   to be used for generating SSE events. This is useful in SSE scenarios in which the browser requests the server
- *   to reconnect after a connection failure, specifying the HTTP <tt>Last-Event-ID</tt> header so that the
+ *   This interface adds to its parent {@link IReactiveDataDriverContextVariable} the possibility to specify a prefix
+ *   to be applied to the names and IDs of events generated in SSE scenarios. This can be useful in scenarios such as
+ *   UI composition, in which streams of markup events coming from different sources (e.g. different parts of a page)
+ *   can be sent to the browser combined in a single <tt>EventSource</tt> SSE stream. That way client JavaScript
+ *   code will be able to identify which part of the page the event belongs to by means of its prefix. Also, combining
+ *   several (prefixed) SSE streams into one can also serve to overcome limitations in the amount of concurrent
+ *   active <tt>EventSource</tt> allowed.
+ * </p>
+ * <p>
+ *   This interface also allows the specification of the first ID value to be used in these SSE events. This is
+ *   useful in SSE scenarios in which the browser requests the server to reconnect after a connection
+ *   failure, specifying the HTTP <tt>Last-Event-ID</tt> header so that the
  *   application can start generating events again starting from the event following the last one successfully
- *   processed by the browser.
+ *   processed by the browser (note this <em>resume</em> operation has to be supported by whoever is in charge of
+ *   creating the data stream that Thymeleaf subscribes to in <tt>DATA-DRIVEN</tt> mode, not by Thymeleaf itself
+ *   which is only in charge of rendering the view layer).
  * </p>
  * <p>
  *   Returning SSE (Server-Sent Events) through Thymeleaf requires the presence of a variable implementing this
  *   interface in the context. Thymeleaf will generate three types of events during rendering:
  * </p>
  * <ul>
- *     <li>Header (<tt>event: head</tt>), a single event containing all the markup previous to the iterated
- *         data (if any).</li>
- *     <li>Data message (<tt>event: message</tt>), a series of n events, one for each value produced by the
- *         data driver.</li>
- *     <li>Tail (<tt>event: tail</tt>), a single event containing all the markup following the last iterated
- *         piece of data (if any).</li>
+ *     <li>Header (<tt>event: head</tt> or <tt>event: {prefix}_head</tt>), a single event containing all the
+ *         markup previous to the iterated data (if any).</li>
+ *     <li>Data message (<tt>event: message</tt> or <tt>event: {prefix}_message</tt>)), a series of n events, one
+ *         for each value produced by the data driver.</li>
+ *     <li>Tail (<tt>event: tail</tt> or <tt>event: {prefix}_tail</tt>)), a single event containing all the markup
+ *         following the last iterated piece of data (if any).</li>
  * </ul>
  * <p>
- *   Note that in the case of SSE, the value assigned to the {@link #getBufferSizeElements()} property can actually
+ *   Note that in the case of SSE, the value assigned to the {@link #getBufferSizeElements()} property does
  *   affect the immediacy of the generated (published) events being sent to the browser. If this buffer is set e.g.
  *   to 4, only when a total of 4 items of data are generated will be sent to the browser as SSE events.
  * </p>
@@ -72,6 +83,25 @@ public interface IReactiveSSEDataDriverContextVariable extends IReactiveDataDriv
 
     /**
      * <p>
+     *   Returns the (optional) prefix to be used for SSE event names and IDs.
+     * </p>
+     * <p>
+     *   Using a prefix for SSE events can be useful in scenarios such as UI composition, in which streams of
+     *   markup events coming from different sources (e.g. different parts of a page) can be sent to the browser
+     *   combined in a single <tt>EventSource</tt> SSE stream. That way client JavaScript
+     *   code will be able to identify which part of the page the event belongs to by means of its
+     *   prefix. Also, combining several (prefixed) SSE streams into one can also serve to overcome limitations
+     *   in the amount of concurrent active <tt>EventSource</tt> allowed.
+     * </p>
+     *
+     * @return the prefix to be applied to event names and IDs, or <tt>null</tt> if no prefix has been set.
+     * @since 3.0.8
+     */
+    public String getSseEventsPrefix();
+
+
+    /**
+     * <p>
      *   Returns the first value to be used as an <tt>id</tt> in the case this response is rendered as SSE
      *   (Server-Sent Events) with content type <tt>text/event-stream</tt>.
      * </p>
@@ -82,6 +112,6 @@ public interface IReactiveSSEDataDriverContextVariable extends IReactiveDataDriv
      *
      * @return the first value to be used for returning the data driver variable values as SSE events.
      */
-    public long getFirstEventID();
+    public long getSseEventsFirstID();
 
 }
