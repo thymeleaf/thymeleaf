@@ -48,24 +48,23 @@ public abstract class AbstractContext implements IContext {
 
 
     protected AbstractContext() {
-        this(Locale.getDefault());
+        this(null, null);
     }
 
 
     protected AbstractContext(final Locale locale) {
-        super();
-        Validate.notNull(locale, "Locale cannot be null");
-        this.locale = locale;
-        this.variables = new LinkedHashMap<String, Object>(10);
+        this(locale, null);
     }
 
 
     protected AbstractContext(final Locale locale, final Map<String, Object> variables) {
         super();
-        Validate.notNull(locale, "Locale cannot be null");
-        Validate.notNull(variables, "Variables map cannot be null");
-        this.locale = locale;
-        this.variables = new LinkedHashMap<String, Object>(variables);
+        this.locale =
+                (locale == null? Locale.getDefault() : locale);
+        this.variables =
+                (variables == null?
+                        new LinkedHashMap<String, Object>(10) :
+                        new LinkedHashMap<String, Object>(variables));
     }
 
 
@@ -94,7 +93,7 @@ public abstract class AbstractContext implements IContext {
      *
      * @param locale the locale.
      */
-    public final void setLocale(final Locale locale) {
+    public void setLocale(final Locale locale) {
         Validate.notNull(locale, "Locale cannot be null");
         this.locale = locale;
     }
@@ -108,7 +107,7 @@ public abstract class AbstractContext implements IContext {
      * @param name the name of the variable.
      * @param value the value of the variable.
      */
-    public final void setVariable(final String name, final Object value) {
+    public void setVariable(final String name, final Object value) {
         this.variables.put(name, value);
     }
 
@@ -120,7 +119,7 @@ public abstract class AbstractContext implements IContext {
      *
      * @param variables the variables to be set.
      */
-    public final void setVariables(final Map<String,Object> variables) {
+    public void setVariables(final Map<String,Object> variables) {
         if (variables == null) {
             return;
         }
@@ -135,7 +134,7 @@ public abstract class AbstractContext implements IContext {
      *
      * @param name the name of the variable to be removed.
      */
-    public final void removeVariable(final String name) {
+    public void removeVariable(final String name) {
         this.variables.remove(name);
     }
 
@@ -145,7 +144,7 @@ public abstract class AbstractContext implements IContext {
      *   Removes all the variables from the context.
      * </p>
      */
-    public final void clearVariables() {
+    public void clearVariables() {
         this.variables.clear();
     }
 

@@ -66,11 +66,13 @@ public abstract class AbstractExpressionContext extends AbstractContext implemen
 
 
 
+    @Override
     public final IEngineConfiguration getConfiguration() {
         return this.configuration;
     }
 
 
+    @Override
     public IExpressionObjects getExpressionObjects() {
         // We delay creation of expression objects in case they are not needed at all
         if (this.expressionObjects == null) {
