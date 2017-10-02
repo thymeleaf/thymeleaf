@@ -53,11 +53,6 @@ import org.springframework.core.ReactiveAdapterRegistry;
  *   {@link reactor.core.publisher.Mono} object will be considered <em>single-valued</em>.
  * </p>
  * <p>
- *   Note that this is not directly related to {@link ReactiveLazyContextVariable}, which is instead an
- *   implementation of the {@link org.thymeleaf.context.ILazyContextVariable} interface and is meant to lazily
- *   resolve asynchronous data stream variables, but without any added data-driven semantics.
- * </p>
- * <p>
  *   The {@link #getBufferSizeElements()} property describes the size (in elements) of the buffers that
  *   will be created from the data-driver stream before triggering the execution of the template (for each buffer).
  *   Normally there is no need to execute the template engine and generate output for each element of data

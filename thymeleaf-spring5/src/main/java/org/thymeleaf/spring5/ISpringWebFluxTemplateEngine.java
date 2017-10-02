@@ -50,9 +50,7 @@ import org.thymeleaf.context.IContext;
  *     </li>
  *     <li><strong>Chunked</strong>: Output buffers limited in size but no <em>data-driven</em>
  *        execution (no {@link Publisher} driving engine execution). All context variables are
- *        expected to be fully resolved before engine execution -except those implementing Thymeleaf's
- *        {@link org.thymeleaf.context.ILazyContextVariable} interface, including its reactive implementation
- *        {@link org.thymeleaf.spring5.context.webflux.ReactiveLazyContextVariable}- and the Thymeleaf
+ *        expected to be fully resolved (in a non-blocking fashion) by WebFlux before engine execution and the Thymeleaf
  *        engine will execute in <em>throttled</em> mode, performing a full-stop each time the output buffer reaches
  *        the specified size, sending it to the output channels with {@link Subscriber#onNext(Object)} and then
  *        waiting until these output channels make the engine resume its work with a new

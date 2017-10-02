@@ -496,9 +496,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
          *        channels in a single onNext(buffer) call (immediately followed by onComplete()).
          *
          *     2. CHUNKED: Output chunks limited in size (responseMaxChunkSizeBytes) but no data-driven
-         *        execution (no Publisher<X> driving engine execution). All model attributes are expected to be fully
-         *        resolved before engine execution (except those implementing Thymeleaf's ILazyContextVariable
-         *        interface, including its reactive implementation ReactiveLazyContextVariable) and the Thymeleaf
+         *        execution (no Publisher<X> driving engine execution). All model attributes are expected to be
+         *        fully resolved (in a non-blocking fashion) by WebFlux before engine execution and the Thymeleaf
          *        engine will execute in throttled mode, performing a full-stop each time the chunk reaches the
          *        specified size, sending it to the output channels with onNext(chunk) and then waiting until
          *        these output channels make the engine resume its work with a new request(n) call. This
