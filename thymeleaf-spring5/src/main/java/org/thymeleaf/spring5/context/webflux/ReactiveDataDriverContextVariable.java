@@ -306,7 +306,7 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
                 ReactiveContextVariableUtils.computePublisherValue(this.dataStream, this.adapterRegistry);
         if (!(publisher instanceof Flux)) {
             throw new IllegalArgumentException(
-                    "Reactive Data Driver context variable was set single-valued aynchronous object. But data driver " +
+                    "Reactive Data Driver context variable was set single-valued asynchronous object. But data driver " +
                     "variables must wrap multi-valued data streams (so that they can be iterated at the template");
         }
         return publisher;

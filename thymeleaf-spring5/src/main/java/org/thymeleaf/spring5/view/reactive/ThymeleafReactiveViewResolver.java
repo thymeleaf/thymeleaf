@@ -80,7 +80,7 @@ import reactor.core.publisher.Mono;
  *       by this {@link ViewResolver} so that each output chunk emitted provokes a <b>flush</b> operation at the
  *       server output channels (so that partial content is sent to the browser/client).</li>
  *   <li><em>DATA-DRIVEN</em>, when a <em>data-driver</em> variable has been specified at the context
- *       (implementing {@link org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable}). This
+ *       (by implementing {@link org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable}). This
  *       variable is expected to contain a <em>data stream</em> (usually in the shape of a
  *       {@link org.reactivestreams.Publisher} that Thymeleaf will consume, creating markup output as data
  *       is streamed from this <em>data-driver</em> and letting the output channels throttle

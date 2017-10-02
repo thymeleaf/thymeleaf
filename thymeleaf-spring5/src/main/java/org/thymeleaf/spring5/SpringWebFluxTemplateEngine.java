@@ -632,7 +632,7 @@ public class SpringWebFluxTemplateEngine
 
     private static String findDataDriverInModel(final IContext context) {
 
-        // In SpringWebFluxExpressionContext (used most of the times), variables are backed by a
+        // In SpringWebFluxContext (used most of the times), variables are backed by a
         // Map<String,Object>. So this iteration on all the names and many "getVariable()" calls
         // shouldn't be an issue perf-wise.
 
