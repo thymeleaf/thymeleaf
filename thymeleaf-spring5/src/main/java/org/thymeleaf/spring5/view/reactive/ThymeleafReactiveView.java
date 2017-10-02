@@ -570,17 +570,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         boolean dataDriven = false;
 
         for (final Object value : mergedModel.values()) {
+            if (value instanceof IReactiveDataDriverContextVariable) {
 
-            if (value instanceof ReactiveLazyContextVariable) {
-
-                // We try to get the ReactiveAdapterRegistry bean from the context only if really needed
-                if (reactiveAdapterRegistry == null) {
-                    reactiveAdapterRegistry = getReactiveAdapterRegistry(applicationContext);
-                }
-
-                ((ReactiveLazyContextVariable)value).setReactiveAdapterRegistry(reactiveAdapterRegistry);
-
-            } else if (value instanceof IReactiveDataDriverContextVariable) {
 
                 dataDriven = true;
 

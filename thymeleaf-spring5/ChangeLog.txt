@@ -14,6 +14,8 @@
 - Added the capability to set a prefix to the names and IDs of SSE events, so that HTML events coming from different
   executions of Thymeleaf in DATA-DRIVEN mode can be combined at the controller for UI composition in a single
   event stream and then easily discriminated at the JavaScript side by the corresponding EventSource objects.
+- Removed the ReactiveLazyContextVariable context variable wrapper in order to avoid confusion with the way
+  lazy evaluation of non-data-driven reactive variables worked.
 - Updated Spring Framework dependencies to 5.0.0.RELEASE.
 - Updated SLF4j dependency to 1.7.25.
 
