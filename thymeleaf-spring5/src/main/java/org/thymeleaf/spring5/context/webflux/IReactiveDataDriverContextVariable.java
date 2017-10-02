@@ -20,6 +20,7 @@
 package org.thymeleaf.spring5.context.webflux;
 
 import org.reactivestreams.Publisher;
+import org.springframework.core.ReactiveAdapterRegistry;
 
 /**
  * <p>
@@ -101,9 +102,13 @@ public interface IReactiveDataDriverContextVariable {
      *   {@link Publisher} stream.
      * </p>
      *
+     * @param reactiveAdapterRegistry the Spring reactive adapter registry that should be used in order to transform
+     *                                other reactive implementations (RxJava, etc.) into
+     *                                {@link reactor.core.publisher.Flux}. Can be null (no adaptations will be
+     *                                available).
      * @return the asynchronous object (as a {@link Publisher}).
      */
-    public Publisher<Object> getDataStream();
+    public Publisher<Object> getDataStream(final ReactiveAdapterRegistry reactiveAdapterRegistry);
 
     /**
      * <p>

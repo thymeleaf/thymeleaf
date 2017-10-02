@@ -33,7 +33,8 @@ import reactor.core.publisher.Flux;
  *   The <em>reactive data stream</em> wrapped by this class will usually have the shape of an implementation of the
  *   {@link Publisher} interface, such as {@link reactor.core.publisher.Flux}. But other types of reactive
  *   artifacts are supported thanks to Spring's {@link org.springframework.core.ReactiveAdapterRegistry}
- *   mechanism.
+ *   mechanism if such adapter registry has been set in the context
+ *   (see {@link SpringWebFluxContext#getReactiveAdapterRegistry()}).
  * </p>
  * <p>
  *   Data-driver context variables are required to be <strong>multi-valued</strong>.
@@ -85,10 +86,10 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
 
     /**
      * <p>
-     *   Default buffer size to be applied if none is specified. Value = <tt>100</tt>.
+     *   Default buffer size to be applied if none is specified. Value = <tt>10</tt>.
      * </p>
      */
-    public static final int DEFAULT_DATA_DRIVER_BUFFER_SIZE_ELEMENTS = 100;
+    public static final int DEFAULT_DATA_DRIVER_BUFFER_SIZE_ELEMENTS = 10;
 
     /**
      * <p>
@@ -102,7 +103,6 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
     private final int dataStreamBufferSizeElements;
     private final String sseEventsPrefix;
     private final long sseEventsFirstID;
-    private ReactiveAdapterRegistry adapterRegistry;
 
 
     /**
@@ -116,7 +116,9 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
      *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Stream's
      *   {@link Publisher} by means of Spring's {@link ReactiveAdapterRegistry} mechanism. If no
      *   adapter has been registered for the type of the asynchronous object, and exception will be
-     *   thrown during lazy resolution.
+     *   thrown during lazy resolution. If no adapter registry has been set into the context
+     *   (see {@link SpringWebFluxContext#getReactiveAdapterRegistry()}) this data stream must mandatorily
+     *   be a {@link Flux}.
      * </p>
      * <p>
      *   Note the specified <tt>dataStream</tt> must be <strong>multi-valued</strong>.
@@ -141,10 +143,12 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
      *   buffer size.
      * </p>
      * <p>
-     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Streams
+     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Stream's
      *   {@link Publisher} by means of Spring's {@link ReactiveAdapterRegistry} mechanism. If no
      *   adapter has been registered for the type of the asynchronous object, and exception will be
-     *   thrown during lazy resolution.
+     *   thrown during lazy resolution. If no adapter registry has been set into the context
+     *   (see {@link SpringWebFluxContext#getReactiveAdapterRegistry()}) this data stream must mandatorily
+     *   be a {@link Flux}.
      * </p>
      * <p>
      *   Note the specified <tt>dataStream</tt> must be <strong>multi-valued</strong>.
@@ -170,10 +174,12 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
      *   buffer size and a prefix for all the names and IDs of events generated from a specific SSE stream.
      * </p>
      * <p>
-     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Streams
+     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Stream's
      *   {@link Publisher} by means of Spring's {@link ReactiveAdapterRegistry} mechanism. If no
      *   adapter has been registered for the type of the asynchronous object, and exception will be
-     *   thrown during lazy resolution.
+     *   thrown during lazy resolution. If no adapter registry has been set into the context
+     *   (see {@link SpringWebFluxContext#getReactiveAdapterRegistry()}) this data stream must mandatorily
+     *   be a {@link Flux}.
      * </p>
      * <p>
      *   Note the specified <tt>dataStream</tt> must be <strong>multi-valued</strong>.
@@ -205,10 +211,12 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
      *   buffer size and a value for the ID of the first event generated in SSE scenarios.
      * </p>
      * <p>
-     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Streams
+     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Stream's
      *   {@link Publisher} by means of Spring's {@link ReactiveAdapterRegistry} mechanism. If no
      *   adapter has been registered for the type of the asynchronous object, and exception will be
-     *   thrown during lazy resolution.
+     *   thrown during lazy resolution. If no adapter registry has been set into the context
+     *   (see {@link SpringWebFluxContext#getReactiveAdapterRegistry()}) this data stream must mandatorily
+     *   be a {@link Flux}.
      * </p>
      * <p>
      *   Note the specified <tt>dataStream</tt> must be <strong>multi-valued</strong>.
@@ -240,10 +248,12 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
      *   the names and IDs of events generated from a specific SSE stream.
      * </p>
      * <p>
-     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Streams
+     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Stream's
      *   {@link Publisher} by means of Spring's {@link ReactiveAdapterRegistry} mechanism. If no
      *   adapter has been registered for the type of the asynchronous object, and exception will be
-     *   thrown during lazy resolution.
+     *   thrown during lazy resolution. If no adapter registry has been set into the context
+     *   (see {@link SpringWebFluxContext#getReactiveAdapterRegistry()}) this data stream must mandatorily
+     *   be a {@link Flux}.
      * </p>
      * <p>
      *   Note the specified <tt>dataStream</tt> must be <strong>multi-valued</strong>.
@@ -278,32 +288,10 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
     }
 
 
-    /**
-     * <p>
-     *   Sets the {@link ReactiveAdapterRegistry} used for converting (if necessary) the wrapped asynchronous
-     *   object into a {@link Publisher}.
-     * </p>
-     * <p>
-     *   This method is transparently called before template execution in order
-     *   to initialize lazy context variables. It can also be called programmatically, but there is normally
-     *   no reason to do this. If not called at all, only {@link Flux} will be allowed as valid type
-     *   for the wrapped data stream.
-     * </p>
-     *
-     * @param reactiveAdapterRegistry the reactive adapter registry.
-     */
-    public final void setReactiveAdapterRegistry(final ReactiveAdapterRegistry reactiveAdapterRegistry) {
-        // Note the presence of the ReactiveAdapterRegistry is optional, so this method might never be
-        // called. We can only be sure that it will be called if this context variable is part of a model
-        // used for rendering a ThymeleafReactiveView (which, anyway, will be most of the cases).
-        this.adapterRegistry = reactiveAdapterRegistry;
-    }
-
-
     @Override
-    public Publisher<Object> getDataStream() {
+    public Publisher<Object> getDataStream(final ReactiveAdapterRegistry reactiveAdapterRegistry) {
         final Publisher<Object> publisher =
-                ReactiveContextVariableUtils.computePublisherValue(this.dataStream, this.adapterRegistry);
+                ReactiveContextVariableUtils.computePublisherValue(this.dataStream, reactiveAdapterRegistry);
         if (!(publisher instanceof Flux)) {
             throw new IllegalArgumentException(
                     "Reactive Data Driver context variable was set single-valued asynchronous object. But data driver " +

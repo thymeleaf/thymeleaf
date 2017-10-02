@@ -52,7 +52,6 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
 import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
-import org.thymeleaf.spring5.context.webflux.ReactiveLazyContextVariable;
 import org.thymeleaf.spring5.context.webflux.SpringWebFluxExpressionContext;
 import org.thymeleaf.spring5.context.webflux.SpringWebFluxThymeleafRequestContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
@@ -370,9 +369,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
         // Determine if we have a data-driver variable, and therefore will need to configure flushing of output chunks
-        // Also, initialize those model attributes that might be instances of ReactiveLazyContextVariable and therefore
-        // need to be set the ReactiveAdapterRegistry.
-        final boolean dataDriven = checkDataDrivennessAndInitializeReactiveModel(applicationContext, mergedModel);
+        final boolean dataDriven = isDataDriven(mergedModel);
 
 
         /*
@@ -389,7 +386,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
         final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
         final SpringWebFluxExpressionContext context =
-                new SpringWebFluxExpressionContext(configuration, exchange, getLocale(), mergedModel);
+                new SpringWebFluxExpressionContext(
+                        configuration, exchange, getReactiveAdapterRegistry(), getLocale(), mergedModel);
 
 
         /*
@@ -553,49 +551,29 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
 
-    private static boolean checkDataDrivennessAndInitializeReactiveModel(
-            final ApplicationContext applicationContext, final Map<String,Object> mergedModel) {
-
-	    // This method will perform two operations on the Model, in order to initialise its reactive variables
-        // (if found): 1. Check if there is a data-driver variable (so that DATA-DRIVEN mode is used) and 2. Initialise
-        // all lazy reactive variables of the specific implementation that allows it so that they can use the reactive
-        // adapter registry to convert reactive streams into Flux/Mono
-
+    private static boolean isDataDriven(final Map<String,Object> mergedModel) {
         if (mergedModel == null || mergedModel.size() == 0) {
             return false;
         }
-
-        ReactiveAdapterRegistry reactiveAdapterRegistry = null;
-
-        boolean dataDriven = false;
-
         for (final Object value : mergedModel.values()) {
             if (value instanceof IReactiveDataDriverContextVariable) {
-
-
-                dataDriven = true;
-
-                if (value instanceof ReactiveDataDriverContextVariable) {
-
-                    // We try to get the ReactiveAdapterRegistry bean from the context only if really needed
-                    if (reactiveAdapterRegistry == null) {
-                        reactiveAdapterRegistry = getReactiveAdapterRegistry(applicationContext);
-                    }
-
-                    ((ReactiveDataDriverContextVariable)value).setReactiveAdapterRegistry(reactiveAdapterRegistry);
-
-                }
-
+                return true;
             }
         }
-
-        return dataDriven;
-
+        return false;
     }
 
 
-    private static ReactiveAdapterRegistry getReactiveAdapterRegistry(final ApplicationContext applicationContext) {
-	    if (applicationContext != null) {
+
+
+    private ReactiveAdapterRegistry getReactiveAdapterRegistry() {
+
+	    final ApplicationContext applicationContext = getApplicationContext();
+	    if (applicationContext == null) {
+	        return null;
+        }
+
+        if (applicationContext != null) {
             try {
                 return applicationContext.getBean(ReactiveAdapterRegistry.class);
             } catch (final NoSuchBeanDefinitionException ignored) {
@@ -603,6 +581,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
             }
         }
         return null;
+
     }
 
 

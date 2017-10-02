@@ -22,11 +22,13 @@ package org.thymeleaf.spring5.context.webflux;
 import java.util.Locale;
 import java.util.Map;
 
+import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebSession;
 import org.thymeleaf.context.AbstractContext;
+import org.thymeleaf.util.Validate;
 import reactor.core.publisher.Mono;
 
 /**
@@ -46,26 +48,79 @@ import reactor.core.publisher.Mono;
  */
 public class SpringWebFluxContext extends AbstractContext implements ISpringWebFluxContext {
 
+
     private final ServerWebExchange exchange;
+    private final ReactiveAdapterRegistry reactiveAdapterRegistry; // nullable
 
 
+    /**
+     * <p>
+     *     Build a new instance of this Spring WebFlux-specific context object.
+     * </p>
+     *
+     * @param exchange the Spring WebFlux exchange object, containing request, response and session. Cannot be null.
+     */
     public SpringWebFluxContext(final ServerWebExchange exchange) {
-        super();
-        this.exchange = exchange;
+        this(exchange, null, null, null);
     }
 
+    /**
+     * <p>
+     *     Build a new instance of this Spring WebFlux-specific context object.
+     * </p>
+     *
+     * @param exchange the Spring WebFlux exchange object, containing request, response and session. Cannot be null.
+     * @param locale the locale to be used for executing Thymeleaf. Can be null (Locale.getDefault() will be used).
+     */
     public SpringWebFluxContext(final ServerWebExchange exchange, final Locale locale) {
-        super(locale);
-        this.exchange = exchange;
+        this(exchange, null, locale, null);
     }
 
+    /**
+     * <p>
+     *     Build a new instance of this Spring WebFlux-specific context object.
+     * </p>
+     *
+     * @param exchange the Spring WebFlux exchange object, containing request, response and session. Cannot be null.
+     * @param locale the locale to be used for executing Thymeleaf. Can be null (Locale.getDefault() will be used).
+     * @param variables the variables to be used for executing Thymeleaf. Can be null.
+     */
     public SpringWebFluxContext(
             final ServerWebExchange exchange,
             final Locale locale, final Map<String, Object> variables) {
-        super(locale, variables);
-        this.exchange = exchange;
+        this(exchange, null, locale, variables);
     }
 
+    /**
+     * <p>
+     *     Build a new instance of this Spring WebFlux-specific context object.
+     * </p>
+     *
+     * @param exchange the Spring WebFlux exchange object, containing request, response and session. Cannot be null.
+     * @param reactiveAdapterRegistry the Spring WebFlux reactive adapter object, used in cases when it is needed
+     *                                to turn non-Reactor reactive streams (RxJava, etc.) into Reactor equivalents
+     *                                (Flux, Mono) in order to be used by Thymeleaf as data drivers
+     *                                (see {@link IReactiveDataDriverContextVariable}). Can be null.
+     * @param locale the locale to be used for executing Thymeleaf. Can be null (Locale.getDefault() will be used).
+     * @param variables the variables to be used for executing Thymeleaf. Can be null.
+     */
+    public SpringWebFluxContext(
+            final ServerWebExchange exchange,
+            final ReactiveAdapterRegistry reactiveAdapterRegistry,
+            final Locale locale, final Map<String, Object> variables) {
+        super(locale, variables);
+        Validate.notNull(exchange, "ServerWebExchange cannot be null in Spring WebFlux contexts");
+        // reactiveAdapterRegistry CAN be null
+        this.exchange = exchange;
+        this.reactiveAdapterRegistry = reactiveAdapterRegistry;
+    }
+
+
+    // This method is not included in the interface as it is more an implementation detail usable for
+    // a specific scenario of Publisher-normalisation in WebFlux.
+    public ReactiveAdapterRegistry getReactiveAdapterRegistry() {
+        return this.reactiveAdapterRegistry;
+    }
 
     @Override
     public ServerHttpRequest getRequest() {

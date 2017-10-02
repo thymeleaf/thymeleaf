@@ -22,14 +22,12 @@ package org.thymeleaf.spring5.context.webflux;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebSession;
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.AbstractExpressionContext;
 import org.thymeleaf.context.IExpressionContext;
-import reactor.core.publisher.Mono;
+import org.thymeleaf.expression.ExpressionObjects;
+import org.thymeleaf.expression.IExpressionObjects;
 
 /**
  * <p>
@@ -45,50 +43,53 @@ import reactor.core.publisher.Mono;
  * @since 3.0.3
  *
  */
-public class SpringWebFluxExpressionContext extends AbstractExpressionContext implements ISpringWebFluxContext {
+public class SpringWebFluxExpressionContext extends SpringWebFluxContext implements IExpressionContext {
 
-    private final ServerWebExchange exchange;
+    private final IEngineConfiguration configuration;
+    private IExpressionObjects expressionObjects = null;
 
 
     public SpringWebFluxExpressionContext(
             final IEngineConfiguration configuration, final ServerWebExchange exchange) {
-        super(configuration);
-        this.exchange = exchange;
+        this(configuration, exchange, null, null, null);
     }
 
     public SpringWebFluxExpressionContext(
             final IEngineConfiguration configuration, final ServerWebExchange exchange, final Locale locale) {
-        super(configuration, locale);
-        this.exchange = exchange;
+        this(configuration, exchange, null, locale, null);
     }
 
     public SpringWebFluxExpressionContext(
             final IEngineConfiguration configuration,
             final ServerWebExchange exchange,
             final Locale locale, final Map<String, Object> variables) {
-        super(configuration, locale, variables);
-        this.exchange = exchange;
+        this(configuration, exchange, null, locale, variables);
+    }
+
+    public SpringWebFluxExpressionContext(
+            final IEngineConfiguration configuration,
+            final ServerWebExchange exchange,
+            final ReactiveAdapterRegistry reactiveAdapterRegistry,
+            final Locale locale, final Map<String, Object> variables) {
+        super(exchange, reactiveAdapterRegistry, locale, variables);
+        this.configuration = configuration;
+    }
+
+
+
+    @Override
+    public IEngineConfiguration getConfiguration() {
+        return this.configuration;
     }
 
 
     @Override
-    public ServerHttpRequest getRequest() {
-        return this.exchange.getRequest();
-    }
-
-    @Override
-    public Mono<WebSession> getSession() {
-        return this.exchange.getSession();
-    }
-
-    @Override
-    public ServerHttpResponse getResponse() {
-        return this.exchange.getResponse();
-    }
-
-    @Override
-    public ServerWebExchange getExchange() {
-        return this.exchange;
+    public IExpressionObjects getExpressionObjects() {
+        // We delay creation of expression objects in case they are not needed at all
+        if (this.expressionObjects == null) {
+            this.expressionObjects = new ExpressionObjects(this, this.configuration.getExpressionObjectFactory());
+        }
+        return this.expressionObjects;
     }
 
 }

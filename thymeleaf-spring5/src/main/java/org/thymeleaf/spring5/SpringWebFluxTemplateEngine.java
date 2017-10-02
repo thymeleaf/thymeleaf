@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.MediaType;
@@ -50,6 +51,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.IReactiveSSEDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.ISpringWebFluxContext;
+import org.thymeleaf.spring5.context.webflux.SpringWebFluxContext;
 import org.thymeleaf.spring5.context.webflux.SpringWebFluxEngineContextFactory;
 import org.thymeleaf.spring5.linkbuilder.webflux.SpringWebFluxLinkBuilder;
 import org.thymeleaf.util.LoggingUtils;
@@ -341,6 +343,9 @@ public class SpringWebFluxTemplateEngine
         final long sseEventsID =
                 (dataDriver instanceof IReactiveSSEDataDriverContextVariable?
                         ((IReactiveSSEDataDriverContextVariable) dataDriver).getSseEventsFirstID() : 0L);
+        final ReactiveAdapterRegistry reactiveAdapterRegistry =
+                (context instanceof SpringWebFluxContext ?
+                        ((SpringWebFluxContext)context).getReactiveAdapterRegistry() : null);
 
 
         // STEP 2: Replace the data driver variable with a DataDrivenTemplateIterator
@@ -350,7 +355,7 @@ public class SpringWebFluxTemplateEngine
 
         // STEP 3: Create the data stream buffers, plus add some logging in order to know how the stream is being used
         final Flux<List<Object>> dataDrivenBufferedStream =
-                Flux.from(dataDriver.getDataStream())
+                Flux.from(dataDriver.getDataStream(reactiveAdapterRegistry))
                         .buffer(bufferSizeElements)
                         .log(LOG_CATEGORY_DATADRIVEN_INPUT, Level.FINEST);
 
