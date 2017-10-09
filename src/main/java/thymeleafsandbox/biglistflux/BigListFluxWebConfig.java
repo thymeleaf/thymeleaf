@@ -26,8 +26,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.freemarker.SpringTemplateLoader;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewResolver;
-import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
-import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveViewResolver;
 
 @Configuration
 public class BigListFluxWebConfig {
@@ -46,9 +44,9 @@ public class BigListFluxWebConfig {
 
 
     /*
-     * --------------------------------------
-     * FREEMARKER CONFIGURATION
-     * --------------------------------------
+     * --------------------------------------------------------------------------
+     * FREEMARKER CONFIGURATION (no autoconf for reactive FreeMarkerViewResolver)
+     * --------------------------------------------------------------------------
      */
 
 
@@ -73,35 +71,5 @@ public class BigListFluxWebConfig {
     }
 
 
-
-
-
-    /*
-     * --------------------------------------
-     * THYMELEAF CONFIGURATION
-     * --------------------------------------
-     */
-
-
-    /*
-     * ViewResolver for Thymeleaf templates.
-     *
-     * Note that views which name matches "*chunked*" or "*datadriven*" will be processed as CHUNKED (or as DATA-DRIVEN
-     * but with a maximum output chunk size).
-     */
-    // TODO * Normal Spring Boot ThymeleafAutoConfiguration should be enough once Spring Boot adds properties
-    // TODO   "spring.thymeleaf.reactive.chunked-mode-view-names" and "spring.thymeleaf.reactive.full-mode-view-names"
-    @Bean
-    public ThymeleafReactiveViewResolver thymeleafChunkedAndDataDrivenViewResolver(final ISpringWebFluxTemplateEngine templateEngine){
-        final ThymeleafReactiveViewResolver viewResolver = new ThymeleafReactiveViewResolver();
-        viewResolver.setTemplateEngine(templateEngine);
-        viewResolver.setOrder(1);
-        // The maximum size for output chunks will be applied to the "biglist-chunked" and "biglist-datadriven"
-        // templates. Note that datadriven executions flush output after each partial execution anyway, but setting
-        // them as "chunked" here makes sure no chunk (even if from a data-driven execution) exceeds the specified size
-        viewResolver.setChunkedModeViewNames(new String[] { "thymeleaf/*chunked*" });
-        viewResolver.setResponseMaxChunkSizeBytes(8192); // OUTPUT BUFFER size limit
-        return viewResolver;
-    }
 
 }
