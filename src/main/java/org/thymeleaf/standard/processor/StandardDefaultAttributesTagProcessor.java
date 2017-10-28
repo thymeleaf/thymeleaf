@@ -160,7 +160,9 @@ public final class StandardDefaultAttributesTagProcessor
 
                 } else {
 
-                    expressionResult = expression.execute(context);
+                    // Default attributes will ALWAYS be executed in RESTRICTED mode, for safety reasons (they might
+                    // create attributes involved in code execution)
+                    expressionResult = expression.execute(context, StandardExpressionExecutionContext.RESTRICTED);
 
                 }
 
