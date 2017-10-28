@@ -278,7 +278,7 @@ public class ThymeleafView
             }
 
             final FragmentExpression.ExecutedFragmentExpression fragment =
-                    FragmentExpression.createExecutedFragmentExpression(context, fragmentExpression, StandardExpressionExecutionContext.NORMAL);
+                    FragmentExpression.createExecutedFragmentExpression(context, fragmentExpression);
 
             templateName = FragmentExpression.resolveTemplateName(fragment);
             markupSelectors = FragmentExpression.resolveFragments(fragment);
