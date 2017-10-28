@@ -77,7 +77,7 @@ public final class StandardUtextTagProcessor extends AbstractAttributeTagProcess
             // save a call to resource.exists() which might be costly.
 
             final FragmentExpression.ExecutedFragmentExpression executedFragmentExpression =
-                    FragmentExpression.createExecutedFragmentExpression(context, (FragmentExpression) expression, StandardExpressionExecutionContext.RESTRICTED);
+                    FragmentExpression.createExecutedFragmentExpression(context, (FragmentExpression) expression);
 
             expressionResult =
                     FragmentExpression.resolveExecutedFragmentExpression(context, executedFragmentExpression, true);

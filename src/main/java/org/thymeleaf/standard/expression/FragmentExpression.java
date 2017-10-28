@@ -374,8 +374,7 @@ public final class FragmentExpression extends SimpleExpression {
 
 
     static Fragment executeFragmentExpression(
-            final IExpressionContext context,
-            final FragmentExpression expression, final StandardExpressionExecutionContext expContext) {
+            final IExpressionContext context, final FragmentExpression expression) {
 
         if (!(context instanceof ITemplateContext)) {
             throw new TemplateProcessingException(
@@ -391,7 +390,7 @@ public final class FragmentExpression extends SimpleExpression {
 
         return resolveExecutedFragmentExpression(
                 (ITemplateContext) context,
-                createExecutedFragmentExpression(context, expression, expContext),
+                createExecutedFragmentExpression(context, expression),
                 // By default we will NOT consider a non existing template a failure, so that we give the system the chance
                 // to return null here (in exchange for a call to resource.exists()). So this false will always be
                 // applied in scenarios such as when the fragment expression is used as a parameter in a larger
@@ -400,8 +399,35 @@ public final class FragmentExpression extends SimpleExpression {
     }
 
 
+    /**
+     * <p>
+     *   Create the executed fragment expression.
+     * </p>
+     *
+     * @param context the context
+     * @param expression the expresson
+     * @param expContext the expression context
+     * @return the executed fragment expression
+     *
+     * @deprecated Deprecated in 3.0.9. Use the version without "expContext" itself, as all FragmentExpressions should
+     *             be executed in RESTRICTED mode (no request parameter use allowed).
+     */
+    @Deprecated
+    public static ExecutedFragmentExpression createExecutedFragmentExpression(
+            final IExpressionContext context,
+            final FragmentExpression expression, final StandardExpressionExecutionContext expContext) {
+        return doCreateExecutedFragmentExpression(context, expression, expContext);
+    }
+
 
     public static ExecutedFragmentExpression createExecutedFragmentExpression(
+            final IExpressionContext context, final FragmentExpression expression) {
+        // All FragmentExpressions will be executed as RESTRICTED (no URL parameters allowed)
+        return doCreateExecutedFragmentExpression(context, expression, StandardExpressionExecutionContext.RESTRICTED);
+    }
+
+
+    private static ExecutedFragmentExpression doCreateExecutedFragmentExpression(
             final IExpressionContext context,
             final FragmentExpression expression, final StandardExpressionExecutionContext expContext) {
 

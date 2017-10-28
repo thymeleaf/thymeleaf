@@ -153,7 +153,7 @@ public final class StandardDefaultAttributesTagProcessor
                     // save a call to resource.exists() which might be costly.
 
                     final FragmentExpression.ExecutedFragmentExpression executedFragmentExpression =
-                            FragmentExpression.createExecutedFragmentExpression(context, (FragmentExpression) expression, StandardExpressionExecutionContext.NORMAL);
+                            FragmentExpression.createExecutedFragmentExpression(context, (FragmentExpression) expression);
 
                     expressionResult =
                             FragmentExpression.resolveExecutedFragmentExpression(context, executedFragmentExpression, true);
