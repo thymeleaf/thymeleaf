@@ -34,7 +34,7 @@ public final class StandardHrefTagProcessor extends AbstractStandardAttributeMod
     public static final String ATTR_NAME = "href";
 
     public StandardHrefTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE, false);
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE, false, true);
     }
 
 
