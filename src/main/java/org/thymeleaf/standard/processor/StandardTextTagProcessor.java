@@ -43,7 +43,9 @@ public final class StandardTextTagProcessor extends AbstractStandardExpressionAt
 
 
     public StandardTextTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, true);
+        // We will only use RESTRICTED expression execution mode for TEXT template mode, as it could be used for
+        // writing inside code-oriented HTML attributes and other similar scenarios.
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, true, (templateMode == TemplateMode.TEXT));
     }
 
 
