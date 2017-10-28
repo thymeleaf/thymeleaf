@@ -49,8 +49,21 @@ public abstract class AbstractStandardAttributeModifierTagProcessor
     private AttributeDefinition targetAttributeDefinition;
 
 
-
-
+    /**
+     * <p>
+     *   Build a new instance of this tag processor.
+     * </p>
+     *
+     * @param templateMode the template mode.
+     * @param dialectPrefix the dialect prefix.
+     * @param attrName the attribute name to be matched.
+     * @param precedence the precedence to be applied.
+     * @param removeIfEmpty whether the attribute should be removed if the result of executing the expression is empty.
+     *
+     * @deprecated Deprecated in 3.0.9. Use the version with a "restrictedExpressionExecution" argument instead. Will
+     *             be removed in Thymeleaf 3.1.
+     */
+    @Deprecated
     protected AbstractStandardAttributeModifierTagProcessor(
             final TemplateMode templateMode,
             final String dialectPrefix, final String attrName,
@@ -59,12 +72,84 @@ public abstract class AbstractStandardAttributeModifierTagProcessor
     }
 
 
+    /**
+     * <p>
+     *   Build a new instance of this tag processor.
+     * </p>
+     *
+     * @param templateMode the template mode.
+     * @param dialectPrefix the dialect prefix.
+     * @param attrName the attribute name to be matched.
+     * @param precedence the precedence to be applied.
+     * @param removeIfEmpty whether the attribute should be removed if the result of executing the expression is empty.
+     * @param restrictedExpressionExecution whether the expression to be executed (value of the attribute) should
+     *                                      be executed in restricted mode (no parameter acess) or not.
+     *
+     * @since 3.0.9
+     */
+    protected AbstractStandardAttributeModifierTagProcessor(
+            final TemplateMode templateMode,
+            final String dialectPrefix, final String attrName,
+            final int precedence, final boolean removeIfEmpty,
+            final boolean restrictedExpressionExecution) {
+        this(templateMode, dialectPrefix, attrName, attrName, precedence, removeIfEmpty, restrictedExpressionExecution);
+    }
+
+
+    /**
+     * <p>
+     *   Build a new instance of this tag processor.
+     * </p>
+     *
+     * @param templateMode the template mode.
+     * @param dialectPrefix the dialect prefix.
+     * @param attrName the attribute name to be matched.
+     * @param targetAttrCompleteName complete name of target attribute.
+     * @param precedence the precedence to be applied.
+     * @param removeIfEmpty whether the attribute should be removed if the result of executing the expression is empty.
+     *
+     * @deprecated Deprecated in 3.0.9. Use the version with a "restrictedExpressionExecution" argument instead. Will
+     *             be removed in Thymeleaf 3.1.
+     */
+    @Deprecated
     protected AbstractStandardAttributeModifierTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix,
             final String attrName, final String targetAttrCompleteName,
             final int precedence, final boolean removeIfEmpty) {
 
         super(templateMode, dialectPrefix, attrName, precedence, false);
+
+        Validate.notNull(targetAttrCompleteName, "Complete name of target attribute cannot be null");
+
+        this.targetAttrCompleteName = targetAttrCompleteName;
+        this.removeIfEmpty = removeIfEmpty;
+
+    }
+
+
+    /**
+     * <p>
+     *   Build a new instance of this tag processor.
+     * </p>
+     *
+     * @param templateMode the template mode.
+     * @param dialectPrefix the dialect prefix.
+     * @param attrName the attribute name to be matched.
+     * @param targetAttrCompleteName complete name of target attribut.
+     * @param precedence the precedence to be applied.
+     * @param removeIfEmpty whether the attribute should be removed if the result of executing the expression is empty.
+     * @param restrictedExpressionExecution whether the expression to be executed (value of the attribute) should
+     *                                      be executed in restricted mode (no parameter acess) or not.
+     *
+     * @since 3.0.9
+     */
+    protected AbstractStandardAttributeModifierTagProcessor(
+            final TemplateMode templateMode, final String dialectPrefix,
+            final String attrName, final String targetAttrCompleteName,
+            final int precedence, final boolean removeIfEmpty,
+            final boolean restrictedExpressionExecution) {
+
+        super(templateMode, dialectPrefix, attrName, precedence, false, restrictedExpressionExecution);
 
         Validate.notNull(targetAttrCompleteName, "Complete name of target attribute cannot be null");
 

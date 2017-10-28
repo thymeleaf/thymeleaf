@@ -44,7 +44,6 @@ import org.thymeleaf.standard.expression.FragmentSignatureUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.NoOpToken;
-import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EscapedAttributeUtils;
@@ -357,7 +356,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
                     (FragmentExpression) expressionParser.parseExpression(context, "~{" + trimmedInput + "}");
 
             final FragmentExpression.ExecutedFragmentExpression executedFragmentExpression =
-                    FragmentExpression.createExecutedFragmentExpression(context, fragmentExpression, StandardExpressionExecutionContext.NORMAL);
+                    FragmentExpression.createExecutedFragmentExpression(context, fragmentExpression);
 
             if (executedFragmentExpression.getFragmentSelectorExpressionResult() == null && executedFragmentExpression.getFragmentParameters() == null) {
                 // We might be in the scenario that what we thought was a template name in fact was instead an expression
@@ -394,7 +393,7 @@ public abstract class AbstractStandardFragmentInsertionTagProcessor extends Abst
             // save a call to resource.exists() which might be costly.
 
             final FragmentExpression.ExecutedFragmentExpression executedFragmentExpression =
-                    FragmentExpression.createExecutedFragmentExpression(context, (FragmentExpression) fragmentExpression, StandardExpressionExecutionContext.NORMAL);
+                    FragmentExpression.createExecutedFragmentExpression(context, (FragmentExpression) fragmentExpression);
 
             fragmentExpressionResult =
                     FragmentExpression.resolveExecutedFragmentExpression(context, executedFragmentExpression, true);

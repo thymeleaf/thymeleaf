@@ -41,14 +41,53 @@ import org.thymeleaf.templatemode.TemplateMode;
 public abstract class AbstractStandardExpressionAttributeTagProcessor extends AbstractAttributeTagProcessor {
 
 
+    private final boolean restrictedExpressionExecution;
     private final boolean removeIfNoop;
 
 
+    /**
+     * <p>
+     *   Build a new instance of this tag processor.
+     * </p>
+     *
+     * @param templateMode the template mode
+     * @param dialectPrefix the dialect prefox
+     * @param attrName the attribute name to be matched
+     * @param precedence the precedence to be applied
+     * @param removeAttribute whether the attribute should be removed after execution
+     *
+     * @deprecated Deprecated in 3.0.9. Use the version with a "restrictedExpressionExecution" argument instead. Will
+     *             be removed in Thymeleaf 3.1.
+     */
+    @Deprecated
     protected AbstractStandardExpressionAttributeTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix,
             final String attrName, final int precedence, final boolean removeAttribute) {
+        this(templateMode, dialectPrefix, attrName, precedence, removeAttribute, false);
+    }
+
+    /**
+     * <p>
+     *   Build a new instance of this tag processor.
+     * </p>
+     *
+     * @param templateMode the template mode
+     * @param dialectPrefix the dialect prefox
+     * @param attrName the attribute name to be matched
+     * @param precedence the precedence to be applied
+     * @param removeAttribute whether the attribute should be removed after execution
+     * @param restrictedExpressionExecution whether the expression to be executed (value of the attribute) should
+     *                                      be executed in restricted mode (no parameter acess) or not.
+     *
+     * @since 3.0.9
+     */
+    protected AbstractStandardExpressionAttributeTagProcessor(
+            final TemplateMode templateMode, final String dialectPrefix,
+            final String attrName, final int precedence, final boolean removeAttribute,
+            final boolean restrictedExpressionExecution) {
         super(templateMode, dialectPrefix, null, false, attrName, true, precedence, removeAttribute);
         this.removeIfNoop = !removeAttribute;
+        this.restrictedExpressionExecution = restrictedExpressionExecution;
     }
 
 
@@ -72,14 +111,22 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
                 // save a call to resource.exists() which might be costly.
 
                 final FragmentExpression.ExecutedFragmentExpression executedFragmentExpression =
-                        FragmentExpression.createExecutedFragmentExpression(context, (FragmentExpression) expression, StandardExpressionExecutionContext.NORMAL);
+                        FragmentExpression.createExecutedFragmentExpression(context, (FragmentExpression) expression);
 
                 expressionResult =
                         FragmentExpression.resolveExecutedFragmentExpression(context, executedFragmentExpression, true);
 
             } else {
 
-                expressionResult = expression.execute(context);
+                /*
+                 * Some attributes will require the execution of the expressions contained in them in RESTRICTED
+                 * mode, so that e.g. access to request parameters is forbidden.
+                 */
+                final StandardExpressionExecutionContext expCtx =
+                        (this.restrictedExpressionExecution?
+                                StandardExpressionExecutionContext.RESTRICTED : StandardExpressionExecutionContext.NORMAL);
+
+                expressionResult = expression.execute(context, expCtx);
 
             }
 
