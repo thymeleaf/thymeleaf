@@ -32,6 +32,7 @@ import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.AssignationUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.NoOpToken;
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.ArrayUtils;
 import org.thymeleaf.util.EscapedAttributeUtils;
@@ -51,15 +52,55 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
     protected enum ModificationType { SUBSTITUTION, APPEND, PREPEND, APPEND_WITH_SPACE, PREPEND_WITH_SPACE }
 
     private final ModificationType modificationType;
+    private final boolean restrictedExpressionExecution;
 
 
-
+    /**
+     * <p>
+     *   Build a new instance of this tag processor.
+     * </p>
+     *
+     * @param templateMode the template mode
+     * @param dialectPrefix the dialect prefox
+     * @param attrName the attribute name to be matched
+     * @param precedence the precedence to be applied
+     * @param modificationType type of modification to be performed on the attribute (replacement, append, prepend)
+     *
+     * @deprecated Deprecated in 3.0.9. Use the version with a "restrictedExpressionExecution" argument instead. Will
+     *             be removed in Thymeleaf 3.1.
+     */
+    @Deprecated
     protected AbstractStandardMultipleAttributeModifierTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix,
             final String attrName, final int precedence,
             final ModificationType modificationType) {
+        this(templateMode, dialectPrefix, attrName, precedence, modificationType, false);
+    }
+
+
+    /**
+     * <p>
+     *   Build a new instance of this tag processor.
+     * </p>
+     *
+     * @param templateMode the template mode
+     * @param dialectPrefix the dialect prefox
+     * @param attrName the attribute name to be matched
+     * @param precedence the precedence to be applied
+     * @param modificationType type of modification to be performed on the attribute (replacement, append, prepend)
+     * @param restrictedExpressionExecution whether the expression to be executed (value of the attribute) should
+     *                                      be executed in restricted mode (no parameter acess) or not.
+     *
+     * @since 3.0.9
+     */
+    protected AbstractStandardMultipleAttributeModifierTagProcessor(
+            final TemplateMode templateMode, final String dialectPrefix,
+            final String attrName, final int precedence,
+            final ModificationType modificationType,
+            final boolean restrictedExpressionExecution) {
         super(templateMode, dialectPrefix, null, false, attrName, true, precedence, true);
         this.modificationType = modificationType;
+        this.restrictedExpressionExecution = restrictedExpressionExecution;
     }
 
 
@@ -81,6 +122,11 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
                     "Could not parse value as attribute assignations: \"" + attributeValue + "\"");
         }
 
+        // Compute the required execution context depending on whether execution should be restricted or not
+        final StandardExpressionExecutionContext expCtx =
+                (this.restrictedExpressionExecution?
+                        StandardExpressionExecutionContext.RESTRICTED : StandardExpressionExecutionContext.NORMAL);
+
         final List<Assignation> assignationValues = assignations.getAssignations();
         final int assignationValuesLen = assignationValues.size();
 
@@ -89,10 +135,10 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
             final Assignation assignation = assignationValues.get(i);
 
             final IStandardExpression leftExpr = assignation.getLeft();
-            final Object leftValue = leftExpr.execute(context);
+            final Object leftValue = leftExpr.execute(context, expCtx);
 
             final IStandardExpression rightExpr = assignation.getRight();
-            final Object rightValue = rightExpr.execute(context);
+            final Object rightValue = rightExpr.execute(context, expCtx);
 
             if (rightValue == NoOpToken.VALUE) {
                 // No changes to be done for this attribute

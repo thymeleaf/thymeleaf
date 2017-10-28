@@ -35,7 +35,7 @@ public final class StandardAttrTagProcessor extends AbstractStandardMultipleAttr
 
 
     public StandardAttrTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, ModificationType.SUBSTITUTION);
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, ModificationType.SUBSTITUTION, true);
     }
 
 

@@ -35,7 +35,7 @@ public final class StandardAttrprependTagProcessor extends AbstractStandardMulti
 
 
     public StandardAttrprependTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
-        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, ModificationType.PREPEND);
+        super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, ModificationType.PREPEND, true);
     }
 
 
