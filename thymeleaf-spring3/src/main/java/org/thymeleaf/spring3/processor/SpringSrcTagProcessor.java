@@ -55,7 +55,7 @@ public final class SpringSrcTagProcessor
 
 
     public SpringSrcTagProcessor(final String dialectPrefix) {
-        super(TEMPLATE_MODE, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, false);
+        super(TEMPLATE_MODE, dialectPrefix, ATTR_NAME, ATTR_PRECEDENCE, false, true);
     }
 
 
