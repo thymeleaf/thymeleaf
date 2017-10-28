@@ -469,7 +469,7 @@ public class StandardDialect
             processors.add(new StandardConditionalFixedValueTagProcessor(dialectPrefix, attrName));
         }
         for (final String attrName : StandardDOMEventAttributeTagProcessor.ATTR_NAMES) {
-            processors.add(new StandardRemovableAttributeTagProcessor(dialectPrefix, attrName));
+            processors.add(new StandardDOMEventAttributeTagProcessor(dialectPrefix, attrName));
         }
         processors.add(new StandardEachTagProcessor(TemplateMode.HTML, dialectPrefix));
         processors.add(new StandardFragmentTagProcessor(TemplateMode.HTML, dialectPrefix));
