@@ -81,7 +81,8 @@ public abstract class SimpleExpression extends Expression {
             return NullTokenExpression.executeNullTokenExpression(context, (NullTokenExpression) expression, expContext);
         }
         if (expression instanceof LinkExpression) {
-            return LinkExpression.executeLinkExpression(context, (LinkExpression)expression, expContext);
+            // No expContext to be specified: link expressions always execute in RESTRICTED mode for the URL base and NORMAL for URL parameters
+            return LinkExpression.executeLinkExpression(context, (LinkExpression)expression);
         }
         if (expression instanceof FragmentExpression) {
             // No expContext to be specified: fragment expressions always execute in RESTRICTED mode

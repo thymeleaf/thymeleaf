@@ -226,9 +226,7 @@ public final class LinkExpression extends SimpleExpression {
     
 
 
-    static Object executeLinkExpression(
-            final IExpressionContext context,
-            final LinkExpression expression, final StandardExpressionExecutionContext expContext) {
+    static Object executeLinkExpression(final IExpressionContext context, final LinkExpression expression) {
 
         /*
          *  DEVELOPMENT NOTE: Reasons why Spring's RequestDataValueProcessor#processUrl(...) is not applied here
@@ -259,7 +257,11 @@ public final class LinkExpression extends SimpleExpression {
         final ITemplateContext templateContext = (ITemplateContext)context;
 
         final IStandardExpression baseExpression = expression.getBase();
-        Object base = baseExpression.execute(templateContext, expContext);
+
+        // The URL base in a link expression will always be executed in RESTRICTED mode, so we will forbid that
+        // base URLs come directly from user input (request parameters). Note this restriction does not need to apply
+        // to URL parameters.
+        Object base = baseExpression.execute(templateContext, StandardExpressionExecutionContext.RESTRICTED);
 
         base = LiteralValue.unwrap(base);
         if (base != null && !(base instanceof String)) {
@@ -272,8 +274,13 @@ public final class LinkExpression extends SimpleExpression {
         /*
          * Resolve the parameters from the expression into a LinkParameters object.
          * Note the parameters variable might be null if there are no parameters
+         *
+         * Also note that link parameters, which should be correctly URL-encoded before being added to
+         * the query string of the URL, will always be executed using UNRESTRICTED mode, so that request
+         * params can be directly passed along to other generated URLs.
          */
-        final Map<String, Object> parameters = resolveParameters(templateContext, expression, expContext);
+        final Map<String, Object> parameters =
+                resolveParameters(templateContext, expression, StandardExpressionExecutionContext.NORMAL);
 
 
         /*
