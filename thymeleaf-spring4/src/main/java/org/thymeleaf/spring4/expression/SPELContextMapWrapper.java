@@ -83,8 +83,9 @@ public final class SPELContextMapWrapper implements Map {
             if (REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME.equals(key)) {
                 throw new TemplateProcessingException(
                         "Access to variable \"" + key + "\" is forbidden in this context. Note some restrictions apply to " +
-                        "variable access. For example, accessing request parameters is forbidden in preprocessing and " +
-                        "unescaped expressions, and also in fragment inclusion specifications.");
+                        "variable access. For example, direct access to request parameters is forbidden in preprocessing and " +
+                        "unescaped expressions, in TEXT template mode, in fragment insertion specifications and " +
+                        "in some specific attribute processors.");
             }
         }
         // We will be NOT calling this.context.containsVariable(key) as it could be very inefficient in web

@@ -27,6 +27,8 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.expression.spel.support.StandardTypeConverter;
 import org.thymeleaf.expression.IExpressionObjects;
+import org.thymeleaf.standard.expression.RestrictedRequestAccessUtils;
+import org.thymeleaf.standard.expression.StandardExpressionObjectFactory;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -99,14 +101,28 @@ public final class ThymeleafEvaluationContext
 
     @Override
     public Object lookupVariable(final String name) {
+
         if (this.expressionObjects != null && this.expressionObjects.containsObject(name)) {
+
             final Object result = this.expressionObjects.getObject(name);
             if (result != null) {
+
+                // We need to first check if we are in a restricted environment. If so, restrict access to the request.
+                if (this.variableAccessRestricted &&
+                        (StandardExpressionObjectFactory.REQUEST_EXPRESSION_OBJECT_NAME.equals(name) ||
+                                StandardExpressionObjectFactory.HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_NAME.equals(name))) {
+                    return RestrictedRequestAccessUtils.wrapRequestObject(result);
+                }
+
                 return result;
+
             }
+
         }
+
         // fall back to superclass
         return super.lookupVariable(name);
+
     }
 
 
