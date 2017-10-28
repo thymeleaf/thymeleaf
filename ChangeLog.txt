@@ -1,3 +1,9 @@
+3.0.9
+=====
+- Improve restricted expression evaluation mode to restrict access to some request features
+  (#request.getParameter(), #request.getParameterValues(), #request.getParameterMap(), #request.getQueryString()).
+
+
 3.0.8
 =====
 - Fixed WebEngineContext returning wrong boolean values for ServletContextAttributesMap#isEmpty() and

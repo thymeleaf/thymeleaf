@@ -76,8 +76,9 @@ public final class OGNLContextPropertyAccessor implements PropertyAccessor {
         if (REQUEST_PARAMETERS_RESTRICTED_VARIABLE_NAME.equals(name) && ognlContext != null && ognlContext.containsKey(RESTRICT_REQUEST_PARAMETERS)) {
             throw new OgnlException(
                     "Access to variable \"" + name + "\" is forbidden in this context. Note some restrictions apply to " +
-                    "variable access. For example, accessing request parameters is forbidden in preprocessing and " +
-                    "unescaped expressions, and also in fragment inclusion specifications.");
+                    "variable access. For example, direct access to request parameters is forbidden in preprocessing and " +
+                    "unescaped expressions, in TEXT template mode, in fragment insertion specifications and " +
+                    "in some specific attribute processors.");
         }
 
         final String propertyName = (name == null? null : name.toString());

@@ -135,7 +135,7 @@ public final class OGNLVariableExpressionEvaluator
                 // expression object names start is not allowed by the OGNLShortcutExpression parser.
 
                 final IExpressionObjects expressionObjects = context.getExpressionObjects();
-                contextVariablesMap = new OGNLExpressionObjectsWrapper(expressionObjects);
+                contextVariablesMap = new OGNLExpressionObjectsWrapper(expressionObjects, expContext.getRestrictVariableAccess());
 
                 // We might need to apply restrictions on the request parameters. In the case of OGNL, the only way we
                 // can actually communicate with the PropertyAccessor, (OGNLVariablesMapPropertyAccessor), which is the
