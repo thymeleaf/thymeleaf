@@ -45,7 +45,10 @@ public final class StandardVariableRestrictions {
             Arrays.asList(new IContextVariableRestriction[] {
                     new ForbiddenContextVariableRestriction(
                             "param", 
-                            "Accessing request parameters (param.*) is forbidden in preprocessing or unescaped expressions")
+                            "Accessing request parameters is forbidden in this context. Note some restrictions apply to " +
+                            "variable access. For example, direct access to request parameters is forbidden in preprocessing and " +
+                            "unescaped expressions, in fragment insertion specifications and " +
+                            "in some specific attribute processors.")
             });
     
     
