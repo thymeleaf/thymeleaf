@@ -124,7 +124,8 @@ public class SpelVariableExpressionEvaluator
             }
 
             final ThymeleafEvaluationContextWrapper evaluationContext =
-                    new ThymeleafEvaluationContextWrapper(baseEvaluationContext, contextVariables);
+                    new ThymeleafEvaluationContextWrapper(
+                            baseEvaluationContext, contextVariables, expContext.getForbidRequestParameters());
 
             final SpelExpression exp = getExpression(configuration, spelExpression);
             

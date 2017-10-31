@@ -35,6 +35,8 @@ import org.springframework.expression.TypeComparator;
 import org.springframework.expression.TypeConverter;
 import org.springframework.expression.TypeLocator;
 import org.springframework.expression.TypedValue;
+import org.thymeleaf.expression.ExpressionEvaluatorObjects;
+import org.thymeleaf.standard.expression.RestrictedRequestAccessUtils;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -58,14 +60,32 @@ public final class ThymeleafEvaluationContextWrapper implements EvaluationContex
     private final List<PropertyAccessor> propertyAccessors;
     private Map<String,Object> additionalVariables;
 
+    private boolean requestParametersRestricted = false;
+
     public static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
 
+
+
     public ThymeleafEvaluationContextWrapper(final EvaluationContext delegate) {
-        this(delegate, null);
+        this(delegate, null, false);
     }
 
 
-    public ThymeleafEvaluationContextWrapper(final EvaluationContext delegate, final Map<String,Object> additionalVariables) {
+    public ThymeleafEvaluationContextWrapper(
+            final EvaluationContext delegate, final Map<String,Object> additionalVariables) {
+        this(delegate, additionalVariables, false);
+    }
+
+
+    // @since 2.1.6
+    public ThymeleafEvaluationContextWrapper(final EvaluationContext delegate, final boolean requestParametersRestricted) {
+        this(delegate, null, requestParametersRestricted);
+    }
+
+
+    // @since 2.1.6
+    public ThymeleafEvaluationContextWrapper(
+            final EvaluationContext delegate, final Map<String,Object> additionalVariables, final boolean requestParametersRestricted) {
         
         super();
 
@@ -84,6 +104,8 @@ public final class ThymeleafEvaluationContextWrapper implements EvaluationContex
         }
 
         this.additionalVariables = additionalVariables;
+
+        this.requestParametersRestricted = requestParametersRestricted;
 
     }
 
@@ -135,10 +157,15 @@ public final class ThymeleafEvaluationContextWrapper implements EvaluationContex
         if (this.additionalVariables != null && this.additionalVariables.containsKey(name)) {
             final Object result = this.additionalVariables.get(name);
             if (result != null) {
+                // before returning, check if access restrictions apply
+                if (this.requestParametersRestricted &&
+                        ExpressionEvaluatorObjects.HTTP_SERVLET_REQUEST_VARIABLE_NAME.equals(name)) {
+                    return RestrictedRequestAccessUtils.wrapRequestObject(result);
+                }
                 return result;
             }
         }
-        // fail back to delegate
+        // fall back to delegate
         return this.delegate.lookupVariable(name);
     }
     
