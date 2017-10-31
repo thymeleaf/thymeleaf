@@ -28,7 +28,6 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.LoaderClassPath;
 import ognl.Ognl;
-import ognl.OgnlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
@@ -145,10 +144,11 @@ public class OgnlVariableExpressionEvaluator
     
     protected void setVariableRestrictions(final StandardExpressionExecutionContext expContext, 
             final Object evaluationRoot, final Map<String,Object> contextVariables) {
-        
+
+        final boolean forbidRequestParameters = expContext.getForbidRequestParameters();
+
         final List<IContextVariableRestriction> restrictions =
-                (expContext.getForbidRequestParameters()? 
-                        StandardVariableRestrictions.REQUEST_PARAMETERS_FORBIDDEN : null);
+                (forbidRequestParameters? StandardVariableRestrictions.REQUEST_PARAMETERS_FORBIDDEN : null);
         
         final Object context = contextVariables.get(ExpressionEvaluatorObjects.CONTEXT_VARIABLE_NAME);
         if (context != null && context instanceof IContext) {
@@ -158,7 +158,18 @@ public class OgnlVariableExpressionEvaluator
         if (evaluationRoot != null && evaluationRoot instanceof VariablesMap<?,?>) {
             ((VariablesMap<?,?>)evaluationRoot).setRestrictions(restrictions);
         }
-        
+
+        if (forbidRequestParameters) {
+            final Object request = contextVariables.get(ExpressionEvaluatorObjects.HTTP_SERVLET_REQUEST_VARIABLE_NAME);
+            if (request != null) {
+                // The HTTP Servlet Request (#httpServletRequest) is present in the context variables, so we
+                // need to apply the wrapper to restrict access to request parameters in certain scenarios
+                // (restricted expression evaluation mode).
+                final Object wrappedRequest = RestrictedRequestAccessUtils.wrapRequestObject(request);
+                contextVariables.put(ExpressionEvaluatorObjects.HTTP_SERVLET_REQUEST_VARIABLE_NAME, wrappedRequest);
+            }
+        }
+
     }
     
     
