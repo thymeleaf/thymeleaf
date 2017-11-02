@@ -26,6 +26,7 @@ import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractSingleAttributeModifierAttrProcessor;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -39,17 +40,31 @@ public abstract class AbstractStandardSingleAttributeModifierAttrProcessor
         extends AbstractSingleAttributeModifierAttrProcessor {
 
 
+    private final boolean restrictedExpressionEvaluationMode;
+
 
 
     protected AbstractStandardSingleAttributeModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
-        super(matcher);
+        this(matcher, false);
     }
 
     protected AbstractStandardSingleAttributeModifierAttrProcessor(final String attributeName) {
-        super(attributeName);
+        this(attributeName, false);
     }
 
-    
+    // @since 2.1.6
+    protected AbstractStandardSingleAttributeModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher, final boolean restrictedExpressionEvaluationMode) {
+        super(matcher);
+        this.restrictedExpressionEvaluationMode = restrictedExpressionEvaluationMode;
+    }
+
+    // @since 2.1.6
+    protected AbstractStandardSingleAttributeModifierAttrProcessor(final String attributeName, final boolean restrictedExpressionEvaluationMode) {
+        super(attributeName);
+        this.restrictedExpressionEvaluationMode = restrictedExpressionEvaluationMode;
+    }
+
+
 
     
 
@@ -64,7 +79,11 @@ public abstract class AbstractStandardSingleAttributeModifierAttrProcessor
 
         final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
 
-        final Object result = expression.execute(configuration, arguments);
+        final StandardExpressionExecutionContext expMode =
+                (this.restrictedExpressionEvaluationMode?
+                        StandardExpressionExecutionContext.RESTRICTED : StandardExpressionExecutionContext.NORMAL);
+
+        final Object result = expression.execute(configuration, arguments, expMode);
         return (result == null? "" : result.toString());
 
     }

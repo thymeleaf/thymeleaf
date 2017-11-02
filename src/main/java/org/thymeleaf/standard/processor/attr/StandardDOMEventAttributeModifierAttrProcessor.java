@@ -125,7 +125,8 @@ public final class StandardDOMEventAttributeModifierAttrProcessor
     
     
     private StandardDOMEventAttributeModifierAttrProcessor(final String attributeName) {
-        super(attributeName);
+        // These attribute processors for JavaScript DOM events will always use restricted expression evaluation mode
+        super(attributeName, true);
     }
 
     
