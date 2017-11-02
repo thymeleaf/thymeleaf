@@ -43,7 +43,8 @@ public final class StandardAttrprependAttrProcessor
     
     
     public StandardAttrprependAttrProcessor() {
-        super(ATTR_NAME);
+        // We will use restricted expression evaluation mode
+        super(ATTR_NAME, true);
     }
     
 

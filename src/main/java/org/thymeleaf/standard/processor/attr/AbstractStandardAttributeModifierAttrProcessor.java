@@ -34,6 +34,7 @@ import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.AssignationUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.util.ArrayUtils;
 import org.thymeleaf.util.EvaluationUtil;
 import org.thymeleaf.util.StringUtils;
@@ -50,13 +51,28 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
         extends AbstractAttributeModifierAttrProcessor {
 
 
+    private final boolean restrictedExpressionEvaluationMode;
+
+
 
     protected AbstractStandardAttributeModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
-        super(matcher);
+        this(matcher, false);
     }
 
     protected AbstractStandardAttributeModifierAttrProcessor(final String attributeName) {
+        this(attributeName, false);
+    }
+
+    protected AbstractStandardAttributeModifierAttrProcessor(
+            final IAttributeNameProcessorMatcher matcher, final boolean restrictedExpressionEvaluationMode) {
+        super(matcher);
+        this.restrictedExpressionEvaluationMode = restrictedExpressionEvaluationMode;
+    }
+
+    protected AbstractStandardAttributeModifierAttrProcessor(
+            final String attributeName, final boolean restrictedExpressionEvaluationMode) {
         super(attributeName);
+        this.restrictedExpressionEvaluationMode = restrictedExpressionEvaluationMode;
     }
 
     
@@ -77,16 +93,20 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
             throw new TemplateProcessingException(
                     "Could not parse value as attribute assignations: \"" + attributeValue + "\"");
         }
-        
+
+        final StandardExpressionExecutionContext expMode =
+                (this.restrictedExpressionEvaluationMode?
+                        StandardExpressionExecutionContext.RESTRICTED : StandardExpressionExecutionContext.NORMAL);
+
         final Map<String,String> newAttributeValues = new HashMap<String,String>(assignations.size() + 1, 1.0f);
         
         for (final Assignation assignation : assignations) {
             
             final IStandardExpression leftExpr = assignation.getLeft();
-            final Object leftValue = leftExpr.execute(configuration, arguments);
+            final Object leftValue = leftExpr.execute(configuration, arguments, expMode);
 
             final IStandardExpression rightExpr = assignation.getRight();
-            final Object rightValue = rightExpr.execute(configuration, arguments);
+            final Object rightValue = rightExpr.execute(configuration, arguments, expMode);
 
             final String newAttributeName = (leftValue == null? null : leftValue.toString());
             if (StringUtils.isEmptyOrWhitespace(newAttributeName)) {
