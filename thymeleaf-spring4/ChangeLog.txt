@@ -1,3 +1,8 @@
+3.0.9
+=====
+- Adapted Spring-based tag processors to new scenarios for restricted expression evaluation.
+
+
 3.0.8
 =====
 - Fix RequestDataValueProcessor being called without a default "action" attribute (with GET value) for
