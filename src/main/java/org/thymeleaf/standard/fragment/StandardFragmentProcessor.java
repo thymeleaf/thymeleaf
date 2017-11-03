@@ -34,6 +34,7 @@ import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.FragmentSelection;
 import org.thymeleaf.standard.expression.FragmentSelectionUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.util.Validate;
 
 
@@ -74,7 +75,10 @@ public final class StandardFragmentProcessor {
         final IStandardExpression templateNameExpression = fragmentSelection.getTemplateName();
         final String templateName;
         if (templateNameExpression != null) {
-            final Object templateNameObject = templateNameExpression.execute(configuration, processingContext);
+            // Template names are always executed in restricted mode
+            final Object templateNameObject =
+                    templateNameExpression.execute(
+                            configuration, processingContext, StandardExpressionExecutionContext.RESTRICTED);
             if (templateNameObject == null) {
                 throw new TemplateProcessingException(
                         "Evaluation of template name from spec \"" + standardFragmentSpec + "\" " +
@@ -100,7 +104,8 @@ public final class StandardFragmentProcessor {
         if (fragmentSelection.hasFragmentSelector()) {
 
             final Object fragmentSelectorObject =
-                    fragmentSelection.getFragmentSelector().execute(configuration, processingContext);
+                    fragmentSelection.getFragmentSelector().execute(
+                            configuration, processingContext, StandardExpressionExecutionContext.RESTRICTED);
             if (fragmentSelectorObject == null) {
                 throw new TemplateProcessingException(
                         "Evaluation of fragment selector from spec \"" + standardFragmentSpec + "\" " + 
@@ -145,13 +150,18 @@ public final class StandardFragmentProcessor {
         final Map<String,Object> parameterValues = new HashMap<String, Object>(parameters.size() + 2);
         for (final Assignation assignation : parameters.getAssignations()) {
 
+            // Note parameters will always be executed in restricted mode
+
             final IStandardExpression parameterNameExpr = assignation.getLeft();
-            final Object parameterNameValue = parameterNameExpr.execute(configuration, processingContext);
+            final Object parameterNameValue =
+                    parameterNameExpr.execute(
+                            configuration, processingContext, StandardExpressionExecutionContext.RESTRICTED);
 
             final String parameterName = (parameterNameValue == null? null : parameterNameValue.toString());
 
             final IStandardExpression parameterValueExpr = assignation.getRight();
-            final Object parameterValueValue = parameterValueExpr.execute(configuration, processingContext);
+            final Object parameterValueValue =
+                    parameterValueExpr.execute(configuration, processingContext, StandardExpressionExecutionContext.RESTRICTED);
 
             parameterValues.put(parameterName, parameterValueValue);
 
