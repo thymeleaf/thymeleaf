@@ -39,7 +39,8 @@ public final class StandardSrcAttrProcessor
 
 
     public StandardSrcAttrProcessor() {
-        super(ATTR_NAME);
+        // Will use restricted expression evaluation mode for this attribute
+        super(ATTR_NAME, true);
     }
     
 
