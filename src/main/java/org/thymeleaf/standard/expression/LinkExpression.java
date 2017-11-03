@@ -229,8 +229,7 @@ public final class LinkExpression extends SimpleExpression {
 
 
     static Object executeLink(final Configuration configuration,
-            final IProcessingContext processingContext, final LinkExpression expression, 
-            final StandardExpressionExecutionContext expContext) {
+            final IProcessingContext processingContext, final LinkExpression expression) {
 
         /*
          *  DEVELOPMENT NOTE: Reasons why Spring's RequestDataValueProcessor#processUrl(...) is not applied here
@@ -251,7 +250,9 @@ public final class LinkExpression extends SimpleExpression {
         }
 
         final IStandardExpression baseExpression = expression.getBase();
-        Object base = baseExpression.execute(configuration, processingContext, expContext);
+        // The URL base in the link expression will always be executed in restricted mode to avoid injection
+        Object base =
+                baseExpression.execute(configuration, processingContext, StandardExpressionExecutionContext.RESTRICTED);
 
         base = LiteralValue.unwrap(base);
         if (base != null && !(base instanceof String)) {
@@ -271,9 +272,10 @@ public final class LinkExpression extends SimpleExpression {
         }
         
         @SuppressWarnings("unchecked")
+        // Link parameters will always be executed unrestricted (they will be escaped afterwards)
         final Map<String,List<Object>> parameters =
             (expression.hasParameters()?
-                    resolveParameters(configuration, processingContext, expression, expContext) :
+                    resolveParameters(configuration, processingContext, expression, StandardExpressionExecutionContext.NORMAL) :
                     (Map<String,List<Object>>) Collections.EMPTY_MAP);
         
         /*
