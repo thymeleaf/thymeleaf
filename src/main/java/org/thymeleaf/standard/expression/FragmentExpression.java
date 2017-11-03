@@ -476,7 +476,7 @@ public final class FragmentExpression extends SimpleExpression {
          */
         final Object fragmentSelectorExpressionResult;
         if (expression.hasFragmentSelector()) {
-            // Note we will NOT apply restricted variable access for resolving fragment selectors
+            // Note we will apply restricted variable access for resolving fragment selectors (but will honor legacy behaviour)
             fragmentSelectorExpressionResult = expression.getFragmentSelector().execute(context, expContext);
             // We actually DO allow this expression to return null. It can be a way to signal we want to use the entire
             // template as a fragment
