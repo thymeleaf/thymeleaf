@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -109,13 +108,12 @@ public class SeedStarterMngController {
 
     @RequestMapping({"/","/seedstartermng"})
     public Mono<String> doSeedstarter(
-            final SeedStarter seedStarter, final BindingResult bindingResult, final ModelMap model,
-            final ServerWebExchange exchange) {
+            final SeedStarter seedStarter, final BindingResult bindingResult, final ServerWebExchange exchange) {
 
         return exchange.getFormData().flatMap(
                 formData -> {
                     if (formData.containsKey("save")) {
-                        return saveSeedstarter(seedStarter,  bindingResult, model);
+                        return saveSeedstarter(seedStarter,  bindingResult);
                     }
                     if (formData.containsKey("addRow")) {
                         return addRow(seedStarter, bindingResult);
@@ -136,13 +134,11 @@ public class SeedStarterMngController {
     }
 
 
-    private Mono<String> saveSeedstarter(final SeedStarter seedStarter, final BindingResult bindingResult, final ModelMap model) {
+    private Mono<String> saveSeedstarter(final SeedStarter seedStarter, final BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return Mono.just("seedstartermng");
         }
-        return this.seedStarterService.add(seedStarter)
-                .then(Mono.fromRunnable(() -> model.clear()))
-                .then(Mono.just("redirect:/seedstartermng"));
+        return this.seedStarterService.add(seedStarter).then(Mono.just("redirect:/seedstartermng"));
     }
 
 
@@ -159,6 +155,7 @@ public class SeedStarterMngController {
         seedStarter.getRows().remove(rowId);
         return Mono.just("seedstartermng");
     }
+
 
 
 }
