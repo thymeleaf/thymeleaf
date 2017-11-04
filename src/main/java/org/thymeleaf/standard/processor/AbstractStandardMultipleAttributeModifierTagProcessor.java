@@ -66,10 +66,7 @@ public abstract class AbstractStandardMultipleAttributeModifierTagProcessor exte
      * @param precedence the precedence to be applied
      * @param modificationType type of modification to be performed on the attribute (replacement, append, prepend)
      *
-     * @deprecated Deprecated in 3.0.9. Use the version with a "restrictedExpressionExecution" argument instead. Will
-     *             be removed in Thymeleaf 3.1.
      */
-    @Deprecated
     protected AbstractStandardMultipleAttributeModifierTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix,
             final String attrName, final int precedence,

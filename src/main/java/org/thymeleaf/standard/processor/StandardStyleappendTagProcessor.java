@@ -55,7 +55,7 @@ public final class StandardStyleappendTagProcessor
 
 
     public StandardStyleappendTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE, true);
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE, true, false);
     }
 
 

@@ -34,7 +34,7 @@ public final class StandardActionTagProcessor extends AbstractStandardAttributeM
     public static final String ATTR_NAME = "action";
 
     public StandardActionTagProcessor(final String dialectPrefix) {
-        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE, false);
+        super(TemplateMode.HTML, dialectPrefix, ATTR_NAME, PRECEDENCE, false, false);
     }
 
 

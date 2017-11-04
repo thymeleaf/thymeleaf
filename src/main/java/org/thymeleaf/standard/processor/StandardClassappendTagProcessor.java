@@ -54,7 +54,7 @@ public final class StandardClassappendTagProcessor
 
 
     public StandardClassappendTagProcessor(final String dialectPrefix) {
-        super(TEMPLATE_MODE, dialectPrefix, ATTR_NAME, PRECEDENCE, true);
+        super(TEMPLATE_MODE, dialectPrefix, ATTR_NAME, PRECEDENCE, true, false);
     }
 
 

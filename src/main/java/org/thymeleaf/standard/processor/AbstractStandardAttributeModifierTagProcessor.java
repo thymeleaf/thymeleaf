@@ -60,10 +60,7 @@ public abstract class AbstractStandardAttributeModifierTagProcessor
      * @param precedence the precedence to be applied.
      * @param removeIfEmpty whether the attribute should be removed if the result of executing the expression is empty.
      *
-     * @deprecated Deprecated in 3.0.9. Use the version with a "restrictedExpressionExecution" argument instead. Will
-     *             be removed in Thymeleaf 3.1.
      */
-    @Deprecated
     protected AbstractStandardAttributeModifierTagProcessor(
             final TemplateMode templateMode,
             final String dialectPrefix, final String attrName,
@@ -83,7 +80,7 @@ public abstract class AbstractStandardAttributeModifierTagProcessor
      * @param precedence the precedence to be applied.
      * @param removeIfEmpty whether the attribute should be removed if the result of executing the expression is empty.
      * @param restrictedExpressionExecution whether the expression to be executed (value of the attribute) should
-     *                                      be executed in restricted mode (no parameter acess) or not.
+     *                                      be executed in restricted mode (no parameter access) or not (default: false).
      *
      * @since 3.0.9
      */
@@ -108,10 +105,7 @@ public abstract class AbstractStandardAttributeModifierTagProcessor
      * @param precedence the precedence to be applied.
      * @param removeIfEmpty whether the attribute should be removed if the result of executing the expression is empty.
      *
-     * @deprecated Deprecated in 3.0.9. Use the version with a "restrictedExpressionExecution" argument instead. Will
-     *             be removed in Thymeleaf 3.1.
      */
-    @Deprecated
     protected AbstractStandardAttributeModifierTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix,
             final String attrName, final String targetAttrCompleteName,
@@ -139,7 +133,7 @@ public abstract class AbstractStandardAttributeModifierTagProcessor
      * @param precedence the precedence to be applied.
      * @param removeIfEmpty whether the attribute should be removed if the result of executing the expression is empty.
      * @param restrictedExpressionExecution whether the expression to be executed (value of the attribute) should
-     *                                      be executed in restricted mode (no parameter acess) or not.
+     *                                      be executed in restricted mode (no parameter access) or not (default: false).
      *
      * @since 3.0.9
      */

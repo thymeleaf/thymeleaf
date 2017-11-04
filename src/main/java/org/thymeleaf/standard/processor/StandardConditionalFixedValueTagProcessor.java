@@ -65,7 +65,7 @@ public final class StandardConditionalFixedValueTagProcessor
 
     public StandardConditionalFixedValueTagProcessor(final String dialectPrefix, final String attrName) {
 
-        super(TEMPLATE_MODE, dialectPrefix, attrName, PRECEDENCE, true);
+        super(TEMPLATE_MODE, dialectPrefix, attrName, PRECEDENCE, true, false);
 
         // We are discarding the prefix because that is exactly what we want: th:async -> async
         this.targetAttributeCompleteName = attrName;

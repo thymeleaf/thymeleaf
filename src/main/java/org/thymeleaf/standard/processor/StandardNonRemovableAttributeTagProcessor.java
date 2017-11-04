@@ -43,7 +43,7 @@ public final class StandardNonRemovableAttributeTagProcessor extends AbstractSta
 
 
     public StandardNonRemovableAttributeTagProcessor(final String dialectPrefix, final String attrName) {
-        super(TemplateMode.HTML, dialectPrefix, attrName, PRECEDENCE, false);
+        super(TemplateMode.HTML, dialectPrefix, attrName, PRECEDENCE, false, false);
     }
 
 

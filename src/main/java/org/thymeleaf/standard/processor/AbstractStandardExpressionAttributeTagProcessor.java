@@ -56,10 +56,7 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
      * @param precedence the precedence to be applied
      * @param removeAttribute whether the attribute should be removed after execution
      *
-     * @deprecated Deprecated in 3.0.9. Use the version with a "restrictedExpressionExecution" argument instead. Will
-     *             be removed in Thymeleaf 3.1.
      */
-    @Deprecated
     protected AbstractStandardExpressionAttributeTagProcessor(
             final TemplateMode templateMode, final String dialectPrefix,
             final String attrName, final int precedence, final boolean removeAttribute) {
@@ -77,7 +74,7 @@ public abstract class AbstractStandardExpressionAttributeTagProcessor extends Ab
      * @param precedence the precedence to be applied
      * @param removeAttribute whether the attribute should be removed after execution
      * @param restrictedExpressionExecution whether the expression to be executed (value of the attribute) should
-     *                                      be executed in restricted mode (no parameter acess) or not.
+     *                                      be executed in restricted mode (no parameter access) or not (default: false).
      *
      * @since 3.0.9
      */

@@ -59,7 +59,7 @@ public abstract class AbstractStandardDoubleAttributeModifierTagProcessor
             final String attributeOneCompleteName, final String attributeTwoCompleteName,
             final boolean removeIfEmpty) {
 
-        super(templateMode, dialectPrefix, attrName, precedence, true);
+        super(templateMode, dialectPrefix, attrName, precedence, true, false);
 
         Validate.notNull(attributeOneCompleteName, "Complete name of attribute one cannot be null");
         Validate.notNull(attributeTwoCompleteName, "Complete name of attribute one cannot be null");
