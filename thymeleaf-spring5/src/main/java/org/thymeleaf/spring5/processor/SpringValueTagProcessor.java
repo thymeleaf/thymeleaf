@@ -64,7 +64,7 @@ public final class SpringValueTagProcessor
 
 
     public SpringValueTagProcessor(final String dialectPrefix) {
-        super(TEMPLATE_MODE, dialectPrefix, TARGET_ATTR_NAME, ATTR_PRECEDENCE, false);
+        super(TEMPLATE_MODE, dialectPrefix, TARGET_ATTR_NAME, ATTR_PRECEDENCE, false, false);
     }
 
 
