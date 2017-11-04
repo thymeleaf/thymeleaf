@@ -1,5 +1,6 @@
 3.0.9
 =====
+- Fixed hit ratio in StandardCache not being correctly computed (always 1 or 0).
 - Improve restricted expression evaluation mode to restrict access to some request features
   (#request.getParameter(), #request.getParameterValues(), #request.getParameterMap(), #request.getQueryString()).
 - Added new scenarios for restricted expression evaluation: th:on*, th:attr, th:src, th:href, default attribute
