@@ -1,5 +1,7 @@
 3.0.9
 =====
+- Fixed bean validation mechanism trying to create BindStatus for unbound objects because of an improper use of
+  a Spring 5 validation API.
 - Adapted Spring-based tag processors to new scenarios for restricted expression evaluation.
 
 
