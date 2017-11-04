@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -98,12 +97,11 @@ public class SeedStarterMngController {
     
     
     @RequestMapping(value="/seedstartermng", params={"save"})
-    public String saveSeedstarter(final SeedStarter seedStarter, final BindingResult bindingResult, final ModelMap model) {
+    public String saveSeedstarter(final SeedStarter seedStarter, final BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "seedstartermng";
         }
         this.seedStarterService.add(seedStarter);
-        model.clear();
         return "redirect:/seedstartermng";
     }
     
