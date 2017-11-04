@@ -306,7 +306,7 @@ public final class StandardCache<K, V> implements ICache<K,V> {
             return 0;
         }
 
-        return hitCount / getCount;
+        return (double) hitCount / (double) getCount;
     }
 
     public double getMissRatio() {
@@ -336,7 +336,7 @@ public final class StandardCache<K, V> implements ICache<K,V> {
                     long putCount = getPutCount();
                     long getCount = getGetCount();
 
-                    double hitRatio = hitCount / getCount;
+                    double hitRatio = (double) hitCount / (double) getCount;
                     double missRatio = 1 - hitRatio;
 
                     this.logger.trace(
