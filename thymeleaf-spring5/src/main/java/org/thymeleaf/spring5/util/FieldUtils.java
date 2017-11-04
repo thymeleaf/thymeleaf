@@ -379,7 +379,7 @@ public final class FieldUtils {
         final String beanName = completeExpression.substring(0, dotPos);
 
         // The getErrors() method is not extremely efficient, but it has a cache map, so it should be fine
-        final boolean beanValid = requestContext.getErrors(beanName, false) != null;
+        final boolean beanValid = requestContext.getErrors(beanName, false).isPresent();
         if (beanValid && completeExpression.length() > dotPos) {
             final String path = completeExpression.substring(dotPos + 1, completeExpression.length() - 1);
             // We will validate the rest of the expression as a bean property identifier or a bean property expression.
