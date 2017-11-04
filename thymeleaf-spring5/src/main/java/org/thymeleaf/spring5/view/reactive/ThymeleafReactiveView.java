@@ -344,7 +344,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
         // Initialize RequestContext (reactive version) and add it to the model as another attribute,
         // so that it can be retrieved from elsewhere.
-        final RequestContext requestContext = new RequestContext(exchange, mergedModel, applicationContext);
+        final RequestContext requestContext = createRequestContext(exchange, mergedModel);
         final SpringWebFluxThymeleafRequestContext thymeleafRequestContext =
                 new SpringWebFluxThymeleafRequestContext(requestContext, exchange);
 
