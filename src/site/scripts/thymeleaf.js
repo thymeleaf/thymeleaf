@@ -59,7 +59,7 @@
 			'<dependency>',
 			'    <groupId>org.thymeleaf</groupId>',
 			'    <artifactId>thymeleaf</artifactId>',
-			'    <version>3.0.8.RELEASE</version>',
+			'    <version>3.0.9.RELEASE</version>',
 			'</dependency>'
 		].join('\n'),
 
@@ -162,7 +162,7 @@
 			'<dependency>',
 			'  <groupId>org.thymeleaf</groupId>',
 			'  <artifactId>thymeleaf</artifactId>',
-			'  <version>3.0.9-SNAPSHOT</version>',
+			'  <version>3.0.10-SNAPSHOT</version>',
 			'  <scope>compile</scope>',
 			'</dependency>'
 		].join('\n')
