@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="279px" height="308px" viewBox="0 0 279 308" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47 (45396) - http://www.bohemiancoding.com/sketch -->
+    <title>logo-across</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Landing-Page" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-2" transform="translate(-12.000000, -2.000000)" fill-rule="nonzero">
+            <g id="logo-across" transform="translate(12.000000, 2.000000)">
+                <polygon id="Shape" fill="#3CA873" points="0 76.2686387 53.9020394 46 194 124.731361 140.097961 155"></polygon>
+                <polygon id="Shape" fill="#0093D8" points="85 30.2960725 138.892646 0 279 78.736858 225.107354 109"></polygon>
+                <polygon id="Shape" fill="#53DD99" points="194 277.867119 194 124 140 154.044251 140 308"></polygon>
+                <polygon id="Shape" fill="#36D4F9" points="279 231.867119 279 78 225 108.044251 225 262"></polygon>
+                <polygon id="Shape" fill="#257A50" points="49 208 98 178.938624 49 150"></polygon>
+                <polygon id="Shape" fill="#4DBC86" points="49 208.01532 98 237 98 179"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

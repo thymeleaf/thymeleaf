@@ -1,0 +1,3 @@
+Across is an open source Java framework for the modular development of web applications using Spring. It provides both a way to define application modules, as well as the infrastructure to run the application.
+
+We needed a straightforward, powerful and extensible templating framework that enables us to embed the templates in our modules. Thymeleaf is just that. It allows for natural templating, can do complex processing and lets us easily define custom dialects. On top of that, Thymeleaf facilitates the collaboration of both front end and back end developers on the same template file, greatly increasing productivity.
