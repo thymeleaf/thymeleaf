@@ -1,0 +1,6 @@
+VEDA GmbH is a German Software Development Company which creates dynamic, integrated and agile HR Management Software.
+
+We were looking for a powerful template language for the frontend of our modern web-based products. Thymeleaf is simple to learn and easy to handle allowing us to write wonderful clean code considering separation of concerns.
+
+The simple syntax, Thymeleaf's seemless Spring framework integration and its executable templates are the reasons why VEDA GmbH is using this professional open source solution.
+
