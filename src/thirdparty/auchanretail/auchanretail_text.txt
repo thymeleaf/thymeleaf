@@ -1,0 +1,4 @@
+Auchan has been a committed retailer for 55 years, a changing retailer in a changing world. Our ambition now is to meet today's purchase- and health-conscious omni-channel consumers, with the goal of bringing change to their lives!
+
+Auchan Retail France is using Thymeleaf for French ecommerce platform Server Side Rendering purposes, in order to make our customers benefit from best user experience on every devices. Integration with Spring 5 framework is easy and perfect for our reactive programming Spring Web Flow implementation.
+
