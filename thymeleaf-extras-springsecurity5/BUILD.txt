@@ -1,0 +1,36 @@
+
+ Building thymeleaf-extras-springsecurity5
+ -----------------------------------------
+ 
+ To build thymeleaf-extras-springsecurity5 you will need Maven 3. You can
+ get it at:
+ 
+     http://maven.apache.org
+
+ Build and install the project executing, from the project's
+ root folder:
+ 
+     mvn clean:clean install
+     
+ And you will get a fresh target/thymeleaf-extras-springsecurity5-{version}.jar
+ file. You will also get it installed in your local repository at:
+ 
+     $M2_REPO/org/thymeleaf/extras/thymeleaf-extras-springsecurity5/{version}/thymeleaf-extras-springsecurity5-{version}.jar
+
+
+
+ Generating Javadoc for thymeleaf-extras-springsecurity5
+ -------------------------------------------------------
+ 
+ If you wish to generate the javadoc for thymeleaf-extras-springsecurity5,
+ execute this from the project root folder:
+ 
+     mvn javadoc:javadoc
+     
+ This will generate the javadoc documentation in HTML format in:
+ 
+     target/site/apidocs
+ 
+
+
+ 
