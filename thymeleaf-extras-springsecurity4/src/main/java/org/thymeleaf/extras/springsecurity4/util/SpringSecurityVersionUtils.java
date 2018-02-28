@@ -182,6 +182,11 @@ public final class SpringSecurityVersionUtils {
     }
 
 
+    public static boolean isSpringSecurity50AtLeast() {
+        return SPRING_SECURITY_VERSION_MAJOR >= 5;
+    }
+
+
 
     private SpringSecurityVersionUtils() {
         super();
