@@ -70,7 +70,10 @@ public final class SpringSecurityVersionUtils {
 
         } else {
 
-            if (testClassExistence(springSecurityPackageName + ".jackson2.SecurityJackson2Modules")) {
+            if (testClassExistence(springSecurityPackageName + ".web.server.context.SecurityContextServerWebExchange")) {
+                SPRING_SECURITY_VERSION_MAJOR = 5;
+                SPRING_SECURITY_VERSION_MINOR = 0;
+            } else if (testClassExistence(springSecurityPackageName + ".jackson2.SecurityJackson2Modules")) {
                 SPRING_SECURITY_VERSION_MAJOR = 4;
                 SPRING_SECURITY_VERSION_MINOR = 2;
             } else if (testClassExistence(springSecurityPackageName + ".core.annotation.AuthenticationPrincipal")) {
