@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import javax.servlet.ServletContext;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -47,6 +45,7 @@ import org.springframework.security.acls.model.SidRetrievalStrategy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.ConfigurationException;
 
 
@@ -72,22 +71,24 @@ public final class AclAuthUtils {
 
 
     public static boolean authorizeUsingAccessControlList(
+            final IExpressionContext context,
             final Object domainObject,
             final ApplicationContext applicationContext, final String permissionsString,
-            final Authentication authentication, final ServletContext servletContext) {
+            final Authentication authentication) {
 
         final List<Permission> permissions =
                 parsePermissionsString(applicationContext, permissionsString);
 
-        return authorizeUsingAccessControlList(domainObject, permissions, authentication, servletContext);
+        return authorizeUsingAccessControlList(context, domainObject, permissions, authentication);
 
     }
 
 
 
     public static boolean authorizeUsingAccessControlList(
+            final IExpressionContext context,
             final Object domainObject, final List<Permission> permissions, 
-            final Authentication authentication, final ServletContext servletContext) {
+            final Authentication authentication) {
 
 
         if (logger.isTraceEnabled()) {
@@ -97,7 +98,7 @@ public final class AclAuthUtils {
                             (domainObject == null? null : domainObject.getClass().getName()), permissions});
         }
         
-        final ApplicationContext applicationContext = AuthUtils.getContext(servletContext);
+        final ApplicationContext applicationContext = AuthUtils.getContext(context);
 
         final AclService aclService = getBeanOfType(applicationContext, AclService.class);
 

@@ -19,10 +19,6 @@
  */
 package org.thymeleaf.extras.springsecurity5.auth;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.security.core.Authentication;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.util.Validate;
@@ -41,27 +37,19 @@ public final class Authorization {
 
     private final IExpressionContext context;
     private final Authentication authentication;
-    private final HttpServletRequest request;
-    private final HttpServletResponse response;
-    private final ServletContext servletContext;
-    
+
     
 
 
     public Authorization(
             final IExpressionContext context,
-            final Authentication authentication, 
-            final HttpServletRequest request, final HttpServletResponse response,
-            final ServletContext servletContext) {
+            final Authentication authentication) {
         
         super();
 
         this.context = context;
         this.authentication = authentication;
-        this.request = request;
-        this.response = response;
-        this.servletContext = servletContext;
-        
+
     }
 
 
@@ -71,21 +59,6 @@ public final class Authorization {
 
     public Authentication getAuthentication() {
         return this.authentication;
-    }
-
-
-    public HttpServletRequest getRequest() {
-        return this.request;
-    }
-
-
-    public HttpServletResponse getResponse() {
-        return this.response;
-    }
-
-
-    public ServletContext getServletContext() {
-        return this.servletContext;
     }
 
 
@@ -100,8 +73,7 @@ public final class Authorization {
         
         Validate.notEmpty(expression, "Access expression cannot be null");
         
-        return AuthUtils.authorizeUsingAccessExpression(
-                this.context, expression, this.authentication, this.request, this.response, this.servletContext);
+        return AuthUtils.authorizeUsingAccessExpression(this.context, expression, this.authentication);
         
     }
     
@@ -118,8 +90,7 @@ public final class Authorization {
         
         Validate.notEmpty(url, "URL cannot be null");
         
-        return AuthUtils.authorizeUsingUrlCheck(
-                url, method, this.authentication, this.request, this.servletContext);
+        return AuthUtils.authorizeUsingUrlCheck(this.context, url, method, this.authentication);
         
     }
 

@@ -21,11 +21,10 @@ package org.thymeleaf.extras.springsecurity5.auth;
 
 import java.util.List;
 
-import javax.servlet.ServletContext;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
+import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.util.Validate;
 
 
@@ -38,21 +37,20 @@ import org.thymeleaf.util.Validate;
 public final class AclAuthorization {
 
 
+    private final IExpressionContext context;
     private final Authentication authentication;
-    private final ServletContext servletContext;
-
 
 
 
     public AclAuthorization(
-            final Authentication authentication,
-            final ServletContext servletContext) {
+            final IExpressionContext context,
+            final Authentication authentication) {
         
         super();
 
+        this.context = context;
         this.authentication = authentication;
-        this.servletContext = servletContext;
-        
+
     }
 
 
@@ -61,23 +59,18 @@ public final class AclAuthorization {
     }
 
 
-    public ServletContext getServletContext() {
-        return this.servletContext;
-    }
-
-
 
     public boolean acl(final Object domainObject, final String permissions) {
         
         Validate.notEmpty(permissions, "permissions cannot be null or empty");
 
-        final ApplicationContext applicationContext = AuthUtils.getContext(this.servletContext);
+        final ApplicationContext applicationContext = AuthUtils.getContext(this.context);
         
         final List<Permission> permissionsList =
                 AclAuthUtils.parsePermissionsString(applicationContext, permissions);
         
         return AclAuthUtils.authorizeUsingAccessControlList(
-                domainObject, permissionsList, this.authentication, this.servletContext);
+                this.context, domainObject, permissionsList, this.authentication);
         
     }
 

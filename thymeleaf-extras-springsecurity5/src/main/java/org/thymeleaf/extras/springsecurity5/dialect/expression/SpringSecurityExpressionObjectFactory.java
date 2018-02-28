@@ -33,6 +33,7 @@ import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.extras.springsecurity5.auth.AuthUtils;
 import org.thymeleaf.extras.springsecurity5.auth.Authorization;
+import org.thymeleaf.spring5.context.webflux.ISpringWebFluxContext;
 
 /**
  * <p>
@@ -97,18 +98,13 @@ public class SpringSecurityExpressionObjectFactory implements IExpressionObjectF
         }
 
         if (AUTHORIZATION_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            if (context instanceof IWebContext) {
+            if (context instanceof IWebContext || context instanceof ISpringWebFluxContext) {
 
                 // We retrieve it like this in order to give it the opportunity to come from cache
                 final Authentication authentication =
                         (Authentication) context.getExpressionObjects().getObject(AUTHENTICATION_EXPRESSION_OBJECT_NAME);
 
-                final IWebContext webContext = (IWebContext)context;
-                final HttpServletRequest request = webContext.getRequest();
-                final HttpServletResponse response = webContext.getResponse();
-                final ServletContext servletContext = webContext.getServletContext();
-
-                return new Authorization(context, authentication, request, response, servletContext);
+                return new Authorization(context, authentication);
 
             }
             return null;

@@ -41,13 +41,10 @@ final class SpringVersionSpecificUtils {
     private static final Logger LOG = LoggerFactory.getLogger(SpringVersionSpecificUtils.class);
 
     private static final String PACKAGE_NAME = SpringVersionSpecificUtils.class.getPackage().getName();
-    private static final String SPRING3_DELEGATE_CLASS = PACKAGE_NAME + ".Spring3VersionSpecificUtility";
-    private static final String SPRING4_DELEGATE_CLASS = PACKAGE_NAME + ".Spring4VersionSpecificUtility";
+    // Spring Security 5 requires at least Spring 5
     private static final String SPRING5_DELEGATE_CLASS = PACKAGE_NAME + ".Spring5VersionSpecificUtility";
 
 
-    private static final ISpringVersionSpecificUtility spring3Delegate;
-    private static final ISpringVersionSpecificUtility spring4Delegate;
     private static final ISpringVersionSpecificUtility spring5Delegate;
 
 
@@ -61,8 +58,6 @@ final class SpringVersionSpecificUtils {
             try {
                 final Class<?> implClass = ClassLoaderUtils.loadClass(SPRING5_DELEGATE_CLASS);
                 spring5Delegate = (ISpringVersionSpecificUtility) implClass.newInstance();
-                spring4Delegate = null;
-                spring3Delegate = null;
             } catch (final Exception e) {
                 throw new ExceptionInInitializerError(
                         new ConfigurationException(
@@ -70,44 +65,12 @@ final class SpringVersionSpecificUtils {
                             "delegate of class \"" + SPRING5_DELEGATE_CLASS + "\"", e));
             }
 
-        } else if (SpringVersionUtils.isSpring40AtLeast()) {
-
-            LOG.trace("[THYMELEAF][TESTING] Spring 4.0+ found on classpath. Initializing auth utility for Spring 4");
-
-            try {
-                final Class<?> implClass = ClassLoaderUtils.loadClass(SPRING4_DELEGATE_CLASS);
-                spring5Delegate = null;
-                spring4Delegate = (ISpringVersionSpecificUtility) implClass.newInstance();
-                spring3Delegate = null;
-            } catch (final Exception e) {
-                throw new ExceptionInInitializerError(
-                        new ConfigurationException(
-                            "Environment has been detected to be at least Spring 4, but thymeleaf could not initialize a " +
-                            "delegate of class \"" + SPRING4_DELEGATE_CLASS + "\"", e));
-            }
-
-        } else if (SpringVersionUtils.isSpring30AtLeast()) {
-
-            LOG.trace("[THYMELEAF][TESTING] Spring 3.x found on classpath. Initializing auth utility for Spring 3");
-
-            try {
-                final Class<?> implClass = ClassLoaderUtils.loadClass(SPRING3_DELEGATE_CLASS);
-                spring5Delegate = null;
-                spring4Delegate = null;
-                spring3Delegate = (ISpringVersionSpecificUtility) implClass.newInstance();
-            } catch (final Exception e) {
-                throw new ExceptionInInitializerError(
-                        new ConfigurationException(
-                            "Environment has been detected to be Spring 3.x, but thymeleaf could not initialize a " +
-                            "delegate of class \"" + SPRING3_DELEGATE_CLASS + "\"", e));
-            }
-
         } else {
 
             throw new ExceptionInInitializerError(
                     new ConfigurationException(
                         "The auth infrastructure could not create utility for the specific version of Spring being" +
-                        "used. Currently Spring 3.0, 3.1, 3.2 and 4.x are supported."));
+                        "used. Currently only Spring 5.x is supported."));
 
         }
 
@@ -122,16 +85,10 @@ final class SpringVersionSpecificUtils {
         if (spring5Delegate != null) {
             return spring5Delegate.wrapEvaluationContext(evaluationContext, expresionObjects);
         }
-        if (spring4Delegate != null) {
-            return spring4Delegate.wrapEvaluationContext(evaluationContext, expresionObjects);
-        }
-        if (spring3Delegate != null) {
-            return spring3Delegate.wrapEvaluationContext(evaluationContext, expresionObjects);
-        }
 
         throw new ConfigurationException(
                 "The authorization infrastructure could not create initializer for the specific version of Spring being" +
-                "used. Currently Spring 3.0, 3.1, 3.2 and 4.x are supported.");
+                "used. Currently only Spring 5.x is supported.");
 
     }
 

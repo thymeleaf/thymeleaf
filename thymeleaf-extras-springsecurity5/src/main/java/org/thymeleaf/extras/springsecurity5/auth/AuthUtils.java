@@ -23,12 +23,9 @@ import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,10 +44,11 @@ import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.IExpressionObjects;
-import org.thymeleaf.extras.springsecurity5.util.SpringSecurityWebApplicationContextUtils;
+import org.thymeleaf.extras.springsecurity5.util.SpringSecurityContextUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -67,7 +65,7 @@ public final class AuthUtils {
     private static final Logger logger = LoggerFactory.getLogger(AuthUtils.class);
     
     private static final FilterChain DUMMY_CHAIN = new FilterChain() {
-        public void doFilter(ServletRequest request, ServletResponse response) 
+        public void doFilter(ServletRequest request, ServletResponse response)
                 throws IOException, ServletException {
            throw new UnsupportedOperationException();
         }
@@ -159,9 +157,7 @@ public final class AuthUtils {
 
     public static boolean authorizeUsingAccessExpression(
             final IExpressionContext context,
-            final String accessExpression, final Authentication authentication, 
-            final HttpServletRequest request, final HttpServletResponse response,
-            final ServletContext servletContext) {
+            final String accessExpression, final Authentication authentication) {
     
         Validate.notNull(context, "Context cannot be null");
         
@@ -178,7 +174,7 @@ public final class AuthUtils {
                         accessExpression.substring(2, accessExpression.length() - 1) :
                         accessExpression);
         
-        final SecurityExpressionHandler<FilterInvocation> handler = getExpressionHandler(servletContext);
+        final SecurityExpressionHandler<FilterInvocation> handler = getExpressionHandler(context);
 
         Expression expressionObject = null;
         try {
@@ -190,7 +186,7 @@ public final class AuthUtils {
         }
 
         final FilterInvocation filterInvocation = new FilterInvocation(request, response, DUMMY_CHAIN);
-        
+
         final EvaluationContext evaluationContext = handler.createEvaluationContext(authentication, filterInvocation);
         
         /*
@@ -233,9 +229,9 @@ public final class AuthUtils {
     
     
     @SuppressWarnings("unchecked")
-    private static SecurityExpressionHandler<FilterInvocation> getExpressionHandler(final ServletContext servletContext) {
+    private static SecurityExpressionHandler<FilterInvocation> getExpressionHandler(final IExpressionContext context) {
 
-        final ApplicationContext ctx = getContext(servletContext);
+        final ApplicationContext ctx = getContext(context);
         
         final Map<String, SecurityExpressionHandler> expressionHandlers =
                 ctx.getBeansOfType(SecurityExpressionHandler.class);
@@ -259,18 +255,17 @@ public final class AuthUtils {
     
     
     public static boolean authorizeUsingUrlCheck(
-            final String url, final String method, final Authentication authentication, 
-            final HttpServletRequest request, final ServletContext servletContext) {
+            final IExpressionContext context, final String url, final String method, final Authentication authentication) {
         
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Checking authorization for URL \"{}\" and method \"{}\" for user \"{}\".",
                     new Object[] {TemplateEngine.threadIndex(), url, method, (authentication == null? null : authentication.getName())});
         }
-        
+
+        final String contextPath = SpringSecurityContextUtils.getContextPath(context);
+
         final boolean result =
-                getPrivilegeEvaluator(servletContext, request).isAllowed(
-                    request.getContextPath(), url, method, authentication) ? 
-                            true : false;
+                getPrivilegeEvaluator(context).isAllowed(contextPath, url, method, authentication);
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Checked authorization for URL \"{}\" and method \"{}\" for user \"{}\". " +
@@ -287,16 +282,16 @@ public final class AuthUtils {
 
 
     
-    private static WebInvocationPrivilegeEvaluator getPrivilegeEvaluator(
-            final ServletContext servletContext, final HttpServletRequest request) {
+    private static WebInvocationPrivilegeEvaluator getPrivilegeEvaluator(final IExpressionContext context) {
 
         final WebInvocationPrivilegeEvaluator privEvaluatorFromRequest =
-                (WebInvocationPrivilegeEvaluator) request.getAttribute(WebAttributes.WEB_INVOCATION_PRIVILEGE_EVALUATOR_ATTRIBUTE);
+                (WebInvocationPrivilegeEvaluator) SpringSecurityContextUtils.getRequestAttribute(
+                        context, WebAttributes.WEB_INVOCATION_PRIVILEGE_EVALUATOR_ATTRIBUTE);
         if (privEvaluatorFromRequest != null) {
             return privEvaluatorFromRequest;
         }
 
-        final ApplicationContext ctx = getContext(servletContext);
+        final ApplicationContext ctx = getContext(context);
 
         final Map<String, WebInvocationPrivilegeEvaluator> privilegeEvaluators = 
                 ctx.getBeansOfType(WebInvocationPrivilegeEvaluator.class);
@@ -315,8 +310,8 @@ public final class AuthUtils {
 
 
     
-    public static ApplicationContext getContext(final ServletContext servletContext) {
-        return SpringSecurityWebApplicationContextUtils.findRequiredWebApplicationContext(servletContext);
+    public static ApplicationContext getContext(final IContext context) {
+        return SpringSecurityContextUtils.getApplicationContext(context);
     }
     
     

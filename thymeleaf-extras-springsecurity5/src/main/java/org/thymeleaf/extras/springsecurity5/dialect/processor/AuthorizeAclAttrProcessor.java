@@ -19,16 +19,12 @@
  */
 package org.thymeleaf.extras.springsecurity5.dialect.processor;
 
-import javax.servlet.ServletContext;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.extras.springsecurity5.auth.AclAuthUtils;
 import org.thymeleaf.extras.springsecurity5.auth.AuthUtils;
@@ -76,22 +72,12 @@ public final class AuthorizeAclAttrProcessor extends AbstractStandardConditional
             return false;
         }
 
-        if (!(context instanceof IWebContext)) {
-            throw new ConfigurationException(
-                    "Thymeleaf execution context is not a web context (implementation of " +
-                            IWebContext.class.getName() + "). Spring Security integration can only be used in " +
-                            "web environments.");
-        }
-
-        final IWebContext webContext = (IWebContext) context;
-        final ServletContext servletContext = webContext.getServletContext();
-
         final Authentication authentication = AuthUtils.getAuthenticationObject();
         if (authentication == null) {
             return false;
         }
 
-        final ApplicationContext applicationContext = AuthUtils.getContext(servletContext);
+        final ApplicationContext applicationContext = AuthUtils.getContext(context);
 
         final IEngineConfiguration configuration = context.getConfiguration();
 
@@ -119,7 +105,7 @@ public final class AuthorizeAclAttrProcessor extends AbstractStandardConditional
                 (permissionsObject == null? null : permissionsObject.toString());
 
         return AclAuthUtils.authorizeUsingAccessControlList(
-                domainObject, applicationContext, permissionsStr, authentication, servletContext);
+                context, domainObject, applicationContext, permissionsStr, authentication);
 
     }
 

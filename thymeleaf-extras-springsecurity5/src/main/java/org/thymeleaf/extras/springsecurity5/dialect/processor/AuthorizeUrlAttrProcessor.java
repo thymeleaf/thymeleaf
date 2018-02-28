@@ -19,14 +19,9 @@
  */
 package org.thymeleaf.extras.springsecurity5.dialect.processor;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.security.core.Authentication;
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.engine.AttributeName;
-import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.extras.springsecurity5.auth.AuthUtils;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.standard.processor.AbstractStandardConditionalVisibilityTagProcessor;
@@ -70,25 +65,13 @@ public final class AuthorizeUrlAttrProcessor extends AbstractStandardConditional
         final String method =
                 (spaceIndex < 0? "GET" : attrValue.substring(0, spaceIndex)).trim();
 
-        if (!(context instanceof IWebContext)) {
-            throw new ConfigurationException(
-                    "Thymeleaf execution context is not a web context (implementation of " +
-                            IWebContext.class.getName() + "). Spring Security integration can only be used in " +
-                            "web environments.");
-        }
-        final IWebContext webContext = (IWebContext) context;
-
-        final HttpServletRequest request = webContext.getRequest();
-        final ServletContext servletContext = webContext.getServletContext();
-
         final Authentication authentication = AuthUtils.getAuthenticationObject();
 
         if (authentication == null) {
             return false;
         }
 
-        return AuthUtils.authorizeUsingUrlCheck(
-                url, method, authentication, request, servletContext);
+        return AuthUtils.authorizeUsingUrlCheck(context, url, method, authentication);
 
     }
 
