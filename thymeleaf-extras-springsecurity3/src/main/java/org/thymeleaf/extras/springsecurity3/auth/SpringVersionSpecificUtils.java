@@ -107,7 +107,7 @@ final class SpringVersionSpecificUtils {
             throw new ExceptionInInitializerError(
                 new ConfigurationException(
                     "The auth infrastructure could not create utility for the specific version of Spring being" +
-                    "used. Currently Spring 3.0, 3.1, 3.2 and 4.x are supported."));
+                    "used. Currently only Spring 3.x, 4.x and 5.x are supported."));
 
         }
 
@@ -131,7 +131,7 @@ final class SpringVersionSpecificUtils {
 
         throw new ConfigurationException(
                 "The authorization infrastructure could not create initializer for the specific version of Spring being" +
-                "used. Currently Spring 3.0, 3.1, 3.2 and 4.x are supported.");
+                "used. Currently only Spring 3.x, 4.x and 5.x are supported.");
 
     }
 
