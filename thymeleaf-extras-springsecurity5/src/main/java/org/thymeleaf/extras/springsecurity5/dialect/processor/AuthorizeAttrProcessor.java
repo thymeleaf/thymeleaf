@@ -64,7 +64,7 @@ public final class AuthorizeAttrProcessor extends AbstractStandardConditionalVis
             return false;
         }
 
-        final Authentication authentication = AuthUtils.getAuthenticationObject();
+        final Authentication authentication = AuthUtils.getAuthenticationObject(context);
 
         if (authentication == null) {
             return false;

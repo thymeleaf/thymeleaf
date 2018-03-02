@@ -19,15 +19,26 @@
  */
 package org.thymeleaf.extras.springsecurity5.util;
 
+import java.security.Principal;
 import java.util.Enumeration;
+import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.server.ServerWebExchange;
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IWebContext;
+import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
 import org.thymeleaf.spring5.context.webflux.ISpringWebFluxContext;
+import reactor.core.publisher.Mono;
 
 /**
  * 
@@ -37,6 +48,13 @@ import org.thymeleaf.spring5.context.webflux.ISpringWebFluxContext;
  *
  */
 public final class SpringSecurityContextUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(SpringSecurityContextUtils.class);
+
+    // This constant is used for caching the Authentication object as a ServerWebExchange attribute the
+    // first time it is computed (by blocking on the stream that obtains it from the SecurityContext repository).
+    private static final String SERVER_WEB_EXCHANGE_ATTRIBUTE_AUTHENTICATION =
+            SpringSecurityDialect.class.getName() + ".AUTHENTICATION";
 
 
     private SpringSecurityContextUtils() {
@@ -101,6 +119,24 @@ public final class SpringSecurityContextUtils {
     }
 
 
+    public static Authentication getAuthenticationObject(final IContext context) {
+
+        if (context instanceof IWebContext) {
+            return SpringSecurityWebMvcApplicationContextUtils.getAuthenticationObject();
+        }
+
+        if (context instanceof ISpringWebFluxContext) {
+            return SpringSecurityWebFluxApplicationContextUtils.getAuthenticationObject((ISpringWebFluxContext)context);
+        }
+
+        throw new IllegalStateException(
+                "Could not obtain authentication object: Thymeleaf context is neither an implementation of " +
+                "IWebContext (for Spring MVC apps) nor ISpringWebFluxContext (for Spring WebFlux apps). " +
+                "Thymeleaf's Spring Security support can only be used in web applications.");
+
+    }
+
+
 
     private static final class SpringSecurityWebMvcApplicationContextUtils {
 
@@ -159,6 +195,19 @@ public final class SpringSecurityContextUtils {
         }
 
 
+        static Authentication getAuthenticationObject() {
+            final SecurityContext securityContext = SecurityContextHolder.getContext();
+            if (securityContext == null) {
+                if (logger.isTraceEnabled()) {
+                    logger.trace("[THYMELEAF][{}] No security context found, no authentication object returned.",
+                            new Object[] {TemplateEngine.threadIndex()});
+                }
+                return null;
+            }
+            return securityContext.getAuthentication();
+        }
+
+
     }
 
 
@@ -190,6 +239,35 @@ public final class SpringSecurityContextUtils {
             return applicationContext;
 
         }
+
+
+        static Authentication getAuthenticationObject(final ISpringWebFluxContext context) {
+
+            final ServerWebExchange exchange = context.getExchange();
+            final Optional<Authentication> cachedAuthentication =
+                    exchange.getAttribute(SERVER_WEB_EXCHANGE_ATTRIBUTE_AUTHENTICATION);
+            if (cachedAuthentication != null) {
+                return cachedAuthentication.orElse(null);
+            }
+
+            final Principal auth2 = exchange.getPrincipal().block();
+            final Mono<SecurityContext> securityContextStream = ReactiveSecurityContextHolder.getContext();
+            final SecurityContext securityContext = securityContextStream.block();
+            final Mono<Authentication> authenticationStream = securityContextStream.map(sc -> sc.getAuthentication());
+
+            // Given Thymeleaf 3.0 does not allow resolution of reactive variables on-the-fly (i.e. on the middle
+            // of template execution), there is no alternative here but to block.
+            // NOTE however that this should only be noticeable if the SecurityContext is retrieved
+            // from a repository that could actually need to block (i.e. a persisted WebSession).
+            final Authentication authentication = authenticationStream.block();
+
+            // Cache it for the next time
+            exchange.getAttributes().put(SERVER_WEB_EXCHANGE_ATTRIBUTE_AUTHENTICATION, Optional.ofNullable(authentication));
+
+            return authentication;
+
+        }
+
 
     }
 

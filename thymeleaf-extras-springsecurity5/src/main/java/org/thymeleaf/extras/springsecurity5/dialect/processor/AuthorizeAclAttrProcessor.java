@@ -72,7 +72,7 @@ public final class AuthorizeAclAttrProcessor extends AbstractStandardConditional
             return false;
         }
 
-        final Authentication authentication = AuthUtils.getAuthenticationObject();
+        final Authentication authentication = AuthUtils.getAuthenticationObject(context);
         if (authentication == null) {
             return false;
         }

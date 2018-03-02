@@ -62,7 +62,7 @@ public final class AuthenticationAttrProcessor extends AbstractAttributeTagProce
             return;
         }
 
-        final Authentication authentication = AuthUtils.getAuthenticationObject();
+        final Authentication authentication = AuthUtils.getAuthenticationObject(context);
         final Object authenticationProperty = AuthUtils.getAuthenticationProperty(authentication, attrValue);
 
         if (authenticationProperty == null) {

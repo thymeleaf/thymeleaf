@@ -65,7 +65,7 @@ public final class AuthorizeUrlAttrProcessor extends AbstractStandardConditional
         final String method =
                 (spaceIndex < 0? "GET" : attrValue.substring(0, spaceIndex)).trim();
 
-        final Authentication authentication = AuthUtils.getAuthenticationObject();
+        final Authentication authentication = AuthUtils.getAuthenticationObject(context);
 
         if (authentication == null) {
             return false;

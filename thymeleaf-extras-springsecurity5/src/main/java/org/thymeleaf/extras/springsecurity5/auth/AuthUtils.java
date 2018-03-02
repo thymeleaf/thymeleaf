@@ -19,13 +19,7 @@
  */
 package org.thymeleaf.extras.springsecurity5.auth;
 
-import java.io.IOException;
 import java.util.Map;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +33,6 @@ import org.springframework.expression.ParseException;
 import org.springframework.security.access.expression.ExpressionUtils;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
@@ -64,12 +57,12 @@ public final class AuthUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthUtils.class);
     
-    private static final FilterChain DUMMY_CHAIN = new FilterChain() {
-        public void doFilter(ServletRequest request, ServletResponse response)
-                throws IOException, ServletException {
-           throw new UnsupportedOperationException();
-        }
-    };
+//    private static final FilterChain DUMMY_CHAIN = new FilterChain() {
+//        public void doFilter(ServletRequest request, ServletResponse response)
+//                throws IOException, ServletException {
+//           throw new UnsupportedOperationException();
+//        }
+//    };
 
     
     
@@ -81,23 +74,15 @@ public final class AuthUtils {
     
     
 
-    public static Authentication getAuthenticationObject() {
+    public static Authentication getAuthenticationObject(final IExpressionContext context) {
         
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Obtaining authentication object.",
                     new Object[] {TemplateEngine.threadIndex()});
         }
-        
-        if ((SecurityContextHolder.getContext() == null)) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("[THYMELEAF][{}] No security context found, no authentication object returned.",
-                        new Object[] {TemplateEngine.threadIndex()});
-            }
-            return null;
-        }
 
-        final Authentication authentication = 
-                SecurityContextHolder.getContext().getAuthentication();
+        final Authentication authentication =
+                SpringSecurityContextUtils.getAuthenticationObject(context);
 
         if (authentication == null || authentication.getPrincipal() == null) {
             if (logger.isTraceEnabled()) {
@@ -185,7 +170,8 @@ public final class AuthUtils {
                     expr + "\"", e);
         }
 
-        final FilterInvocation filterInvocation = new FilterInvocation(request, response, DUMMY_CHAIN);
+//        final FilterInvocation filterInvocation = new FilterInvocation(request, response, DUMMY_CHAIN);
+        final FilterInvocation filterInvocation = null;
 
         final EvaluationContext evaluationContext = handler.createEvaluationContext(authentication, filterInvocation);
         
@@ -237,6 +223,7 @@ public final class AuthUtils {
                 ctx.getBeansOfType(SecurityExpressionHandler.class);
 
         for (SecurityExpressionHandler handler : expressionHandlers.values()) {
+            final Class<?> clazz = GenericTypeResolver.resolveTypeArgument(handler.getClass(), SecurityExpressionHandler.class);
             if (FilterInvocation.class.equals(GenericTypeResolver.resolveTypeArgument(handler.getClass(), SecurityExpressionHandler.class))) {
                 return handler;
             }

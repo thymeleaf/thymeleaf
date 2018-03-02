@@ -114,12 +114,13 @@
 
 
   <properties>
-    <maven.compile.source>1.6</maven.compile.source>
-    <maven.compile.target>1.6</maven.compile.target>
+    <maven.compile.source>8</maven.compile.source>
+    <maven.compile.target>8</maven.compile.target>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <servlet-api.version>2.5</servlet-api.version>
     <thymeleaf.version>3.0.9.RELEASE</thymeleaf.version>
-    <springsecurity.version>5.0.2.RELEASE</springsecurity.version>
+    <springsecurity.version>5.0.3.RELEASE</springsecurity.version>
+    <reactor.version>3.1.2.RELEASE</reactor.version>
     <slf4j.version>1.7.25</slf4j.version>
   </properties>
 
@@ -335,6 +336,17 @@
       <artifactId>spring-security-acl</artifactId>
       <version>${springsecurity.version}</version>
       <scope>provided</scope>
+    </dependency>
+
+
+    <!-- Reactor core should be provided by Spring 5, and by marking it as provided we intend to -->
+    <!-- give Spring priority on the specification of version.                                   -->
+    <dependency>
+      <groupId>io.projectreactor</groupId>
+      <artifactId>reactor-core</artifactId>
+      <version>${reactor.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
 
 

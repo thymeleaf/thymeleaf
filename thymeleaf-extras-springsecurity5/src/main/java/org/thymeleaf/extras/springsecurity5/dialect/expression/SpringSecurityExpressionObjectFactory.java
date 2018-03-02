@@ -93,7 +93,7 @@ public class SpringSecurityExpressionObjectFactory implements IExpressionObjectF
 
         if (AUTHENTICATION_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
             if (context instanceof IWebContext) {
-                return AuthUtils.getAuthenticationObject();
+                return AuthUtils.getAuthenticationObject(context);
             }
         }
 
