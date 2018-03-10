@@ -10,7 +10,12 @@
  project root folder:
  
      mvn clean:clean install
-     
+
+ Note: if you receive an error related to GPG signing, you can
+ skip it from the command line for installing on your local system:
+
+     mvn clean:clean install -Dgpg.skip
+
  And you will get a fresh target/thymeleaf-spring4-{version}.jar file.
  You will also get it installed in your local repository at:
  
