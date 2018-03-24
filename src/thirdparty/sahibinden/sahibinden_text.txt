@@ -10,4 +10,4 @@ of 300 people, sahibinden.com is enjoying a fast paced growth even after 13 year
 At sahibinden.com, Thymeleaf is mainly used to serve classified search results, which
 roughly is 50% of sahibinden.com's traffic.
 
-LINK: http://www.sahibinden.com/en/
+LINK: https://www.sahibinden.com/en/

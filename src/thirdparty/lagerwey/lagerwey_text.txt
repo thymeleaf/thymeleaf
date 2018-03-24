@@ -8,4 +8,4 @@ Using this portal the Lagerwey wind turbines and wind farms can be monitored and
 we are able to develop HTML5 pages displaying the wind turbines real time data.
 
 
-LINK: http://www.lagerwey.com
+LINK: https://www.lagerwey.com
