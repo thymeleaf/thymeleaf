@@ -1,3 +1,9 @@
+3.0.10
+======
+- Updated AttoParser dependency to 2.0.5.RELEASE
+- Updated Unbescape dependency to 1.1.6.RELEASE
+
+
 3.0.9
 =====
 - Fixed hit ratio in StandardCache not being correctly computed (always 1 or 0).
