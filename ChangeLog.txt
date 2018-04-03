@@ -1,5 +1,6 @@
 3.0.10
 ======
+- Improved use of template name abbreviation in logs and exceptions.
 - Updated AttoParser dependency to 2.0.5.RELEASE
 - Updated Unbescape dependency to 1.1.6.RELEASE
 
