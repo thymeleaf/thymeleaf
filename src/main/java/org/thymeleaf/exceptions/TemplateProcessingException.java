@@ -20,8 +20,6 @@
 package org.thymeleaf.exceptions;
 
 
-import org.thymeleaf.util.LoggingUtils;
-
 /**
  * <p>
  *   General exception for errors raised during the process of a template.
@@ -141,7 +139,7 @@ public class TemplateProcessingException extends TemplateEngineException {
             sb.append(' ');
             sb.append('(');
             sb.append("template: \"");
-            sb.append(LoggingUtils.loggifyTemplateName(this.templateName));
+            sb.append(this.templateName);
             sb.append('"');
             if (this.line != null || this.col != null) {
                 sb.append(" - ");

@@ -867,7 +867,7 @@ public final class TemplateManager {
         }
 
         throw new TemplateInputException(
-                "Error resolving template \"" + LoggingUtils.loggifyTemplateName(template) + "\", " +
+                "Error resolving template [" + template + "], " +
                 "template might not exist or might not be accessible by " +
                 "any of the configured Template Resolvers");
 

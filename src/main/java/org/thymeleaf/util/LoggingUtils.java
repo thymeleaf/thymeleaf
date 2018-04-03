@@ -36,13 +36,13 @@ public final class LoggingUtils {
         if (template == null) {
             return null;
         }
-        if (template.length() <= 80) {
+        if (template.length() <= 120) {
             return template.replace('\n', ' ');
         }
         final StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append(template.substring(0, 40).replace('\n', ' '));
+        strBuilder.append(template.substring(0, 35).replace('\n', ' '));
         strBuilder.append("[...]");
-        strBuilder.append(template.substring(template.length() - 25).replace('\n', ' '));
+        strBuilder.append(template.substring(template.length() - 80).replace('\n', ' '));
         return strBuilder.toString();
     }
 

@@ -24,7 +24,6 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import org.thymeleaf.exceptions.TemplateInputException;
-import org.thymeleaf.util.LoggingUtils;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -81,7 +80,7 @@ public final class StringTemplateResource implements ITemplateResource {
 
     public ITemplateResource relative(final String relativeLocation) {
         throw new TemplateInputException(
-                String.format("Cannot create a relative resource for String resource  \"%s\"", LoggingUtils.loggifyTemplateName(this.resource)));
+                String.format("Cannot create a relative resource for String resource  \"%s\"", this.resource));
     }
 
 
