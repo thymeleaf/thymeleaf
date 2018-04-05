@@ -42,7 +42,7 @@ public final class SpringErrorsTagProcessor extends AbstractAttributeTagProcesso
 
     private static final String ERROR_DELIMITER = "<br />";
     
-    public static final int ATTR_PRECEDENCE = 1200;
+    public static final int ATTR_PRECEDENCE = 1700;
     public static final String ATTR_NAME = "errors";
 
     

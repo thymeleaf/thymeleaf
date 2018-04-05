@@ -49,7 +49,7 @@ public abstract class AbstractSpringFieldTagProcessor
         implements IAttributeDefinitionsAware {
 
 
-    public static final int ATTR_PRECEDENCE = 1200;
+    public static final int ATTR_PRECEDENCE = 1700;
     public static final String ATTR_NAME = "field";
 
     private static final TemplateMode TEMPLATE_MODE = TemplateMode.HTML;

@@ -58,7 +58,7 @@ public final class SpringErrorClassTagProcessor
         extends AbstractAttributeTagProcessor
         implements IAttributeDefinitionsAware {
 
-    public static final int ATTR_PRECEDENCE = 1500;
+    public static final int ATTR_PRECEDENCE = 1800;
     public static final String ATTR_NAME = "errorclass";
     public static final String TARGET_ATTR_NAME = "class";
 
