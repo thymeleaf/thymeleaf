@@ -1,3 +1,8 @@
+3.0.10
+======
+- Added "Automatic-Module-Name: thymeleaf-spring3" to MANIFEST.MF for Java 9+ JPMS.
+
+
 3.0.9
 =====
 - Adapted Spring-based tag processors to new scenarios for restricted expression evaluation.
