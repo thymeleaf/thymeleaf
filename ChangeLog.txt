@@ -2,6 +2,7 @@
 ======
 - Fixed StackOverflowError when inserting content before first element of model in a model processor.
 - Improved use of template name abbreviation in logs and exceptions.
+- Added "Automatic-Module-Name: thymeleaf" to MANIFEST.MF for Java 9+ JPMS.
 - Updated AttoParser dependency to 2.0.5.RELEASE
 - Updated Unbescape dependency to 1.1.6.RELEASE
 
