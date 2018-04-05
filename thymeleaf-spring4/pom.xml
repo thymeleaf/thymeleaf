@@ -108,7 +108,7 @@
   <properties>
     <maven.compile.source>1.6</maven.compile.source>
     <maven.compile.target>1.6</maven.compile.target>
-    <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+    <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
     <!-- Spring version 4.0 is supported, but 4.1 is used as a dependency -->
     <!-- in order to integrate with some 4.1-only features.               -->
     <springframework.version>4.1.0.RELEASE</springframework.version>
@@ -147,26 +147,27 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
+        <version>3.7.0</version>
         <configuration>
           <source>${maven.compile.source}</source>
           <target>${maven.compile.target}</target>
+          <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>2.7</version>
+        <version>3.0.2</version>
         <configuration>
-          <encoding>US-ASCII</encoding>
+          <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.5</version>
+        <version>3.0.2</version>
         <configuration>
           <archive>
             <addMavenDescriptor>false</addMavenDescriptor>
@@ -180,6 +181,8 @@
               <!-- library users. See: http://commons.apache.org/releases/prepare.html                -->
               <X-Compile-Source-JDK>${maven.compile.source}</X-Compile-Source-JDK>
               <X-Compile-Target-JDK>${maven.compile.target}</X-Compile-Target-JDK>
+              <!-- Set the Built-By attribute in MANIFEST.MF to avoid displaying specific user names. -->
+              <Built-By>thymeleaf</Built-By>
             </manifestEntries>
           </archive>
         </configuration>
@@ -188,7 +191,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.1</version>
+        <version>3.0.0</version>
         <configuration>
           <noqualifier>java.lang</noqualifier>
           <overview>${basedir}/src/main/javadoc/overview.html</overview>
@@ -209,7 +212,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.4</version>
+        <version>3.0.1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -238,7 +241,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.5.2</version>
+        <version>2.5.3</version>
         <configuration>
           <mavenExecutorId>forked-path</mavenExecutorId>
         </configuration>
