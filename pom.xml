@@ -100,6 +100,8 @@
     <!-- These are needed for showing the build timestamp correctly at the thymeleaf.properties file -->
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
+    <!-- A project-name-based approach is adopted for the module name (instead of a reverse-DNS one) -->
+    <module.name>${project.artifactId}</module.name>
     <servlet-api.version>2.5</servlet-api.version>
     <ognl.version>3.1.12</ognl.version>
     <attoparser.version>2.0.5.RELEASE</attoparser.version>
@@ -197,6 +199,9 @@
               <X-Compile-Target-JDK>${maven.compile.target}</X-Compile-Target-JDK>
               <!-- Set the Built-By attribute in MANIFEST.MF to avoid displaying specific user names. -->
               <Built-By>thymeleaf</Built-By>
+              <!-- Setting this automatic module name will fix the module name used by unbescape even -->
+              <!-- if the library is not yet fully modularised.                                       -->
+              <Automatic-Module-Name>${module.name}</Automatic-Module-Name>
             </manifestEntries>
           </archive>
         </configuration>
