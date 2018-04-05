@@ -26,6 +26,7 @@ import org.thymeleaf.model.IAttribute;
 import org.thymeleaf.model.IModel;
 import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.model.ITemplateEvent;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EscapedAttributeUtils;
 
@@ -76,12 +77,13 @@ public abstract class AbstractAttributeModelProcessor extends AbstractElementMod
             doProcess(context, model, attributeName, attributeValue, structureHandler);
 
             if (this.removeAttribute) {
-                if (model.size() > 0 && model.get(0) instanceof IProcessableElementTag) {
-                    firstEvent = (IProcessableElementTag) model.get(0);
+                final int firstEventLocation = locateFirstEventInModel(model, firstEvent);
+                if (firstEventLocation >= 0) {
+                    firstEvent = (IProcessableElementTag) model.get(firstEventLocation);
                     final IModelFactory modelFactory = context.getModelFactory();
                     final IProcessableElementTag newFirstEvent = modelFactory.removeAttribute(firstEvent,attributeName);
                     if (newFirstEvent != firstEvent) {
-                        model.replace(0, newFirstEvent);
+                        model.replace(firstEventLocation, newFirstEvent);
                     }
                 }
             }
@@ -143,6 +145,23 @@ public abstract class AbstractAttributeModelProcessor extends AbstractElementMod
             final String attributeValue,
             final IElementModelStructureHandler structureHandler);
 
+
+
+    private static int locateFirstEventInModel(final IModel model, final ITemplateEvent firstEvent) {
+        final int modelSize = model.size();
+        // First we will try to locate the exact same event in the model
+        for (int i = 0; i < modelSize; i++) {
+            // We can (should, actually) use reference equality here
+            if (firstEvent == model.get(i)) {
+                return i;
+            }
+        }
+        // We weren't able to locate the exact same event, so we will just consider the first one, if it can contain attrs
+        if (modelSize > 0 && model.get(0) instanceof IProcessableElementTag) {
+            return 0;
+        }
+        return -1;
+    }
 
 
 }
