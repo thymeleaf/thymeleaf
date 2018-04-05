@@ -1,5 +1,8 @@
 3.0.10
 ======
+- Fix th:field executing before th:remove and therefore potentially executing the ConversionService and the
+  RequestDataValueProcessor for values that are not meant to be displayed in the HTML result, which could lead
+  to unnecessary exceptions.
 - Added "Automatic-Module-Name: thymeleaf-spring5" to MANIFEST.MF for Java 9+ JPMS.
 
 
