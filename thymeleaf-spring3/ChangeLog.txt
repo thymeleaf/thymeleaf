@@ -1,8 +1,10 @@
 3.0.10
 ======
-- Fix th:field executing before th:remove and therefore potentially executing the ConversionService and the
+- Fixed th:field executing before th:remove and therefore potentially executing the ConversionService and the
   RequestDataValueProcessor for values that are not meant to be displayed in the HTML result, which could lead
   to unnecessary exceptions.
+- Fixed bean validation path not correctly binding expressions with brackets ([...]) when BindStatus was being
+  obtained with optional = true.
 - Added "Automatic-Module-Name: thymeleaf-spring3" to MANIFEST.MF for Java 9+ JPMS.
 
 
@@ -13,7 +15,7 @@
 
 3.0.8
 =====
-- Fix RequestDataValueProcessor being called without a default "action" attribute (with GET value) for
+- Fixed RequestDataValueProcessor being called without a default "action" attribute (with GET value) for
   forms that included th:action, which resulted in CSRF token being added as a request parameter to the URL
   in some scenarios.
 - Added "th:uerrors" attribute in order to easily output all selected errors without escaping the error

@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.NotReadablePropertyException;
+import org.springframework.beans.PropertyAccessor;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
@@ -381,7 +382,7 @@ public final class FieldUtils {
         // The getErrors() method is not extremely efficient, but it has a cache map, so it should be fine
         final boolean beanValid = requestContext.getErrors(beanName, false).isPresent();
         if (beanValid && completeExpression.length() > dotPos) {
-            final String path = completeExpression.substring(dotPos + 1, completeExpression.length() - 1);
+            final String path = completeExpression.substring(dotPos + 1, completeExpression.length());
             // We will validate the rest of the expression as a bean property identifier or a bean property expression.
             return validateBeanPath(path);
         }
@@ -396,9 +397,16 @@ public final class FieldUtils {
      */
     private static boolean validateBeanPath(final CharSequence path) {
         final int pathLen = path.length();
+        boolean inKey = false;
         for (int charPos = 0; charPos < pathLen; charPos++) {
             final char c = path.charAt(charPos);
-            if (!Character.isJavaIdentifierPart(c) && c != '.') {
+            if (!inKey && c == PropertyAccessor.PROPERTY_KEY_PREFIX_CHAR) {
+                inKey = true;
+            }
+            else if (inKey && c == PropertyAccessor.PROPERTY_KEY_SUFFIX_CHAR) {
+                inKey = false;
+            }
+            else if (!inKey && !Character.isJavaIdentifierPart(c) && c != '.') {
                 return false;
             }
         }
