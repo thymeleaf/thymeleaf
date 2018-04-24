@@ -92,8 +92,9 @@ public class SpringStandardDialect extends StandardDialect {
     public static final String PREFIX = "th";
     public static final int PROCESSOR_PRECEDENCE = 1000;
 
+    public static final boolean DEFAULT_ENABLE_SPRING_EL_COMPILER = false;
 
-    private boolean enableSpringELCompiler = false;
+    private boolean enableSpringELCompiler = DEFAULT_ENABLE_SPRING_EL_COMPILER;
 
 
     // These variables will be initialized lazily following the model applied in the extended StandardDialect.
