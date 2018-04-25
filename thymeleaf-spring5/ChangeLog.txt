@@ -5,6 +5,10 @@
   to unnecessary exceptions.
 - Fixed bean validation path not correctly binding expressions with brackets ([...]) when BindStatus was being
   obtained with optional = true.
+- Added a "renderHiddenMarkersBeforeCheckboxes" flag to SpringStandardDialect (also configurable from
+  SpringTemplateEngine) in order to instruct th:field to render the <input type="hidden" ...> associated with
+  checkbox fields before the checkbox itself and not after, in order to improve compatibility with several CSS-based
+  frameworks.
 - Added "Automatic-Module-Name: thymeleaf-spring5" to MANIFEST.MF for Java 9+ JPMS.
 
 
