@@ -147,7 +147,11 @@ public final class SpringInputCheckboxFieldTagProcessor
 
             hiddenTagModel.add(hiddenTag);
 
-            structureHandler.insertImmediatelyAfter(hiddenTagModel, false);
+            if (this.renderHiddenMarkersBeforeCheckboxes) {
+                structureHandler.insertBefore(hiddenTagModel);
+            } else {
+                structureHandler.insertImmediatelyAfter(hiddenTagModel, false);
+            }
 
         }
 
