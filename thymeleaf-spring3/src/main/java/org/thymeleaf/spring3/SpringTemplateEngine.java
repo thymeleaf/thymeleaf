@@ -19,9 +19,12 @@
  */
 package org.thymeleaf.spring3;
 
+import java.util.Set;
+
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.spring3.dialect.SpringStandardDialect;
@@ -135,6 +138,92 @@ public class SpringTemplateEngine
 
         super.setMessageResolver(messageResolver);
 
+    }
+
+
+
+
+    /**
+     * <p>
+     *   Returns whether the <tt>&lt;input type="hidden" ...&gt;</tt> marker tags rendered to signal the presence
+     *   of checkboxes in forms when unchecked should be rendered <em>before</em> the checkbox tag itself,
+     *   or after (default).
+     * </p>
+     * <p>
+     *   (This is just a convenience method, equivalent to calling
+     *   {@link SpringStandardDialect#getRenderHiddenMarkersBeforeCheckboxes()} on the dialect instance
+     *   itself. It is provided here in order to allow users to modify this behaviour without
+     *   having to directly create instances of the {@link SpringStandardDialect})
+     * </p>
+     * <p>
+     *   A number of CSS frameworks and style guides assume that the <tt>&lt;label ...&gt;</tt> for a checkbox
+     *   will appear in markup just after the <tt>&lt;input type="checkbox" ...&gt;</tt> tag itself, and so the
+     *   default behaviour of rendering an <tt>&lt;input type="hidden" ...&gt;</tt> after the checkbox can lead to
+     *   bad application of styles. By tuning this flag, developers can modify this behaviour and make the hidden
+     *   tag appear before the checkbox (and thus allow the lable to truly appear right after the checkbox).
+     * </p>
+     * <p>
+     *   Note this hidden field is introduced in order to signal the existence of the field in the form being sent,
+     *   even if the checkbox is unchecked (no URL parameter is added for unchecked check boxes).
+     * </p>
+     * <p>
+     *   This flag is set to <tt>false</tt> by default.
+     * </p>
+     *
+     * @return <tt>true</tt> if hidden markers should be rendered before the checkboxes, <tt>false</tt> if not.
+     *
+     * @since 3.0.10
+     */
+    public boolean getRenderHiddenMarkersBeforeCheckboxes() {
+        final Set<IDialect> dialects = getDialects();
+        for (final IDialect dialect : dialects) {
+            if (dialect instanceof SpringStandardDialect) {
+                return ((SpringStandardDialect) dialect).getRenderHiddenMarkersBeforeCheckboxes();
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * <p>
+     *   Sets whether the <tt>&lt;input type="hidden" ...&gt;</tt> marker tags rendered to signal the presence
+     *   of checkboxes in forms when unchecked should be rendered <em>before</em> the checkbox tag itself,
+     *   or after (default).
+     * </p>
+     * <p>
+     *   (This is just a convenience method, equivalent to calling
+     *   {@link SpringStandardDialect#setRenderHiddenMarkersBeforeCheckboxes(boolean)} on the dialect instance
+     *   itself. It is provided here in order to allow users to modify this behaviour without
+     *   having to directly create instances of the {@link SpringStandardDialect})
+     * </p>
+     * <p>
+     *   A number of CSS frameworks and style guides assume that the <tt>&lt;label ...&gt;</tt> for a checkbox
+     *   will appear in markup just after the <tt>&lt;input type="checkbox" ...&gt;</tt> tag itself, and so the
+     *   default behaviour of rendering an <tt>&lt;input type="hidden" ...&gt;</tt> after the checkbox can lead to
+     *   bad application of styles. By tuning this flag, developers can modify this behaviour and make the hidden
+     *   tag appear before the checkbox (and thus allow the lable to truly appear right after the checkbox).
+     * </p>
+     * <p>
+     *   Note this hidden field is introduced in order to signal the existence of the field in the form being sent,
+     *   even if the checkbox is unchecked (no URL parameter is added for unchecked check boxes).
+     * </p>
+     * <p>
+     *   This flag is set to <tt>false</tt> by default.
+     * </p>
+     *
+     * @param renderHiddenMarkersBeforeCheckboxes <tt>true</tt> if hidden markers should be rendered
+     *                                            before the checkboxes, <tt>false</tt> if not.
+     *
+     * @since 3.0.10
+     */
+    public void setRenderHiddenMarkersBeforeCheckboxes(final boolean renderHiddenMarkersBeforeCheckboxes) {
+        final Set<IDialect> dialects = getDialects();
+        for (final IDialect dialect : dialects) {
+            if (dialect instanceof SpringStandardDialect) {
+                ((SpringStandardDialect) dialect).setRenderHiddenMarkersBeforeCheckboxes(renderHiddenMarkersBeforeCheckboxes);
+            }
+        }
     }
 
 
