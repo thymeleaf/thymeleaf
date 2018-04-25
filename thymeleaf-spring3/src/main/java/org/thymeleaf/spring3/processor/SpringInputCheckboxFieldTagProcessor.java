@@ -34,6 +34,7 @@ import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.model.IStandaloneElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
+import org.thymeleaf.spring3.dialect.SpringStandardDialect;
 import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
 import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.unbescape.html.HtmlEscape;
@@ -52,10 +53,19 @@ public final class SpringInputCheckboxFieldTagProcessor
 
     public static final String CHECKBOX_INPUT_TYPE_ATTR_VALUE = "checkbox";
 
+    private final boolean renderHiddenMarkersBeforeCheckboxes;
+
+
 
 
     public SpringInputCheckboxFieldTagProcessor(final String dialectPrefix) {
+        this(dialectPrefix, SpringStandardDialect.DEFAULT_RENDER_HIDDEN_MARKERS_BEFORE_CHECKBOXES);
+    }
+
+
+    public SpringInputCheckboxFieldTagProcessor(final String dialectPrefix, final boolean renderHiddenMarkersBeforeCheckboxes) {
         super(dialectPrefix, INPUT_TAG_NAME, TYPE_ATTR_NAME, new String[] { CHECKBOX_INPUT_TYPE_ATTR_VALUE }, true);
+        this.renderHiddenMarkersBeforeCheckboxes = renderHiddenMarkersBeforeCheckboxes;
     }
 
 

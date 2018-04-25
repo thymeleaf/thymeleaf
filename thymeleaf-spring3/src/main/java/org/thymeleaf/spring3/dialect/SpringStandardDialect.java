@@ -87,6 +87,10 @@ public class SpringStandardDialect extends StandardDialect {
     public static final String PREFIX = "th";
     public static final int PROCESSOR_PRECEDENCE = 1000;
 
+    public static final boolean DEFAULT_RENDER_HIDDEN_MARKERS_BEFORE_CHECKBOXES = false;
+
+    private boolean renderHiddenMarkersBeforeCheckboxes = DEFAULT_RENDER_HIDDEN_MARKERS_BEFORE_CHECKBOXES;
+
 
     // These variables will be initialized lazily following the model applied in the extended StandardDialect.
     private IExpressionObjectFactory expressionObjectFactory = null;
@@ -97,6 +101,69 @@ public class SpringStandardDialect extends StandardDialect {
     
     public SpringStandardDialect() {
         super(NAME, PREFIX, PROCESSOR_PRECEDENCE);
+    }
+
+
+
+
+    /**
+     * <p>
+     *   Returns whether the <tt>&lt;input type="hidden" ...&gt;</tt> marker tags rendered to signal the presence
+     *   of checkboxes in forms when unchecked should be rendered <em>before</em> the checkbox tag itself,
+     *   or after (default).
+     * </p>
+     * <p>
+     *   A number of CSS frameworks and style guides assume that the <tt>&lt;label ...&gt;</tt> for a checkbox
+     *   will appear in markup just after the <tt>&lt;input type="checkbox" ...&gt;</tt> tag itself, and so the
+     *   default behaviour of rendering an <tt>&lt;input type="hidden" ...&gt;</tt> after the checkbox can lead to
+     *   bad application of styles. By tuning this flag, developers can modify this behaviour and make the hidden
+     *   tag appear before the checkbox (and thus allow the lable to truly appear right after the checkbox).
+     * </p>
+     * <p>
+     *   Note this hidden field is introduced in order to signal the existence of the field in the form being sent,
+     *   even if the checkbox is unchecked (no URL parameter is added for unchecked check boxes).
+     * </p>
+     * <p>
+     *   This flag is set to <tt>false</tt> by default.
+     * </p>
+     *
+     * @return <tt>true</tt> if hidden markers should be rendered before the checkboxes, <tt>false</tt> if not.
+     *
+     * @since 3.0.10
+     */
+    public boolean getRenderHiddenMarkersBeforeCheckboxes() {
+        return this.renderHiddenMarkersBeforeCheckboxes;
+    }
+
+
+    /**
+     * <p>
+     *   Sets whether the <tt>&lt;input type="hidden" ...&gt;</tt> marker tags rendered to signal the presence
+     *   of checkboxes in forms when unchecked should be rendered <em>before</em> the checkbox tag itself,
+     *   or after (default).
+     * </p>
+     * <p>
+     *   A number of CSS frameworks and style guides assume that the <tt>&lt;label ...&gt;</tt> for a checkbox
+     *   will appear in markup just after the <tt>&lt;input type="checkbox" ...&gt;</tt> tag itself, and so the
+     *   default behaviour of rendering an <tt>&lt;input type="hidden" ...&gt;</tt> after the checkbox can lead to
+     *   bad application of styles. By tuning this flag, developers can modify this behaviour and make the hidden
+     *   tag appear before the checkbox (and thus allow the lable to truly appear right after the checkbox).
+     * </p>
+     * <p>
+     *   Note this hidden field is introduced in order to signal the existence of the field in the form being sent,
+     *   even if the checkbox is unchecked (no URL parameter is added for unchecked check boxes).
+     * </p>
+     * <p>
+     *   This flag is set to <tt>false</tt> by default.
+     * </p>
+     *
+     * @param renderHiddenMarkersBeforeCheckboxes <tt>true</tt> if hidden markers should be rendered
+     *                                            before the checkboxes, <tt>false</tt> if not.
+     *
+     * @since 3.0.10
+     */
+    public void setRenderHiddenMarkersBeforeCheckboxes(final boolean renderHiddenMarkersBeforeCheckboxes) {
+        this.renderHiddenMarkersBeforeCheckboxes = renderHiddenMarkersBeforeCheckboxes;
     }
 
 
@@ -131,7 +198,7 @@ public class SpringStandardDialect extends StandardDialect {
 
     @Override
     public Set<IProcessor> getProcessors(final String dialectPrefix) {
-        return createSpringStandardProcessorsSet(dialectPrefix);
+        return createSpringStandardProcessorsSet(dialectPrefix, this.renderHiddenMarkersBeforeCheckboxes);
     }
 
 
@@ -146,6 +213,25 @@ public class SpringStandardDialect extends StandardDialect {
      * @return the set of SpringStandard processors.
      */
     public static Set<IProcessor> createSpringStandardProcessorsSet(final String dialectPrefix) {
+        return createSpringStandardProcessorsSet(dialectPrefix, DEFAULT_RENDER_HIDDEN_MARKERS_BEFORE_CHECKBOXES);
+    }
+
+
+    /**
+     * <p>
+     *   Create a the set of SpringStandard processors, all of them freshly instanced.
+     * </p>
+     *
+     * @param dialectPrefix the prefix established for the Standard Dialect, needed for initialization
+     * @param renderHiddenMarkersBeforeCheckboxes <tt>true</tt> if hidden markers should be rendered
+     *                                            before the checkboxes, <tt>false</tt> if not.
+     *
+     * @return the set of SpringStandard processors.
+     *
+     * @since 3.0.10
+     */
+    public static Set<IProcessor> createSpringStandardProcessorsSet(
+            final String dialectPrefix, final boolean renderHiddenMarkersBeforeCheckboxes) {
         /*
          * It is important that we create new instances here because, if there are
          * several dialects in the TemplateEngine that extend StandardDialect, they should
@@ -190,7 +276,7 @@ public class SpringStandardDialect extends StandardDialect {
         processors.add(new SpringUErrorsTagProcessor(dialectPrefix));
         processors.add(new SpringInputGeneralFieldTagProcessor(dialectPrefix));
         processors.add(new SpringInputPasswordFieldTagProcessor(dialectPrefix));
-        processors.add(new SpringInputCheckboxFieldTagProcessor(dialectPrefix));
+        processors.add(new SpringInputCheckboxFieldTagProcessor(dialectPrefix, renderHiddenMarkersBeforeCheckboxes));
         processors.add(new SpringInputRadioFieldTagProcessor(dialectPrefix));
         processors.add(new SpringInputFileFieldTagProcessor(dialectPrefix));
         processors.add(new SpringSelectFieldTagProcessor(dialectPrefix));
