@@ -19,14 +19,14 @@
  */
 package org.thymeleaf.context;
 
-import java.util.List;
-import java.util.Map;
-
 import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.templatemode.TemplateMode;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -68,7 +68,7 @@ public interface ITemplateContext extends IExpressionContext {
      *
      * @return the template data corresponding to the elements or nodes being currently processed.
      */
-    public TemplateData getTemplateData();
+    TemplateData getTemplateData();
 
     /**
      * <p>
@@ -83,7 +83,7 @@ public interface ITemplateContext extends IExpressionContext {
      *
      * @return the template mode of the elements or nodes being currently processed.
      */
-    public TemplateMode getTemplateMode();
+    TemplateMode getTemplateMode();
 
     /**
      * <p>
@@ -101,7 +101,7 @@ public interface ITemplateContext extends IExpressionContext {
      *
      * @return the stack of templates (list of {@link TemplateData}).
      */
-    public List<TemplateData> getTemplateStack();
+    List<TemplateData> getTemplateStack();
 
     /**
      * <p>
@@ -125,7 +125,7 @@ public interface ITemplateContext extends IExpressionContext {
      *
      * @return the stack of elements (list of {@link IProcessableElementTag}).
      */
-    public List<IProcessableElementTag> getElementStack();
+    List<IProcessableElementTag> getElementStack();
 
     /**
      * <p>
@@ -136,7 +136,7 @@ public interface ITemplateContext extends IExpressionContext {
      *
      * @return the template resolution attributes map
      */
-    public Map<String, Object> getTemplateResolutionAttributes();
+    Map<String, Object> getTemplateResolutionAttributes();
 
     /**
      * <p>
@@ -150,7 +150,7 @@ public interface ITemplateContext extends IExpressionContext {
      *
      * @return the model factory
      */
-    public IModelFactory getModelFactory();
+    IModelFactory getModelFactory();
 
     /**
      * <p>
@@ -164,7 +164,7 @@ public interface ITemplateContext extends IExpressionContext {
      *
      * @return <tt>true</tt> if there is a selection target, <tt>false</tt> if not.
      */
-    public boolean hasSelectionTarget();
+    boolean hasSelectionTarget();
 
     /**
      * <p>
@@ -178,7 +178,7 @@ public interface ITemplateContext extends IExpressionContext {
      *
      * @return the selection target, or null if there isn't any.
      */
-    public Object getSelectionTarget();
+    Object getSelectionTarget();
 
     /**
      * <p>
@@ -188,7 +188,7 @@ public interface ITemplateContext extends IExpressionContext {
      *
      * @return the inliner to be used.
      */
-    public IInliner getInliner();
+    IInliner getInliner();
 
     /**
      * <p>
@@ -208,7 +208,7 @@ public interface ITemplateContext extends IExpressionContext {
      * @return the requested message, correctly formatted. Or an <em>absent message representation</em>, or
      *         <tt>null</tt> if no absent message representations are allowed.
      */
-    public String getMessage(
+    String getMessage(
             final Class<?> origin, final String key, final Object[] messageParameters, final boolean useAbsentMessageRepresentation);
 
     /**
@@ -223,7 +223,7 @@ public interface ITemplateContext extends IExpressionContext {
      * @param parameters the (optional) URL parameters.
      * @return the built URL, or an exception if no link builders are able to build this link.
      */
-    public String buildLink(final String base, final Map<String, Object> parameters);
+    String buildLink(final String base, final Map<String, Object> parameters);
 
     /**
      * <p>
@@ -232,6 +232,6 @@ public interface ITemplateContext extends IExpressionContext {
      *
      * @return the identifier sequences object.
      */
-    public IdentifierSequences getIdentifierSequences();
+    IdentifierSequences getIdentifierSequences();
 
 }

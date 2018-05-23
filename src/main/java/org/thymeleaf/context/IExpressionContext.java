@@ -51,7 +51,7 @@ public interface IExpressionContext extends IContext {
      *
      * @return the engine configuration.
      */
-    public IEngineConfiguration getConfiguration();
+    IEngineConfiguration getConfiguration();
 
     /**
      * <p>
@@ -60,6 +60,6 @@ public interface IExpressionContext extends IContext {
      * </p>
      * @return the expression objects instance.
      */
-    public IExpressionObjects getExpressionObjects();
+    IExpressionObjects getExpressionObjects();
 
 }
