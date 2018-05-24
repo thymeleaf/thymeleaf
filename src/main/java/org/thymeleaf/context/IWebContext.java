@@ -52,7 +52,7 @@ public interface IWebContext extends IContext {
      *
      * @return the request object.
      */
-    public HttpServletRequest getRequest();
+    HttpServletRequest getRequest();
 
     /**
      * <p>
@@ -61,7 +61,7 @@ public interface IWebContext extends IContext {
      *
      * @return the response object.
      */
-    public HttpServletResponse getResponse();
+    HttpServletResponse getResponse();
 
     /**
      * <p>
@@ -71,7 +71,7 @@ public interface IWebContext extends IContext {
      *
      * @return the session object. Might be null if no session has been created.
      */
-    public HttpSession getSession();
+    HttpSession getSession();
 
     /**
      * <p>
@@ -80,6 +80,6 @@ public interface IWebContext extends IContext {
      *
      * @return the servlet context object.
      */
-    public ServletContext getServletContext();
+    ServletContext getServletContext();
 
 }
