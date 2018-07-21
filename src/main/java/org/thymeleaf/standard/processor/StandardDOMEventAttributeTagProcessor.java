@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.standard.processor;
 
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.templatemode.TemplateMode;
 
 /**
@@ -109,7 +110,7 @@ public final class StandardDOMEventAttributeTagProcessor extends AbstractStandar
 
 
     public StandardDOMEventAttributeTagProcessor(final String dialectPrefix, final String attrName) {
-        super(TemplateMode.HTML, dialectPrefix, attrName, PRECEDENCE, true, true);
+        super(TemplateMode.HTML, dialectPrefix, attrName, PRECEDENCE, true, StandardExpressionExecutionContext.RESTRICTED_FORBID_UNSAFE_EXP_RESULTS);
     }
 
 

@@ -26,6 +26,7 @@ import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IAttributeDefinitionsAware;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.util.StandardProcessorUtils;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.EscapedAttributeUtils;
@@ -101,6 +102,29 @@ public abstract class AbstractStandardAttributeModifierTagProcessor
      * @param templateMode the template mode.
      * @param dialectPrefix the dialect prefix.
      * @param attrName the attribute name to be matched.
+     * @param precedence the precedence to be applied.
+     * @param removeIfEmpty whether the attribute should be removed if the result of executing the expression is empty.
+     * @param expressionExecutionContext the expression execution context to be applied.
+     *
+     * @since 3.0.10
+     */
+    protected AbstractStandardAttributeModifierTagProcessor(
+            final TemplateMode templateMode,
+            final String dialectPrefix, final String attrName,
+            final int precedence, final boolean removeIfEmpty,
+            final StandardExpressionExecutionContext expressionExecutionContext) {
+        this(templateMode, dialectPrefix, attrName, attrName, precedence, removeIfEmpty, expressionExecutionContext);
+    }
+
+
+    /**
+     * <p>
+     *   Build a new instance of this tag processor.
+     * </p>
+     *
+     * @param templateMode the template mode.
+     * @param dialectPrefix the dialect prefix.
+     * @param attrName the attribute name to be matched.
      * @param targetAttrCompleteName complete name of target attribute.
      * @param precedence the precedence to be applied.
      * @param removeIfEmpty whether the attribute should be removed if the result of executing the expression is empty.
@@ -144,6 +168,37 @@ public abstract class AbstractStandardAttributeModifierTagProcessor
             final boolean restrictedExpressionExecution) {
 
         super(templateMode, dialectPrefix, attrName, precedence, false, restrictedExpressionExecution);
+
+        Validate.notNull(targetAttrCompleteName, "Complete name of target attribute cannot be null");
+
+        this.targetAttrCompleteName = targetAttrCompleteName;
+        this.removeIfEmpty = removeIfEmpty;
+
+    }
+
+
+    /**
+     * <p>
+     *   Build a new instance of this tag processor.
+     * </p>
+     *
+     * @param templateMode the template mode.
+     * @param dialectPrefix the dialect prefix.
+     * @param attrName the attribute name to be matched.
+     * @param targetAttrCompleteName complete name of target attribut.
+     * @param precedence the precedence to be applied.
+     * @param removeIfEmpty whether the attribute should be removed if the result of executing the expression is empty.
+     * @param expressionExecutionContext the expression execution context to be applied.
+     *
+     * @since 3.0.10
+     */
+    protected AbstractStandardAttributeModifierTagProcessor(
+            final TemplateMode templateMode, final String dialectPrefix,
+            final String attrName, final String targetAttrCompleteName,
+            final int precedence, final boolean removeIfEmpty,
+            final StandardExpressionExecutionContext expressionExecutionContext) {
+
+        super(templateMode, dialectPrefix, attrName, precedence, false, expressionExecutionContext);
 
         Validate.notNull(targetAttrCompleteName, "Complete name of target attribute cannot be null");
 

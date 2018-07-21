@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IExpressionContext;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
 
@@ -154,8 +155,28 @@ public final class SelectionVariableExpression extends SimpleExpression implemen
         final StandardExpressionExecutionContext evalExpContext =
                 (expression.getConvertToString()? expContext.withTypeConversion() : expContext.withoutTypeConversion());
 
-        return expressionEvaluator.evaluate(context, expression, evalExpContext);
-        
+        final Object result = expressionEvaluator.evaluate(context, expression, evalExpContext);
+
+        if (!expContext.getForbidUnsafeExpressionResults()) {
+            return result;
+        }
+
+        // We are only allowing results of type Number and Boolean, and cosidering the rest of data types "unsafe",
+        // as they could be rendered into a non-trustable String. This is mainly useful for helping prevent code
+        // injection in th:on* event handlers.
+        if (result == null
+                || result instanceof Number
+                || result instanceof Boolean) {
+            return result;
+        }
+
+        throw new TemplateProcessingException(
+                "Only variable expressions returning numbers or booleans are allowed in this context, any other data" +
+                "types are not trusted in the context of this expression, including Strings or any other " +
+                "object that could be rendered as a text literal. A typical case is HTML attributes for event handlers (e.g. " +
+                "\"onload\"), in which textual data from variables should better be output to \"data-*\" attributes and then " +
+                "read from the event handler.");
+
     }
     
     
