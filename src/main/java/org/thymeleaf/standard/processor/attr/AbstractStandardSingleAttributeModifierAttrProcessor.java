@@ -40,7 +40,7 @@ public abstract class AbstractStandardSingleAttributeModifierAttrProcessor
         extends AbstractSingleAttributeModifierAttrProcessor {
 
 
-    private final boolean restrictedExpressionEvaluationMode;
+    private final StandardExpressionExecutionContext expressionExecutionContext;
 
 
 
@@ -54,14 +54,24 @@ public abstract class AbstractStandardSingleAttributeModifierAttrProcessor
 
     // @since 2.1.6
     protected AbstractStandardSingleAttributeModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher, final boolean restrictedExpressionEvaluationMode) {
-        super(matcher);
-        this.restrictedExpressionEvaluationMode = restrictedExpressionEvaluationMode;
+        this(matcher, (restrictedExpressionEvaluationMode? StandardExpressionExecutionContext.RESTRICTED : StandardExpressionExecutionContext.NORMAL));
     }
 
     // @since 2.1.6
     protected AbstractStandardSingleAttributeModifierAttrProcessor(final String attributeName, final boolean restrictedExpressionEvaluationMode) {
+        this(attributeName, (restrictedExpressionEvaluationMode? StandardExpressionExecutionContext.RESTRICTED : StandardExpressionExecutionContext.NORMAL));
+    }
+
+    // @since 2.1.7
+    protected AbstractStandardSingleAttributeModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher, final StandardExpressionExecutionContext expressionExecutionContext) {
+        super(matcher);
+        this.expressionExecutionContext = expressionExecutionContext;
+    }
+
+    // @since 2.1.7
+    protected AbstractStandardSingleAttributeModifierAttrProcessor(final String attributeName, final StandardExpressionExecutionContext expressionExecutionContext) {
         super(attributeName);
-        this.restrictedExpressionEvaluationMode = restrictedExpressionEvaluationMode;
+        this.expressionExecutionContext = expressionExecutionContext;
     }
 
 
@@ -79,11 +89,7 @@ public abstract class AbstractStandardSingleAttributeModifierAttrProcessor
 
         final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
 
-        final StandardExpressionExecutionContext expMode =
-                (this.restrictedExpressionEvaluationMode?
-                        StandardExpressionExecutionContext.RESTRICTED : StandardExpressionExecutionContext.NORMAL);
-
-        final Object result = expression.execute(configuration, arguments, expMode);
+        final Object result = expression.execute(configuration, arguments, this.expressionExecutionContext);
         return (result == null? "" : result.toString());
 
     }

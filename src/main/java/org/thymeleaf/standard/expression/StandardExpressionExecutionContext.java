@@ -40,22 +40,31 @@ package org.thymeleaf.standard.expression;
 public final class StandardExpressionExecutionContext {
 
     // @since 2.1.6
-    public static final StandardExpressionExecutionContext RESTRICTED = new StandardExpressionExecutionContext(true, false);
-    public static final StandardExpressionExecutionContext RESTRICTED_WITH_TYPE_CONVERSION = new StandardExpressionExecutionContext(true, true);
+    public static final StandardExpressionExecutionContext RESTRICTED = new StandardExpressionExecutionContext(true, false, false);
+    public static final StandardExpressionExecutionContext RESTRICTED_FORBID_UNSAFE_EXP_RESULTS = new StandardExpressionExecutionContext(true, true, false);
 
-    public static final StandardExpressionExecutionContext PREPROCESSING = new StandardExpressionExecutionContext(true, false);
-    public static final StandardExpressionExecutionContext NORMAL = new StandardExpressionExecutionContext(false, false);
-    public static final StandardExpressionExecutionContext NORMAL_WITH_TYPE_CONVERSION = new StandardExpressionExecutionContext(false, true);
-    public static final StandardExpressionExecutionContext UNESCAPED_EXPRESSION = new StandardExpressionExecutionContext(true, false);
-    public static final StandardExpressionExecutionContext UNESCAPED_EXPRESSION_WITH_TYPE_CONVERSION = new StandardExpressionExecutionContext(true, true);
+    public static final StandardExpressionExecutionContext PREPROCESSING = new StandardExpressionExecutionContext(true, false, false);
+    public static final StandardExpressionExecutionContext NORMAL = new StandardExpressionExecutionContext(false, false, false);
+    public static final StandardExpressionExecutionContext UNESCAPED_EXPRESSION = new StandardExpressionExecutionContext(true, false, false);
+
+    private static final StandardExpressionExecutionContext RESTRICTED_WITH_TYPE_CONVERSION = new StandardExpressionExecutionContext(true, false, true);
+    private static final StandardExpressionExecutionContext RESTRICTED_FORBID_UNSAFE_EXP_RESULTS_WITH_TYPE_CONVERSION = new StandardExpressionExecutionContext(true, true, true);
+
+    private static final StandardExpressionExecutionContext NORMAL_WITH_TYPE_CONVERSION = new StandardExpressionExecutionContext(false, false, true);
+    private static final StandardExpressionExecutionContext UNESCAPED_EXPRESSION_WITH_TYPE_CONVERSION = new StandardExpressionExecutionContext(true, false, true);
 
     private final boolean forbidRequestParameters;
+    private final boolean forbidUnsafeExpressionResults;
     private final boolean performTypeConversion;
     
     
-    private StandardExpressionExecutionContext(final boolean forbidRequestParameters, final boolean performTypeConversion) {
+    private StandardExpressionExecutionContext(
+            final boolean forbidRequestParameters,
+            final boolean forbidUnsafeExpressionResults,
+            final boolean performTypeConversion) {
         super();
         this.forbidRequestParameters = forbidRequestParameters;
+        this.forbidUnsafeExpressionResults = forbidUnsafeExpressionResults;
         this.performTypeConversion = performTypeConversion;
     }
 
@@ -63,11 +72,18 @@ public final class StandardExpressionExecutionContext {
         return this.forbidRequestParameters;
     }
 
+    public boolean getForbidUnsafeExpressionResults() {
+        return this.forbidUnsafeExpressionResults;
+    }
+
     public boolean getPerformTypeConversion() {
         return this.performTypeConversion;
     }
 
     public StandardExpressionExecutionContext withoutTypeConversion() {
+        if (!getPerformTypeConversion()) {
+            return this;
+        }
         if (this == NORMAL_WITH_TYPE_CONVERSION) {
             return NORMAL;
         }
@@ -77,10 +93,16 @@ public final class StandardExpressionExecutionContext {
         if (this == RESTRICTED_WITH_TYPE_CONVERSION) {
             return RESTRICTED;
         }
-        return this;
+        if (this == RESTRICTED_FORBID_UNSAFE_EXP_RESULTS_WITH_TYPE_CONVERSION) {
+            return RESTRICTED_FORBID_UNSAFE_EXP_RESULTS;
+        }
+        return new StandardExpressionExecutionContext(getForbidRequestParameters(), getForbidUnsafeExpressionResults(), false);
     }
 
     public StandardExpressionExecutionContext withTypeConversion() {
+        if (getPerformTypeConversion()) {
+            return this;
+        }
         if (this == NORMAL) {
             return NORMAL_WITH_TYPE_CONVERSION;
         }
@@ -90,7 +112,10 @@ public final class StandardExpressionExecutionContext {
         if (this == RESTRICTED) {
             return RESTRICTED_WITH_TYPE_CONVERSION;
         }
-        return this;
+        if (this == RESTRICTED_FORBID_UNSAFE_EXP_RESULTS) {
+            return RESTRICTED_FORBID_UNSAFE_EXP_RESULTS_WITH_TYPE_CONVERSION;
+        }
+        return new StandardExpressionExecutionContext(getForbidRequestParameters(), getForbidUnsafeExpressionResults(), true);
     }
 
 

@@ -1,3 +1,8 @@
+2.1.7
+=====
+- Improved restricted expression evaluation mode to forbid output of textual data from context variables inside
+  JavaScript event handlers in HTML templates.
+
 2.1.6
 =====
 - Fixed #numbers.sequence(from,to) throwing an exception if from > to (bad computation of 'step' argument).

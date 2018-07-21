@@ -22,6 +22,7 @@ package org.thymeleaf.standard.processor.attr;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 
 /**
  * 
@@ -126,7 +127,7 @@ public final class StandardDOMEventAttributeModifierAttrProcessor
     
     private StandardDOMEventAttributeModifierAttrProcessor(final String attributeName) {
         // These attribute processors for JavaScript DOM events will always use restricted expression evaluation mode
-        super(attributeName, true);
+        super(attributeName, StandardExpressionExecutionContext.RESTRICTED_FORBID_UNSAFE_EXP_RESULTS);
     }
 
     
