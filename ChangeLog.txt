@@ -3,6 +3,8 @@
 - Fixed StackOverflowError when inserting content before first element of model in a model processor.
 - Improved restricted expression evaluation mode to forbid output of textual data from context variables inside
   JavaScript event handlers in HTML templates.
+- Improved HTML event handler attributes (th:on*) in order to allow processing of their values as fragments
+  of inlined JavaScript (using JAVASCRIPT template mode).
 - Improved use of template name abbreviation in logs and exceptions.
 - Added "Automatic-Module-Name: thymeleaf" to MANIFEST.MF for Java 9+ JPMS.
 - Updated AttoParser dependency to 2.0.5.RELEASE
