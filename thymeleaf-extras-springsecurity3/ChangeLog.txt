@@ -2,6 +2,7 @@
 =====
 - Improved instances of static class loading by making references package-relative for better resilience
   to package renaming.
+- Moved minimum thymeleaf dependency version to 3.0.10.
 - Updated SLF4j dependency to 1.7.25.
 
 
