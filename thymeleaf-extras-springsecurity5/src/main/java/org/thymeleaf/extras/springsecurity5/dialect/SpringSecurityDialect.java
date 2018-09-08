@@ -48,8 +48,8 @@ public class SpringSecurityDialect
     public static final String DEFAULT_PREFIX = "sec";
     public static final int PROCESSOR_PRECEDENCE = 800;
 
-    public static final IExpressionObjectFactory EXPRESSION_OBJECT_FACTORY = new SpringSecurityExpressionObjectFactory();
     
+    private static final IExpressionObjectFactory EXPRESSION_OBJECT_FACTORY = new SpringSecurityExpressionObjectFactory();
 
 
     public SpringSecurityDialect() {
