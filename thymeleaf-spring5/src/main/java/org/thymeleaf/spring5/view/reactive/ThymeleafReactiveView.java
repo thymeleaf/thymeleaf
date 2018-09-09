@@ -28,6 +28,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -101,6 +103,38 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
      * By default, no max response chunk size is set. Value = {@link Integer#MAX_VALUE}
      */
     public static final int DEFAULT_RESPONSE_CHUNK_SIZE_BYTES = Integer.MAX_VALUE;
+
+
+    /**
+     * <p>
+     *   This prefix should be used in order to allow dialects to provide reactive stream objects
+     *   that should be resolved (in an unblocked manner) just before the execution of the view. The idea is to allow
+     *   these streams to be included in the standard reactive Spring view model resolution mechanisms so that Thymeleaf
+     *   does not have to block during the execution of the view in order to obtain the value. The result will be as
+     *   if reactive stream objects had been added by the controller methods.
+     * </p>
+     * <p>
+     *   The name of the attributes being added to the Model will be the name of the execution attribute minus the
+     *   prefix. So <tt>ThymeleafReactiveModelAdditions:somedata</tt> will result in a Model attribute called
+     *   <tt>somedata</tt>.
+     * </p>
+     * <p>
+     *   Values of these execution attributes are allowed to be:
+     * </p>
+     * <ul>
+     *     <li><tt>Publisher&lt;?&gt;</tt> (including Flux&lt;?&gt; and Mono&lt;?&gt;).</li>
+     *     <li><tt>Supplier&lt;? extends Publisher&lt;?&gt;&gt;</tt>: The supplier will be called at <tt>View</tt>
+     *          rendering time and the result will be added to the Model.</li>
+     *     <li><tt>Function&lt;ServerWebExchange,? extends Publisher&lt;?&gt;&gt;</tt>: The function will be called
+     *          at <tt>View</tt> rendering time and the result will be added to the Model.</li>
+     * </ul>
+     * <p>
+     *     Value: <tt>ThymeleafReactiveModelAdditions:</tt>
+     * </p>
+     *
+     * @since 3.0.10
+     */
+    public static final String REACTIVE_MODEL_ADDITIONS_EXECUTION_ATTRIBUTE_PREFIX = "ThymeleafReactiveModelAdditions:";
 
     private static final String WEBFLUX_CONVERSION_SERVICE_NAME = "webFluxConversionService";
 
@@ -283,6 +317,58 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
 
 
+
+    @Override
+    public Mono<Void> render(final Map<String, ?> model, final MediaType contentType, final ServerWebExchange exchange) {
+	    // We will prepare the model for rendering by checking if the configured dialects have specified any execution
+        // attributes to be added to the model during preparation (e.g. reactive streams that will need to be previously
+        // resolved)
+
+        final ISpringWebFluxTemplateEngine viewTemplateEngine = getTemplateEngine();
+
+        if (viewTemplateEngine == null) {
+            return Mono.error(new IllegalArgumentException("Property 'thymeleafTemplateEngine' is required"));
+        }
+
+        final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
+        final Map<String,Object> executionAttributes = configuration.getExecutionAttributes();
+
+        // execution attribute -> process the model somehow? in SpringSecurityDialect there should be nothing that
+        // depends from reactor -> no Flux, o Flux extraction. So just an object of an interface of some kind?
+        // Such object cannot be even instantiated when we are not using WebFlux!
+
+        for (final String executionAttributeName : executionAttributes.keySet()) {
+
+            if (executionAttributeName != null && executionAttributeName.startsWith(REACTIVE_MODEL_ADDITIONS_EXECUTION_ATTRIBUTE_PREFIX)) {
+                // This execution attribute defines a reactive stream object that should be added to the model for
+                // non-blocking resolution at view rendering time
+
+                final Object executionAttributeValue = executionAttributes.get(executionAttributeName);
+                final String modelAttributeName =
+                        executionAttributeName.substring(REACTIVE_MODEL_ADDITIONS_EXECUTION_ATTRIBUTE_PREFIX.length());
+                Publisher<?> modelAttributeValue = null;
+
+                if (executionAttributeValue != null) {
+                    if (executionAttributeValue instanceof Publisher<?>) {
+                        modelAttributeValue = (Publisher<?>) executionAttributeValue;
+                    } else if (executionAttributeValue instanceof Supplier<?>){
+                        final Supplier<Publisher<?>> supplier = (Supplier<Publisher<?>>) executionAttributeValue;
+                        modelAttributeValue = supplier.get();
+                    } else if (executionAttributeValue instanceof Function<?,?>) {
+                        final Function<ServerWebExchange, Publisher<?>> function = (Function<ServerWebExchange, Publisher<?>>) executionAttributeValue;
+                        modelAttributeValue = function.apply(exchange);
+                    }
+                }
+
+                ((Map<String,Object>)model).put(modelAttributeName, modelAttributeValue);
+
+            }
+
+        }
+
+        return super.render(model, contentType, exchange);
+
+    }
 
 
 

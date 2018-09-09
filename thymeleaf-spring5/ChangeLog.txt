@@ -9,6 +9,8 @@
   SpringTemplateEngine) in order to instruct th:field to render the <input type="hidden" ...> associated with
   checkbox fields before the checkbox itself and not after, in order to improve compatibility with several CSS-based
   frameworks.
+- Added support for non-blocking resolution (before View rendering) of reactive variables specified by dialects
+  as execution attributes.
 - Added "Automatic-Module-Name: thymeleaf-spring5" to MANIFEST.MF for Java 9+ JPMS.
 
 
