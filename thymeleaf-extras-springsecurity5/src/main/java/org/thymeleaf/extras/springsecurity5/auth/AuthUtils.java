@@ -170,8 +170,8 @@ public final class AuthUtils {
                     expr + "\"", e);
         }
 
+        // TODO This is servlet-specific, but we should have an equivalence for WebFlux
 //        final FilterInvocation filterInvocation = new FilterInvocation(request, response, DUMMY_CHAIN);
-        final FilterInvocation filterInvocation = null;
 
         final EvaluationContext evaluationContext = handler.createEvaluationContext(authentication, filterInvocation);
         

@@ -37,6 +37,8 @@ import org.thymeleaf.util.ClassLoaderUtils;
  */
 final class SpringVersionSpecificUtils {
 
+    // TODO This infrastructure should evolve towards having support for different versions of thymeleaf-spring
+    // TODO (not the same as different versions of Spring), and merge with ThymeleafSpringUtils (probably)
 
     private static final Logger LOG = LoggerFactory.getLogger(SpringVersionSpecificUtils.class);
 

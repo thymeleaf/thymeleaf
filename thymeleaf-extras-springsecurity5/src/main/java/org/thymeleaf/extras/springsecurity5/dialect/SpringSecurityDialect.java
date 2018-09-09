@@ -19,10 +19,17 @@
  */
 package org.thymeleaf.extras.springsecurity5.dialect;
 
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.dialect.AbstractDialect;
+import org.thymeleaf.dialect.IExecutionAttributeDialect;
 import org.thymeleaf.dialect.IExpressionObjectDialect;
 import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.expression.IExpressionObjectFactory;
@@ -31,9 +38,12 @@ import org.thymeleaf.extras.springsecurity5.dialect.processor.AuthenticationAttr
 import org.thymeleaf.extras.springsecurity5.dialect.processor.AuthorizeAclAttrProcessor;
 import org.thymeleaf.extras.springsecurity5.dialect.processor.AuthorizeAttrProcessor;
 import org.thymeleaf.extras.springsecurity5.dialect.processor.AuthorizeUrlAttrProcessor;
+import org.thymeleaf.extras.springsecurity5.util.SpringSecurityContextUtils;
+import org.thymeleaf.extras.springsecurity5.util.SpringVersionUtils;
 import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.standard.processor.StandardXmlNsTagProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
+import reactor.core.publisher.Mono;
 
 
 /**
@@ -42,7 +52,8 @@ import org.thymeleaf.templatemode.TemplateMode;
  *
  */
 public class SpringSecurityDialect
-        extends AbstractDialect implements IProcessorDialect, IExpressionObjectDialect {
+        extends AbstractDialect
+        implements IProcessorDialect, IExpressionObjectDialect, IExecutionAttributeDialect {
 
     public static final String NAME = "SpringSecurity";
     public static final String DEFAULT_PREFIX = "sec";
@@ -50,6 +61,34 @@ public class SpringSecurityDialect
 
     
     private static final IExpressionObjectFactory EXPRESSION_OBJECT_FACTORY = new SpringSecurityExpressionObjectFactory();
+    private static final Map<String,Object> EXECUTION_ATTRIBUTES;
+
+    // Note here we are not using the constant from the ReactiveThymeleafView class (instead we replicate its same
+    // value "ThymeleafReactiveModelAdditions:" so that we don't create a hard dependency on the thymeleaf-spring5
+    // package, so that this class could be used in the future with, for example, a
+    // thymeleaf-spring6 integration package if needed.
+    private static final String SECURITY_CONTEXT_EXECUTION_ATTRIBUTE_NAME =
+            "ThymeleafReactiveModelAdditions:" + SpringSecurityContextUtils.SECURITY_CONTEXT_MODEL_ATTRIBUTE_NAME;
+
+
+    static {
+
+        if (!SpringVersionUtils.isSpringWebReactivePresent()) {
+
+            EXECUTION_ATTRIBUTES = null;
+
+        } else {
+
+            final Function<ServerWebExchange, Mono<SecurityContext>> secCtxInitializer =
+                        (exchange) -> ReactiveSecurityContextHolder.getContext();
+
+            EXECUTION_ATTRIBUTES = new HashMap<>(2, 1.0f);
+            EXECUTION_ATTRIBUTES.put(SECURITY_CONTEXT_EXECUTION_ATTRIBUTE_NAME, secCtxInitializer);
+
+        }
+
+    }
+
 
 
     public SpringSecurityDialect() {
@@ -105,6 +144,32 @@ public class SpringSecurityDialect
     public IExpressionObjectFactory getExpressionObjectFactory() {
         return EXPRESSION_OBJECT_FACTORY;
     }
-    
-    
+
+
+
+
+    @Override
+    public Map<String, Object> getExecutionAttributes() {
+        return EXECUTION_ATTRIBUTES;
+    }
+
+
+
+
+    private static final class ReactiveContextInitializerUtil {
+
+        private static Object buildReactiveContextInitializer() {
+           // We don't use a lambda here in order to avoid using
+           return new Function<ServerWebExchange, Mono<SecurityContext>>() {
+
+               @Override
+               public Mono<SecurityContext> apply(final ServerWebExchange serverWebExchange) {
+                   return ReactiveSecurityContextHolder.getContext();
+               }
+
+           };
+        }
+
+    }
+
 }

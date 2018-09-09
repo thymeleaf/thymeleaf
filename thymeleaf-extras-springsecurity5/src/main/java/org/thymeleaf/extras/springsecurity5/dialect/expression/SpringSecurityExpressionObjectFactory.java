@@ -23,17 +23,12 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.security.core.Authentication;
 import org.thymeleaf.context.IExpressionContext;
-import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.extras.springsecurity5.auth.AuthUtils;
 import org.thymeleaf.extras.springsecurity5.auth.Authorization;
-import org.thymeleaf.spring5.context.webflux.ISpringWebFluxContext;
+import org.thymeleaf.extras.springsecurity5.util.ThymeleafSpringUtils;
 
 /**
  * <p>
@@ -92,13 +87,13 @@ public class SpringSecurityExpressionObjectFactory implements IExpressionObjectF
     public Object buildObject(final IExpressionContext context, final String expressionObjectName) {
 
         if (AUTHENTICATION_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            if (context instanceof IWebContext) {
+            if (ThymeleafSpringUtils.isWebMvcContext(context) || ThymeleafSpringUtils.isWebFluxContext(context)) {
                 return AuthUtils.getAuthenticationObject(context);
             }
         }
 
         if (AUTHORIZATION_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            if (context instanceof IWebContext || context instanceof ISpringWebFluxContext) {
+            if (ThymeleafSpringUtils.isWebMvcContext(context) || ThymeleafSpringUtils.isWebFluxContext(context)) {
 
                 // We retrieve it like this in order to give it the opportunity to come from cache
                 final Authentication authentication =

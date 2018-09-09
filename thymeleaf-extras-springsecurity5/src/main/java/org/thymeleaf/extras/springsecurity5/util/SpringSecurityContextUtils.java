@@ -19,15 +19,12 @@
  */
 package org.thymeleaf.extras.springsecurity5.util;
 
-import java.security.Principal;
 import java.util.Enumeration;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.WebApplicationContext;
@@ -36,9 +33,6 @@ import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IWebContext;
-import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
-import org.thymeleaf.spring5.context.webflux.ISpringWebFluxContext;
-import reactor.core.publisher.Mono;
 
 /**
  * 
@@ -51,10 +45,9 @@ public final class SpringSecurityContextUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(SpringSecurityContextUtils.class);
 
-    // This constant is used for caching the Authentication object as a ServerWebExchange attribute the
-    // first time it is computed (by blocking on the stream that obtains it from the SecurityContext repository).
-    private static final String SERVER_WEB_EXCHANGE_ATTRIBUTE_AUTHENTICATION =
-            SpringSecurityDialect.class.getName() + ".AUTHENTICATION";
+    public static final String SECURITY_CONTEXT_MODEL_ATTRIBUTE_NAME = "ThymeleafSpringSecurityContext";
+
+
 
 
     private SpringSecurityContextUtils() {
@@ -65,12 +58,12 @@ public final class SpringSecurityContextUtils {
 
     public static ApplicationContext getApplicationContext(final IContext context) {
 
-        if (context instanceof IWebContext) {
-            return SpringSecurityWebMvcApplicationContextUtils.findRequiredWebApplicationContext((IWebContext) context);
+        if (ThymeleafSpringUtils.isWebMvcContext(context)) {
+            return SpringSecurityWebMvcApplicationContextUtils.findRequiredWebApplicationContext(context);
         }
 
-        if (context instanceof ISpringWebFluxContext) {
-            return SpringSecurityWebFluxApplicationContextUtils.findRequiredApplicationContext((ISpringWebFluxContext)context);
+        if (ThymeleafSpringUtils.isWebFluxContext(context)) {
+            return SpringSecurityWebFluxApplicationContextUtils.findRequiredApplicationContext(context);
         }
 
         throw new IllegalStateException(
@@ -84,12 +77,12 @@ public final class SpringSecurityContextUtils {
 
     public static Object getRequestAttribute(final IContext context, final String attributeName) {
 
-        if (context instanceof IWebContext) {
-            return SpringSecurityWebMvcApplicationContextUtils.getRequestAttribute((IWebContext) context, attributeName);
+        if (ThymeleafSpringUtils.isWebMvcContext(context)) {
+            return SpringSecurityWebMvcApplicationContextUtils.getRequestAttribute(context, attributeName);
         }
 
-        if (context instanceof ISpringWebFluxContext) {
-            return SpringSecurityWebFluxApplicationContextUtils.getRequestAttribute((ISpringWebFluxContext)context, attributeName);
+        if (ThymeleafSpringUtils.isWebFluxContext(context)) {
+            return SpringSecurityWebFluxApplicationContextUtils.getRequestAttribute(context, attributeName);
         }
 
         throw new IllegalStateException(
@@ -103,12 +96,12 @@ public final class SpringSecurityContextUtils {
 
     public static String getContextPath(final IContext context) {
 
-        if (context instanceof IWebContext) {
-            return SpringSecurityWebMvcApplicationContextUtils.getContextPath((IWebContext) context);
+        if (ThymeleafSpringUtils.isWebMvcContext(context)) {
+            return SpringSecurityWebMvcApplicationContextUtils.getContextPath(context);
         }
 
-        if (context instanceof ISpringWebFluxContext) {
-            return SpringSecurityWebFluxApplicationContextUtils.getContextPath((ISpringWebFluxContext)context);
+        if (ThymeleafSpringUtils.isWebFluxContext(context)) {
+            return SpringSecurityWebFluxApplicationContextUtils.getContextPath(context);
         }
 
         throw new IllegalStateException(
@@ -121,12 +114,12 @@ public final class SpringSecurityContextUtils {
 
     public static Authentication getAuthenticationObject(final IContext context) {
 
-        if (context instanceof IWebContext) {
+        if (ThymeleafSpringUtils.isWebMvcContext(context)) {
             return SpringSecurityWebMvcApplicationContextUtils.getAuthenticationObject();
         }
 
-        if (context instanceof ISpringWebFluxContext) {
-            return SpringSecurityWebFluxApplicationContextUtils.getAuthenticationObject((ISpringWebFluxContext)context);
+        if (ThymeleafSpringUtils.isWebFluxContext(context)) {
+            return SpringSecurityWebFluxApplicationContextUtils.getAuthenticationObject(context);
         }
 
         throw new IllegalStateException(
@@ -141,14 +134,14 @@ public final class SpringSecurityContextUtils {
     private static final class SpringSecurityWebMvcApplicationContextUtils {
 
 
-        static Object getRequestAttribute(final IWebContext context, final String attributeName) {
-            final javax.servlet.http.HttpServletRequest request = context.getRequest();
+        static Object getRequestAttribute(final IContext context, final String attributeName) {
+            final javax.servlet.http.HttpServletRequest request = ((IWebContext)context).getRequest();
             return request.getAttribute(attributeName);
         }
 
 
-        static String getContextPath(final IWebContext context) {
-            final javax.servlet.http.HttpServletRequest request = context.getRequest();
+        static String getContextPath(final IContext context) {
+            final javax.servlet.http.HttpServletRequest request = ((IWebContext)context).getRequest();
             return request.getContextPath();
         }
 
@@ -166,9 +159,9 @@ public final class SpringSecurityContextUtils {
          * only available since Spring Security 4.1, so we cannot simply call it if we want to support Spring Security 4.0.
          * That's why this method basically mimics its behaviour.
          */
-        static ApplicationContext findRequiredWebApplicationContext(final IWebContext context) {
+        static ApplicationContext findRequiredWebApplicationContext(final IContext context) {
 
-            final javax.servlet.ServletContext servletContext = context.getServletContext();
+            final javax.servlet.ServletContext servletContext = ((IWebContext)context).getServletContext();
 
             WebApplicationContext wac = WebApplicationContextUtils.getWebApplicationContext(servletContext);
             if (wac == null) {
@@ -215,21 +208,21 @@ public final class SpringSecurityContextUtils {
 
     private static final class SpringSecurityWebFluxApplicationContextUtils {
 
-        static Object getRequestAttribute(final ISpringWebFluxContext context, final String attributeName) {
-            final ServerWebExchange exchange = context.getExchange();
+        static Object getRequestAttribute(final IContext context, final String attributeName) {
+            final ServerWebExchange exchange = (ServerWebExchange) ThymeleafSpringUtils.getWebFluxExchange(context);
             return exchange.getAttribute(attributeName);
         }
 
 
-        static String getContextPath(final ISpringWebFluxContext context) {
-            final ServerWebExchange exchange = context.getExchange();
+        static String getContextPath(final IContext context) {
+            final ServerWebExchange exchange = (ServerWebExchange) ThymeleafSpringUtils.getWebFluxExchange(context);
             return exchange.getRequest().getPath().contextPath().value();
         }
 
 
-        static ApplicationContext findRequiredApplicationContext(final ISpringWebFluxContext context) {
+        static ApplicationContext findRequiredApplicationContext(final IContext context) {
 
-            final ServerWebExchange exchange = context.getExchange();
+            final ServerWebExchange exchange = (ServerWebExchange) ThymeleafSpringUtils.getWebFluxExchange(context);
             final ApplicationContext applicationContext = exchange.getApplicationContext();
 
             if (applicationContext == null) {
@@ -241,31 +234,16 @@ public final class SpringSecurityContextUtils {
         }
 
 
-        static Authentication getAuthenticationObject(final ISpringWebFluxContext context) {
-
-            final ServerWebExchange exchange = context.getExchange();
-            final Optional<Authentication> cachedAuthentication =
-                    exchange.getAttribute(SERVER_WEB_EXCHANGE_ATTRIBUTE_AUTHENTICATION);
-            if (cachedAuthentication != null) {
-                return cachedAuthentication.orElse(null);
+        static Authentication getAuthenticationObject(final IContext context) {
+            final SecurityContext securityContext = (SecurityContext) context.getVariable(SECURITY_CONTEXT_MODEL_ATTRIBUTE_NAME);
+            if (securityContext == null) {
+                if (logger.isTraceEnabled()) {
+                    logger.trace("[THYMELEAF][{}] No security context found, no authentication object returned.",
+                            new Object[] {TemplateEngine.threadIndex()});
+                }
+                return null;
             }
-
-            final Principal auth2 = exchange.getPrincipal().block();
-            final Mono<SecurityContext> securityContextStream = ReactiveSecurityContextHolder.getContext();
-            final SecurityContext securityContext = securityContextStream.block();
-            final Mono<Authentication> authenticationStream = securityContextStream.map(sc -> sc.getAuthentication());
-
-            // Given Thymeleaf 3.0 does not allow resolution of reactive variables on-the-fly (i.e. on the middle
-            // of template execution), there is no alternative here but to block.
-            // NOTE however that this should only be noticeable if the SecurityContext is retrieved
-            // from a repository that could actually need to block (i.e. a persisted WebSession).
-            final Authentication authentication = authenticationStream.block();
-
-            // Cache it for the next time
-            exchange.getAttributes().put(SERVER_WEB_EXCHANGE_ATTRIBUTE_AUTHENTICATION, Optional.ofNullable(authentication));
-
-            return authentication;
-
+            return securityContext.getAuthentication();
         }
 
 
