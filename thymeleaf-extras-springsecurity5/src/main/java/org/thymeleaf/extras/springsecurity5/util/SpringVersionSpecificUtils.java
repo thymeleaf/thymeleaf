@@ -17,14 +17,15 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.extras.springsecurity5.auth;
+package org.thymeleaf.extras.springsecurity5.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.EvaluationContext;
+import org.springframework.web.server.ServerWebExchange;
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.expression.IExpressionObjects;
-import org.thymeleaf.extras.springsecurity5.util.SpringVersionUtils;
 import org.thymeleaf.util.ClassLoaderUtils;
 
 
@@ -35,7 +36,7 @@ import org.thymeleaf.util.ClassLoaderUtils;
  * @since 2.1.1
  *
  */
-final class SpringVersionSpecificUtils {
+public final class SpringVersionSpecificUtils {
 
 
     private static final Logger LOG = LoggerFactory.getLogger(SpringVersionSpecificUtils.class);
@@ -53,7 +54,7 @@ final class SpringVersionSpecificUtils {
 
         if (SpringVersionUtils.isSpring50AtLeast()) {
 
-            LOG.trace("[THYMELEAF][TESTING] Spring 5.0+ found on classpath. Initializing auth utility for Spring 5");
+            LOG.trace("[THYMELEAF][TESTING] Spring 5.0+ found on classpath. Initializing version-specific utilities for Spring 5");
 
             try {
                 final Class<?> implClass = ClassLoaderUtils.loadClass(SPRING5_DELEGATE_CLASS);
@@ -69,8 +70,8 @@ final class SpringVersionSpecificUtils {
 
             throw new ExceptionInInitializerError(
                     new ConfigurationException(
-                        "The auth infrastructure could not create utility for the specific version of Spring being" +
-                        "used. Currently only Spring 5.x is supported."));
+                        "The Spring-version-specific infrastructure could not create utility for the specific " +
+                        "version of Spring being used. Currently only Spring 5.x or newer is supported."));
 
         }
 
@@ -79,7 +80,7 @@ final class SpringVersionSpecificUtils {
 
 
 
-    static EvaluationContext wrapEvaluationContext(
+    public static EvaluationContext wrapEvaluationContext(
             final EvaluationContext evaluationContext, final IExpressionObjects expresionObjects) {
 
         if (spring5Delegate != null) {
@@ -88,10 +89,65 @@ final class SpringVersionSpecificUtils {
 
         throw new ConfigurationException(
                 "The authorization infrastructure could not create initializer for the specific version of Spring being" +
-                "used. Currently only Spring 5.x is supported.");
+                "used. Currently only Spring 5.x or newer is supported.");
 
     }
 
+
+
+
+    public static boolean isWebContext(final IContext context) {
+
+        if (spring5Delegate != null) {
+            return spring5Delegate.isWebContext(context);
+        }
+
+        throw new ConfigurationException(
+                "The authorization infrastructure could not create initializer for the specific version of Spring being" +
+                "used. Currently only Spring 5.x or newer is supported.");
+
+    }
+
+
+    public static boolean isWebMvcContext(final IContext context) {
+
+        if (spring5Delegate != null) {
+            return spring5Delegate.isWebMvcContext(context);
+        }
+
+        throw new ConfigurationException(
+                "The authorization infrastructure could not create initializer for the specific version of Spring being" +
+                "used. Currently only Spring 5.x or newer is supported.");
+
+    }
+
+
+    public static boolean isWebFluxContext(final IContext context) {
+
+        if (spring5Delegate != null) {
+            return spring5Delegate.isWebFluxContext(context);
+        }
+
+        throw new ConfigurationException(
+                "The authorization infrastructure could not create initializer for the specific version of Spring being" +
+                "used. Currently only Spring 5.x or newer is supported.");
+
+    }
+
+
+
+
+    public static ServerWebExchange getServerWebExchange(final IContext context) {
+
+        if (spring5Delegate != null) {
+            return spring5Delegate.getServerWebExchange(context);
+        }
+
+        throw new ConfigurationException(
+                "The authorization infrastructure could not create initializer for the specific version of Spring being" +
+                "used. Currently only Spring 5.x or newer is supported.");
+
+    }
 
 
 

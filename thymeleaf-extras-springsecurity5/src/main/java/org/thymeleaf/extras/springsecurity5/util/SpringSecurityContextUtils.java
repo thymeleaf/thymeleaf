@@ -58,11 +58,11 @@ public final class SpringSecurityContextUtils {
 
     public static ApplicationContext getApplicationContext(final IContext context) {
 
-        if (ThymeleafSpringUtils.isWebMvcContext(context)) {
+        if (SpringVersionSpecificUtils.isWebMvcContext(context)) {
             return SpringSecurityWebMvcApplicationContextUtils.findRequiredWebApplicationContext(context);
         }
 
-        if (ThymeleafSpringUtils.isWebFluxContext(context)) {
+        if (SpringVersionSpecificUtils.isWebFluxContext(context)) {
             return SpringSecurityWebFluxApplicationContextUtils.findRequiredApplicationContext(context);
         }
 
@@ -77,11 +77,11 @@ public final class SpringSecurityContextUtils {
 
     public static Object getRequestAttribute(final IContext context, final String attributeName) {
 
-        if (ThymeleafSpringUtils.isWebMvcContext(context)) {
+        if (SpringVersionSpecificUtils.isWebMvcContext(context)) {
             return SpringSecurityWebMvcApplicationContextUtils.getRequestAttribute(context, attributeName);
         }
 
-        if (ThymeleafSpringUtils.isWebFluxContext(context)) {
+        if (SpringVersionSpecificUtils.isWebFluxContext(context)) {
             return SpringSecurityWebFluxApplicationContextUtils.getRequestAttribute(context, attributeName);
         }
 
@@ -96,11 +96,11 @@ public final class SpringSecurityContextUtils {
 
     public static String getContextPath(final IContext context) {
 
-        if (ThymeleafSpringUtils.isWebMvcContext(context)) {
+        if (SpringVersionSpecificUtils.isWebMvcContext(context)) {
             return SpringSecurityWebMvcApplicationContextUtils.getContextPath(context);
         }
 
-        if (ThymeleafSpringUtils.isWebFluxContext(context)) {
+        if (SpringVersionSpecificUtils.isWebFluxContext(context)) {
             return SpringSecurityWebFluxApplicationContextUtils.getContextPath(context);
         }
 
@@ -114,11 +114,11 @@ public final class SpringSecurityContextUtils {
 
     public static Authentication getAuthenticationObject(final IContext context) {
 
-        if (ThymeleafSpringUtils.isWebMvcContext(context)) {
+        if (SpringVersionSpecificUtils.isWebMvcContext(context)) {
             return SpringSecurityWebMvcApplicationContextUtils.getAuthenticationObject();
         }
 
-        if (ThymeleafSpringUtils.isWebFluxContext(context)) {
+        if (SpringVersionSpecificUtils.isWebFluxContext(context)) {
             return SpringSecurityWebFluxApplicationContextUtils.getAuthenticationObject(context);
         }
 
@@ -209,20 +209,20 @@ public final class SpringSecurityContextUtils {
     private static final class SpringSecurityWebFluxApplicationContextUtils {
 
         static Object getRequestAttribute(final IContext context, final String attributeName) {
-            final ServerWebExchange exchange = (ServerWebExchange) ThymeleafSpringUtils.getWebFluxExchange(context);
+            final ServerWebExchange exchange = SpringVersionSpecificUtils.getServerWebExchange(context);
             return exchange.getAttribute(attributeName);
         }
 
 
         static String getContextPath(final IContext context) {
-            final ServerWebExchange exchange = (ServerWebExchange) ThymeleafSpringUtils.getWebFluxExchange(context);
+            final ServerWebExchange exchange = SpringVersionSpecificUtils.getServerWebExchange(context);
             return exchange.getRequest().getPath().contextPath().value();
         }
 
 
         static ApplicationContext findRequiredApplicationContext(final IContext context) {
 
-            final ServerWebExchange exchange = (ServerWebExchange) ThymeleafSpringUtils.getWebFluxExchange(context);
+            final ServerWebExchange exchange = SpringVersionSpecificUtils.getServerWebExchange(context);
             final ApplicationContext applicationContext = exchange.getApplicationContext();
 
             if (applicationContext == null) {

@@ -17,38 +17,32 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.extras.springsecurity5.auth;
+package org.thymeleaf.extras.springsecurity5.util;
 
 import org.springframework.expression.EvaluationContext;
+import org.springframework.web.server.ServerWebExchange;
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.expression.IExpressionObjects;
-import org.thymeleaf.spring5.expression.IThymeleafEvaluationContext;
-import org.thymeleaf.spring5.expression.ThymeleafEvaluationContextWrapper;
 
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
  *
- * @since 3.0.2
+ * @since 2.1.1
  *
  */
-final class Spring5VersionSpecificUtility implements ISpringVersionSpecificUtility {
+interface ISpringVersionSpecificUtility {
+
+    EvaluationContext wrapEvaluationContext(
+            final EvaluationContext evaluationContext, final IExpressionObjects expresionObjects);
 
 
+    boolean isWebContext(final IContext context);
+    boolean isWebMvcContext(final IContext context);
+    boolean isWebFluxContext(final IContext context);
 
 
-    Spring5VersionSpecificUtility() {
-        super();
-    }
-
-
-
-    public EvaluationContext wrapEvaluationContext(
-            final EvaluationContext evaluationContext, final IExpressionObjects expresionObjects) {
-        final IThymeleafEvaluationContext thymeleafEvaluationContext = new ThymeleafEvaluationContextWrapper(evaluationContext);
-        thymeleafEvaluationContext.setExpressionObjects(expresionObjects);
-        return thymeleafEvaluationContext;
-    }
-
+    ServerWebExchange getServerWebExchange(final IContext context);
 
 }
