@@ -13,10 +13,11 @@ This is a *thymeleaf extras* module, not a part of the Thymeleaf core (and as
 such following its own versioning schema), but fully supported by the 
 Thymeleaf team.
 
-This repository contains two projects:
+This repository contains 3 projects:
 
   * **thymeleaf-extras-springsecurity3** for integration with Spring Security 3.x
   * **thymeleaf-extras-springsecurity4** for integration with Spring Security 4.x
+  * **thymeleaf-extras-springsecurity5** for integration with Spring Security 5.x
 
 Current versions: 
 
@@ -47,6 +48,7 @@ Maven info
   *   artifactId: 
     *   Spring Security 3 integration package: `thymeleaf-extras-springsecurity3`
     *   Spring Security 4 integration package: `thymeleaf-extras-springsecurity4`
+    *   Spring Security 5 integration package: `thymeleaf-extras-springsecurity5`
 
 
 Distribution packages
@@ -58,7 +60,9 @@ Distribution packages (binaries + sources + javadoc) can be downloaded from [Sou
 Features
 --------
 
-This module provides a new dialect called `org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect` or `org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect` (depending on the Spring Security version),
+This module provides a new dialect called `org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect`, 
+`org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect` or 
+`org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect` (depending on the Spring Security version),
 with default prefix `sec`. It includes:
   
   *   New expression utility objects:
@@ -120,7 +124,7 @@ The `#authentication` object can be easily used, like this:
     </div>
 ```
 
-The `#authorization` object can be used in a similar way, normally in `th:if` or `th:unless`tags:
+The `#authorization` object can be used in a similar way, normally in `th:if` or `th:unless` tags:
 
 
 ```html
