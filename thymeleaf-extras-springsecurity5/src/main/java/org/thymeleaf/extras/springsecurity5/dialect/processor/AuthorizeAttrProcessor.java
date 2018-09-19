@@ -58,8 +58,6 @@ public final class AuthorizeAttrProcessor extends AbstractStandardConditionalVis
             final ITemplateContext context, final IProcessableElementTag tag,
             final AttributeName attributeName, final String attributeValue) {
 
-        System.out.println("SECCTX: " + context.getVariable("secctx"));
-
         final String attrValue = (attributeValue == null? null : attributeValue.trim());
 
         if (attrValue == null || attrValue.length() == 0) {
