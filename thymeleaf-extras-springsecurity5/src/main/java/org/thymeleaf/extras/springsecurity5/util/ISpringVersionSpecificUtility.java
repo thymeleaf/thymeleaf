@@ -19,6 +19,9 @@
  */
 package org.thymeleaf.extras.springsecurity5.util;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.expression.EvaluationContext;
 import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.context.IContext;
@@ -43,6 +46,8 @@ interface ISpringVersionSpecificUtility {
     boolean isWebFluxContext(final IContext context);
 
 
+    HttpServletRequest getHttpServletRequest(final IContext context);
+    HttpServletResponse getHttpServletResponse(final IContext context);
     ServerWebExchange getServerWebExchange(final IContext context);
 
 }

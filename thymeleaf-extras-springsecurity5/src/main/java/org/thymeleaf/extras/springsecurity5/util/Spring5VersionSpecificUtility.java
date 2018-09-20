@@ -19,10 +19,14 @@
  */
 package org.thymeleaf.extras.springsecurity5.util;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.expression.EvaluationContext;
 import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IWebContext;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.spring5.context.webflux.ISpringWebFluxContext;
 import org.thymeleaf.spring5.expression.IThymeleafEvaluationContext;
@@ -83,11 +87,35 @@ final class Spring5VersionSpecificUtility implements ISpringVersionSpecificUtili
 
 
     @Override
+    public HttpServletRequest getHttpServletRequest(final IContext context) {
+        if (context instanceof IWebContext) {
+            return ((IWebContext)context).getRequest();
+        }
+        throw new TemplateProcessingException(
+                "Cannot obtain HttpServletRequest from a non-Servlet context implementation (\"" +
+                context.getClass().getName() + "\")");
+    }
+
+
+    @Override
+    public HttpServletResponse getHttpServletResponse(final IContext context) {
+        if (context instanceof IWebContext) {
+            return ((IWebContext)context).getResponse();
+        }
+        throw new TemplateProcessingException(
+                "Cannot obtain HttpServletResponse from a non-WebFlux context implementation (\"" +
+                context.getClass().getName() + "\")");
+    }
+
+
+    @Override
     public ServerWebExchange getServerWebExchange(final IContext context) {
         if (context instanceof ISpringWebFluxContext) {
             return ((ISpringWebFluxContext)context).getExchange();
         }
-        return null;
+        throw new TemplateProcessingException(
+                "Cannot obtain ServerWebExchange from a non-WebFlux context implementation (\"" +
+                context.getClass().getName() + "\")");
     }
 
 

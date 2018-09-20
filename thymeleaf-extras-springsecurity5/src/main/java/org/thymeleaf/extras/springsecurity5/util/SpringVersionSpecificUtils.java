@@ -19,6 +19,9 @@
  */
 package org.thymeleaf.extras.springsecurity5.util;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.EvaluationContext;
@@ -126,6 +129,36 @@ public final class SpringVersionSpecificUtils {
 
         if (spring5Delegate != null) {
             return spring5Delegate.isWebFluxContext(context);
+        }
+
+        throw new ConfigurationException(
+                "The authorization infrastructure could not create initializer for the specific version of Spring being" +
+                "used. Currently only Spring 5.x or newer is supported.");
+
+    }
+
+
+
+
+    public static HttpServletRequest getHttpServletRequest(final IContext context) {
+
+        if (spring5Delegate != null) {
+            return spring5Delegate.getHttpServletRequest(context);
+        }
+
+        throw new ConfigurationException(
+                "The authorization infrastructure could not create initializer for the specific version of Spring being" +
+                "used. Currently only Spring 5.x or newer is supported.");
+
+    }
+
+
+
+
+    public static HttpServletResponse getHttpServletResponse(final IContext context) {
+
+        if (spring5Delegate != null) {
+            return spring5Delegate.getHttpServletResponse(context);
         }
 
         throw new ConfigurationException(
