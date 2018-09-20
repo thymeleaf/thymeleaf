@@ -155,26 +155,27 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.2</version>
+        <version>3.7.0</version>
         <configuration>
           <source>${maven.compile.source}</source>
           <target>${maven.compile.target}</target>
+          <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>2.7</version>
+        <version>3.1.0</version>
         <configuration>
-          <encoding>US-ASCII</encoding>
+          <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.5</version>
+        <version>3.1.0</version>
         <configuration>
           <archive>
             <addMavenDescriptor>false</addMavenDescriptor>
@@ -188,6 +189,8 @@
               <!-- library users. See: http://commons.apache.org/releases/prepare.html                -->
               <X-Compile-Source-JDK>${maven.compile.source}</X-Compile-Source-JDK>
               <X-Compile-Target-JDK>${maven.compile.target}</X-Compile-Target-JDK>
+              <!-- Set the Built-By attribute in MANIFEST.MF to avoid displaying specific user names. -->
+              <Built-By>thymeleaf</Built-By>
             </manifestEntries>
           </archive>
         </configuration>
@@ -196,8 +199,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.1</version>
+        <version>3.0.1</version>
         <configuration>
+          <show>protected</show>
           <noqualifier>java.lang</noqualifier>
           <overview>${basedir}/src/main/javadoc/overview.html</overview>
           <javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
@@ -216,7 +220,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.4</version>
+        <version>3.0.1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -243,7 +247,7 @@
                 <descriptor>${basedir}/src/assembly/dist.xml</descriptor>
               </descriptors>
               <appendAssemblyId>true</appendAssemblyId>
-              <finalName>thymeleaf-extras-springsecurity4-${project.version}</finalName>
+              <finalName>thymeleaf-extras-springsecurity5-${project.version}</finalName>
             </configuration>
           </execution>
         </executions>
@@ -267,7 +271,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.4.2</version>
+        <version>2.5.3</version>
         <configuration>
           <mavenExecutorId>forked-path</mavenExecutorId>
         </configuration>
