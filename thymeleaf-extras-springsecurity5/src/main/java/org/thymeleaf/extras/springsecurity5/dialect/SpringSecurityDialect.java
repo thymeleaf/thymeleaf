@@ -155,21 +155,4 @@ public class SpringSecurityDialect
 
 
 
-
-    private static final class ReactiveContextInitializerUtil {
-
-        private static Object buildReactiveContextInitializer() {
-           // We don't use a lambda here in order to avoid using
-           return new Function<ServerWebExchange, Mono<SecurityContext>>() {
-
-               @Override
-               public Mono<SecurityContext> apply(final ServerWebExchange serverWebExchange) {
-                   return ReactiveSecurityContextHolder.getContext();
-               }
-
-           };
-        }
-
-    }
-
 }
