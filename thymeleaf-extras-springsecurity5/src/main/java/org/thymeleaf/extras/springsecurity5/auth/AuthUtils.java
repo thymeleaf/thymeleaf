@@ -335,9 +335,10 @@ public final class AuthUtils {
             final IExpressionContext context, final String url, final String method, final Authentication authentication) {
 
         throw new TemplateProcessingException(
-                "Authorization-oriented utilities (such as 'sec:authorize') are not available in WebFlux " +
-                "applications due to a lack of support in the reactive side of Spring Security (as of " +
-                "Spring Security 5.1)");
+                "Authorization-oriented expressions (such as those in 'sec:authorize') are restricted " +
+                "in WebFlux applications due to a lack of support in the reactive side of Spring Security (as of " +
+                "Spring Security 5.1). Only a minimal set of security expressions is allowed: " +
+                MinimalAuthenticationExpressionSupport.HANDLED_EXPRESSIONS);
 
     }
 
