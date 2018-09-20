@@ -27,6 +27,8 @@ import java.util.function.Function;
 
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.web.reactive.result.view.CsrfRequestDataValueProcessor;
+import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.dialect.AbstractDialect;
 import org.thymeleaf.dialect.IExecutionAttributeDialect;
@@ -69,6 +71,8 @@ public class SpringSecurityDialect
     // thymeleaf-spring6 integration package if needed.
     private static final String SECURITY_CONTEXT_EXECUTION_ATTRIBUTE_NAME =
             "ThymeleafReactiveModelAdditions:" + SpringSecurityContextUtils.SECURITY_CONTEXT_MODEL_ATTRIBUTE_NAME;
+    private static final String CSRF_EXECUTION_ATTRIBUTE_NAME =
+            "ThymeleafReactiveModelAdditions:" + CsrfRequestDataValueProcessor.DEFAULT_CSRF_ATTR_NAME;
 
 
     static {
@@ -82,8 +86,23 @@ public class SpringSecurityDialect
             final Function<ServerWebExchange, Mono<SecurityContext>> secCtxInitializer =
                         (exchange) -> ReactiveSecurityContextHolder.getContext();
 
+            final Function<ServerWebExchange, Mono<CsrfToken>> csrfTokenInitializer =
+                    (exchange) -> {
+                        final Mono<CsrfToken> csrfToken = exchange.getAttribute(CsrfToken.class.getName());
+                        if (csrfToken == null) {
+                            return Mono.empty();
+                        }
+                        // We need to put it into the exchange attributes manually here because async resolution
+                        // will only set the result into the MODEL, but RequestDataValueProcessor is expecing this
+                        // as an exchange attribute
+                        return csrfToken.doOnSuccess(
+                                token -> exchange.getAttributes().put(CsrfRequestDataValueProcessor.DEFAULT_CSRF_ATTR_NAME, token));
+                    };
+
+
             EXECUTION_ATTRIBUTES = new HashMap<>(2, 1.0f);
             EXECUTION_ATTRIBUTES.put(SECURITY_CONTEXT_EXECUTION_ATTRIBUTE_NAME, secCtxInitializer);
+            EXECUTION_ATTRIBUTES.put(CSRF_EXECUTION_ATTRIBUTE_NAME, csrfTokenInitializer);
 
         }
 
