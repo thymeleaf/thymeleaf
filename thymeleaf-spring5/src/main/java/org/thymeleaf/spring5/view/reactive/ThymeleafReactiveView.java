@@ -333,9 +333,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
         final Map<String,Object> executionAttributes = configuration.getExecutionAttributes();
 
-        // execution attribute -> process the model somehow? in SpringSecurityDialect there should be nothing that
-        // depends from reactor -> no Flux, o Flux extraction. So just an object of an interface of some kind?
-        // Such object cannot be even instantiated when we are not using WebFlux!
+        // Process the execution attributes and look for possible reactive objects that should be added for resolution
 
         for (final String executionAttributeName : executionAttributes.keySet()) {
 
