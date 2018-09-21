@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.function.Function;
 
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.reactive.result.view.CsrfRequestDataValueProcessor;
 import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.web.server.ServerWebExchange;
@@ -83,10 +82,12 @@ public class SpringSecurityDialect
 
         } else {
 
-            final Function<ServerWebExchange, Mono<SecurityContext>> secCtxInitializer =
+            // Returns Mono<SecurityContext>, but we will specify Object in order not to bind this class to Mono at compile time
+            final Function<ServerWebExchange, Object> secCtxInitializer =
                         (exchange) -> ReactiveSecurityContextHolder.getContext();
 
-            final Function<ServerWebExchange, Mono<CsrfToken>> csrfTokenInitializer =
+            // Returns Mono<SecurityContext>, but we will specify Object in order not to bind this class to Mono at compile time
+            final Function<ServerWebExchange, Object> csrfTokenInitializer =
                     (exchange) -> {
                         final Mono<CsrfToken> csrfToken = exchange.getAttribute(CsrfToken.class.getName());
                         if (csrfToken == null) {
