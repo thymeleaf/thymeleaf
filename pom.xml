@@ -107,6 +107,8 @@
     <maven.compile.source>1.6</maven.compile.source>
     <maven.compile.target>1.6</maven.compile.target>
     <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
+    <!-- A project-name-based approach is adopted for the module name (instead of a reverse-DNS one) -->
+    <module.name>${project.artifactId}</module.name>
     <thymeleaf.version>3.0.4.RELEASE</thymeleaf.version>
     <thymeleaf-spring5.version>3.0.4.M2</thymeleaf-spring5.version>
     <attoparser.version>2.0.3.RELEASE</attoparser.version>
@@ -186,6 +188,9 @@
               <X-Compile-Target-JDK>${maven.compile.target}</X-Compile-Target-JDK>
               <!-- Set the Built-By attribute in MANIFEST.MF to avoid displaying specific user names. -->
               <Built-By>thymeleaf</Built-By>
+              <!-- Setting this automatic module name will fix the module name used by unbescape even -->
+              <!-- if the library is not yet fully modularised.                                       -->
+              <Automatic-Module-Name>${module.name}</Automatic-Module-Name>
             </manifestEntries>
           </archive>
         </configuration>
