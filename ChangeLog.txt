@@ -24,6 +24,7 @@
 - Added "Automatic-Module-Name: thymeleaf" to MANIFEST.MF for Java 9+ JPMS.
 - Updated AttoParser dependency to 2.0.5.RELEASE
 - Updated Unbescape dependency to 1.1.6.RELEASE
+- Added `Numbers` functions to format numbers with a chosen currency.
 
 
 3.0.9
