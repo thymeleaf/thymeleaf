@@ -1,3 +1,9 @@
+3.1.3
+=========
+- Added `Numbers` functions to format numbers with a chosen currency.
+
+
+
 3.1.2
 =====
 - Allow java.sql.* types in expressions.
@@ -169,8 +175,6 @@
   processing (as is default) or on the contrary it should only start sending results to the web server's
   output buffers when processing of the template has completely finished and output is rendered in memory.
 - Added "Automatic-Module-Name: thymeleaf-spring5" to MANIFEST.MF for Java 9+ JPMS.
-
-
 
 3.0.9
 =====
