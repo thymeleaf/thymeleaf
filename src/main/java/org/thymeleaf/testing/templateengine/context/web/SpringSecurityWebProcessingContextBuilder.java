@@ -120,8 +120,8 @@ public class SpringSecurityWebProcessingContextBuilder extends SpringWebProcessi
      *   built with the values of two context variables:
      * </p>
      * <ul>
-     *   <li><tt>j_username</tt> for the user name.</li>
-     *   <li><tt>j_password</tt> for the user password.</li>
+     *   <li>{@code j_username} for the user name.</li>
+     *   <li>{@code j_password} for the user password.</li>
      * </ul>
      * <p>
      *   If one or both of these variables are not present, null is returned and therefore
