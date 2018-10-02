@@ -65,14 +65,14 @@ public interface ITemplateResource {
 
     /**
      * <p>
-     *   Returns a <tt>String</tt> describing the resource.
+     *   Returns a {@code String} describing the resource.
      * </p>
      * <p>
      *   Note this should not be taken for a valid <em>resource name</em>, as depending on the implementation
      *   it could be too verbose/descriptive or not unique enough to be used for identification purposes.
      * </p>
      *
-     * @return the resource description. Should never return <tt>null</tt>.
+     * @return the resource description. Should never return {@code null}.
      */
     public String getDescription();
 
@@ -86,12 +86,12 @@ public interface ITemplateResource {
      *   the deepest level of the resource path.
      * </p>
      * <p>
-     *   For example, a file resource located at <tt>/home/user/template/main.html</tt> should return
-     *   <tt>main</tt> as its <em>base name</em>, so that names like <tt>main.properties</tt>,
-     *   <tt>main.th.xml</tt> or similar can be derived, and afterwards resolved using {@link #relative(String)}.
+     *   For example, a file resource located at {@code /home/user/template/main.html} should return
+     *   {@code main} as its <em>base name</em>, so that names like {@code main.properties},
+     *   {@code main.th.xml} or similar can be derived, and afterwards resolved using {@link #relative(String)}.
      * </p>
      *
-     * @return the base name, or <tt>null</tt> if it cannot be computed for the specific type of resource.
+     * @return the base name, or {@code null} if it cannot be computed for the specific type of resource.
      */
     public String getBaseName();
 
@@ -109,10 +109,10 @@ public interface ITemplateResource {
      *   This mechanism will be used by Template Resolvers extending from
      *   {@link org.thymeleaf.templateresolver.AbstractTemplateResolver} for checking real resource existence
      *   if the {@link org.thymeleaf.templateresolver.AbstractTemplateResolver#setCheckExistence(boolean)} flag
-     *   is set to <tt>true</tt>.
+     *   is set to {@code true}.
      * </p>
      *
-     * @return <tt>true</tt> if the resource exists, <tt>false</tt> if not.
+     * @return {@code true} if the resource exists, {@code false} if not.
      */
     public boolean exists();
 
@@ -129,7 +129,7 @@ public interface ITemplateResource {
      *   Note this readers should be closed after being fully consumed, just like any other resources.
      * </p>
      *
-     * @return a {@link Reader} on the template contents. Should never return <tt>null</tt>.
+     * @return a {@link Reader} on the template contents. Should never return {@code null}.
      * @throws IOException if an input/output exception happens or if the resource does not exist (e.g.
      *                     {@link java.io.FileNotFoundException}).
      */
@@ -146,7 +146,7 @@ public interface ITemplateResource {
      * </p>
      *
      * @param relativeLocation the location of the resource we want to obtain, relative to the current one. Required.
-     * @return the relative resource. Should never return <tt>null</tt>.
+     * @return the relative resource. Should never return {@code null}.
      */
     public ITemplateResource relative(final String relativeLocation);
 

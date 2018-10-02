@@ -33,7 +33,7 @@ import org.thymeleaf.util.Validate;
 /**
  * <p>
  *   Class that models the result of a {@link FragmentExpression}, i.e. the result of a fragment expression in
- *   the form of <tt>~{template :: fragment? (parameters)?}</tt>
+ *   the form of {@code ~{template :: fragment? (parameters)?}}
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez

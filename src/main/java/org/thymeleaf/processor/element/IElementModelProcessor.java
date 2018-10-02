@@ -60,7 +60,7 @@ import org.thymeleaf.model.IModelVisitor;
  *   useful for traversing an entire model looking for specific nodes or relevant data the Visitor pattern.
  * </p>
  * <p>
- *   <b>Using the <tt>structureHandler</tt></b>
+ *   <b>Using the {@code structureHandler}</b>
  * </p>
  * <p>
  *   Model processors are passed a structure handler object that allows them to instruct the engine to take

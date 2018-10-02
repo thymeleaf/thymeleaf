@@ -37,7 +37,7 @@ import org.thymeleaf.util.Validate;
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name
- *   <tt>#calendars</tt>.
+ *   {@code #calendars}.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez

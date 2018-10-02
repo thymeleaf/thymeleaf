@@ -151,8 +151,8 @@ public interface IElementTagStructureHandler {
      *   Instructs the engine to set a new selection target.
      * </p>
      * <p>
-     *   The <em>selection target</em> is the object on which selection expressions <tt>(*{...})</tt> are executed.
-     *   In the Standard Dialect, this selection target is usually modified by means of the <tt>th:object</tt>
+     *   The <em>selection target</em> is the object on which selection expressions {@code (*{...})} are executed.
+     *   In the Standard Dialect, this selection target is usually modified by means of the {@code th:object}
      *   attribute, but custom processors can do it too. Note the selection target has the same scope as a local
      *   variable, and will therefore be accessible only inside the body of the element being processed.
      * </p>
@@ -200,11 +200,11 @@ public interface IElementTagStructureHandler {
 
     /**
      * <p>
-     *   Instructs the engine to set a new body for the current element, in the form of a <tt>CharSequence</tt>.
+     *   Instructs the engine to set a new body for the current element, in the form of a {@code CharSequence}.
      * </p>
      * <p>
      *   This is the way a processor can change what is shown inside an element during processing. For example,
-     *   it is this way how <tt>th:text</tt> changes the contents of its containing element.
+     *   it is this way how {@code th:text} changes the contents of its containing element.
      * </p>
      *
      * @param text the text to be used as the new body.
@@ -220,7 +220,7 @@ public interface IElementTagStructureHandler {
      * </p>
      * <p>
      *   This is the way a processor can change what is shown inside an element during processing. For example,
-     *   it is this way how <tt>th:utext</tt> changes the contents of its containing element.
+     *   it is this way how {@code th:utext} changes the contents of its containing element.
      * </p>
      *
      * @param model the model to be used as the new body.
@@ -262,7 +262,7 @@ public interface IElementTagStructureHandler {
 
     /**
      * <p>
-     *   Instructs the engine to replace the current element with the specified text (a <tt>CharSequence</tt>).
+     *   Instructs the engine to replace the current element with the specified text (a {@code CharSequence}).
      * </p>
      * <p>
      *   Note it is the <em>complete element</em> that will be replaced with the specified text, i.e. the
@@ -325,7 +325,7 @@ public interface IElementTagStructureHandler {
      * </p>
      * <p>
      *   This method specifies the name of both the iteration variable name and the <em>iterStatus</em> variable
-     *   name, and also the object that should be iterated (usually a <tt>Collection</tt>, <tt>Iterable</tt> or
+     *   name, and also the object that should be iterated (usually a {@code Collection}, {@code Iterable} or
      *   similar).
      * </p>
      *

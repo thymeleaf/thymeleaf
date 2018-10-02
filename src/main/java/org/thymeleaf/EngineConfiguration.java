@@ -321,9 +321,9 @@ public class EngineConfiguration implements IEngineConfiguration {
 
 
     /**
-     * Compares <tt>Integer</tt> types, taking into account possible <tt>null</tt>
-     * values.  When <tt>null</tt>, then the return value will be such that the
-     * other value will come first in a comparison.  If both values are <tt>null</tt>,
+     * Compares {@code Integer} types, taking into account possible {@code null}
+     * values.  When {@code null}, then the return value will be such that the
+     * other value will come first in a comparison.  If both values are {@code null},
      * then they are effectively equal.
      * 
      * @param o1 The first value to compare.

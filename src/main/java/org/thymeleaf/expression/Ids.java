@@ -24,12 +24,12 @@ import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   Expression Object for performing operations related to markup <tt>id</tt> attributes inside Thymeleaf
+ *   Expression Object for performing operations related to markup {@code id} attributes inside Thymeleaf
  *   Standard Expressions.
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name
- *   <tt>#ids</tt>.
+ *   {@code #ids}.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez

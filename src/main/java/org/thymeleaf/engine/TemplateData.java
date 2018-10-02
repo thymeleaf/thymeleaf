@@ -69,7 +69,7 @@ public final class TemplateData {
 
     /**
      * <p>
-     *   Builds a new <tt>TemplateData</tt> object.
+     *   Builds a new {@code TemplateData} object.
      * </p>
      * <p>
      *   This constructor should be considered internal, as there should be no reason why
@@ -126,7 +126,7 @@ public final class TemplateData {
      *   Returns whether this spec has template selectors specified or not.
      * </p>
      *
-     * @return <tt>true</tt> of there are template selectors, <tt>false</tt> if not.
+     * @return {@code true} of there are template selectors, {@code false} if not.
      */
     public boolean hasTemplateSelectors() {
         // Checking for null is enough, as we have already processed this in the constructor
@@ -141,12 +141,12 @@ public final class TemplateData {
      * <p>
      *   Template selectors allow the possibility to process only a part of the specified template, expressing
      *   this selection in a syntax similar to jQuery, CSS or XPath selectors. Note this is only available for
-     *   <em>markup template modes</em> (<tt>HTML</tt>, <tt>XML</tt>). For more info on <em>template selectors</em>
+     *   <em>markup template modes</em> ({@code HTML}, {@code XML}). For more info on <em>template selectors</em>
      *   syntax, have a look at <a href="http://www.attoparser.org">AttoParser</a>'s <em>markup selectors</em>
      *   documentation.
      * </p>
      *
-     * @return the template selectors, or <tt>null</tt> if there are none.
+     * @return the template selectors, or {@code null} if there are none.
      */
     public Set<String> getTemplateSelectors() {
         return this.templateSelectors;
@@ -162,7 +162,7 @@ public final class TemplateData {
      *   {@link org.thymeleaf.templateresolver.ITemplateResolver}.
      * </p>
      * <p>
-     *   Note that, even if this resource object will never be <tt>null</tt>, the existence of the
+     *   Note that, even if this resource object will never be {@code null}, the existence of the
      *   resource object does not necessarily imply the existence of the resource itself unless
      *   the template resolver was configured for calling {@link ITemplateResource#exists()} upon
      *   template resolution.

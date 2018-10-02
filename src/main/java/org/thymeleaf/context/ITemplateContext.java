@@ -61,7 +61,7 @@ public interface ITemplateContext extends IExpressionContext {
      * <p>
      *   Note that the {@link TemplateData} returned here corresponds with the origin of the elements or
      *   nodes being currently processed. This is, if a processor is being executed for an element inserted
-     *   from an external template (via a <tt>th:insert</tt>, for example), then this method will return
+     *   from an external template (via a {@code th:insert}, for example), then this method will return
      *   the template data for the template in which the inserted fragment lives, not the one it was inserted
      *   into.
      * </p>
@@ -77,7 +77,7 @@ public interface ITemplateContext extends IExpressionContext {
      * <p>
      *   Note that the {@link TemplateMode} returned here corresponds with origin of the elements or nodes being
      *   currently processed. This is, if a processor is being executed for an element inserted from an external
-     *   template (via a <tt>th:insert</tt>, for example), then this method will return the template mode
+     *   template (via a {@code th:insert}, for example), then this method will return the template mode
      *   for the template in which the inserted fragment lives, not the one it was inserted into.
      * </p>
      *
@@ -96,7 +96,7 @@ public interface ITemplateContext extends IExpressionContext {
      * </p>
      * <p>
      *   The first element in this list will always be the top-level template (the one called at the
-     *   {@link org.thymeleaf.ITemplateEngine} <tt>process(...)</tt> methods).
+     *   {@link org.thymeleaf.ITemplateEngine} {@code process(...)} methods).
      * </p>
      *
      * @return the stack of templates (list of {@link TemplateData}).
@@ -129,7 +129,7 @@ public interface ITemplateContext extends IExpressionContext {
 
     /**
      * <p>
-     *   Returns the map of configuration items that have been specified at the <tt>process(...)</tt> methods of
+     *   Returns the map of configuration items that have been specified at the {@code process(...)} methods of
      *   {@link org.thymeleaf.ITemplateEngine}, aimed at further configuring the template being used and its
      *   resolution by means of the {@link org.thymeleaf.templateresolver.ITemplateResolver}s.
      * </p>
@@ -158,22 +158,22 @@ public interface ITemplateContext extends IExpressionContext {
      *   execution or not.
      * </p>
      * <p>
-     *   Selection targets are objects on which all <tt>*{...}</tt> expression will be executed (instead of on the
-     *   root context). They are normally set by means of <tt>th:objects</tt>.
+     *   Selection targets are objects on which all {@code *{...}} expression will be executed (instead of on the
+     *   root context). They are normally set by means of {@code th:objects}.
      * </p>
      *
-     * @return <tt>true</tt> if there is a selection target, <tt>false</tt> if not.
+     * @return {@code true} if there is a selection target, {@code false} if not.
      */
     public boolean hasSelectionTarget();
 
     /**
      * <p>
-     *   Returns the <em>selection target</em> set for the current point of execution (or <tt>null</tt> if there
+     *   Returns the <em>selection target</em> set for the current point of execution (or {@code null} if there
      *   isn't any).
      * </p>
      * <p>
-     *   Selection targets are objects on which all <tt>*{...}</tt> expression will be executed (instead of on the
-     *   root context). They are normally set by means of <tt>th:objects</tt>.
+     *   Selection targets are objects on which all {@code *{...}} expression will be executed (instead of on the
+     *   root context). They are normally set by means of {@code th:objects}.
      * </p>
      *
      * @return the selection target, or null if there isn't any.
@@ -206,7 +206,7 @@ public interface ITemplateContext extends IExpressionContext {
      *                                       the case that the message does not exist
      *                                       (see {@link org.thymeleaf.messageresolver.IMessageResolver}).
      * @return the requested message, correctly formatted. Or an <em>absent message representation</em>, or
-     *         <tt>null</tt> if no absent message representations are allowed.
+     *         {@code null} if no absent message representations are allowed.
      */
     public String getMessage(
             final Class<?> origin, final String key, final Object[] messageParameters, final boolean useAbsentMessageRepresentation);

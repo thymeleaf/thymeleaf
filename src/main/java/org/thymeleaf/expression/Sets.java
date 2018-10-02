@@ -31,7 +31,7 @@ import org.thymeleaf.util.SetUtils;
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name
- *   <tt>#sets</tt>.
+ *   {@code #sets}.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez

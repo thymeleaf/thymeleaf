@@ -30,7 +30,7 @@ import org.thymeleaf.engine.TemplateModel;
  * </p>
  * <p>
  *   This class is in charge of providing the corresponding cache objects to
- *   the template engine. Every call to each of the <tt>getXCache()</tt>
+ *   the template engine. Every call to each of the {@code getXCache()}
  *   methods must always return the XCache object (i.e. only one cache object
  *   should be ever created for each type of cache, and returned every time it
  *   is requested).
@@ -98,7 +98,7 @@ public interface ICacheManager {
      * <p>
      *   Keys are the expressions themselves (their String representation), along with
      *   a type that is normally used for identifying the nature of the object being
-     *   cached (for example <tt>{"ognl","person.name"}</tt>).
+     *   cached (for example {@code {"ognl","person.name"}}).
      * </p>
      * 
      * @return the cache of expression artifacts
@@ -116,7 +116,7 @@ public interface ICacheManager {
      *   they should use this method to retrieve them by their name.
      * </p>
      * <p>
-     *   Note the default {@link StandardCacheManager} will return <tt>null</tt> for every
+     *   Note the default {@link StandardCacheManager} will return {@code null} for every
      *   call to this method, as it should be custom implementations of this interface (or
      *   extensions of {@link AbstractCacheManager} or extensions {@link StandardCacheManager})
      *   who implement these <i>specific caches</i> and offer their names through the
@@ -140,7 +140,7 @@ public interface ICacheManager {
      *   Might return null if no specific caches are managed.
      * </p>
      * <p>
-     *   Note the default {@link StandardCacheManager} will return <tt>null</tt>, as it should
+     *   Note the default {@link StandardCacheManager} will return {@code null}, as it should
      *   be custom implementations of this interface (or
      *   extensions of {@link AbstractCacheManager} or extensions {@link StandardCacheManager})
      *   who implement these <i>specific caches</i> and offer their names through the

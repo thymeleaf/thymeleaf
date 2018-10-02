@@ -36,7 +36,7 @@ public interface IXMLDeclaration extends ITemplateEvent {
     /**
      * <p>
      *   Returns the keyword of the XML Declaration in its original
-     *   case (usually <tt>xml</tt>).
+     *   case (usually {@code xml}).
      * </p>
      *
      * @return the XML Declaration keyword.
@@ -54,7 +54,7 @@ public interface IXMLDeclaration extends ITemplateEvent {
 
     /**
      * <p>
-     *   Returns the value of the <tt>encoding</tt> attribute specified at the
+     *   Returns the value of the {@code encoding} attribute specified at the
      *   XML Declaration (if specified).
      * </p>
      *
@@ -64,7 +64,7 @@ public interface IXMLDeclaration extends ITemplateEvent {
 
     /**
      * <p>
-     *   Returns the value of the <tt>standalone</tt> attribute specified at the
+     *   Returns the value of the {@code standalone} attribute specified at the
      *   XML Declaration (if specified).
      * </p>
      *

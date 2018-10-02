@@ -35,7 +35,7 @@ public interface ICDATASection extends ITemplateEvent, CharSequence {
 
     /**
      * <p>
-     *   Returns the whole CDATA Section, including the <tt>&lt;![CDATA[...]]&gt;</tt> prefix and suffix.
+     *   Returns the whole CDATA Section, including the {@code <![CDATA[...]]>} prefix and suffix.
      * </p>
      *
      * @return the CDATA Section.

@@ -31,7 +31,7 @@ import org.thymeleaf.util.MapUtils;
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name
- *   <tt>#maps</tt>.
+ *   {@code #maps}.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez

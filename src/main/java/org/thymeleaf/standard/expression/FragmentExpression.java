@@ -55,7 +55,7 @@ public final class FragmentExpression extends SimpleExpression {
     private static final long serialVersionUID = -130371297698708001L;
 
     /**
-     * This constant contains the {@link FragmentExpression} object representing the EMPTY FRAGMENT (<tt>~{}</tt>)
+     * This constant contains the {@link FragmentExpression} object representing the EMPTY FRAGMENT ({@code ~{}})
      */
     public static final FragmentExpression EMPTY_FRAGMENT_EXPRESSION = new FragmentExpression();
 

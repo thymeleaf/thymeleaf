@@ -71,8 +71,8 @@ public interface IElementModelStructureHandler {
      *   Instructs the engine to set a new selection target.
      * </p>
      * <p>
-     *   The <em>selection target</em> is the object on which selection expressions <tt>(*{...})</tt> are executed.
-     *   In the Standard Dialect, this selection target is usually modified by means of the <tt>th:object</tt>
+     *   The <em>selection target</em> is the object on which selection expressions {@code (*{...})} are executed.
+     *   In the Standard Dialect, this selection target is usually modified by means of the {@code th:object}
      *   attribute, but custom processors can do it too. Note the selection target has the same scope as a local
      *   variable, and will therefore be accessible only inside the body of the element being processed.
      * </p>

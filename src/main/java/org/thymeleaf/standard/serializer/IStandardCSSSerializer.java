@@ -30,7 +30,7 @@ import java.io.Writer;
  * <p>
  *   CSS serializer objects are in charge of outputting values both in templates using
  *   {@link org.thymeleaf.templatemode.TemplateMode#CSS} and in inlined code by means of e.g.
- *   <tt>th:inline="css"</tt> blocks.
+ *   {@code th:inline="css"} blocks.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez

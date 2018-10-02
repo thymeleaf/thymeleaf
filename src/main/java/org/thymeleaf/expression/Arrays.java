@@ -30,7 +30,7 @@ import org.thymeleaf.util.ArrayUtils;
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name
- *   <tt>#arrays</tt>.
+ *   {@code #arrays}.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez

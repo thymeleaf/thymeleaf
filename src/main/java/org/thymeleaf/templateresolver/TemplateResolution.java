@@ -99,7 +99,7 @@ public final class TemplateResolution {
      *   {@link org.thymeleaf.templateresolver.ITemplateResolver}.
      * </p>
      * <p>
-     *   Note that, even if this resource object will never be <tt>null</tt>, the existence of the
+     *   Note that, even if this resource object will never be {@code null}, the existence of the
      *   resource object does not necessarily imply the existence of the resource itself unless
      *   the template resolver was configured for calling {@link ITemplateResource#exists()} upon
      *   template resolution.
@@ -135,11 +135,11 @@ public final class TemplateResolution {
      *   been already verified to actually exist by the template resolver during resolution.
      * </p>
      * <p>
-     *   This allows avoiding further checks in case the <tt>resource.exists()</tt> execution is
+     *   This allows avoiding further checks in case the {@code resource.exists()} execution is
      *   costly.
      * </p>
      * <p>
-     *   Note a <tt>false</tt> here does not mean the resource does not exist, but simply that
+     *   Note a {@code false} here does not mean the resource does not exist, but simply that
      *   its existence was not verified (true) during resolution.
      * </p>
      *
@@ -156,7 +156,7 @@ public final class TemplateResolution {
      *   for this template during parsing.
      * </p>
      * <p>
-     *   Note a <tt>true</tt> here does not mean that a decoupled logic resource has to necessarily exist for this
+     *   Note a {@code true} here does not mean that a decoupled logic resource has to necessarily exist for this
      *   template, only that its existence should be checked and used if it exists.
      * </p>
      *

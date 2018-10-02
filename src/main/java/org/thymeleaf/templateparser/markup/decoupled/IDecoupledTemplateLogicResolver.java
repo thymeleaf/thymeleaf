@@ -67,7 +67,7 @@ public interface IDecoupledTemplateLogicResolver {
      * @param templateSelectors the selectors to be used, defining the fragments that should be processed.
      * @param resource the resource of the resolved template.
      * @param templateMode the template mode to be applied to the resolved template.
-     * @return the resource containing the decoupled template logic, or <tt>null</tt> if there isn't any.
+     * @return the resource containing the decoupled template logic, or {@code null} if there isn't any.
      */
     public ITemplateResource resolveDecoupledTemplateLogic(
             final IEngineConfiguration configuration,

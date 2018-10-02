@@ -32,7 +32,7 @@ import org.thymeleaf.util.Validate;
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name
- *   <tt>#conversions</tt>.
+ *   {@code #conversions}.
  * </p>
  * <p>
  *   Note a class with this name existed since 2.1.0, but it was completely reimplemented

@@ -52,19 +52,19 @@ import org.thymeleaf.util.Validate;
  *   at children (inserted fragment) templates.
  * </p>
  * <p>
- *   For each of these templates, several <tt>.properties</tt> files will be examined. For example,
- *   a message in template <tt>/WEB-INF/templates/home.html</tt> for locale
- *   <tt>gl_ES-gheada</tt> ("gl" = language, "ES" = country, "gheada" = variant) would be looked for
- *   in <tt>.properties</tt> files in the following sequence:
+ *   For each of these templates, several {@code .properties} files will be examined. For example,
+ *   a message in template {@code /WEB-INF/templates/home.html} for locale
+ *   {@code gl_ES-gheada} ("gl" = language, "ES" = country, "gheada" = variant) would be looked for
+ *   in {@code .properties} files in the following sequence:
  * </p>
  * <ul>
- *   <li><tt>/WEB-INF/templates/home_gl_ES-gheada.properties</tt></li>
- *   <li><tt>/WEB-INF/templates/home_gl_ES.properties</tt></li>
- *   <li><tt>/WEB-INF/templates/home_gl.properties</tt></li>
- *   <li><tt>/WEB-INF/templates/home.properties</tt></li>
+ *   <li>{@code /WEB-INF/templates/home_gl_ES-gheada.properties}</li>
+ *   <li>{@code /WEB-INF/templates/home_gl_ES.properties}</li>
+ *   <li>{@code /WEB-INF/templates/home_gl.properties}</li>
+ *   <li>{@code /WEB-INF/templates/home.properties}</li>
  * </ul>
  * <p>
- *   Note the resolution mechanism used for accessing these template-based <tt>.properties</tt> files will
+ *   Note the resolution mechanism used for accessing these template-based {@code .properties} files will
  *   be the same used for resolving the templates themselves. So for templates resolved from the ServletContext
  *   its messages files will be searched at the ServletContext, for templates resolved from URL the corresponding
  *   derived URLs will be called, etc.
@@ -74,19 +74,19 @@ import org.thymeleaf.util.Validate;
  * </p>
  * <p>
  *   If no suitable message value is found during template-based resolution, origin-based resolution
- *   is performed. This allows the resolution of messages from <tt>.properties</tt> files living
+ *   is performed. This allows the resolution of messages from {@code .properties} files living
  *   in the classpath (and only in the classpath) in files corresponding with the names of the
  *   classes being used as origin.
  * </p>
  * <p>
- *   For example, a processor <tt>my.company.processor.SomeDataProcessor</tt> using its own class
+ *   For example, a processor {@code my.company.processor.SomeDataProcessor} using its own class
  *   as <em>origin</em> will be able to resolve messages from a
- *   <tt>my/company/processor/SomeDataProcessor_gl_ES.properties</tt> file in the classpath.
+ *   {@code my/company/processor/SomeDataProcessor_gl_ES.properties} file in the classpath.
  * </p>
  * <p>
  *   Also, if a message is not found there, resolution will be tried for each of the superclasses this
- *   <tt>my.company.processor.SomeDataProcessor</tt> class extends, until a suitable message is found, or
- *   no more superclasses (except <tt>java.lang.Object</tt> exist).
+ *   {@code my.company.processor.SomeDataProcessor} class extends, until a suitable message is found, or
+ *   no more superclasses (except {@code java.lang.Object} exist).
  * </p>
  * <p>
  *   <strong>Step 3: Defaults-based message resolution</strong>
@@ -105,13 +105,13 @@ import org.thymeleaf.util.Validate;
  * <p>
  *   Message resolution will return null if no message is found, in which case callers will have the possibility
  *   to choose between asking the resolver to create an <em>absent message representation</em> or not.
- *   This is precisely what the <tt>useAbsentMessageRepresentation</tt> flag does in
+ *   This is precisely what the {@code useAbsentMessageRepresentation} flag does in
  *   {@link ITemplateContext#getMessage(Class, String, Object[], boolean)}.
  * </p>
  * <p>
- *   An absent message representation looks like <tt>??mymessage_gl_ES??</tt> and is useful to quickly determine
- *   when a message is lacking from the application's configuration. Note <tt>#{...}</tt> message expressions will
- *   always ask for an <tt>absent message representation</tt>, whereas methods in the <tt>#messages</tt>
+ *   An absent message representation looks like {@code ??mymessage_gl_ES??} and is useful to quickly determine
+ *   when a message is lacking from the application's configuration. Note {@code #{...}} message expressions will
+ *   always ask for an {@code absent message representation}, whereas methods in the {@code #messages}
  *   expression object will do it depending on the specific method being called.
  * </p>
  * <p>
@@ -366,7 +366,7 @@ public class StandardMessageResolver extends AbstractMessageResolver {
      *   message resolution mechanisms.
      * </p>
      * <p>
-     *   The standard mechanism will look for <tt>.properties</tt> files at the same location as
+     *   The standard mechanism will look for {@code .properties} files at the same location as
      *   the template (using the same resource resolution mechanism), and with the same name base.
      * </p>
      *
@@ -394,7 +394,7 @@ public class StandardMessageResolver extends AbstractMessageResolver {
      * </p>
      * <p>
      *   The standard mechanism will look for files in the classpath (only classpath),
-     *   at the same package and with the same name as the origin class, with <tt>.properties</tt>
+     *   at the same package and with the same name as the origin class, with {@code .properties}
      *   extension.
      * </p>
      *

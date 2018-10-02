@@ -35,16 +35,16 @@ import org.thymeleaf.templateresource.ITemplateResource;
  * </p>
  * <p>
  *   By default, the relative location resolved will be formed as
- *   <tt>resource.getBaseName() + DECOUPLED_TEMPLATE_LOGIC_FILE_SUFFIX</tt> (see
+ *   {@code resource.getBaseName() + DECOUPLED_TEMPLATE_LOGIC_FILE_SUFFIX} (see
  *   {@link ITemplateResource#getBaseName()} and {@link #DECOUPLED_TEMPLATE_LOGIC_FILE_SUFFIX}.
- *   So for a template resource <tt>/WEB-INF/templates/main.html</tt>, the <tt>main.th.xml</tt> relative
+ *   So for a template resource {@code /WEB-INF/templates/main.html}, the {@code main.th.xml} relative
  *   location will be used to call {@link ITemplateResource#relative(String)}.
  * </p>
  * <p>
- *   However this can be modified by specifying different <tt>prefix</tt> and <tt>suffix</tt> values so that, if a
- *   <tt>prefix</tt> with value <tt>"../logic/"</tt> is specified, for a template resource
- *   <tt>/WEB-INF/templates/main.html</tt>, the <tt>../viewlogic/main.th.xml</tt> relative path will be resolved, normally
- *   resulting in the <tt>/WEB-INF/viewlogic/main.th.xml</tt> resource.
+ *   However this can be modified by specifying different {@code prefix} and {@code suffix} values so that, if a
+ *   {@code prefix} with value {@code "../logic/"} is specified, for a template resource
+ *   {@code /WEB-INF/templates/main.html}, the {@code ../viewlogic/main.th.xml} relative path will be resolved, normally
+ *   resulting in the {@code /WEB-INF/viewlogic/main.th.xml} resource.
  * </p>
  * <p>
  *   This class is <strong>thread-safe</strong>.

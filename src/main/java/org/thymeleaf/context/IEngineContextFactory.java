@@ -32,7 +32,7 @@ import org.thymeleaf.engine.TemplateData;
  * <p>
  *   Engine Contexts (implementations of {@link IEngineContext}) are the type of context really used by the engine
  *   during template processing. These factories will be called in order to create {@link IEngineContext} instances
- *   from the original {@link IContext} implementations (the much simpler <tt>context</tt> objects that were used
+ *   from the original {@link IContext} implementations (the much simpler {@code context} objects that were used
  *   for calling the template engine).
  * </p>
  * <p>
@@ -62,18 +62,18 @@ public interface IEngineContextFactory {
      * <p>
      *   Note this factory method will be only called once during the processing of a template. Once a engine context
      *   instance has been created, the engine will try to reuse it for any nested processing operations as far as
-     *   possible. This means that, e.g., the <tt>templateData</tt> specified here will only be the <em>root-level</em>
+     *   possible. This means that, e.g., the {@code templateData} specified here will only be the <em>root-level</em>
      *   template data (the one for the template that is actually being used as an
-     *   {@link org.thymeleaf.ITemplateEngine}<tt>.process(...)</tt> argument). Any <tt>th:insert</tt> or
-     *   <tt>th:replace</tt> operations inside that template will not ask this factory to create a new engine context,
+     *   {@link org.thymeleaf.ITemplateEngine}{@code .process(...)} argument). Any {@code th:insert} or
+     *   {@code th:replace} operations inside that template will not ask this factory to create a new engine context,
      *   but instead just increase the nesting level of the already-existing one
      *   (see {@link IEngineContext#increaseLevel()}) and set the new, nested template data for that level
      *   (see {@link IEngineContext#setTemplateData(TemplateData)}).
      * </p>
      * <p>
-     *   Note also that the <tt>context</tt> object passed here as an argument will normally correspond to the
+     *   Note also that the {@code context} object passed here as an argument will normally correspond to the
      *   simple {@link IContext} implementation used for calling
-     *   {@link org.thymeleaf.ITemplateEngine}<tt>.process(...)</tt> and, therefore, will normally be an object
+     *   {@link org.thymeleaf.ITemplateEngine}{@code .process(...)} and, therefore, will normally be an object
      *   of class {@link EngineContext}, {@link WebContext} or similar.
      * </p>
      *

@@ -30,7 +30,7 @@ import java.io.Writer;
  * <p>
  *   JavaScript serializer objects are in charge of outputting values both in templates using
  *   {@link org.thymeleaf.templatemode.TemplateMode#JAVASCRIPT} and in inlined code by means of e.g.
- *   <tt>th:inline="javascript"</tt> blocks.
+ *   {@code th:inline="javascript"} blocks.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez

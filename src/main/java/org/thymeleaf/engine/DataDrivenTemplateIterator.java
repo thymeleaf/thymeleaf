@@ -158,7 +158,7 @@ public final class DataDrivenTemplateIterator implements Iterator<Object> {
      *   needed or not. The typical use of this is to be able to switch between the "head" and the "data/buffer" phase.
      * </p>
      *
-     * @return <tt>true</tt> if this iterator has been queried, <tt>false</tt> if not.
+     * @return {@code true} if this iterator has been queried, {@code false} if not.
      *
      * @since 3.0.3
      */

@@ -38,12 +38,12 @@ import org.thymeleaf.util.Validate;
  *   and creates {@link StringTemplateResource} instances for template resources.
  * </p>
  * <p>
- *   This template resolvers will consider the <tt>template</tt> being resolved as the template itself,
+ *   This template resolvers will consider the {@code template} being resolved as the template itself,
  *   this is, its contents. No external file or resource will be therefore accessed.
  * </p>
  * <p>
  *   This template resolver will consider its resolved templates <strong>non-cacheable</strong> by default,
- *   given its nature of being used for resolving arbitrary <tt>String</tt> objects.
+ *   given its nature of being used for resolving arbitrary {@code String} objects.
  * </p>
  * <p>
  *   Also, the {@link TemplateMode#HTML} template mode will be used by default.

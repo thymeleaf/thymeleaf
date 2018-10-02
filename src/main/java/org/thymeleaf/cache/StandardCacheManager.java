@@ -40,20 +40,20 @@ import org.thymeleaf.engine.TemplateModel;
  *   <li>Its <i>maximum size</i>: the maximum size the cache will be allowed to reach.
  *       Some special values:
  *       <ul>
- *         <li><tt>-1</tt> means no limit in size.</li>
- *         <li><tt>0</tt> means this cache will not be used at 
- *             all (<tt>getXCache()</tt> will return <tt>null</tt>).</li>
+ *         <li>{@code -1} means no limit in size.</li>
+ *         <li>{@code 0} means this cache will not be used at
+ *             all ({@code getXCache()} will return {@code null}).</li>
  *       </ul>
  *   </li>
  *   <li>Whether the cache should use <i>soft references</i> or not
- *       (<tt>java.lang.ref.SoftReference</tt>). Using Soft References
+ *       ({@code java.lang.ref.SoftReference}). Using Soft References
  *       allows the cache to be <i>memory-sensitive</i>, allowing the garbage collector
  *       to dispose cache entries if memory is critical, before raising an
- *       <tt>OutOfMemoryError</tt>.</li>
+ *       {@code OutOfMemoryError}.</li>
  *   <li>The <i>name of the logger</i> that will output trace information for the
  *       cache object. Configuring this allows a finer-grained log configuration that
  *       allows the more effective inspection of cache behaviour. If not specifically
- *       set, <tt>org.thymeleaf.TemplateEngine.cache.${cacheName}</tt> will be used.</li>
+ *       set, {@code org.thymeleaf.TemplateEngine.cache.${cacheName}} will be used.</li>
  *   <li>An (optional) <i>validity checker</i> implementing {@link ICacheEntryValidityChecker},
  *       which will be applied on each entry upon retrieval from cache in order to ensure
  *       it is still valid and can be used.

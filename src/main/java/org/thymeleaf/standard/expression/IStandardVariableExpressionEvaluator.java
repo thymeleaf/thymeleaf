@@ -23,7 +23,7 @@ import org.thymeleaf.context.IExpressionContext;
 
 /**
  * <p>
- *   Common interface for all objects in charge of executing <i>variable expressions</i> (<tt>${...}</tt>) inside
+ *   Common interface for all objects in charge of executing <i>variable expressions</i> ({@code ${...}}) inside
  *   Thymeleaf Standard Expressions.
  * </p>
  * <p>

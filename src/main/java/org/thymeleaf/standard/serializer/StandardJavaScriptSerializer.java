@@ -70,7 +70,7 @@ import org.unbescape.json.JsonEscapeType;
  * </p>
  * <p>
  *   Note that, even if Jackson is present in the classpath, its usage can be prevented by means of the
- *   <tt>useJacksonIfAvailable</tt> constructor flag.
+ *   {@code useJacksonIfAvailable} constructor flag.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez

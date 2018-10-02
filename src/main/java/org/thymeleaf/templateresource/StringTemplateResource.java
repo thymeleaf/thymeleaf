@@ -29,7 +29,7 @@ import org.thymeleaf.util.Validate;
 /**
  * <p>
  *   Implementation of {@link ITemplateResource} that represents a template completely contained in memory inside
- *   a <tt>String</tt> object.
+ *   a {@code String} object.
  * </p>
  * <p>
  *   Objects of this class are usually created by {@link org.thymeleaf.templateresolver.StringTemplateResolver}.

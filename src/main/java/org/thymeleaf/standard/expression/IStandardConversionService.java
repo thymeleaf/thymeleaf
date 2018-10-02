@@ -26,14 +26,14 @@ import org.thymeleaf.context.IExpressionContext;
  *   Common interface for all implementations of a conversion service, to be used during template execution.
  * </p>
  * <p>
- *   Thymeleaf conversion services work in a way similar to Spring Framework's <tt>ConversionService</tt> interface,
+ *   Thymeleaf conversion services work in a way similar to Spring Framework's {@code ConversionService} interface,
  *   but this is a generic mechanism (not dependent on Spring).
  * </p>
  * <p>
  *   Default implementation &mdash;registered by {@link org.thymeleaf.standard.StandardDialect}&mdash;
  *   is {@link StandardConversionService}, which performs some standard conversions, but the
  *   Spring Standard Dialect used by the Thymeleaf + Spring integration module automatically registers an implementation
- *   of this interface that delegates on any existing Spring <tt>ConversionService</tt> objects (thus using
+ *   of this interface that delegates on any existing Spring {@code ConversionService} objects (thus using
  *   the Converters and Formatters registered at the Spring Application Context).
  * </p>
  * <p>

@@ -36,7 +36,7 @@ import org.thymeleaf.util.Validate;
  * <p>
  *   Specification class containing everything needed by the template engine related to the
  *   template to be processed. Objects of this class are normally used as an argument to the
- *   different <tt>process(...)</tt> methods at {@link ITemplateEngine}.
+ *   different {@code process(...)} methods at {@link ITemplateEngine}.
  * </p>
  * <p>
  *   The only required value in a template specification is the <em>template</em>, which normally
@@ -107,7 +107,7 @@ public final class TemplateSpec implements Serializable {
      * <p>
      *   Build a new object of this class, specifying <em>template</em> and also <em>output content type</em>
      *   (MIME type). Most of the times this will force a template mode for template execution
-     *   (e.g. <tt>text/html</tt>, <tt>application/javascript</tt>), but not always (e.g. <tt>text/event-stream</tt>).
+     *   (e.g. {@code text/html}, {@code application/javascript}), but not always (e.g. {@code text/event-stream}).
      * </p>
      * <p>
      *   The <em>template</em> normally represents the <em>template name</em>, but can be the entire template
@@ -118,16 +118,16 @@ public final class TemplateSpec implements Serializable {
      *   Supported relations between template mode and output content type are:
      * </p>
      * <ul>
-     *     <li>HTML: <tt>text/html</tt>, <tt>application/xhtml+xml</tt></li>
-     *     <li>XML: <tt>application/xml</tt></li>
-     *     <li>JAVASCRIPT: <tt>application/javascript</tt>, <tt>application/x-javascript</tt>,
-     *                     <tt>application/ecmascript</tt>, <tt>text/javascript</tt>,
-     *                     <tt>text/ecmascript</tt>, <tt>application/json</tt></li>
-     *     <li>CSS: <tt>text/css</tt></li>
-     *     <li>TEXT: <tt>text/plain</tt></li>
+     *     <li>HTML: {@code text/html}, {@code application/xhtml+xml}</li>
+     *     <li>XML: {@code application/xml}</li>
+     *     <li>JAVASCRIPT: {@code application/javascript}, {@code application/x-javascript},
+     *                     {@code application/ecmascript}, {@code text/javascript},
+     *                     {@code text/ecmascript}, {@code application/json}</li>
+     *     <li>CSS: {@code text/css}</li>
+     *     <li>TEXT: {@code text/plain}</li>
      * </ul>
      * <p>
-     *   The <tt>text/event-stream</tt> content type will also be supported, but will have no effect in
+     *   The {@code text/event-stream} content type will also be supported, but will have no effect in
      *   forcing a template mode. Instead, it will put the engine into Server-Sent Event (SSE) output mode.
      * </p>
      * <p>
@@ -166,7 +166,7 @@ public final class TemplateSpec implements Serializable {
      *   so they will be used as a part of the keys for cached templates. <strong>It is therefore
      *   required that template attribute maps contain values with valid {@link #equals(Object)}
      *   and {@link #hashCode()} implementations</strong>. Therefore, using simple (and fast)
-     *   <tt>Map&lt;String,String&gt;</tt> maps is the recommended option.
+     *   {@code Map<String,String>} maps is the recommended option.
      * </p>
      * <p>
      *   This constructor will set no <em>template selectors</em> or <em>forced template mode</em>.
@@ -193,7 +193,7 @@ public final class TemplateSpec implements Serializable {
      * <p>
      *   Template selectors allow the possibility to process only a part of the specified template, expressing
      *   this selection in a syntax similar to jQuery, CSS or XPath selectors. Note this is only available for
-     *   <em>markup template modes</em> (<tt>HTML</tt>, <tt>XML</tt>). For more info on <em>template selectors</em>
+     *   <em>markup template modes</em> ({@code HTML}, {@code XML}). For more info on <em>template selectors</em>
      *   syntax, have a look at <a href="http://www.attoparser.org">AttoParser</a>'s <em>markup selectors</em>
      *   documentation.
      * </p>
@@ -212,7 +212,7 @@ public final class TemplateSpec implements Serializable {
      *   so they will be used as a part of the keys for cached templates. <strong>It is therefore
      *   required that template attribute maps contain values with valid {@link #equals(Object)}
      *   and {@link #hashCode()} implementations</strong>. Therefore, using simple (and fast)
-     *   <tt>Map&lt;String,String&gt;</tt> maps is the recommended option.
+     *   {@code Map<String,String>} maps is the recommended option.
      * </p>
      *
      * @param template the template (usually the template name), required.
@@ -230,8 +230,8 @@ public final class TemplateSpec implements Serializable {
     /**
      * <p>
      *   Build a new object of this class, specifying an output content type (MIME type). Most of the times this
-     *   will force a template mode for template execution (e.g. <tt>text/html</tt>, <tt>application/javascript</tt>),
-     *   but not always (e.g. <tt>text/event-stream</tt>).
+     *   will force a template mode for template execution (e.g. {@code text/html}, {@code application/javascript}),
+     *   but not always (e.g. {@code text/event-stream}).
      * </p>
      * <p>
      *   The <em>template</em> usually represents the <em>template name</em>, but can be the entire template
@@ -241,7 +241,7 @@ public final class TemplateSpec implements Serializable {
      * <p>
      *   Template selectors allow the possibility to process only a part of the specified template, expressing
      *   this selection in a syntax similar to jQuery, CSS or XPath selectors. Note this is only available for
-     *   <em>markup template modes</em> (<tt>HTML</tt>, <tt>XML</tt>). For more info on <em>template selectors</em>
+     *   <em>markup template modes</em> ({@code HTML}, {@code XML}). For more info on <em>template selectors</em>
      *   syntax, have a look at <a href="http://www.attoparser.org">AttoParser</a>'s <em>markup selectors</em>
      *   documentation.
      * </p>
@@ -254,16 +254,16 @@ public final class TemplateSpec implements Serializable {
      *   Supported relations between template mode and output content type are:
      * </p>
      * <ul>
-     *     <li>HTML: <tt>text/html</tt>, <tt>application/xhtml+xml</tt></li>
-     *     <li>XML: <tt>application/xml</tt></li>
-     *     <li>JAVASCRIPT: <tt>application/javascript</tt>, <tt>application/x-javascript</tt>,
-     *                     <tt>application/ecmascript</tt>, <tt>text/javascript</tt>,
-     *                     <tt>text/ecmascript</tt>, <tt>application/json</tt></li>
-     *     <li>CSS: <tt>text/css</tt></li>
-     *     <li>TEXT: <tt>text/plain</tt></li>
+     *     <li>HTML: {@code text/html}, {@code application/xhtml+xml}</li>
+     *     <li>XML: {@code application/xml}</li>
+     *     <li>JAVASCRIPT: {@code application/javascript}, {@code application/x-javascript},
+     *                     {@code application/ecmascript}, {@code text/javascript},
+     *                     {@code text/ecmascript}, {@code application/json}</li>
+     *     <li>CSS: {@code text/css}</li>
+     *     <li>TEXT: {@code text/plain}</li>
      * </ul>
      * <p>
-     *   The <tt>text/event-stream</tt> content type will also be supported, but will have no effect in
+     *   The {@code text/event-stream} content type will also be supported, but will have no effect in
      *   forcing a template mode. Instead, it will put the engine into Server-Sent Event (SSE) output mode.
      * </p>
      * <p>
@@ -274,7 +274,7 @@ public final class TemplateSpec implements Serializable {
      *   so they will be used as a part of the keys for cached templates. <strong>It is therefore
      *   required that template attribute maps contain values with valid {@link #equals(Object)}
      *   and {@link #hashCode()} implementations</strong>. Therefore, using simple (and fast)
-     *   <tt>Map&lt;String,String&gt;</tt> maps is the recommended option.
+     *   {@code Map<String,String>} maps is the recommended option.
      * </p>
      *
      * @param template the template (usually the template name), required.
@@ -378,7 +378,7 @@ public final class TemplateSpec implements Serializable {
      *   Returns whether this spec has template selectors specified or not.
      * </p>
      *
-     * @return <tt>true</tt> of there are template selectors, <tt>false</tt> if not.
+     * @return {@code true} of there are template selectors, {@code false} if not.
      */
     public boolean hasTemplateSelectors() {
         // Checking for null is enough, as we have already processed this in the constructor
@@ -393,12 +393,12 @@ public final class TemplateSpec implements Serializable {
      * <p>
      *   Template selectors allow the possibility to process only a part of the specified template, expressing
      *   this selection in a syntax similar to jQuery, CSS or XPath selectors. Note this is only available for
-     *   <em>markup template modes</em> (<tt>HTML</tt>, <tt>XML</tt>). For more info on <em>template selectors</em>
+     *   <em>markup template modes</em> ({@code HTML}, {@code XML}). For more info on <em>template selectors</em>
      *   syntax, have a look at <a href="http://www.attoparser.org">AttoParser</a>'s <em>markup selectors</em>
      *   documentation.
      * </p>
      *
-     * @return the template selectors, or <tt>null</tt> if there are none.
+     * @return the template selectors, or {@code null} if there are none.
      */
     public Set<String> getTemplateSelectors() {
         return this.templateSelectors;
@@ -410,7 +410,7 @@ public final class TemplateSpec implements Serializable {
      *   Returns whether this spec has template mode specified or not.
      * </p>
      *
-     * @return <tt>true</tt> of there is a template mode, <tt>false</tt> if not.
+     * @return {@code true} of there is a template mode, {@code false} if not.
      */
     public boolean hasTemplateMode() {
         return this.templateMode != null;
@@ -427,7 +427,7 @@ public final class TemplateSpec implements Serializable {
      *   template resolvers.
      * </p>
      *
-     * @return the template mode specified, or <tt>null</tt> if there isn't any.
+     * @return the template mode specified, or {@code null} if there isn't any.
      */
     public TemplateMode getTemplateMode() {
         return this.templateMode;
@@ -439,7 +439,7 @@ public final class TemplateSpec implements Serializable {
      *   Returns whether this spec includes template resolution attributes or not.
      * </p>
      *
-     * @return <tt>true</tt> of there are template resolution attributes, <tt>false</tt> if not.
+     * @return {@code true} of there are template resolution attributes, {@code false} if not.
      */
     public boolean hasTemplateResolutionAttributes() {
         // Checking for null is enough, as we have already processed this in the constructor
@@ -461,7 +461,7 @@ public final class TemplateSpec implements Serializable {
      *   so they will be used as a part of the keys for cached templates. <strong>It is therefore
      *   required that template attribute maps contain values with valid {@link #equals(Object)}
      *   and {@link #hashCode()} implementations</strong>. Therefore, using simple (and fast)
-     *   <tt>Map&lt;String,String&gt;</tt> maps is the recommended option.
+     *   {@code Map<String,String>} maps is the recommended option.
      * </p>
      *
      * @return the template resolution attributes.
@@ -474,30 +474,30 @@ public final class TemplateSpec implements Serializable {
     /**
      * <p>
      *   Returns the output content type (MIME type). Most of the times this
-     *   will force a template mode for template execution (e.g. <tt>text/html</tt>, <tt>application/javascript</tt>),
-     *   but not always (e.g. <tt>text/event-stream</tt>).
+     *   will force a template mode for template execution (e.g. {@code text/html}, {@code application/javascript}),
+     *   but not always (e.g. {@code text/event-stream}).
      * </p>
      * <p>
      *   Supported relations between template mode and output content type are:
      * </p>
      * <ul>
-     *     <li>HTML: <tt>text/html</tt>, <tt>application/xhtml+xml</tt></li>
-     *     <li>XML: <tt>application/xml</tt></li>
-     *     <li>JAVASCRIPT: <tt>application/javascript</tt>, <tt>application/x-javascript</tt>,
-     *                     <tt>application/ecmascript</tt>, <tt>text/javascript</tt>,
-     *                     <tt>text/ecmascript</tt>, <tt>application/json</tt></li>
-     *     <li>CSS: <tt>text/css</tt></li>
-     *     <li>TEXT: <tt>text/plain</tt></li>
+     *     <li>HTML: {@code text/html}, {@code application/xhtml+xml}</li>
+     *     <li>XML: {@code application/xml}</li>
+     *     <li>JAVASCRIPT: {@code application/javascript}, {@code application/x-javascript},
+     *                     {@code application/ecmascript}, {@code text/javascript},
+     *                     {@code text/ecmascript}, {@code application/json}</li>
+     *     <li>CSS: {@code text/css}</li>
+     *     <li>TEXT: {@code text/plain}</li>
      * </ul>
      * <p>
-     *   The <tt>text/event-stream</tt> content type will also be supported, but will have no effect in
+     *   The {@code text/event-stream} content type will also be supported, but will have no effect in
      *   forcing a template mode. Instead, it will put the engine into Server-Sent Event (SSE) output mode.
      * </p>
      * <p>
      *   Note content type parameters will be ignored (only the mime type itself will be used).
      * </p>
      *
-     * @return the output content type, or <tt>null</tt> if none was specified.
+     * @return the output content type, or {@code null} if none was specified.
      */
     public String getOutputContentType() {
         return this.outputContentType;
@@ -509,7 +509,7 @@ public final class TemplateSpec implements Serializable {
      *   Returns whether output should be Server-Sent Events (SSE) or not.
      * </p>
      * <p>
-     *   Server-Sent Events mode is enabled by setting the <tt>text/event-stream</tt> mime type
+     *   Server-Sent Events mode is enabled by setting the {@code text/event-stream} mime type
      *   as *output content type* constructor argument.
      * </p>
      *

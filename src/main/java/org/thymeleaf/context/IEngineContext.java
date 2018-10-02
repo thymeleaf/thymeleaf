@@ -40,8 +40,8 @@ import org.thymeleaf.model.IProcessableElementTag;
  * <p>
  *   Contexts used during template processing by the engine are always implementations of this interface.
  *   If the Template Engine is called with an implementation of this {@link IEngineContext} as
- *   <tt>context</tt>, the same object will be used (so that users can actually provide their own implementations).
- *   On the other side, if the <tt>context</tt> specified to the Template Engine is not an implementation of this
+ *   {@code context}, the same object will be used (so that users can actually provide their own implementations).
+ *   On the other side, if the {@code context} specified to the Template Engine is not an implementation of this
  *   interface, an implementation of {@link IEngineContext} will be internally created by the engine, the original
  *   context's variables and other info will be cloned, and used instead.
  * </p>
@@ -107,10 +107,10 @@ public interface IEngineContext extends ITemplateContext {
 
     /**
      * <p>
-     *   Set a selection target. Usually the consequence of executing a <tt>th:object</tt> processor.
+     *   Set a selection target. Usually the consequence of executing a {@code th:object} processor.
      * </p>
      * <p>
-     *   Once set, all <em>selection expressions</em> (<tt>*{...}</tt>) will be executed on this target.
+     *   Once set, all <em>selection expressions</em> ({@code *{...}}) will be executed on this target.
      * </p>
      * <p>
      *   This selection target will have the consideration of a <em>local variable</em> and thus depend on
@@ -123,7 +123,7 @@ public interface IEngineContext extends ITemplateContext {
 
     /**
      * <p>
-     *   Set an inliner. Usually the consequence of executing a <tt>th:inline</tt> processor.
+     *   Set an inliner. Usually the consequence of executing a {@code th:inline} processor.
      * </p>
      * <p>
      *   This inliner will have the consideration of a <em>local variable</em> and thus depend on
@@ -141,7 +141,7 @@ public interface IEngineContext extends ITemplateContext {
      *   decreased below the current level) originally belonged to a different template.
      * </p>
      * <p>
-     *   A call on this method is usually the consequence of <tt>th:insert</tt> or <tt>th:replace</tt>.
+     *   A call on this method is usually the consequence of {@code th:insert} or {@code th:replace}.
      * </p>
      *
      * @param template the template data.
@@ -180,7 +180,7 @@ public interface IEngineContext extends ITemplateContext {
      * </p>
      *
      * @param name the name of the variable to be checked.
-     * @return <tt>true</tt> if the variable is local (level &gt; 0), <tt>false</tt> if not (level == 0).
+     * @return {@code true} if the variable is local (level &gt; 0), {@code false} if not (level == 0).
      */
     public boolean isVariableLocal(final String name);
 

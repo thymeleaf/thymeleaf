@@ -37,7 +37,7 @@ import org.unbescape.javascript.JavaScriptEscape;
  * <p>
  * This class is used as a basis for the methods offered by
  * {@link org.thymeleaf.expression.Strings}, which in turn are the
- * methods offered by the <tt>#strings</tt> utility object in variable
+ * methods offered by the {@code #strings} utility object in variable
  * expressions.
  * </p>
  *
@@ -55,12 +55,12 @@ public final class StringUtils {
 
     /**
      * <p>
-     * Performs a null-safe <tt>toString()</tt> operation.
+     * Performs a null-safe {@code toString()} operation.
      * </p>
      *
      * @param target the object on which toString will be executed
-     * @return the result of calling <tt>target.toString()</tt> if target is not null,
-     *         <tt>null</tt> if target is null.
+     * @return the result of calling {@code target.toString()} if target is not null,
+     *         {@code null} if target is null.
      * @since 2.0.12
      */
     public static String toString(final Object target) {
@@ -198,7 +198,7 @@ public final class StringUtils {
      *
      * @param target source of the copy.
      * @param beginIndex index where the copy start.
-     * @return part of target, or <tt>null</tt> if target is null.
+     * @return part of target, or {@code null} if target is null.
      * @since 1.1.2
      */
     public static String substring(final Object target, final int beginIndex) {

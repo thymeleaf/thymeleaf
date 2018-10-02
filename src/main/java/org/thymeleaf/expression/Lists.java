@@ -32,7 +32,7 @@ import org.thymeleaf.util.ListUtils;
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name
- *   <tt>#lists</tt>.
+ *   {@code #lists}.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez

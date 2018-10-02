@@ -35,7 +35,7 @@ import org.thymeleaf.templatemode.TemplateMode;
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name
- *   <tt>#execInfo</tt>.
+ *   {@code #execInfo}.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
@@ -63,7 +63,7 @@ public final class ExecutionInfo {
      * <p>
      *   Note that the template name returned here corresponds with origin of the elements or nodes being
      *   currently processed. This is, if a processor is being executed for an element inserted from an external
-     *   template (via a <tt>th:insert</tt>, for example), then this method will return the template mode
+     *   template (via a {@code th:insert}, for example), then this method will return the template mode
      *   for the template in which the inserted fragment lives, not the one it was inserted into.
      * </p>
      *
@@ -81,7 +81,7 @@ public final class ExecutionInfo {
      * <p>
      *   Note that the {@link TemplateMode} returned here corresponds with origin of the elements or nodes being
      *   currently processed. This is, if a processor is being executed for an element inserted from an external
-     *   template (via a <tt>th:insert</tt>, for example), then this method will return the template mode
+     *   template (via a {@code th:insert}, for example), then this method will return the template mode
      *   for the template in which the inserted fragment lives, not the one it was inserted into.
      * </p>
      *

@@ -34,13 +34,13 @@ import org.thymeleaf.context.ITemplateContext;
  * <p>
  *   Note that message resolution will return null if no message is found, in which case callers will have the
  *   possibility to choose between asking the resolver to create an <em>absent message representation</em> or not.
- *   This is precisely what the <tt>useAbsentMessageRepresentation</tt> flag does in
+ *   This is precisely what the {@code useAbsentMessageRepresentation} flag does in
  *   {@link ITemplateContext#getMessage(Class, String, Object[], boolean)}.
  * </p>
  * <p>
- *   An absent message representation looks like <tt>??mymessage_gl_ES??</tt> and is useful to quickly determine
- *   when a message is lacking from the application's configuration. Note <tt>#{...}</tt> message expressions will
- *   always ask for an <tt>absent message representation</tt>, whereas methods in the <tt>#messages</tt>
+ *   An absent message representation looks like {@code ??mymessage_gl_ES??} and is useful to quickly determine
+ *   when a message is lacking from the application's configuration. Note {@code #{...}} message expressions will
+ *   always ask for an {@code absent message representation}, whereas methods in the {@code #messages}
  *   expression object will do it depending on the specific method being called.
  * </p>
  * <p>
@@ -78,12 +78,12 @@ public interface IMessageResolver {
 
     /**
      * <p>
-     *   Resolve the message, returning the requested message (or <tt>null</tt> if not found).
+     *   Resolve the message, returning the requested message (or {@code null} if not found).
      * </p>
      * <p>
-     *   Message resolvers should perform resolution of the <tt>key</tt> + <tt>messageParameters</tt> pair
-     *   based on the <tt>context</tt> and <tt>origin</tt> specified. The context will provide
-     *   information about the template and the (optional) <tt>origin</tt> about the point in template execution from
+     *   Message resolvers should perform resolution of the {@code key} + {@code messageParameters} pair
+     *   based on the {@code context} and {@code origin} specified. The context will provide
+     *   information about the template and the (optional) {@code origin} about the point in template execution from
      *   which the message is being requested (usually an {@link org.thymeleaf.processor.IProcessor} or
      *   the {@link org.thymeleaf.standard.expression.MessageExpression} class).
      * </p>
@@ -92,7 +92,7 @@ public interface IMessageResolver {
      * @param origin the origin of the message request, usually a processor or expression class. Can be null.
      * @param key the message key.
      * @param messageParameters the (optional) message parameters.
-     * @return the resolved message, or <tt>null</tt> if the message could not be resolved.
+     * @return the resolved message, or {@code null} if the message could not be resolved.
      */
     public String resolveMessage(
             final ITemplateContext context, final Class<?> origin, final String key, final Object[] messageParameters);
@@ -104,8 +104,8 @@ public interface IMessageResolver {
      * </p>
      * <p>
      *   Once the entire chain of configured {@link IMessageResolver} objects is asked for a specific message
-     *   and all of them return <tt>null</tt>, the engine will call this method on the first resolver in the chain.
-     *   If the first resolver returns <tt>null</tt> as a representation, the following resolver will be called, and
+     *   and all of them return {@code null}, the engine will call this method on the first resolver in the chain.
+     *   If the first resolver returns {@code null} as a representation, the following resolver will be called, and
      *   so on until a resolver returns a non-null result. The empty String will be used if all resolvers return null.
      * </p>
      *
@@ -113,7 +113,7 @@ public interface IMessageResolver {
      * @param origin the origin of the message request, usually a processor or expression class. Can be null.
      * @param key the message key.
      * @param messageParameters the (optional) message parameters.
-     * @return the absent message representation, of <tt>null</tt> if the resolver cannot create such representation.
+     * @return the absent message representation, of {@code null} if the resolver cannot create such representation.
      */
     public String createAbsentMessageRepresentation(
             final ITemplateContext context, final Class<?> origin, final String key, final Object[] messageParameters);

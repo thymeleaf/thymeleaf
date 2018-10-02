@@ -25,7 +25,7 @@ package org.thymeleaf.exceptions;
  * </p>
  * <p>
  *   In the Standard Dialects, this exception might be raised by the
- *   <tt>th:assert</tt> attribute.
+ *   {@code th:assert} attribute.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez

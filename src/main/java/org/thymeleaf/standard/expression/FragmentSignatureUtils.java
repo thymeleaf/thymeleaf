@@ -138,7 +138,7 @@ public final class FragmentSignatureUtils {
      * </p>
      * <p>
      *   This processing matches the specified parameters against the ones in the signature, allowing the specified
-     *   ones (usually coming from a fragment selection like <tt>th:include</tt>) to be nameless, so that their values
+     *   ones (usually coming from a fragment selection like {@code th:include}) to be nameless, so that their values
      *   are matched to their corresponding variable name during this parameter processing operation.
      * </p>
      * <p>

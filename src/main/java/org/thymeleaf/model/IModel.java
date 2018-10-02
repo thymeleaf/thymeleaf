@@ -123,7 +123,7 @@ public interface IModel {
     /**
      * <p>
      *   Add an entire model at the end of the sequence. This effectively appends the
-     *   <tt>model</tt> argument's sequence to this one.
+     *   {@code model} argument's sequence to this one.
      * </p>
      *
      * @param model the model to be appended.

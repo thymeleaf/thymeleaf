@@ -150,9 +150,9 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      * </p>
      * <p>
      *   Note that this suffix may not be applied to the template name if the template name
-     *   already ends in a known file name suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
-     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
-     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>. If this behaviour needs to be overridden so
+     *   already ends in a known file name suffix: {@code .html}, {@code .htm}, {@code .xhtml},
+     *   {@code .xml}, {@code .js}, {@code .json},
+     *   {@code .css}, {@code .rss}, {@code .atom}, {@code .txt}. If this behaviour needs to be overridden so
      *   that suffix is always applied, the {@link #setForceSuffix(boolean)} will need to be set.
      * </p>
      *
@@ -170,9 +170,9 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      * </p>
      * <p>
      *   Note that this suffix may not be applied to the template name if the template name
-     *   already ends in a known file name suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
-     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
-     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>. If this behaviour needs to be overridden so
+     *   already ends in a known file name suffix: {@code .html}, {@code .htm}, {@code .xhtml},
+     *   {@code .xml}, {@code .js}, {@code .json},
+     *   {@code .css}, {@code .rss}, {@code .atom}, {@code .txt}. If this behaviour needs to be overridden so
      *   that suffix is always applied, the {@link #setForceSuffix(boolean)} will need to be set.
      * </p>
      *
@@ -190,11 +190,11 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      * </p>
      * <p>
      *   When forced, suffix will be appended to the template name even if the template
-     *   name ends in a known suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
-     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
-     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>.
+     *   name ends in a known suffix: {@code .html}, {@code .htm}, {@code .xhtml},
+     *   {@code .xml}, {@code .js}, {@code .json},
+     *   {@code .css}, {@code .rss}, {@code .atom}, {@code .txt}.
      * </p>
-     * <p>Default value is <tt><b>false</b></tt></p>.
+     * <p>Default value is <b>{@code false}</b></p>.
      *
      * @return whether the suffix will be forced or not.
      * @since 3.0.6
@@ -211,11 +211,11 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      * </p>
      * <p>
      *   When forced, suffix will be appended to the template name even if the template
-     *   name ends in a known suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
-     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
-     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>.
+     *   name ends in a known suffix: {@code .html}, {@code .htm}, {@code .xhtml},
+     *   {@code .xml}, {@code .js}, {@code .json},
+     *   {@code .css}, {@code .rss}, {@code .atom}, {@code .txt}.
      * </p>
-     * <p>Default value is <tt><b>false</b></tt></p>.
+     * <p>Default value is <b>{@code false}</b></p>.
      *
      * @param forceSuffix whether the suffix should be forced or not.
      * @since 3.0.6
@@ -262,9 +262,9 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      * </p>
      * <p>
      *   Note that this template mode also may not be applied if the template resource name
-     *   ends in a known file name suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
-     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
-     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>. If this behaviour needs to be overridden so
+     *   ends in a known file name suffix: {@code .html}, {@code .htm}, {@code .xhtml},
+     *   {@code .xml}, {@code .js}, {@code .json},
+     *   {@code .css}, {@code .rss}, {@code .atom}, {@code .txt}. If this behaviour needs to be overridden so
      *   that template name is always applied, the {@link #setForceTemplateMode(boolean)} will need to be set.
      * </p>
      *
@@ -286,9 +286,9 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      * </p>
      * <p>
      *   Note that this template mode also may not be applied if the template resource name
-     *   ends in a known file name suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
-     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
-     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>. If this behaviour needs to be overridden so
+     *   ends in a known file name suffix: {@code .html}, {@code .htm}, {@code .xhtml},
+     *   {@code .xml}, {@code .js}, {@code .json},
+     *   {@code .css}, {@code .rss}, {@code .atom}, {@code .txt}. If this behaviour needs to be overridden so
      *   that template name is always applied, the {@link #setForceTemplateMode(boolean)} will need to be set.
      * </p>
      *
@@ -315,9 +315,9 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      * </p>
      * <p>
      *   Note that this template mode also may not be applied if the template resource name
-     *   ends in a known file name suffix: <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
-     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
-     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>. If this behaviour needs to be overridden so
+     *   ends in a known file name suffix: {@code .html}, {@code .htm}, {@code .xhtml},
+     *   {@code .xml}, {@code .js}, {@code .json},
+     *   {@code .css}, {@code .rss}, {@code .atom}, {@code .txt}. If this behaviour needs to be overridden so
      *   that template name is always applied, the {@link #setForceTemplateMode(boolean)} will need to be set.
      * </p>
      *
@@ -340,11 +340,11 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      * <p>
      *   When forced, the configured template mode ({@link #setTemplateMode(TemplateMode)} will
      *   be applied even if the template resource name ends in a known suffix:
-     *   <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
-     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
-     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>.
+     *   {@code .html}, {@code .htm}, {@code .xhtml},
+     *   {@code .xml}, {@code .js}, {@code .json},
+     *   {@code .css}, {@code .rss}, {@code .atom}, {@code .txt}.
      * </p>
-     * <p>Default value is <tt><b>false</b></tt></p>.
+     * <p>Default value is <b>{@code false}</b></p>.
      *
      * @return whether the suffix will be forced or not.
      * @since 3.0.6
@@ -362,11 +362,11 @@ public abstract class AbstractConfigurableTemplateResolver extends AbstractTempl
      * <p>
      *   When forced, the configured template mode ({@link #setTemplateMode(TemplateMode)} will
      *   be applied even if the template resource name ends in a known suffix:
-     *   <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
-     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
-     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>.
+     *   {@code .html}, {@code .htm}, {@code .xhtml},
+     *   {@code .xml}, {@code .js}, {@code .json},
+     *   {@code .css}, {@code .rss}, {@code .atom}, {@code .txt}.
      * </p>
-     * <p>Default value is <tt><b>false</b></tt></p>.
+     * <p>Default value is <b>{@code false}</b></p>.
      *
      * @param forceTemplateMode whether the configured template mode should be forced or not.
      * @since 3.0.6

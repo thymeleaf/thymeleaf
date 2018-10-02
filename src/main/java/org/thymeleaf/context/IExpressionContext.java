@@ -56,7 +56,7 @@ public interface IExpressionContext extends IContext {
     /**
      * <p>
      *   Returns the {@link IExpressionObjects} instance to be used for retrieving (and maybe building
-     *   lazily) expression objects (<tt>${#expobj}</tt>) to be used at Standard Thymeleaf Expressions.
+     *   lazily) expression objects ({@code ${#expobj}}) to be used at Standard Thymeleaf Expressions.
      * </p>
      * @return the expression objects instance.
      */

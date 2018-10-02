@@ -94,7 +94,7 @@ public interface ICache<K, V> {
      * <p>
      *   Returns all the keys contained in this cache. Note this method might return keys for entries
      *   that are already invalid, so the result of calling {@link #get(Object)} for these keys might
-     *   be <tt>null</tt>.
+     *   be {@code null}.
      * </p>
      *
      * @return the complete set of cache keys. Might include keys for already-invalid (non-cleaned) entries.

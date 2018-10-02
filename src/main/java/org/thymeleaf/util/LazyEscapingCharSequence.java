@@ -34,7 +34,7 @@ import org.unbescape.xml.XmlEscape;
 
 /**
  * <p>
- *   Character sequence that performs a lazy escaping of a text, so that it is directly written to a <tt>Writer</tt>
+ *   Character sequence that performs a lazy escaping of a text, so that it is directly written to a {@code Writer}
  *   output during the escape operation itself.
  * </p>
  * <p>

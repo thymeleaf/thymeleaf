@@ -28,7 +28,7 @@ import org.thymeleaf.util.Validate;
 /**
  * <p>
  *   Objects of this class are kept at {@link ITemplateContext} in order to provide templates
- *   with a way to create unique <tt>id</tt> attribute values during template processing.
+ *   with a way to create unique {@code id} attribute values during template processing.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
@@ -55,7 +55,7 @@ public final class IdentifierSequences {
     /**
      * <p>
      *   Returns a new index (ID count) for a specific
-     *   value of the <tt>id</tt> attribute, and increments
+     *   value of the {@code id} attribute, and increments
      *   the count.
      * </p>
      *
@@ -76,7 +76,7 @@ public final class IdentifierSequences {
     /**
      * <p>
      *   Returns the index (ID count) for a specific
-     *   value of the <tt>id</tt> attribute without incrementing
+     *   value of the {@code id} attribute without incrementing
      *   the count.
      * </p>
      *
@@ -96,7 +96,7 @@ public final class IdentifierSequences {
     /**
      * <p>
      *   Returns the last index (ID count) returned for a specific
-     *   value of the <tt>id</tt> attribute (without incrementing
+     *   value of the {@code id} attribute (without incrementing
      *   the count).
      * </p>
      *

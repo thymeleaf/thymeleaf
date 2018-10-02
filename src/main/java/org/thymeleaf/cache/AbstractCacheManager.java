@@ -29,7 +29,7 @@ import org.thymeleaf.engine.TemplateModel;
  * <p>
  *   Common abstract class for {@link ICacheManager} implementations, useful
  *   for taking care of the lazy initialization of cache objects when their
- *   corresponding <tt>getXCache()</tt> methods are called.
+ *   corresponding {@code getXCache()} methods are called.
  * </p>
  * <p>
  *   Note a class with this name existed since 2.0.0, but it was completely reimplemented

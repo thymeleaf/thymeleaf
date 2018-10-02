@@ -31,7 +31,7 @@ import org.thymeleaf.util.AggregateUtils;
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name
- *   <tt>#aggregates</tt>.
+ *   {@code #aggregates}.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez

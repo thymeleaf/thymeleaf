@@ -22,7 +22,7 @@ package org.thymeleaf.util;
 
 /**
  * <p>
- *   Utility class for <tt>char[]</tt> operations (mainly matching/comparing)
+ *   Utility class for {@code char[]} operations (mainly matching/comparing)
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
@@ -35,7 +35,7 @@ public final class TextUtils {
 
     /**
      * <p>
-     *   Check equality of two <tt>CharSequence</tt> objects. This is equivalent to {@link java.lang.String#equals(Object)}
+     *   Check equality of two {@code CharSequence} objects. This is equivalent to {@link java.lang.String#equals(Object)}
      *   and {@link java.lang.String#equalsIgnoreCase(String)}.
      * </p>
      *
@@ -68,7 +68,7 @@ public final class TextUtils {
 
     /**
      * <p>
-     *   Check equality between a <tt>CharSequence</tt> and a <tt>char[]</tt> object.
+     *   Check equality between a {@code CharSequence} and a {@code char[]} object.
      * </p>
      *
      * @param caseSensitive whether the comparison must be done in a case-sensitive or case-insensitive way.
@@ -83,7 +83,7 @@ public final class TextUtils {
 
     /**
      * <p>
-     *   Check equality between two <tt>char[]</tt> objects.
+     *   Check equality between two {@code char[]} objects.
      * </p>
      *
      * @param caseSensitive whether the comparison must be done in a case-sensitive or case-insensitive way.
@@ -98,7 +98,7 @@ public final class TextUtils {
 
     /**
      * <p>
-     *   Check equality between two <tt>char[]</tt> objects, specifying (offset,len) pairs for limiting
+     *   Check equality between two {@code char[]} objects, specifying (offset,len) pairs for limiting
      *   the fragments to be checked.
      * </p>
      *
@@ -173,7 +173,7 @@ public final class TextUtils {
 
     /**
      * <p>
-     *   Check equality between a <tt>CharSequence</tt> and a <tt>char[]</tt> object, specifying (offset,len) pairs
+     *   Check equality between a {@code CharSequence} and a {@code char[]} object, specifying (offset,len) pairs
      *   for limiting the fragments to be checked.
      * </p>
      *
@@ -244,7 +244,7 @@ public final class TextUtils {
 
     /**
      * <p>
-     *   Check equality between two <tt>CharSequence</tt> objects, specifying (offset,len) pairs
+     *   Check equality between two {@code CharSequence} objects, specifying (offset,len) pairs
      *   for limiting the fragments to be checked.
      * </p>
      *
@@ -1448,8 +1448,8 @@ public final class TextUtils {
      * @param caseSensitive whether the comparison must be done in a case-sensitive or case-insensitive way.
      * @param text1 the first text to be compared.
      * @param text2 the second text to be compared.
-     * @return the value <tt>0</tt> if both texts are equal; a value less than <tt>0</tt> if the first text
-     *         is lexicographically less than the second text; and a value greater than <tt>0</tt> if the
+     * @return the value {@code 0} if both texts are equal; a value less than {@code 0} if the first text
+     *         is lexicographically less than the second text; and a value greater than {@code 0} if the
      *         first text is lexicographically greater than the second text.
      */
     public static int compareTo(final boolean caseSensitive, final CharSequence text1, final CharSequence text2) {
@@ -1492,8 +1492,8 @@ public final class TextUtils {
      * @param caseSensitive whether the comparison must be done in a case-sensitive or case-insensitive way.
      * @param text1 the first text to be compared.
      * @param text2 the second text to be compared.
-     * @return the value <tt>0</tt> if both texts are equal; a value less than <tt>0</tt> if the first text
-     *         is lexicographically less than the second text; and a value greater than <tt>0</tt> if the
+     * @return the value {@code 0} if both texts are equal; a value less than {@code 0} if the first text
+     *         is lexicographically less than the second text; and a value greater than {@code 0} if the
      *         first text is lexicographically greater than the second text.
      */
     public static int compareTo(final boolean caseSensitive, final CharSequence text1, final char[] text2) {
@@ -1523,8 +1523,8 @@ public final class TextUtils {
      * @param caseSensitive whether the comparison must be done in a case-sensitive or case-insensitive way.
      * @param text1 the first text to be compared.
      * @param text2 the second text to be compared.
-     * @return the value <tt>0</tt> if both texts are equal; a value less than <tt>0</tt> if the first text
-     *         is lexicographically less than the second text; and a value greater than <tt>0</tt> if the
+     * @return the value {@code 0} if both texts are equal; a value less than {@code 0} if the first text
+     *         is lexicographically less than the second text; and a value greater than {@code 0} if the
      *         first text is lexicographically greater than the second text.
      */
     public static int compareTo(final boolean caseSensitive, final char[] text1, final char[] text2) {
@@ -1558,8 +1558,8 @@ public final class TextUtils {
      * @param text2 the second text to be compared.
      * @param text2Offset the offset of the second text.
      * @param text2Len the length of the second text.
-     * @return the value <tt>0</tt> if both texts are equal; a value less than <tt>0</tt> if the first text
-     *         is lexicographically less than the second text; and a value greater than <tt>0</tt> if the
+     * @return the value {@code 0} if both texts are equal; a value less than {@code 0} if the first text
+     *         is lexicographically less than the second text; and a value greater than {@code 0} if the
      *         first text is lexicographically greater than the second text.
      */
     public static int compareTo(
@@ -1644,8 +1644,8 @@ public final class TextUtils {
      * @param text2 the second text to be compared.
      * @param text2Offset the offset of the second text.
      * @param text2Len the length of the second text.
-     * @return the value <tt>0</tt> if both texts are equal; a value less than <tt>0</tt> if the first text
-     *         is lexicographically less than the second text; and a value greater than <tt>0</tt> if the
+     * @return the value {@code 0} if both texts are equal; a value less than {@code 0} if the first text
+     *         is lexicographically less than the second text; and a value greater than {@code 0} if the
      *         first text is lexicographically greater than the second text.
      */
     public static int compareTo(
@@ -1726,8 +1726,8 @@ public final class TextUtils {
      * @param text2 the second text to be compared.
      * @param text2Offset the offset of the second text.
      * @param text2Len the length of the second text.
-     * @return the value <tt>0</tt> if both texts are equal; a value less than <tt>0</tt> if the first text
-     *         is lexicographically less than the second text; and a value greater than <tt>0</tt> if the
+     * @return the value {@code 0} if both texts are equal; a value less than {@code 0} if the first text
+     *         is lexicographically less than the second text; and a value greater than {@code 0} if the
      *         first text is lexicographically greater than the second text.
      */
     public static int compareTo(
@@ -1792,11 +1792,11 @@ public final class TextUtils {
 
     /**
      * <p>
-     *   Searches the specified array of texts (<tt>values</tt>) for the specified text &mdash;or a fragment, using an
+     *   Searches the specified array of texts ({@code values}) for the specified text &mdash;or a fragment, using an
      *   (offset,len) specification&mdash; using the binary search algorithm.
      * </p>
      * <p>
-     *   Note the specified <tt>values</tt> parameter <strong>must be lexicographically ordered</strong>.
+     *   Note the specified {@code values} parameter <strong>must be lexicographically ordered</strong>.
      * </p>
      *
      * @param caseSensitive whether the comparison must be done in a case-sensitive or case-insensitive way.
@@ -1806,7 +1806,7 @@ public final class TextUtils {
      * @param textOffset the offset of the text to search.
      * @param textLen the length of the text to search.
      * @return index of the search key, if it is contained in the values array; otherwise,
-     *         <tt>(-(<i>insertion point</i>) - 1)</tt>. The <i>insertion point</i> is defined as the point at
+     *         {@code (-(insertion point) - 1)}. The insertion point is defined as the point at
      *         which the key would be inserted into the array. Note that this guarantees that the return value will
      *         be &gt;= 0 if and only if the key is found.
      */
@@ -1824,11 +1824,11 @@ public final class TextUtils {
 
     /**
      * <p>
-     *   Searches the specified array of texts (<tt>values</tt>) for the specified text &mdash;or a fragment, using an
+     *   Searches the specified array of texts ({@code values}) for the specified text &mdash;or a fragment, using an
      *   (offset,len) specification&mdash; using the binary search algorithm.
      * </p>
      * <p>
-     *   Note the specified <tt>values</tt> parameter <strong>must be lexicographically ordered</strong>.
+     *   Note the specified {@code values} parameter <strong>must be lexicographically ordered</strong>.
      * </p>
      *
      * @param caseSensitive whether the comparison must be done in a case-sensitive or case-insensitive way.
@@ -1838,7 +1838,7 @@ public final class TextUtils {
      * @param textOffset the offset of the text to search.
      * @param textLen the length of the text to search.
      * @return index of the search key, if it is contained in the values array; otherwise,
-     *         <tt>(-(<i>insertion point</i>) - 1)</tt>. The <i>insertion point</i> is defined as the point at
+     *         {@code (-(insertion point) - 1)}. The insertion point is defined as the point at
      *         which the key would be inserted into the array. Note that this guarantees that the return value will
      *         be &gt;= 0 if and only if the key is found.
      */
@@ -1856,11 +1856,11 @@ public final class TextUtils {
 
     /**
      * <p>
-     *   Searches the specified array of texts (<tt>values</tt>) for the specified text &mdash;or a fragment, using an
+     *   Searches the specified array of texts ({@code values}) for the specified text &mdash;or a fragment, using an
      *   (offset,len) specification&mdash; using the binary search algorithm.
      * </p>
      * <p>
-     *   Note the specified <tt>values</tt> parameter <strong>must be lexicographically ordered</strong>.
+     *   Note the specified {@code values} parameter <strong>must be lexicographically ordered</strong>.
      * </p>
      *
      * @param caseSensitive whether the comparison must be done in a case-sensitive or case-insensitive way.
@@ -1870,7 +1870,7 @@ public final class TextUtils {
      * @param textOffset the offset of the text to search.
      * @param textLen the length of the text to search.
      * @return index of the search key, if it is contained in the values array; otherwise,
-     *         <tt>(-(<i>insertion point</i>) - 1)</tt>. The <i>insertion point</i> is defined as the point at
+     *         {@code (-(insertion point) - 1)}. The insertion point is defined as the point at
      *         which the key would be inserted into the array. Note that this guarantees that the return value will
      *         be &gt;= 0 if and only if the key is found.
      */
@@ -1888,11 +1888,11 @@ public final class TextUtils {
 
     /**
      * <p>
-     *   Searches the specified array of texts (<tt>values</tt>) for the specified text &mdash;or a fragment, using an
+     *   Searches the specified array of texts ({@code values}) for the specified text &mdash;or a fragment, using an
      *   (offset,len) specification&mdash; using the binary search algorithm.
      * </p>
      * <p>
-     *   Note the specified <tt>values</tt> parameter <strong>must be lexicographically ordered</strong>.
+     *   Note the specified {@code values} parameter <strong>must be lexicographically ordered</strong>.
      * </p>
      *
      * @param caseSensitive whether the comparison must be done in a case-sensitive or case-insensitive way.
@@ -1902,7 +1902,7 @@ public final class TextUtils {
      * @param textOffset the offset of the text to search.
      * @param textLen the length of the text to search.
      * @return index of the search key, if it is contained in the values array; otherwise,
-     *         <tt>(-(<i>insertion point</i>) - 1)</tt>. The <i>insertion point</i> is defined as the point at
+     *         {@code (-(insertion point) - 1)}. The insertion point is defined as the point at
      *         which the key would be inserted into the array. Note that this guarantees that the return value will
      *         be &gt;= 0 if and only if the key is found.
      */
@@ -1920,11 +1920,11 @@ public final class TextUtils {
 
     /**
      * <p>
-     *   Searches the specified array of texts (<tt>values</tt>) for the specified text &mdash;or a fragment, using an
+     *   Searches the specified array of texts ({@code values}) for the specified text &mdash;or a fragment, using an
      *   (offset,len) specification&mdash; using the binary search algorithm.
      * </p>
      * <p>
-     *   Note the specified <tt>values</tt> parameter <strong>must be lexicographically ordered</strong>.
+     *   Note the specified {@code values} parameter <strong>must be lexicographically ordered</strong>.
      * </p>
      *
      * @param caseSensitive whether the comparison must be done in a case-sensitive or case-insensitive way.
@@ -1937,7 +1937,7 @@ public final class TextUtils {
      * @param textOffset the offset of the text to search.
      * @param textLen the length of the text to search.
      * @return index of the search key, if it is contained in the values array; otherwise,
-     *         <tt>(-(<i>insertion point</i>) - 1)</tt>. The <i>insertion point</i> is defined as the point at
+     *         {@code (-(insertion point) - 1)}. The insertion point is defined as the point at
      *         which the key would be inserted into the array. Note that this guarantees that the return value will
      *         be &gt;= 0 if and only if the key is found.
      */
@@ -1984,11 +1984,11 @@ public final class TextUtils {
 
     /**
      * <p>
-     *   Searches the specified array of texts (<tt>values</tt>) for the specified text &mdash;or a fragment, using an
+     *   Searches the specified array of texts ({@code values}) for the specified text &mdash;or a fragment, using an
      *   (offset,len) specification&mdash; using the binary search algorithm.
      * </p>
      * <p>
-     *   Note the specified <tt>values</tt> parameter <strong>must be lexicographically ordered</strong>.
+     *   Note the specified {@code values} parameter <strong>must be lexicographically ordered</strong>.
      * </p>
      *
      * @param caseSensitive whether the comparison must be done in a case-sensitive or case-insensitive way.
@@ -2001,7 +2001,7 @@ public final class TextUtils {
      * @param textOffset the offset of the text to search.
      * @param textLen the length of the text to search.
      * @return index of the search key, if it is contained in the values array; otherwise,
-     *         <tt>(-(<i>insertion point</i>) - 1)</tt>. The <i>insertion point</i> is defined as the point at
+     *         {@code (-(insertion point) - 1)}. The insertion point is defined as the point at
      *         which the key would be inserted into the array. Note that this guarantees that the return value will
      *         be &gt;= 0 if and only if the key is found.
      */
@@ -2048,11 +2048,11 @@ public final class TextUtils {
 
     /**
      * <p>
-     *   Searches the specified array of texts (<tt>values</tt>) for the specified text &mdash;or a fragment, using an
+     *   Searches the specified array of texts ({@code values}) for the specified text &mdash;or a fragment, using an
      *   (offset,len) specification&mdash; using the binary search algorithm.
      * </p>
      * <p>
-     *   Note the specified <tt>values</tt> parameter <strong>must be lexicographically ordered</strong>.
+     *   Note the specified {@code values} parameter <strong>must be lexicographically ordered</strong>.
      * </p>
      *
      * @param caseSensitive whether the comparison must be done in a case-sensitive or case-insensitive way.
@@ -2065,7 +2065,7 @@ public final class TextUtils {
      * @param textOffset the offset of the text to search.
      * @param textLen the length of the text to search.
      * @return index of the search key, if it is contained in the values array; otherwise,
-     *         <tt>(-(<i>insertion point</i>) - 1)</tt>. The <i>insertion point</i> is defined as the point at
+     *         {@code (-(insertion point) - 1)}. The insertion point is defined as the point at
      *         which the key would be inserted into the array. Note that this guarantees that the return value will
      *         be &gt;= 0 if and only if the key is found.
      */
@@ -2112,11 +2112,11 @@ public final class TextUtils {
 
     /**
      * <p>
-     *   Searches the specified array of texts (<tt>values</tt>) for the specified text &mdash;or a fragment, using an
+     *   Searches the specified array of texts ({@code values}) for the specified text &mdash;or a fragment, using an
      *   (offset,len) specification&mdash; using the binary search algorithm.
      * </p>
      * <p>
-     *   Note the specified <tt>values</tt> parameter <strong>must be lexicographically ordered</strong>.
+     *   Note the specified {@code values} parameter <strong>must be lexicographically ordered</strong>.
      * </p>
      *
      * @param caseSensitive whether the comparison must be done in a case-sensitive or case-insensitive way.
@@ -2129,7 +2129,7 @@ public final class TextUtils {
      * @param textOffset the offset of the text to search.
      * @param textLen the length of the text to search.
      * @return index of the search key, if it is contained in the values array; otherwise,
-     *         <tt>(-(<i>insertion point</i>) - 1)</tt>. The <i>insertion point</i> is defined as the point at
+     *         {@code (-(insertion point) - 1)}. The insertion point is defined as the point at
      *         which the key would be inserted into the array. Note that this guarantees that the return value will
      *         be &gt;= 0 if and only if the key is found.
      */

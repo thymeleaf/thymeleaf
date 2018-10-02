@@ -31,7 +31,7 @@ import org.thymeleaf.model.IText;
  * <p>
  *   <em>Inliners</em> are objects in charge of processing logic appearing on textual-oriented nodes
  *   ({@link IText}, {@link ICDATASection} and {@link IComment}), as opposed to on <em>elements</em>.
- *   For example, inlined output expressions (<tt>[[${...}]]</tt>), javascript inlining artifacts, etc.
+ *   For example, inlined output expressions ({@code [[${...}]]}), javascript inlining artifacts, etc.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez

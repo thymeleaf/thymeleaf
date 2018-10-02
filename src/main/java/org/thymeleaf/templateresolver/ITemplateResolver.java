@@ -118,7 +118,7 @@ public interface ITemplateResolver {
      *   return a {@link TemplateResolution} object.
      * </p>
      * <p>
-     *   The <tt>ownerTemplate</tt>, which might be null, will be specified when the template
+     *   The {@code ownerTemplate}, which might be null, will be specified when the template
      *   is resolved in order to be used as a fragent to be inserted into a higher level
      *   template (the <em>owner</em>). Most template resolver implementations will simply ignore
      *   this argument, but others might change their resolution results depending on the

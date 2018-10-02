@@ -36,7 +36,7 @@ import org.thymeleaf.util.NumberUtils;
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name
- *   <tt>#numbers</tt>.
+ *   {@code #numbers}.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez

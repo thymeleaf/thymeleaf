@@ -67,7 +67,7 @@ public interface IContext {
      * </p>
      *
      * @param name the name of the variable to be checked.
-     * @return <tt>true</tt> if the variable is already contained, <tt>false</tt> if not.
+     * @return {@code true} if the variable is already contained, {@code false} if not.
      */
     public boolean containsVariable(final String name);
 

@@ -72,7 +72,7 @@ public interface IAttribute {
      *   Returns the operator specified for this attribute.
      * </p>
      * <p>
-     *   The operator itself, if present, is always an equals sign (<tt>=</tt>), but the reason this is specified as a separate
+     *   The operator itself, if present, is always an equals sign ({@code =}), but the reason this is specified as a separate
      *   field is that it could be surrounded by white space, which should be respected in output when present at
      *   the input template.
      * </p>

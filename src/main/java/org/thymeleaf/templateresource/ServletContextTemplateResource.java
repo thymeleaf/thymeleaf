@@ -37,7 +37,7 @@ import org.thymeleaf.util.Validate;
  * <p>
  *   Implementation of {@link ITemplateResource} accessible from the {@link ServletContext} in a web application.
  *   The paths of these resources start at the web application root, and are normally stored inside
- *   <tt>/WEB-INF</tt>.
+ *   {@code /WEB-INF}.
  * </p>
  * <p>
  *   Objects of this class are usually created by {@link org.thymeleaf.templateresolver.ServletContextTemplateResolver}.

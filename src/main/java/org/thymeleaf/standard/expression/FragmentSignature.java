@@ -30,7 +30,7 @@ import org.thymeleaf.util.Validate;
 /**
  * <p>
  *   Represents a fragment signature, including both a name and an (optional) sequence of parameter names to be
- *   applied. Typically the result of parsing a <tt>th:fragment</tt> attribute.
+ *   applied. Typically the result of parsing a {@code th:fragment} attribute.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez

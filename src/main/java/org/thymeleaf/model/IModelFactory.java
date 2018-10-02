@@ -73,8 +73,8 @@ public interface IModelFactory {
      *   Parse the template specified as String and return the result as a model.
      * </p>
      * <p>
-     *   Note the <tt>template</tt> argument specified here is the template content itself, not a name to be resolved
-     *   by a template resolver. The <tt>ownerTemplate</tt> argument is mandatory, and specifies the template that
+     *   Note the {@code template} argument specified here is the template content itself, not a name to be resolved
+     *   by a template resolver. The {@code ownerTemplate} argument is mandatory, and specifies the template that
      *   is being processed and as a part of which process the String template is being parsed.
      * </p>
      *
@@ -130,7 +130,7 @@ public interface IModelFactory {
      *  Create a DOCTYPE clause event, specifying all its components.
      * </p>
      *
-     * @param keyword the keyword value (should be <tt>DOCTYPE</tt>, but case might vary).
+     * @param keyword the keyword value (should be {@code DOCTYPE}, but case might vary).
      * @param elementName the root element name.
      * @param publicId the public ID (might be null).
      * @param systemId the system ID (might be null).
@@ -184,7 +184,7 @@ public interface IModelFactory {
      * </p>
      * <p>
      *   This is equivalent to calling {@link #createStandaloneElementTag(String, boolean, boolean)} with
-     *   <tt>false</tt> as a value for <tt>synthetic</tt> and <tt>true</tt> as a value for <tt>minimized</tt>.
+     *   {@code false} as a value for {@code synthetic} and {@code true} as a value for {@code minimized}.
      * </p>
      *
      * @param elementName the element name.
@@ -198,7 +198,7 @@ public interface IModelFactory {
      * </p>
      * <p>
      *   This is equivalent to calling {@link #createStandaloneElementTag(String, String, String, boolean, boolean)} with
-     *   <tt>false</tt> as a value for <tt>synthetic</tt> and <tt>true</tt> as a value for <tt>minimized</tt>.
+     *   {@code false} as a value for {@code synthetic} and {@code true} as a value for {@code minimized}.
      * </p>
      *
      * @param elementName the element name.
@@ -216,8 +216,8 @@ public interface IModelFactory {
      * @param elementName the element name.
      * @param synthetic whether the tag is synthetic or not. Synthetic tags are used for balancing of markup and
      *                  will not appear on output.
-     * @param minimized whether the tag is minimized or not, i.e. whether it ends in <tt>/&gt;</tt> or simply
-     *                  <tt>&gt;</tt>.
+     * @param minimized whether the tag is minimized or not, i.e. whether it ends in {@code />} or simply
+     *                  {@code >}.
      * @return the standalone tag.
      */
     public IStandaloneElementTag createStandaloneElementTag(final String elementName, final boolean synthetic, final boolean minimized);
@@ -232,8 +232,8 @@ public interface IModelFactory {
      * @param attributeValue the value of the attribute to be added to the tag.
      * @param synthetic whether the tag is synthetic or not. Synthetic tags are used for balancing of markup and
      *                  will not appear on output.
-     * @param minimized whether the tag is minimized or not, i.e. whether it ends in <tt>/&gt;</tt> or simply
-     *                  <tt>&gt;</tt>.
+     * @param minimized whether the tag is minimized or not, i.e. whether it ends in {@code />} or simply
+     *                  {@code >}.
      * @return the standalone tag.
      */
     public IStandaloneElementTag createStandaloneElementTag(final String elementName, final String attributeName, final String attributeValue, final boolean synthetic, final boolean minimized);
@@ -248,8 +248,8 @@ public interface IModelFactory {
      * @param attributeValueQuotes the type of quotes to be used for representing the attribute values.
      * @param synthetic whether the tag is synthetic or not. Synthetic tags are used for balancing of markup and
      *                  will not appear on output.
-     * @param minimized whether the tag is minimized or not, i.e. whether it ends in <tt>/&gt;</tt> or simply
-     *                  <tt>&gt;</tt>.
+     * @param minimized whether the tag is minimized or not, i.e. whether it ends in {@code />} or simply
+     *                  {@code >}.
      * @return the standalone tag.
      */
     public IStandaloneElementTag createStandaloneElementTag(final String elementName, final Map<String,String> attributes, final AttributeValueQuotes attributeValueQuotes, final boolean synthetic, final boolean minimized);
@@ -261,7 +261,7 @@ public interface IModelFactory {
      * </p>
      * <p>
      *   This is equivalent to calling {@link #createOpenElementTag(String, boolean)} with
-     *   <tt>false</tt> as a value for <tt>synthetic</tt>.
+     *   {@code false} as a value for {@code synthetic}.
      * </p>
      *
      * @param elementName the element name.
@@ -275,7 +275,7 @@ public interface IModelFactory {
      * </p>
      * <p>
      *   This is equivalent to calling {@link #createOpenElementTag(String, String, String, boolean)} with
-     *   <tt>false</tt> as a value for <tt>synthetic</tt>.
+     *   {@code false} as a value for {@code synthetic}.
      * </p>
      *
      * @param elementName the element name.
@@ -332,7 +332,7 @@ public interface IModelFactory {
      * </p>
      * <p>
      *   This is equivalent to calling {@link #createCloseElementTag(String, boolean, boolean)} with
-     *   <tt>false</tt> as a value for <tt>synthetic</tt> and also <tt>false</tt> as a value for <tt>unmatched</tt>.
+     *   {@code false} as a value for {@code synthetic} and also {@code false} as a value for {@code unmatched}.
      * </p>
      *
      * @param elementName the element name.

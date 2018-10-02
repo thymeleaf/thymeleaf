@@ -38,7 +38,7 @@ import org.thymeleaf.standard.util.StandardExpressionUtils;
 
 /**
  * <p>
- *   Evaluator for variable expressions (<tt>${...}</tt>) in Thymeleaf Standard Expressions, using the
+ *   Evaluator for variable expressions ({@code ${...}}) in Thymeleaf Standard Expressions, using the
  *   OGNL expression language.
  * </p>
  * <p>

@@ -72,7 +72,7 @@ public interface ILinkBuilder {
 
     /**
      * <p>
-     *   Build a link, returning <tt>null</tt> if not possible.
+     *   Build a link, returning {@code null} if not possible.
      * </p>
      *
      * @param context the {@link IExpressionContext} object being used for template processing. Cannot be null.

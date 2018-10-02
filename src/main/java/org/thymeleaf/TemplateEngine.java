@@ -63,7 +63,7 @@ import org.thymeleaf.util.Validate;
  *   This is the only implementation of {@link ITemplateEngine} provided out of the box by Thymeleaf.
  * </p>
  *
- * <h3>Creating an instance of <tt>TemplateEngine</tt></h3>
+ * <h3>Creating an instance of {@code TemplateEngine}</h3>
  * <p>
  *   An instance of this class can be created at any time by calling its constructor:
  * </p>
@@ -71,14 +71,14 @@ import org.thymeleaf.util.Validate;
  *   final TemplateEngine templateEngine = new TemplateEngine();
  * </code>
  * <p>
- *   Creation and configuration of <tt>TemplateEngine</tt> instances is expensive, so it is
+ *   Creation and configuration of {@code TemplateEngine} instances is expensive, so it is
  *   recommended to create only one instance of this class (or at least one instance per
  *   dialect/configuration) and use it to process multiple templates.
  * </p>
  * 
- * <h3>Configuring the <tt>TemplateEngine</tt></h3>
+ * <h3>Configuring the {@code TemplateEngine}</h3>
  * <p>
- *   Once created, an instance of <tt>TemplateEngine</tt> has to be typically configured a
+ *   Once created, an instance of {@code TemplateEngine} has to be typically configured a
  *   mechanism for <em>resolving templates</em> (i.e. obtaining and reading them):
  * </p>
  * <ul>
@@ -185,9 +185,9 @@ import org.thymeleaf.util.Validate;
  * 
  * <h4>2. Template Processing</h4>
  * <p>
- *   In order to execute templates, the different <tt>process(...)</tt> methods should
+ *   In order to execute templates, the different {@code process(...)} methods should
  *   be used. Those are mostly divided into two blocks: those that return the template processing
- *   result as a <tt>String</tt>, and those that receive a {@link Writer} as an argument
+ *   result as a {@code String}, and those that receive a {@link Writer} as an argument
  *   and use it for writing the result instead.
  * </p>
  * <p>
@@ -206,7 +206,7 @@ import org.thymeleaf.util.Validate;
  *   templateEngine.process("mytemplate", ctx, httpServletResponse.getWriter());
  * </code>
  * <p>
- *   The <tt>"mytemplate"</tt> String argument is the <i>template name</i>, and it
+ *   The {@code "mytemplate"} String argument is the <i>template name</i>, and it
  *   will relate to the physical/logical location of the template itself in a way
  *   configured at the template resolver/s. 
  * </p>
@@ -225,11 +225,11 @@ public class TemplateEngine implements ITemplateEngine {
 
     /**
      * <p>
-     *   Name of the <tt>TIMER</tt> logger. This logger will output the time required
+     *   Name of the {@code TIMER} logger. This logger will output the time required
      *   for executing each template processing operation.
      * </p>
      * <p>
-     *   The value of this constant is <tt>org.thymeleaf.TemplateEngine.TIMER</tt>. This
+     *   The value of this constant is {@code org.thymeleaf.TemplateEngine.TIMER}. This
      *   allows you to set a specific configuration and/or appenders for timing info at your logging
      *   system configuration.
      * </p>
@@ -261,10 +261,10 @@ public class TemplateEngine implements ITemplateEngine {
 
     /**
      * <p>
-     *   Constructor for <tt>TemplateEngine</tt> objects.
+     *   Constructor for {@code TemplateEngine} objects.
      * </p>
      * <p>
-     *   This is the only way to create a <tt>TemplateEngine</tt> instance (which
+     *   This is the only way to create a {@code TemplateEngine} instance (which
      *   should be configured after creation).
      * </p>
      */
@@ -309,7 +309,7 @@ public class TemplateEngine implements ITemplateEngine {
      *   THIS METHOD IS INTERNAL AND SHOULD <b>NEVER</b> BE CALLED DIRECTLY.
      * </p>
      * <p>
-     *   If a subclass of <tt>TemplateEngine</tt> needs additional steps for
+     *   If a subclass of {@code TemplateEngine} needs additional steps for
      *   initialization, the {@link #initializeSpecific()} method should
      *   be overridden.
      * </p>
@@ -360,7 +360,7 @@ public class TemplateEngine implements ITemplateEngine {
     /**
      * <p>
      *   This method performs additional initializations required for a
-     *   <tt>TemplateEngine</tt> subclass instance. This method
+     *   {@code TemplateEngine} subclass instance. This method
      *   is called before the first execution of
      *   {@link TemplateEngine#process(String, org.thymeleaf.context.IContext)}
      *   or {@link TemplateEngine#processThrottled(String, org.thymeleaf.context.IContext)}
@@ -372,7 +372,7 @@ public class TemplateEngine implements ITemplateEngine {
      * </p>
      * <p>
      *   The base implementation of this method does nothing, and it is designed
-     *   for being overridden by subclasses of <tt>TemplateEngine</tt>.
+     *   for being overridden by subclasses of {@code TemplateEngine}.
      * </p>
      */
     protected void initializeSpecific() {
@@ -383,16 +383,16 @@ public class TemplateEngine implements ITemplateEngine {
 
     /**
      * <p>
-     *   Checks whether the <tt>TemplateEngine</tt> has already been initialized
-     *   or not. A <tt>TemplateEngine</tt> is initialized when the {@link #initialize()}
+     *   Checks whether the {@code TemplateEngine} has already been initialized
+     *   or not. A {@code TemplateEngine} is initialized when the {@link #initialize()}
      *   method is called the first time a template is processed.
      * </p>
      * <p>
      *   Normally, there is no good reason why users would need to call this method.
      * </p>
      *
-     * @return <tt>true</tt> if the template engine has already been initialized,
-     *         <tt>false</tt> if not.
+     * @return {@code true} if the template engine has already been initialized,
+     *         {@code false} if not.
      */
     public final boolean isInitialized() {
         return this.initialized;

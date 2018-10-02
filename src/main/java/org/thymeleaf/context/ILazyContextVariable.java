@@ -33,7 +33,7 @@ package org.thymeleaf.context;
  * </p>
  * <p>
  *   Note this <em>lazy resolution</em> can only be performed when the lazy variable is added to the context as a
- *   <strong>first-level</strong> variable. i.e. <tt>${lazy}</tt> will work, but <tt>${container.lazy}</tt>
+ *   <strong>first-level</strong> variable. i.e. {@code ${lazy}} will work, but {@code ${container.lazy}}
  *   will not.
  * </p>
  * <p>

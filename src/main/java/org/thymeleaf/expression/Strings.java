@@ -35,7 +35,7 @@ import org.thymeleaf.util.Validate;
  * </p>
  * <p>
  *   An object of this class is usually available in variable evaluation expressions with the name
- *   <tt>#strings</tt>.
+ *   {@code #strings}.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
@@ -63,12 +63,12 @@ public final class Strings {
     
     /**
      * <p>
-     *   Performs a null-safe <tt>toString()</tt> operation.
+     *   Performs a null-safe {@code toString()} operation.
      * </p>
      * 
      * @param target the object on which toString will be executed
-     * @return the result of calling <tt>target.toString()</tt> if target is not null,
-     *         <tt>null</tt> if target is null.
+     * @return the result of calling {@code target.toString()} if target is not null,
+     *         {@code null} if target is null.
      * @since 2.0.12
      */
     public String toString(final Object target) {
@@ -81,13 +81,13 @@ public final class Strings {
 
     /**
      * <p>
-     *   Performs a null-safe <tt>toString()</tt> operation on each
+     *   Performs a null-safe {@code toString()} operation on each
      *   element of the array.
      * </p>
      * 
      * @param target the array of objects on which toString will be executed
-     * @return for each element: the result of calling <tt>target.toString()</tt> 
-     *         if target is not null, <tt>null</tt> if target is null.
+     * @return for each element: the result of calling {@code target.toString()}
+     *         if target is not null, {@code null} if target is null.
      * @since 2.0.12
      */
     public String[] arrayToString(final Object[] target) {
@@ -104,13 +104,13 @@ public final class Strings {
     
     /**
      * <p>
-     *   Performs a null-safe <tt>toString()</tt> operation on each
+     *   Performs a null-safe {@code toString()} operation on each
      *   element of the list.
      * </p>
      * 
      * @param target the list of objects on which toString will be executed
-     * @return for each element: the result of calling <tt>target.toString()</tt> 
-     *         if target is not null, <tt>null</tt> if target is null.
+     * @return for each element: the result of calling {@code target.toString()}
+     *         if target is not null, {@code null} if target is null.
      * @since 2.0.12
      */
     public List<String> listToString(final List<?> target) {
@@ -127,13 +127,13 @@ public final class Strings {
 
     /**
      * <p>
-     *   Performs a null-safe <tt>toString()</tt> operation on each
+     *   Performs a null-safe {@code toString()} operation on each
      *   element of the set.
      * </p>
      * 
      * @param target the set of objects on which toString will be executed
-     * @return for each element: the result of calling <tt>target.toString()</tt> 
-     *         if target is not null, <tt>null</tt> if target is null.
+     * @return for each element: the result of calling {@code target.toString()}
+     *         if target is not null, {@code null} if target is null.
      * @since 2.0.12
      */
     public Set<String> setToString(final Set<?> target) {
@@ -434,7 +434,7 @@ public final class Strings {
      * @param target  source of the copy.
      * @param start   index where the copy start.
      * 
-     * @return part of target, or <tt>null</tt> if target is null.
+     * @return part of target, or {@code null} if target is null.
      *
      * @since 1.1.2
      * 
@@ -455,7 +455,7 @@ public final class Strings {
      * @param target source of the copy.
      * @param start  index where the copy start.
      * 
-     * @return part of target, or <tt>null</tt> if target is null.
+     * @return part of target, or {@code null} if target is null.
      *
      * @since 1.1.2
      * 
@@ -480,7 +480,7 @@ public final class Strings {
      * @param target   source of the copy.
      * @param start    index where the copy start.
      * 
-     * @return part of target, or <tt>null</tt> if target is null.
+     * @return part of target, or {@code null} if target is null.
      *
      * @since 1.1.2
      * 
@@ -505,7 +505,7 @@ public final class Strings {
      * @param target source of the copy.
      * @param start  index where the copy start.
      * 
-     * @return part of target, or <tt>null</tt> if target is null.
+     * @return part of target, or {@code null} if target is null.
      *
      * @since 1.1.2
      * 

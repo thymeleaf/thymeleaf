@@ -90,11 +90,11 @@ public final class ClassLoaderUtils {
      * <p>
      *   First the <em>context class loader</em> will be used. If this class loader is not
      *   able to load the class, then the <em>class class loader</em>
-     *   (<tt>ClassLoaderUtils.class.getClassLoader()</tt>) will be used if it is different from
+     *   ({@code ClassLoaderUtils.class.getClassLoader()}) will be used if it is different from
      *   the thread context one. Last, the System class loader will be tried.
      * </p>
      * <p>
-     *   This method does never return <tt>null</tt>.
+     *   This method does never return {@code null}.
      * </p>
      *
      * @param className the name of the class to be obtained.
@@ -166,15 +166,15 @@ public final class ClassLoaderUtils {
 
     /**
      * <p>
-     *   Try to obtain a class by name, returning <tt>null</tt> if not found.
+     *   Try to obtain a class by name, returning {@code null} if not found.
      * </p>
      * <p>
-     *   This method works very similarly to {@link #loadClass(String)} but will just return <tt>null</tt>
+     *   This method works very similarly to {@link #loadClass(String)} but will just return {@code null}
      *   if the class is not found by the sequence of class loaders being tried.
      * </p>
      *
      * @param className the name of the class to be obtained.
-     * @return the found class, or <tt>null</tt> if it could not be found.
+     * @return the found class, or {@code null} if it could not be found.
      *
      * @since 3.0.3
      *
@@ -194,12 +194,12 @@ public final class ClassLoaderUtils {
      *   Checks whether a class is present at the application's class path.
      * </p>
      * <p>
-     *   This method works very similarly to {@link #findClass(String)} but will just return <tt>true</tt>
-     *   or <tt>false</tt> depending on whether the class could be found or not.
+     *   This method works very similarly to {@link #findClass(String)} but will just return {@code true}
+     *   or {@code false} depending on whether the class could be found or not.
      * </p>
      *
      * @param className the name of the class to be checked.
-     * @return <tt>true</tt> if the class was found (by any class loader), <tt>false</tt> if not.
+     * @return {@code true} if the class was found (by any class loader), {@code false} if not.
      *
      * @since 3.0.3
      *
@@ -213,17 +213,17 @@ public final class ClassLoaderUtils {
 
     /**
      * <p>
-     *   Try to obtain a resource by name, returning <tt>null</tt> if it could not be located.
+     *   Try to obtain a resource by name, returning {@code null} if it could not be located.
      * </p>
      * <p>
      *   First the <em>context class loader</em> will be used. If this class loader is not
      *   able to locate the resource, then the <em>class class loader</em>
-     *   (<tt>ClassLoaderUtils.class.getClassLoader()</tt>) will be used if it is different from
+     *   ({@code ClassLoaderUtils.class.getClassLoader()}) will be used if it is different from
      *   the thread context one. Last, the System class loader will be tried.
      * </p>
      *
      * @param resourceName the name of the resource to be obtained.
-     * @return the found resource, or <tt>null</tt> if it could not be located.
+     * @return the found resource, or {@code null} if it could not be located.
      *
      * @since 3.0.3
      *
@@ -281,12 +281,12 @@ public final class ClassLoaderUtils {
      *   Checks whether a resource is present at the application's class path.
      * </p>
      * <p>
-     *   This method works very similarly to {@link #findResource(String)} but will just return <tt>true</tt>
-     *   or <tt>false</tt> depending on whether the resource could be located or not.
+     *   This method works very similarly to {@link #findResource(String)} but will just return {@code true}
+     *   or {@code false} depending on whether the resource could be located or not.
      * </p>
      *
      * @param resourceName the name of the resource to be checked.
-     * @return <tt>true</tt> if the class was located (by any class loader), <tt>false</tt> if not.
+     * @return {@code true} if the class was located (by any class loader), {@code false} if not.
      *
      * @since 3.0.3
      *
@@ -305,11 +305,11 @@ public final class ClassLoaderUtils {
      * <p>
      *   First the <em>context class loader</em> will be used. If this class loader is not
      *   able to locate the resource, then the <em>class class loader</em>
-     *   (<tt>ClassLoaderUtils.class.getClassLoader()</tt>) will be used if it is different from
+     *   ({@code ClassLoaderUtils.class.getClassLoader()}) will be used if it is different from
      *   the thread context one. Last, the System class loader will be tried.
      * </p>
      * <p>
-     *   This method does never return <tt>null</tt>.
+     *   This method does never return {@code null}.
      * </p>
      *
      * @param resourceName the name of the resource to be obtained.
@@ -334,15 +334,15 @@ public final class ClassLoaderUtils {
 
     /**
      * <p>
-     *   Try to obtain a resource by name, returning <tt>null</tt> if it could not be located.
+     *   Try to obtain a resource by name, returning {@code null} if it could not be located.
      * </p>
      * <p>
-     *   This method works very similarly to {@link #loadResourceAsStream(String)} but will just return <tt>null</tt>
+     *   This method works very similarly to {@link #loadResourceAsStream(String)} but will just return {@code null}
      *   if the resource cannot be located by the sequence of class loaders being tried.
      * </p>
      *
      * @param resourceName the name of the resource to be obtained.
-     * @return an input stream on the resource, or <tt>null</tt> if it could not be located.
+     * @return an input stream on the resource, or {@code null} if it could not be located.
      *
      * @since 3.0.3
      *

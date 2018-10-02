@@ -43,17 +43,17 @@ import org.unbescape.uri.UriEscape;
  *   This class will build link URLs using (by default) the Java Servlet API when the specified URLs are
  *   context-relative, given the need to obtain the context path and add it to the URL. Also, when an
  *   {@link org.thymeleaf.context.IWebContext} implementation is used as context, URLs will be passed to
- *   the standard <tt>HttpSerlvetResponse.encodeURL(...)</tt> method before returning.
+ *   the standard {@code HttpSerlvetResponse.encodeURL(...)} method before returning.
  * </p>
  * <p>
  *   Note however that the Servlet-API specific part of this behaviour is configurable and confined to a set of
- *   <tt>protected</tt> methods that can be overwritten by subclasses that want to offer a link building
+ *   {@code protected} methods that can be overwritten by subclasses that want to offer a link building
  *   behaviour very similar to the standard one, but without any dependencies on the Servlet API (e.g. extracting
- *   URL context paths from a framework artifact other than <tt>HttpServletRequest</tt>).
+ *   URL context paths from a framework artifact other than {@code HttpServletRequest}).
  * </p>
  * <p>
- *   This implementation will only return <tt>null</tt> at {@link #buildLink(IExpressionContext, String, Map)}
- *   if the specified <tt>base</tt> argument is <tt>null</tt>.
+ *   This implementation will only return {@code null} at {@link #buildLink(IExpressionContext, String, Map)}
+ *   if the specified {@code base} argument is {@code null}.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
@@ -469,8 +469,8 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
      *   need a context path to be inserted at their beginning).
      * </p>
      * <p>
-     *   By default, this method will obtain the context path from <tt>HttpServletRequest.getContextPath()</tt>,
-     *   throwing an exception if <tt>context</tt> is not an instance of <tt>IWebContext</tt> given context-relative
+     *   By default, this method will obtain the context path from {@code HttpServletRequest.getContextPath()},
+     *   throwing an exception if {@code context} is not an instance of {@code IWebContext} given context-relative
      *   URLs are (by default) only allowed in web contexts.
      * </p>
      * <p>
@@ -505,9 +505,9 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
      *   Process an already-built URL just before returning it.
      * </p>
      * <p>
-     *   By default, this method will apply the <tt>HttpServletResponse.encodeURL(url)</tt> mechanism, as standard
-     *   when using the Java Servlet API. Note however that this will only be applied if <tt>context</tt> is
-     *   an implementation of <tt>IWebContext</tt> (i.e. the Servlet API will only be applied in web environments).
+     *   By default, this method will apply the {@code HttpServletResponse.encodeURL(url)} mechanism, as standard
+     *   when using the Java Servlet API. Note however that this will only be applied if {@code context} is
+     *   an implementation of {@code IWebContext} (i.e. the Servlet API will only be applied in web environments).
      * </p>
      * <p>
      *   This method can be overridden by any subclasses that want to change this behaviour (e.g. in order to

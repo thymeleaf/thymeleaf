@@ -58,7 +58,7 @@ public interface IExpressionObjectFactory {
      *
      * @param context the context being used for processing the template.
      * @param expressionObjectName the name of the expression object to be built.
-     * @return the built object, or <tt>null</tt> if the object could not be built.
+     * @return the built object, or {@code null} if the object could not be built.
      */
     public Object buildObject(final IExpressionContext context, final String expressionObjectName);
 
@@ -72,7 +72,7 @@ public interface IExpressionObjectFactory {
      *   executed during a single template execution.
      * </p>
      * @param expressionObjectName the name of the expression object.
-     * @return <tt>true</tt> is the object is to be considered cacheable, <tt>false</tt> if not.
+     * @return {@code true} is the object is to be considered cacheable, {@code false} if not.
      */
     public boolean isCacheable(final String expressionObjectName);
 

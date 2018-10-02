@@ -40,7 +40,7 @@ import org.thymeleaf.util.Validate;
  *   interface and offers a good base for the easy implementation of custom template handlers.
  * </p>
  * <p>
- *   All <tt>handleX()</tt> implementations in this class are set to simply delegate to the
+ *   All {@code handleX()} implementations in this class are set to simply delegate to the
  *   <em>next</em> handler in the chain, so that subclasses can override only the handling methods that are
  *   really relevant to them.
  * </p>

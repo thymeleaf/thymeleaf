@@ -32,7 +32,7 @@ import org.thymeleaf.model.IProcessableElementTag;
  *   (see {@link IElementProcessor}.
  * </p>
  * <p>
- *   <b>Using the <tt>structureHandler</tt></b>
+ *   <b>Using the {@code structureHandler}</b>
  * </p>
  * <p>
  *   For any actions involving modifications to the tag being processed or the markup structure, processors will

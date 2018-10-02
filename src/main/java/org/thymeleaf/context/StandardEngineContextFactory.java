@@ -33,7 +33,7 @@ import org.thymeleaf.util.Validate;
  *   Standard implementation of the {@link IEngineContextFactory} interface.
  * </p>
  * <p>
- *   This factory will examine the <tt>context</tt> being passed as a parameter and, depending on whether
+ *   This factory will examine the {@code context} being passed as a parameter and, depending on whether
  *   this context object implements the {@link IWebContext} interface or not (i.e. whether support for the
  *   Servlet API should be enabled or not), return a {@link WebEngineContext} or an {@link EngineContext}
  *   instance as a result.

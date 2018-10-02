@@ -89,7 +89,7 @@ public interface ITemplateEngine {
      * <p>
      * Template selectors allow the possibility to process only a part of the specified template, expressing
      * this selection in a syntax similar to jQuery, CSS or XPath selectors. Note this is only available for
-     * <em>markup template modes</em> (<tt>HTML</tt>, <tt>XML</tt>). For more info on <em>template selectors</em>
+     * <em>markup template modes</em> ({@code HTML}, {@code XML}). For more info on <em>template selectors</em>
      * syntax, have a look at <a href="http://www.attoparser.org">AttoParser</a>'s <em>markup selectors</em>
      * documentation.
      * </p>
@@ -161,7 +161,7 @@ public interface ITemplateEngine {
      * <p>
      * Template selectors allow the possibility to process only a part of the specified template, expressing
      * this selection in a syntax similar to jQuery, CSS or XPath selectors. Note this is only available for
-     * <em>markup template modes</em> (<tt>HTML</tt>, <tt>XML</tt>). For more info on <em>template selectors</em>
+     * <em>markup template modes</em> ({@code HTML}, {@code XML}). For more info on <em>template selectors</em>
      * syntax, have a look at <a href="http://www.attoparser.org">AttoParser</a>'s <em>markup selectors</em>
      * documentation.
      * </p>
@@ -235,7 +235,7 @@ public interface ITemplateEngine {
      * <p>
      * Template selectors allow the possibility to process only a part of the specified template, expressing
      * this selection in a syntax similar to jQuery, CSS or XPath selectors. Note this is only available for
-     * <em>markup template modes</em> (<tt>HTML</tt>, <tt>XML</tt>). For more info on <em>template selectors</em>
+     * <em>markup template modes</em> ({@code HTML}, {@code XML}). For more info on <em>template selectors</em>
      * syntax, have a look at <a href="http://www.attoparser.org">AttoParser</a>'s <em>markup selectors</em>
      * documentation.
      * </p>

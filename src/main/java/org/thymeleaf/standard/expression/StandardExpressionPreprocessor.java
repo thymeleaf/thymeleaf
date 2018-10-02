@@ -27,7 +27,7 @@ import org.thymeleaf.context.IExpressionContext;
 
 /**
  * <p>
- *   Expression preprocessor, in charge of executing <tt>__...__</tt> fragments in Thymeleaf Standard Expressions.
+ *   Expression preprocessor, in charge of executing {@code __...__} fragments in Thymeleaf Standard Expressions.
  * </p>
  * <p>
  *   Note a class with this name existed since 2.1.0, but it was completely reimplemented

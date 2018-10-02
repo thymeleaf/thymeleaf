@@ -36,7 +36,7 @@ public interface IDocType extends ITemplateEvent {
     /**
      * <p>
      *   Returns the keyword of the DOCTYPE clause in its original
-     *   case (usually <tt>DOCTYPE</tt>).
+     *   case (usually {@code DOCTYPE}).
      * </p>
      *
      * @return the DOCTYPE keyword.
@@ -46,7 +46,7 @@ public interface IDocType extends ITemplateEvent {
     /**
      * <p>
      *   Returns the root element name in the DOCTYPE clause. Will normally be
-     *   <tt>html</tt> in HTML or XHTML documents.
+     *   {@code html} in HTML or XHTML documents.
      * </p>
      *
      * @return the element name
@@ -55,7 +55,7 @@ public interface IDocType extends ITemplateEvent {
 
     /**
      * <p>
-     *   Returns the type of DOCTYPE, usually <tt>null</tt>, <tt>PUBLIC</tt> or <tt>SYSTEM</tt>.
+     *   Returns the type of DOCTYPE, usually {@code null}, {@code PUBLIC} or {@code SYSTEM}.
      * </p>
      *
      * @return the type of DOCTYPE (might be null).

@@ -96,11 +96,11 @@ import org.thymeleaf.util.Validate;
 /**
  * <p>
  *   Standard Dialect. This is the class containing the implementation of Thymeleaf Standard Dialect, including all
- *   <tt>th:*</tt> processors, expression objects, etc.
+ *   {@code th:*} processors, expression objects, etc.
  * </p>
  * <p>
  *   Note this dialect uses <strong>OGNL</strong> as an expression language. There is a Spring-integrated version
- *   of the Standard Dialect called the <em>SpringStandard Dialect</em> at the <tt>thymeleaf-spring*</tt> packages,
+ *   of the Standard Dialect called the <em>SpringStandard Dialect</em> at the {@code thymeleaf-spring*} packages,
  *   which uses SpringEL as an expression language.
  * </p>
  * <p>

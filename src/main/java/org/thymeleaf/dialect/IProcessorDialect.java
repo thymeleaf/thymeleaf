@@ -29,12 +29,12 @@ import org.thymeleaf.processor.IProcessor;
  *   Base interface for all dialects providing processors ({@link IProcessor} objects) to the template engine.
  * </p>
  * <p>
- *   Dialects of this kind can specify a <tt>prefix</tt> (see {@link #getPrefix()}) which will be considered the
+ *   Dialects of this kind can specify a {@code prefix} (see {@link #getPrefix()}) which will be considered the
  *   <em>default</em> prefix for that dialect. Users can however change the prefix to be used at the moment the
  *   dialect is added to the template engine.
  * </p>
  * <p>
- *   Also, prefix can be <tt>null</tt>, in which case the dialect's processors will be acting on
+ *   Also, prefix can be {@code null}, in which case the dialect's processors will be acting on
  *   attributes and elements without a namespace.
  * </p>
  * <p>

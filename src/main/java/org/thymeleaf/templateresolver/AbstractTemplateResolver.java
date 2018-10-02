@@ -200,11 +200,11 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      *   Returns whether template resources will be checked for existence before being returned or not.
      * </p>
      * <p>
-     *   Default value is <tt>FALSE</tt>.
+     *   Default value is {@code FALSE}.
      * </p>
      * <p>
      *   Checking resources for existence will make the template resolver execute {@link ITemplateResource#exists()}
-     *   for each resolved resource before returning a {@link TemplateResolution}, returning <tt>null</tt> if the
+     *   for each resolved resource before returning a {@link TemplateResolution}, returning {@code null} if the
      *   resource does not exist.
      * </p>
      * <p>
@@ -217,10 +217,10 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      * </p>
      * <p>
      *   If this <em>existence check</em> is enabled and a resource is determined to not exist,
-     *   {@link ITemplateResolver#resolveTemplate(IEngineConfiguration, String, String, Map)} will return <tt>null</tt>.
+     *   {@link ITemplateResolver#resolveTemplate(IEngineConfiguration, String, String, Map)} will return {@code null}.
      * </p>
      *
-     * @return <tt>true</tt> if resource existence will be checked, <tt>false</tt> if not
+     * @return {@code true} if resource existence will be checked, {@code false} if not
      *
      * @since 3.0.0
      *
@@ -235,11 +235,11 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      *   Sets whether template resources will be checked for existence before being returned or not.
      * </p>
      * <p>
-     *   Default value is <tt>FALSE</tt>.
+     *   Default value is {@code FALSE}.
      * </p>
      * <p>
      *   Checking resources for existence will make the template resolver execute {@link ITemplateResource#exists()}
-     *   for each resolved resource before returning a {@link TemplateResolution}, returning <tt>null</tt> if the
+     *   for each resolved resource before returning a {@link TemplateResolution}, returning {@code null} if the
      *   resource does not exist.
      * </p>
      * <p>
@@ -252,10 +252,10 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      * </p>
      * <p>
      *   If this <em>existence check</em> is enabled and a resource is determined to not exist,
-     *   {@link ITemplateResolver#resolveTemplate(IEngineConfiguration, String, String, Map)} will return <tt>null</tt>.
+     *   {@link ITemplateResolver#resolveTemplate(IEngineConfiguration, String, String, Map)} will return {@code null}.
      * </p>
      *
-     * @param checkExistence <tt>true</tt> if resource existence should be checked, <tt>false</tt> if not
+     * @param checkExistence {@code true} if resource existence should be checked, {@code false} if not
      *
      * @since 3.0.0
      *
@@ -278,8 +278,8 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      *   interface.
      * </p>
      * <p>
-     *   Note this flag can only be <tt>true</tt> for the {@link TemplateMode#HTML} and {@link TemplateMode#XML}
-     *   template modes. Also, note that setting this flag to <tt>true</tt> does not mean that a resource with
+     *   Note this flag can only be {@code true} for the {@link TemplateMode#HTML} and {@link TemplateMode#XML}
+     *   template modes. Also, note that setting this flag to {@code true} does not mean that a resource with
      *   decoupled logic must exist for the resolved template, only that it can exist.
      * </p>
      * <p>
@@ -288,10 +288,10 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      *   for non-cacheable templates, and completely removes any overhead for cached templates.
      * </p>
      * <p>
-     *   Default value is <tt>FALSE</tt>.
+     *   Default value is {@code FALSE}.
      * </p>
      *
-     * @return <tt>true</tt> if decoupled logic resources should be checked, <tt>false</tt> if not.
+     * @return {@code true} if decoupled logic resources should be checked, {@code false} if not.
      *
      * @since 3.0.0
      *
@@ -313,8 +313,8 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      *   interface.
      * </p>
      * <p>
-     *   Note this flag can only be <tt>true</tt> for the {@link TemplateMode#HTML} and {@link TemplateMode#XML}
-     *   template modes. Also, note that setting this flag to <tt>true</tt> does not mean that a resource with
+     *   Note this flag can only be {@code true} for the {@link TemplateMode#HTML} and {@link TemplateMode#XML}
+     *   template modes. Also, note that setting this flag to {@code true} does not mean that a resource with
      *   decoupled logic must exist for the resolved template, only that it can exist and therefore it should be
      *   checked.
      * </p>
@@ -324,10 +324,10 @@ public abstract class AbstractTemplateResolver implements ITemplateResolver {
      *   for non-cacheable templates, and completely removes any overhead for cached templates.
      * </p>
      * <p>
-     *   Default value is <tt>FALSE</tt>.
+     *   Default value is {@code FALSE}.
      * </p>
      *
-     * @param useDecoupledLogic <tt>true</tt> if resource existence should be checked, <tt>false</tt> if not
+     * @param useDecoupledLogic {@code true} if resource existence should be checked, {@code false} if not
      *
      * @since 3.0.0
      *

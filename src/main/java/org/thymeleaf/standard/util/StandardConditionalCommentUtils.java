@@ -48,7 +48,7 @@ public final class StandardConditionalCommentUtils {
      * </p>
      * <p>
      *  Result is an object of class {@link ConditionalCommentParsingResult}, or
-     *  <tt>null</tt> if text does not have the expected format for a conditional comment.
+     *  {@code null} if text does not have the expected format for a conditional comment.
      * </p>
      *
      * @param text the text to be parsed

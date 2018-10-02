@@ -35,7 +35,7 @@ public interface IComment extends ITemplateEvent, CharSequence {
 
     /**
      * <p>
-     *   Returns the whole Comment, including the <tt>&lt;!--...--&gt;</tt> prefix and suffix.
+     *   Returns the whole Comment, including the {@code <!--...-->} prefix and suffix.
      * </p>
      *
      * @return the Comment.

@@ -47,8 +47,8 @@ public interface ICacheEntryValidity {
      *   or not.
      * </p>
      * 
-     * @return <tt>true</tt> if the parsed template can be included into the cache,
-     *         <tt>false</tt> if not.
+     * @return {@code true} if the parsed template can be included into the cache,
+     *         {@code false} if not.
      */
     public boolean isCacheable();
 
