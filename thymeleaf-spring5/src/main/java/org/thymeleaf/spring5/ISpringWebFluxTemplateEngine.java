@@ -63,7 +63,7 @@ import org.thymeleaf.context.IContext;
  *        {@link Publisher} of output buffers (the combination of which turns Thymeleaf into a {@link Processor}
  *        in Reactive Streams terminology). Thymeleaf will execute as a response to
  *        {@link Subscriber#onNext(Object)} events triggered by this <em>data-driver</em>
- *        {@link Publisher}. Thymeleaf will expect to find a <tt>th:each</tt> iteration on the data-driven variable
+ *        {@link Publisher}. Thymeleaf will expect to find a {@code th:each} iteration on the data-driven variable
  *        inside the processed template, and will be executed in throttled mode for the published elements, sending
  *        the resulting output buffers to the output channels via {@link Subscriber#onNext(Object)} and stopping
  *        until the <em>data-driver</em> {@link Publisher} produces new data (normally after being requested to do

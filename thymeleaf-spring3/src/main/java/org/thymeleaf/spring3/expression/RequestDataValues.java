@@ -26,19 +26,19 @@ import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
 
 /**
  * <p>
- *   Expression object that offers the functionality of Spring MVC's <tt>RequestDataValueProcessor</tt> for
+ *   Expression object that offers the functionality of Spring MVC's {@code RequestDataValueProcessor} for
  *   performing last-moment modifications to request data values such as URLs or form contents in order to
  *   enable mechanism such as CSRF protection.
  * </p>
  * <p>
  *   Methods in this class correspond to the methods in Spring MVC's
- *   <tt>org.springframework.web.servlet.support.RequestDataValueProcessor</tt>.
+ *   {@code org.springframework.web.servlet.support.RequestDataValueProcessor}.
  * </p>
  * <p>
  *   Using this expression object is not needed in most scenarios, as its functionality will be automatically
- *   applied by <tt>th:href</tt>,  <tt>th:src</tt>,  <tt>th:action</tt>, <tt>th:value</tt>, <tt>th:method</tt>
- *   and <tt>th:field</tt>. But sometimes there is a need to manually apply these behaviours when e.g. creating
- *   and using URLs outside attributes such as <tt>th:href</tt> or <tt>th:src</tt>.
+ *   applied by {@code th:href},  {@code th:src},  {@code th:action}, {@code th:value}, {@code th:method}
+ *   and {@code th:field}. But sometimes there is a need to manually apply these behaviours when e.g. creating
+ *   and using URLs outside attributes such as {@code th:href} or {@code th:src}.
  * </p>
  * <p>
  *   An example of such scenario would be using an URL as a parameter in a message expression:

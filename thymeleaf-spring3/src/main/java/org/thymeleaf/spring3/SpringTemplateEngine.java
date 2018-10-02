@@ -43,7 +43,7 @@ import org.thymeleaf.spring3.messageresolver.SpringMessageResolver;
  *   It also configures a {@link SpringMessageResolver} as message resolver, and
  *   implements the {@link MessageSourceAware} interface in order to let Spring 
  *   automatically setting the {@link MessageSource} used at the application
- *   (bean needs to have id <tt>"messageSource"</tt>). If this Spring standard setting
+ *   (bean needs to have id {@code "messageSource"}). If this Spring standard setting
  *   needs to be overridden, the {@link #setTemplateEngineMessageSource(MessageSource)} can
  *   be used. 
  * </p>
@@ -81,7 +81,7 @@ public class SpringTemplateEngine
      * </p>
      * <p>
      *   If several {@link MessageSource} implementation beans exist, Spring will inject here 
-     *   the one with id <tt>"messageSource"</tt>.
+     *   the one with id {@code "messageSource"}.
      * </p>
      * <p>
      *   This property <b>should not be set manually</b> in most scenarios (see 
@@ -145,7 +145,7 @@ public class SpringTemplateEngine
 
     /**
      * <p>
-     *   Returns whether the <tt>&lt;input type="hidden" ...&gt;</tt> marker tags rendered to signal the presence
+     *   Returns whether the {@code <input type="hidden" ...>} marker tags rendered to signal the presence
      *   of checkboxes in forms when unchecked should be rendered <em>before</em> the checkbox tag itself,
      *   or after (default).
      * </p>
@@ -156,9 +156,9 @@ public class SpringTemplateEngine
      *   having to directly create instances of the {@link SpringStandardDialect})
      * </p>
      * <p>
-     *   A number of CSS frameworks and style guides assume that the <tt>&lt;label ...&gt;</tt> for a checkbox
-     *   will appear in markup just after the <tt>&lt;input type="checkbox" ...&gt;</tt> tag itself, and so the
-     *   default behaviour of rendering an <tt>&lt;input type="hidden" ...&gt;</tt> after the checkbox can lead to
+     *   A number of CSS frameworks and style guides assume that the {@code <label ...>} for a checkbox
+     *   will appear in markup just after the {@code <input type="checkbox" ...>} tag itself, and so the
+     *   default behaviour of rendering an {@code <input type="hidden" ...>} after the checkbox can lead to
      *   bad application of styles. By tuning this flag, developers can modify this behaviour and make the hidden
      *   tag appear before the checkbox (and thus allow the lable to truly appear right after the checkbox).
      * </p>
@@ -167,10 +167,10 @@ public class SpringTemplateEngine
      *   even if the checkbox is unchecked (no URL parameter is added for unchecked check boxes).
      * </p>
      * <p>
-     *   This flag is set to <tt>false</tt> by default.
+     *   This flag is set to {@code false} by default.
      * </p>
      *
-     * @return <tt>true</tt> if hidden markers should be rendered before the checkboxes, <tt>false</tt> if not.
+     * @return {@code true} if hidden markers should be rendered before the checkboxes, {@code false} if not.
      *
      * @since 3.0.10
      */
@@ -187,7 +187,7 @@ public class SpringTemplateEngine
 
     /**
      * <p>
-     *   Sets whether the <tt>&lt;input type="hidden" ...&gt;</tt> marker tags rendered to signal the presence
+     *   Sets whether the {@code <input type="hidden" ...>} marker tags rendered to signal the presence
      *   of checkboxes in forms when unchecked should be rendered <em>before</em> the checkbox tag itself,
      *   or after (default).
      * </p>
@@ -198,9 +198,9 @@ public class SpringTemplateEngine
      *   having to directly create instances of the {@link SpringStandardDialect})
      * </p>
      * <p>
-     *   A number of CSS frameworks and style guides assume that the <tt>&lt;label ...&gt;</tt> for a checkbox
-     *   will appear in markup just after the <tt>&lt;input type="checkbox" ...&gt;</tt> tag itself, and so the
-     *   default behaviour of rendering an <tt>&lt;input type="hidden" ...&gt;</tt> after the checkbox can lead to
+     *   A number of CSS frameworks and style guides assume that the {@code <label ...>} for a checkbox
+     *   will appear in markup just after the {@code <input type="checkbox" ...>} tag itself, and so the
+     *   default behaviour of rendering an {@code <input type="hidden" ...>} after the checkbox can lead to
      *   bad application of styles. By tuning this flag, developers can modify this behaviour and make the hidden
      *   tag appear before the checkbox (and thus allow the lable to truly appear right after the checkbox).
      * </p>
@@ -209,11 +209,11 @@ public class SpringTemplateEngine
      *   even if the checkbox is unchecked (no URL parameter is added for unchecked check boxes).
      * </p>
      * <p>
-     *   This flag is set to <tt>false</tt> by default.
+     *   This flag is set to {@code false} by default.
      * </p>
      *
-     * @param renderHiddenMarkersBeforeCheckboxes <tt>true</tt> if hidden markers should be rendered
-     *                                            before the checkboxes, <tt>false</tt> if not.
+     * @param renderHiddenMarkersBeforeCheckboxes {@code true} if hidden markers should be rendered
+     *                                            before the checkboxes, {@code false} if not.
      *
      * @since 3.0.10
      */
@@ -231,7 +231,7 @@ public class SpringTemplateEngine
     /**
      * <p>
      *   This method performs additional initializations required for a
-     *   <tt>SpringTemplateEngine</tt> subclass instance. This method
+     *   {@code SpringTemplateEngine} subclass instance. This method
      *   is called before the first execution of
      *   {@link TemplateEngine#process(String, org.thymeleaf.context.IContext)}
      *   or {@link TemplateEngine#processThrottled(String, org.thymeleaf.context.IContext)}
@@ -243,7 +243,7 @@ public class SpringTemplateEngine
      * </p>
      * <p>
      *   The implementation of this method does nothing, and it is designed
-     *   for being overridden by subclasses of <tt>SpringTemplateEngine</tt>.
+     *   for being overridden by subclasses of {@code SpringTemplateEngine}.
      * </p>
      */
     protected void initializeSpringSpecific() {

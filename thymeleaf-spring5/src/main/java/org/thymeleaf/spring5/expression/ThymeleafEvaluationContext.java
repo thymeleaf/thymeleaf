@@ -49,7 +49,7 @@ import org.thymeleaf.util.Validate;
  * </p>
  * <p>
  *   Before executing a Spring EL expression using this evaluation context, it should be enriched with the
- *   variables to be made accessible (like <tt>#variableName</tt>), using a
+ *   variables to be made accessible (like {@code #variableName}), using a
  *   {@link ThymeleafEvaluationContextWrapper} object.
  * </p>
  *

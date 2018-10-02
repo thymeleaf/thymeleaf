@@ -39,8 +39,8 @@ import org.thymeleaf.spring5.context.webflux.ISpringWebFluxContext;
  *   type of application.
  * </p>
  * <p>
- *   This implementation will only return <tt>null</tt> at {@link #buildLink(IExpressionContext, String, Map)}
- *   if the specified <tt>base</tt> argument is <tt>null</tt>.
+ *   This implementation will only return {@code null} at {@link #buildLink(IExpressionContext, String, Map)}
+ *   if the specified {@code base} argument is {@code null}.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
@@ -63,8 +63,8 @@ public class SpringWebFluxLinkBuilder extends StandardLinkBuilder {
      *   might need a context path to be inserted at their beginning).
      * </p>
      * <p>
-     *   This method will obtain the context path from <tt>ServerHttpRequest.getContextPath()</tt>,
-     *   throwing an exception if <tt>context</tt> is not an instance of <tt>ISpringWebFluxContext</tt> given
+     *   This method will obtain the context path from {@code ServerHttpRequest.getContextPath()},
+     *   throwing an exception if {@code context} is not an instance of {@code ISpringWebFluxContext} given
      *   context-relative URLs are (by default) only allowed in Spring WebFlux contexts.
      * </p>
      * <p>

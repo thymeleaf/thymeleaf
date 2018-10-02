@@ -48,8 +48,8 @@ import org.unbescape.html.HtmlEscape;
 
 /**
  * Adds the given class to the field on which this attribute is applied, if that
- * field contains errors.  It's similar to a combination of <tt>th:classappend</tt>
- * with a <tt>${#fields.hasErrors()}</tt> expression.
+ * field contains errors.  It's similar to a combination of {@code th:classappend}
+ * with a {@code ${#fields.hasErrors()}} expression.
  * 
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.3

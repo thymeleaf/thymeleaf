@@ -58,7 +58,7 @@ public abstract class AbstractThymeleafView
     /**
      * <p>
      *   Default charset set to ISO-8859-1 for compatibility reasons with Spring's AbstractView.
-     *   Value is "<tt>text/html;charset=ISO-8859-1</tt>".
+     *   Value is "{@code text/html;charset=ISO-8859-1}".
      * </p>
      */
     public static final String DEFAULT_CONTENT_TYPE = "text/html;charset=ISO-8859-1";
@@ -79,7 +79,7 @@ public abstract class AbstractThymeleafView
 
     /**
      * <p>
-     *   Creates a new instance of <tt>ThymeleafView</tt>.
+     *   Creates a new instance of {@code ThymeleafView}.
      * </p>
      */
 	protected AbstractThymeleafView() {
@@ -89,7 +89,7 @@ public abstract class AbstractThymeleafView
 
 	/**
 	 * <p>
-	 *   Creates a new instance of <tt>ThymeleafView</tt>, specifying the
+	 *   Creates a new instance of {@code ThymeleafView}, specifying the
 	 *   template name.
 	 * </p>
 	 * 
@@ -172,11 +172,11 @@ public abstract class AbstractThymeleafView
      * <p>
      *   When forced, the configured content type ({@link #setForceContentType(boolean)})  will
      *   be applied even if the template name ends in a known suffix:
-     *   <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
-     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
-     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>.
+     *   {@code .html}, {@code .htm}, {@code .xhtml},
+     *   {@code .xml}, {@code .js}, {@code .json},
+     *   {@code .css}, {@code .rss}, {@code .atom}, {@code .txt}.
      * </p>
-     * <p>Default value is <tt><b>false</b></tt></p>.
+     * <p>Default value is <b>{@code false}</b></p>.
      *
      * @return whether the content type will be forced or not.
      * @since 3.0.6
@@ -194,11 +194,11 @@ public abstract class AbstractThymeleafView
      * <p>
      *   When forced, the configured content type ({@link #setForceContentType(boolean)})  will
      *   be applied even if the template name ends in a known suffix:
-     *   <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
-     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
-     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>.
+     *   {@code .html}, {@code .htm}, {@code .xhtml},
+     *   {@code .xml}, {@code .js}, {@code .json},
+     *   {@code .css}, {@code .rss}, {@code .atom}, {@code .txt}.
      * </p>
-     * <p>Default value is <tt><b>false</b></tt></p>.
+     * <p>Default value is <b>{@code false}</b></p>.
      *
      * @param forceContentType whether the configured template mode should be forced or not.
      * @since 3.0.6
@@ -252,8 +252,8 @@ public abstract class AbstractThymeleafView
      *   to set the character encoding using this method.
      * </p>
      * 
-     * @param characterEncoding the character encoding to be used (e.g. <tt>UTF-8</tt>, 
-     *        <tt>ISO-8859-1</tt>, etc.)
+     * @param characterEncoding the character encoding to be used (e.g. {@code UTF-8},
+     *        {@code ISO-8859-1}, etc.)
      */
     public void setCharacterEncoding(final String characterEncoding) {
         this.characterEncoding = characterEncoding;
@@ -385,7 +385,7 @@ public abstract class AbstractThymeleafView
      * <p>
      *   These static variables are added to the context before the view is 
      *   processed, so that they can be referenced from the context like any 
-     *   other context variables, for example: <tt>${myStaticVar}</tt>.
+     *   other context variables, for example: {@code ${myStaticVar}}.
      * </p>
      * 
      * @return the map of static variables to be set into view's execution.
@@ -406,7 +406,7 @@ public abstract class AbstractThymeleafView
      *   These static variables are added to the context before this view 
      *   is processed, so that they can be referenced from
      *   the context like any other context variables, for example:
-     *   <tt>${myStaticVar}</tt>.
+     *   {@code ${myStaticVar}}.
      * </p>
      * 
      * @param name the name of the static variable
@@ -433,7 +433,7 @@ public abstract class AbstractThymeleafView
      *   These static variables are added to the context before this view is 
      *   processed, so that they can be referenced from
      *   the context like any other context variables, for example:
-     *   <tt>${myStaticVar}</tt>.
+     *   {@code ${myStaticVar}}.
      * </p>
      * 
      * 

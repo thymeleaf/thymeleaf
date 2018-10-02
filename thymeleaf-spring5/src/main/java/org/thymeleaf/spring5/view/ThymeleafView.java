@@ -107,7 +107,7 @@ public class ThymeleafView
 
     /**
      * <p>
-     *   Creates a new instance of <tt>ThymeleafView</tt>.
+     *   Creates a new instance of {@code ThymeleafView}.
      * </p>
      */
     public ThymeleafView() {
@@ -117,7 +117,7 @@ public class ThymeleafView
 
 	/**
 	 * <p>
-	 *   Creates a new instance of <tt>ThymeleafView</tt>, specifying the
+	 *   Creates a new instance of {@code ThymeleafView}, specifying the
 	 *   template name.
 	 * </p>
 	 *

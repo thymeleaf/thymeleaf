@@ -115,21 +115,21 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
      * </p>
      * <p>
      *   The name of the attributes being added to the Model will be the name of the execution attribute minus the
-     *   prefix. So <tt>ThymeleafReactiveModelAdditions:somedata</tt> will result in a Model attribute called
-     *   <tt>somedata</tt>.
+     *   prefix. So {@code ThymeleafReactiveModelAdditions:somedata} will result in a Model attribute called
+     *   {@code somedata}.
      * </p>
      * <p>
      *   Values of these execution attributes are allowed to be:
      * </p>
      * <ul>
-     *     <li><tt>Publisher&lt;?&gt;</tt> (including Flux&lt;?&gt; and Mono&lt;?&gt;).</li>
-     *     <li><tt>Supplier&lt;? extends Publisher&lt;?&gt;&gt;</tt>: The supplier will be called at <tt>View</tt>
+     *     <li>{@code Publisher<?>} (including Flux&lt;?&gt; and Mono&lt;?&gt;).</li>
+     *     <li>{@code Supplier<? extends Publisher<?>>}: The supplier will be called at {@code View}
      *          rendering time and the result will be added to the Model.</li>
-     *     <li><tt>Function&lt;ServerWebExchange,? extends Publisher&lt;?&gt;&gt;</tt>: The function will be called
-     *          at <tt>View</tt> rendering time and the result will be added to the Model.</li>
+     *     <li>{@code Function<ServerWebExchange,? extends Publisher<?>>}: The function will be called
+     *          at {@code View} rendering time and the result will be added to the Model.</li>
      * </ul>
      * <p>
-     *     Value: <tt>ThymeleafReactiveModelAdditions:</tt>
+     *     Value: {@code "ThymeleafReactiveModelAdditions:"}
      * </p>
      *
      * @since 3.0.10

@@ -26,7 +26,7 @@ import org.springframework.web.servlet.View;
 /**
  * <p>
  *   Interface defining getter and setter methods for an 
- *   <tt>ajaxHandler</tt> property in Views, so that they can
+ *   {@code ajaxHandler} property in Views, so that they can
  *   be used in Spring AJAX environments.
  * </p>
  *
@@ -34,7 +34,7 @@ import org.springframework.web.servlet.View;
  * 
  * @since 2.0.12
  *
- * @deprecated Deprecated in 3.0.0. Moved to the <tt>org.thymeleaf.spring3.webflow.view</tt> package. Will be removed
+ * @deprecated Deprecated in 3.0.0. Moved to the {@code org.thymeleaf.spring3.webflow.view} package. Will be removed
  *             from this package in Thymeleaf 3.1.
  *
  */

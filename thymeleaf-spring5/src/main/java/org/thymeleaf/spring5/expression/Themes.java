@@ -29,9 +29,9 @@ import org.thymeleaf.spring5.context.IThymeleafRequestContext;
 import org.thymeleaf.spring5.context.SpringContextUtils;
 
 /**
- * A utility object, accessed in Thymeleaf templates by the <tt>#themes</tt>
+ * A utility object, accessed in Thymeleaf templates by the {@code #themes}
  * expression, that provides the same features as the Spring
- * <tt>&lt;spring:theme</tt> JSP tag.
+ * {@code <spring:theme>} JSP tag.
  *
  * @author Emanuel Rabina
  * @author Daniel Fern&aacute;ndez

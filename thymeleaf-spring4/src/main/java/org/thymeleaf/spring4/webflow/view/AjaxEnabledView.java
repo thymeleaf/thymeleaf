@@ -26,7 +26,7 @@ import org.springframework.web.servlet.View;
 /**
  * <p>
  *   Interface defining getter and setter methods for an 
- *   <tt>ajaxHandler</tt> property in Views, so that they can
+ *   {@code ajaxHandler} property in Views, so that they can
  *   be used in Spring AJAX environments.
  * </p>
  *

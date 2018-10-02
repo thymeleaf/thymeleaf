@@ -34,9 +34,9 @@ import org.thymeleaf.spring5.context.webflux.SpringWebFluxThymeleafRequestContex
 
 /**
  * <p>
- *   This interface is meant to abstract a Spring <tt>RequestContext</tt>, without the client code
+ *   This interface is meant to abstract a Spring {@code RequestContext}, without the client code
  *   needing to know if it is a Spring WebMVC or Spring WebFlux implementation of this
- *   <tt>RequestContext</tt>.
+ *   {@code RequestContext}.
  * </p>
  *
  * @see org.thymeleaf.spring5.context.webmvc.SpringWebMvcThymeleafRequestContext

@@ -53,7 +53,7 @@ import org.thymeleaf.util.ClassLoaderUtils;
 
 /**
  * <p>
- *   Evaluator for variable expressions (<tt>${...}</tt>) in Thymeleaf Standard Expressions, using the
+ *   Evaluator for variable expressions ({@code ${...}}) in Thymeleaf Standard Expressions, using the
  *   SpringEL expression language.
  * </p>
  * <p>

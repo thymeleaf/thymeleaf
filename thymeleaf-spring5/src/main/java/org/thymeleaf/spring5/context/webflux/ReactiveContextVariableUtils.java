@@ -50,10 +50,10 @@ class ReactiveContextVariableUtils {
      *   {@link org.springframework.web.reactive.result.view.ViewResolutionResultHandler}):
      * </p>
      * <ul>
-     *     <li><tt>Flux&lt;T&gt;</tt> or other <em>multi-valued</em> streams are resolved as
-     *         <tt>List&lt;T&gt;</tt> so that they are <em>iterable</em>.</li>
-     *     <li><tt>Mono&lt;T&gt;</tt> or other <em>single-valued</em> streams are resolved as
-     *         <tt>T</tt> so that they are directly referenceable just like any other object.</li>
+     *     <li>{@code Flux<T>} or other <em>multi-valued</em> streams are resolved as
+     *         {@code List<T>} so that they are <em>iterable</em>.</li>
+     *     <li>{@code Mono<T>} or other <em>single-valued</em> streams are resolved as
+     *         {@code T} so that they are directly referenceable just like any other object.</li>
      * </ul>
      *
      * @param asyncObj the asynchronous object being wrapped by this lazy variable.

@@ -46,7 +46,7 @@ import org.thymeleaf.util.Validate;
  *   Implementation of Thymeleaf's {@link IThymeleafEvaluationContext} interface designed to wrap around a
  *   delegated implementation of {@link org.springframework.expression.EvaluationContext}, adding the
  *   Thymeleaf-required {@link org.springframework.expression.PropertyAccessor} implementations and (optionally)
- *   a series of variables to be accessed like <tt>#variableName</tt> during expression evaluation.
+ *   a series of variables to be accessed like {@code #variableName} during expression evaluation.
  * </p>
  * <p>
  *   Note a class with this name existed since 2.1.0, but it was completely reimplemented

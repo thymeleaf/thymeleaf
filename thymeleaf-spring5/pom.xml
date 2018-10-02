@@ -201,6 +201,7 @@
           <javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
           <reportOutputDirectory>${project.reporting.outputDirectory}/api/${project.artifactId}/apidocs</reportOutputDirectory>
           <excludePackageNames>org.springframework</excludePackageNames>
+          <additionalJOption>--no-module-directories</additionalJOption>
         </configuration>
         <executions>
           <execution>

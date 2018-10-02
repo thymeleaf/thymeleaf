@@ -35,7 +35,7 @@ import org.thymeleaf.util.ClassLoaderUtils;
 
 /**
  * <p>
- *   Utility class used for applying the <tt>org.springframework.web.servlet.support.RequestDataValueProcessor</tt>
+ *   Utility class used for applying the {@code org.springframework.web.servlet.support.RequestDataValueProcessor}
  *   interface to URLs and forms output by Thymeleaf.
  * </p>
  * <p>

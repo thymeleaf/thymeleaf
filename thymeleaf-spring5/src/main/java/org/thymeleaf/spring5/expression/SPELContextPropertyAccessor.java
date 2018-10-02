@@ -37,9 +37,9 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  * </p>
  * <p>
  *   Note that, even if {@link IContext} objects used as expression roots will be accessible as
- *   <tt>java.util.Map</tt>s thanks to {@link SPELContextMapWrapper}, this property accessor
- *   class is still needed in order to access nested context info like the <tt>session</tt> or
- *   <tt>param</tt> maps in web contexts.
+ *   {@code java.util.Map}s thanks to {@link SPELContextMapWrapper}, this property accessor
+ *   class is still needed in order to access nested context info like the {@code session} or
+ *   {@code param} maps in web contexts.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez

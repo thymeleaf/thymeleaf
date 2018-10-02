@@ -28,7 +28,7 @@ import org.thymeleaf.spring5.context.SpringContextUtils;
 
 /**
  * <p>
- *   Utility class used for applying Spring's <tt>RequestDataValueProcessor</tt>
+ *   Utility class used for applying Spring's {@code RequestDataValueProcessor}
  *   mechanism to URLs and forms rendered by Thymeleaf.
  * </p>
  *

@@ -48,7 +48,7 @@ import org.springframework.webflow.execution.View;
  *
  * @since 2.0.11
  *
- * @deprecated Deprecated in 3.0.0. Moved to the <tt>org.thymeleaf.spring4.webflow.view</tt> package. Will be removed
+ * @deprecated Deprecated in 3.0.0. Moved to the {@code org.thymeleaf.spring4.webflow.view} package. Will be removed
  *             from this package in Thymeleaf 3.1.
  *
  */

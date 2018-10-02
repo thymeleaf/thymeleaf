@@ -48,7 +48,7 @@ import org.thymeleaf.spring4.view.ThymeleafView;
  * </p>
  * <p>
  *   This view searches for a comma-separated list of <i>markup selectors</i> in a request
- *   parameter called <tt>fragments</tt>.
+ *   parameter called {@code fragments}.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez

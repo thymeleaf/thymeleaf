@@ -29,9 +29,9 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 
 /**
- * A utility object, accessed in Thymeleaf templates by the <tt>#themes</tt>
+ * A utility object, accessed in Thymeleaf templates by the {@code #themes}
  * expression, that provides the same features as the Spring
- * <tt>&lt;spring:theme</tt> JSP tag.
+ * {@code <spring:theme>} JSP tag.
  * 
  * @author Emanuel Rabina
  */

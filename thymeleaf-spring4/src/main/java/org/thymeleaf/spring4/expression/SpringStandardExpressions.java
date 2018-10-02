@@ -60,7 +60,7 @@ public final class SpringStandardExpressions {
      * </p>
      *
      * @param configuration the configuration object for the current template execution environment.
-     * @return <tt>true</tt> if the SpEL compiler should be enabled if available, <tt>false</tt> if not.
+     * @return {@code true} if the SpEL compiler should be enabled if available, {@code false} if not.
      */
     public static boolean isSpringELCompilerEnabled(final IEngineConfiguration configuration) {
         final Object enableSpringELCompiler =

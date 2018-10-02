@@ -28,7 +28,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 
 /**
  * <p>
- *   Wrapper on {@link IContext} objects that makes them look like <tt>java.util.Map</tt> objects
+ *   Wrapper on {@link IContext} objects that makes them look like {@code java.util.Map} objects
  *   in order to be used at the root of SpEL expressions without the need to use custom property accessors
  *   in most scenarios.
  * </p>

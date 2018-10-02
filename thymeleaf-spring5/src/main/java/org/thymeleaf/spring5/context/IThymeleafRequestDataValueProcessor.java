@@ -23,9 +23,9 @@ import java.util.Map;
 
 /**
  * <p>
- *   This interface is meant to abstract a Spring <tt>RequestDataValueProcessor</tt>, without the client code
+ *   This interface is meant to abstract a Spring {@code RequestDataValueProcessor}, without the client code
  *   needing to know if it is a Spring WebMVC or Spring WebFlux implementation of this
- *   <tt>RequestDataValueProcessor</tt>.
+ *   {@code RequestDataValueProcessor}.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez

@@ -37,8 +37,8 @@ import org.thymeleaf.util.Validate;
 /**
  * Binds an input property with the value in the form's backing bean.
  * <p>
- * Values for <tt>th:field</tt> attributes must be selection expressions
- * <tt>(*{...})</tt>, as they will be evaluated on the form backing bean and not
+ * Values for {@code th:field} attributes must be selection expressions
+ * {@code (*{...})}, as they will be evaluated on the form backing bean and not
  * on the context variables (model attributes in Spring MVC jargon).
  * 
  * @author Daniel Fern&aacute;ndez

@@ -39,7 +39,7 @@ import org.springframework.core.ReactiveAdapterRegistry;
  * </p>
  * <p>
  *   <strong>Templates executed in <em>data-driven</em> mode are expected to contain some kind <em>iteration</em>
- *   on the data-driver variable</strong>, normally by means of a <tt>th:each</tt> attribute. This iteration
+ *   on the data-driver variable</strong>, normally by means of a {@code th:each} attribute. This iteration
  *   should be <em>unique</em>. Also note that, if this iteration is not present (or it doesn't end up being
  *   executed due to template logic), it is <strong>not guaranteed</strong> that the data-driven stream will not
  *   be consumed anyway -at least partially- depending on the use that the specific server implementation might make

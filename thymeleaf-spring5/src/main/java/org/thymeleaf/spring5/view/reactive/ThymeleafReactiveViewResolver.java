@@ -88,20 +88,20 @@ import reactor.core.publisher.Mono;
  *       configured by this {@link ViewResolver} so that the server output channels are flushed after each
  *       engine execution (which will happen for each <em>buffer</em> (of configurable size) of elements
  *       collected from the <em>data-driver</em> stream. Additionally, if a value has been set for this
- *       <tt>responseMaxChunkSizeBytes</tt> property, the emitted
+ *       {@code responseMaxChunkSizeBytes} property, the emitted
  *       {@link org.springframework.core.io.buffer.DataBuffer} output chunks will never exceed this size,
  *       and therefore more than one chunk could be emitted for each buffer of <em>data-driver</em> elements.</li>
  * </ul>
  * <p>
  *   Also note that the properties set by means of {@link #setFullModeViewNames(String[])} and
  *   {@link #setChunkedModeViewNames(String[])} also influence and fine-tune which templates are
- *   executed in <tt>FULL</tt> or <tt>CHUNKED</tt> mode (they have no effect on <tt>DATA-DRIVEN</tt>).
+ *   executed in {@code FULL} or {@code CHUNKED} mode (they have no effect on {@code DATA-DRIVEN}).
  * </p>
  * <p>
  *   Also note that {@link ThymeleafReactiveView} objects can be specifically configured to be executed in
- *   <tt>CHUNKED</tt> mode by instantiating prototypes of them for the desired view names and setting a
+ *   {@code CHUNKED} mode by instantiating prototypes of them for the desired view names and setting a
  *   per-view max chunk size by means of {@link ThymeleafReactiveView#setResponseMaxChunkSizeBytes(int)}. If this
- *   is set to {@link Integer#MAX_VALUE}, they will be effectively configured to execute in <tt>FULL</tt> mode. This
+ *   is set to {@link Integer#MAX_VALUE}, they will be effectively configured to execute in {@code FULL} mode. This
  *   per-view setting will always have higher precedence than the one performed at the {@link ViewResolver} level.
  * </p>
  *
@@ -127,7 +127,7 @@ public class ThymeleafReactiveViewResolver
      *   HTTP redirect.
      * </p>
      * <p>
-     *   Value: <tt>redirect:</tt>
+     *   Value: {@code redirect:}
      * </p>
      */
     public static final String REDIRECT_URL_PREFIX = "redirect:";
@@ -190,7 +190,7 @@ public class ThymeleafReactiveViewResolver
 
     /**
      * <p>
-     *   Create an instance of <tt>ThymeleafReactiveViewResolver</tt>.
+     *   Create an instance of {@code ThymeleafReactiveViewResolver}.
      * </p>
      */
     public ThymeleafReactiveViewResolver() {
@@ -278,7 +278,7 @@ public class ThymeleafReactiveViewResolver
      *   These static variables are added to the context by the view resolver
      *   before every view is processed, so that they can be referenced from
      *   the context like any other context variables, for example:
-     *   <tt>${myStaticVar}</tt>.
+     *   {@code ${myStaticVar}}.
      * </p>
      *
      * @return the map of static variables to be set into views' execution.
@@ -296,7 +296,7 @@ public class ThymeleafReactiveViewResolver
      *   These static variables are added to the context by the view resolver
      *   before every view is processed, so that they can be referenced from
      *   the context like any other context variables, for example:
-     *   <tt>${myStaticVar}</tt>.
+     *   {@code ${myStaticVar}}.
      * </p>
      *
      * @param name the name of the static variable
@@ -320,7 +320,7 @@ public class ThymeleafReactiveViewResolver
      *   These static variables are added to the context by the view resolver
      *   before every view is processed, so that they can be referenced from
      *   the context like any other context variables, for example:
-     *   <tt>${myStaticVar}</tt>.
+     *   {@code ${myStaticVar}}.
      * </p>
      *
      *
@@ -343,7 +343,7 @@ public class ThymeleafReactiveViewResolver
      * </p>
      * <p>
      *   Spring Web applications can have several view resolvers configured,
-     *   and this <tt>order</tt> property established the order in which
+     *   and this {@code order} property established the order in which
      *   they will be queried for view resolution.
      * </p>
      *
@@ -361,7 +361,7 @@ public class ThymeleafReactiveViewResolver
      * </p>
      * <p>
      *   Spring Web applications can have several view resolvers configured,
-     *   and this <tt>order</tt> property established the order in which
+     *   and this {@code order} property established the order in which
      *   they will be queried for view resolution.
      * </p>
      *
@@ -379,8 +379,8 @@ public class ThymeleafReactiveViewResolver
      *   request is passed to the view resolver.
      * </p>
      * <p>
-     *   Note the parameter specified to the function will be the <tt>URL</tt> of the redirect
-     *   (as specified in the view name returned by the controller, without the <tt>redirect:</tt>
+     *   Note the parameter specified to the function will be the {@code URL} of the redirect
+     *   (as specified in the view name returned by the controller, without the {@code redirect:}
      *   prefix).
      * </p>
      *
@@ -398,8 +398,8 @@ public class ThymeleafReactiveViewResolver
      *   request is passed to the view resolver.
      * </p>
      * <p>
-     *   Note the parameter specified to the function will be the <tt>URL</tt> of the redirect
-     *   (as specified in the view name returned by the controller, without the <tt>redirect:</tt>
+     *   Note the parameter specified to the function will be the {@code URL} of the redirect
+     *   (as specified in the view name returned by the controller, without the {@code redirect:}
      *   prefix).
      * </p>
      *
@@ -415,20 +415,20 @@ public class ThymeleafReactiveViewResolver
     /**
      * <p>
      *   Set whether this view resolver should always process forwards and redirects independently of the value of
-     *   the <tt>viewNames</tt> property.
+     *   the {@code viewNames} property.
      * </p>
      * <p>
-     *   When this flag is set to <tt>true</tt> (default value), any view name that starts with the
-     *   <tt>redirect:</tt> or <tt>forward:</tt> prefixes will be resolved by this ViewResolver even if the view names
-     *   would not match what is established at the <tt>viewNames</tt> property.
+     *   When this flag is set to {@code true} (default value), any view name that starts with the
+     *   {@code redirect:} or {@code forward:} prefixes will be resolved by this ViewResolver even if the view names
+     *   would not match what is established at the {@code viewNames} property.
      * </p>
      * <p>
      *   Note that the behaviour of <em>resolving</em> view names with these prefixes is exactly the same with this
-     *   flag set to <tt>true</tt> or <tt>false</tt> (perform an HTTP redirect or forward to an internal resource).
-     *   The only difference is whether the prefixes have to be explicitly specified at <tt>viewNames</tt> or not.
+     *   flag set to {@code true} or {@code false} (perform an HTTP redirect or forward to an internal resource).
+     *   The only difference is whether the prefixes have to be explicitly specified at {@code viewNames} or not.
      * </p>
      * <p>
-     *   Default value is <tt>true</tt>.
+     *   Default value is {@code true}.
      * </p>
      *
      * @param alwaysProcessRedirectAndForward true if redirects and forwards are always processed, false if this will
@@ -442,24 +442,24 @@ public class ThymeleafReactiveViewResolver
     /**
      * <p>
      *   Return whether this view resolver should always process forwards and redirects independently of the value of
-     *   the <tt>viewNames</tt> property.
+     *   the {@code viewNames} property.
      * </p>
      * <p>
-     *   When this flag is set to <tt>true</tt> (default value), any view name that starts with the
-     *   <tt>redirect:</tt> or <tt>forward:</tt> prefixes will be resolved by this ViewResolver even if the view names
-     *   would not match what is established at the <tt>viewNames</tt> property.
+     *   When this flag is set to {@code true} (default value), any view name that starts with the
+     *   {@code redirect:} or {@code forward:} prefixes will be resolved by this ViewResolver even if the view names
+     *   would not match what is established at the {@code viewNames} property.
      * </p>
      * <p>
      *   Note that the behaviour of <em>resolving</em> view names with these prefixes is exactly the same with this
-     *   flag set to <tt>true</tt> or <tt>false</tt> (perform an HTTP redirect or forward to an internal resource).
-     *   The only difference is whether the prefixes have to be explicitly specified at <tt>viewNames</tt> or not.
+     *   flag set to {@code true} or {@code false} (perform an HTTP redirect or forward to an internal resource).
+     *   The only difference is whether the prefixes have to be explicitly specified at {@code viewNames} or not.
      * </p>
      * <p>
-     *   Default value is <tt>true</tt>.
+     *   Default value is {@code true}.
      * </p>
      *
      * @return whether redirects and forwards will be always processed by this view resolver or else only when they are
-     *         matched by the <tt>viewNames</tt> property.
+     *         matched by the {@code viewNames} property.
      *
      */
     public boolean getAlwaysProcessRedirectAndForward() {
@@ -502,17 +502,17 @@ public class ThymeleafReactiveViewResolver
      *       configured by this {@link ViewResolver} so that the server output channels are flushed after each
      *       engine execution (which will happen for each <em>buffer</em> (of configurable size) of elements
      *       collected from the <em>data-driver</em> stream. Additionally, if a value has been set for this
-     *       <tt>responseMaxChunkSizeBytes</tt> property, the emitted
+     *       {@code responseMaxChunkSizeBytes} property, the emitted
      *       {@link org.springframework.core.io.buffer.DataBuffer} output chunks will never exceed this size,
      *       and therefore more than one chunk could be emitted for each buffer of <em>data-driver</em> elements.</li>
      * </ul>
      * <p>
      *   Also note that the properties set by means of {@link #setFullModeViewNames(String[])} and
      *   {@link #setChunkedModeViewNames(String[])} also influence and fine-tune which templates are
-     *   executed in <tt>FULL</tt> or <tt>CHUNKED</tt> mode (they have no effect on <tt>DATA-DRIVEN</tt>).
+     *   executed in {@code FULL} or {@code CHUNKED} mode (they have no effect on {@code DATA-DRIVEN}).
      * </p>
      * <p>
-     *   If this property is set to <tt>-1</tt> or <tt>Integer.MAX_VALUE</tt>, no size limit will be used. Note also
+     *   If this property is set to {@code -1} or {@code Integer.MAX_VALUE}, no size limit will be used. Note also
      *   that there is no limit set by default.
      * </p>
      * <p>
@@ -522,7 +522,7 @@ public class ThymeleafReactiveViewResolver
      *
      * @param responseMaxChunkSizeBytes the maximum size in bytes for output chunks
      *                                  ({@link org.springframework.core.io.buffer.DataBuffer} objects), or
-     *                                  <tt>-1</tt> or <tt>Integer.MAX_VALUE</tt> if no limit is to be used.
+     *                                  {@code -1} or {@code Integer.MAX_VALUE} if no limit is to be used.
      */
     public void setResponseMaxChunkSizeBytes(final int responseMaxChunkSizeBytes) {
         this.responseMaxChunkSizeBytes = responseMaxChunkSizeBytes;
@@ -563,22 +563,22 @@ public class ThymeleafReactiveViewResolver
      *       configured by this {@link ViewResolver} so that the server output channels are flushed after each
      *       engine execution (which will happen for each <em>buffer</em> (of configurable size) of elements
      *       collected from the <em>data-driver</em> stream. Additionally, if a value has been set for this
-     *       <tt>responseMaxChunkSizeBytes</tt> property, the emitted
+     *       {@code responseMaxChunkSizeBytes} property, the emitted
      *       {@link org.springframework.core.io.buffer.DataBuffer} output chunks will never exceed this size,
      *       and therefore more than one chunk could be emitted for each buffer of <em>data-driver</em> elements.</li>
      * </ul>
      * <p>
      *   Also note that the properties set by means of {@link #setFullModeViewNames(String[])} and
      *   {@link #setChunkedModeViewNames(String[])} also influence and fine-tune which templates are
-     *   executed in <tt>FULL</tt> or <tt>CHUNKED</tt> mode (they have no effect on <tt>DATA-DRIVEN</tt>).
+     *   executed in {@code FULL} or {@code CHUNKED} mode (they have no effect on {@code DATA-DRIVEN}).
      * </p>
      * <p>
      *   Also note that the properties set by means of {@link #setFullModeViewNames(String[])} and
      *   {@link #setChunkedModeViewNames(String[])} also influence and fine-tune which templates are
-     *   executed in <tt>FULL</tt> or <tt>CHUNKED</tt> mode (they have no effect on <tt>DATA-DRIVEN</tt>).
+     *   executed in {@code FULL} or {@code CHUNKED} mode (they have no effect on {@code DATA-DRIVEN}).
      * </p>
      * <p>
-     *   If this property is set to <tt>-1</tt> or <tt>Integer.MAX_VALUE</tt>, no size limit will be used. Note also
+     *   If this property is set to {@code -1} or {@code Integer.MAX_VALUE}, no size limit will be used. Note also
      *   that there is no limit set by default.
      * </p>
      * <p>
@@ -588,7 +588,7 @@ public class ThymeleafReactiveViewResolver
      *
      * @return the maximum size in bytes for output chunks
      *         ({@link org.springframework.core.io.buffer.DataBuffer} objects), or
-     *         <tt>-1</tt> or <tt>Integer.MAX_VALUE</tt> if no limit is to be used.
+     *         {@code -1} or {@code Integer.MAX_VALUE} if no limit is to be used.
      */
     public int getResponseMaxChunkSizeBytes() {
         return this.responseMaxChunkSizeBytes;
@@ -606,17 +606,17 @@ public class ThymeleafReactiveViewResolver
      *   In applications configuring several view resolvers &ndash;for example, one for Thymeleaf
      *   and another one for JSP+JSTL legacy pages&ndash;, this property establishes when
      *   a view will be considered to be resolved by this view resolver and when Spring should
-     *   simply ask the next resolver in the chain &ndash;according to its <tt>order</tt>&ndash;
+     *   simply ask the next resolver in the chain &ndash;according to its {@code order}&ndash;
      *   instead.
      * </p>
      * <p>
      *   The specified view name patterns can be complete view names, but can also use
-     *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
+     *   the {@code *} wildcard: "{@code index.*}", "{@code user_*}", "{@code admin/*}", etc.
      * </p>
      * <p>
      *   Also note that these view name patterns are checked <em>before</em> applying any prefixes
      *   or suffixes to the view name, so they should not include these. Usually therefore, you
-     *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
+     *   would specify {@code orders/*} instead of {@code /WEB-INF/templates/orders/*.html}.
      * </p>
      *
      * @param viewNames the view names (actually view name patterns)
@@ -636,17 +636,17 @@ public class ThymeleafReactiveViewResolver
      *   In applications configuring several view resolvers &ndash;for example, one for Thymeleaf
      *   and another one for JSP+JSTL legacy pages&ndash;, this property establishes when
      *   a view will be considered to be resolved by this view resolver and when Spring should
-     *   simply ask the next resolver in the chain &ndash;according to its <tt>order</tt>&ndash;
+     *   simply ask the next resolver in the chain &ndash;according to its {@code order}&ndash;
      *   instead.
      * </p>
      * <p>
      *   The specified view name patterns can be complete view names, but can also use
-     *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
+     *   the {@code *} wildcard: "{@code index.*}", "{@code user_*}", "{@code admin/*}", etc.
      * </p>
      * <p>
      *   Also note that these view name patterns are checked <em>before</em> applying any prefixes
      *   or suffixes to the view name, so they should not include these. Usually therefore, you
-     *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
+     *   would specify {@code orders/*} instead of {@code /WEB-INF/templates/orders/*.html}.
      * </p>
      *
      * @return the view name patterns
@@ -702,12 +702,12 @@ public class ThymeleafReactiveViewResolver
     /**
      * <p>
      *   Specify a set of name patterns that be will applied to determine whether a view is to be processed
-     *   in <tt>FULL</tt> mode even if a maximum response chunk size has been defined.
+     *   in {@code FULL} mode even if a maximum response chunk size has been defined.
      * </p>
      * <p>
      *   When a response maximum chunk size has been set by means of {@link #setResponseMaxChunkSizeBytes(int)},
      *   this parameter allows the possibility to exclude some views from being applied this maximum size
-     *   and therefore be executed in <tt>FULL</tt> mode, in just one template engine execution in-memory.
+     *   and therefore be executed in {@code FULL} mode, in just one template engine execution in-memory.
      * </p>
      * <p>
      *   This is useful when a maximum chunk size has been set but some pages are actually small enough to benefit
@@ -720,24 +720,24 @@ public class ThymeleafReactiveViewResolver
      * </p>
      * <p>
      *   When a response maximum chunk size has been set by means of {@link #setResponseMaxChunkSizeBytes(int)},
-     *   but a value has also been set to the <tt>chunkedModeViewNames</tt> parameter by means of
+     *   but a value has also been set to the {@code chunkedModeViewNames} parameter by means of
      *   {@link #setChunkedModeViewNames(String[])} method, this parameter has no effect at all, as only the views
-     *   specified in the latter parameter will be processed in <tt>CHUNKED</tt> mode.
+     *   specified in the latter parameter will be processed in {@code CHUNKED} mode.
      * </p>
      * <p>
-     *   Also note that, if a view specified here to be executed as <tt>FULL</tt> is executed with a
-     *   <em>data-driver</em> variable included in the model, the <tt>DATA-DRIVEN</tt> execution mode will be
+     *   Also note that, if a view specified here to be executed as {@code FULL} is executed with a
+     *   <em>data-driver</em> variable included in the model, the {@code DATA-DRIVEN} execution mode will be
      *   automatically selected instead, and output chunks will be flushed after each execution of the engine for
      *   each buffer of elements obtained from the <em>data-driver</em> stream.
      * </p>
      * <p>
      *   The specified view name patterns can be complete view names, but can also use
-     *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
+     *   the {@code *} wildcard: "{@code index.*}", "{@code user_*}", "{@code admin/*}", etc.
      * </p>
      * <p>
      *   Also note that these view name patterns are checked <em>before</em> applying any prefixes
      *   or suffixes to the view name, so they should not include these. Usually therefore, you
-     *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
+     *   would specify {@code orders/*} instead of {@code /WEB-INF/templates/orders/*.html}.
      * </p>
      *
      * @param fullModeViewNames the view names (actually view name patterns)
@@ -755,12 +755,12 @@ public class ThymeleafReactiveViewResolver
     /**
      * <p>
      *   Returns the set of name patterns that will be applied to determine whether a view is to be processed
-     *   in <tt>FULL</tt> mode even if a maximum response chunk size has been defined.
+     *   in {@code FULL} mode even if a maximum response chunk size has been defined.
      * </p>
      * <p>
      *   When a response maximum chunk size has been set by means of {@link #setResponseMaxChunkSizeBytes(int)},
      *   this parameter allows the possibility to exclude some views from being applied this maximum size
-     *   and therefore be executed in <tt>FULL</tt> mode, in just one template engine execution in-memory.
+     *   and therefore be executed in {@code FULL} mode, in just one template engine execution in-memory.
      * </p>
      * <p>
      *   This is useful when a maximum chunk size has been set but some pages are actually small enough to benefit
@@ -773,24 +773,24 @@ public class ThymeleafReactiveViewResolver
      * </p>
      * <p>
      *   When a response maximum chunk size has been set by means of {@link #setResponseMaxChunkSizeBytes(int)},
-     *   but a value has also been set to the <tt>chunkedModeViewNames</tt> parameter by means of
+     *   but a value has also been set to the {@code chunkedModeViewNames} parameter by means of
      *   {@link #setChunkedModeViewNames(String[])} method, this parameter has no effect at all, as only the views
-     *   specified in the latter parameter will be processed in <tt>CHUNKED</tt> mode.
+     *   specified in the latter parameter will be processed in {@code CHUNKED} mode.
      * </p>
      * <p>
-     *   Also note that, if a view specified here to be executed as <tt>FULL</tt> is executed with a
-     *   <em>data-driver</em> variable included in the model, the <tt>DATA-DRIVEN</tt> execution mode will be
+     *   Also note that, if a view specified here to be executed as {@code FULL} is executed with a
+     *   <em>data-driver</em> variable included in the model, the {@code DATA-DRIVEN} execution mode will be
      *   automatically selected instead, and output chunks will be flushed after each execution of the engine for
      *   each buffer of elements obtained from the <em>data-driver</em> stream.
      * </p>
      * <p>
      *   The specified view name patterns can be complete view names, but can also use
-     *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
+     *   the {@code *} wildcard: "{@code index.*}", "{@code user_*}", "{@code admin/*}", etc.
      * </p>
      * <p>
      *   Also note that these view name patterns are checked <em>before</em> applying any prefixes
      *   or suffixes to the view name, so they should not include these. Usually therefore, you
-     *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
+     *   would specify {@code orders/*} instead of {@code /WEB-INF/templates/orders/*.html}.
      * </p>
      *
      * @return the view name patterns
@@ -810,13 +810,13 @@ public class ThymeleafReactiveViewResolver
     /**
      * <p>
      *   Specify a set of name patterns that will be applied to determine whether a view is to be processed
-     *   in <tt>CHUNKED</tt> mode (assuming a maximum response chunk size has been defined).
+     *   in {@code CHUNKED} mode (assuming a maximum response chunk size has been defined).
      * </p>
      * <p>
      *   This parameter only has effect if a maximum response chunk size has been set by means of
      *   {@link #setResponseMaxChunkSizeBytes(int)}. If that is the case, then <strong>only</strong> the views
-     *   which name matches the patterns specified here will be executed in <tt>CHUNKED</tt> mode using the
-     *   maximum output chunk size that has been configured. All other views will be executed in <tt>FULL</tt>
+     *   which name matches the patterns specified here will be executed in {@code CHUNKED} mode using the
+     *   maximum output chunk size that has been configured. All other views will be executed in {@code FULL}
      *   mode.
      * </p>
      * <p>
@@ -828,8 +828,8 @@ public class ThymeleafReactiveViewResolver
      *   this parameter has no effect at all.
      * </p>
      * <p>
-     *   Also note that, if a view specified here to be executed as <tt>CHUNKED</tt> is executed with a
-     *   <em>data-driver</em> variable included in the model, the <tt>DATA-DRIVEN</tt> execution mode will be
+     *   Also note that, if a view specified here to be executed as {@code CHUNKED} is executed with a
+     *   <em>data-driver</em> variable included in the model, the {@code DATA-DRIVEN} execution mode will be
      *   automatically selected instead, and output chunks will be flushed after each execution of the engine for
      *   each buffer of elements obtained from the <em>data-driver</em> stream. But in this case, the maximum chunk
      *   size will also apply and, if any of these data-driven chunks exceeds this size, it will be divided into
@@ -837,12 +837,12 @@ public class ThymeleafReactiveViewResolver
      * </p>
      * <p>
      *   The specified view name patterns can be complete view names, but can also use
-     *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
+     *   the {@code *} wildcard: "{@code index.*}", "{@code user_*}", "{@code admin/*}", etc.
      * </p>
      * <p>
      *   Also note that these view name patterns are checked <em>before</em> applying any prefixes
      *   or suffixes to the view name, so they should not include these. Usually therefore, you
-     *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
+     *   would specify {@code orders/*} instead of {@code /WEB-INF/templates/orders/*.html}.
      * </p>
      *
      * @param chunkedModeViewNames the view names (actually view name patterns)
@@ -860,13 +860,13 @@ public class ThymeleafReactiveViewResolver
     /**
      * <p>
      *   Return the set of name patterns that will be applied to determine whether a view is to be processed
-     *   in <tt>CHUNKED</tt> mode (assuming a maximum response chunk size has been defined).
+     *   in {@code CHUNKED} mode (assuming a maximum response chunk size has been defined).
      * </p>
      * <p>
      *   This parameter only has effect if a maximum response chunk size has been set by means of
      *   {@link #setResponseMaxChunkSizeBytes(int)}. If that is the case, then <strong>only</strong> the views
-     *   which name matches the patterns specified here will be executed in <tt>CHUNKED</tt> mode using the
-     *   maximum output chunk size that has been configured. All other views will be executed in <tt>FULL</tt>
+     *   which name matches the patterns specified here will be executed in {@code CHUNKED} mode using the
+     *   maximum output chunk size that has been configured. All other views will be executed in {@code FULL}
      *   mode.
      * </p>
      * <p>
@@ -878,8 +878,8 @@ public class ThymeleafReactiveViewResolver
      *   this parameter has no effect at all.
      * </p>
      * <p>
-     *   Also note that, if a view specified here to be executed as <tt>CHUNKED</tt> is executed with a
-     *   <em>data-driver</em> variable included in the model, the <tt>DATA-DRIVEN</tt> execution mode will be
+     *   Also note that, if a view specified here to be executed as {@code CHUNKED} is executed with a
+     *   <em>data-driver</em> variable included in the model, the {@code DATA-DRIVEN} execution mode will be
      *   automatically selected instead, and output chunks will be flushed after each execution of the engine for
      *   each buffer of elements obtained from the <em>data-driver</em> stream. But in this case, the maximum chunk
      *   size will also apply and, if any of these data-driven chunks exceeds this size, it will be divided into
@@ -887,12 +887,12 @@ public class ThymeleafReactiveViewResolver
      * </p>
      * <p>
      *   The specified view name patterns can be complete view names, but can also use
-     *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
+     *   the {@code *} wildcard: "{@code index.*}", "{@code user_*}", "{@code admin/*}", etc.
      * </p>
      * <p>
      *   Also note that these view name patterns are checked <em>before</em> applying any prefixes
      *   or suffixes to the view name, so they should not include these. Usually therefore, you
-     *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
+     *   would specify {@code orders/*} instead of {@code /WEB-INF/templates/orders/*.html}.
      * </p>
      *
      * @return the view name patterns

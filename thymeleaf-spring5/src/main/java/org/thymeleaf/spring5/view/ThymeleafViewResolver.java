@@ -73,7 +73,7 @@ public class ThymeleafViewResolver
      *   HTTP redirect.
      * </p>
      * <p>
-     *   Value: <tt>redirect:</tt>
+     *   Value: {@code redirect:}
      * </p>
      */
     public static final String REDIRECT_URL_PREFIX = "redirect:";
@@ -84,7 +84,7 @@ public class ThymeleafViewResolver
      *   HTTP forward.
      * </p>
      * <p>
-     *   Value: <tt>forward:</tt>
+     *   Value: {@code forward:}
      * </p>
      */
     public static final String FORWARD_URL_PREFIX = "forward:";
@@ -188,7 +188,7 @@ public class ThymeleafViewResolver
      *   These static variables are added to the context by the view resolver
      *   before every view is processed, so that they can be referenced from
      *   the context like any other context variables, for example:
-     *   <tt>${myStaticVar}</tt>.
+     *   {@code ${myStaticVar}}.
      * </p>
      * 
      * @return the map of static variables to be set into views' execution.
@@ -206,7 +206,7 @@ public class ThymeleafViewResolver
      *   These static variables are added to the context by the view resolver
      *   before every view is processed, so that they can be referenced from
      *   the context like any other context variables, for example:
-     *   <tt>${myStaticVar}</tt>.
+     *   {@code ${myStaticVar}}.
      * </p>
      * 
      * @param name the name of the static variable
@@ -230,7 +230,7 @@ public class ThymeleafViewResolver
      *   These static variables are added to the context by the view resolver
      *   before every view is processed, so that they can be referenced from
      *   the context like any other context variables, for example:
-     *   <tt>${myStaticVar}</tt>.
+     *   {@code ${myStaticVar}}.
      * </p>
      * 
      * 
@@ -252,7 +252,7 @@ public class ThymeleafViewResolver
      * </p>
      * <p>
      *   Spring Web applications can have several view resolvers configured,
-     *   and this <tt>order</tt> property established the order in which
+     *   and this {@code order} property established the order in which
      *   they will be queried for view resolution.
      * </p>
      * 
@@ -270,7 +270,7 @@ public class ThymeleafViewResolver
      * </p>
      * <p>
      *   Spring Web applications can have several view resolvers configured,
-     *   and this <tt>order</tt> property established the order in which
+     *   and this {@code order} property established the order in which
      *   they will be queried for view resolution.
      * </p>
      * 
@@ -343,11 +343,11 @@ public class ThymeleafViewResolver
      * <p>
      *   When forced, the configured content type ({@link #setForceContentType(boolean)})  will
      *   be applied even if the template name ends in a known suffix:
-     *   <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
-     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
-     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>.
+     *   {@code .html}, {@code .htm}, {@code .xhtml},
+     *   {@code .xml}, {@code .js}, {@code .json},
+     *   {@code .css}, {@code .rss}, {@code .atom}, {@code .txt}.
      * </p>
-     * <p>Default value is <tt><b>false</b></tt></p>.
+     * <p>Default value is <b>{@code false}</b></p>.
      *
      * @return whether the content type will be forced or not.
      * @since 3.0.6
@@ -365,11 +365,11 @@ public class ThymeleafViewResolver
      * <p>
      *   When forced, the configured content type ({@link #setForceContentType(boolean)})  will
      *   be applied even if the template name ends in a known suffix:
-     *   <tt>.html</tt>, <tt>.htm</tt>, <tt>.xhtml</tt>,
-     *   <tt>.xml</tt>, <tt>.js</tt>, <tt>.json</tt>,
-     *   <tt>.css</tt>, <tt>.rss</tt>, <tt>.atom</tt>, <tt>.txt</tt>.
+     *   {@code .html}, {@code .htm}, {@code .xhtml},
+     *   {@code .xml}, {@code .js}, {@code .json},
+     *   {@code .css}, {@code .rss}, {@code .atom}, {@code .txt}.
      * </p>
-     * <p>Default value is <tt><b>false</b></tt></p>.
+     * <p>Default value is <b>{@code false}</b></p>.
      *
      * @param forceContentType whether the configured template mode should be forced or not.
      * @since 3.0.6
@@ -401,8 +401,8 @@ public class ThymeleafViewResolver
      *   method, the value specified at the view resolver has no effect.
      * </p>
      * 
-     * @param characterEncoding the character encoding to be used (e.g. <tt>UTF-8</tt>, 
-     *        <tt>ISO-8859-1</tt>, etc.)
+     * @param characterEncoding the character encoding to be used (e.g. {@code UTF-8},
+     *        {@code ISO-8859-1}, etc.)
      */
     public void setCharacterEncoding(final String characterEncoding) {
         this.characterEncoding = characterEncoding;
@@ -444,12 +444,12 @@ public class ThymeleafViewResolver
      *   as relative to the current ServletContext, i.e. as relative to the web application root.
      * </p>
      * <p>
-     *   Default is <b><tt>true</tt></b>: A redirect URL that starts with a slash will be interpreted 
+     *   Default is <b>{@code true}</b>: A redirect URL that starts with a slash will be interpreted
      *   as relative to the web application root, i.e. the context path will be prepended to the URL.
      * </p>
      * <p>
-     *   Redirect URLs can be specified via the <tt>"redirect:"</tt> prefix. e.g.: 
-     *   <tt>"redirect:myAction.do"</tt>. 
+     *   Redirect URLs can be specified via the {@code "redirect:"} prefix. e.g.:
+     *   {@code "redirect:myAction.do"}.
      * </p>
      * 
      * @param redirectContextRelative whether redirect URLs should be considered context-relative or not.
@@ -466,7 +466,7 @@ public class ThymeleafViewResolver
      *   as relative to the current ServletContext, i.e. as relative to the web application root. 
      * </p>
      * <p>
-     *   Default is <b><tt>true</tt></b>.
+     *   Default is <b>{@code true}</b>.
      * </p>
      *
      * @return true if redirect URLs will be considered relative to context, false if not.
@@ -483,7 +483,7 @@ public class ThymeleafViewResolver
      *   Set whether redirects should stay compatible with HTTP 1.0 clients.
      * </p>
      * <p>
-     *   In the default implementation (default is <b><tt>true</tt></b>), this will enforce HTTP status 
+     *   In the default implementation (default is <b>{@code true}</b>), this will enforce HTTP status
      *   code 302 in any case, i.e. delegate to 
      *   {@link javax.servlet.http.HttpServletResponse#sendRedirect(String)}. Turning this off 
      *   will send HTTP status code 303, which is the correct code for HTTP 1.1 clients, but not understood 
@@ -494,8 +494,8 @@ public class ThymeleafViewResolver
      *   depend on 303 when redirecting after a POST request; turn this flag off in such a scenario.
      * </p>
      * <p>
-     *   Redirect URLs can be specified via the <tt>"redirect:"</tt> prefix. e.g.:
-     *   <tt>"redirect:myAction.do"</tt> 
+     *   Redirect URLs can be specified via the {@code "redirect:"} prefix. e.g.:
+     *   {@code "redirect:myAction.do"}
      * </p>
      * 
      * @param redirectHttp10Compatible true if redirects should stay compatible with HTTP 1.0 clients,
@@ -512,7 +512,7 @@ public class ThymeleafViewResolver
      *   Return whether redirects should stay compatible with HTTP 1.0 clients.
      * </p>
      * <p>
-     *   Default is <b><tt>true</tt></b>.
+     *   Default is <b>{@code true}</b>.
      * </p>
      * 
      * @return whether redirect responses should stay compatible with HTTP 1.0 clients.
@@ -527,20 +527,20 @@ public class ThymeleafViewResolver
     /**
      * <p>
      *   Set whether this view resolver should always process forwards and redirects independently of the value of
-     *   the <tt>viewNames</tt> property.
+     *   the {@code viewNames} property.
      * </p>
      * <p>
-     *   When this flag is set to <tt>true</tt> (default value), any view name that starts with the
-     *   <tt>redirect:</tt> or <tt>forward:</tt> prefixes will be resolved by this ViewResolver even if the view names
-     *   would not match what is established at the <tt>viewNames</tt> property.
+     *   When this flag is set to {@code true} (default value), any view name that starts with the
+     *   {@code redirect:} or {@code forward:} prefixes will be resolved by this ViewResolver even if the view names
+     *   would not match what is established at the {@code viewNames} property.
      * </p>
      * <p>
      *   Note that the behaviour of <em>resolving</em> view names with these prefixes is exactly the same with this
-     *   flag set to <tt>true</tt> or <tt>false</tt> (perform an HTTP redirect or forward to an internal JSP resource).
-     *   The only difference is whether the prefixes have to be explicitly specified at <tt>viewNames</tt> or not.
+     *   flag set to {@code true} or {@code false} (perform an HTTP redirect or forward to an internal JSP resource).
+     *   The only difference is whether the prefixes have to be explicitly specified at {@code viewNames} or not.
      * </p>
      * <p>
-     *   Default value is <tt>true</tt>.
+     *   Default value is {@code true}.
      * </p>
      *
      * @param alwaysProcessRedirectAndForward true if redirects and forwards are always processed, false if this will
@@ -554,24 +554,24 @@ public class ThymeleafViewResolver
     /**
      * <p>
      *   Return whether this view resolver should always process forwards and redirects independently of the value of
-     *   the <tt>viewNames</tt> property.
+     *   the {@code viewNames} property.
      * </p>
      * <p>
-     *   When this flag is set to <tt>true</tt> (default value), any view name that starts with the
-     *   <tt>redirect:</tt> or <tt>forward:</tt> prefixes will be resolved by this ViewResolver even if the view names
-     *   would not match what is established at the <tt>viewNames</tt> property.
+     *   When this flag is set to {@code true} (default value), any view name that starts with the
+     *   {@code redirect:} or {@code forward:} prefixes will be resolved by this ViewResolver even if the view names
+     *   would not match what is established at the {@code viewNames} property.
      * </p>
      * <p>
      *   Note that the behaviour of <em>resolving</em> view names with these prefixes is exactly the same with this
-     *   flag set to <tt>true</tt> or <tt>false</tt> (perform an HTTP redirect or forward to an internal JSP resource).
-     *   The only difference is whether the prefixes have to be explicitly specified at <tt>viewNames</tt> or not.
+     *   flag set to {@code true} or {@code false} (perform an HTTP redirect or forward to an internal JSP resource).
+     *   The only difference is whether the prefixes have to be explicitly specified at {@code viewNames} or not.
      * </p>
      * <p>
-     *   Default value is <tt>true</tt>.
+     *   Default value is {@code true}.
      * </p>
      *
      * @return whether redirects and forwards will be always processed by this view resolver or else only when they are
-     *         matched by the <tt>viewNames</tt> property.
+     *         matched by the {@code viewNames} property.
      *
      */
     public boolean getAlwaysProcessRedirectAndForward() {
@@ -589,17 +589,17 @@ public class ThymeleafViewResolver
      *   In applications configuring several view resolvers &ndash;for example, one for Thymeleaf 
      *   and another one for JSP+JSTL legacy pages&ndash;, this property establishes when
      *   a view will be considered to be resolved by this view resolver and when Spring should
-     *   simply ask the next resolver in the chain &ndash;according to its <tt>order</tt>&ndash;
+     *   simply ask the next resolver in the chain &ndash;according to its {@code order}&ndash;
      *   instead.
      * </p>
      * <p>
      *   The specified view name patterns can be complete view names, but can also use
-     *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
+     *   the {@code *} wildcard: "{@code index.*}", "{@code user_*}", "{@code admin/*}", etc.
      * </p>
      * <p>
      *   Also note that these view name patterns are checked <i>before</i> applying any prefixes
      *   or suffixes to the view name, so they should not include these. Usually therefore, you
-     *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
+     *   would specify {@code orders/*} instead of {@code /WEB-INF/templates/orders/*.html}.
      * </p>
      * 
      * @param viewNames the view names (actually view name patterns)
@@ -619,17 +619,17 @@ public class ThymeleafViewResolver
      *   In applications configuring several view resolvers &ndash;for example, one for Thymeleaf 
      *   and another one for JSP+JSTL legacy pages&ndash;, this property establishes when
      *   a view will be considered to be resolved by this view resolver and when Spring should
-     *   simply ask the next resolver in the chain &ndash;according to its <tt>order</tt>&ndash;
+     *   simply ask the next resolver in the chain &ndash;according to its {@code order}&ndash;
      *   instead.
      * </p>
      * <p>
      *   The specified view name patterns can be complete view names, but can also use
-     *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
+     *   the {@code *} wildcard: "{@code index.*}", "{@code user_*}", "{@code admin/*}", etc.
      * </p>
      * <p>
      *   Also note that these view name patterns are checked <i>before</i> applying any prefixes
      *   or suffixes to the view name, so they should not include these. Usually therefore, you
-     *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
+     *   would specify {@code orders/*} instead of {@code /WEB-INF/templates/orders/*.html}.
      * </p>
      * 
      * @return the view name patterns

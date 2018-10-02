@@ -31,7 +31,7 @@ import org.thymeleaf.spring5.context.IThymeleafBindStatus;
 /**
  * <p>
  *   This class mirrors the behaviour of the protected class
- *   <tt>org.springframework.web.servlet.tags.form.SelectedValueComparator</tt>, needed in order to compare
+ *   {@code org.springframework.web.servlet.tags.form.SelectedValueComparator}, needed in order to compare
  *   and match form values in a way compatible to other Spring view-layer technologies.
  * </p>
  *

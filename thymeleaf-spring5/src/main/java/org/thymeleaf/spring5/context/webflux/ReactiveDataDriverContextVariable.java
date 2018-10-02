@@ -86,14 +86,14 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
 
     /**
      * <p>
-     *   Default buffer size to be applied if none is specified. Value = <tt>10</tt>.
+     *   Default buffer size to be applied if none is specified. Value = {@code 10}.
      * </p>
      */
     public static final int DEFAULT_DATA_DRIVER_BUFFER_SIZE_ELEMENTS = 10;
 
     /**
      * <p>
-     *   Default value for the first event ID (for SSE scenarios). Value = <tt>0</tt>.
+     *   Default value for the first event ID (for SSE scenarios). Value = {@code 0}.
      * </p>
      */
     public static final long DEFAULT_FIRST_EVENT_ID = 0L;
@@ -113,7 +113,7 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
      *   Buffer size will be set to {@link #DEFAULT_DATA_DRIVER_BUFFER_SIZE_ELEMENTS}.
      * </p>
      * <p>
-     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Stream's
+     *   The specified {@code dataStream} must be <em>adaptable</em> to a Reactive Stream's
      *   {@link Publisher} by means of Spring's {@link ReactiveAdapterRegistry} mechanism. If no
      *   adapter has been registered for the type of the asynchronous object, and exception will be
      *   thrown during lazy resolution. If no adapter registry has been set into the context
@@ -121,12 +121,12 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
      *   be a {@link Flux}.
      * </p>
      * <p>
-     *   Note the specified <tt>dataStream</tt> must be <strong>multi-valued</strong>.
+     *   Note the specified {@code dataStream} must be <strong>multi-valued</strong>.
      * </p>
      * <p>
      *   Examples of supported implementations are Reactor's {@link Flux} (but not
-     *   {@link reactor.core.publisher.Mono}), and also RxJava's <tt>Observable</tt>
-     *   (but not <tt>Single</tt>).
+     *   {@link reactor.core.publisher.Mono}), and also RxJava's {@code Observable}
+     *   (but not {@code Single}).
      * </p>
      *
      * @param dataStream the asynchronous object, which must be convertible to a multi-valued {@link Publisher} by
@@ -143,7 +143,7 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
      *   buffer size.
      * </p>
      * <p>
-     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Stream's
+     *   The specified {@code dataStream} must be <em>adaptable</em> to a Reactive Stream's
      *   {@link Publisher} by means of Spring's {@link ReactiveAdapterRegistry} mechanism. If no
      *   adapter has been registered for the type of the asynchronous object, and exception will be
      *   thrown during lazy resolution. If no adapter registry has been set into the context
@@ -151,12 +151,12 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
      *   be a {@link Flux}.
      * </p>
      * <p>
-     *   Note the specified <tt>dataStream</tt> must be <strong>multi-valued</strong>.
+     *   Note the specified {@code dataStream} must be <strong>multi-valued</strong>.
      * </p>
      * <p>
      *   Examples of supported implementations are Reactor's {@link Flux} (but not
-     *   {@link reactor.core.publisher.Mono}), and also RxJava's <tt>Observable</tt>
-     *   (but not <tt>Single</tt>).
+     *   {@link reactor.core.publisher.Mono}), and also RxJava's {@code Observable}
+     *   (but not {@code Single}).
      * </p>
      *
      * @param dataStream the asynchronous object, which must be convertible to a multi-valued {@link Publisher} by
@@ -174,7 +174,7 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
      *   buffer size and a prefix for all the names and IDs of events generated from a specific SSE stream.
      * </p>
      * <p>
-     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Stream's
+     *   The specified {@code dataStream} must be <em>adaptable</em> to a Reactive Stream's
      *   {@link Publisher} by means of Spring's {@link ReactiveAdapterRegistry} mechanism. If no
      *   adapter has been registered for the type of the asynchronous object, and exception will be
      *   thrown during lazy resolution. If no adapter registry has been set into the context
@@ -182,12 +182,12 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
      *   be a {@link Flux}.
      * </p>
      * <p>
-     *   Note the specified <tt>dataStream</tt> must be <strong>multi-valued</strong>.
+     *   Note the specified {@code dataStream} must be <strong>multi-valued</strong>.
      * </p>
      * <p>
      *   Examples of supported implementations are Reactor's {@link Flux} (but not
-     *   {@link reactor.core.publisher.Mono}), and also RxJava's <tt>Observable</tt>
-     *   (but not <tt>Single</tt>).
+     *   {@link reactor.core.publisher.Mono}), and also RxJava's {@code Observable}
+     *   (but not {@code Single}).
      * </p>
      *
      * @param dataStream the asynchronous object, which must be convertible to a multi-valued {@link Publisher} by
@@ -211,7 +211,7 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
      *   buffer size and a value for the ID of the first event generated in SSE scenarios.
      * </p>
      * <p>
-     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Stream's
+     *   The specified {@code dataStream} must be <em>adaptable</em> to a Reactive Stream's
      *   {@link Publisher} by means of Spring's {@link ReactiveAdapterRegistry} mechanism. If no
      *   adapter has been registered for the type of the asynchronous object, and exception will be
      *   thrown during lazy resolution. If no adapter registry has been set into the context
@@ -219,12 +219,12 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
      *   be a {@link Flux}.
      * </p>
      * <p>
-     *   Note the specified <tt>dataStream</tt> must be <strong>multi-valued</strong>.
+     *   Note the specified {@code dataStream} must be <strong>multi-valued</strong>.
      * </p>
      * <p>
      *   Examples of supported implementations are Reactor's {@link Flux} (but not
-     *   {@link reactor.core.publisher.Mono}), and also RxJava's <tt>Observable</tt>
-     *   (but not <tt>Single</tt>).
+     *   {@link reactor.core.publisher.Mono}), and also RxJava's {@code Observable}
+     *   (but not {@code Single}).
      * </p>
      *
      * @param dataStream the asynchronous object, which must be convertible to a multi-valued {@link Publisher} by
@@ -248,7 +248,7 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
      *   the names and IDs of events generated from a specific SSE stream.
      * </p>
      * <p>
-     *   The specified <tt>dataStream</tt> must be <em>adaptable</em> to a Reactive Stream's
+     *   The specified {@code dataStream} must be <em>adaptable</em> to a Reactive Stream's
      *   {@link Publisher} by means of Spring's {@link ReactiveAdapterRegistry} mechanism. If no
      *   adapter has been registered for the type of the asynchronous object, and exception will be
      *   thrown during lazy resolution. If no adapter registry has been set into the context
@@ -256,12 +256,12 @@ public class ReactiveDataDriverContextVariable implements IReactiveSSEDataDriver
      *   be a {@link Flux}.
      * </p>
      * <p>
-     *   Note the specified <tt>dataStream</tt> must be <strong>multi-valued</strong>.
+     *   Note the specified {@code dataStream} must be <strong>multi-valued</strong>.
      * </p>
      * <p>
      *   Examples of supported implementations are Reactor's {@link Flux} (but not
-     *   {@link reactor.core.publisher.Mono}), and also RxJava's <tt>Observable</tt>
-     *   (but not <tt>Single</tt>).
+     *   {@link reactor.core.publisher.Mono}), and also RxJava's {@code Observable}
+     *   (but not {@code Single}).
      * </p>
      *
      * @param dataStream the asynchronous object, which must be convertible to a multi-valued {@link Publisher} by

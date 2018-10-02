@@ -27,7 +27,7 @@ import org.springframework.web.util.HtmlUtils;
 /**
  * <p>
  *   This class mirrors the behaviour of the protected class
- *   <tt>org.springframework.web.servlet.tags.form.ValueFormatter</tt>, needed in order to format
+ *   {@code org.springframework.web.servlet.tags.form.ValueFormatter}, needed in order to format
  *   rendered values in a way compatible to other Spring view-layer technologies.
  * </p>
  *

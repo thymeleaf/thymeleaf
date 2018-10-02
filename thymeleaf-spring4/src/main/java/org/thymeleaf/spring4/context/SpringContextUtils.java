@@ -45,14 +45,14 @@ public class SpringContextUtils {
      * </p>
      * <p>
      *   Note that the application context might not be always accessible (and thus this method
-     *   can return <tt>null</tt>). Application Context will be accessible when the template is being executed
+     *   can return {@code null}). Application Context will be accessible when the template is being executed
      *   as a Spring View, or else when an object of class {@link ThymeleafEvaluationContext} has been
-     *   explicitly set into the {@link ITemplateContext} <tt>context</tt> with variable name
+     *   explicitly set into the {@link ITemplateContext} {@code context} with variable name
      *   {@link ThymeleafEvaluationContext#THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME}.
      * </p>
      *
      * @param context the template context.
-     * @return the application context, or <tt>null</tt> if it could not be accessed.
+     * @return the application context, or {@code null} if it could not be accessed.
      */
     public static ApplicationContext getApplicationContext(final ITemplateContext context) {
         if (context == null) {
