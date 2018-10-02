@@ -4,6 +4,7 @@
   to package renaming.
 - Moved minimum thymeleaf dependency version to 3.0.10.
 - Updated SLF4j dependency to 1.7.25.
+- Added "Automatic-Module-Name: thymeleaf-extras-springsecurity3" to MANIFEST.MF for Java 9+ JPMS.
 
 
 3.0.2
