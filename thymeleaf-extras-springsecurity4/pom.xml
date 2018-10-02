@@ -210,6 +210,7 @@
           <javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
           <reportOutputDirectory>${project.reporting.outputDirectory}/api/${project.artifactId}/apidocs</reportOutputDirectory>
           <excludePackageNames>org.springframework</excludePackageNames>
+          <additionalJOption>--no-module-directories</additionalJOption>
         </configuration>
         <executions>
           <execution>
@@ -244,7 +245,7 @@
             <id>make-assembly-dist</id>
             <phase>package</phase>
             <goals>
-              <goal>attached</goal>
+              <goal>single</goal>
             </goals>
             <configuration>
               <descriptors>
