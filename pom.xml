@@ -118,7 +118,7 @@
     <maven.compile.target>1.6</maven.compile.target>
     <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
     <thymeleaf.version>3.0.10-SNAPSHOT</thymeleaf.version>
-    <springframework.version>4.3.3.RELEASE</springframework.version>
+    <springframework.version>5.1.0.RELEASE</springframework.version>
   </properties>
   
 
@@ -220,7 +220,7 @@
         
     <dependency>
       <groupId>org.thymeleaf</groupId>
-      <artifactId>thymeleaf-spring4</artifactId>
+      <artifactId>thymeleaf-spring5</artifactId>
       <version>${thymeleaf.version}</version>
       <scope>compile</scope>
     </dependency>
