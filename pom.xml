@@ -51,11 +51,28 @@
   
   <developers>
     <developer>
-      <id>dfernandez</id>
+      <id>danielfernandez</id>
       <name>Daniel Fernandez</name>
-      <email>dfernandez AT users.sourceforge.net</email>
+      <email>daniel.fernandez AT 11thlabs DOT org</email>
       <roles>
-        <role>Project admin</role>
+        <role>Project Admin</role>
+        <role>Lead Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>jmiguelsamper</id>
+      <name>Jose Miguel Samper</name>
+      <email>jmiguelsamper AT users DOT sourceforge DOT net</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>ultraq</id>
+      <name>Emanuel Rabina</name>
+      <email>emanuelrabina AT gmail DOT com</email>
+      <roles>
+        <role>Developer</role>
       </roles>
      </developer>
   </developers>
@@ -97,8 +114,10 @@
 
 
   <properties>
-    <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <thymeleaf.version>3.0.9.RELEASE</thymeleaf.version>
+    <maven.compile.source>1.6</maven.compile.source>
+    <maven.compile.target>1.6</maven.compile.target>
+    <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
+    <thymeleaf.version>3.0.10-SNAPSHOT</thymeleaf.version>
     <springframework.version>4.3.3.RELEASE</springframework.version>
   </properties>
   
@@ -126,19 +145,29 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.2</version>
+        <version>3.8.0</version>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <source>${maven.compile.source}</source>
+          <target>${maven.compile.target}</target>
+          <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
       </plugin>
       
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>2.7</version>
+        <version>3.1.0</version>
         <configuration>
-          <encoding>ISO-8859-1</encoding>
+          <encoding>${project.build.sourceEncoding}</encoding>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.2.2</version>
+        <configuration>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
         </configuration>
       </plugin>
 
@@ -170,19 +199,20 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
+            <version>3.1.0</version>
             <executions>
               <execution>
                 <id>make-assembly-dist</id>
                 <phase>package</phase>
                 <goals>
-                  <goal>attached</goal>
+                  <goal>single</goal>
                 </goals>
                 <configuration>
                   <descriptors>
                     <descriptor>${basedir}/src/assembly/sources.xml</descriptor>
                   </descriptors>
                   <appendAssemblyId>true</appendAssemblyId>
-                  <finalName>${groupId}-${artifactId}-${version}</finalName>
+                  <finalName>${project.groupId}-${project.artifactId}-${project.version}</finalName>
                 </configuration>
               </execution>
             </executions>
@@ -266,14 +296,14 @@
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
-      <version>1.0.0.GA</version>
+      <version>2.0.1.Final</version>
       <scope>compile</scope>
     </dependency>
         
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator-annotation-processor</artifactId>
-      <version>4.1.0.Final</version>
+      <version>5.3.2.Final</version>
     </dependency>        
 
 
