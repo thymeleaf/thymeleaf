@@ -152,8 +152,7 @@ public final class AuthUtils {
         }
 
     }
-    
-    
+
     
     
 
@@ -170,8 +169,8 @@ public final class AuthUtils {
 
         final boolean authorized =
                   (SpringVersionSpecificUtils.isWebFluxContext(context))?
-                          authorizeUsingAccessExpressionWebFlux(context, accessExpression, authentication) :
-                          authorizeUsingAccessExpressionMvc(context, accessExpression, authentication);
+                          WebFluxAuthUtils.authorizeUsingAccessExpressionWebFlux(context, accessExpression, authentication) :
+                          MvcAuthUtils.authorizeUsingAccessExpressionMvc(context, accessExpression, authentication);
 
         if (authorized) {
 
@@ -195,77 +194,6 @@ public final class AuthUtils {
 
 
 
-    private static boolean authorizeUsingAccessExpressionMvc(
-            final IExpressionContext context,
-            final String accessExpression, final Authentication authentication) {
-
-        /*
-         * In case this expression is specified as a standard variable expression (${...}), clean it.
-         */
-        final String expr =
-                ((accessExpression != null && accessExpression.startsWith("${") && accessExpression.endsWith("}"))?
-                        accessExpression.substring(2, accessExpression.length() - 1) :
-                        accessExpression);
-
-        final SecurityExpressionHandler<FilterInvocation> handler = getExpressionHandler(context);
-
-        Expression expressionObject = null;
-        try {
-            expressionObject = handler.getExpressionParser().parseExpression(expr);
-        } catch (ParseException e) {
-            throw new TemplateProcessingException(
-                    "An error happened trying to parse Spring Security access expression \"" +
-                            expr + "\"", e);
-        }
-
-        final HttpServletRequest request = SpringVersionSpecificUtils.getHttpServletRequest(context);
-        final HttpServletResponse response = SpringVersionSpecificUtils.getHttpServletResponse(context);
-
-        final FilterInvocation filterInvocation = new FilterInvocation(request, response, ServletFilterChainHolder.DUMMY_CHAIN);
-
-        final EvaluationContext evaluationContext = handler.createEvaluationContext(authentication, filterInvocation);
-
-        /*
-         * Initialize the context variables map.
-         *
-         * This will allow SpringSecurity expressions to include any variables from
-         * the IContext just by accessing them as properties of the "#vars" utility object.
-         */
-        IExpressionObjects expressionObjects = context.getExpressionObjects();
-
-        // We add Thymeleaf's wrapper on top of the SpringSecurity basic evaluation context
-        // We need to do this through a version-independent wrapper because the classes we will use for the
-        // EvaluationContext wrapper are in the org.thymeleaf.spring3.* or org.thymeleaf.spring4.* packages,
-        // depending on the version of Spring we are using.
-        final EvaluationContext wrappedEvaluationContext =
-                SpringVersionSpecificUtils.wrapEvaluationContext(evaluationContext, expressionObjects);
-
-
-        return (ExpressionUtils.evaluateAsBoolean(expressionObject, wrappedEvaluationContext));
-
-    }
-
-
-
-    private static boolean authorizeUsingAccessExpressionWebFlux(
-            final IExpressionContext context,
-            final String accessExpression, final Authentication authentication) {
-
-        // There is no full support for Security expressions, so we will only check if it is a minimal expression
-        if (!MinimalAuthenticationExpressionSupport.isMinimalHandledExpression(accessExpression)) {
-            throw new TemplateProcessingException(
-                    "Authorization-oriented expressions (such as those in 'sec:authorize') are restricted " +
-                    "in WebFlux applications due to a lack of support in the reactive side of Spring Security (as of " +
-                    "Spring Security 5.1). Only a minimal set of security expressions is allowed: " +
-                    MinimalAuthenticationExpressionSupport.HANDLED_EXPRESSIONS);
-        }
-
-        return MinimalAuthenticationExpressionSupport.evaluateMinimalExpression(accessExpression, authentication);
-
-    }
-
-
-    
     
     @SuppressWarnings("unchecked")
     private static SecurityExpressionHandler<FilterInvocation> getExpressionHandler(final IExpressionContext context) {
@@ -291,9 +219,7 @@ public final class AuthUtils {
     
     
     
-    
-    
-    
+
     public static boolean authorizeUsingUrlCheck(
             final IExpressionContext context, final String url, final String method, final Authentication authentication) {
 
@@ -306,8 +232,8 @@ public final class AuthUtils {
 
         final boolean authorized =
                 (SpringVersionSpecificUtils.isWebFluxContext(context))?
-                        authorizeUsingUrlCheckWebFlux(context, url, method, authentication) :
-                        authorizeUsingUrlCheckMvc(context, url, method, authentication);
+                        WebFluxAuthUtils.authorizeUsingUrlCheckWebFlux(context, url, method, authentication) :
+                        MvcAuthUtils.authorizeUsingUrlCheckMvc(context, url, method, authentication);
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Checked authorization for URL \"{}\" and method \"{}\" for user \"{}\". " +
@@ -322,30 +248,6 @@ public final class AuthUtils {
 
 
 
-    private static boolean authorizeUsingUrlCheckMvc(
-            final IExpressionContext context, final String url, final String method, final Authentication authentication) {
-
-        final String contextPath = SpringSecurityContextUtils.getContextPath(context);
-        return getPrivilegeEvaluator(context).isAllowed(contextPath, url, method, authentication);
-
-    }
-
-
-    private static boolean authorizeUsingUrlCheckWebFlux(
-            final IExpressionContext context, final String url, final String method, final Authentication authentication) {
-
-        throw new TemplateProcessingException(
-                "Authorization-oriented expressions (such as those in 'sec:authorize') are restricted " +
-                "in WebFlux applications due to a lack of support in the reactive side of Spring Security (as of " +
-                "Spring Security 5.1). Only a minimal set of security expressions is allowed: " +
-                MinimalAuthenticationExpressionSupport.HANDLED_EXPRESSIONS);
-
-    }
-
-
-
-
-    
     private static WebInvocationPrivilegeEvaluator getPrivilegeEvaluator(final IExpressionContext context) {
 
         final WebInvocationPrivilegeEvaluator privEvaluatorFromRequest =
@@ -393,6 +295,115 @@ public final class AuthUtils {
 
 
     }
+
+
+
+
+
+
+    private static final class MvcAuthUtils {
+
+
+        private static boolean authorizeUsingAccessExpressionMvc(
+                final IExpressionContext context,
+                final String accessExpression, final Authentication authentication) {
+
+            /*
+             * In case this expression is specified as a standard variable expression (${...}), clean it.
+             */
+            final String expr =
+                    ((accessExpression != null && accessExpression.startsWith("${") && accessExpression.endsWith("}"))?
+                            accessExpression.substring(2, accessExpression.length() - 1) :
+                            accessExpression);
+
+            final SecurityExpressionHandler<FilterInvocation> handler = getExpressionHandler(context);
+
+            Expression expressionObject = null;
+            try {
+                expressionObject = handler.getExpressionParser().parseExpression(expr);
+            } catch (ParseException e) {
+                throw new TemplateProcessingException(
+                        "An error happened trying to parse Spring Security access expression \"" +
+                                expr + "\"", e);
+            }
+
+            final HttpServletRequest request = SpringVersionSpecificUtils.getHttpServletRequest(context);
+            final HttpServletResponse response = SpringVersionSpecificUtils.getHttpServletResponse(context);
+
+            final FilterInvocation filterInvocation = new FilterInvocation(request, response, ServletFilterChainHolder.DUMMY_CHAIN);
+
+            final EvaluationContext evaluationContext = handler.createEvaluationContext(authentication, filterInvocation);
+
+            /*
+             * Initialize the context variables map.
+             *
+             * This will allow SpringSecurity expressions to include any variables from
+             * the IContext just by accessing them as properties of the "#vars" utility object.
+             */
+            IExpressionObjects expressionObjects = context.getExpressionObjects();
+
+            // We add Thymeleaf's wrapper on top of the SpringSecurity basic evaluation context
+            // We need to do this through a version-independent wrapper because the classes we will use for the
+            // EvaluationContext wrapper are in the org.thymeleaf.spring3.* or org.thymeleaf.spring4.* packages,
+            // depending on the version of Spring we are using.
+            final EvaluationContext wrappedEvaluationContext =
+                    SpringVersionSpecificUtils.wrapEvaluationContext(evaluationContext, expressionObjects);
+
+
+            return (ExpressionUtils.evaluateAsBoolean(expressionObject, wrappedEvaluationContext));
+
+        }
+
+
+        private static boolean authorizeUsingUrlCheckMvc(
+                final IExpressionContext context, final String url, final String method, final Authentication authentication) {
+
+            final String contextPath = SpringSecurityContextUtils.getContextPath(context);
+            return getPrivilegeEvaluator(context).isAllowed(contextPath, url, method, authentication);
+
+        }
+
+
+    }
+
+
+
+
+    private static final class WebFluxAuthUtils {
+
+
+        private static boolean authorizeUsingAccessExpressionWebFlux(
+                final IExpressionContext context,
+                final String accessExpression, final Authentication authentication) {
+
+            // There is no full support for Security expressions, so we will only check if it is a minimal expression
+            if (!MinimalAuthenticationExpressionSupport.isMinimalHandledExpression(accessExpression)) {
+                throw new TemplateProcessingException(
+                        "Authorization-oriented expressions (such as those in 'sec:authorize') are restricted " +
+                                "in WebFlux applications due to a lack of support in the reactive side of Spring Security (as of " +
+                                "Spring Security 5.1). Only a minimal set of security expressions is allowed: " +
+                                MinimalAuthenticationExpressionSupport.HANDLED_EXPRESSIONS);
+            }
+
+            return MinimalAuthenticationExpressionSupport.evaluateMinimalExpression(accessExpression, authentication);
+
+        }
+
+
+        private static boolean authorizeUsingUrlCheckWebFlux(
+                final IExpressionContext context, final String url, final String method, final Authentication authentication) {
+
+            throw new TemplateProcessingException(
+                    "Authorization-oriented expressions (such as those in 'sec:authorize') are restricted " +
+                            "in WebFlux applications due to a lack of support in the reactive side of Spring Security (as of " +
+                            "Spring Security 5.1). Only a minimal set of security expressions is allowed: " +
+                            MinimalAuthenticationExpressionSupport.HANDLED_EXPRESSIONS);
+
+        }
+
+
+    }
+
 
 
 
