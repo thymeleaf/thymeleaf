@@ -19,8 +19,6 @@
  */
 package thymeleafsandbox.biglistflux.web.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -66,11 +64,10 @@ public class FreeMarkerController {
     @RequestMapping("/biglist.freemarker")
     public String bigList(final Model model) {
 
+        // Will be async resolved by Spring WebFlux before calling the view
         final Flux<PlaylistEntry> playlistStream = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
-        // We need to fully resolve the list before executing the template
-        final List<PlaylistEntry> playlistEntries = playlistStream.collectList().block();
 
-        model.addAttribute("dataSource", playlistEntries);
+        model.addAttribute("dataSource", playlistStream);
 
         return "freemarker/biglist";
 

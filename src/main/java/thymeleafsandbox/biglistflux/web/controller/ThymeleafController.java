@@ -19,8 +19,6 @@
  */
 package thymeleafsandbox.biglistflux.web.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -79,11 +77,10 @@ public class ThymeleafController {
     @RequestMapping("/biglist-chunked.thymeleaf")
     public String bigListChunked(final Model model) {
 
+        // Will be async resolved by Spring WebFlux before calling the view
         final Flux<PlaylistEntry> playlistStream = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
-        // We need to fully resolve the list before executing the template
-        final List<PlaylistEntry> playlistEntries = playlistStream.collectList().block();
 
-        model.addAttribute("dataSource", playlistEntries);
+        model.addAttribute("dataSource", playlistStream);
 
         return "thymeleaf/biglist-chunked";
 
@@ -93,11 +90,10 @@ public class ThymeleafController {
     @RequestMapping("/biglist-full.thymeleaf")
     public String bigListFull(final Model model) {
 
+        // Will be async resolved by Spring WebFlux before calling the view
         final Flux<PlaylistEntry> playlistStream = this.playlistEntryRepository.findLargeCollectionPlaylistEntries();
-        // We need to fully resolve the list before executing the template
-        final List<PlaylistEntry> playlistEntries = playlistStream.collectList().block();
 
-        model.addAttribute("dataSource", playlistEntries);
+        model.addAttribute("dataSource", playlistStream);
 
         return "thymeleaf/biglist-full";
 
