@@ -122,7 +122,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
      *   Values of these execution attributes are allowed to be:
      * </p>
      * <ul>
-     *     <li>{@code Publisher<?>} (including Flux&lt;?&gt; and Mono&lt;?&gt;).</li>
+     *     <li>{@code Publisher<?>} (including {@code Flux<?>} and {@code Mono<?>}).</li>
      *     <li>{@code Supplier<? extends Publisher<?>>}: The supplier will be called at {@code View}
      *          rendering time and the result will be added to the Model.</li>
      *     <li>{@code Function<ServerWebExchange,? extends Publisher<?>>}: The function will be called

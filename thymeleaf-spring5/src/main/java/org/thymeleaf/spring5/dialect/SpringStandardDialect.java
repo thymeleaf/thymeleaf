@@ -19,13 +19,17 @@
  */
 package org.thymeleaf.spring5.dialect;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
+import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring5.context.SpringContextUtils;
 import org.thymeleaf.spring5.expression.SPELVariableExpressionEvaluator;
 import org.thymeleaf.spring5.expression.SpringStandardConversionService;
 import org.thymeleaf.spring5.expression.SpringStandardExpressionObjectFactory;
@@ -48,6 +52,7 @@ import org.thymeleaf.spring5.processor.SpringSrcTagProcessor;
 import org.thymeleaf.spring5.processor.SpringTextareaFieldTagProcessor;
 import org.thymeleaf.spring5.processor.SpringUErrorsTagProcessor;
 import org.thymeleaf.spring5.processor.SpringValueTagProcessor;
+import org.thymeleaf.spring5.util.SpringVersionUtils;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
@@ -98,12 +103,59 @@ public class SpringStandardDialect extends StandardDialect {
     private boolean enableSpringELCompiler = DEFAULT_ENABLE_SPRING_EL_COMPILER;
     private boolean renderHiddenMarkersBeforeCheckboxes = DEFAULT_RENDER_HIDDEN_MARKERS_BEFORE_CHECKBOXES;
 
+    private static final Map<String,Object> REACTIVE_MODEL_ADDITIONS_EXECUTION_ATTRIBUTES;
+
+    // This execution attribute will force the asynchronous resolution of the WebSession (not the real creation of a
+    // persisted session) before view execution. This will avoid the need to block in order to obtain the WebSession
+    // from the ServerWebExchange during template execution.
+    // NOTE here we are not using the constant from the ReactiveThymeleafView class (instead we replicate its same
+    // value "ThymeleafReactiveModelAdditions:" so that we don't force the initialisation of that class in
+    // non-WebFlux environments.
+    private static final String WEB_SESSION_EXECUTION_ATTRIBUTE_NAME =
+            "ThymeleafReactiveModelAdditions:" + SpringContextUtils.WEB_SESSION_ATTRIBUTE_NAME;
 
     // These variables will be initialized lazily following the model applied in the extended StandardDialect.
     private IExpressionObjectFactory expressionObjectFactory = null;
     private IStandardConversionService conversionService = null;
     
-    
+
+
+
+
+    static {
+
+        /*
+         * If this is a WebFlux application, we will use a special mechanism in ThymeleafReactiveView that allows
+         * the configuration of an execution attribute with a name with a certain prefix and type
+         * Function<ServerWebExchange,Publisher<?>>, so that such function is called during View preparation and
+         * its result (Publisher<?>) is put into the model so that Spring WebFlux asynchronously resolves it (without
+         * blocking) before asking the View to actually render.
+         *
+         * This way, by means of this execution attribute we will set the Mono<WebSession> returned by
+         * ServerWebExchange into the model and have Spring resolve it non-blockingly into the WebSession object we
+         * could need during template execution.
+         *
+         * NOTE that, per the definition of WebSession in Spring WebFlux, even if this operation does mean the creation
+         * of a WebSession instance, it does not mean the creation of a real (persisted) user session, cookie emission,
+         * etc. unless anything is actually put afterwards into the session or it is explicitly started.
+         */
+
+        if (!SpringVersionUtils.isSpringWebFluxPresent()) {
+
+            REACTIVE_MODEL_ADDITIONS_EXECUTION_ATTRIBUTES = Collections.emptyMap();
+
+        } else {
+
+            // Returns Mono<WebSession>, but we will specify Object in order not to bind this class to Mono at compile time
+            final Function<ServerWebExchange, Object> webSessionInitializer = (exchange) -> exchange.getSession();
+
+            REACTIVE_MODEL_ADDITIONS_EXECUTION_ATTRIBUTES =
+                    Collections.singletonMap(WEB_SESSION_EXECUTION_ATTRIBUTE_NAME, webSessionInitializer);
+
+        }
+
+    }
+
     
     public SpringStandardDialect() {
         super(NAME, PREFIX, PROCESSOR_PRECEDENCE);
@@ -267,6 +319,7 @@ public class SpringStandardDialect extends StandardDialect {
     public Map<String, Object> getExecutionAttributes() {
 
         final Map<String,Object> executionAttributes = super.getExecutionAttributes();
+        executionAttributes.putAll(REACTIVE_MODEL_ADDITIONS_EXECUTION_ATTRIBUTES);
         executionAttributes.put(
                 SpringStandardExpressions.ENABLE_SPRING_EL_COMPILER_ATTRIBUTE_NAME, Boolean.valueOf(getEnableSpringELCompiler()));
 

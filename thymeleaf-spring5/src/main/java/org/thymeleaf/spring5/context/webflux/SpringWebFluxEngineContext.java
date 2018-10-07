@@ -42,6 +42,7 @@ import org.thymeleaf.context.WebContext;
 import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.spring5.context.SpringContextUtils;
 import org.thymeleaf.util.Validate;
 import reactor.core.publisher.Mono;
 
@@ -73,7 +74,6 @@ public class SpringWebFluxEngineContext
 
     private final ServerHttpRequest request;
     private final ServerHttpResponse response;
-    private final Mono<WebSession> session;
     private final ServerWebExchange exchange;
 
     private final WebExchangeAttributesVariablesMap webExchangeAttributesVariablesMap;
@@ -117,12 +117,16 @@ public class SpringWebFluxEngineContext
         this.exchange = exchange;
         this.request = this.exchange.getRequest();
         this.response = this.exchange.getResponse();
-        this.session = this.exchange.getSession();
+        // No need to call "Mono<WebSession> this.exchange.getSession()" because the reactive variable it returns
+        // should have been already configured by SpringStandardDialect for async resolution before View execution
+        // (by means of a specially-named execution attribute), so we should be instead retrieving the WebSession
+        // (not he reactive Mono<WebSession>) from the context.
 
         this.webExchangeAttributesVariablesMap =
                 new WebExchangeAttributesVariablesMap(configuration, templateData, templateResolutionAttributes, this.exchange, locale, variables);
         this.requestParametersVariablesMap = new RequestParametersMap(this.request);
-        this.sessionAttributesVariablesMap = new SessionAttributesMap(this.session);
+        this.sessionAttributesVariablesMap =
+                new SessionAttributesMap(this.webExchangeAttributesVariablesMap);
 
     }
 
@@ -141,7 +145,7 @@ public class SpringWebFluxEngineContext
 
     @Override
     public Mono<WebSession> getSession() {
-        return this.session;
+        return this.exchange.getSession();
     }
 
 
@@ -348,34 +352,45 @@ public class SpringWebFluxEngineContext
     private static final class SessionAttributesMap extends NoOpMapImpl {
 
         /*
-         * Note this class is built so that the Mono flux containing the WebSession is not really blocked
-         * (and the real WebSession object obtained) until really needed.
+         * NOTE the WebSession is not actually obtained from the ServerWebExchange at this point, but instead
+         * from the context. The reason is ServerWebExchange#getSession() returns Mono<WebSession>, and in order
+         * to resolve this reactive variable in a non-blocking manner we have used the execution attributes
+         * mechanism in the dialect in order to specify that Mono<WebSession> should be resolved before
+         * template execution.
          */
 
-        private final Mono<WebSession> sessionFlux;
+        private final WebExchangeAttributesVariablesMap attrVars;
         private WebSession session = null;
 
 
-        SessionAttributesMap(final Mono<WebSession> sessionFlux) {
+        SessionAttributesMap(final WebExchangeAttributesVariablesMap attrVars) {
             super();
-            this.sessionFlux = sessionFlux;
+            this.attrVars = attrVars;
         }
 
         private WebSession getSession() {
             if (this.session == null) {
-                this.session = this.sessionFlux.block();
+                this.session = (WebSession) this.attrVars.getVariable(SpringContextUtils.WEB_SESSION_ATTRIBUTE_NAME);
             }
             return this.session;
         }
 
         @Override
         public int size() {
-            return getSession().getAttributes().size();
+            final WebSession webSession = getSession();
+            if (webSession == null) {
+                return 0;
+            }
+            return webSession.getAttributes().size();
         }
 
         @Override
         public boolean isEmpty() {
-            return getSession().getAttributes().isEmpty();
+            final WebSession webSession = getSession();
+            if (webSession == null) {
+                return true;
+            }
+            return webSession.getAttributes().isEmpty();
         }
 
         @Override
@@ -396,22 +411,38 @@ public class SpringWebFluxEngineContext
 
         @Override
         public Object get(final Object key) {
-            return resolveLazy(getSession().getAttributes().get(key != null? key.toString() : null));
+            final WebSession webSession = getSession();
+            if (webSession == null) {
+                return null;
+            }
+            return resolveLazy(webSession.getAttributes().get(key != null? key.toString() : null));
         }
 
         @Override
         public Set<String> keySet() {
-            return getSession().getAttributes().keySet();
+            final WebSession webSession = getSession();
+            if (webSession == null) {
+                return Collections.emptySet();
+            }
+            return webSession.getAttributes().keySet();
         }
 
         @Override
         public Collection<Object> values() {
-            return getSession().getAttributes().values();
+            final WebSession webSession = getSession();
+            if (webSession == null) {
+                return Collections.emptyList();
+            }
+            return webSession.getAttributes().values();
         }
 
         @Override
         public Set<Entry<String,Object>> entrySet() {
-            return getSession().getAttributes().entrySet();
+            final WebSession webSession = getSession();
+            if (webSession == null) {
+                return Collections.emptySet();
+            }
+            return webSession.getAttributes().entrySet();
         }
 
     }

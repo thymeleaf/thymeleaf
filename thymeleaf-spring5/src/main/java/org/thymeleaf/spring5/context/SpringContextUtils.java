@@ -40,6 +40,25 @@ import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 public class SpringContextUtils {
 
 
+    /**
+     * <p>
+     *   This is the name of the model attribute that will hold the (asychronously resolved)
+     *   {@code WebSession} object in order to be used whenever needed, avoiding the need to block
+     *   for obtaining it from the {@code ServerWebExchange}.
+     * </p>
+     * <p>
+     *   Note resolving the {@code WebSession} from the reactive {@code Mono<WebSession>} stream does
+     *   mean the creation of a {@code WebSession} instance, but not the real creation of a persisted session
+     *   sent to the browser.
+     * </p>
+     * <p>
+     *     Value: {@code "thymeleafWebSession"}
+     * </p>
+     *
+     * @see org.springframework.web.server.WebSession
+     */
+    public static final String WEB_SESSION_ATTRIBUTE_NAME = "thymeleafWebSession";
+
 
     /**
      * <p>
