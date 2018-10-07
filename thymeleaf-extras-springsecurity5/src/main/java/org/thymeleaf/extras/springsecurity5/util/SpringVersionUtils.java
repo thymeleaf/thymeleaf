@@ -167,7 +167,7 @@ public final class SpringVersionUtils {
     }
 
 
-    public static boolean isSpringWebReactivePresent() {
+    public static boolean isSpringWebFluxPresent() {
         return SPRING_WEB_REACTIVE_PRESENT;
     }
 

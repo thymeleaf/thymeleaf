@@ -76,7 +76,7 @@ public class SpringSecurityDialect
 
     static {
 
-        if (!SpringVersionUtils.isSpringWebReactivePresent()) {
+        if (!SpringVersionUtils.isSpringWebFluxPresent()) {
 
             EXECUTION_ATTRIBUTES = null;
 
