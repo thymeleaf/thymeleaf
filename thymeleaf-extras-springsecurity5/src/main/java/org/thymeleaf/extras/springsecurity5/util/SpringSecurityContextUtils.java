@@ -49,7 +49,7 @@ public final class SpringSecurityContextUtils {
      * This is the name of the model attribute that will hold the (asychronously resolved)
      * {@code SecurityContext} object.
      */
-    public static final String SECURITY_CONTEXT_MODEL_ATTRIBUTE_NAME = "ThymeleafSpringSecurityContext";
+    public static final String SECURITY_CONTEXT_MODEL_ATTRIBUTE_NAME = "thymeleafSpringSecurityContext";
 
 
 
