@@ -64,7 +64,12 @@ public class SpringSecurityDialect
     private static final IExpressionObjectFactory EXPRESSION_OBJECT_FACTORY = new SpringSecurityExpressionObjectFactory();
     private static final Map<String,Object> EXECUTION_ATTRIBUTES;
 
-    // Note here we are not using the constant from the ReactiveThymeleafView class (instead we replicate its same
+    // These execution attributes will force the asynchronous resolution of the SecurityContext and the CsrfToken. This
+    // will avoid the need to block in order to obtain any of them during SpringSecurity-enabled execution. This will
+    // also mean both objects will be always resolved for every template execution even if not needed, but there is
+    // no way Thymeleaf could know beforehand if they will be needed for a template or not, so any alternative to this
+    // would involve blocking.
+    // NOTE here we are not using the constant from the ReactiveThymeleafView class (instead we replicate its same
     // value "ThymeleafReactiveModelAdditions:" so that we don't create a hard dependency on the thymeleaf-spring5
     // package, so that this class could be used in the future with, for example, a
     // thymeleaf-spring6 integration package if needed.
@@ -95,13 +100,13 @@ public class SpringSecurityDialect
                         }
                         // We need to put it into the exchange attributes manually here because async resolution
                         // will only set the result into the MODEL, but RequestDataValueProcessor is expecing this
-                        // as an exchange attribute
+                        // specifically as an exchange attribute instead of looking into the model or context.
                         return csrfToken.doOnSuccess(
                                 token -> exchange.getAttributes().put(CsrfRequestDataValueProcessor.DEFAULT_CSRF_ATTR_NAME, token));
                     };
 
 
-            EXECUTION_ATTRIBUTES = new HashMap<>(2, 1.0f);
+            EXECUTION_ATTRIBUTES = new HashMap<>(3, 1.0f);
             EXECUTION_ATTRIBUTES.put(SECURITY_CONTEXT_EXECUTION_ATTRIBUTE_NAME, secCtxInitializer);
             EXECUTION_ATTRIBUTES.put(CSRF_EXECUTION_ATTRIBUTE_NAME, csrfTokenInitializer);
 
