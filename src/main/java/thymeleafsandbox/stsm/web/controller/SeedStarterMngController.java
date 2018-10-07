@@ -28,6 +28,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -41,6 +42,7 @@ import thymeleafsandbox.stsm.business.services.VarietyService;
 
 
 @Controller
+@SessionAttributes({"allFeatures"})
 public class SeedStarterMngController {
 
 
