@@ -353,16 +353,16 @@ public class ThymeleafView
 
         }
 
-        final boolean fullProcessingBeforeOutput = getFullProcessingBeforeOutput();
+        final boolean producePartialOutputWhileProcessing = getProducePartialOutputWhileProcessing();
 
         // If we have chosen to not output anything until processing finishes, we will use a buffer
         final Writer templateWriter =
-                (fullProcessingBeforeOutput? new FastStringWriter(1024) : response.getWriter());
+                (producePartialOutputWhileProcessing? response.getWriter() : new FastStringWriter(1024));
 
         viewTemplateEngine.process(templateName, processMarkupSelectors, context, templateWriter);
 
         // If a buffer was used, write it to the web server's output buffers all at once
-        if (fullProcessingBeforeOutput) {
+        if (!producePartialOutputWhileProcessing) {
             response.getWriter().write(templateWriter.toString());
         }
 

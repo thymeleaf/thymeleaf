@@ -94,7 +94,7 @@ public class ThymeleafViewResolver
 
     private boolean alwaysProcessRedirectAndForward = true;
 
-    private boolean fullProcessingBeforeOutput = AbstractThymeleafView.DEFAULT_FULL_PROCESSING_BEFORE_OUTPUT;
+    private boolean producePartialOutputWhileProcessing = AbstractThymeleafView.DEFAULT_PRODUCE_PARTIAL_OUTPUT_WHILE_PROCESSING;
 
     private Class<? extends AbstractThymeleafView> viewClass = ThymeleafView.class;   
     private String[] viewNames = null;
@@ -585,63 +585,68 @@ public class ThymeleafViewResolver
 
     /**
      * <p>
-     *   Returns whether Thymeleaf should fully process and render a template (e.g. into HTML)
-     *   before starting to send any results to the clients (e.g. browsers).
+     *   Returns whether Thymeleaf should start producing output &ndash;and sending it to the web server's output
+     *   buffers&ndash; as soon as possible, outputting partial results while processing as they become available so
+     *   that they can potentially be sent to the client (browser) before processing of the whole template has
+     *   completely finished.
      * </p>
      * <p>
-     *   If set to {@code true}, no fragments of template result will be sent to the web server's
+     *   If set to {@code false}, no fragments of template result will be sent to the web server's
      *   output buffers until Thymeleaf completely finishes processing the template and generating
      *   the corresponding output. Only once finished will output start to be written to the web server's
-     *   output buffers, and therefore sent to the browser.
+     *   output buffers, and therefore sent to the clients.
      * </p>
      * <p>
-     *   Note that setting this to {@code true} is <strong>not recommended for most
-     *   scenarios</strong>, as it can significantly increase the amount of memory used per
+     *   Note that setting this to {@code false} is <strong>not recommended for most
+     *   scenarios</strong>, as it can (very) significantly increase the amount of memory used per
      *   template execution. Only modify this setting if you know what you are doing. A typical
-     *   reason for exploring the effects of setting this to {@code true} is suffering from UI
-     *   rendering issues at the browser due to incremental rendering of very large templates.
+     *   scenario in which setting this to {@code false} could be of use is when an application is
+     *   suffering from UI rendering issues (flickering) at the browser due to incremental
+     *   rendering of very large templates.
      * </p>
      * <p>
-     *   Default value is {@code false}.
+     *   Default value is {@code true}.
      * </p>
      *
-     * @return whether to process and render templates in full before sending results or not
-     *         (default: {@code false}).
+     * @return whether to start producing output as soon as possible while processing or not (default: {@code true}).
      * @since 3.0.10
      */
-    public boolean getFullProcessingBeforeOutput() {
-        return this.fullProcessingBeforeOutput;
+    public boolean getProducePartialOutputWhileProcessing() {
+        return this.producePartialOutputWhileProcessing;
     }
 
 
     /**
      * <p>
-     *   Sets whether Thymeleaf should fully process and render a template (e.g. into HTML)
-     *   before starting to send any results to the clients (e.g. browsers).
+     *   Sets whether Thymeleaf should start producing output &ndash;and sending it to the web server's output
+     *   buffers&ndash; as soon as possible, outputting partial results while processing as they become available so
+     *   that they can potentially be sent to the client (browser) before processing of the whole template has
+     *   completely finished.
      * </p>
      * <p>
-     *   If set to {@code true}, no fragments of template result will be sent to the web server's
+     *   If set to {@code false}, no fragments of template result will be sent to the web server's
      *   output buffers until Thymeleaf completely finishes processing the template and generating
      *   the corresponding output. Only once finished will output start to be written to the web server's
-     *   output buffers, and therefore sent to the browser.
+     *   output buffers, and therefore sent to the clients.
      * </p>
      * <p>
-     *   Note that setting this to {@code true} is <strong>not recommended for most
-     *   scenarios</strong>, as it can significantly increase the amount of memory used per
+     *   Note that setting this to {@code false} is <strong>not recommended for most
+     *   scenarios</strong>, as it can (very) significantly increase the amount of memory used per
      *   template execution. Only modify this setting if you know what you are doing. A typical
-     *   reason for exploring the effects of setting this to {@code true} is suffering from UI
-     *   rendering issues at the browser due to incremental rendering of very large templates.
+     *   scenario in which setting this to {@code false} could be of use is when an application is
+     *   suffering from UI rendering issues (flickering) at the browser due to incremental
+     *   rendering of very large templates.
      * </p>
      * <p>
-     *   Default value is {@code false}.
+     *   Default value is {@code true}.
      * </p>
      *
-     * @param fullProcessingBeforeOutput whether to process and render templates in full before sending
-     *            results or not (default: {@code false}).
+     * @param producePartialOutputWhileProcessing whether to start producing output as soon as possible while
+     *                                            processing or not (default: {@code true}).
      * @since 3.0.10
      */
-    public void setFullProcessingBeforeOutput(final boolean fullProcessingBeforeOutput) {
-        this.fullProcessingBeforeOutput = fullProcessingBeforeOutput;
+    public void setProducePartialOutputWhileProcessing(final boolean producePartialOutputWhileProcessing) {
+        this.producePartialOutputWhileProcessing = producePartialOutputWhileProcessing;
     }
 
 
@@ -874,8 +879,8 @@ public class ThymeleafViewResolver
         if (view.getCharacterEncoding() == null && getCharacterEncoding() != null) {
             view.setCharacterEncoding(getCharacterEncoding());
         }
-        if (!view.isFullProcessingBeforeOutputSet()) {
-            view.setFullProcessingBeforeOutput(getFullProcessingBeforeOutput());
+        if (!view.isProducePartialOutputWhileProcessingSet()) {
+            view.setProducePartialOutputWhileProcessing(getProducePartialOutputWhileProcessing());
         }
         
         return view;
