@@ -9,6 +9,10 @@
   SpringTemplateEngine) in order to instruct th:field to render the <input type="hidden" ...> associated with
   checkbox fields before the checkbox itself and not after, in order to improve compatibility with several CSS-based
   frameworks.
+- Added a "fullProcessingBeforeOutput" flag to ThymeleafView and ThymeleafViewResolver in order to be able to
+  specify that Thymeleaf should only start sending results to the web browser's output buffers when processing and
+  rendering of the template is completely finished, so no partial template processing results are sent to browsers
+  while the template is still being processed (default: false).
 - Added "Automatic-Module-Name: thymeleaf-spring4" to MANIFEST.MF for Java 9+ JPMS.
 
 

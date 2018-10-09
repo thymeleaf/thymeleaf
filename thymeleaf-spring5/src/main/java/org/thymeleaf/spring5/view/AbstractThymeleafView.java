@@ -62,15 +62,24 @@ public abstract class AbstractThymeleafView
      * </p>
      */
     public static final String DEFAULT_CONTENT_TYPE = "text/html;charset=ISO-8859-1";
-    
 
-    
+    /**
+     * <p>
+     *   By default Thymeleaf will not wait until a template is fully processed and rendered before
+     *   starting to output its results.
+     * </p>
+     */
+    public static final boolean DEFAULT_FULL_PROCESSING_BEFORE_OUTPUT = false;
+
+
     private String beanName = null;
     private String contentType = DEFAULT_CONTENT_TYPE;
     private boolean contentTypeSet = false;
     private boolean forceContentType = false;
     private boolean forceContentTypeSet = false;
     private String characterEncoding = null;
+    private boolean fullProcessingBeforeOutput = DEFAULT_FULL_PROCESSING_BEFORE_OUTPUT;
+    private boolean fullProcessingBeforeOutputSet = false;
     private ISpringTemplateEngine templateEngine = null;
 	private String templateName = null;
     private Locale locale = null;
@@ -258,6 +267,80 @@ public abstract class AbstractThymeleafView
     public void setCharacterEncoding(final String characterEncoding) {
         this.characterEncoding = characterEncoding;
     }
+
+
+    /**
+     * <p>
+     *   Returns whether Thymeleaf should fully process and render a template (e.g. into HTML)
+     *   before starting to send any results to the clients (e.g. browsers).
+     * </p>
+     * <p>
+     *   If set to {@code true}, no fragments of template result will be sent to the web server's
+     *   output buffers until Thymeleaf completely finishes processing the template and generating
+     *   the corresponding output. Only once finished will output start to be written to the web server's
+     *   output buffers, and therefore sent to the browser.
+     * </p>
+     * <p>
+     *   Note that setting this to {@code true} is <strong>not recommended for most
+     *   scenarios</strong>, as it can significantly increase the amount of memory used per
+     *   template execution. Only modify this setting if you know what you are doing. A typical
+     *   reason for exploring the effects of setting this to {@code true} is suffering from UI
+     *   rendering issues at the browser due to incremental rendering of very large templates.
+     * </p>
+     * <p>
+     *   Default value is {@code false}.
+     * </p>
+     *
+     * @return whether to process and render templates in full before sending results or not
+     *         (default: {@code false}).
+     * @since 3.0.10
+     */
+    public boolean getFullProcessingBeforeOutput() {
+        return this.fullProcessingBeforeOutput;
+    }
+
+
+    /**
+     * <p>
+     *   Sets whether Thymeleaf should fully process and render a template (e.g. into HTML)
+     *   before starting to send any results to the clients (e.g. browsers).
+     * </p>
+     * <p>
+     *   If set to {@code true}, no fragments of template result will be sent to the web server's
+     *   output buffers until Thymeleaf completely finishes processing the template and generating
+     *   the corresponding output. Only once finished will output start to be written to the web server's
+     *   output buffers, and therefore sent to the browser.
+     * </p>
+     * <p>
+     *   Note that setting this to {@code true} is <strong>not recommended for most
+     *   scenarios</strong>, as it can significantly increase the amount of memory used per
+     *   template execution. Only modify this setting if you know what you are doing. A typical
+     *   reason for exploring the effects of setting this to {@code true} is suffering from UI
+     *   rendering issues at the browser due to incremental rendering of very large templates.
+     * </p>
+     * <p>
+     *   Default value is {@code false}.
+     * </p>
+     *
+     * @param fullProcessingBeforeOutput whether to process and render templates in full before sending
+     *            results or not (default: {@code false}).
+     * @since 3.0.10
+     */
+    public void setFullProcessingBeforeOutput(final boolean fullProcessingBeforeOutput) {
+        this.fullProcessingBeforeOutput = fullProcessingBeforeOutput;
+        this.fullProcessingBeforeOutputSet = true;
+    }
+
+
+    /*
+     * Internally used (by ThymeleafViewResolver) in order to know whether a value
+     * for the "full processing before output" flag has been explicitly set or not.
+     * @since 3.0.10
+     */
+    protected boolean isFullProcessingBeforeOutputSet() {
+        return this.fullProcessingBeforeOutputSet;
+    }
+
 
     
     

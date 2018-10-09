@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.spring3.view;
 
+import java.io.Writer;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -48,6 +49,7 @@ import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.util.FastStringWriter;
 
 
 /**
@@ -349,9 +351,20 @@ public class ThymeleafView
             }
 
         }
-        
-        viewTemplateEngine.process(templateName, processMarkupSelectors, context, response.getWriter());
-        
+
+        final boolean fullProcessingBeforeOutput = getFullProcessingBeforeOutput();
+
+        // If we have chosen to not output anything until processing finishes, we will use a buffer
+        final Writer templateWriter =
+                (fullProcessingBeforeOutput? new FastStringWriter(1024) : response.getWriter());
+
+        viewTemplateEngine.process(templateName, processMarkupSelectors, context, templateWriter);
+
+        // If a buffer was used, write it to the web server's output buffers all at once
+        if (fullProcessingBeforeOutput) {
+            response.getWriter().write(templateWriter.toString());
+        }
+
     }
 
 

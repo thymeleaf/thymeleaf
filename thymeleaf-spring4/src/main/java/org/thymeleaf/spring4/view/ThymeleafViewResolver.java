@@ -94,7 +94,9 @@ public class ThymeleafViewResolver
 
     private boolean alwaysProcessRedirectAndForward = true;
 
-    private Class<? extends AbstractThymeleafView> viewClass = ThymeleafView.class;   
+    private boolean fullProcessingBeforeOutput = AbstractThymeleafView.DEFAULT_FULL_PROCESSING_BEFORE_OUTPUT;
+
+    private Class<? extends AbstractThymeleafView> viewClass = ThymeleafView.class;
     private String[] viewNames = null;
     private String[] excludedViewNames = null;
     private int order = Integer.MAX_VALUE;
@@ -591,6 +593,71 @@ public class ThymeleafViewResolver
 
 
 
+
+    /**
+     * <p>
+     *   Returns whether Thymeleaf should fully process and render a template (e.g. into HTML)
+     *   before starting to send any results to the clients (e.g. browsers).
+     * </p>
+     * <p>
+     *   If set to {@code true}, no fragments of template result will be sent to the web server's
+     *   output buffers until Thymeleaf completely finishes processing the template and generating
+     *   the corresponding output. Only once finished will output start to be written to the web server's
+     *   output buffers, and therefore sent to the browser.
+     * </p>
+     * <p>
+     *   Note that setting this to {@code true} is <strong>not recommended for most
+     *   scenarios</strong>, as it can significantly increase the amount of memory used per
+     *   template execution. Only modify this setting if you know what you are doing. A typical
+     *   reason for exploring the effects of setting this to {@code true} is suffering from UI
+     *   rendering issues at the browser due to incremental rendering of very large templates.
+     * </p>
+     * <p>
+     *   Default value is {@code false}.
+     * </p>
+     *
+     * @return whether to process and render templates in full before sending results or not
+     *         (default: {@code false}).
+     * @since 3.0.10
+     */
+    public boolean getFullProcessingBeforeOutput() {
+        return this.fullProcessingBeforeOutput;
+    }
+
+
+    /**
+     * <p>
+     *   Sets whether Thymeleaf should fully process and render a template (e.g. into HTML)
+     *   before starting to send any results to the clients (e.g. browsers).
+     * </p>
+     * <p>
+     *   If set to {@code true}, no fragments of template result will be sent to the web server's
+     *   output buffers until Thymeleaf completely finishes processing the template and generating
+     *   the corresponding output. Only once finished will output start to be written to the web server's
+     *   output buffers, and therefore sent to the browser.
+     * </p>
+     * <p>
+     *   Note that setting this to {@code true} is <strong>not recommended for most
+     *   scenarios</strong>, as it can significantly increase the amount of memory used per
+     *   template execution. Only modify this setting if you know what you are doing. A typical
+     *   reason for exploring the effects of setting this to {@code true} is suffering from UI
+     *   rendering issues at the browser due to incremental rendering of very large templates.
+     * </p>
+     * <p>
+     *   Default value is {@code false}.
+     * </p>
+     *
+     * @param fullProcessingBeforeOutput whether to process and render templates in full before sending
+     *            results or not (default: {@code false}).
+     * @since 3.0.10
+     */
+    public void setFullProcessingBeforeOutput(final boolean fullProcessingBeforeOutput) {
+        this.fullProcessingBeforeOutput = fullProcessingBeforeOutput;
+    }
+
+
+
+
     /**
      * <p>
      *   Specify a set of name patterns that will applied to determine whether a view name
@@ -818,7 +885,10 @@ public class ThymeleafViewResolver
         if (view.getCharacterEncoding() == null && getCharacterEncoding() != null) {
             view.setCharacterEncoding(getCharacterEncoding());
         }
-        
+        if (!view.isFullProcessingBeforeOutputSet()) {
+            view.setFullProcessingBeforeOutput(getFullProcessingBeforeOutput());
+        }
+
         return view;
         
     }
