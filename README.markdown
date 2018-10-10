@@ -14,7 +14,7 @@ This is an auxiliary testing library, not directly a part of the Thymeleaf core 
 
 Current versions:
 
-  * **3.0.3.RELEASE** - for Thymeleaf 3.0 (requires 3.0.4+)
+  * **3.0.4.RELEASE** - for Thymeleaf 3.0 (requires 3.0.4+)
   * **2.1.4.RELEASE** - for Thymeleaf 2.1 (requires 2.1.2+)
 
 
