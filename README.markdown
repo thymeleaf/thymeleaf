@@ -110,8 +110,9 @@ can use the `sec:*` attributes and special expression utility objects:
 And that's all!
 
 **NOTE**: If we are using Thymeleaf in a Spring Boot application, all that will be needed is to add the
-corresponding Thymeleaf and Spring Security starters to our application, and this integration module and
-its corresponding dialect will be automatically configured for us.
+corresponding Thymeleaf and Spring Security starters to our application as well as the 
+`thymeleaf-extras-springsecurity[3|4|5]` dependency, and this dialect will be automatically 
+configured for us.
 
 
 	
