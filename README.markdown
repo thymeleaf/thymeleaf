@@ -37,8 +37,8 @@ Requirements (3.0.x)
 
   *   Thymeleaf **3.0.10+**
   *   Spring Framework version **3.0.x** to **5.1.x**
-  *   Spring Security version **3.0.x** to **5.0.x**
-  *   Web environment (Spring Security integration cannot work offline)
+  *   Spring Security version **3.0.x** to **5.1.x**
+  *   Web environment (Spring Security integration cannot work offline). Works with both Spring MVC and Spring WebFlux.
 
 
 Maven info
@@ -54,14 +54,14 @@ Maven info
 Distribution packages
 ---------------------
 
-Distribution packages (binaries + sources + javadoc) can be downloaded from [SourceForge](http://sourceforge.net/projects/thymeleaf/files/thymeleaf-extras-springsecurity/).
+Distribution packages (binaries + sources + javadoc) can be downloaded from [bintray](https://dl.bintray.com/thymeleaf/downloads).
 
 
 Features
 --------
 
 This module provides a new dialect called `org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect`, 
-`org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect` or 
+`org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect` or 
 `org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect` (depending on the Spring Security version),
 with default prefix `sec`. It includes:
   
@@ -87,20 +87,20 @@ with default prefix `sec`. It includes:
 Configuration
 -------------
 
-In order to use the thymeleaf-extras-springsecurity3 or thymeleaf-extras-springsecurity4 
-modules in our Spring MVC application,
+In order to use the thymeleaf-extras-springsecurity[3|4|5] modules in our Spring MVC application
+(or thymeleaf-extras-springsecurity5 in a Spring WebFlux application),
 we will first need to configure our application in the usual way for
 Spring + Thymeleaf applications (*TemplateEngine* bean, *template resolvers*, 
 etc.), and add the SpringSecurity dialect to our Template Engine so that we
 can use the `sec:*` attributes and special expression utility objects:
 
 ```xml
-    <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+    <bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
       ...
       <property name="additionalDialects">
         <set>
-          <!-- Note the package would change to 'springsecurity3' if you are using that version -->
-          <bean class="org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect"/>
+          <!-- Note the package would change to 'springsecurity[3|4]' if you are using that version -->
+          <bean class="org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect"/>
         </set>
       </property>
 	  ...
@@ -109,7 +109,9 @@ can use the `sec:*` attributes and special expression utility objects:
 
 And that's all!
 
-
+**NOTE**: If we are using Thymeleaf in a Spring Boot application, all that will be needed is to add the
+corresponding Thymeleaf and Spring Security starters to our application, and this integration module and
+its corresponding dialect will be automatically configured for us.
 
 
 	
@@ -218,7 +220,7 @@ to be thymeleaf *Standard Expressions*.
 
 ### Namespace
 
-The namespace for both Spring 3 and 4 versions of this dialect is `http://www.thymeleaf.org/extras/spring-security`.
+The namespace for all versions of this dialect is `http://www.thymeleaf.org/extras/spring-security`.
 
 ```html
 	<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
