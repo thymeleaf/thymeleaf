@@ -1,3 +1,9 @@
+3.0.11
+======
+- Fixed JPMS "Automatic-Module-Name" entry in MANIFEST.MF: Was "thymeleaf-spring5" but hyphen is a forbidden
+  character. New value is "thymeleaf.spring5".
+
+
 3.0.10
 ======
 - Fixed th:field executing before th:remove and therefore potentially executing the ConversionService and the
