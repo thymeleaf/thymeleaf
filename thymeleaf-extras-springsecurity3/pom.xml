@@ -118,7 +118,8 @@
     <maven.compile.target>1.6</maven.compile.target>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <!-- A project-name-based approach is adopted for the module name (instead of a reverse-DNS one) -->
-    <module.name>${project.artifactId}</module.name>
+    <!-- Note this name is computed from the artifactID by means of a Groovy plugin during init.     -->
+    <module.name>${project.automaticmodulename}</module.name>
     <servlet-api.version>2.5</servlet-api.version>
     <thymeleaf.version>3.0.10.RELEASE</thymeleaf.version>
     <springsecurity.version>3.1.3.RELEASE</springsecurity.version>
@@ -234,6 +235,39 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.gmavenplus</groupId>
+        <artifactId>gmavenplus-plugin</artifactId>
+        <version>1.6.2</version>
+        <executions>
+          <execution>
+            <phase>initialize</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <scripts>
+            <!-- This script is meant to initialise a project property to be used as an automatic  -->
+            <!-- module name. This is computed from the artifactID, replacing '-' forbidden chars. -->
+            <script>
+              def automaticmodulename = "${project.artifactId}".replace('-', '.')
+              project.properties.setProperty('project.automaticmodulename', automaticmodulename)
+            </script>
+          </scripts>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>2.5.3</version>
+            <scope>runtime</scope>
+            <type>pom</type>
+          </dependency>
+        </dependencies>
       </plugin>
 
       <plugin>

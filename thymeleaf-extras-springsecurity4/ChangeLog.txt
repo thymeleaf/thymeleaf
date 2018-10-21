@@ -1,3 +1,9 @@
+3.0.4
+=====
+- Fixed JPMS "Automatic-Module-Name" entry in MANIFEST.MF: Was "thymeleaf-extras-springsecurity4" but hyphen
+  is a forbidden character. New value is "thymeleaf.extras.springsecurity4".
+
+
 3.0.3
 =====
 - Improved instances of static class loading by making references package-relative for better resilience
