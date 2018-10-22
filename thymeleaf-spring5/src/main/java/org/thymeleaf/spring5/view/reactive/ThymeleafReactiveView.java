@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -335,6 +336,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
         // Process the execution attributes and look for possible reactive objects that should be added for resolution
 
+        Map<String,Object> enrichedModel = null;
         for (final String executionAttributeName : executionAttributes.keySet()) {
 
             if (executionAttributeName != null && executionAttributeName.startsWith(REACTIVE_MODEL_ADDITIONS_EXECUTION_ATTRIBUTE_PREFIX)) {
@@ -358,13 +360,18 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
                     }
                 }
 
-                ((Map<String,Object>)model).put(modelAttributeName, modelAttributeValue);
+                if (enrichedModel == null) {
+                    enrichedModel = new LinkedHashMap<>(model);
+                }
+                enrichedModel.put(modelAttributeName, modelAttributeValue);
 
             }
 
         }
 
-        return super.render(model, contentType, exchange);
+        enrichedModel = (enrichedModel != null ? enrichedModel : (Map<String,Object>)model);
+
+        return super.render(enrichedModel, contentType, exchange);
 
     }
 
