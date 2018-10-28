@@ -1,3 +1,8 @@
+3.0.11
+======
+- Updated jackson-databind dependency to 2.9.7 (due to vulnerabilities in previous jackson version).
+
+
 3.0.10
 ======
 - Fixed StackOverflowError when inserting content before first element of model in a model processor.
