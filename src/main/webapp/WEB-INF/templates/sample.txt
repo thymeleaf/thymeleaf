@@ -1,4 +1,0 @@
-[# th:with="result=${value}*2"]
-  [(${result})]
-  [(${#numbers.formatDecimal(result,1,2)})]
-[/]
