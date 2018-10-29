@@ -21,7 +21,7 @@ This repository contains 3 projects:
 
 Current versions: 
 
-  * **Version 3.0.3.RELEASE** - for Thymeleaf 3.0 (requires Thymeleaf 3.0.10+)
+  * **Version 3.0.4.RELEASE** - for Thymeleaf 3.0 (requires Thymeleaf 3.0.10+)
   * **Version 2.1.3.RELEASE** - for Thymeleaf 2.1 (requires Thymeleaf 2.1.2+)
 
 
