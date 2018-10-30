@@ -42,7 +42,7 @@ import org.thymeleaf.util.Validate;
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
 public final class ClassLoaderTemplateResource implements ITemplateResource {
 
@@ -119,6 +119,20 @@ public final class ClassLoaderTemplateResource implements ITemplateResource {
 
     public Reader reader() throws IOException {
 
+        final InputStream inputStream = inputStream();
+
+        if (!StringUtils.isEmptyOrWhitespace(this.characterEncoding)) {
+            return new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream), this.characterEncoding));
+        }
+
+        return new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream)));
+
+    }
+
+
+
+
+    public InputStream inputStream() throws IOException {
         final InputStream inputStream;
         if (this.optionalClassLoader != null) {
             inputStream = this.optionalClassLoader.getResourceAsStream(this.path);
@@ -129,13 +143,7 @@ public final class ClassLoaderTemplateResource implements ITemplateResource {
         if (inputStream == null) {
             throw new FileNotFoundException(String.format("ClassLoader resource \"%s\" could not be resolved", this.path));
         }
-
-        if (!StringUtils.isEmptyOrWhitespace(this.characterEncoding)) {
-            return new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream), this.characterEncoding));
-        }
-
-        return new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream)));
-
+        return inputStream;
     }
 
 

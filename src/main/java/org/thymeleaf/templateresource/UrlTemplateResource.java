@@ -48,7 +48,7 @@ import org.thymeleaf.util.Validate;
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
 public final class UrlTemplateResource implements ITemplateResource, Serializable {
 
@@ -115,7 +115,7 @@ public final class UrlTemplateResource implements ITemplateResource, Serializabl
 
 
 
-    private InputStream inputStream() throws IOException {
+    public InputStream inputStream() throws IOException {
 
         final URLConnection connection = this.url.openConnection();
         if (connection.getClass().getSimpleName().startsWith("JNLP")) {

@@ -45,7 +45,7 @@ import org.thymeleaf.util.Validate;
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
 public final class ServletContextTemplateResource implements ITemplateResource {
 
@@ -90,10 +90,7 @@ public final class ServletContextTemplateResource implements ITemplateResource {
 
     public Reader reader() throws IOException {
 
-        final InputStream inputStream = this.servletContext.getResourceAsStream(this.path);
-        if (inputStream == null) {
-            throw new FileNotFoundException(String.format("ServletContext resource \"%s\" does not exist", this.path));
-        }
+        final InputStream inputStream = inputStream();
 
         if (!StringUtils.isEmptyOrWhitespace(this.characterEncoding)) {
             return new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream), this.characterEncoding));
@@ -101,6 +98,17 @@ public final class ServletContextTemplateResource implements ITemplateResource {
 
         return new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream)));
 
+    }
+
+
+
+
+    public InputStream inputStream() throws IOException {
+        InputStream inputStream = this.servletContext.getResourceAsStream(this.path);
+        if (inputStream == null) {
+            throw new FileNotFoundException(String.format("ServletContext resource \"%s\" does not exist", this.path));
+        }
+        return inputStream;
     }
 
 

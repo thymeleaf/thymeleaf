@@ -19,7 +19,9 @@
  */
 package org.thymeleaf.templateresource;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -37,7 +39,7 @@ import org.thymeleaf.util.Validate;
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
 public final class StringTemplateResource implements ITemplateResource {
 
@@ -73,6 +75,13 @@ public final class StringTemplateResource implements ITemplateResource {
 
     public Reader reader() throws IOException {
         return new StringReader(this.resource);
+    }
+
+
+
+
+    public InputStream inputStream() throws IOException {
+        return new ByteArrayInputStream(this.resource.getBytes("UTF-8"));
     }
 
 
