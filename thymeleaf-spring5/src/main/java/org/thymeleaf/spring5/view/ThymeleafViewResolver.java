@@ -776,7 +776,7 @@ public class ThymeleafViewResolver
             vrlogger.trace("[THYMELEAF] View \"{}\" is a redirect, and will not be handled directly by ThymeleafViewResolver.", viewName);
             final String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length(), viewName.length());
             final RedirectView view = new RedirectView(redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible());
-            return (View) getApplicationContext().getAutowireCapableBeanFactory().initializeBean(view, viewName);
+            return (View) getApplicationContext().getAutowireCapableBeanFactory().initializeBean(view, REDIRECT_URL_PREFIX);
         }
         // Process forwards (to JSP resources)
         if (viewName.startsWith(FORWARD_URL_PREFIX)) {
