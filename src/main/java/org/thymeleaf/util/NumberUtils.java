@@ -223,7 +223,7 @@ public final class NumberUtils {
         Validate.notNull(thousandsPointType, "Thousands point type cannot be null");
         Validate.notNull(locale, "Locale cannot be null");
         
-        final DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        final DecimalFormatSymbols symbols = new DecimalFormatSymbols(locale);
         
         switch (decimalPointType) {
             case POINT :
