@@ -107,8 +107,7 @@
     <ognl.version>3.1.12</ognl.version>
     <attoparser.version>2.0.5.RELEASE</attoparser.version>
     <unbescape.version>1.1.6.RELEASE</unbescape.version>
-    <jackson-databind.version>2.9.9.2</jackson-databind.version>
-    <jackson-datatype.version>2.9.9</jackson-datatype.version>
+    <jackson.version>2.11.0</jackson.version>
     <slf4j.version>1.7.25</slf4j.version>
   </properties>
 
@@ -339,7 +338,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${jackson-databind.version}</version>
+      <version>${jackson.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -347,7 +346,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
-      <version>${jackson-datatype.version}</version>
+      <version>${jackson.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
