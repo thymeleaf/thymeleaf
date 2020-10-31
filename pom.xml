@@ -189,22 +189,6 @@
           <archive>
             <addMavenDescriptor>false</addMavenDescriptor>
             <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-<!--            <manifest>-->
-<!--              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>-->
-<!--              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>-->
-<!--            </manifest>-->
-<!--            <manifestEntries>-->
-<!--              &lt;!&ndash; These two entries are non-standard, specified by the Apache Software Foundation in &ndash;&gt;-->
-<!--              &lt;!&ndash; their release preparation procedures as a way to pass this information on to the   &ndash;&gt;-->
-<!--              &lt;!&ndash; library users. See: http://commons.apache.org/releases/prepare.html                &ndash;&gt;-->
-<!--              <X-Compile-Source-JDK>${maven.compile.source}</X-Compile-Source-JDK>-->
-<!--              <X-Compile-Target-JDK>${maven.compile.target}</X-Compile-Target-JDK>-->
-<!--              &lt;!&ndash; Set the Built-By attribute in MANIFEST.MF to avoid displaying specific user names. &ndash;&gt;-->
-<!--              <Built-By>thymeleaf</Built-By>-->
-<!--              &lt;!&ndash; Setting this automatic module name will fix the module name used by unbescape even &ndash;&gt;-->
-<!--              &lt;!&ndash; if the library is not yet fully modularised.                                       &ndash;&gt;-->
-<!--              <Automatic-Module-Name>${module.name}</Automatic-Module-Name>-->
-<!--            </manifestEntries>-->
           </archive>
         </configuration>
       </plugin>
