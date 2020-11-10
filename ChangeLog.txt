@@ -1,6 +1,6 @@
 3.0.12
 ======
-- Updated jackson-databind to 2.9.9.2 and jackson-datatype to 2.9.9 (due to vulnerabilities in previous versions).
+- Updated jackson-databind to 2.11.0 and jackson-datatype to 2.11.0 (due to vulnerabilities in previous versions).
 
 
 3.0.11
