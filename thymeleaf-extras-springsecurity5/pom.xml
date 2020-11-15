@@ -114,9 +114,11 @@
 
 
   <properties>
-    <maven.compile.source>8</maven.compile.source>
-    <maven.compile.target>8</maven.compile.target>
-    <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+    <java.version>8</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <maven.compiler.release>${java.version}</maven.compiler.release>
+    <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
     <!-- A project-name-based approach is adopted for the module name (instead of a reverse-DNS one) -->
     <!-- Note this name is computed from the artifactID by means of a Groovy plugin during init.     -->
     <module.name>${project.automaticmodulename}</module.name>
@@ -159,11 +161,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
-        <configuration>
-          <source>${maven.compile.source}</source>
-          <target>${maven.compile.target}</target>
-          <encoding>${project.build.sourceEncoding}</encoding>
-        </configuration>
       </plugin>
 
       <plugin>
@@ -190,8 +187,8 @@
               <!-- These two entries are non-standard, specified by the Apache Software Foundation in -->
               <!-- their release preparation procedures as a way to pass this information on to the   -->
               <!-- library users. See: http://commons.apache.org/releases/prepare.html                -->
-              <X-Compile-Source-JDK>${maven.compile.source}</X-Compile-Source-JDK>
-              <X-Compile-Target-JDK>${maven.compile.target}</X-Compile-Target-JDK>
+              <X-Compile-Source-JDK>${maven.compiler.source}</X-Compile-Source-JDK>
+              <X-Compile-Target-JDK>${maven.compiler.target}</X-Compile-Target-JDK>
               <!-- Set the Built-By attribute in MANIFEST.MF to avoid displaying specific user names. -->
               <Built-By>thymeleaf</Built-By>
               <!-- Setting this automatic module name will fix the module name used by unbescape even -->
@@ -209,7 +206,7 @@
         <configuration>
           <show>protected</show>
           <noqualifier>java.lang</noqualifier>
-          <source>${maven.compile.source}</source>
+          <source>${maven.compiler.source}</source>
           <overview>${basedir}/src/main/javadoc/overview.html</overview>
           <javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
           <reportOutputDirectory>${project.reporting.outputDirectory}/api/${project.artifactId}/apidocs</reportOutputDirectory>
