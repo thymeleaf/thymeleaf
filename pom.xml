@@ -76,7 +76,12 @@
       </roles>
     </developer>
   </developers>
-  
+
+  <properties>
+    <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
+  </properties>
+
+
   <repositories>
     <repository>
       <id>sonatype-nexus-snapshots</id>
@@ -107,18 +112,27 @@
       </testResource>
     </testResources>
     
-    <plugins>        
-    
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <encoding>${project.build.sourceEncoding}</encoding>
+        </configuration>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>2.1</version>
+        <version>3.9.1</version>
       </plugin>
       
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2-beta-5</version>
+        <version>3.3.0</version>
         <executions>
           <execution>
             <id>make-assembly-dist</id>
