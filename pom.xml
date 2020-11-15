@@ -215,6 +215,7 @@
         <configuration>
           <show>protected</show>
           <noqualifier>java.lang</noqualifier>
+          <source>${maven.compile.source}</source>
           <overview>${basedir}/src/main/javadoc/overview.html</overview>
           <javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
           <reportOutputDirectory>${project.reporting.outputDirectory}/api/${project.artifactId}/apidocs</reportOutputDirectory>
