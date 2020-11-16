@@ -111,6 +111,7 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven.compiler.release>${java.version}</maven.compiler.release>
     <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
+    <project.build.propertiesEncoding>ISO-8859-1</project.build.propertiesEncoding>
     <!-- A project-name-based approach is adopted for the module name (instead of a reverse-DNS one) -->
     <!-- NOTE module name is fixed and not set to project.artifactId because this would not be a     -->
     <!-- valid approach for project names containing hyphens, which are not allowed in module names. -->
@@ -160,6 +161,7 @@
         <version>3.2.0</version>
         <configuration>
           <encoding>${project.build.sourceEncoding}</encoding>
+          <propertiesEncoding>${project.build.propertiesEncoding}</propertiesEncoding>
         </configuration>
       </plugin>
 
