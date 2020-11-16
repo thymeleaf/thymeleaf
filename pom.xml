@@ -107,7 +107,7 @@
     <!-- valid approach for project names containing hyphens, which are not allowed in module names. -->
     <module.name>thymeleaf</module.name>
     <servlet-api.version>2.5</servlet-api.version>
-    <ognl.version>3.1.12</ognl.version>
+    <ognl.version>3.1.26</ognl.version>
     <attoparser.version>2.0.5.RELEASE</attoparser.version>
     <unbescape.version>1.1.6.RELEASE</unbescape.version>
     <jackson.version>2.11.3</jackson.version>

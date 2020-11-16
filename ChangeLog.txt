@@ -1,6 +1,7 @@
 3.0.12
 ======
 - Fixed "package-list" not being produced for JavaDoc since JDK 11 started being used for compiling the project.
+- Updated OGNL dependency to 3.1.26.
 - Updated jackson-databind to 2.11.3 and jackson-datatype to 2.11.3 (due to vulnerabilities in previous versions).
 
 
