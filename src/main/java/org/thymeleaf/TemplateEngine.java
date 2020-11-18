@@ -176,7 +176,7 @@ import org.thymeleaf.util.Validate;
  *   {@link javax.servlet.ServletContext} objects as constructor arguments: 
  * </p>
  * <code>
- *   final IContext ctx = new WebContext(request, response, servletContext);<br>
+ *   final WebContext ctx = new WebContext(request, response, servletContext);<br>
  *   ctx.setVariable("allItems", items);
  * </code>
  * <p>
