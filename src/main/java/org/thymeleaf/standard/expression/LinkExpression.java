@@ -269,6 +269,8 @@ public final class LinkExpression extends SimpleExpression {
         }
         if (base == null || StringUtils.isEmptyOrWhitespace((String) base)) {
             base = "";
+        } else {
+            base = ((String) base).trim();
         }
 
         /*
