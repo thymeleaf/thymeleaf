@@ -70,8 +70,8 @@ public final class VersionUtils {
                         qualifierSeparator = Character.valueOf(ver.charAt(endOfNumericVersionIdx));
                         qualifier = ver.substring(endOfNumericVersionIdx + 1);
                         if (qualifier == null || qualifier.trim().length() == 0) {
-                            throw new IllegalStateException(String.format(
-                                    "Cannot parse version '%s' as it ends with a separator", ver));
+                            // Build an UNKNOWN version
+                            return new VersionSpec(buildTimestamp);
                         }
                     }
                 }
@@ -101,9 +101,8 @@ public final class VersionUtils {
                 return new VersionSpec(major, minor, patch, qualifierSeparator, qualifier, buildTimestamp);
 
             } catch (final Exception e) {
-                throw new ExceptionInInitializerError(String.format(
-                        "Exception during parsing of version. Identified version is '%s', which " +
-                        "does not follow the {major}[.{minor}][.{patch}][.|-]{qualifier} scheme", version));
+                // Build an UNKNOWN version
+                return new VersionSpec(buildTimestamp);
             }
 
         }
