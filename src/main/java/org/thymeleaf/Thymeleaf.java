@@ -22,6 +22,7 @@ package org.thymeleaf;
 import java.util.Properties;
 
 import org.thymeleaf.util.ClassLoaderUtils;
+import org.thymeleaf.util.VersionUtils;
 
 
 /**
@@ -36,13 +37,35 @@ import org.thymeleaf.util.ClassLoaderUtils;
  */
 public final class Thymeleaf {
 
-    public static final String VERSION;
-    public static final String BUILD_TIMESTAMP;
+    private static final String STABLE_RELEASE_QUALIFIER = "RELEASE";
 
+    /**
+     * @deprecated Deprecated in 3.0.12. Use {@link #getVersion()} instead. Will be removed in Thymeleaf 3.1.
+     */
+    public static final String VERSION;
+    /**
+     * @deprecated Deprecated in 3.0.12. Use {@link #getBuildTimestamp()} instead. Will be removed in Thymeleaf 3.1.
+     */
+    public static final String BUILD_TIMESTAMP;
+    /**
+     * @deprecated Deprecated in 3.0.12. Use {@link #getVersionMajor()} instead. Will be removed in Thymeleaf 3.1.
+     */
     public static final int VERSION_MAJOR;
+    /**
+     * @deprecated Deprecated in 3.0.12. Use {@link #getVersionMinor()} instead. Will be removed in Thymeleaf 3.1.
+     */
     public static final int VERSION_MINOR;
+    /**
+     * @deprecated Deprecated in 3.0.12. Use {@link #getVersionPatch()} instead. Will be removed in Thymeleaf 3.1.
+     */
     public static final int VERSION_BUILD;
+    /**
+     * @deprecated Deprecated in 3.0.12. Use {@link #getVersionQualifier()} instead. Will be removed in Thymeleaf 3.1.
+     */
     public static final String VERSION_TYPE;
+
+
+    private static final VersionUtils.VersionSpec VERSION_SPEC;
 
 
     static {
@@ -58,51 +81,51 @@ public final class Thymeleaf {
             // Ignored: we don't have such information, might be due to IDE configuration
         }
 
-        VERSION = version;
-        BUILD_TIMESTAMP = buildTimestamp;
 
-        if (VERSION == null || VERSION.trim().length() == 0) {
+        VERSION_SPEC = VersionUtils.parseVersion(version, buildTimestamp);
 
-            VERSION_MAJOR = 0;
-            VERSION_MINOR = 0;
-            VERSION_BUILD = 0;
-            VERSION_TYPE = "UNKNOWN";
-
-        } else {
-
-            try {
-
-                String versionRemainder = VERSION;
-
-                int separatorIdx = versionRemainder.indexOf('.');
-                VERSION_MAJOR = Integer.parseInt(versionRemainder.substring(0,separatorIdx));
-                versionRemainder = versionRemainder.substring(separatorIdx + 1);
-
-                separatorIdx = versionRemainder.indexOf('.');
-                VERSION_MINOR = Integer.parseInt(versionRemainder.substring(0, separatorIdx));
-                versionRemainder = versionRemainder.substring(separatorIdx + 1);
-
-                separatorIdx = versionRemainder.indexOf('.');
-                if (separatorIdx < 0) {
-                    separatorIdx = versionRemainder.indexOf('-');
-                }
-                VERSION_BUILD = Integer.parseInt(versionRemainder.substring(0, separatorIdx));
-                VERSION_TYPE = versionRemainder.substring(separatorIdx + 1);
-
-            } catch (final Exception e) {
-                throw new ExceptionInInitializerError(
-                        "Exception during initialization of Thymeleaf versioning utilities. Identified Thymeleaf " +
-                        "version is '" + VERSION + "', which does not follow the {major}.{minor}.{build}[.|-]{type} " +
-                        "scheme");
-            }
-
-        }
+        VERSION = VERSION_SPEC.getVersion();
+        BUILD_TIMESTAMP = VERSION_SPEC.getBuildTimestamp();
+        VERSION_MAJOR = VERSION_SPEC.getMajor();
+        VERSION_MINOR = VERSION_SPEC.getMinor();
+        VERSION_BUILD = VERSION_SPEC.getPatch();
+        VERSION_TYPE = VERSION_SPEC.getQualifier();
 
     }
 
 
+
+
+
+
+
+    public static String getVersion() {
+        return VERSION_SPEC.getVersion();
+    }
+
+    public static String getBuildTimestamp() {
+        return VERSION_SPEC.getBuildTimestamp();
+    }
+
+    public static int getVersionMajor() {
+        return VERSION_SPEC.getMajor();
+    }
+
+    public static int getVersionMinor() {
+        return VERSION_SPEC.getMinor();
+    }
+
+    public static int getVersionPatch() {
+        return VERSION_SPEC.getPatch();
+    }
+
+    public static String getVersionQualifier() {
+        return VERSION_SPEC.getQualifier();
+    }
+
+
     public static boolean isVersionStableRelease() {
-        return "RELEASE".equals(VERSION_TYPE);
+        return STABLE_RELEASE_QUALIFIER.equals(VERSION_SPEC.getQualifier());
     }
 
 
