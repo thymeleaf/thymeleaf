@@ -90,6 +90,9 @@ public final class SpringVersionUtils {
 
 
 
+    public static String getSpringVersion() {
+        return SPRING_VERSION_SPEC.getVersion();
+    }
 
     public static int getSpringVersionMajor() {
         return SPRING_VERSION_SPEC.getMajor();
