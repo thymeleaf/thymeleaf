@@ -109,6 +109,7 @@ public class Mvc {
     public static interface MethodArgumentBuilderWrapper {
 
         public MethodArgumentBuilderWrapper arg(int index, Object value);
+        public MethodArgumentBuilderWrapper encode();
         public String build();
         public String buildAndExpand(Object... uriVariables);
 
@@ -128,6 +129,16 @@ public class Mvc {
 
         public MethodArgumentBuilderWrapper arg(final int index, final Object value) {
             return new Spring41MethodArgumentBuilderWrapper(this.builder.arg(index, value));
+        }
+
+        public MethodArgumentBuilderWrapper encode() {
+            if (!SpringVersionUtils.isSpringAtLeast(5,0,8)) {
+                throw new IllegalStateException(String.format(
+                        "At least Spring version 5.0.8.RELEASE is needed for executing " +
+                        "MvcUriComponentsBuilder#encode() but detected Spring version is %s.",
+                        SpringVersionUtils.getSpringVersion()));
+            }
+            return new Spring41MethodArgumentBuilderWrapper(this.builder.encode());
         }
 
         public String build() {
