@@ -223,7 +223,7 @@ public final class NumberUtils {
         Validate.notNull(thousandsPointType, "Thousands point type cannot be null");
         Validate.notNull(locale, "Locale cannot be null");
         
-        final DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        final DecimalFormatSymbols symbols = new DecimalFormatSymbols(locale);
         
         switch (decimalPointType) {
             case POINT :
@@ -236,8 +236,7 @@ public final class NumberUtils {
                 symbols.setDecimalSeparator(' ');
                 break;
             case DEFAULT :
-                final DecimalFormatSymbols dfs = new DecimalFormatSymbols(locale);
-                symbols.setDecimalSeparator(dfs.getDecimalSeparator());
+                // No changes needed to the "symbols" variable defined above
                 break;
             case NONE :
                 // This should never happen
@@ -255,8 +254,7 @@ public final class NumberUtils {
                 symbols.setGroupingSeparator(' ');
                 break;
             case DEFAULT :
-                final DecimalFormatSymbols dfs = new DecimalFormatSymbols(locale);
-                symbols.setGroupingSeparator(dfs.getGroupingSeparator());
+                // No changes needed to the "symbols" variable defined above
                 break;
             case NONE :
                 // This should never be shown
