@@ -1,5 +1,6 @@
 3.0.12
 ======
+- Fixed memory leak at ThymeleafViewResolver when redirects were being performed to dynamically built URLs.
 - Added encode() method to the #mvc expression utility object.
 
 

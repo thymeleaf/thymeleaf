@@ -1,3 +1,8 @@
+3.0.12
+======
+- Fixed memory leak at ThymeleafViewResolver when redirects were being performed to dynamically built URLs.
+
+
 3.0.11
 ======
 - Fixed JPMS "Automatic-Module-Name" entry in MANIFEST.MF: Was "thymeleaf-spring3" but hyphen is a forbidden
