@@ -973,7 +973,7 @@ public class ThymeleafReactiveViewResolver
             final String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length());
             final RedirectView view = this.redirectViewProvider.apply(redirectUrl);
             final RedirectView initializedView =
-                    (RedirectView) getApplicationContext().getAutowireCapableBeanFactory().initializeBean(view, viewName);
+                    (RedirectView) getApplicationContext().getAutowireCapableBeanFactory().initializeBean(view, REDIRECT_URL_PREFIX);
             return Mono.just(initializedView);
         }
         // Process forwards (to JSP resources)
