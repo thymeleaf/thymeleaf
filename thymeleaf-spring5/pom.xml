@@ -117,7 +117,7 @@
     <!-- valid approach for project names containing hyphens, which are not allowed in module names. -->
     <module.name>thymeleaf.spring5</module.name>
     <springframework.version>5.0.8.RELEASE</springframework.version>
-    <springwebflow.version>2.4.4.RELEASE</springwebflow.version>
+    <springwebflow.version>2.5.0.RELEASE</springwebflow.version>
     <slf4j.version>1.7.25</slf4j.version>
   </properties>
 
@@ -379,14 +379,6 @@
     <dependency>
       <groupId>org.springframework.webflow</groupId>
       <artifactId>spring-webflow</artifactId>
-      <version>${springwebflow.version}</version>
-      <scope>provided</scope>
-      <optional>true</optional>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.webflow</groupId>
-      <artifactId>spring-js</artifactId>
       <version>${springwebflow.version}</version>
       <scope>provided</scope>
       <optional>true</optional>

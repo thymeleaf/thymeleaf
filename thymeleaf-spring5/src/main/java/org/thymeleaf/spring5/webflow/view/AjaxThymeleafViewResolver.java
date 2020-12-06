@@ -27,10 +27,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.js.ajax.AjaxHandler;
-import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.webflow.context.servlet.AjaxHandler;
+import org.springframework.webflow.context.servlet.DefaultAjaxHandler;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
@@ -57,7 +57,7 @@ public class AjaxThymeleafViewResolver
     private static final Logger vrlogger = LoggerFactory.getLogger(AjaxThymeleafViewResolver.class);
     
 
-    private AjaxHandler ajaxHandler = new SpringJavascriptAjaxHandler();
+    private AjaxHandler ajaxHandler = new DefaultAjaxHandler();
 
 
 
@@ -73,7 +73,7 @@ public class AjaxThymeleafViewResolver
      *   in views resolved by this resolver.
      * </p>
      * <p>
-     *   An instance of {@link SpringJavascriptAjaxHandler} is set by default.
+     *   An instance of {@link DefaultAjaxHandler} is set by default.
      * </p>
      * 
      * @return the AJAX handler.
@@ -90,7 +90,7 @@ public class AjaxThymeleafViewResolver
      *   in views resolved by this resolver.
      * </p>
      * <p>
-     *   An instance of {@link SpringJavascriptAjaxHandler} is set by default.
+     *   An instance of {@link DefaultAjaxHandler} is set by default.
      * </p>
      * 
      * @param ajaxHandler the AJAX handler.
@@ -149,7 +149,7 @@ public class AjaxThymeleafViewResolver
         
         private static final Logger vlogger = LoggerFactory.getLogger(AjaxRedirectView.class);
 
-        private AjaxHandler ajaxHandler = new SpringJavascriptAjaxHandler();
+        private AjaxHandler ajaxHandler = new DefaultAjaxHandler();
 
         AjaxRedirectView(final AjaxHandler ajaxHandler, final String redirectUrl,
                 final boolean redirectContextRelative, final boolean redirectHttp10Compatible) {

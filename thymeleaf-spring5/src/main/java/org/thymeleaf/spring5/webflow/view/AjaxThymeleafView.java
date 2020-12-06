@@ -30,8 +30,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.util.StringUtils;
+import org.springframework.webflow.context.servlet.AjaxHandler;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.spring5.view.ThymeleafView;
 

@@ -19,8 +19,8 @@
  */
 package org.thymeleaf.spring5.webflow.view;
 
-import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.web.servlet.View;
+import org.springframework.webflow.context.servlet.AjaxHandler;
 
 
 /**
