@@ -120,7 +120,7 @@ public final class OGNLVariableExpressionEvaluator
             }
 
             final ComputedOGNLExpression parsedExpression =
-                    obtainComputedOGNLExpression(configuration, expression, exp, applyOGNLShortcuts);
+                    obtainComputedOGNLExpression(configuration, expression, exp, expContext, applyOGNLShortcuts);
 
             final Map<String,Object> contextVariablesMap;
             if (parsedExpression.mightNeedExpressionObjects) {
@@ -197,7 +197,9 @@ public final class OGNLVariableExpressionEvaluator
 
     
     private static ComputedOGNLExpression obtainComputedOGNLExpression(
-            final IEngineConfiguration configuration, final IStandardVariableExpression expression, final String exp,
+            final IEngineConfiguration configuration,
+            final IStandardVariableExpression expression, final String exp,
+            final StandardExpressionExecutionContext expContext,
             final boolean applyOGNLShortcuts) throws OgnlException {
 
         if (expression instanceof VariableExpression) {
@@ -208,7 +210,7 @@ public final class OGNLVariableExpressionEvaluator
             if (cachedExpression != null && cachedExpression instanceof ComputedOGNLExpression) {
                 return (ComputedOGNLExpression) cachedExpression;
             }
-            cachedExpression = parseComputedOGNLExpression(configuration, exp, applyOGNLShortcuts);
+            cachedExpression = parseComputedOGNLExpression(configuration, exp, expContext, applyOGNLShortcuts);
             if (cachedExpression != null) {
                 vexpression.setCachedExpression(cachedExpression);
             }
@@ -224,7 +226,7 @@ public final class OGNLVariableExpressionEvaluator
             if (cachedExpression != null && cachedExpression instanceof ComputedOGNLExpression) {
                 return (ComputedOGNLExpression) cachedExpression;
             }
-            cachedExpression = parseComputedOGNLExpression(configuration, exp, applyOGNLShortcuts);
+            cachedExpression = parseComputedOGNLExpression(configuration, exp, expContext, applyOGNLShortcuts);
             if (cachedExpression != null) {
                 vexpression.setCachedExpression(cachedExpression);
             }
@@ -232,13 +234,15 @@ public final class OGNLVariableExpressionEvaluator
 
         }
 
-        return parseComputedOGNLExpression(configuration, exp, applyOGNLShortcuts);
+        return parseComputedOGNLExpression(configuration, exp, expContext, applyOGNLShortcuts);
 
     }
 
 
     private static ComputedOGNLExpression parseComputedOGNLExpression(
-            final IEngineConfiguration configuration, final String exp, final boolean applyOGNLShortcuts)
+            final IEngineConfiguration configuration,
+            final String exp, final StandardExpressionExecutionContext expContext,
+            final boolean applyOGNLShortcuts)
             throws OgnlException {
 
         ComputedOGNLExpression parsedExpression =
@@ -247,7 +251,7 @@ public final class OGNLVariableExpressionEvaluator
             return parsedExpression;
         }
         // The result of parsing might be an OGNL expression AST or a ShortcutOGNLExpression (for simple cases)
-        parsedExpression = parseExpression(exp, applyOGNLShortcuts);
+        parsedExpression = parseExpression(exp, expContext, applyOGNLShortcuts);
         ExpressionCache.putIntoCache(configuration, exp, parsedExpression, EXPRESSION_CACHE_TYPE_OGNL);
         return parsedExpression;
 
@@ -283,8 +287,16 @@ public final class OGNLVariableExpressionEvaluator
 
 
 
-    private static ComputedOGNLExpression parseExpression(final String expression, final boolean applyOGNLShortcuts)
+    private static ComputedOGNLExpression parseExpression(
+            final String expression, final StandardExpressionExecutionContext expContext,
+            final boolean applyOGNLShortcuts)
             throws OgnlException {
+
+        if (expContext.getRestrictInstantiationAndStatic()
+                && StandardExpressionUtils.containsOGNLInstantiationOrStatic(expression)) {
+            throw new TemplateProcessingException(
+                    "Instantiation of new objects and access to static classes is forbidden in this context");
+        }
 
         final boolean mightNeedExpressionObjects = StandardExpressionUtils.mightNeedExpressionObjects(expression);
 
