@@ -73,6 +73,10 @@ public final class StandardExpressionUtils {
     }
 
 
+    /**
+     *
+     * @since 3.0.12
+     */
     public static boolean containsOGNLInstantiationOrStatic(final String expression) {
 
         /*
