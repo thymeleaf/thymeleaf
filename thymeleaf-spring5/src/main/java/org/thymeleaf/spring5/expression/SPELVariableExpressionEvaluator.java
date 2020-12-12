@@ -39,6 +39,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.spring5.context.IThymeleafBindStatus;
 import org.thymeleaf.spring5.util.FieldUtils;
+import org.thymeleaf.spring5.util.SpringStandardExpressionUtils;
 import org.thymeleaf.spring5.util.SpringValueFormatter;
 import org.thymeleaf.spring5.util.SpringVersionUtils;
 import org.thymeleaf.standard.expression.IStandardConversionService;
@@ -177,7 +178,8 @@ public class SPELVariableExpressionEvaluator
             /*
              * OBTAIN THE EXPRESSION (SpelExpression OBJECT) FROM THE CACHE, OR PARSE IT
              */
-            final ComputedSpelExpression exp = obtainComputedSpelExpression(configuration, expression, spelExpression);
+            final ComputedSpelExpression exp =
+                    obtainComputedSpelExpression(configuration, expression, spelExpression, expContext);
 
 
             /*
@@ -298,7 +300,9 @@ public class SPELVariableExpressionEvaluator
 
 
     private static ComputedSpelExpression obtainComputedSpelExpression(
-            final IEngineConfiguration configuration, final IStandardVariableExpression expression, final String spelExpression) {
+            final IEngineConfiguration configuration,
+            final IStandardVariableExpression expression, final String spelExpression,
+            final StandardExpressionExecutionContext expContext) {
 
         if (expression instanceof VariableExpression) {
 
@@ -308,7 +312,7 @@ public class SPELVariableExpressionEvaluator
             if (cachedExpression != null && cachedExpression instanceof ComputedSpelExpression) {
                 return (ComputedSpelExpression) cachedExpression;
             }
-            cachedExpression = getExpression(configuration, spelExpression);
+            cachedExpression = getExpression(configuration, spelExpression, expContext);
             if (cachedExpression != null) {
                 vexpression.setCachedExpression(cachedExpression);
             }
@@ -324,7 +328,7 @@ public class SPELVariableExpressionEvaluator
             if (cachedExpression != null && cachedExpression instanceof ComputedSpelExpression) {
                 return (ComputedSpelExpression) cachedExpression;
             }
-            cachedExpression = getExpression(configuration, spelExpression);
+            cachedExpression = getExpression(configuration, spelExpression, expContext);
             if (cachedExpression != null) {
                 vexpression.setCachedExpression(cachedExpression);
             }
@@ -332,12 +336,14 @@ public class SPELVariableExpressionEvaluator
 
         }
 
-        return getExpression(configuration, spelExpression);
+        return getExpression(configuration, spelExpression, expContext);
 
     }
 
 
-    private static ComputedSpelExpression getExpression(final IEngineConfiguration configuration, final String spelExpression) {
+    private static ComputedSpelExpression getExpression(
+            final IEngineConfiguration configuration,
+            final String spelExpression, final StandardExpressionExecutionContext expContext) {
 
         ComputedSpelExpression exp = null;
         ICache<ExpressionCacheKey, Object> cache = null;
@@ -357,8 +363,15 @@ public class SPELVariableExpressionEvaluator
                     PARSER_WITH_COMPILED_SPEL != null && SpringStandardExpressions.isSpringELCompilerEnabled(configuration)?
                             PARSER_WITH_COMPILED_SPEL : PARSER_WITHOUT_COMPILED_SPEL;
 
-            final SpelExpression spelExpressionObject = (SpelExpression) spelExpressionParser.parseExpression(spelExpression);
+            if (expContext.getRestrictInstantiationAndStatic()
+                    && SpringStandardExpressionUtils.containsSpELInstantiationOrStatic(spelExpression)) {
+                throw new TemplateProcessingException(
+                        "Instantiation of new objects and access to static classes is forbidden in this context");
+            }
+
             final boolean mightNeedExpressionObjects = StandardExpressionUtils.mightNeedExpressionObjects(spelExpression);
+
+            final SpelExpression spelExpressionObject = (SpelExpression) spelExpressionParser.parseExpression(spelExpression);
 
             exp = new ComputedSpelExpression(spelExpressionObject, mightNeedExpressionObjects);
 

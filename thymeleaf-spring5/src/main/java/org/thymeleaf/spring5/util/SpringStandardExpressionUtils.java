@@ -26,7 +26,7 @@ package org.thymeleaf.spring5.util;
  * @since 3.0.12
  *
  */
-public final class SpringExpressionUtils {
+public final class SpringStandardExpressionUtils {
 
 
     private static final char[] NEW_ARRAY = "wen".toCharArray(); // Inverted "new"
@@ -37,7 +37,7 @@ public final class SpringExpressionUtils {
 
         /*
          * Checks whether the expression contains instantiation of objects ("new SomeClass") or makes use of
-         * static methods ("@SomeClass@") as both are forbidden in certain contexts in restricted mode.
+         * static methods ("T(SomeClass)") as both are forbidden in certain contexts in restricted mode.
          */
 
         final int explen = expression.length();
@@ -95,7 +95,7 @@ public final class SpringExpressionUtils {
 
 
 
-    private SpringExpressionUtils() {
+    private SpringStandardExpressionUtils() {
         super();
     }
 
