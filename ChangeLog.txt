@@ -3,6 +3,7 @@
 - Fixed #numbers.format*() expression utility methods not producing numbers using the correct digit symbols for
   locales that use them, in JDK versions where NumberFormat does this (currently >= JDK15).
 - Fixed "package-list" not being produced for JavaDoc since JDK 11 started being used for compiling the project.
+- Added instantiation of new objects and calls to static classes as forbidden operations in restricted mode.
 - Updated OGNL dependency to 3.1.26.
 - Updated jackson-databind to 2.11.3 and jackson-datatype to 2.11.3 (due to vulnerabilities in previous versions).
 
