@@ -1,6 +1,7 @@
 3.0.12
 ======
 - Fixed memory leak at ThymeleafViewResolver when redirects were being performed to dynamically built URLs.
+- Added instantiation of new objects and calls to static classes as forbidden operations in restricted mode.
 
 
 3.0.11
