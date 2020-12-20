@@ -45,6 +45,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring4.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring4.naming.SpringContextVariableNames;
 import org.thymeleaf.spring4.util.SpringContentTypeUtils;
+import org.thymeleaf.spring4.util.SpringRequestUtils;
 import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
@@ -267,6 +268,10 @@ public class ThymeleafView
 
         } else {
             // Template name contains a fragment name, so we should parse it as such
+
+            // A check must be made that the template name is not included in the URL, so that we make sure
+            // no code to be executed comes from direct user input.
+            SpringRequestUtils.checkViewNameNotInRequest(viewTemplateName, request);
 
             final IStandardExpressionParser parser = StandardExpressions.getExpressionParser(configuration);
 

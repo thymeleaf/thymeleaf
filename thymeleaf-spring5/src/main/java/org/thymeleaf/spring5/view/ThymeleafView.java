@@ -46,6 +46,7 @@ import org.thymeleaf.spring5.context.webmvc.SpringWebMvcThymeleafRequestContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 import org.thymeleaf.spring5.util.SpringContentTypeUtils;
+import org.thymeleaf.spring5.util.SpringRequestUtils;
 import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
@@ -209,7 +210,6 @@ public class ThymeleafView
             throw new IllegalArgumentException("Property 'templateEngine' is required");
         }
 
-
         final Map<String, Object> mergedModel = new HashMap<String, Object>(30);
         final Map<String, Object> templateStaticVariables = getStaticVariables();
         if (templateStaticVariables != null) {
@@ -269,6 +269,10 @@ public class ThymeleafView
 
         } else {
             // Template name contains a fragment name, so we should parse it as such
+
+            // A check must be made that the template name is not included in the URL, so that we make sure
+            // no code to be executed comes from direct user input.
+            SpringRequestUtils.checkViewNameNotInRequest(viewTemplateName, request);
 
             final IStandardExpressionParser parser = StandardExpressions.getExpressionParser(configuration);
 

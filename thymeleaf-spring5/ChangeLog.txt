@@ -1,6 +1,8 @@
 3.0.12
 ======
 - Fixed memory leak at ThymeleafViewResolver when redirects were being performed to dynamically built URLs.
+- Forbidden execution of view names as a fragment expressions if such view name is contained in the URL path
+  or query parameters.
 - Added instantiation of new objects and calls to static classes as forbidden operations in restricted mode.
 - Added encode() method to the #mvc expression utility object.
 - Adapted Spring WebFlow support to Spring WebFlow 2.5 after changes in API (WebFlow 2.5.0+ is now required).
