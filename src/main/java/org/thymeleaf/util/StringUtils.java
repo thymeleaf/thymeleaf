@@ -552,6 +552,39 @@ public final class StringUtils {
 
 
     /**
+     * Removes all whitespaces and control chars at all positions, and
+     * transforms to lower case.
+     *
+     * @param target the string to be packed
+     * @return the packed string
+     *
+     * @since 3.0.12
+     */
+    public static String pack(final String target) {
+        if (target == null) {
+            return null;
+        }
+        final int targetLen = target.length();
+        StringBuilder strBuilder = null;
+        char c;
+        for (int i = 0; i < targetLen; i++) {
+            c = target.charAt(i);
+            if (Character.isWhitespace(c) || c <= ' ') {
+                if (strBuilder == null) {
+                    strBuilder = new StringBuilder();
+                    strBuilder.append(target, 0, i);
+                }
+            } else {
+                if (strBuilder != null) {
+                    strBuilder.append(c);
+                }
+            }
+        }
+        return (strBuilder == null) ? target.toLowerCase() : strBuilder.toString().toLowerCase();
+    }
+
+
+    /**
      * <p>
      * Convert the first letter of target to uppercase (title-case, in fact).
      * </p>
