@@ -26,7 +26,7 @@
   <groupId>org.thymeleaf</groupId>
   <artifactId>thymeleaf</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.12-SNAPSHOT</version>
+  <version>3.0.12.RELEASE</version>
   <name>thymeleaf</name>
   <url>http://www.thymeleaf.org</url>
 
@@ -49,7 +49,7 @@
     <url>scm:git:git@github.com:thymeleaf/thymeleaf.git</url>
     <connection>scm:git:git@github.com:thymeleaf/thymeleaf.git</connection>
     <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>thymeleaf-3.0.12.RELEASE</tag>
   </scm>
 
   <developers>
@@ -240,7 +240,7 @@
         <version>3.0.0</version>
         <executions>
           <!-- Copy javadoc's "element-list" file to "package-list" in order to allow projects    -->
-          <!-- using versions of the javadoc tool < JDK9 to properly link to Thymeleaf's javadoc  -->
+          <!-- using versions of the javadoc tool < JDK9 to properly link to Thymeleaf's javadoc -->
           <!-- as an external link.                                                               -->
           <!-- NOTE this modifies the javadoc AFTER the creation of the jar as it is not possible -->
           <!-- to do so by previously configuring javadoc:javadoc in the prepare-package phase    -->
@@ -254,9 +254,7 @@
             </goals>
             <configuration>
               <target name="copy javadocs element-list to package-list">
-                <copy file="${project.build.directory}/apidocs/element-list"
-                      tofile="${project.build.directory}/apidocs/package-list"
-                      failonerror="false"/>
+                <copy file="${project.build.directory}/apidocs/element-list" tofile="${project.build.directory}/apidocs/package-list" failonerror="false" />
               </target>
             </configuration>
           </execution>
