@@ -118,7 +118,7 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven.compiler.release>${java.version}</maven.compiler.release>
     <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
-    <thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
+    <thymeleaf.version>3.0.12.RELEASE</thymeleaf.version>
     <thymeleafspringsecurity5.version>3.0.3.RELEASE</thymeleafspringsecurity5.version>
     <springframework.version>5.1.0.RELEASE</springframework.version>
     <springsecurity.version>5.1.0.RELEASE</springsecurity.version>
