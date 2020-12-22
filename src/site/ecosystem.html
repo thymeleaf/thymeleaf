@@ -14,11 +14,14 @@
 	<link rel="stylesheet" href="styles/thymeleaf.css" media="screen"/>
 
 	<script src="https://unpkg.com/dumb-query-selector@3.0.0/dumb-query-selector.js" defer></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/components/prism-core.min.js" defer data-manual></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/components/prism-markup.min.js" defer></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/components/prism-clike.min.js" defer></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/components/prism-java.min.js" defer></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/plugins/line-numbers/prism-line-numbers.min.js" defer></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/prism.min.js" data-manual
+		defer integrity="sha256-HWJnMZHGx7U1jmNfxe4yaQedmpo/mtxWSIXvcJkLIf4=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/plugins/unescaped-markup/prism-unescaped-markup.js"
+		defer integrity="sha256-THYQfN3ZkC8QQ5I4JxslpEaXIT7tUakaV9/e69MYEuU=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/plugins/normalize-whitespace/prism-normalize-whitespace.min.js"
+		defer integrity="sha256-abVQckxqXkWO8NiZk8TBPHzv3/LObzIqzzQWz0kV0F0=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/plugins/line-numbers/prism-line-numbers.js"
+		defer integrity="sha256-ISWqAwOAxClmLCu22st3+xU4+kVYHrE8jdn6ONzjg5Q=" crossorigin="anonymous"></script>
 	<script src="scripts/thymeleaf.js" defer></script>
 </head>
 
@@ -117,7 +120,33 @@
 
 					<p>Test specifications can be as simple as this:</p>
 
-					<pre><code class="language-html" data-src="testing-example"></code></pre>
+					<pre><code class="language-html"><!--
+						%TEMPLATE_MODE HTML5
+						# ------------ separator comment -----------
+						%CONTEXT
+						onevar = "Goodbye,"
+						# ------------------------------------------
+						%MESSAGES
+						one.msg = Crisis
+						# ------------------------------------------
+						%INPUT
+						<!DOCTYPE html>
+						<html>
+							<body>
+								<span th:text="${onevar}">Hello,</span>
+								<span th:text="#{one.msg}">World!</span>
+							</body>
+						</html>
+						# ------------------------------------------
+						%OUTPUT
+						<!DOCTYPE html>
+						<html>
+						<body>
+							<span>Goodbye,</span>
+							<span>Crisis</span>
+						</body>
+						</html>
+					--></code></pre>
 				</section>
 
 				<section class="subsection">
@@ -183,12 +212,36 @@
 					templates, or even only fragments of them (in the usual
 					<code>th:include</code> notation):</p>
 
-					<pre><code class="language-xml" data-src="tiles-example-1"></code></pre>
+					<pre><code class="language-xml"><!--
+						<tiles-definitions>
+							...
+							<definition name="main" template="basic_layout">
+								<put-attribute name="content">
+									<definition template="basic_contentlayout :: content">
+										<put-attribute name="text" value="main :: text" />
+									</definition>
+								</put-attribute>
+								<put-attribute name="side" value="${config.sideColumnTemplate}" />
+							</definition>
+							...
+						</tiles-definitions>
+					--></code></pre>
 
 					<p>...and templates can call the Thymeleaf Tiles Dialect to include
 					other parts of the layout:</p>
 
-					<pre><code class="language-html" data-src="tiles-example-2"></code></pre>
+					<pre><code class="language-html"><!--
+						<html xmlns:th="http://www.thymeleaf.org" xmlns:tiles="http://www.thymeleaf.org">
+						...
+						<body>
+							...
+							<div tiles:include="side">
+								some prototyping markup over here...
+							</div>
+							...
+						</body>
+						</html>
+					--></code></pre>
 				</section>
 
 				<section class="subsection">
@@ -223,12 +276,20 @@
 					<p>With this library, role-based access restrictions defined in Spring
 					Security can be easily used:</p>
 
-					<pre><code class="language-xml" data-src="springsecurity-example-1"></code></pre>
+					<pre><code class="language-xml"><!--
+						<div sec:authorize="hasRole('ROLE_ADMIN')">
+							This will only be displayed if authenticated user has role ROLE_ADMIN.
+						</div>
+					--></code></pre>
 
 					<p>The security-related objects can also be included in your normal
 					Thymeleaf expressions:</p>
 
-					<pre><code class="language-html" data-src="springsecurity-example-2"></code></pre>
+					<pre><code class="language-html"><!--
+						<div th:text="${#authentication.name}">
+							The value of the "name" property of the authentication object should appear here.
+						</div>
+					--></code></pre>
 				</section>
 
 				<section class="subsection">
@@ -255,11 +316,21 @@
 
 					<p>IE Conditional comments look like this:</p>
 
-					<pre><code class="language-html" data-src="conditionalcomments-example-1"></code></pre>
+					<script type="text/plain" class="language-html">
+						<!--[if lt IE 8]>
+						<link rel="stylesheet" th:href="@{/resources/blueprint/ie.css}"
+							type="text/css" media="screen, projection">
+						<![endif]-->
+					</script>
 
 					<p>...and thanks to this library, they are correctly executed like:</p>
 
-					<pre><code class="language-html" data-src="conditionalcomments-example-2"></code></pre>
+					<script type="text/plain" class="language-html">
+						<!--[if lt IE 8]>
+						<link rel="stylesheet" href="/myapp/resources/blueprint/ie.css"
+							type="text/css" media="screen, projection">
+						<![endif]-->
+					</script>
 				</section>
 
 			</section>
