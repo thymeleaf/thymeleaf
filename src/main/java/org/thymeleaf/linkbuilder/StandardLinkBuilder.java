@@ -90,6 +90,8 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
         final Map<String,Object> linkParameters =
                 (parameters == null || parameters.size() == 0? null : new LinkedHashMap<String, Object>(parameters));
 
+        filterOutJavaScriptLinks(base);
+
         final LinkType linkType;
         if (isLinkBaseAbsolute(base)) {
             linkType = LinkType.ABSOLUTE;
@@ -238,6 +240,27 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
         return -1;
     }
 
+
+    private static void filterOutJavaScriptLinks(final CharSequence linkBase) {
+        if (linkBase.length() >= 11 &&
+                Character.toLowerCase(linkBase.charAt(0)) == 'j' &&
+                Character.toLowerCase(linkBase.charAt(1)) == 'a' &&
+                Character.toLowerCase(linkBase.charAt(2)) == 'v' &&
+                Character.toLowerCase(linkBase.charAt(3)) == 'a' &&
+                Character.toLowerCase(linkBase.charAt(4)) == 's' &&
+                Character.toLowerCase(linkBase.charAt(5)) == 'c' &&
+                Character.toLowerCase(linkBase.charAt(6)) == 'r' &&
+                Character.toLowerCase(linkBase.charAt(7)) == 'i' &&
+                Character.toLowerCase(linkBase.charAt(8)) == 'p' &&
+                Character.toLowerCase(linkBase.charAt(9)) == 't' &&
+                Character.toLowerCase(linkBase.charAt(10)) == ':') {
+
+            throw new TemplateProcessingException(
+                    "'javascript:' is forbidden in this context. Link expressions cannot " +
+                    "contain inlined JavaScript code.");
+
+        }
+    }
 
 
     

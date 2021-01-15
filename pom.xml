@@ -26,7 +26,7 @@
   <groupId>org.thymeleaf</groupId>
   <artifactId>thymeleaf</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.12-SNAPSHOT</version>
+  <version>3.0.13-SNAPSHOT</version>
   <name>thymeleaf</name>
   <url>http://www.thymeleaf.org</url>
 
@@ -94,20 +94,24 @@
   </distributionManagement>
 
   <properties>
-    <maven.compile.source>1.6</maven.compile.source>
-    <maven.compile.target>1.6</maven.compile.target>
+    <java.version>6</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <maven.compiler.release>${java.version}</maven.compiler.release>
     <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
+    <project.build.propertiesEncoding>ISO-8859-1</project.build.propertiesEncoding>
     <!-- These are needed for showing the build timestamp correctly at the thymeleaf.properties file -->
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
     <!-- A project-name-based approach is adopted for the module name (instead of a reverse-DNS one) -->
-    <!-- Note this name is computed from the artifactID by means of a Groovy plugin during init.     -->
-    <module.name>${project.automaticmodulename}</module.name>
+    <!-- NOTE module name is fixed and not set to project.artifactId because this would not be a     -->
+    <!-- valid approach for project names containing hyphens, which are not allowed in module names. -->
+    <module.name>thymeleaf</module.name>
     <servlet-api.version>2.5</servlet-api.version>
-    <ognl.version>3.1.12</ognl.version>
+    <ognl.version>3.1.26</ognl.version>
     <attoparser.version>2.0.5.RELEASE</attoparser.version>
     <unbescape.version>1.1.6.RELEASE</unbescape.version>
-    <jackson.version>2.11.0</jackson.version>
+    <jackson.version>2.11.3</jackson.version>
     <slf4j.version>1.7.25</slf4j.version>
   </properties>
 
@@ -165,26 +169,22 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
-        <configuration>
-          <source>${maven.compile.source}</source>
-          <target>${maven.compile.target}</target>
-          <encoding>${project.build.sourceEncoding}</encoding>
-        </configuration>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.2.0</version>
         <configuration>
           <encoding>${project.build.sourceEncoding}</encoding>
+          <propertiesEncoding>${project.build.propertiesEncoding}</propertiesEncoding>
         </configuration>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.1.2</version>
+        <version>3.2.0</version>
         <configuration>
           <archive>
             <addMavenDescriptor>false</addMavenDescriptor>
@@ -196,13 +196,16 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.2.0</version>
         <configuration>
           <show>protected</show>
           <noqualifier>java.lang</noqualifier>
+          <source>${maven.compiler.source}</source>
+          <release>${maven.compiler.release}</release>
           <overview>${basedir}/src/main/javadoc/overview.html</overview>
           <javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
-          <reportOutputDirectory>${project.reporting.outputDirectory}/api/${project.artifactId}/apidocs</reportOutputDirectory>
+          <reportOutputDirectory>${project.build.directory}/apidocs</reportOutputDirectory>
+          <!-- This will avoid adding a folder level for the base module name. Note: Support removed in JDK 13 -->
           <additionalJOption>--no-module-directories</additionalJOption>
         </configuration>
         <executions>
@@ -218,7 +221,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -227,39 +230,6 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.gmavenplus</groupId>
-        <artifactId>gmavenplus-plugin</artifactId>
-        <version>1.6.2</version>
-        <executions>
-          <execution>
-            <phase>initialize</phase>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <scripts>
-            <!-- This script is meant to initialise a project property to be used as an automatic  -->
-            <!-- module name. This is computed from the artifactID, replacing '-' forbidden chars. -->
-            <script>
-              def automaticmodulename = "${project.artifactId}".replace('-', '.')
-              project.properties.setProperty('project.automaticmodulename', automaticmodulename)
-            </script>
-          </scripts>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>2.5.3</version>
-            <scope>runtime</scope>
-            <type>pom</type>
-          </dependency>
-        </dependencies>
       </plugin>
 
       <plugin>
@@ -275,6 +245,12 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.8.2</version>
       </plugin>
 
       <plugin>
@@ -295,6 +271,38 @@
           </execution>
         </executions>
       </plugin>
+
+      <!-- IMPORTANT: This plugin should always appear AFTER maven-release-plugin in this pom.xml -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <!-- Copy javadoc's "element-list" file to "package-list" in order to allow projects    -->
+          <!-- using versions of the javadoc tool < JDK9 to properly link to Thymeleaf's javadoc  -->
+          <!-- as an external link.                                                               -->
+          <!-- NOTE this modifies the javadoc AFTER the creation of the jar as it is not possible -->
+          <!-- to do so by previously configuring javadoc:javadoc in the prepare-package phase    -->
+          <!-- because this "package-list" modification would trigger a second execution of the   -->
+          <!-- javadoc tool in the javadoc:jar goal.                                              -->
+          <execution>
+            <id>copy-javadoc-element-list-to-package-list</id>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target name="copy javadocs element-list to package-list">
+                <copy file="${project.build.directory}/apidocs/element-list"
+                      tofile="${project.build.directory}/apidocs/package-list"
+                      failonerror="false"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+
     </plugins>
 
   </build>

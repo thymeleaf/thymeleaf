@@ -40,36 +40,50 @@ package org.thymeleaf.standard.expression;
 public final class StandardExpressionExecutionContext {
 
     public static final StandardExpressionExecutionContext RESTRICTED =
-            new StandardExpressionExecutionContext(true, false,  false);
+            new StandardExpressionExecutionContext(true, true, false,  false);
     public static final StandardExpressionExecutionContext RESTRICTED_FORBID_UNSAFE_EXP_RESULTS =
-            new StandardExpressionExecutionContext(true, true,  false);
+            new StandardExpressionExecutionContext(true, true, true,  false);
     public static final StandardExpressionExecutionContext NORMAL =
-            new StandardExpressionExecutionContext(false, false, false);
+            new StandardExpressionExecutionContext(false, false, false, false);
 
     private static final StandardExpressionExecutionContext RESTRICTED_WITH_TYPE_CONVERSION =
-            new StandardExpressionExecutionContext(true, false,true);
+            new StandardExpressionExecutionContext(true, true, false,true);
     private static final StandardExpressionExecutionContext RESTRICTED_FORBID_UNSAFE_EXP_RESULTS_WITH_TYPE_CONVERSION =
-            new StandardExpressionExecutionContext(true, true,  true);
+            new StandardExpressionExecutionContext(true, true, true, true);
     private static final StandardExpressionExecutionContext NORMAL_WITH_TYPE_CONVERSION =
-            new StandardExpressionExecutionContext(false, false, true);
+            new StandardExpressionExecutionContext(false, false, false, true);
 
     private final boolean restrictVariableAccess;
+    private final boolean restrictInstantiationAndStatic;
     private final boolean forbidUnsafeExpressionResults;
     private final boolean performTypeConversion;
-    
+
     
     private StandardExpressionExecutionContext(
             final boolean restrictVariableAccess,
+            final boolean restrictInstantiationAndStatic,
             final boolean forbidUnsafeExpressionResults,
             final boolean performTypeConversion) {
         super();
         this.restrictVariableAccess = restrictVariableAccess;
+        this.restrictInstantiationAndStatic = restrictInstantiationAndStatic;
         this.forbidUnsafeExpressionResults = forbidUnsafeExpressionResults;
         this.performTypeConversion = performTypeConversion;
     }
 
     public boolean getRestrictVariableAccess() {
         return this.restrictVariableAccess;
+    }
+
+    /**
+     * Restricts whether this execution context restricts the instantiation of new objects and the
+     * access to static classes.
+     *
+     * @return Whether this restriction should be applied or not.
+     * @since 3.0.12
+     */
+    public boolean getRestrictInstantiationAndStatic() {
+        return this.restrictInstantiationAndStatic;
     }
 
     public boolean getForbidUnsafeExpressionResults() {
@@ -93,7 +107,8 @@ public final class StandardExpressionExecutionContext {
         if (this == RESTRICTED_FORBID_UNSAFE_EXP_RESULTS_WITH_TYPE_CONVERSION) {
             return RESTRICTED_FORBID_UNSAFE_EXP_RESULTS;
         }
-        return new StandardExpressionExecutionContext(getRestrictVariableAccess(), getForbidUnsafeExpressionResults(), false);
+        return new StandardExpressionExecutionContext(
+                getRestrictVariableAccess(), getRestrictInstantiationAndStatic(), getForbidUnsafeExpressionResults(), false);
     }
 
     public StandardExpressionExecutionContext withTypeConversion() {
@@ -109,7 +124,8 @@ public final class StandardExpressionExecutionContext {
         if (this == RESTRICTED_FORBID_UNSAFE_EXP_RESULTS) {
             return RESTRICTED_FORBID_UNSAFE_EXP_RESULTS_WITH_TYPE_CONVERSION;
         }
-        return new StandardExpressionExecutionContext(getRestrictVariableAccess(), getForbidUnsafeExpressionResults(), true);
+        return new StandardExpressionExecutionContext(
+                getRestrictVariableAccess(), getRestrictInstantiationAndStatic(), getForbidUnsafeExpressionResults(), true);
     }
 
 
