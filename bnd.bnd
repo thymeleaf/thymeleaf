@@ -1,0 +1,5 @@
+X-Compile-Source-JDK: ${maven.compile.source}
+X-Compile-Target-JDK: ${maven.compile.target}
+Built-By: thymeleaf
+Automatic-Module-Name: ${module.name}
+Export-Package = org.thymeleaf*; version=${project.version}
