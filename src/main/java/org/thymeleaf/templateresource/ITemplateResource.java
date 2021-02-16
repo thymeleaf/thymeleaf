@@ -20,6 +20,7 @@
 package org.thymeleaf.templateresource;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 
 /**
@@ -58,7 +59,7 @@ import java.io.Reader;
  * @see UrlTemplateResource
  *
  * @since 3.0.0
- * 
+ *
  */
 public interface ITemplateResource {
 
@@ -135,6 +136,19 @@ public interface ITemplateResource {
      */
     public Reader reader() throws IOException;
 
+    /**
+     * <p>
+     *   Returns an {@link InputStream} that can be used for consuming the template contents as binary data.
+     * </p>
+     * <p>
+     *   Note this InputStream should be closed after being fully consumed, just like any other resources.
+     * </p>
+     *
+     * @return an {@link InputStream} on the template contents. Should never return {@code null}.
+     * @throws IOException if an input/output exception happens or if the resource does not exist (e.g.
+     *                     {@link java.io.FileNotFoundException}).
+     */
+    public InputStream inputStream() throws IOException;
 
     /**
      * <p>

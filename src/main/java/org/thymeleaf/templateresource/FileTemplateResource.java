@@ -42,7 +42,7 @@ import org.thymeleaf.util.Validate;
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
 public final class FileTemplateResource implements ITemplateResource, Serializable {
 
@@ -99,7 +99,7 @@ public final class FileTemplateResource implements ITemplateResource, Serializab
 
     public Reader reader() throws IOException {
 
-        final InputStream inputStream = new FileInputStream(this.file);
+        final InputStream inputStream = inputStream();
 
         if (!StringUtils.isEmptyOrWhitespace(this.characterEncoding)) {
             return new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream), this.characterEncoding));
@@ -107,6 +107,13 @@ public final class FileTemplateResource implements ITemplateResource, Serializab
 
         return new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream)));
 
+    }
+
+
+
+
+    public InputStream inputStream() throws IOException {
+        return new FileInputStream(this.file);
     }
 
 
