@@ -5,7 +5,7 @@ on:
   pull_request:
     types: labeled
 env:
-  MY_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   add-backlog-thymeleaf21:
     name: Add task to Thymeleaf 2.1 backlog
