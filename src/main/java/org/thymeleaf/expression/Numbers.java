@@ -20,6 +20,7 @@
 package org.thymeleaf.expression;
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -344,6 +345,17 @@ public final class Numbers {
             throw new TemplateProcessingException("Error formatting currency", e);
         }
     }
+
+    public String formatCurrency(final Number target, final Currency currency) {
+        if (target == null) {
+            return null;
+        }
+        try {
+            return NumberUtils.formatCurrency(target, this.locale, currency);
+        } catch (final Exception e) {
+            throw new TemplateProcessingException("Error formatting currency", e);
+        }
+    }
     
     public String[] arrayFormatCurrency(final Object[] target) {
         if (target == null) {
@@ -355,7 +367,18 @@ public final class Numbers {
         }
         return result;
     }
-    
+
+    public String[] arrayFormatCurrency(final Object[] target, final Currency currency) {
+        if(target == null) {
+            return null;
+        }
+        final String[] result = new String[target.length];
+        for (int i = 0; i < target.length; i++) {
+            result[i] = formatCurrency((Number) target[i], currency);
+        }
+        return result;
+    }
+
     public List<String> listFormatCurrency(final List<? extends Number> target) {
         if (target == null) {
             return null;
@@ -366,7 +389,18 @@ public final class Numbers {
         }
         return result;
     }
-    
+
+    public List<String> listFormatCurrency(final List<? extends Number> target, final Currency currency) {
+        if (target == null) {
+            return null;
+        }
+        final List<String> result = new ArrayList<String>(target.size() + 2);
+        for (final Number element : target) {
+            result.add(formatCurrency(element, currency));
+        }
+        return result;
+    }
+
     public Set<String> setFormatCurrency(final Set<? extends Number> target) {
         if (target == null) {
             return null;
@@ -374,6 +408,17 @@ public final class Numbers {
         final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatCurrency(element));
+        }
+        return result;
+    }
+
+    public Set<String> setFormatCurrency(final Set<? extends Number> target, final Currency currency) {
+        if (target == null) {
+            return null;
+        }
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
+        for (final Number element : target) {
+            result.add(formatCurrency(element, currency));
         }
         return result;
     }

@@ -1,3 +1,7 @@
+3.0.13
+======
+- Added `Numbers` functions to format numbers with a chosen currency.
+
 3.0.12
 ======
 - Fixed #numbers.format*() expression utility methods not producing numbers using the correct digit symbols for

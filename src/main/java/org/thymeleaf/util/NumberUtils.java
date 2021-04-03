@@ -23,6 +23,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 
@@ -283,6 +284,19 @@ public final class NumberUtils {
         }
 
         NumberFormat format = NumberFormat.getCurrencyInstance(locale);
+
+        return format.format(target);
+    }
+
+    public static String formatCurrency(final Number target, final Locale locale, final Currency currency) {
+        Validate.notNull(locale, "Locale cannot be null");
+        if(target == null) {
+            return null;
+        }
+
+        NumberFormat format = NumberFormat.getCurrencyInstance(locale);
+        format.setCurrency(currency);
+        format.setMaximumFractionDigits(currency.getDefaultFractionDigits());
 
         return format.format(target);
     }
