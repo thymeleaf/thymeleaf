@@ -274,6 +274,24 @@
         <version>2.5.3</version>
       </plugin>
 
+      <!-- Create Jakarta EE 9 version of artifact -->
+      <plugin>
+        <groupId>org.eclipse.transformer</groupId>
+        <artifactId>org.eclipse.transformer.maven</artifactId>
+        <version>0.2.0</version>
+        <configuration>
+          <classifier>jakarta</classifier>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+      </plugin>
+
       <!-- IMPORTANT: This plugin should always appear AFTER maven-release-plugin in this pom.xml -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
