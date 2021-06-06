@@ -27,6 +27,7 @@ import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.EscapedAttributeUtils;
 
 /**
  * Outputs a property of the authentication object, similar to the Spring
@@ -69,7 +70,9 @@ public final class AuthenticationAttrProcessor extends AbstractAttributeTagProce
             return;
         }
 
-        structureHandler.setBody(authenticationProperty.toString(), false);
+
+        String encodedAttribute = EscapedAttributeUtils.escapeAttribute(getTemplateMode(), authenticationProperty.toString());
+        structureHandler.setBody(encodedAttribute, false);
 
     }
 
