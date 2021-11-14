@@ -78,8 +78,7 @@ public final class SpringStandardExpressionUtils {
             if (c == ')') {
                 si = n;
             } else if (si > n && c == '('
-                        && ((n - 1 >= 0) && (expression.charAt(n - 1) == 'T'))
-                        && ((n - 1 == 0) || !Character.isJavaIdentifierPart(expression.charAt(n - 2)))) {
+                        && ((n - 1 >= 0) && isPreviousStaticMarker(expression, n))) {
                 return true;
             } else if (si > n && !(Character.isJavaIdentifierPart(c) || c == '.')) {
                 si = -1;
@@ -92,7 +91,19 @@ public final class SpringStandardExpressionUtils {
     }
 
 
-
+    private static boolean isPreviousStaticMarker(final String expression, final int idx) {
+        char c;
+        int n = idx;
+        while (n-- != 0) {
+            c = expression.charAt(n);
+            if (c == 'T') {
+                return (n == 0 || !Character.isJavaIdentifierPart(expression.charAt(n - 1)));
+            } else if (!Character.isWhitespace(c)) {
+                return false;
+            }
+        }
+        return false;
+    }
 
 
     private SpringStandardExpressionUtils() {
