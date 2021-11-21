@@ -52,7 +52,7 @@ public final class SpringRequestUtils {
             while (!found && paramNames.hasMoreElements()) {
                 paramValues = request.getParameterValues(paramNames.nextElement());
                 for (int i = 0; !found && i < paramValues.length; i++) {
-                    paramValue = StringUtils.pack(UriEscape.unescapeUriQueryParam(paramValues[i]));
+                    paramValue = StringUtils.pack(paramValues[i]);
                     if (paramValue.contains(vn)) {
                         found = true;
                     }
