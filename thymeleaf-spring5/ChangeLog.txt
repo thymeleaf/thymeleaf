@@ -1,3 +1,9 @@
+3.0.13
+======
+- Fixed CVE-2021-43466: Specific scenarios in template injection may lead to remote code execution.
+- Fixed incorrect double-unescaping of request parameters breaking processing of forms during restricted mode checks.
+
+
 3.0.12
 ======
 - Fixed memory leak at ThymeleafViewResolver when redirects were being performed to dynamically built URLs.
