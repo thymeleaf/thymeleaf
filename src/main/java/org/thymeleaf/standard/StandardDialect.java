@@ -125,18 +125,18 @@ public class StandardDialect
     // We will avoid setting this variableExpressionEvaluator variable to "OgnlVariableExpressionEvaluator.INSTANCE"
     // in order to not cause this OGNL-related class to initialize, therefore introducing a forced dependency on OGNL
     // to Spring users (who don't need OGNL at all).
-    private IStandardVariableExpressionEvaluator variableExpressionEvaluator = null;
+    protected IStandardVariableExpressionEvaluator variableExpressionEvaluator = null;
 
     // These variables will be initialized lazily if needed (because no value is set to them via their setters)
     // This should improve startup times (esp. Jackson for the JS serializer) and avoid losing time initializing
     // objects that might not be used after all if they are overridden via setter.
-    private IStandardExpressionParser expressionParser = null;
-    private IStandardConversionService conversionService = null;
-    private IStandardJavaScriptSerializer javaScriptSerializer = null;
-    private IStandardCSSSerializer cssSerializer = null;
+    protected IStandardExpressionParser expressionParser = null;
+    protected IStandardConversionService conversionService = null;
+    protected IStandardJavaScriptSerializer javaScriptSerializer = null;
+    protected IStandardCSSSerializer cssSerializer = null;
 
     // Note this is not settable - just lazily initialized
-    private IExpressionObjectFactory expressionObjectFactory = null;
+    protected IExpressionObjectFactory expressionObjectFactory = null;
 
 
 
