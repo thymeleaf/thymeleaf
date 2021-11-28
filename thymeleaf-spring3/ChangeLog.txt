@@ -2,6 +2,7 @@
 ======
 - Fixed CVE-2021-43466: Specific scenarios in template injection may lead to remote code execution.
 - Fixed incorrect double-unescaping of request parameters breaking processing of forms during restricted mode checks.
+- Fixed SpringStandardDialect not allowing the use of a custom IStandardConversionService.
 
 
 3.0.12

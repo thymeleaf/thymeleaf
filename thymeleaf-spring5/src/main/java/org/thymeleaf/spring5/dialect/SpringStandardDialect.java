@@ -114,10 +114,6 @@ public class SpringStandardDialect extends StandardDialect {
     private static final String WEB_SESSION_EXECUTION_ATTRIBUTE_NAME =
             "ThymeleafReactiveModelAdditions:" + SpringContextUtils.WEB_SESSION_ATTRIBUTE_NAME;
 
-    // These variables will be initialized lazily following the model applied in the extended StandardDialect.
-    private IExpressionObjectFactory expressionObjectFactory = null;
-    private IStandardConversionService conversionService = null;
-    
 
 
 
@@ -284,6 +280,12 @@ public class SpringStandardDialect extends StandardDialect {
     @Override
     public IStandardVariableExpressionEvaluator getVariableExpressionEvaluator() {
         return SPELVariableExpressionEvaluator.INSTANCE;
+    }
+
+    @Override
+    public void setVariableExpressionEvaluator(final IStandardVariableExpressionEvaluator variableExpressionEvaluator) {
+        throw new UnsupportedOperationException(
+                "Variable Expression Evaluator cannot be modified in SpringStandardDialect");
     }
 
 

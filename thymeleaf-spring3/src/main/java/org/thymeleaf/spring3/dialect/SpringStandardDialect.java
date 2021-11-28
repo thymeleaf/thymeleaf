@@ -92,10 +92,6 @@ public class SpringStandardDialect extends StandardDialect {
     private boolean renderHiddenMarkersBeforeCheckboxes = DEFAULT_RENDER_HIDDEN_MARKERS_BEFORE_CHECKBOXES;
 
 
-    // These variables will be initialized lazily following the model applied in the extended StandardDialect.
-    private IExpressionObjectFactory expressionObjectFactory = null;
-    private IStandardConversionService conversionService = null;
-    
     
     
     
@@ -172,6 +168,12 @@ public class SpringStandardDialect extends StandardDialect {
     @Override
     public IStandardVariableExpressionEvaluator getVariableExpressionEvaluator() {
         return SPELVariableExpressionEvaluator.INSTANCE;
+    }
+
+    @Override
+    public void setVariableExpressionEvaluator(final IStandardVariableExpressionEvaluator variableExpressionEvaluator) {
+        throw new UnsupportedOperationException(
+                "Variable Expression Evaluator cannot be modified in SpringStandardDialect");
     }
 
 
