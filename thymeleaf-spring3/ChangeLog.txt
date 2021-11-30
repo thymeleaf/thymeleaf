@@ -1,3 +1,9 @@
+3.0.14
+======
+- Improved detection of restricted expression execution scenarios.
+- Improved detection of restricted usages of view names in direct request input.
+
+
 3.0.13
 ======
 - Fixed CVE-2021-43466: Specific scenarios in template injection may lead to remote code execution.
