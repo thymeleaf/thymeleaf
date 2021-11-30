@@ -42,9 +42,20 @@ public final class SpringRequestUtils {
 
         final String vn = StringUtils.pack(viewName);
 
-        final String requestURI = StringUtils.pack(UriEscape.unescapeUriPath(request.getRequestURI()));
+        if (!containsExpression(vn)) {
+            // We are only worried about expressions coming from user input, so if the view name contains no
+            // expression at all, we should be safe at this stage.
+            return;
+        }
 
-        boolean found = (requestURI != null && requestURI.contains(vn));
+        boolean found = false;
+
+        final String requestURI = StringUtils.pack(UriEscape.unescapeUriPath(request.getRequestURI()));
+        if (requestURI != null && containsExpression(requestURI)) {
+            // View name contains an expression, and it seems the path does too. This is too dangerous.
+            found = true;
+        }
+
         if (!found) {
             final Enumeration<String> paramNames = request.getParameterNames();
             String[] paramValues;
@@ -53,7 +64,8 @@ public final class SpringRequestUtils {
                 paramValues = request.getParameterValues(paramNames.nextElement());
                 for (int i = 0; !found && i < paramValues.length; i++) {
                     paramValue = StringUtils.pack(paramValues[i]);
-                    if (paramValue.contains(vn)) {
+                    if (paramValue != null && containsExpression(paramValue) && vn.contains(paramValue)) {
+                        // Request parameter contains an expression, and it is contained in the view name. Too dangerous.
                         found = true;
                     }
                 }
@@ -62,12 +74,34 @@ public final class SpringRequestUtils {
 
         if (found) {
             throw new TemplateProcessingException(
-                    "View name is an executable expression, and it is present in a literal manner in " +
-                    "request path or parameters, which is forbidden for security reasons.");
+                    "View name contains an expression and so does either the URL path or one of the request " +
+                    "parameters. This is forbidden in order to reduce the possibilities that direct user input " +
+                    "is executed as a part of the view name.");
         }
 
     }
 
+
+    private static boolean containsExpression(final String text) {
+        final int textLen = text.length();
+        char c;
+        boolean expInit = false;
+        for (int i = 0; i < textLen; i++) {
+            c = text.charAt(i);
+            if (!expInit) {
+                if (c == '$' || c == '*' || c == '#' || c == '@' || c == '~') {
+                    expInit = true;
+                }
+            } else {
+                if (c == '{') {
+                    return true;
+                } else if (!Character.isWhitespace(c)) {
+                    expInit = false;
+                }
+            }
+        }
+        return false;
+    }
 
 
 

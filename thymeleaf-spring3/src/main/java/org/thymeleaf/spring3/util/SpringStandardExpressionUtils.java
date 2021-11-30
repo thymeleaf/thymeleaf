@@ -92,12 +92,16 @@ public final class SpringStandardExpressionUtils {
 
 
     private static boolean isPreviousStaticMarker(final String expression, final int idx) {
-        char c;
+        char c,c1;
         int n = idx;
         while (n-- != 0) {
             c = expression.charAt(n);
             if (c == 'T') {
-                return (n == 0 || !Character.isJavaIdentifierPart(expression.charAt(n - 1)));
+                if (n == 0) {
+                    return true;
+                }
+                c1 = expression.charAt(n - 1);
+                return !((c1 >= 'A' && c1 <= 'Z') || (c1 >= 'a' && c1 <= 'z') || (c1 >= '0' && c1 <= '9') || c1 == '_');
             } else if (!Character.isWhitespace(c)) {
                 return false;
             }
