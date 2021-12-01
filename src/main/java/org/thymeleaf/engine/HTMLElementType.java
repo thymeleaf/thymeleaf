@@ -33,7 +33,7 @@ public enum HTMLElementType {
 
     final boolean isVoid;
 
-    private HTMLElementType(final boolean voidElement) {
+    HTMLElementType(final boolean voidElement) {
         this.isVoid = voidElement;
     }
 

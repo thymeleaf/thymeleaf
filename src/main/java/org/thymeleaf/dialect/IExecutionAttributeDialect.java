@@ -30,6 +30,6 @@ import java.util.Map;
  */
 public interface IExecutionAttributeDialect extends IDialect {
 
-    public Map<String,Object> getExecutionAttributes();
+    Map<String,Object> getExecutionAttributes();
 
 }

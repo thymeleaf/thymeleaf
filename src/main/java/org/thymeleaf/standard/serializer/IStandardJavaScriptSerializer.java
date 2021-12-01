@@ -40,6 +40,6 @@ import java.io.Writer;
  */
 public interface IStandardJavaScriptSerializer {
 
-    public void serializeValue(final Object object, final Writer writer);
+    void serializeValue(final Object object, final Writer writer);
 
 }

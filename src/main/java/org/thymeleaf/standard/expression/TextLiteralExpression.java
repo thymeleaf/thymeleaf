@@ -80,9 +80,9 @@ public final class TextLiteralExpression extends SimpleExpression {
     
     @Override
     public String getStringRepresentation() {
-        return String.valueOf(DELIMITER) + 
-               this.value.getValue().replace(String.valueOf(DELIMITER),("\\" + DELIMITER)) + 
-               String.valueOf(DELIMITER);
+        return DELIMITER +
+               this.value.getValue().replace(String.valueOf(DELIMITER),("\\" + DELIMITER)) +
+                DELIMITER;
     }
 
 

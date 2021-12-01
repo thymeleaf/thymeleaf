@@ -39,7 +39,7 @@ final class ThrottledTemplateWriterWriterAdapter
     // Given we will be directly writing chars we will use a 256-char buffer as a sensible, approximate
     // measure of the amount of overflow we will need, given the only influencing factor for us is
     // the size of the structures being written to this writer (elements, texts, etc.)
-    private static int OVERFLOW_BUFFER_INCREMENT = 256;
+    private static final int OVERFLOW_BUFFER_INCREMENT = 256;
 
     private final String templateName;
     private final TemplateFlowController flowController;

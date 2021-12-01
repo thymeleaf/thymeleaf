@@ -45,7 +45,7 @@ public interface IElementModelStructureHandler {
      *   Resets all actions specified so far for the current processor execution.
      * </p>
      */
-    public void reset();
+    void reset();
 
     /**
      * <p>
@@ -55,7 +55,7 @@ public interface IElementModelStructureHandler {
      * @param name the name of the variable.
      * @param value the value of the variable.
      */
-    public void setLocalVariable(final String name, final Object value);
+    void setLocalVariable(final String name, final Object value);
 
     /**
      * <p>
@@ -64,7 +64,7 @@ public interface IElementModelStructureHandler {
      *
      * @param name the name of the variable.
      */
-    public void removeLocalVariable(final String name);
+    void removeLocalVariable(final String name);
 
     /**
      * <p>
@@ -82,7 +82,7 @@ public interface IElementModelStructureHandler {
      *
      * @param selectionTarget the selection target to be set.
      */
-    public void setSelectionTarget(final Object selectionTarget);
+    void setSelectionTarget(final Object selectionTarget);
 
     /**
      * <p>
@@ -99,7 +99,7 @@ public interface IElementModelStructureHandler {
      *
      * @param inliner the inliner.
      */
-    public void setInliner(final IInliner inliner);
+    void setInliner(final IInliner inliner);
 
     /**
      * <p>
@@ -116,8 +116,7 @@ public interface IElementModelStructureHandler {
      *
      * @param templateData the template data.
      */
-    public void setTemplateData(final TemplateData templateData);
+    void setTemplateData(final TemplateData templateData);
 
 
 }
-

@@ -32,7 +32,7 @@ import org.thymeleaf.preprocessor.IPreProcessor;
  */
 public interface IPreProcessorDialect extends IDialect {
 
-    public int getDialectPreProcessorPrecedence();
-    public Set<IPreProcessor> getPreProcessors();
+    int getDialectPreProcessorPrecedence();
+    Set<IPreProcessor> getPreProcessors();
 
 }

@@ -64,42 +64,42 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
  */
 public interface IEngineConfiguration {
 
-    public Set<ITemplateResolver> getTemplateResolvers();
-    public Set<IMessageResolver> getMessageResolvers();
-    public Set<ILinkBuilder> getLinkBuilders();
+    Set<ITemplateResolver> getTemplateResolvers();
+    Set<IMessageResolver> getMessageResolvers();
+    Set<ILinkBuilder> getLinkBuilders();
 
-    public ICacheManager getCacheManager();
+    ICacheManager getCacheManager();
 
-    public IEngineContextFactory getEngineContextFactory();
+    IEngineContextFactory getEngineContextFactory();
 
-    public IDecoupledTemplateLogicResolver getDecoupledTemplateLogicResolver();
+    IDecoupledTemplateLogicResolver getDecoupledTemplateLogicResolver();
 
-    public Set<DialectConfiguration> getDialectConfigurations();
-    public Set<IDialect> getDialects();
-    public boolean isStandardDialectPresent();
-    public String getStandardDialectPrefix();
+    Set<DialectConfiguration> getDialectConfigurations();
+    Set<IDialect> getDialects();
+    boolean isStandardDialectPresent();
+    String getStandardDialectPrefix();
 
-    public ElementDefinitions getElementDefinitions();
-    public AttributeDefinitions getAttributeDefinitions();
+    ElementDefinitions getElementDefinitions();
+    AttributeDefinitions getAttributeDefinitions();
 
-    public Set<ITemplateBoundariesProcessor> getTemplateBoundariesProcessors(final TemplateMode templateMode);
-    public Set<ICDATASectionProcessor> getCDATASectionProcessors(final TemplateMode templateMode);
-    public Set<ICommentProcessor> getCommentProcessors(final TemplateMode templateMode);
-    public Set<IDocTypeProcessor> getDocTypeProcessors(final TemplateMode templateMode);
-    public Set<IElementProcessor> getElementProcessors(final TemplateMode templateMode);
-    public Set<ITextProcessor> getTextProcessors(final TemplateMode templateMode);
-    public Set<IProcessingInstructionProcessor> getProcessingInstructionProcessors(final TemplateMode templateMode);
-    public Set<IXMLDeclarationProcessor> getXMLDeclarationProcessors(final TemplateMode templateMode);
+    Set<ITemplateBoundariesProcessor> getTemplateBoundariesProcessors(final TemplateMode templateMode);
+    Set<ICDATASectionProcessor> getCDATASectionProcessors(final TemplateMode templateMode);
+    Set<ICommentProcessor> getCommentProcessors(final TemplateMode templateMode);
+    Set<IDocTypeProcessor> getDocTypeProcessors(final TemplateMode templateMode);
+    Set<IElementProcessor> getElementProcessors(final TemplateMode templateMode);
+    Set<ITextProcessor> getTextProcessors(final TemplateMode templateMode);
+    Set<IProcessingInstructionProcessor> getProcessingInstructionProcessors(final TemplateMode templateMode);
+    Set<IXMLDeclarationProcessor> getXMLDeclarationProcessors(final TemplateMode templateMode);
 
-    public Set<IPreProcessor> getPreProcessors(final TemplateMode templateMode);
-    public Set<IPostProcessor> getPostProcessors(final TemplateMode templateMode);
+    Set<IPreProcessor> getPreProcessors(final TemplateMode templateMode);
+    Set<IPostProcessor> getPostProcessors(final TemplateMode templateMode);
 
-    public Map<String,Object> getExecutionAttributes();
+    Map<String,Object> getExecutionAttributes();
 
-    public IExpressionObjectFactory getExpressionObjectFactory();
+    IExpressionObjectFactory getExpressionObjectFactory();
 
-    public TemplateManager getTemplateManager();
+    TemplateManager getTemplateManager();
 
-    public IModelFactory getModelFactory(final TemplateMode templateMode);
+    IModelFactory getModelFactory(final TemplateMode templateMode);
 
 }

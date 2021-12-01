@@ -93,7 +93,7 @@ public interface ITemplateResolver {
      * 
      * @return the template resolver name.
      */
-    public String getName();
+    String getName();
 
     
     /**
@@ -104,7 +104,7 @@ public interface ITemplateResolver {
      * 
      * @return the order of this resolver in the chain.
      */
-    public Integer getOrder();
+    Integer getOrder();
 
 
     /**
@@ -149,7 +149,7 @@ public interface ITemplateResolver {
      * @return a TemplateResolution object (which might represent an existing resource or not), or null if the
      *         template could not be resolved.
      */
-    public TemplateResolution resolveTemplate(
+    TemplateResolution resolveTemplate(
             final IEngineConfiguration configuration,
             final String ownerTemplate, final String template,
             final Map<String, Object> templateResolutionAttributes);

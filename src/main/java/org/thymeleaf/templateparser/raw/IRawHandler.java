@@ -32,18 +32,18 @@ public interface IRawHandler {
 
 
 
-    public void handleDocumentStart(final long startTimeNanos, final int line, final int col)
+    void handleDocumentStart(final long startTimeNanos, final int line, final int col)
             throws RawParseException;
 
 
-    public void handleDocumentEnd(
+    void handleDocumentEnd(
             final long endTimeNanos, final long totalTimeNanos, final int line, final int col)
             throws RawParseException;
 
 
 
 
-    public void handleText(
+    void handleText(
             final char[] buffer,
             final int offset, final int len,
             final int line, final int col)

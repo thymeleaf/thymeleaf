@@ -105,36 +105,33 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
 
     protected static final Set<String> ALL_EXPRESSION_OBJECT_NAMES =
             Collections.unmodifiableSet(new LinkedHashSet<String>(java.util.Arrays.asList(
-                    new String[]{
-                            CONTEXT_EXPRESSION_OBJECT_NAME,
-                            ROOT_EXPRESSION_OBJECT_NAME,
-                            VARIABLES_EXPRESSION_OBJECT_NAME,
-                            SELECTION_TARGET_EXPRESSION_OBJECT_NAME,
-                            LOCALE_EXPRESSION_OBJECT_NAME,
-                            REQUEST_EXPRESSION_OBJECT_NAME,
-                            RESPONSE_EXPRESSION_OBJECT_NAME,
-                            SESSION_EXPRESSION_OBJECT_NAME,
-                            SERVLET_CONTEXT_EXPRESSION_OBJECT_NAME,
-                            CONVERSIONS_EXPRESSION_OBJECT_NAME,
-                            URIS_EXPRESSION_OBJECT_NAME,
-                            CALENDARS_EXPRESSION_OBJECT_NAME,
-                            DATES_EXPRESSION_OBJECT_NAME,
-                            BOOLS_EXPRESSION_OBJECT_NAME,
-                            NUMBERS_EXPRESSION_OBJECT_NAME,
-                            OBJECTS_EXPRESSION_OBJECT_NAME,
-                            STRINGS_EXPRESSION_OBJECT_NAME,
-                            ARRAYS_EXPRESSION_OBJECT_NAME,
-                            LISTS_EXPRESSION_OBJECT_NAME,
-                            SETS_EXPRESSION_OBJECT_NAME,
-                            MAPS_EXPRESSION_OBJECT_NAME,
-                            AGGREGATES_EXPRESSION_OBJECT_NAME,
-                            MESSAGES_EXPRESSION_OBJECT_NAME,
-                            IDS_EXPRESSION_OBJECT_NAME,
-                            EXECUTION_INFO_OBJECT_NAME,
-                            HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_NAME,
-                            HTTP_SESSION_EXPRESSION_OBJECT_NAME
-                    }
-            )));
+                    CONTEXT_EXPRESSION_OBJECT_NAME,
+                    ROOT_EXPRESSION_OBJECT_NAME,
+                    VARIABLES_EXPRESSION_OBJECT_NAME,
+                    SELECTION_TARGET_EXPRESSION_OBJECT_NAME,
+                    LOCALE_EXPRESSION_OBJECT_NAME,
+                    REQUEST_EXPRESSION_OBJECT_NAME,
+                    RESPONSE_EXPRESSION_OBJECT_NAME,
+                    SESSION_EXPRESSION_OBJECT_NAME,
+                    SERVLET_CONTEXT_EXPRESSION_OBJECT_NAME,
+                    CONVERSIONS_EXPRESSION_OBJECT_NAME,
+                    URIS_EXPRESSION_OBJECT_NAME,
+                    CALENDARS_EXPRESSION_OBJECT_NAME,
+                    DATES_EXPRESSION_OBJECT_NAME,
+                    BOOLS_EXPRESSION_OBJECT_NAME,
+                    NUMBERS_EXPRESSION_OBJECT_NAME,
+                    OBJECTS_EXPRESSION_OBJECT_NAME,
+                    STRINGS_EXPRESSION_OBJECT_NAME,
+                    ARRAYS_EXPRESSION_OBJECT_NAME,
+                    LISTS_EXPRESSION_OBJECT_NAME,
+                    SETS_EXPRESSION_OBJECT_NAME,
+                    MAPS_EXPRESSION_OBJECT_NAME,
+                    AGGREGATES_EXPRESSION_OBJECT_NAME,
+                    MESSAGES_EXPRESSION_OBJECT_NAME,
+                    IDS_EXPRESSION_OBJECT_NAME,
+                    EXECUTION_INFO_OBJECT_NAME,
+                    HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_NAME,
+                    HTTP_SESSION_EXPRESSION_OBJECT_NAME)));
 
 
 

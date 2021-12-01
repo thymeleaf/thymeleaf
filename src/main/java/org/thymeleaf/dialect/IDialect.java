@@ -54,6 +54,6 @@ package org.thymeleaf.dialect;
  */
 public interface IDialect {
 
-    public String getName();
+    String getName();
 
 }

@@ -119,12 +119,12 @@ public final class VariableExpression extends SimpleExpression implements IStand
     
     @Override
     public String getStringRepresentation() {
-        return String.valueOf(SELECTOR) + 
-               String.valueOf(SimpleExpression.EXPRESSION_START_CHAR) +
+        return String.valueOf(SELECTOR) +
+                SimpleExpression.EXPRESSION_START_CHAR +
                (this.convertToString? String.valueOf(SimpleExpression.EXPRESSION_START_CHAR) : "") +
                this.expression +
                (this.convertToString? String.valueOf(SimpleExpression.EXPRESSION_END_CHAR) : "") +
-               String.valueOf(SimpleExpression.EXPRESSION_END_CHAR);
+                SimpleExpression.EXPRESSION_END_CHAR;
     }
     
     

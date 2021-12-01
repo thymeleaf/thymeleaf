@@ -88,7 +88,7 @@ public final class StandardCaseTagProcessor extends AbstractStandardConditionalV
 
             if (this.logger.isTraceEnabled()) {
                 this.logger.trace("[THYMELEAF][{}][{}] Case expression \"{}\" in attribute \"{}\" has been evaluated as: \"{}\"",
-                        new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(context.getTemplateData().getTemplate()), attributeValue, attributeName, attributeValue, Boolean.TRUE});
+                        TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(context.getTemplateData().getTemplate()), attributeValue, attributeName, attributeValue, Boolean.TRUE);
             }
 
             switchStructure.setExecuted(true);
@@ -109,7 +109,7 @@ public final class StandardCaseTagProcessor extends AbstractStandardConditionalV
 
         if (this.logger.isTraceEnabled()) {
             this.logger.trace("[THYMELEAF][{}][{}] Case expression \"{}\" in attribute \"{}\" has been evaluated as: \"{}\"",
-                    new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(context.getTemplateData().getTemplate()), attributeValue, attributeName, attributeValue, Boolean.valueOf(visible)});
+                    TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(context.getTemplateData().getTemplate()), attributeValue, attributeName, attributeValue, Boolean.valueOf(visible));
         }
 
         if (visible) {
@@ -122,4 +122,3 @@ public final class StandardCaseTagProcessor extends AbstractStandardConditionalV
 
 
 }
-

@@ -106,7 +106,7 @@ public interface IElementModelProcessor extends IElementProcessor {
      * @param model the model this processor is executing on.
      * @param structureHandler the handler that will centralise modifications and commands to the engine.
      */
-    public void process(
+    void process(
             final ITemplateContext context,
             final IModel model, final IElementModelStructureHandler structureHandler);
 

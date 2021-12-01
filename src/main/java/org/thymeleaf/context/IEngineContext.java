@@ -73,7 +73,7 @@ public interface IEngineContext extends ITemplateContext {
      * @param name the name of the variable.
      * @param value the value of the variable.
      */
-    public void setVariable(final String name, final Object value);
+    void setVariable(final String name, final Object value);
 
     /**
      * <p>
@@ -88,7 +88,7 @@ public interface IEngineContext extends ITemplateContext {
      *
      * @param variables the variables to be set.
      */
-    public void setVariables(final Map<String, Object> variables);
+    void setVariables(final Map<String, Object> variables);
 
     /**
      * <p>
@@ -103,7 +103,7 @@ public interface IEngineContext extends ITemplateContext {
      *
      * @param name the name of the variable to be removed.
      */
-    public void removeVariable(final String name);
+    void removeVariable(final String name);
 
     /**
      * <p>
@@ -119,7 +119,7 @@ public interface IEngineContext extends ITemplateContext {
      *
      * @param selectionTarget the selection target to be set.
      */
-    public void setSelectionTarget(final Object selectionTarget);
+    void setSelectionTarget(final Object selectionTarget);
 
     /**
      * <p>
@@ -132,7 +132,7 @@ public interface IEngineContext extends ITemplateContext {
      *
      * @param inliner the inliner to be set.
      */
-    public void setInliner(final IInliner inliner);
+    void setInliner(final IInliner inliner);
 
     /**
      * <p>
@@ -146,7 +146,7 @@ public interface IEngineContext extends ITemplateContext {
      *
      * @param template the template data.
      */
-    public void setTemplateData(final TemplateData template);
+    void setTemplateData(final TemplateData template);
 
     /**
      * <p>
@@ -158,7 +158,7 @@ public interface IEngineContext extends ITemplateContext {
      *
      * @param elementTag the element tag.
      */
-    public void setElementTag(final IProcessableElementTag elementTag);
+    void setElementTag(final IProcessableElementTag elementTag);
 
     /**
      * <p>
@@ -169,7 +169,7 @@ public interface IEngineContext extends ITemplateContext {
      * @param contextLevel the level above which we want to obtain the element stack.
      * @return the element stack above a specified level.
      */
-    public List<IProcessableElementTag> getElementStackAbove(final int contextLevel);
+    List<IProcessableElementTag> getElementStackAbove(final int contextLevel);
 
     /**
      * <p>
@@ -182,7 +182,7 @@ public interface IEngineContext extends ITemplateContext {
      * @param name the name of the variable to be checked.
      * @return {@code true} if the variable is local (level &gt; 0), {@code false} if not (level == 0).
      */
-    public boolean isVariableLocal(final String name);
+    boolean isVariableLocal(final String name);
 
     /**
      * <p>
@@ -194,7 +194,7 @@ public interface IEngineContext extends ITemplateContext {
      *   <strong>This method should only be called internally</strong>.
      * </p>
      */
-    public void increaseLevel();
+    void increaseLevel();
 
     /**
      * <p>
@@ -206,7 +206,7 @@ public interface IEngineContext extends ITemplateContext {
      *   <strong>This method should only be called internally</strong>.
      * </p>
      */
-    public void decreaseLevel();
+    void decreaseLevel();
 
 
     /**
@@ -219,6 +219,6 @@ public interface IEngineContext extends ITemplateContext {
      *
      * @return the current level
      */
-    public int level();
+    int level();
 
 }

@@ -62,7 +62,7 @@ public interface IMessageResolver {
      * 
      * @return the name of the message resolver
      */
-    public String getName();
+    String getName();
 
 
     /**
@@ -73,7 +73,7 @@ public interface IMessageResolver {
      * 
      * @return the order of this resolver in the chain.
      */
-    public Integer getOrder();
+    Integer getOrder();
 
 
     /**
@@ -94,7 +94,7 @@ public interface IMessageResolver {
      * @param messageParameters the (optional) message parameters.
      * @return the resolved message, or {@code null} if the message could not be resolved.
      */
-    public String resolveMessage(
+    String resolveMessage(
             final ITemplateContext context, final Class<?> origin, final String key, final Object[] messageParameters);
 
 
@@ -115,7 +115,7 @@ public interface IMessageResolver {
      * @param messageParameters the (optional) message parameters.
      * @return the absent message representation, of {@code null} if the resolver cannot create such representation.
      */
-    public String createAbsentMessageRepresentation(
+    String createAbsentMessageRepresentation(
             final ITemplateContext context, final Class<?> origin, final String key, final Object[] messageParameters);
 
 }

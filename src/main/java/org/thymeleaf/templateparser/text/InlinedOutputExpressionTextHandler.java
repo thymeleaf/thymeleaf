@@ -170,7 +170,7 @@ final class InlinedOutputExpressionTextHandler extends AbstractChainedTextHandle
 
     private static final class InlineTextAdapterPreProcessorHandler implements IInlinePreProcessorHandler {
 
-        private ITextHandler handler;
+        private final ITextHandler handler;
 
 
         InlineTextAdapterPreProcessorHandler(final ITextHandler handler) {

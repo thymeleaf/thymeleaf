@@ -41,7 +41,7 @@ public interface IXMLDeclaration extends ITemplateEvent {
      *
      * @return the XML Declaration keyword.
      */
-    public String getKeyword();
+    String getKeyword();
 
     /**
      * <p>
@@ -50,7 +50,7 @@ public interface IXMLDeclaration extends ITemplateEvent {
      *
      * @return the XML version (might be null).
      */
-    public String getVersion();
+    String getVersion();
 
     /**
      * <p>
@@ -60,7 +60,7 @@ public interface IXMLDeclaration extends ITemplateEvent {
      *
      * @return the encoding value (might be null).
      */
-    public String getEncoding();
+    String getEncoding();
 
     /**
      * <p>
@@ -70,7 +70,7 @@ public interface IXMLDeclaration extends ITemplateEvent {
      *
      * @return the standalone value (might be null).
      */
-    public String getStandalone();
+    String getStandalone();
 
     /**
      * <p>
@@ -79,6 +79,6 @@ public interface IXMLDeclaration extends ITemplateEvent {
      *
      * @return the complete XML Declaration.
      */
-    public String getXmlDeclaration();
+    String getXmlDeclaration();
 
 }

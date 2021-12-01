@@ -44,7 +44,7 @@ public interface ITextStructureHandler {
      *   Resets all actions specified so far for the current processor execution.
      * </p>
      */
-    public void reset();
+    void reset();
 
     /**
      * <p>
@@ -52,7 +52,7 @@ public interface ITextStructureHandler {
      * </p>
      * @param text the new text
      */
-    public void setText(final CharSequence text);
+    void setText(final CharSequence text);
 
     /**
      * <p>
@@ -62,14 +62,13 @@ public interface ITextStructureHandler {
      * @param model the model to be used as a replacement.
      * @param processable whether the model should be considered <em>processable</em> or not.
      */
-    public void replaceWith(final IModel model, final boolean processable);
+    void replaceWith(final IModel model, final boolean processable);
 
     /**
      * <p>
      *   Instructs the engine to remove the entire event that is being processed.
      * </p>
      */
-    public void removeText();
+    void removeText();
 
 }
-

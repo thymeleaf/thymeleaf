@@ -96,11 +96,7 @@ public abstract class ElementName {
             return false;
         }
 
-        if (!Arrays.equals(this.completeElementNames, that.completeElementNames)) {
-            return false;
-        }
-
-        return true;
+        return Arrays.equals(this.completeElementNames, that.completeElementNames);
 
     }
 

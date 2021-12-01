@@ -57,7 +57,7 @@ public interface ITemplateEngine {
      *
      * @return the engine configuration object.
      */
-    public IEngineConfiguration getConfiguration();
+    IEngineConfiguration getConfiguration();
 
 
     /**
@@ -77,7 +77,7 @@ public interface ITemplateEngine {
      * @return a String containing the result of evaluating the specified template
      * with the provided context.
      */
-    public String process(final String template, final IContext context);
+    String process(final String template, final IContext context);
 
 
     /**
@@ -105,7 +105,7 @@ public interface ITemplateEngine {
      * @return a String containing the result of evaluating the specified template
      * with the provided context.
      */
-    public String process(final String template, final Set<String> templateSelectors, final IContext context);
+    String process(final String template, final Set<String> templateSelectors, final IContext context);
 
 
     /**
@@ -129,14 +129,14 @@ public interface ITemplateEngine {
      * @return a String containing the result of evaluating the specified template
      * with the provided context.
      */
-    public String process(final TemplateSpec templateSpec, final IContext context);
+    String process(final TemplateSpec templateSpec, final IContext context);
 
 
     /**
      * <p>
      * Process the specified template (usually the template name). Output will be written
      * to the specified writer as it is generated from processing the template. This is specially
-     * useful for web environments (using {@link javax.servlet.http.HttpServletResponse#getWriter()}).
+     * useful for web environments (using {@link jakarta.servlet.http.HttpServletResponse#getWriter()}).
      * </p>
      * <p>
      * This is actually a convenience method that will internally create a {@link TemplateSpec} and then
@@ -148,7 +148,7 @@ public interface ITemplateEngine {
      * @param context  the context.
      * @param writer   the writer the results will be output to.
      */
-    public void process(final String template, final IContext context, final Writer writer);
+    void process(final String template, final IContext context, final Writer writer);
 
 
     /**
@@ -156,7 +156,7 @@ public interface ITemplateEngine {
      * Process the specified template (usually the template name) applying a set of
      * <em>template selectors</em>. Output will be written to the specified writer as it is generated
      * from processing the template. This is specially useful for web environments
-     * (using {@link javax.servlet.http.HttpServletResponse#getWriter()}).
+     * (using {@link jakarta.servlet.http.HttpServletResponse#getWriter()}).
      * </p>
      * <p>
      * Template selectors allow the possibility to process only a part of the specified template, expressing
@@ -176,14 +176,14 @@ public interface ITemplateEngine {
      * @param context           the context.
      * @param writer            the writer the results will be output to.
      */
-    public void process(final String template, Set<String> templateSelectors, final IContext context, final Writer writer);
+    void process(final String template, Set<String> templateSelectors, final IContext context, final Writer writer);
 
 
     /**
      * <p>
      * Process a template starting from a {@link TemplateSpec}. Output will be written to the
      * specified writer as it is generated from processing the template. This is specially useful for
-     * web environments (using {@link javax.servlet.http.HttpServletResponse#getWriter()}).
+     * web environments (using {@link jakarta.servlet.http.HttpServletResponse#getWriter()}).
      * </p>
      * <p>
      * The template specification will be used as input for the template resolvers, queried in chain
@@ -200,7 +200,7 @@ public interface ITemplateEngine {
      * @param context      the context.
      * @param writer       the writer the results will be output to.
      */
-    public void process(final TemplateSpec templateSpec, final IContext context, final Writer writer);
+    void process(final TemplateSpec templateSpec, final IContext context, final Writer writer);
 
 
     /**
@@ -221,7 +221,7 @@ public interface ITemplateEngine {
      * @return the IThrottledTemplateProcessor object in charge of dictating the engine when to process the template and
      *         how much output should be produced.
      */
-    public IThrottledTemplateProcessor processThrottled(final String template, final IContext context);
+    IThrottledTemplateProcessor processThrottled(final String template, final IContext context);
 
 
     /**
@@ -251,7 +251,7 @@ public interface ITemplateEngine {
      * @return the IThrottledTemplateProcessor object in charge of dictating the engine when to process the template and
      *         how much output should be produced.
      */
-    public IThrottledTemplateProcessor processThrottled(final String template, final Set<String> templateSelectors, final IContext context);
+    IThrottledTemplateProcessor processThrottled(final String template, final Set<String> templateSelectors, final IContext context);
 
 
     /**
@@ -277,6 +277,6 @@ public interface ITemplateEngine {
      * @return the IThrottledTemplateProcessor object in charge of dictating the engine when to process the template and
      *         how much output should be produced.
      */
-    public IThrottledTemplateProcessor processThrottled(final TemplateSpec templateSpec, final IContext context);
+    IThrottledTemplateProcessor processThrottled(final TemplateSpec templateSpec, final IContext context);
 
 }

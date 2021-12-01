@@ -33,11 +33,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.engine.TemplateData;
@@ -596,18 +597,19 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
         @Override
         public Collection<Object> values() {
-            return this.request.getParameterMap().values();
+            return new ArrayList<>(this.request.getParameterMap().values());
         }
 
         @Override
         public Set<Map.Entry<String,Object>> entrySet() {
-            return this.request.getParameterMap().entrySet();
+            return this.request.getParameterMap()
+                    .entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(Entry::getKey, stringEntry -> (Object) stringEntry.getValue()))
+                    .entrySet();
         }
 
     }
-
-
-
 
     private static final class RequestAttributesVariablesMap extends AbstractEngineContext implements IEngineContext {
 
@@ -1165,7 +1167,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
                 strBuilder.append(',');
             }
             strBuilder.append(this.levels[n]).append(":");
-            strBuilder.append(requestAttributes.toString());
+            strBuilder.append(requestAttributes);
             if (this.selectionTargets[0] != null) {
                 strBuilder.append("<").append(this.selectionTargets[0].selectionTarget).append(">");
             }
@@ -1196,7 +1198,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
             }
             final String textInliningStr = (getInliner() != null? "[" + getInliner().getName() + "]" : "" );
             final String templateDataStr = "(" + getTemplateData().getTemplate() + ")";
-            return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "") + textInliningStr + templateDataStr;
+            return equivalentMap + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "") + textInliningStr + templateDataStr;
 
         }
 

@@ -59,7 +59,7 @@ final class IteratedGatheringModelProcessable extends AbstractGatheringModelProc
 
     private IterationModels iterationModels;
 
-    private DataDrivenTemplateIterator dataDrivenIterator;
+    private final DataDrivenTemplateIterator dataDrivenIterator;
 
     private int iter;
     private int iterOffset;

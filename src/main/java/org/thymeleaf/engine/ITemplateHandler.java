@@ -41,36 +41,36 @@ import org.thymeleaf.model.IXMLDeclaration;
 public interface ITemplateHandler {
 
 
-    public void setNext(final ITemplateHandler next);
+    void setNext(final ITemplateHandler next);
 
-    public void setContext(final ITemplateContext context);
-
-
-    public void handleTemplateStart(final ITemplateStart templateStart);
-
-    public void handleTemplateEnd(final ITemplateEnd templateEnd);
+    void setContext(final ITemplateContext context);
 
 
-    public void handleXMLDeclaration(final IXMLDeclaration xmlDeclaration);
+    void handleTemplateStart(final ITemplateStart templateStart);
 
-    public void handleDocType(final IDocType docType);
-
-    public void handleCDATASection(final ICDATASection cdataSection);
-
-    public void handleComment(final IComment comment);
-
-    public void handleText(final IText text);
+    void handleTemplateEnd(final ITemplateEnd templateEnd);
 
 
-    public void handleStandaloneElement(final IStandaloneElementTag standaloneElementTag);
+    void handleXMLDeclaration(final IXMLDeclaration xmlDeclaration);
 
-    public void handleOpenElement(final IOpenElementTag openElementTag);
+    void handleDocType(final IDocType docType);
 
-    public void handleCloseElement(final ICloseElementTag closeElementTag);
+    void handleCDATASection(final ICDATASection cdataSection);
+
+    void handleComment(final IComment comment);
+
+    void handleText(final IText text);
+
+
+    void handleStandaloneElement(final IStandaloneElementTag standaloneElementTag);
+
+    void handleOpenElement(final IOpenElementTag openElementTag);
+
+    void handleCloseElement(final ICloseElementTag closeElementTag);
 
 
 
-    public void handleProcessingInstruction(final IProcessingInstruction processingInstruction);
+    void handleProcessingInstruction(final IProcessingInstruction processingInstruction);
 
 
 }

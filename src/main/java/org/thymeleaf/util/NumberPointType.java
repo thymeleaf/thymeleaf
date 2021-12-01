@@ -66,7 +66,7 @@ public enum NumberPointType {
     
     
     
-    private NumberPointType(final String name) {
+    NumberPointType(final String name) {
         this.name = name;
     }
 

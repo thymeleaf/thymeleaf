@@ -60,7 +60,7 @@ public interface IModel {
      *
      * @return the engine configuration.
      */
-    public IEngineConfiguration getConfiguration();
+    IEngineConfiguration getConfiguration();
 
     /**
      * <p>
@@ -69,7 +69,7 @@ public interface IModel {
      *
      * @return the template mode.
      */
-    public TemplateMode getTemplateMode();
+    TemplateMode getTemplateMode();
 
     /**
      * <p>
@@ -78,7 +78,7 @@ public interface IModel {
      *
      * @return the size of the model.
      */
-    public int size();
+    int size();
 
     /**
      * <p>
@@ -88,7 +88,7 @@ public interface IModel {
      * @param pos the position (zero-based) of the event to be retrieved.
      * @return the retrieved event.
      */
-    public ITemplateEvent get(final int pos);
+    ITemplateEvent get(final int pos);
 
     /**
      * <p>
@@ -97,7 +97,7 @@ public interface IModel {
      *
      * @param event the event to be added.
      */
-    public void add(final ITemplateEvent event);
+    void add(final ITemplateEvent event);
 
     /**
      * <p>
@@ -107,7 +107,7 @@ public interface IModel {
      * @param pos the position to insert the event (zero-based).
      * @param event the event to be inserted.
      */
-    public void insert(final int pos, final ITemplateEvent event);
+    void insert(final int pos, final ITemplateEvent event);
 
     /**
      * <p>
@@ -118,7 +118,7 @@ public interface IModel {
      * @param pos the position of the event to be replaced (zero-based).
      * @param event the event to serve as replacement.
      */
-    public void replace(final int pos, final ITemplateEvent event);
+    void replace(final int pos, final ITemplateEvent event);
 
     /**
      * <p>
@@ -128,7 +128,7 @@ public interface IModel {
      *
      * @param model the model to be appended.
      */
-    public void addModel(final IModel model);
+    void addModel(final IModel model);
 
     /**
      * <p>
@@ -138,7 +138,7 @@ public interface IModel {
      * @param pos the position to insert the mdoel (zero-based).
      * @param model the model to be inserted.
      */
-    public void insertModel(final int pos, final IModel model);
+    void insertModel(final int pos, final IModel model);
 
     /**
      * <p>
@@ -147,14 +147,14 @@ public interface IModel {
      *
      * @param pos the position (zero-based) of the event to be removed.
      */
-    public void remove(final int pos);
+    void remove(final int pos);
 
     /**
      * <p>
      *   Remove all events from the model sequence.
      * </p>
      */
-    public void reset();
+    void reset();
 
     /**
      * <p>
@@ -163,7 +163,7 @@ public interface IModel {
      *
      * @return the new model.
      */
-    public IModel cloneModel();
+    IModel cloneModel();
 
     /**
      * <p>
@@ -173,7 +173,7 @@ public interface IModel {
      *
      * @param visitor the visitor object.
      */
-    public void accept(final IModelVisitor visitor);
+    void accept(final IModelVisitor visitor);
 
     /**
      * <p>
@@ -183,6 +183,6 @@ public interface IModel {
      * @param writer the writer that will be used for writing the model.
      * @throws IOException should any exception happen.
      */
-    public void write(final Writer writer) throws IOException;
+    void write(final Writer writer) throws IOException;
 
 }

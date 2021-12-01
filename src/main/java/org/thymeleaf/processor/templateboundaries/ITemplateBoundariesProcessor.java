@@ -59,7 +59,7 @@ public interface ITemplateBoundariesProcessor extends IProcessor {
      * @param templateStart the event this processor is executing on.
      * @param structureHandler the handler that will centralise modifications and commands to the engine.
      */
-    public void processTemplateStart(
+    void processTemplateStart(
             final ITemplateContext context,
             final ITemplateStart templateStart, final ITemplateBoundariesStructureHandler structureHandler);
 
@@ -77,7 +77,7 @@ public interface ITemplateBoundariesProcessor extends IProcessor {
      * @param templateEnd the event this processor is executing on.
      * @param structureHandler the handler that will centralise modifications and commands to the engine.
      */
-    public void processTemplateEnd(
+    void processTemplateEnd(
             final ITemplateContext context,
             final ITemplateEnd templateEnd, final ITemplateBoundariesStructureHandler structureHandler);
 

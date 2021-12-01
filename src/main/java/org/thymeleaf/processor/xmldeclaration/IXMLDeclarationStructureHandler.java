@@ -44,7 +44,7 @@ public interface IXMLDeclarationStructureHandler {
      *   Resets all actions specified so far for the current processor execution.
      * </p>
      */
-    public void reset();
+    void reset();
 
     /**
      * <p>
@@ -56,7 +56,7 @@ public interface IXMLDeclarationStructureHandler {
      * @param encoding the new encoding value (might be null)
      * @param standalone the new standalone value (might be null)
      */
-    public void setXMLDeclaration(
+    void setXMLDeclaration(
             final String keyword, final String version, final String encoding, final String standalone);
 
     /**
@@ -67,14 +67,13 @@ public interface IXMLDeclarationStructureHandler {
      * @param model the model to be used as a replacement.
      * @param processable whether the model should be considered <em>processable</em> or not.
      */
-    public void replaceWith(final IModel model, final boolean processable);
+    void replaceWith(final IModel model, final boolean processable);
 
     /**
      * <p>
      *   Instructs the engine to remove the entire event that is being processed.
      * </p>
      */
-    public void removeXMLDeclaration();
+    void removeXMLDeclaration();
 
 }
-

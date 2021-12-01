@@ -58,6 +58,6 @@ public interface ILazyContextVariable<T> {
      *
      * @return the variable value
      */
-    public T getValue();
+    T getValue();
 
 }

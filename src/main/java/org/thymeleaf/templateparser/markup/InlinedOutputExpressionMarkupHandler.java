@@ -215,7 +215,7 @@ final class InlinedOutputExpressionMarkupHandler extends AbstractChainedMarkupHa
 
     private static final class InlineMarkupAdapterPreProcessorHandler implements IInlinePreProcessorHandler {
 
-        private IMarkupHandler handler;
+        private final IMarkupHandler handler;
 
 
         InlineMarkupAdapterPreProcessorHandler(final IMarkupHandler handler) {

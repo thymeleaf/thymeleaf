@@ -50,7 +50,7 @@ public interface IXMLDeclarationProcessor extends IProcessor {
      * @param xmlDeclaration the event this processor is executing on.
      * @param structureHandler the handler that will centralise modifications and commands to the engine.
      */
-    public void process(
+    void process(
             final ITemplateContext context,
             final IXMLDeclaration xmlDeclaration, final IXMLDeclarationStructureHandler structureHandler);
 

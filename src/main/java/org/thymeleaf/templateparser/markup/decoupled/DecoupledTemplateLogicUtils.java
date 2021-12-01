@@ -77,7 +77,7 @@ public final class DecoupledTemplateLogicUtils {
                 logger.trace(
                         "[THYMELEAF][{}] Decoupled logic for template \"{}\" could not be resolved as relative resource \"{}\". " +
                         "This does not need to be an error, as templates may lack a corresponding decoupled logic file.",
-                        new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template), decoupledResource.getDescription()});
+                        TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template), decoupledResource.getDescription());
             }
 
             return null;
@@ -87,7 +87,7 @@ public final class DecoupledTemplateLogicUtils {
         if (logger.isTraceEnabled()) {
             logger.trace(
                     "[THYMELEAF][{}] Decoupled logic for template \"{}\" has been resolved as relative resource \"{}\"",
-                    new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template), decoupledResource.getDescription()});
+                    TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(template), decoupledResource.getDescription());
         }
 
 

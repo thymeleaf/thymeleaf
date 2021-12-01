@@ -40,6 +40,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.SerializableString;
 import com.fasterxml.jackson.core.io.CharacterEscapes;
 import com.fasterxml.jackson.core.io.SerializedString;
+import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -170,11 +171,11 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
             if (javaTimeModuleClass != null) {
                 // JSR310 support for Jackson is present in classpath
                 try {
-                    this.mapper.registerModule((Module)javaTimeModuleClass.newInstance());
+                    Module jacksonTimeModule = (Module)javaTimeModuleClass.getDeclaredConstructor(new Class[]{})
+                            .newInstance();
+                    this.mapper.registerModule(jacksonTimeModule);
                     this.mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-                } catch (final InstantiationException e) {
-                    throw new ConfigurationException("Exception while trying to initialize JSR310 support for Jackson", e);
-                } catch (final IllegalAccessException e) {
+                } catch (final InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                     throw new ConfigurationException("Exception while trying to initialize JSR310 support for Jackson", e);
                 }
             }
@@ -184,7 +185,7 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
 
         public void serializeValue(final Object object, final Writer writer) {
             try {
-                this.mapper.writeValue(writer, object);
+                this.mapper.writer().writeValue(writer, object);
             } catch (final IOException e) {
                 throw new TemplateProcessingException(
                         "An exception was raised while trying to serialize object to JavaScript using Jackson", e);
@@ -557,7 +558,7 @@ public final class StandardJavaScriptSerializer implements IStandardJavaScriptSe
                     final Method readMethod =  descriptor.getReadMethod();
                     if (readMethod != null) {
                         final String name = descriptor.getName();
-                        if (!"class".equals(name.toLowerCase())) {
+                        if (!"class".equalsIgnoreCase(name)) {
                             final Object value = readMethod.invoke(object);
                             properties.put(name, value);
                         }

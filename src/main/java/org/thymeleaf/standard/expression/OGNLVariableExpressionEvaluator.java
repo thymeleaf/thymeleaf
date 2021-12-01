@@ -60,8 +60,8 @@ public final class OGNLVariableExpressionEvaluator
     private static final String EXPRESSION_CACHE_TYPE_OGNL = "ognl";
 
 
-    private static Map<String,Object> CONTEXT_VARIABLES_MAP_NOEXPOBJECTS_RESTRICTIONS =
-            (Map<String,Object>) (Map<?,?>)Collections.singletonMap(
+    private static final Map<String,Object> CONTEXT_VARIABLES_MAP_NOEXPOBJECTS_RESTRICTIONS =
+            Collections.singletonMap(
                     OGNLContextPropertyAccessor.RESTRICT_REQUEST_PARAMETERS,
                     OGNLContextPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
 
@@ -88,7 +88,7 @@ public final class OGNLVariableExpressionEvaluator
 
 
 
-    public final Object evaluate(
+    public Object evaluate(
             final IExpressionContext context,
             final IStandardVariableExpression expression,
             final StandardExpressionExecutionContext expContext) {
@@ -152,7 +152,7 @@ public final class OGNLVariableExpressionEvaluator
                 if (expContext.getRestrictVariableAccess()) {
                     contextVariablesMap = CONTEXT_VARIABLES_MAP_NOEXPOBJECTS_RESTRICTIONS;
                 } else {
-                    contextVariablesMap = Collections.EMPTY_MAP;
+                    contextVariablesMap = Collections.emptyMap();
                 }
 
             }

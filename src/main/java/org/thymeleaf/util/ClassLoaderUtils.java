@@ -261,9 +261,7 @@ public final class ClassLoaderUtils {
                 // The only class loader we can rely on for not being null is the system one
                 if (systemClassLoader != null && systemClassLoader != contextClassLoader && systemClassLoader != classClassLoader) {
                     final URL url = systemClassLoader.getResource(resourceName);
-                    if (url != null) {
-                        return url;
-                    }
+                    return url;
                     // Pass-through, anyway we have a return null after this...
                 }
 
@@ -380,9 +378,7 @@ public final class ClassLoaderUtils {
                 // The only class loader we can rely on for not being null is the system one
                 if (systemClassLoader != null && systemClassLoader != contextClassLoader && systemClassLoader != classClassLoader) {
                     final InputStream inputStream = systemClassLoader.getResourceAsStream(resourceName);
-                    if (inputStream != null) {
-                        return inputStream;
-                    }
+                    return inputStream;
                     // Pass-through, anyway we have a return null after this...
                 }
 

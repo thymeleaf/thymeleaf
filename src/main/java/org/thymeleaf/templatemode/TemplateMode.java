@@ -93,7 +93,7 @@ public enum TemplateMode {
 
 
 
-    private static Logger logger = LoggerFactory.getLogger(TemplateMode.class);
+    private static final Logger logger = LoggerFactory.getLogger(TemplateMode.class);
 
 
     private final boolean html;
@@ -149,19 +149,19 @@ public enum TemplateMode {
                 "VALIDXHTML".equalsIgnoreCase(mode) || "LEGACYHTML5".equalsIgnoreCase(mode)) {
             logger.warn(
                     "[THYMELEAF][{}] Template Mode '{}' is deprecated. Using Template Mode '{}' instead.",
-                    new Object[]{TemplateEngine.threadIndex(), mode, HTML});
+                    TemplateEngine.threadIndex(), mode, HTML);
             return HTML;
         }
         if ("VALIDXML".equalsIgnoreCase(mode)) {
             logger.warn(
                     "[THYMELEAF][{}] Template Mode '{}' is deprecated. Using Template Mode '{}' instead.",
-                    new Object[]{TemplateEngine.threadIndex(), mode, XML});
+                    TemplateEngine.threadIndex(), mode, XML);
             return XML;
         }
         logger.warn(
                 "[THYMELEAF][{}] Unknown Template Mode '{}'. Must be one of: 'HTML', 'XML', 'TEXT', 'JAVASCRIPT', 'CSS', 'RAW'. " +
                 "Using default Template Mode '{}'.",
-                new Object[]{TemplateEngine.threadIndex(), mode, HTML});
+                TemplateEngine.threadIndex(), mode, HTML);
         return HTML;
     }
 

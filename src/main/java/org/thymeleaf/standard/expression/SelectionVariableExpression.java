@@ -114,11 +114,11 @@ public final class SelectionVariableExpression extends SimpleExpression implemen
     @Override
     public String getStringRepresentation() {
         return String.valueOf(SELECTOR) +
-               String.valueOf(SimpleExpression.EXPRESSION_START_CHAR) +
+                SimpleExpression.EXPRESSION_START_CHAR +
                (this.convertToString? String.valueOf(SimpleExpression.EXPRESSION_START_CHAR) : "") +
                this.expression +
                (this.convertToString? String.valueOf(SimpleExpression.EXPRESSION_END_CHAR) : "") +
-               String.valueOf(SimpleExpression.EXPRESSION_END_CHAR);
+                SimpleExpression.EXPRESSION_END_CHAR;
     }
     
     

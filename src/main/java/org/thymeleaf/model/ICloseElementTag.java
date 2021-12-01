@@ -41,6 +41,6 @@ public interface ICloseElementTag extends IElementTag {
      *
      * @return true if the tag is unmatched, false if not.
      */
-    public boolean isUnmatched();
+    boolean isUnmatched();
 
 }

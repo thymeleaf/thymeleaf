@@ -199,7 +199,7 @@ final class StandardMessageResolutionUtils {
 
         if (StringUtils.isEmptyOrWhitespace(locale.getLanguage())) {
             throw new TemplateProcessingException(
-                    "Locale \"" + locale.toString() + "\" " +
+                    "Locale \"" + locale + "\" " +
                     "cannot be used as it does not specify a language.");
         }
 

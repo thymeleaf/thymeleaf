@@ -96,8 +96,8 @@ public final class GreaterOrEqualToExpression extends GreaterLesserExpression {
         }
         
         if (logger.isTraceEnabled()) {
-            logger.trace("[THYMELEAF][{}] Evaluating GREATER OR EQUAL TO expression: \"{}\". Left is \"{}\", right is \"{}\". Result is \"{}\"", 
-                    new Object[] {TemplateEngine.threadIndex(), expression.getStringRepresentation(), leftValue, rightValue, result});
+            logger.trace("[THYMELEAF][{}] Evaluating GREATER OR EQUAL TO expression: \"{}\". Left is \"{}\", right is \"{}\". Result is \"{}\"",
+                    TemplateEngine.threadIndex(), expression.getStringRepresentation(), leftValue, rightValue, result);
         }
         
         return result; 

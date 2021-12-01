@@ -52,6 +52,6 @@ public interface IWritableCharSequence extends CharSequence {
     * @param writer the writer to write the character sequence to.
     * @throws IOException if an input/output exception happens during writing
     */
-   public void write(final Writer writer) throws IOException;
+   void write(final Writer writer) throws IOException;
 
 }

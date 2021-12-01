@@ -101,12 +101,8 @@ public abstract class AttributeName {
             return false;
         }
 
-        if (!this.completeAttributeNames[0].equals(that.completeAttributeNames[0])) {
-            // No need to check the other names as we have already checked the class
-            return false;
-        }
-
-        return true;
+        // No need to check the other names as we have already checked the class
+        return this.completeAttributeNames[0].equals(that.completeAttributeNames[0]);
 
     }
 

@@ -259,10 +259,7 @@ public final class EvaluationUtils {
             if (this.entryKey != null ? !this.entryKey.equals(mapEntry.getKey()) : mapEntry.getKey() != null) {
                 return false;
             }
-            if (this.entryValue != null ? !this.entryValue.equals(mapEntry.getValue()) : mapEntry.getValue() != null) {
-                return false;
-            }
-            return true;
+            return this.entryValue != null ? this.entryValue.equals(mapEntry.getValue()) : mapEntry.getValue() == null;
         }
 
         @Override

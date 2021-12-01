@@ -41,6 +41,6 @@ public interface IText extends ITemplateEvent, CharSequence {
      *
      * @return the text.
      */
-    public String getText();
+    String getText();
 
 }

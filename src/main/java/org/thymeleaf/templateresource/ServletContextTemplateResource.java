@@ -28,7 +28,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;

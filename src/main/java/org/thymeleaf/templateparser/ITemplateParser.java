@@ -43,23 +43,23 @@ import org.thymeleaf.templateresource.ITemplateResource;
 public interface ITemplateParser {
 
 
-    public void parseStandalone(
-                    final IEngineConfiguration configuration,
-                    final String ownerTemplate,
-                    final String template,
-                    final Set<String> templateSelectors,
-                    final ITemplateResource resource,
-                    final TemplateMode templateMode,
-                    final boolean useDecoupledLogic,
-                    final ITemplateHandler handler);
+    void parseStandalone(
+            final IEngineConfiguration configuration,
+            final String ownerTemplate,
+            final String template,
+            final Set<String> templateSelectors,
+            final ITemplateResource resource,
+            final TemplateMode templateMode,
+            final boolean useDecoupledLogic,
+            final ITemplateHandler handler);
 
 
-    public void parseString(
-                    final IEngineConfiguration configuration,
-                    final String ownerTemplate,
-                    final String template,
-                    final int lineOffset, final int colOffset,
-                    final TemplateMode templateMode,
-                    final ITemplateHandler handler);
+    void parseString(
+            final IEngineConfiguration configuration,
+            final String ownerTemplate,
+            final String template,
+            final int lineOffset, final int colOffset,
+            final TemplateMode templateMode,
+            final ITemplateHandler handler);
 
 }

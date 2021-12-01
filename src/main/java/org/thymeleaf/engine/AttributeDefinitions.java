@@ -66,8 +66,7 @@ public final class AttributeDefinitions {
     static {
 
         final List<String> htmlAttributeNameListAux =
-                new ArrayList<String>(Arrays.asList(new String[]{
-                        "abbr", "accept", "accept-charset", "accesskey", "action", "align", "alt", "archive", "async",
+                new ArrayList<String>(Arrays.asList("abbr", "accept", "accept-charset", "accesskey", "action", "align", "alt", "archive", "async",
                         "autocomplete", "autofocus", "autoplay", "axis", "border", "cellpadding", "cellspacing",
                         "challenge", "char", "charoff", "charset", "checked", "cite", "class", "classid",
                         "codebase", "codetype", "cols", "colspan", "command", "content", "contenteditable",
@@ -94,8 +93,7 @@ public final class AttributeDefinitions {
                         "required", "rev", "reversed", "rows", "rowspan", "rules", "scheme", "scope", "scoped",
                         "seamless", "selected", "shape", "size", "span", "spellcheck", "src", "srclang", "standby",
                         "style", "summary", "tabindex", "title", "translate", "type", "usemap", "valign", "value",
-                        "valuetype", "width", "xml:lang", "xml:space", "xmlns"
-                }));
+                        "valuetype", "width", "xml:lang", "xml:space", "xmlns"));
 
         Collections.sort(htmlAttributeNameListAux);
 
@@ -105,13 +103,11 @@ public final class AttributeDefinitions {
 
 
         final Set<String> htmlBooleanAttributeNameSetAux =
-                new HashSet<String>(Arrays.asList(new String[]{
-                        "async", "autofocus", "autoplay", "checked", "controls",
+                new HashSet<String>(Arrays.asList("async", "autofocus", "autoplay", "checked", "controls",
                         "declare", "default", "defer", "disabled", "formnovalidate",
                         "hidden", "ismap", "loop", "multiple", "novalidate",
                         "nowrap", "open", "pubdate", "readonly", "required",
-                        "reversed", "selected", "scoped", "seamless"
-                }));
+                        "reversed", "selected", "scoped", "seamless"));
 
         ALL_STANDARD_BOOLEAN_HTML_ATTRIBUTE_NAMES =
                 Collections.unmodifiableSet(new LinkedHashSet<String>(htmlBooleanAttributeNameSetAux));

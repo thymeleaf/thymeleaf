@@ -47,7 +47,7 @@ public interface IElementTag extends ITemplateEvent {
      *
      * @return the template mode.
      */
-    public TemplateMode getTemplateMode();
+    TemplateMode getTemplateMode();
 
     /**
      * <p>
@@ -60,7 +60,7 @@ public interface IElementTag extends ITemplateEvent {
      *
      * @return the element complete name.
      */
-    public String getElementCompleteName();
+    String getElementCompleteName();
 
     /**
      * <p>
@@ -74,7 +74,7 @@ public interface IElementTag extends ITemplateEvent {
      *
      * @return the element definition.
      */
-    public ElementDefinition getElementDefinition();
+    ElementDefinition getElementDefinition();
 
     /**
      * <p>
@@ -84,6 +84,6 @@ public interface IElementTag extends ITemplateEvent {
      *
      * @return whether the tag is synthetic or not.
      */
-    public boolean isSynthetic();
+    boolean isSynthetic();
 
 }

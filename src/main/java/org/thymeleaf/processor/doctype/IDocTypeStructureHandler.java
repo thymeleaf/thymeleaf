@@ -44,7 +44,7 @@ public interface IDocTypeStructureHandler {
      *   Resets all actions specified so far for the current processor execution.
      * </p>
      */
-    public void reset();
+    void reset();
 
     /**
      * <p>
@@ -57,7 +57,7 @@ public interface IDocTypeStructureHandler {
      * @param systemId the new SYSTEM ID (might be null)
      * @param internalSubset the new internal subset (might be null)
      */
-    public void setDocType(
+    void setDocType(
             final String keyword, final String elementName,
             final String publicId, final String systemId, final String internalSubset);
 
@@ -69,14 +69,13 @@ public interface IDocTypeStructureHandler {
      * @param model the model to be used as a replacement.
      * @param processable whether the model should be considered <em>processable</em> or not.
      */
-    public void replaceWith(final IModel model, final boolean processable);
+    void replaceWith(final IModel model, final boolean processable);
 
     /**
      * <p>
      *   Instructs the engine to remove the entire event that is being processed.
      * </p>
      */
-    public void removeDocType();
+    void removeDocType();
 
 }
-

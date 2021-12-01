@@ -69,7 +69,7 @@ public interface IDecoupledTemplateLogicResolver {
      * @param templateMode the template mode to be applied to the resolved template.
      * @return the resource containing the decoupled template logic, or {@code null} if there isn't any.
      */
-    public ITemplateResource resolveDecoupledTemplateLogic(
+    ITemplateResource resolveDecoupledTemplateLogic(
             final IEngineConfiguration configuration,
             final String ownerTemplate, final String template, final Set<String> templateSelectors,
             final ITemplateResource resource, final TemplateMode templateMode);

@@ -40,7 +40,7 @@ public interface IComment extends ITemplateEvent, CharSequence {
      *
      * @return the Comment.
      */
-    public String getComment();
+    String getComment();
 
     /**
      * <p>
@@ -49,6 +49,6 @@ public interface IComment extends ITemplateEvent, CharSequence {
      *
      * @return the content of the Comment.
      */
-    public String getContent();
+    String getContent();
 
 }

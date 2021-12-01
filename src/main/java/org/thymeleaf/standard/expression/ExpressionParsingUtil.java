@@ -294,7 +294,7 @@ final class ExpressionParsingUtil {
         }
 
         decomposedInput.append(Expression.PARSING_PLACEHOLDER_CHAR);
-        decomposedInput.append(String.valueOf(index));
+        decomposedInput.append(index);
         decomposedInput.append(Expression.PARSING_PLACEHOLDER_CHAR);
         state.addNode(expression);
         currentFragment.setLength(0);
@@ -363,11 +363,7 @@ final class ExpressionParsingUtil {
         }
 
         final GenericTokenExpression genericTokenExpr = GenericTokenExpression.parseGenericTokenExpression(token);
-        if (genericTokenExpr != null) {
-            return genericTokenExpr;
-        }
-
-        return null;
+        return genericTokenExpr;
 
     }
 
@@ -442,7 +438,7 @@ final class ExpressionParsingUtil {
                     final int nestedIndex = currentIndex++;
                     nestedInputs.add(Integer.valueOf(nestedIndex));
                     decomposedString.append(Expression.PARSING_PLACEHOLDER_CHAR);
-                    decomposedString.append(String.valueOf(nestedIndex));
+                    decomposedString.append(nestedIndex);
                     decomposedString.append(Expression.PARSING_PLACEHOLDER_CHAR);
                     state.addNode(currentFragment.toString());
                     currentFragment.setLength(0);

@@ -40,9 +40,9 @@ import org.thymeleaf.context.IExpressionContext;
 public interface IExpressionObjects {
 
 
-    public int size();
-    public boolean containsObject(final String name);
-    public Set<String> getObjectNames();
-    public Object getObject(final String name);
+    int size();
+    boolean containsObject(final String name);
+    Set<String> getObjectNames();
+    Object getObject(final String name);
 
 }

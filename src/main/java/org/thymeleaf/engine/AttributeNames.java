@@ -213,7 +213,7 @@ public class AttributeNames {
 
                 return TextAttributeName.forName(
                         attributeName.substring(0, i - 1),
-                        attributeName.substring(i, attributeName.length()));
+                        attributeName.substring(i));
             }
 
         }
@@ -249,7 +249,7 @@ public class AttributeNames {
 
                 return XMLAttributeName.forName(
                         attributeName.substring(0, i - 1),
-                        attributeName.substring(i, attributeName.length()));
+                        attributeName.substring(i));
             }
 
         }
@@ -291,7 +291,7 @@ public class AttributeNames {
 
                 return HTMLAttributeName.forName(
                         attributeName.substring(0, i - 1),
-                        attributeName.substring(i,attributeName.length()));
+                        attributeName.substring(i));
             }
 
             if (!inData && c == '-') {
@@ -312,7 +312,7 @@ public class AttributeNames {
                 }
                 return HTMLAttributeName.forName(
                         attributeName.substring(5, i - 1),
-                        attributeName.substring(i, attributeName.length()));
+                        attributeName.substring(i));
             }
 
         }

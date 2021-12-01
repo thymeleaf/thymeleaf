@@ -52,7 +52,7 @@ public final class DefaultExpression extends ComplexExpression {
 
     private static final String OPERATOR = "?:";
     // Future proof, just in case in the future we add other tokens as operators
-    static final String[] OPERATORS = new String[] {String.valueOf(OPERATOR)};
+    static final String[] OPERATORS = new String[] {OPERATOR};
 
     
     private final Expression queriedExpression;

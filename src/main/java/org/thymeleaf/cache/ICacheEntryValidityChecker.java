@@ -38,6 +38,6 @@ import java.io.Serializable;
  */
 public interface ICacheEntryValidityChecker<K,V> extends Serializable {
 
-    public boolean checkIsValueStillValid(final K key, final V value, final long entryCreationTimestamp);
+    boolean checkIsValueStillValid(final K key, final V value, final long entryCreationTimestamp);
 
 }

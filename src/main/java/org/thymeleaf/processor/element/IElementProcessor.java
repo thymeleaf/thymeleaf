@@ -57,7 +57,7 @@ public interface IElementProcessor extends IProcessor {
      *
      * @return the element name.
      */
-    public MatchingElementName getMatchingElementName();
+    MatchingElementName getMatchingElementName();
 
     /**
      * <p>
@@ -66,6 +66,6 @@ public interface IElementProcessor extends IProcessor {
      *
      * @return the attribute name.
      */
-    public MatchingAttributeName getMatchingAttributeName();
+    MatchingAttributeName getMatchingAttributeName();
 
 }

@@ -63,8 +63,8 @@ public final class DecoupledTemplateLogicBuilderMarkupHandler extends AbstractMa
 
     private boolean inLogicBody = false;
     private boolean inAttrTag = false;
-    private Selector selector = new Selector();
-    private List<DecoupledInjectedAttribute> currentInjectedAttributes = new ArrayList<DecoupledInjectedAttribute>(8);
+    private final Selector selector = new Selector();
+    private final List<DecoupledInjectedAttribute> currentInjectedAttributes = new ArrayList<DecoupledInjectedAttribute>(8);
 
 
 
@@ -313,7 +313,7 @@ public final class DecoupledTemplateLogicBuilderMarkupHandler extends AbstractMa
     private static final class Selector {
 
         private int level = -1;
-        private List<String> selectorLevels = new ArrayList<String>(5);
+        private final List<String> selectorLevels = new ArrayList<String>(5);
         private String currentSelector = null;
 
         Selector() {

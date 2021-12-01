@@ -47,7 +47,7 @@ public interface IInliner {
      *
      * @return the name of the inliner.
      */
-    public String getName();
+    String getName();
 
     /**
      * <p>
@@ -58,7 +58,7 @@ public interface IInliner {
      * @param text the event to be inlined.
      * @return the modified event (or the same event if no modifications were required)
      */
-    public CharSequence inline(final ITemplateContext context, final IText text);
+    CharSequence inline(final ITemplateContext context, final IText text);
 
     /**
      * <p>
@@ -69,7 +69,7 @@ public interface IInliner {
      * @param cdataSection the event to be inlined.
      * @return the modified event (or the same event if no modifications were required)
      */
-    public CharSequence inline(final ITemplateContext context, final ICDATASection cdataSection);
+    CharSequence inline(final ITemplateContext context, final ICDATASection cdataSection);
 
     /**
      * <p>
@@ -80,6 +80,6 @@ public interface IInliner {
      * @param comment the event to be inlined.
      * @return the modified event (or the same event if no modifications were required)
      */
-    public CharSequence inline(final ITemplateContext context, final IComment comment);
+    CharSequence inline(final ITemplateContext context, final IComment comment);
 
 }

@@ -85,7 +85,7 @@ final class OGNLExpressionObjectsWrapper extends HashMap<String, Object> {
 
     @Override
     public Object put(final String key, final Object value) {
-        if (this.expressionObjects.containsObject(key.toString())) {
+        if (this.expressionObjects.containsObject(key)) {
             throw new IllegalArgumentException(
                     "Cannot put entry with key \"" + key + "\" into Expression Objects wrapper map: key matches the " +
                     "name of one of the expression objects");

@@ -59,7 +59,7 @@ public interface IContext {
      *
      * @return the locale to be used.
      */
-    public Locale getLocale();
+    Locale getLocale();
 
     /**
      * <p>
@@ -69,7 +69,7 @@ public interface IContext {
      * @param name the name of the variable to be checked.
      * @return {@code true} if the variable is already contained, {@code false} if not.
      */
-    public boolean containsVariable(final String name);
+    boolean containsVariable(final String name);
 
     /**
      * <p>
@@ -78,7 +78,7 @@ public interface IContext {
      *
      * @return the variable names.
      */
-    public Set<String> getVariableNames();
+    Set<String> getVariableNames();
 
     /**
      * <p>
@@ -88,6 +88,6 @@ public interface IContext {
      * @param name the name of the variable to be retrieved.
      * @return the variable's value.
      */
-    public Object getVariable(final String name);
+    Object getVariable(final String name);
 
 }

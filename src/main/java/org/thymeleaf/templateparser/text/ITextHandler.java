@@ -32,18 +32,18 @@ public interface ITextHandler {
 
 
 
-    public void handleDocumentStart(final long startTimeNanos, final int line, final int col)
+    void handleDocumentStart(final long startTimeNanos, final int line, final int col)
             throws TextParseException;
 
 
-    public void handleDocumentEnd(
+    void handleDocumentEnd(
             final long endTimeNanos, final long totalTimeNanos, final int line, final int col)
             throws TextParseException;
 
 
 
 
-    public void handleText(
+    void handleText(
             final char[] buffer,
             final int offset, final int len,
             final int line, final int col)
@@ -51,7 +51,7 @@ public interface ITextHandler {
 
 
 
-    public void handleComment(
+    void handleComment(
             final char[] buffer,
             final int contentOffset, final int contentLen,
             final int outerOffset, final int outerLen,
@@ -60,14 +60,14 @@ public interface ITextHandler {
 
 
 
-    public void handleStandaloneElementStart(
+    void handleStandaloneElementStart(
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final boolean minimized,
             final int line, final int col)
             throws TextParseException;
 
-    public void handleStandaloneElementEnd(
+    void handleStandaloneElementEnd(
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final boolean minimized,
@@ -75,35 +75,35 @@ public interface ITextHandler {
             throws TextParseException;
 
 
-    public void handleOpenElementStart(
+    void handleOpenElementStart(
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int line, final int col)
             throws TextParseException;
 
-    public void handleOpenElementEnd(
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
-            final int line, final int col)
-            throws TextParseException;
-
-
-    public void handleCloseElementStart(
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
-            final int line, final int col)
-            throws TextParseException;
-
-    public void handleCloseElementEnd(
+    void handleOpenElementEnd(
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int line, final int col)
             throws TextParseException;
 
 
+    void handleCloseElementStart(
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
+            final int line, final int col)
+            throws TextParseException;
+
+    void handleCloseElementEnd(
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
+            final int line, final int col)
+            throws TextParseException;
 
 
-    public void handleAttribute(
+
+
+    void handleAttribute(
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int nameLine, final int nameCol,

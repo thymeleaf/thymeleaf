@@ -105,11 +105,11 @@ final class LiteralSubstitutionUtil {
                 // We are opening an expression
 
                 if (inLiteralSubstitution && inLiteralSubstitutionInsertion) {
-                    strBuilder.append("\' + ");
+                    strBuilder.append("' + ");
                     inLiteralSubstitutionInsertion = false;
                 } else if (inLiteralSubstitution && i > 0 && input.charAt(i - 1) == SimpleExpression.EXPRESSION_END_CHAR) {
                     // This expression is right after another one, with no characters between them
-                    strBuilder.append(" + \'\' + ");
+                    strBuilder.append(" + '' + ");
                 }
 
                 if (strBuilder != null) {

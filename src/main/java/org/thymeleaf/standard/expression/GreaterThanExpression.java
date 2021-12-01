@@ -106,8 +106,8 @@ public final class GreaterThanExpression extends GreaterLesserExpression {
         }
         
         if (logger.isTraceEnabled()) {
-            logger.trace("[THYMELEAF][{}] Evaluating GREATER THAN expression: \"{}\". Left is \"{}\", right is \"{}\". Result is \"{}\"", 
-                    new Object[] {TemplateEngine.threadIndex(), expression.getStringRepresentation(), leftValue, rightValue, result});
+            logger.trace("[THYMELEAF][{}] Evaluating GREATER THAN expression: \"{}\". Left is \"{}\", right is \"{}\". Result is \"{}\"",
+                    TemplateEngine.threadIndex(), expression.getStringRepresentation(), leftValue, rightValue, result);
         }
         
         return result; 

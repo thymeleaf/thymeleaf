@@ -102,11 +102,7 @@ public abstract class ElementDefinition {
 
         final ElementDefinition that = (ElementDefinition) o;
 
-        if (!this.elementName.equals(that.elementName)) {
-            return false;
-        }
-
-        return true;
+        return this.elementName.equals(that.elementName);
     }
 
 

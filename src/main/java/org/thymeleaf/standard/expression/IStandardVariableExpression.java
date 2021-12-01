@@ -28,7 +28,7 @@ package org.thymeleaf.standard.expression;
  */
 public interface IStandardVariableExpression {
 
-    public String getExpression();
-    public boolean getUseSelectionAsRoot();
+    String getExpression();
+    boolean getUseSelectionAsRoot();
 
 }

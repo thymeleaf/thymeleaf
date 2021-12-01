@@ -205,7 +205,7 @@ public class ElementNames {
 
                 return TextElementName.forName(
                         elementName.substring(0, i - 1),
-                        elementName.substring(i, elementName.length()));
+                        elementName.substring(i));
             }
 
         }
@@ -241,7 +241,7 @@ public class ElementNames {
 
                 return XMLElementName.forName(
                         elementName.substring(0, i - 1),
-                        elementName.substring(i, elementName.length()));
+                        elementName.substring(i));
             }
 
         }
@@ -282,7 +282,7 @@ public class ElementNames {
 
                 return HTMLElementName.forName(
                         elementName.substring(0, i - 1),
-                        elementName.substring(i,elementName.length()));
+                        elementName.substring(i));
             }
 
             if (c == '-') {
@@ -293,7 +293,7 @@ public class ElementNames {
                 }
                 return HTMLElementName.forName(
                         elementName.substring(0, i - 1),
-                        elementName.substring(i, elementName.length()));
+                        elementName.substring(i));
             }
 
         }

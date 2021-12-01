@@ -49,7 +49,7 @@ public interface IProcessableElementTag extends IElementTag {
      *
      * @return the array of attributes.
      */
-    public IAttribute[] getAllAttributes();
+    IAttribute[] getAllAttributes();
 
     /**
      * <p>
@@ -62,7 +62,7 @@ public interface IProcessableElementTag extends IElementTag {
      *
      * @return the map of attributes.
      */
-    public Map<String,String> getAttributeMap();
+    Map<String,String> getAttributeMap();
 
 
     /**
@@ -73,7 +73,7 @@ public interface IProcessableElementTag extends IElementTag {
      * @param completeName the complete name of the attribute that is being queried.
      * @return true if the attribute exists, false if not.
      */
-    public boolean hasAttribute(final String completeName);
+    boolean hasAttribute(final String completeName);
 
     /**
      * <p>
@@ -84,7 +84,7 @@ public interface IProcessableElementTag extends IElementTag {
      * @param name the name of tha attribute that is being queried.
      * @return true if the attribute exists, false if not.
      */
-    public boolean hasAttribute(final String prefix, final String name);
+    boolean hasAttribute(final String prefix, final String name);
 
     /**
      * <p>
@@ -94,7 +94,7 @@ public interface IProcessableElementTag extends IElementTag {
      * @param attributeName the name of the attribute that is being queried.
      * @return true if the attribute exists, false if not.
      */
-    public boolean hasAttribute(final AttributeName attributeName);
+    boolean hasAttribute(final AttributeName attributeName);
 
 
     /**
@@ -105,7 +105,7 @@ public interface IProcessableElementTag extends IElementTag {
      * @param completeName the complete name of the attribute that is being queried.
      * @return the {@link IAttribute} for the queried attribute, or null if it does not exist.
      */
-    public IAttribute getAttribute(final String completeName);
+    IAttribute getAttribute(final String completeName);
 
     /**
      * <p>
@@ -116,7 +116,7 @@ public interface IProcessableElementTag extends IElementTag {
      * @param name the name of tha attribute that is being queried.
      * @return the {@link IAttribute} for the queried attribute, or null if it does not exist.
      */
-    public IAttribute getAttribute(final String prefix, final String name);
+    IAttribute getAttribute(final String prefix, final String name);
 
     /**
      * <p>
@@ -126,7 +126,7 @@ public interface IProcessableElementTag extends IElementTag {
      * @param attributeName the name of the attribute that is being queried.
      * @return the {@link IAttribute} for the queried attribute, or null if it does not exist.
      */
-    public IAttribute getAttribute(final AttributeName attributeName);
+    IAttribute getAttribute(final AttributeName attributeName);
 
 
     /**
@@ -137,7 +137,7 @@ public interface IProcessableElementTag extends IElementTag {
      * @param completeName the complete name of the attribute that is being queried.
      * @return the value of the queried attribute, or null if it does not exist.
      */
-    public String getAttributeValue(final String completeName);
+    String getAttributeValue(final String completeName);
 
     /**
      * <p>
@@ -148,7 +148,7 @@ public interface IProcessableElementTag extends IElementTag {
      * @param name the name of tha attribute that is being queried.
      * @return the value of the queried attribute, or null if it does not exist.
      */
-    public String getAttributeValue(final String prefix, final String name);
+    String getAttributeValue(final String prefix, final String name);
 
     /**
      * <p>
@@ -158,6 +158,6 @@ public interface IProcessableElementTag extends IElementTag {
      * @param attributeName the name of the attribute that is being queried.
      * @return the value of the queried attribute, or null if it does not exist.
      */
-    public String getAttributeValue(final AttributeName attributeName);
+    String getAttributeValue(final AttributeName attributeName);
 
 }

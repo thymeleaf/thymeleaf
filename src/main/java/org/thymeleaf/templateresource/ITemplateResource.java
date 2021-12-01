@@ -74,7 +74,7 @@ public interface ITemplateResource {
      *
      * @return the resource description. Should never return {@code null}.
      */
-    public String getDescription();
+    String getDescription();
 
 
     /**
@@ -93,7 +93,7 @@ public interface ITemplateResource {
      *
      * @return the base name, or {@code null} if it cannot be computed for the specific type of resource.
      */
-    public String getBaseName();
+    String getBaseName();
 
 
     /**
@@ -114,7 +114,7 @@ public interface ITemplateResource {
      *
      * @return {@code true} if the resource exists, {@code false} if not.
      */
-    public boolean exists();
+    boolean exists();
 
 
     /**
@@ -133,7 +133,7 @@ public interface ITemplateResource {
      * @throws IOException if an input/output exception happens or if the resource does not exist (e.g.
      *                     {@link java.io.FileNotFoundException}).
      */
-    public Reader reader() throws IOException;
+    Reader reader() throws IOException;
 
 
     /**
@@ -148,6 +148,6 @@ public interface ITemplateResource {
      * @param relativeLocation the location of the resource we want to obtain, relative to the current one. Required.
      * @return the relative resource. Should never return {@code null}.
      */
-    public ITemplateResource relative(final String relativeLocation);
+    ITemplateResource relative(final String relativeLocation);
 
 }

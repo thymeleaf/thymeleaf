@@ -49,7 +49,7 @@ public interface IExpressionObjectFactory {
      *
      * @return the list of objects this factory can build.
      */
-    public Set<String> getAllExpressionObjectNames();
+    Set<String> getAllExpressionObjectNames();
 
     /**
      * <p>
@@ -60,7 +60,7 @@ public interface IExpressionObjectFactory {
      * @param expressionObjectName the name of the expression object to be built.
      * @return the built object, or {@code null} if the object could not be built.
      */
-    public Object buildObject(final IExpressionContext context, final String expressionObjectName);
+    Object buildObject(final IExpressionContext context, final String expressionObjectName);
 
     /**
      * <p>
@@ -74,6 +74,6 @@ public interface IExpressionObjectFactory {
      * @param expressionObjectName the name of the expression object.
      * @return {@code true} is the object is to be considered cacheable, {@code false} if not.
      */
-    public boolean isCacheable(final String expressionObjectName);
+    boolean isCacheable(final String expressionObjectName);
 
 }

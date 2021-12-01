@@ -41,7 +41,7 @@ public interface IDocType extends ITemplateEvent {
      *
      * @return the DOCTYPE keyword.
      */
-    public String getKeyword();
+    String getKeyword();
 
     /**
      * <p>
@@ -51,7 +51,7 @@ public interface IDocType extends ITemplateEvent {
      *
      * @return the element name
      */
-    public String getElementName();
+    String getElementName();
 
     /**
      * <p>
@@ -60,7 +60,7 @@ public interface IDocType extends ITemplateEvent {
      *
      * @return the type of DOCTYPE (might be null).
      */
-    public String getType();
+    String getType();
 
     /**
      * <p>
@@ -69,7 +69,7 @@ public interface IDocType extends ITemplateEvent {
      *
      * @return the PUBLIC ID (might be null).
      */
-    public String getPublicId();
+    String getPublicId();
 
     /**
      * <p>
@@ -78,7 +78,7 @@ public interface IDocType extends ITemplateEvent {
      *
      * @return the SYSTEM ID (might be null).
      */
-    public String getSystemId();
+    String getSystemId();
 
     /**
      * <p>
@@ -87,7 +87,7 @@ public interface IDocType extends ITemplateEvent {
      *
      * @return the internal subset (might be null).
      */
-    public String getInternalSubset();
+    String getInternalSubset();
 
     /**
      * <p>
@@ -96,6 +96,6 @@ public interface IDocType extends ITemplateEvent {
      *
      * @return the complete DOCTYPE clause.
      */
-    public String getDocType();
+    String getDocType();
 
 }

@@ -274,10 +274,7 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
         while (n-- > 1) { // variables at n == 0 are not local!
             if (this.maps[n] != null && this.maps[n].containsKey(name)) {
                 final Object result = this.maps[n].get(name);
-                if (result == NON_EXISTING) {
-                    return false; // We return false for "non existing"
-                }
-                return true;
+                return result != NON_EXISTING; // We return false for "non existing"
             }
         }
         return false; // We return false for "non existing"
@@ -586,7 +583,7 @@ public class EngineContext extends AbstractEngineContext implements IEngineConte
         }
         final String textInliningStr = (getInliner() != null? "[" + getInliner().getName() + "]" : "" );
         final String templateDataStr = "(" + getTemplateData().getTemplate() + ")";
-        return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "") + textInliningStr + templateDataStr;
+        return equivalentMap + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "") + textInliningStr + templateDataStr;
 
     }
 

@@ -56,7 +56,7 @@ public interface IStandardVariableExpressionEvaluator {
      * @param expContext the expression execution context to be applied (preprocessing, etc.)
      * @return the result of evaluating the expression.
      */
-    public Object evaluate(
+    Object evaluate(
             final IExpressionContext context,
             final IStandardVariableExpression expression,
             final StandardExpressionExecutionContext expContext);

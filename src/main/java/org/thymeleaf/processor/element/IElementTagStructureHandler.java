@@ -48,7 +48,7 @@ public interface IElementTagStructureHandler {
      *   Resets all actions specified so far for the current processor execution.
      * </p>
      */
-    public void reset();
+    void reset();
 
     /**
      * <p>
@@ -58,7 +58,7 @@ public interface IElementTagStructureHandler {
      * @param name the name of the variable.
      * @param value the value of the variable.
      */
-    public void setLocalVariable(final String name, final Object value);
+    void setLocalVariable(final String name, final Object value);
 
     /**
      * <p>
@@ -67,7 +67,7 @@ public interface IElementTagStructureHandler {
      *
      * @param name the name of the variable.
      */
-    public void removeLocalVariable(final String name);
+    void removeLocalVariable(final String name);
 
     /**
      * <p>
@@ -78,7 +78,7 @@ public interface IElementTagStructureHandler {
      * @param attributeName the name of the attribute.
      * @param attributeValue the value of the attribute.
      */
-    public void setAttribute(final String attributeName, final String attributeValue);
+    void setAttribute(final String attributeName, final String attributeValue);
 
     /**
      * <p>
@@ -90,7 +90,7 @@ public interface IElementTagStructureHandler {
      * @param attributeValue the value of the attribute.
      * @param attributeValueQuotes the type of quotes to be set for the attribute.
      */
-    public void setAttribute(final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
+    void setAttribute(final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
 
     /**
      * <p>
@@ -102,7 +102,7 @@ public interface IElementTagStructureHandler {
      * @param attributeName the name of the new attribute.
      * @param attributeValue the value of the new attribute.
      */
-    public void replaceAttribute(final AttributeName oldAttributeName, final String attributeName, final String attributeValue);
+    void replaceAttribute(final AttributeName oldAttributeName, final String attributeName, final String attributeValue);
 
     /**
      * <p>
@@ -115,7 +115,7 @@ public interface IElementTagStructureHandler {
      * @param attributeValue the value of the new attribute.
      * @param attributeValueQuotes the type of quotes to be set for the attribute.
      */
-    public void replaceAttribute(final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
+    void replaceAttribute(final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
 
     /**
      * <p>
@@ -124,7 +124,7 @@ public interface IElementTagStructureHandler {
      *
      * @param attributeName the complete name of the attribute to be removed.
      */
-    public void removeAttribute(final String attributeName);
+    void removeAttribute(final String attributeName);
 
     /**
      * <p>
@@ -134,7 +134,7 @@ public interface IElementTagStructureHandler {
      * @param prefix the prefix of the attribute to be removed.
      * @param name the name of the attribute to be removed.
      */
-    public void removeAttribute(final String prefix, final String name);
+    void removeAttribute(final String prefix, final String name);
 
     /**
      * <p>
@@ -143,7 +143,7 @@ public interface IElementTagStructureHandler {
      *
      * @param attributeName the name of the attribute to be removed.
      */
-    public void removeAttribute(final AttributeName attributeName);
+    void removeAttribute(final AttributeName attributeName);
 
 
     /**
@@ -162,7 +162,7 @@ public interface IElementTagStructureHandler {
      *
      * @param selectionTarget the selection target to be set.
      */
-    public void setSelectionTarget(final Object selectionTarget);
+    void setSelectionTarget(final Object selectionTarget);
 
     /**
      * <p>
@@ -179,7 +179,7 @@ public interface IElementTagStructureHandler {
      *
      * @param inliner the inliner.
      */
-    public void setInliner(final IInliner inliner);
+    void setInliner(final IInliner inliner);
 
     /**
      * <p>
@@ -196,7 +196,7 @@ public interface IElementTagStructureHandler {
      *
      * @param templateData the template data.
      */
-    public void setTemplateData(final TemplateData templateData);
+    void setTemplateData(final TemplateData templateData);
 
     /**
      * <p>
@@ -212,7 +212,7 @@ public interface IElementTagStructureHandler {
      *                    any {@link org.thymeleaf.processor.text.ITextProcessor} processors might be applied on it,
      *                    or not.
      */
-    public void setBody(final CharSequence text, final boolean processable);
+    void setBody(final CharSequence text, final boolean processable);
 
     /**
      * <p>
@@ -227,7 +227,7 @@ public interface IElementTagStructureHandler {
      * @param processable whether the model being set should be considered <em>processable</em>, and therefore
      *                    any processors might be applied on its events, or not.
      */
-    public void setBody(final IModel model, final boolean processable);
+    void setBody(final IModel model, final boolean processable);
 
     /**
      * <p>
@@ -241,7 +241,7 @@ public interface IElementTagStructureHandler {
      *
      * @param model the model to be inserted
      */
-    public void insertBefore(final IModel model);
+    void insertBefore(final IModel model);
 
     /**
      * <p>
@@ -258,7 +258,7 @@ public interface IElementTagStructureHandler {
      * @param processable whether the inserted model should be considered <em>processable</em> or not (i.e. whether
      *                    processors should be executed on it).
      */
-    public void insertImmediatelyAfter(final IModel model, final boolean processable);
+    void insertImmediatelyAfter(final IModel model, final boolean processable);
 
     /**
      * <p>
@@ -272,7 +272,7 @@ public interface IElementTagStructureHandler {
      * @param text the text to be used as a replacement.
      * @param processable whether the text should be considered <em>processable</em> or not.
      */
-    public void replaceWith(final CharSequence text, final boolean processable);
+    void replaceWith(final CharSequence text, final boolean processable);
 
     /**
      * <p>
@@ -286,7 +286,7 @@ public interface IElementTagStructureHandler {
      * @param model the model to be used as a replacement.
      * @param processable whether the model should be considered <em>processable</em> or not.
      */
-    public void replaceWith(final IModel model, final boolean processable);
+    void replaceWith(final IModel model, final boolean processable);
 
 
     /**
@@ -294,7 +294,7 @@ public interface IElementTagStructureHandler {
      *   Instructs the engine to remove the entire element that is being processed (open tag, body, close tag).
      * </p>
      */
-    public void removeElement();
+    void removeElement();
 
     /**
      * <p>
@@ -302,14 +302,14 @@ public interface IElementTagStructureHandler {
      *   keep the body.
      * </p>
      */
-    public void removeTags();
+    void removeTags();
 
     /**
      * <p>
      *   Instructs the engine to remove the body of the element being processed, but keep the open and close tags.
      * </p>
      */
-    public void removeBody();
+    void removeBody();
 
     /**
      * <p>
@@ -317,7 +317,7 @@ public interface IElementTagStructureHandler {
      *   first <em>element</em>, not text or others).
      * </p>
      */
-    public void removeAllButFirstChild();
+    void removeAllButFirstChild();
 
     /**
      * <p>
@@ -333,7 +333,6 @@ public interface IElementTagStructureHandler {
      * @param iterStatusVariableName the name of the iterations status variable.
      * @param iteratedObject the object to be iterated.
      */
-    public void iterateElement(final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject);
+    void iterateElement(final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject);
 
 }
-

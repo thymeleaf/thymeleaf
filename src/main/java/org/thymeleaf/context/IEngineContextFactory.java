@@ -83,7 +83,7 @@ public interface IEngineContextFactory {
      * @param context the context, normally the one used for calling the Template Engine itself.
      * @return a new, freshly built engine context instance.
      */
-    public IEngineContext createEngineContext(
+    IEngineContext createEngineContext(
             final IEngineConfiguration configuration, final TemplateData templateData,
             final Map<String, Object> templateResolutionAttributes, final IContext context);
 

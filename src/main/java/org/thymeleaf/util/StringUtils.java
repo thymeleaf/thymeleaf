@@ -185,7 +185,7 @@ public final class StringUtils {
         // The String constructor is called on purpose to avoid problems from
         // creating substrings out of large amounts of long Strings (creating
         // a substring does not free the memory occupied by the original String).
-        return new String(target.toString().substring(beginIndex, endIndex));
+        return target.toString().substring(beginIndex, endIndex);
 
     }
 
@@ -254,7 +254,7 @@ public final class StringUtils {
         // The String constructor is called on purpose to avoid problems from
         // creating substrings out of large amounts of long Strings (creating
         // a substring does not free the memory occupied by the original String).
-        return new String(str.substring(0, index));
+        return str.substring(0, index);
 
     }
 
@@ -327,7 +327,7 @@ public final class StringUtils {
             if (value == null) {
                 sb.append(nullValue);
             } else {
-                sb.append(value.toString());
+                sb.append(value);
             }
         }
 

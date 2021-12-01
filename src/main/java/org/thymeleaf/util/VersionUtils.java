@@ -138,17 +138,17 @@ public final class VersionUtils {
 
         private static final String UNKNOWN_VERSION = "UNKNOWN";
 
-        private boolean unknown;
+        private final boolean unknown;
 
-        private int major;
-        private int minor;
-        private int patch;
-        private String qualifier;
-        private String buildTimestamp;
+        private final int major;
+        private final int minor;
+        private final int patch;
+        private final String qualifier;
+        private final String buildTimestamp;
 
-        private String versionCore;
-        private String version;
-        private String fullVersion;
+        private final String versionCore;
+        private final String version;
+        private final String fullVersion;
 
 
 

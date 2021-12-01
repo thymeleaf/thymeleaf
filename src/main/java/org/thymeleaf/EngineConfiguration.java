@@ -338,7 +338,7 @@ public class EngineConfiguration implements IEngineConfiguration {
 
     private static final class TemplateResolverComparator implements Comparator<ITemplateResolver> {
 
-        private static TemplateResolverComparator INSTANCE = new TemplateResolverComparator();
+        private static final TemplateResolverComparator INSTANCE = new TemplateResolverComparator();
 
         TemplateResolverComparator() {
             super();
@@ -352,7 +352,7 @@ public class EngineConfiguration implements IEngineConfiguration {
 
     private static final class MessageResolverComparator implements Comparator<IMessageResolver> {
 
-        private static MessageResolverComparator INSTANCE = new MessageResolverComparator();
+        private static final MessageResolverComparator INSTANCE = new MessageResolverComparator();
 
         MessageResolverComparator() {
             super();
@@ -366,7 +366,7 @@ public class EngineConfiguration implements IEngineConfiguration {
 
     private static final class LinkBuilderComparator implements Comparator<ILinkBuilder> {
 
-        private static LinkBuilderComparator INSTANCE = new LinkBuilderComparator();
+        private static final LinkBuilderComparator INSTANCE = new LinkBuilderComparator();
 
         LinkBuilderComparator() {
             super();

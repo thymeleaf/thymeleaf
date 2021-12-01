@@ -79,7 +79,7 @@ public interface IElementTagProcessor extends IElementProcessor {
      * @param tag the event this processor is executing on.
      * @param structureHandler the handler that will centralise modifications and commands to the engine.
      */
-    public void process(
+    void process(
             final ITemplateContext context,
             final IProcessableElementTag tag, final IElementTagStructureHandler structureHandler);
 

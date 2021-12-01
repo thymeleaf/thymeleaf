@@ -79,7 +79,7 @@ public interface ICacheManager {
      * 
      * @return the cache of parsed templates.
      */
-    public ICache<TemplateCacheKey,TemplateModel> getTemplateCache();
+    ICache<TemplateCacheKey,TemplateModel> getTemplateCache();
 
     
     /**
@@ -103,7 +103,7 @@ public interface ICacheManager {
      * 
      * @return the cache of expression artifacts
      */
-    public ICache<ExpressionCacheKey,Object> getExpressionCache();
+    ICache<ExpressionCacheKey,Object> getExpressionCache();
 
     
     /**
@@ -128,7 +128,7 @@ public interface ICacheManager {
      * @param <V> the type of the cache values
      * @return the required cache
      */
-    public <K,V> ICache<K,V> getSpecificCache(final String name);
+    <K,V> ICache<K,V> getSpecificCache(final String name);
 
     
     /**
@@ -150,7 +150,7 @@ public interface ICacheManager {
      * @return a list with all the names of the "specific caches"
      * @since 2.0.16
      */
-    public List<String> getAllSpecificCacheNames();
+    List<String> getAllSpecificCacheNames();
 
     
     /**
@@ -165,7 +165,7 @@ public interface ICacheManager {
      * 
      * @since 2.0.16
      */
-    public void clearAllCaches();
+    void clearAllCaches();
     
     
 }

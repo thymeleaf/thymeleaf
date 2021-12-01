@@ -48,7 +48,7 @@ public interface ICache<K, V> {
      * @param key the key of the new entry
      * @param value the value to be cached
      */
-    public void put(final K key, final V value);
+    void put(final K key, final V value);
     
     /**
      * <p>
@@ -58,7 +58,7 @@ public interface ICache<K, V> {
      * @param key the key of the value to be retrieved
      * @return the retrieved value, or null if no value exists for the specified key.
      */
-    public V get(final K key);
+    V get(final K key);
     
     /**
      * <p>
@@ -72,14 +72,14 @@ public interface ICache<K, V> {
      * @param validityChecker the validity checker to be used to ensure the entry is still valid.
      * @return the retrieved value, or null if no value exists for the specified key.
      */
-    public V get(final K key, final ICacheEntryValidityChecker<? super K, ? super V> validityChecker);
+    V get(final K key, final ICacheEntryValidityChecker<? super K, ? super V> validityChecker);
     
     /**
      * <p>
      *   Clear the entire cache.   
      * </p>
      */
-    public void clear();
+    void clear();
     
     /**
      * <p>
@@ -88,7 +88,7 @@ public interface ICache<K, V> {
      * 
      * @param key the key of the entry to be cleared.
      */
-    public void clearKey(final K key);
+    void clearKey(final K key);
 
     /**
      * <p>
@@ -100,6 +100,6 @@ public interface ICache<K, V> {
      * @return the complete set of cache keys. Might include keys for already-invalid (non-cleaned) entries.
      * @since 3.0.0
      */
-    public Set<K> keySet();
+    Set<K> keySet();
 
 }

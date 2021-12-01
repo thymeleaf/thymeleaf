@@ -52,7 +52,7 @@ public interface IStandardExpressionParser {
      * @param input the expression to be parsed, as an input String.
      * @return the expression object resulting from parsing the expression.
      */
-    public IStandardExpression parseExpression(
+    IStandardExpression parseExpression(
             final IExpressionContext context, final String input);
 
 }

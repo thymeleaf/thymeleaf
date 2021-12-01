@@ -44,7 +44,7 @@ public interface ITemplateBoundariesStructureHandler {
      *   Resets all actions specified so far for the current processor execution.
      * </p>
      */
-    public void reset();
+    void reset();
 
     /**
      * <p>
@@ -54,7 +54,7 @@ public interface ITemplateBoundariesStructureHandler {
      * @param name the name of the variable.
      * @param value the value of the variable.
      */
-    public void setLocalVariable(final String name, final Object value);
+    void setLocalVariable(final String name, final Object value);
 
     /**
      * <p>
@@ -63,7 +63,7 @@ public interface ITemplateBoundariesStructureHandler {
      *
      * @param name the name of the variable.
      */
-    public void removeLocalVariable(final String name);
+    void removeLocalVariable(final String name);
 
     /**
      * <p>
@@ -81,7 +81,7 @@ public interface ITemplateBoundariesStructureHandler {
      *
      * @param selectionTarget the selection target to be set.
      */
-    public void setSelectionTarget(final Object selectionTarget);
+    void setSelectionTarget(final Object selectionTarget);
 
     /**
      * <p>
@@ -98,7 +98,7 @@ public interface ITemplateBoundariesStructureHandler {
      *
      * @param inliner the inliner.
      */
-    public void setInliner(final IInliner inliner);
+    void setInliner(final IInliner inliner);
 
     /**
      * <p>
@@ -114,7 +114,7 @@ public interface ITemplateBoundariesStructureHandler {
      * @param text the text to be inserted.
      * @param processable whether the inserted text should be considered <em>processable</em> or not.
      */
-    public void insert(final String text, final boolean processable);
+    void insert(final String text, final boolean processable);
 
     /**
      * <p>
@@ -130,7 +130,6 @@ public interface ITemplateBoundariesStructureHandler {
      * @param model the model to be inserted.
      * @param processable whether the inserted text should be considered <em>processable</em> or not.
      */
-    public void insert(final IModel model, final boolean processable);
+    void insert(final IModel model, final boolean processable);
 
 }
-

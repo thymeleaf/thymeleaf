@@ -63,7 +63,7 @@ import org.thymeleaf.util.Validate;
  *   This is the only implementation of {@link ITemplateEngine} provided out of the box by Thymeleaf.
  * </p>
  *
- * <h3>Creating an instance of {@code TemplateEngine}</h3>
+ * <h2>Creating an instance of {@code TemplateEngine}</h2>
  * <p>
  *   An instance of this class can be created at any time by calling its constructor:
  * </p>
@@ -76,7 +76,7 @@ import org.thymeleaf.util.Validate;
  *   dialect/configuration) and use it to process multiple templates.
  * </p>
  * 
- * <h3>Configuring the {@code TemplateEngine}</h3>
+ * <h2>Configuring the {@code TemplateEngine}</h2>
  * <p>
  *   Once created, an instance of {@code TemplateEngine} has to be typically configured a
  *   mechanism for <em>resolving templates</em> (i.e. obtaining and reading them):
@@ -131,8 +131,8 @@ import org.thymeleaf.util.Validate;
  *  caches will be used.
  * </p>
  * 
- * <h3>Template Execution</h3>
- * <h4>1. Creating a context</h4>
+ * <h2>Template Execution</h2>
+ * <h3>1. Creating a context</h3>
  * <p>
  *   All template executions require a <i>context</i>. A context is an object that
  *   implements the {@link IContext} interface, and that contains at least the following
@@ -172,8 +172,8 @@ import org.thymeleaf.util.Validate;
  * </code>
  * <p>
  *   A {@link org.thymeleaf.context.WebContext} would also need 
- *   {@link javax.servlet.http.HttpServletRequest}, {@link javax.servlet.http.HttpServletResponse} and
- *   {@link javax.servlet.ServletContext} objects as constructor arguments: 
+ *   {@link jakarta.servlet.http.HttpServletRequest}, {@link jakarta.servlet.http.HttpServletResponse} and
+ *   {@link jakarta.servlet.ServletContext} objects as constructor arguments: 
  * </p>
  * <code>
  *   final WebContext ctx = new WebContext(request, response, servletContext);<br>
@@ -183,7 +183,7 @@ import org.thymeleaf.util.Validate;
  *   See the documentation for these specific implementations for more details.
  * </p>
  * 
- * <h4>2. Template Processing</h4>
+ * <h3>2. Template Processing</h3>
  * <p>
  *   In order to execute templates, the different {@code process(...)} methods should
  *   be used. Those are mostly divided into two blocks: those that return the template processing
@@ -1089,7 +1089,7 @@ public class TemplateEngine implements ITemplateEngine {
 
             if (logger.isTraceEnabled()) {
                 logger.trace("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH LOCALE {}",
-                        new Object[]{TemplateEngine.threadIndex(), templateSpec, context.getLocale()});
+                        TemplateEngine.threadIndex(), templateSpec, context.getLocale());
             }
 
             final long startNanos = System.nanoTime();
@@ -1101,7 +1101,7 @@ public class TemplateEngine implements ITemplateEngine {
             
             if (logger.isTraceEnabled()) {
                 logger.trace("[THYMELEAF][{}] FINISHED PROCESS AND OUTPUT OF TEMPLATE \"{}\" WITH LOCALE {}",
-                        new Object[]{TemplateEngine.threadIndex(), templateSpec, context.getLocale()});
+                        TemplateEngine.threadIndex(), templateSpec, context.getLocale());
             }
 
             if (timerLogger.isTraceEnabled()) {
@@ -1109,10 +1109,9 @@ public class TemplateEngine implements ITemplateEngine {
                 final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(NANOS_IN_SECOND), RoundingMode.HALF_UP);
                 timerLogger.trace(
                         "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH LOCALE {} PROCESSED IN {} nanoseconds (approx. {}ms)",
-                        new Object[]{
-                                TemplateEngine.threadIndex(),
-                                LoggingUtils.loggifyTemplateName(templateSpec.getTemplate()), context.getLocale(), elapsed, elapsedMs,
-                                templateSpec, context.getLocale(), elapsed, elapsedMs});
+                        TemplateEngine.threadIndex(),
+                        LoggingUtils.loggifyTemplateName(templateSpec.getTemplate()), context.getLocale(), elapsed, elapsedMs,
+                        templateSpec, context.getLocale(), elapsed, elapsedMs);
             }
 
             /*
@@ -1127,19 +1126,19 @@ public class TemplateEngine implements ITemplateEngine {
         } catch (final TemplateOutputException e) {
 
             // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
-            logger.error(String.format("[THYMELEAF][%s] Exception processing template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), templateSpec, e.getMessage()}), e);
+            logger.error(String.format("[THYMELEAF][%s] Exception processing template \"%s\": %s", TemplateEngine.threadIndex(), templateSpec, e.getMessage()), e);
             throw e;
             
         } catch (final TemplateEngineException e) {
 
             // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
-            logger.error(String.format("[THYMELEAF][%s] Exception processing template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), templateSpec, e.getMessage()}), e);
+            logger.error(String.format("[THYMELEAF][%s] Exception processing template \"%s\": %s", TemplateEngine.threadIndex(), templateSpec, e.getMessage()), e);
             throw e;
             
         } catch (final RuntimeException e) {
 
             // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
-            logger.error(String.format("[THYMELEAF][%s] Exception processing template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), templateSpec, e.getMessage()}), e);
+            logger.error(String.format("[THYMELEAF][%s] Exception processing template \"%s\": %s", TemplateEngine.threadIndex(), templateSpec, e.getMessage()), e);
             throw new TemplateProcessingException("Exception processing template", templateSpec.toString(), e);
             
         }
@@ -1175,7 +1174,7 @@ public class TemplateEngine implements ITemplateEngine {
 
             if (logger.isTraceEnabled()) {
                 logger.trace("[THYMELEAF][{}] STARTING PREPARATION OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}",
-                        new Object[]{TemplateEngine.threadIndex(), templateSpec, context.getLocale()});
+                        TemplateEngine.threadIndex(), templateSpec, context.getLocale());
             }
 
             final long startNanos = System.nanoTime();
@@ -1187,7 +1186,7 @@ public class TemplateEngine implements ITemplateEngine {
 
             if (logger.isTraceEnabled()) {
                 logger.trace("[THYMELEAF][{}] FINISHED PREPARATION OF THROTTLED TEMPLATE \"{}\" WITH LOCALE {}",
-                        new Object[]{TemplateEngine.threadIndex(), templateSpec, context.getLocale()});
+                        TemplateEngine.threadIndex(), templateSpec, context.getLocale());
             }
 
             if (timerLogger.isTraceEnabled()) {
@@ -1195,28 +1194,27 @@ public class TemplateEngine implements ITemplateEngine {
                 final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(NANOS_IN_SECOND), RoundingMode.HALF_UP);
                 timerLogger.trace(
                         "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH LOCALE {} PREPARED FOR THROTTLED PROCESSING IN {} nanoseconds (approx. {}ms)",
-                        new Object[]{
-                                TemplateEngine.threadIndex(),
-                                LoggingUtils.loggifyTemplateName(templateSpec.getTemplate()), context.getLocale(), elapsed, elapsedMs,
-                                templateSpec, context.getLocale(), elapsed, elapsedMs});
+                        TemplateEngine.threadIndex(),
+                        LoggingUtils.loggifyTemplateName(templateSpec.getTemplate()), context.getLocale(), elapsed, elapsedMs,
+                        templateSpec, context.getLocale(), elapsed, elapsedMs);
             }
 
         } catch (final TemplateOutputException e) {
 
             // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
-            logger.error(String.format("[THYMELEAF][%s] Exception preparing throttled template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), templateSpec, e.getMessage()}), e);
+            logger.error(String.format("[THYMELEAF][%s] Exception preparing throttled template \"%s\": %s", TemplateEngine.threadIndex(), templateSpec, e.getMessage()), e);
             throw e;
 
         } catch (final TemplateEngineException e) {
 
             // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
-            logger.error(String.format("[THYMELEAF][%s] Exception preparing throttled template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), templateSpec, e.getMessage()}), e);
+            logger.error(String.format("[THYMELEAF][%s] Exception preparing throttled template \"%s\": %s", TemplateEngine.threadIndex(), templateSpec, e.getMessage()), e);
             throw e;
 
         } catch (final RuntimeException e) {
 
             // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
-            logger.error(String.format("[THYMELEAF][%s] Exception preparing throttled template \"%s\": %s", new Object[] {TemplateEngine.threadIndex(), templateSpec, e.getMessage()}), e);
+            logger.error(String.format("[THYMELEAF][%s] Exception preparing throttled template \"%s\": %s", TemplateEngine.threadIndex(), templateSpec, e.getMessage()), e);
             throw new TemplateProcessingException("Exception preparing throttled template", templateSpec.toString(), e);
 
         }

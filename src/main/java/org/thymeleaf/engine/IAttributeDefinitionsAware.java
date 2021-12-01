@@ -39,6 +39,6 @@ package org.thymeleaf.engine;
  */
 public interface IAttributeDefinitionsAware {
 
-    public void setAttributeDefinitions(final AttributeDefinitions attributeDefinitions);
+    void setAttributeDefinitions(final AttributeDefinitions attributeDefinitions);
 
 }

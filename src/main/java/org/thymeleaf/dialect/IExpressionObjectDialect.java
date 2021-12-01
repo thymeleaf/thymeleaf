@@ -30,6 +30,6 @@ import org.thymeleaf.expression.IExpressionObjectFactory;
  */
 public interface IExpressionObjectDialect extends IDialect {
 
-    public IExpressionObjectFactory getExpressionObjectFactory();
+    IExpressionObjectFactory getExpressionObjectFactory();
 
 }

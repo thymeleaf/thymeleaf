@@ -53,7 +53,7 @@ public interface IPostProcessor {
      *
      * @return the template mode.
      */
-    public TemplateMode getTemplateMode();
+    TemplateMode getTemplateMode();
 
     /**
      * <p>
@@ -64,7 +64,7 @@ public interface IPostProcessor {
      *
      * @return the post-processor precedence.
      */
-    public int getPrecedence();
+    int getPrecedence();
 
     /**
      * <p>
@@ -79,6 +79,6 @@ public interface IPostProcessor {
      *
      * @return the handler class.
      */
-    public Class<? extends ITemplateHandler> getHandlerClass();
+    Class<? extends ITemplateHandler> getHandlerClass();
 
 }

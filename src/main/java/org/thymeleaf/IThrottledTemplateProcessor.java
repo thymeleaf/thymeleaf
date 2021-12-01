@@ -74,7 +74,7 @@ public interface IThrottledTemplateProcessor {
      *
      * @since 3.0.3
      */
-    public String getProcessorIdentifier();
+    String getProcessorIdentifier();
 
     /**
      * <p>
@@ -85,7 +85,7 @@ public interface IThrottledTemplateProcessor {
      *
      * @since 3.0.3
      */
-    public TemplateSpec getTemplateSpec();
+    TemplateSpec getTemplateSpec();
 
     /**
      * <p>
@@ -101,7 +101,7 @@ public interface IThrottledTemplateProcessor {
      *
      * @return true if the template has already been fully processed, false if not.
      */
-    public boolean isFinished();
+    boolean isFinished();
 
     /**
      * <p>
@@ -110,7 +110,7 @@ public interface IThrottledTemplateProcessor {
      * @param writer the writer output should be written to.
      * @return the amount of bytes written to output.
      */
-    public int processAll(final Writer writer);
+    int processAll(final Writer writer);
 
     /**
      * <p>
@@ -120,7 +120,7 @@ public interface IThrottledTemplateProcessor {
      * @param charset the charset to be used for encoding the written output into bytes.
      * @return the amount of bytes written to output.
      */
-    public int processAll(final OutputStream outputStream, final Charset charset);
+    int processAll(final OutputStream outputStream, final Charset charset);
 
     /**
      * <p>
@@ -132,7 +132,7 @@ public interface IThrottledTemplateProcessor {
      * @param writer the writer output should be written to.
      * @return the amount of bytes written to output.
      */
-    public int process(final int maxOutputInChars, final Writer writer);
+    int process(final int maxOutputInChars, final Writer writer);
 
     /**
      * <p>
@@ -145,7 +145,7 @@ public interface IThrottledTemplateProcessor {
      * @param charset the charset to be used for encoding the written output into bytes.
      * @return the amount of bytes written to output.
      */
-    public int process(final int maxOutputInBytes, final OutputStream outputStream, final Charset charset);
+    int process(final int maxOutputInBytes, final OutputStream outputStream, final Charset charset);
 
 
 }

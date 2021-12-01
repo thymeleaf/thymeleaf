@@ -50,7 +50,7 @@ public interface IAttribute {
      *
      * @return the complete name.
      */
-    public String getAttributeCompleteName();
+    String getAttributeCompleteName();
 
     /**
      * <p>
@@ -65,7 +65,7 @@ public interface IAttribute {
      *
      * @return the attribute definition.
      */
-    public AttributeDefinition getAttributeDefinition();
+    AttributeDefinition getAttributeDefinition();
 
     /**
      * <p>
@@ -83,7 +83,7 @@ public interface IAttribute {
      *
      * @return the attribute operator (might be null if no value specified).
      */
-    public String getOperator();
+    String getOperator();
 
     /**
      * <p>
@@ -95,7 +95,7 @@ public interface IAttribute {
      *
      * @return the value of this attribute, or null if it has none.
      */
-    public String getValue();
+    String getValue();
 
     /**
      * <p>
@@ -104,7 +104,7 @@ public interface IAttribute {
      *
      * @return the {@link AttributeValueQuotes} value representing the attribute value quotes (might be null).
      */
-    public AttributeValueQuotes getValueQuotes();
+    AttributeValueQuotes getValueQuotes();
 
     /**
      * <p>
@@ -118,7 +118,7 @@ public interface IAttribute {
      *
      * @return whether the attribute contains location data or not.
      */
-    public boolean hasLocation();
+    boolean hasLocation();
 
     /**
      * <p>
@@ -127,7 +127,7 @@ public interface IAttribute {
      *
      * @return the name of the template
      */
-    public String getTemplateName();
+    String getTemplateName();
 
     /**
      * <p>
@@ -136,7 +136,7 @@ public interface IAttribute {
      *
      * @return the line number, starting in 1.
      */
-    public int getLine();
+    int getLine();
 
     /**
      * <p>
@@ -145,7 +145,7 @@ public interface IAttribute {
      *
      * @return the column number, starting in 1.
      */
-    public int getCol();
+    int getCol();
 
     /**
      * <p>
@@ -158,7 +158,7 @@ public interface IAttribute {
      * @param writer the writer this attribute should be written to.
      * @throws IOException if an input/output exception occurs.
      */
-    public void write(final Writer writer) throws IOException;
+    void write(final Writer writer) throws IOException;
 
 
 }

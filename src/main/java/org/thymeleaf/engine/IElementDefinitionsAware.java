@@ -39,6 +39,6 @@ package org.thymeleaf.engine;
  */
 public interface IElementDefinitionsAware {
 
-    public void setElementDefinitions(final ElementDefinitions elementDefinitions);
+    void setElementDefinitions(final ElementDefinitions elementDefinitions);
 
 }

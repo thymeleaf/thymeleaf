@@ -54,7 +54,7 @@ public interface IPreProcessor {
      *
      * @return the template mode.
      */
-    public TemplateMode getTemplateMode();
+    TemplateMode getTemplateMode();
 
     /**
      * <p>
@@ -65,7 +65,7 @@ public interface IPreProcessor {
      *
      * @return the pre-processor precedence.
      */
-    public int getPrecedence();
+    int getPrecedence();
 
     /**
      * <p>
@@ -80,6 +80,6 @@ public interface IPreProcessor {
      *
      * @return the handler class.
      */
-    public Class<? extends ITemplateHandler> getHandlerClass();
+    Class<? extends ITemplateHandler> getHandlerClass();
 
 }

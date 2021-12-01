@@ -50,7 +50,7 @@ public interface ICacheEntryValidity {
      * @return {@code true} if the parsed template can be included into the cache,
      *         {@code false} if not.
      */
-    public boolean isCacheable();
+    boolean isCacheable();
 
     
     /**
@@ -67,6 +67,6 @@ public interface ICacheEntryValidity {
      * 
      * @return whether the template resolution can be still considered valid or not.
      */
-    public boolean isCacheStillValid();
+    boolean isCacheStillValid();
     
 }

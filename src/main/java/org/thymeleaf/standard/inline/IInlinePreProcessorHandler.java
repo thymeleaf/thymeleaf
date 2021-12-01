@@ -30,7 +30,7 @@ package org.thymeleaf.standard.inline;
 public interface IInlinePreProcessorHandler {
 
 
-    public void handleText(
+    void handleText(
             final char[] buffer,
             final int offset, final int len,
             final int line, final int col);
@@ -53,66 +53,66 @@ public interface IInlinePreProcessorHandler {
 
 
 
-    public void handleStandaloneElementStart(
+    void handleStandaloneElementStart(
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final boolean minimized,
             final int line, final int col);
 
-    public void handleStandaloneElementEnd(
+    void handleStandaloneElementEnd(
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final boolean minimized,
             final int line, final int col);
 
 
-    public void handleOpenElementStart(
+    void handleOpenElementStart(
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int line, final int col);
 
-    public void handleOpenElementEnd(
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
-            final int line, final int col);
-
-
-    public void handleAutoOpenElementStart(
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
-            final int line, final int col);
-
-    public void handleAutoOpenElementEnd(
+    void handleOpenElementEnd(
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int line, final int col);
 
 
-    public void handleCloseElementStart(
+    void handleAutoOpenElementStart(
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int line, final int col);
 
-    public void handleCloseElementEnd(
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
-            final int line, final int col);
-
-
-    public void handleAutoCloseElementStart(
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
-            final int line, final int col);
-
-    public void handleAutoCloseElementEnd(
+    void handleAutoOpenElementEnd(
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int line, final int col);
 
 
+    void handleCloseElementStart(
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
+            final int line, final int col);
+
+    void handleCloseElementEnd(
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
+            final int line, final int col);
 
 
-    public void handleAttribute(
+    void handleAutoCloseElementStart(
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
+            final int line, final int col);
+
+    void handleAutoCloseElementEnd(
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
+            final int line, final int col);
+
+
+
+
+    void handleAttribute(
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int nameLine, final int nameCol,

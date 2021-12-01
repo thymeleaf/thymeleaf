@@ -847,7 +847,7 @@ public final class TemplateManager {
                 if (logger.isTraceEnabled()) {
                     logger.trace(
                             "[THYMELEAF][{}] Template resolver match! Resolver \"{}\" will resolve template \"{}\"",
-                            new Object[] {TemplateEngine.threadIndex(), templateResolver.getName(), LoggingUtils.loggifyTemplateName(template)});
+                            TemplateEngine.threadIndex(), templateResolver.getName(), LoggingUtils.loggifyTemplateName(template));
                 }
                 return templateResolution;
             }
@@ -855,7 +855,7 @@ public final class TemplateManager {
             if (logger.isTraceEnabled()) {
                     logger.trace(
                             "[THYMELEAF][{}] Skipping template resolver \"{}\" for template \"{}\"",
-                            new Object[] {TemplateEngine.threadIndex(), templateResolver.getName(), LoggingUtils.loggifyTemplateName(template)});
+                            TemplateEngine.threadIndex(), templateResolver.getName(), LoggingUtils.loggifyTemplateName(template));
             }
 
         }

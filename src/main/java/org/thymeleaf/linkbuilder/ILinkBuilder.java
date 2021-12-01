@@ -56,7 +56,7 @@ public interface ILinkBuilder {
      * 
      * @return the name of the link builder
      */
-    public String getName();
+    String getName();
 
 
     /**
@@ -67,7 +67,7 @@ public interface ILinkBuilder {
      * 
      * @return the order of this builder in the chain.
      */
-    public Integer getOrder();
+    Integer getOrder();
 
 
     /**
@@ -80,7 +80,7 @@ public interface ILinkBuilder {
      * @param parameters the (optional) URL parameters.
      * @return the built URL.
      */
-    public String buildLink(
+    String buildLink(
             final IExpressionContext context, final String base, final Map<String, Object> parameters);
 
 }

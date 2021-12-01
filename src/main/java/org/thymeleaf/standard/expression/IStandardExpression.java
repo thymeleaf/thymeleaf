@@ -52,7 +52,7 @@ public interface IStandardExpression {
      *
      * @return the String representation
      */
-    public String getStringRepresentation();
+    String getStringRepresentation();
 
     /**
      * <p>
@@ -62,7 +62,7 @@ public interface IStandardExpression {
      * @param context the context object.
      * @return the result of executing the expression.
      */
-    public Object execute(
+    Object execute(
             final IExpressionContext context);
 
     /**
@@ -74,7 +74,7 @@ public interface IStandardExpression {
      * @param expContext the expression execution context to be applied (preprocessing, etc.)
      * @return the result of executing the expression.
      */
-    public Object execute(
+    Object execute(
             final IExpressionContext context,
             final StandardExpressionExecutionContext expContext);
 

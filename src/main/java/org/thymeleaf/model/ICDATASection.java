@@ -40,7 +40,7 @@ public interface ICDATASection extends ITemplateEvent, CharSequence {
      *
      * @return the CDATA Section.
      */
-    public String getCDATASection();
+    String getCDATASection();
 
     /**
      * <p>
@@ -49,6 +49,6 @@ public interface ICDATASection extends ITemplateEvent, CharSequence {
      *
      * @return the content of the CDATA Section.
      */
-    public String getContent();
+    String getContent();
 
 }

@@ -70,7 +70,7 @@ public interface IStandardConversionService {
      * @param targetClass the target class the object should be converted to.
      * @return the object, converted. Or an exception if the conversion has not been possible.
      */
-    public <T> T convert(final IExpressionContext context,
-                         final Object object, final Class<T> targetClass);
+    <T> T convert(final IExpressionContext context,
+                  final Object object, final Class<T> targetClass);
 
 }

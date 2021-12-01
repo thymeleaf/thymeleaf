@@ -44,7 +44,7 @@ final class EventProcessorTextHandler extends AbstractChainedTextHandler {
     // Will be used as an element name cache in order to avoid creating a new
     // char[] object each time an element is pushed into the stack or an attribute
     // is processed to check its uniqueness.
-    private StructureNamesRepository structureNamesRepository;
+    private final StructureNamesRepository structureNamesRepository;
 
     private char[][] elementStack;
     private int elementStackSize;

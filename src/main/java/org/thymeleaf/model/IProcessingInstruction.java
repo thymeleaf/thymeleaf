@@ -40,7 +40,7 @@ public interface IProcessingInstruction extends ITemplateEvent {
      *
      * @return the Processing Instruction target.
      */
-    public String getTarget();
+    String getTarget();
 
     /**
      * <p>
@@ -49,7 +49,7 @@ public interface IProcessingInstruction extends ITemplateEvent {
      *
      * @return the Processing Instruction content.
      */
-    public String getContent();
+    String getContent();
 
     /**
      * <p>
@@ -58,6 +58,6 @@ public interface IProcessingInstruction extends ITemplateEvent {
      *
      * @return the complete Processing Instruction.
      */
-    public String getProcessingInstruction();
+    String getProcessingInstruction();
 
 }

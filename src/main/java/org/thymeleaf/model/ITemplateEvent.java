@@ -53,7 +53,7 @@ public interface ITemplateEvent {
      *
      * @return whether the event contains location data or not.
      */
-    public boolean hasLocation();
+    boolean hasLocation();
 
     /**
      * <p>
@@ -62,7 +62,7 @@ public interface ITemplateEvent {
      *
      * @return the name of the template
      */
-    public String getTemplateName();
+    String getTemplateName();
 
     /**
      * <p>
@@ -71,7 +71,7 @@ public interface ITemplateEvent {
      *
      * @return the line number, starting in 1.
      */
-    public int getLine();
+    int getLine();
 
     /**
      * <p>
@@ -80,7 +80,7 @@ public interface ITemplateEvent {
      *
      * @return the column number, starting in 1.
      */
-    public int getCol();
+    int getCol();
 
 
     /**
@@ -90,7 +90,7 @@ public interface ITemplateEvent {
      *
      * @param visitor the visitor.
      */
-    public void accept(final IModelVisitor visitor);
+    void accept(final IModelVisitor visitor);
 
 
     /**
@@ -105,6 +105,6 @@ public interface ITemplateEvent {
      * @param writer the writer this event should be written to.
      * @throws IOException if an input/output exception occurs.
      */
-    public void write(final Writer writer) throws IOException;
+    void write(final Writer writer) throws IOException;
 
 }

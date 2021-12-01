@@ -55,7 +55,7 @@ public interface IModelFactory {
      *
      * @return the new model.
      */
-    public IModel createModel();
+    IModel createModel();
 
     /**
      * <p>
@@ -65,7 +65,7 @@ public interface IModelFactory {
      * @param event the event to be put into the newly created model.
      * @return the new model.
      */
-    public IModel createModel(final ITemplateEvent event);
+    IModel createModel(final ITemplateEvent event);
 
 
     /**
@@ -83,7 +83,7 @@ public interface IModelFactory {
      * @param template the String containing the contents of the template to be parsed.
      * @return the {@link IModel} representing the parsed template.
      */
-    public IModel parse(final TemplateData ownerTemplate, final String template);
+    IModel parse(final TemplateData ownerTemplate, final String template);
 
     /**
      * <p>
@@ -93,7 +93,7 @@ public interface IModelFactory {
      * @param content the content (i.e. without prefix or suffix) of the new CDATA Section.
      * @return the new CDATA Section.
      */
-    public ICDATASection createCDATASection(final CharSequence content);
+    ICDATASection createCDATASection(final CharSequence content);
 
     /**
      * <p>
@@ -103,7 +103,7 @@ public interface IModelFactory {
      * @param content the content (i.e. without prefix or suffix) of the new Comment.
      * @return the new Comment.
      */
-    public IComment createComment(final CharSequence content);
+    IComment createComment(final CharSequence content);
 
     /**
      * <p>
@@ -112,7 +112,7 @@ public interface IModelFactory {
      *
      * @return the new DOCTYPE, corresponding with an HTML5 DOCTYPE clause.
      */
-    public IDocType createHTML5DocType();
+    IDocType createHTML5DocType();
 
     /**
      * <p>
@@ -123,7 +123,7 @@ public interface IModelFactory {
      * @param systemId the system ID to be applied (might be null if public ID is also null).
      * @return the new DOCTPYE.
      */
-    public IDocType createDocType(final String publicId, final String systemId);
+    IDocType createDocType(final String publicId, final String systemId);
 
     /**
      * <p>
@@ -137,7 +137,7 @@ public interface IModelFactory {
      * @param internalSubset the internal subset (might be null).
      * @return the new DOCTYPE.
      */
-    public IDocType createDocType(
+    IDocType createDocType(
             final String keyword,
             final String elementName,
             final String publicId,
@@ -153,7 +153,7 @@ public interface IModelFactory {
      * @param content the content value.
      * @return the new Processing Instruction.
      */
-    public IProcessingInstruction createProcessingInstruction(final String target, final String content);
+    IProcessingInstruction createProcessingInstruction(final String target, final String content);
 
     /**
      * <p>
@@ -163,7 +163,7 @@ public interface IModelFactory {
      * @param text the text contents.
      * @return the new Text.
      */
-    public IText createText(final CharSequence text);
+    IText createText(final CharSequence text);
 
     /**
      * <p>
@@ -175,7 +175,7 @@ public interface IModelFactory {
      * @param standalone the standalone value (might be null).
      * @return the new XML Declaration.
      */
-    public IXMLDeclaration createXMLDeclaration(final String version, final String encoding, final String standalone);
+    IXMLDeclaration createXMLDeclaration(final String version, final String encoding, final String standalone);
 
 
     /**
@@ -190,7 +190,7 @@ public interface IModelFactory {
      * @param elementName the element name.
      * @return the standalone tag.
      */
-    public IStandaloneElementTag createStandaloneElementTag(final String elementName);
+    IStandaloneElementTag createStandaloneElementTag(final String elementName);
 
     /**
      * <p>
@@ -206,7 +206,7 @@ public interface IModelFactory {
      * @param attributeValue the value of the attribute to be added to the tag.
      * @return the standalone tag.
      */
-    public IStandaloneElementTag createStandaloneElementTag(final String elementName, final String attributeName, final String attributeValue);
+    IStandaloneElementTag createStandaloneElementTag(final String elementName, final String attributeName, final String attributeValue);
 
     /**
      * <p>
@@ -220,7 +220,7 @@ public interface IModelFactory {
      *                  {@code >}.
      * @return the standalone tag.
      */
-    public IStandaloneElementTag createStandaloneElementTag(final String elementName, final boolean synthetic, final boolean minimized);
+    IStandaloneElementTag createStandaloneElementTag(final String elementName, final boolean synthetic, final boolean minimized);
 
     /**
      * <p>
@@ -236,7 +236,7 @@ public interface IModelFactory {
      *                  {@code >}.
      * @return the standalone tag.
      */
-    public IStandaloneElementTag createStandaloneElementTag(final String elementName, final String attributeName, final String attributeValue, final boolean synthetic, final boolean minimized);
+    IStandaloneElementTag createStandaloneElementTag(final String elementName, final String attributeName, final String attributeValue, final boolean synthetic, final boolean minimized);
 
     /**
      * <p>
@@ -252,7 +252,7 @@ public interface IModelFactory {
      *                  {@code >}.
      * @return the standalone tag.
      */
-    public IStandaloneElementTag createStandaloneElementTag(final String elementName, final Map<String,String> attributes, final AttributeValueQuotes attributeValueQuotes, final boolean synthetic, final boolean minimized);
+    IStandaloneElementTag createStandaloneElementTag(final String elementName, final Map<String, String> attributes, final AttributeValueQuotes attributeValueQuotes, final boolean synthetic, final boolean minimized);
 
 
     /**
@@ -267,7 +267,7 @@ public interface IModelFactory {
      * @param elementName the element name.
      * @return the open tag.
      */
-    public IOpenElementTag createOpenElementTag(final String elementName);
+    IOpenElementTag createOpenElementTag(final String elementName);
 
     /**
      * <p>
@@ -283,7 +283,7 @@ public interface IModelFactory {
      * @param attributeValue the value of the attribute to be added to the tag.
      * @return the open tag.
      */
-    public IOpenElementTag createOpenElementTag(final String elementName, final String attributeName, final String attributeValue);
+    IOpenElementTag createOpenElementTag(final String elementName, final String attributeName, final String attributeValue);
 
     /**
      * <p>
@@ -295,7 +295,7 @@ public interface IModelFactory {
      *                  will not appear on output.
      * @return the open tag.
      */
-    public IOpenElementTag createOpenElementTag(final String elementName, final boolean synthetic);
+    IOpenElementTag createOpenElementTag(final String elementName, final boolean synthetic);
 
     /**
      * <p>
@@ -309,7 +309,7 @@ public interface IModelFactory {
      *                  will not appear on output.
      * @return the open tag.
      */
-    public IOpenElementTag createOpenElementTag(final String elementName, final String attributeName, final String attributeValue, final boolean synthetic);
+    IOpenElementTag createOpenElementTag(final String elementName, final String attributeName, final String attributeValue, final boolean synthetic);
 
     /**
      * <p>
@@ -323,7 +323,7 @@ public interface IModelFactory {
      *                  will not appear on output.
      * @return the open tag.
      */
-    public IOpenElementTag createOpenElementTag(final String elementName, final Map<String,String> attributes, final AttributeValueQuotes attributeValueQuotes, final boolean synthetic);
+    IOpenElementTag createOpenElementTag(final String elementName, final Map<String, String> attributes, final AttributeValueQuotes attributeValueQuotes, final boolean synthetic);
 
 
     /**
@@ -338,7 +338,7 @@ public interface IModelFactory {
      * @param elementName the element name.
      * @return the close tag.
      */
-    public ICloseElementTag createCloseElementTag(final String elementName);
+    ICloseElementTag createCloseElementTag(final String elementName);
 
 
     /**
@@ -353,7 +353,7 @@ public interface IModelFactory {
      *                  previous open tag for it.
      * @return the close tag.
      */
-    public ICloseElementTag createCloseElementTag(final String elementName, final boolean synthetic, final boolean unmatched);
+    ICloseElementTag createCloseElementTag(final String elementName, final boolean synthetic, final boolean unmatched);
 
 
     /**
@@ -371,7 +371,7 @@ public interface IModelFactory {
      * @param <T> the type of the original and new tags.
      * @return the new tag.
      */
-    public <T extends IProcessableElementTag> T setAttribute(final T tag, final String attributeName, final String attributeValue);
+    <T extends IProcessableElementTag> T setAttribute(final T tag, final String attributeName, final String attributeValue);
 
     /**
      * <p>
@@ -390,7 +390,7 @@ public interface IModelFactory {
      * @param <T> the type of the original and new tags.
      * @return the new tag.
      */
-    public <T extends IProcessableElementTag> T setAttribute(final T tag, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
+    <T extends IProcessableElementTag> T setAttribute(final T tag, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
 
     /**
      * <p>
@@ -413,7 +413,7 @@ public interface IModelFactory {
      * @param <T> the type of the original and new tags.
      * @return the new tag.
      */
-    public <T extends IProcessableElementTag> T replaceAttribute(final T tag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue);
+    <T extends IProcessableElementTag> T replaceAttribute(final T tag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue);
 
     /**
      * <p>
@@ -438,7 +438,7 @@ public interface IModelFactory {
      * @param <T> the type of the original and new tags.
      * @return the new tag.
      */
-    public <T extends IProcessableElementTag> T replaceAttribute(final T tag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
+    <T extends IProcessableElementTag> T replaceAttribute(final T tag, final AttributeName oldAttributeName, final String attributeName, final String attributeValue, final AttributeValueQuotes attributeValueQuotes);
 
     /**
      * <p>
@@ -457,7 +457,7 @@ public interface IModelFactory {
      * @param <T> the type of the original and new tags.
      * @return the new tag.
      */
-    public <T extends IProcessableElementTag> T removeAttribute(final T tag, final String attributeName);
+    <T extends IProcessableElementTag> T removeAttribute(final T tag, final String attributeName);
 
     /**
      * <p>
@@ -477,7 +477,7 @@ public interface IModelFactory {
      * @param <T> the type of the original and new tags.
      * @return the new tag.
      */
-    public <T extends IProcessableElementTag> T removeAttribute(final T tag, final String prefix, final String name);
+    <T extends IProcessableElementTag> T removeAttribute(final T tag, final String prefix, final String name);
 
     /**
      * <p>
@@ -496,7 +496,7 @@ public interface IModelFactory {
      * @param <T> the type of the original and new tags.
      * @return the new tag.
      */
-    public <T extends IProcessableElementTag> T removeAttribute(final T tag, final AttributeName attributeName);
+    <T extends IProcessableElementTag> T removeAttribute(final T tag, final AttributeName attributeName);
 
 
 }

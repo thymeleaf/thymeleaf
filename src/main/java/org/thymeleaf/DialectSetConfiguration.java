@@ -329,7 +329,7 @@ final class DialectSetConfiguration {
                         }
                         try {
                             // Check the empty constructor is present -- we will need to use it for creating new instances
-                            handlerClass.getConstructor(new Class[0]);
+                            handlerClass.getConstructor();
                         } catch (final NoSuchMethodException e) {
                             throw new ConfigurationException(
                                     "Pre-Processor class " + handlerClass.getName() + " specified for " +
@@ -394,7 +394,7 @@ final class DialectSetConfiguration {
                         }
                         try {
                             // Check the empty constructor is present -- we will need to use it for creating new instances
-                            handlerClass.getConstructor(new Class[0]);
+                            handlerClass.getConstructor();
                         } catch (final NoSuchMethodException e) {
                             throw new ConfigurationException(
                                     "Post-Processor class " + handlerClass.getName() + " specified for " +
@@ -808,4 +808,3 @@ final class DialectSetConfiguration {
 
 
 }
-

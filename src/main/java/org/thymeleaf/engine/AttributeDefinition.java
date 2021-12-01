@@ -103,11 +103,7 @@ public abstract class AttributeDefinition {
 
         final AttributeDefinition that = (AttributeDefinition) o;
 
-        if (!this.attributeName.equals(that.attributeName)) {
-            return false;
-        }
-
-        return true;
+        return this.attributeName.equals(that.attributeName);
     }
 
 
