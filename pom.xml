@@ -219,8 +219,6 @@
           <overview>${basedir}/src/main/javadoc/overview.html</overview>
           <javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
           <reportOutputDirectory>${project.build.directory}/apidocs</reportOutputDirectory>
-          <!-- This will avoid adding a folder level for the base module name. Note: Support removed in JDK 13 -->
-          <!--<additionalJOption>::double minus but not supported in comment::- -no-module-directories</additionalJOption>-->
         </configuration>
         <executions>
           <execution>
