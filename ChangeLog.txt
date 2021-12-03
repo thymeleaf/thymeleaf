@@ -1,5 +1,6 @@
 3.0.14
 ======
+- Fixed inconsistent restricted variable access check due to caching.
 - Improved detection of restricted expression execution scenarios.
 
 
