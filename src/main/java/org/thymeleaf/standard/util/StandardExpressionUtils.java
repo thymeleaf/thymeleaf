@@ -124,7 +124,7 @@ public final class StandardExpressionUtils {
                     return true;
                 }
                 si = n;
-            } else if (si > n && !(Character.isJavaIdentifierPart(c) || c == '.')) {
+            } else if (si > n && !(Character.isJavaIdentifierPart(c) || Character.isWhitespace(c) || c == '.')) {
                 si = -1;
             }
 

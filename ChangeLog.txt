@@ -1,3 +1,8 @@
+3.0.14
+======
+- Improved detection of restricted expression execution scenarios.
+
+
 3.0.13
 ======
 (no relevant changes in core module)
