@@ -259,6 +259,12 @@ public class SPELVariableExpressionEvaluator
             final IStandardVariableExpression expression, final String spelExpression,
             final StandardExpressionExecutionContext expContext) {
 
+        if (expContext.getRestrictInstantiationAndStatic()
+                && SpringStandardExpressionUtils.containsSpELInstantiationOrStatic(spelExpression)) {
+            throw new TemplateProcessingException(
+                    "Instantiation of new objects and access to static classes is forbidden in this context");
+        }
+
         if (expression instanceof VariableExpression) {
 
             final VariableExpression vexpression = (VariableExpression) expression;
@@ -267,7 +273,7 @@ public class SPELVariableExpressionEvaluator
             if (cachedExpression != null && cachedExpression instanceof ComputedSpelExpression) {
                 return (ComputedSpelExpression) cachedExpression;
             }
-            cachedExpression = getExpression(configuration, spelExpression, expContext);
+            cachedExpression = getExpression(configuration, spelExpression);
             if (cachedExpression != null) {
                 vexpression.setCachedExpression(cachedExpression);
             }
@@ -283,7 +289,7 @@ public class SPELVariableExpressionEvaluator
             if (cachedExpression != null && cachedExpression instanceof ComputedSpelExpression) {
                 return (ComputedSpelExpression) cachedExpression;
             }
-            cachedExpression = getExpression(configuration, spelExpression, expContext);
+            cachedExpression = getExpression(configuration, spelExpression);
             if (cachedExpression != null) {
                 vexpression.setCachedExpression(cachedExpression);
             }
@@ -291,14 +297,13 @@ public class SPELVariableExpressionEvaluator
 
         }
 
-        return getExpression(configuration, spelExpression, expContext);
+        return getExpression(configuration, spelExpression);
 
     }
 
 
     private static ComputedSpelExpression getExpression(
-            final IEngineConfiguration configuration,
-            final String spelExpression, final StandardExpressionExecutionContext expContext) {
+            final IEngineConfiguration configuration, final String spelExpression) {
 
         ComputedSpelExpression exp = null;
         ICache<ExpressionCacheKey, Object> cache = null;
@@ -312,12 +317,6 @@ public class SPELVariableExpressionEvaluator
         }
 
         if (exp == null) {
-
-            if (expContext.getRestrictInstantiationAndStatic()
-                    && SpringStandardExpressionUtils.containsSpELInstantiationOrStatic(spelExpression)) {
-                throw new TemplateProcessingException(
-                        "Instantiation of new objects and access to static classes is forbidden in this context");
-            }
 
             final boolean mightNeedExpressionObjects = StandardExpressionUtils.mightNeedExpressionObjects(spelExpression);
 
