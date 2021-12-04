@@ -79,6 +79,13 @@ public final class StandardEngineContextFactory implements IEngineContextFactory
                         webContext.getRequest(), webContext.getResponse(), webContext.getServletContext(),
                         webContext.getLocale(), Collections.EMPTY_MAP);
             }
+            if (context instanceof IJakartaWebContext) {
+                final IJakartaWebContext webContext = (IJakartaWebContext)context;
+                return new JakartaWebEngineContext(
+                        configuration, templateData, templateResolutionAttributes,
+                        webContext.getRequest(), webContext.getResponse(), webContext.getServletContext(),
+                        webContext.getLocale(), Collections.EMPTY_MAP);
+            }
             return new EngineContext(
                     configuration, templateData, templateResolutionAttributes,
                     context.getLocale(), Collections.EMPTY_MAP);
@@ -91,6 +98,13 @@ public final class StandardEngineContextFactory implements IEngineContextFactory
         if (context instanceof IWebContext) {
             final IWebContext webContext = (IWebContext)context;
             return new WebEngineContext(
+                    configuration, templateData, templateResolutionAttributes,
+                    webContext.getRequest(), webContext.getResponse(), webContext.getServletContext(),
+                    webContext.getLocale(), variables);
+        }
+        if (context instanceof IJakartaWebContext) {
+            final IJakartaWebContext webContext = (IJakartaWebContext)context;
+            return new JakartaWebEngineContext(
                     configuration, templateData, templateResolutionAttributes,
                     webContext.getRequest(), webContext.getResponse(), webContext.getServletContext(),
                     webContext.getLocale(), variables);
