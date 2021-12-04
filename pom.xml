@@ -94,7 +94,7 @@
   </distributionManagement>
 
   <properties>
-    <java.version>6</java.version>
+    <java.version>8</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven.compiler.release>${java.version}</maven.compiler.release>
