@@ -31,9 +31,11 @@ public final class SpringStandardExpressionUtils {
 
     private static final char[] NEW_ARRAY = "wen".toCharArray(); // Inverted "new"
     private static final int NEW_LEN = NEW_ARRAY.length;
+    private static final char[] PARAM_ARRAY = "marap".toCharArray(); // Inverted "param"
+    private static final int PARAM_LEN = PARAM_ARRAY.length;
 
 
-    public static boolean containsSpELInstantiationOrStatic(final String expression) {
+    public static boolean containsSpELInstantiationOrStaticOrParam(final String expression) {
 
         /*
          * Checks whether the expression contains instantiation of objects ("new SomeClass") or makes use of
@@ -43,6 +45,7 @@ public final class SpringStandardExpressionUtils {
         final int explen = expression.length();
         int n = explen;
         int ni = 0; // index for computing position in the NEW_ARRAY
+        int pi = 0; // index for computing position in the PARAM_ARRAY
         char c;
         while (n-- != 0) {
 
@@ -69,6 +72,27 @@ public final class SpringStandardExpressionUtils {
             }
 
             ni = 0;
+
+            // When checking for the "param" keyword, we need to identify that it is not a part of a larger
+            // identifier.
+            if (pi < PARAM_LEN
+                    && c == PARAM_ARRAY[pi]
+                    && (pi > 0 || ((n + 1 < explen) && !isSafeIdentifierChar(expression.charAt(n + 1))))) {
+                pi++;
+                if (pi == PARAM_LEN && (n == 0 || !isSafeIdentifierChar(expression.charAt(n - 1)))) {
+                    return true; // we found a param access
+                }
+                continue;
+            }
+
+            if (pi > 0) {
+                // We 'restart' the matching counter just in case we had a partial match
+                n += pi;
+                pi = 0;
+                continue;
+            }
+
+            pi = 0;
 
             if (c == '(' && ((n - 1 >= 0) && isPreviousStaticMarker(expression, n))) {
                 return true;

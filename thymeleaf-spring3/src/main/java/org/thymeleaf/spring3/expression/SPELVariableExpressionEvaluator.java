@@ -260,9 +260,9 @@ public class SPELVariableExpressionEvaluator
             final StandardExpressionExecutionContext expContext) {
 
         if (expContext.getRestrictInstantiationAndStatic()
-                && SpringStandardExpressionUtils.containsSpELInstantiationOrStatic(spelExpression)) {
+                && SpringStandardExpressionUtils.containsSpELInstantiationOrStaticOrParam(spelExpression)) {
             throw new TemplateProcessingException(
-                    "Instantiation of new objects and access to static classes is forbidden in this context");
+                "Instantiation of new objects and access to static classes or parameters is forbidden in this context");
         }
 
         if (expression instanceof VariableExpression) {
