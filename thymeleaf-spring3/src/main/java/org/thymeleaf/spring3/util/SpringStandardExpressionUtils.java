@@ -43,7 +43,6 @@ public final class SpringStandardExpressionUtils {
         final int explen = expression.length();
         int n = explen;
         int ni = 0; // index for computing position in the NEW_ARRAY
-        int si = -1;
         char c;
         while (n-- != 0) {
 
@@ -56,7 +55,7 @@ public final class SpringStandardExpressionUtils {
                     && c == NEW_ARRAY[ni]
                     && (ni > 0 || ((n + 1 < explen) && Character.isWhitespace(expression.charAt(n + 1))))) {
                 ni++;
-                if (ni == NEW_LEN && (n == 0 || !Character.isJavaIdentifierPart(expression.charAt(n - 1)))) {
+                if (ni == NEW_LEN && (n == 0 || !isSafeIdentifierChar(expression.charAt(n - 1)))) {
                     return true; // we found an object instantiation
                 }
                 continue;
@@ -66,22 +65,13 @@ public final class SpringStandardExpressionUtils {
                 // We 'restart' the matching counter just in case we had a partial match
                 n += ni;
                 ni = 0;
-                if (si < n) {
-                    // This has to be restarted too
-                    si = -1;
-                }
                 continue;
             }
 
             ni = 0;
 
-            if (c == ')') {
-                si = n;
-            } else if (si > n && c == '('
-                        && ((n - 1 >= 0) && isPreviousStaticMarker(expression, n))) {
+            if (c == '(' && ((n - 1 >= 0) && isPreviousStaticMarker(expression, n))) {
                 return true;
-            } else if (si > n && !(Character.isJavaIdentifierPart(c) || c == '.')) {
-                si = -1;
             }
 
         }
@@ -101,12 +91,17 @@ public final class SpringStandardExpressionUtils {
                     return true;
                 }
                 c1 = expression.charAt(n - 1);
-                return !((c1 >= 'A' && c1 <= 'Z') || (c1 >= 'a' && c1 <= 'z') || (c1 >= '0' && c1 <= '9') || c1 == '_');
+                return !isSafeIdentifierChar(c1);
             } else if (!Character.isWhitespace(c)) {
                 return false;
             }
         }
         return false;
+    }
+
+
+    private static boolean isSafeIdentifierChar(final char c) {
+        return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_';
     }
 
 
