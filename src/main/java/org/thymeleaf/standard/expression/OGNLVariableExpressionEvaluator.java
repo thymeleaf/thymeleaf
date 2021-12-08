@@ -203,9 +203,9 @@ public final class OGNLVariableExpressionEvaluator
             final boolean applyOGNLShortcuts) throws OgnlException {
 
         if (expContext.getRestrictInstantiationAndStatic()
-                && StandardExpressionUtils.containsOGNLInstantiationOrStatic(exp)) {
+                && StandardExpressionUtils.containsOGNLInstantiationOrStaticOrParam(exp)) {
             throw new TemplateProcessingException(
-                    "Instantiation of new objects and access to static classes is forbidden in this context");
+                "Instantiation of new objects and access to static classes or parameters is forbidden in this context");
         }
 
         if (expression instanceof VariableExpression) {
