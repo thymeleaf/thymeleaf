@@ -24,7 +24,7 @@
   <groupId>org.thymeleaf</groupId>
   <artifactId>thymeleaf-dist</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.13.RELEASE</version>
+  <version>3.0.14.RELEASE</version>
   <name>thymeleaf-dist</name>
   <url>http://www.thymeleaf.org</url>
 
