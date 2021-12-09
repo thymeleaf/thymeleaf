@@ -43,7 +43,7 @@ import javax.servlet.http.HttpSession;
  * @since 3.0.0
  *
  */
-public interface IWebContext extends IContext {
+public interface IJavaxWebContext extends IContext {
 
     /**
      * <p>

@@ -34,8 +34,8 @@ import org.thymeleaf.util.Validate;
  * </p>
  * <p>
  *   This factory will examine the {@code context} being passed as a parameter and, depending on whether
- *   this context object implements the {@link IWebContext} interface or not (i.e. whether support for the
- *   Servlet API should be enabled or not), return a {@link WebEngineContext} or an {@link EngineContext}
+ *   this context object implements the {@link IJavaxWebContext} interface or not (i.e. whether support for the
+ *   Servlet API should be enabled or not), return a {@link JavaxWebEngineContext} or an {@link EngineContext}
  *   instance as a result.
  * </p>
  * <p>
@@ -72,9 +72,9 @@ public final class StandardEngineContextFactory implements IEngineContextFactory
         final Set<String> variableNames = context.getVariableNames();
 
         if (variableNames == null || variableNames.isEmpty()) {
-            if (context instanceof IWebContext) {
-                final IWebContext webContext = (IWebContext)context;
-                return new WebEngineContext(
+            if (context instanceof IJavaxWebContext) {
+                final IJavaxWebContext webContext = (IJavaxWebContext)context;
+                return new JavaxWebEngineContext(
                         configuration, templateData, templateResolutionAttributes,
                         webContext.getRequest(), webContext.getResponse(), webContext.getServletContext(),
                         webContext.getLocale(), Collections.EMPTY_MAP);
@@ -88,9 +88,9 @@ public final class StandardEngineContextFactory implements IEngineContextFactory
         for (final String variableName : variableNames) {
             variables.put(variableName, context.getVariable(variableName));
         }
-        if (context instanceof IWebContext) {
-            final IWebContext webContext = (IWebContext)context;
-            return new WebEngineContext(
+        if (context instanceof IJavaxWebContext) {
+            final IJavaxWebContext webContext = (IJavaxWebContext)context;
+            return new JavaxWebEngineContext(
                     configuration, templateData, templateResolutionAttributes,
                     webContext.getRequest(), webContext.getResponse(), webContext.getServletContext(),
                     webContext.getLocale(), variables);

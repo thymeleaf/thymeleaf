@@ -64,7 +64,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public class WebEngineContext extends AbstractEngineContext implements IEngineContext, IWebContext {
+public class JavaxWebEngineContext extends AbstractEngineContext implements IEngineContext, IJavaxWebContext {
 
     /*
      * ---------------------------------------------------------------------------
@@ -107,7 +107,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
      * </p>
      * <p>
      *   Note that implementations of {@link IEngineContext} are not meant to be used in order to call
-     *   the template engine (use implementations of {@link IContext} such as {@link Context} or {@link WebContext}
+     *   the template engine (use implementations of {@link IContext} such as {@link Context} or {@link JavaxWebContext}
      *   instead). This is therefore mostly an <b>internal</b> implementation, and users should have no reason
      *   to ever call this constructor except in very specific integration/extension scenarios.
      * </p>
@@ -121,7 +121,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
      * @param locale the locale.
      * @param variables the context variables, probably coming from another {@link IContext} implementation.
      */
-    public WebEngineContext(
+    public JavaxWebEngineContext(
             final IEngineConfiguration configuration,
             final TemplateData templateData,
             final Map<String,Object> templateResolutionAttributes,
