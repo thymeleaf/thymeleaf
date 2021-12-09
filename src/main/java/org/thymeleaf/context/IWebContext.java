@@ -19,11 +19,6 @@
  */
 package org.thymeleaf.context;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 /**
  * <p>
  *   Specialization of the {@link IContext} interface to be implemented by contexts used for template
@@ -43,51 +38,9 @@ import javax.servlet.http.HttpSession;
  * @since 3.0.0
  *
  */
-public interface IJavaxWebContext extends IWebContext {
+public interface IWebContext extends IContext {
 
-    default String getContextPath() {
-        return getRequest().getContextPath();
-    }
+	String getContextPath();
 
-    default String encodeURL(String link) {
-        return getResponse().encodeURL(link);
-    }
-
-    /**
-     * <p>
-     *   Returns the {@link HttpServletRequest} object associated with the template execution.
-     * </p>
-     *
-     * @return the request object.
-     */
-    public HttpServletRequest getRequest();
-
-    /**
-     * <p>
-     *   Returns the {@link HttpServletResponse} object associated with the template execution.
-     * </p>
-     *
-     * @return the response object.
-     */
-    public HttpServletResponse getResponse();
-
-    /**
-     * <p>
-     *   Returns the {@link HttpSession} object associated with the template execution, or null if
-     *   there is no session.
-     * </p>
-     *
-     * @return the session object. Might be null if no session has been created.
-     */
-    public HttpSession getSession();
-
-    /**
-     * <p>
-     *   Returns the {@link ServletContext} object associated with the template execution.
-     * </p>
-     *
-     * @return the servlet context object.
-     */
-    public ServletContext getServletContext();
-
+	String encodeURL(String link);
 }
