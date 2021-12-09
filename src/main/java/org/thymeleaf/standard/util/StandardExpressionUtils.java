@@ -34,6 +34,8 @@ public final class StandardExpressionUtils {
 
     private static final char[] NEW_ARRAY = "wen".toCharArray(); // Inverted "new"
     private static final int NEW_LEN = NEW_ARRAY.length;
+    private static final char[] PARAM_ARRAY = "marap".toCharArray(); // Inverted "param"
+    private static final int PARAM_LEN = PARAM_ARRAY.length;
 
 
     public static boolean mightNeedExpressionObjects(final String expression) {
@@ -77,7 +79,7 @@ public final class StandardExpressionUtils {
      *
      * @since 3.0.12
      */
-    public static boolean containsOGNLInstantiationOrStatic(final String expression) {
+    public static boolean containsOGNLInstantiationOrStaticOrParam(final String expression) {
 
         /*
          * Checks whether the expression contains instantiation of objects ("new SomeClass") or makes use of
@@ -87,6 +89,7 @@ public final class StandardExpressionUtils {
         final int explen = expression.length();
         int n = explen;
         int ni = 0; // index for computing position in the NEW_ARRAY
+        int pi = 0; // index for computing position in the PARAM_ARRAY
         int si = -1;
         char c;
         while (n-- != 0) {
@@ -100,7 +103,7 @@ public final class StandardExpressionUtils {
                     && c == NEW_ARRAY[ni]
                     && (ni > 0 || ((n + 1 < explen) && Character.isWhitespace(expression.charAt(n + 1))))) {
                 ni++;
-                if (ni == NEW_LEN && (n == 0 || !Character.isJavaIdentifierPart(expression.charAt(n - 1)))) {
+                if (ni == NEW_LEN && (n == 0 || !isSafeIdentifierChar(expression.charAt(n - 1)))) {
                     return true; // we found an object instantiation
                 }
                 continue;
@@ -119,12 +122,33 @@ public final class StandardExpressionUtils {
 
             ni = 0;
 
+            // When checking for the "param" keyword, we need to identify that it is not a part of a larger
+            // identifier.
+            if (pi < PARAM_LEN
+                    && c == PARAM_ARRAY[pi]
+                    && (pi > 0 || ((n + 1 < explen) && !isSafeIdentifierChar(expression.charAt(n + 1))))) {
+                pi++;
+                if (pi == PARAM_LEN && (n == 0 || !isSafeIdentifierChar(expression.charAt(n - 1)))) {
+                    return true; // we found a param access
+                }
+                continue;
+            }
+
+            if (pi > 0) {
+                // We 'restart' the matching counter just in case we had a partial match
+                n += pi;
+                pi = 0;
+                continue;
+            }
+
+            pi = 0;
+
             if (c == '@') {
                 if (si > n) {
                     return true;
                 }
                 si = n;
-            } else if (si > n && !(Character.isJavaIdentifierPart(c) || c == '.')) {
+            } else if (si > n && !(Character.isJavaIdentifierPart(c) || Character.isWhitespace(c) || c == '.')) {
                 si = -1;
             }
 
@@ -132,6 +156,11 @@ public final class StandardExpressionUtils {
 
         return false;
 
+    }
+
+
+    private static boolean isSafeIdentifierChar(final char c) {
+        return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_';
     }
 
 

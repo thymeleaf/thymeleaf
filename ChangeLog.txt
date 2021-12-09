@@ -1,3 +1,9 @@
+3.0.14
+======
+- Fixed inconsistent restricted variable access check due to caching.
+- Improved detection of restricted expression execution scenarios.
+
+
 3.0.13
 ======
 (no relevant changes in core module)
