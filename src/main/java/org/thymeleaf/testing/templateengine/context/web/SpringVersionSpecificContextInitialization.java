@@ -41,10 +41,8 @@ final class SpringVersionSpecificContextInitialization {
     private static Logger LOG = LoggerFactory.getLogger(SpringVersionSpecificContextInitialization.class);
 
     private static final String PACKAGE_NAME = SpringVersionSpecificContextInitialization.class.getPackage().getName();
-    private static final String SPRING4_DELEGATE_CLASS = PACKAGE_NAME + ".Spring4VersionSpecificContextInitializer";
     private static final String SPRING5_DELEGATE_CLASS = PACKAGE_NAME + ".Spring5VersionSpecificContextInitializer";
 
-    private static final ISpringVersionSpecificContextInitializer spring4Delegate;
     private static final ISpringVersionSpecificContextInitializer spring5Delegate;
 
 
@@ -59,30 +57,11 @@ final class SpringVersionSpecificContextInitialization {
             try {
                 final Class<?> implClass = ClassLoaderUtils.loadClass(SPRING5_DELEGATE_CLASS);
                 spring5Delegate = (ISpringVersionSpecificContextInitializer) implClass.newInstance();
-                spring4Delegate = null;
             } catch (final Exception e) {
                 throw new ExceptionInInitializerError(
                         new ConfigurationException(
                                 "Environment has been detected to be at least Spring 5, but thymeleaf could not initialize a " +
-                                "delegate of class \"" + SPRING4_DELEGATE_CLASS + "\"", e));
-            }
-
-        } else if (SpringVersionUtils.isSpring40AtLeast()) {
-
-            LOG.trace("[THYMELEAF][TESTING] Spring 4.0+ found on classpath. Initializing testing system for using Spring 4 in tests");
-
-            try {
-                final Class<?> implClass = ClassLoaderUtils.loadClass(SPRING4_DELEGATE_CLASS);
-                spring5Delegate = null;
-                spring4Delegate = (ISpringVersionSpecificContextInitializer) implClass.newInstance();
-                spring3Delegate = null;
-            } catch (final Exception e) {
-                throw new ExceptionInInitializerError(
-                        new ConfigurationException(
-                            "Environment has been detected to be at least Spring 4, but thymeleaf could not initialize a " +
-                            "delegate of class \"" + SPRING4_DELEGATE_CLASS + "\"", e));
-            }
-
+                                "delegate of class \"" + SPRING5_DELEGATE_CLASS + "\"", e));
             }
 
         } else {
@@ -108,12 +87,6 @@ final class SpringVersionSpecificContextInitialization {
             return;
         }
 
-        if (spring4Delegate != null) {
-            spring4Delegate.versionSpecificAdditionalVariableProcessing(
-                    applicationContext, conversionService, request, response, servletContext, variables);
-            return;
-        }
-
         throw new ConfigurationException(
                 "The testing infrastructure could not create initializer for the specific version of Spring being" +
                 "used. Currently Spring 3.0, 3.1, 3.2, 4.x and 5.x are supported.");
@@ -129,11 +102,6 @@ final class SpringVersionSpecificContextInitialization {
 
         if (spring5Delegate != null) {
             return spring5Delegate.versionSpecificCreateContextInstance(
-                    applicationContext, request, response, servletContext, locale, variables);
-        }
-
-        if (spring4Delegate != null) {
-            return spring4Delegate.versionSpecificCreateContextInstance(
                     applicationContext, request, response, servletContext, locale, variables);
         }
 
