@@ -53,7 +53,7 @@ import java.io.Reader;
  * @see org.thymeleaf.templateresolver.TemplateResolution
  * @see ClassLoaderTemplateResource
  * @see FileTemplateResource
- * @see ServletContextTemplateResource
+ * @see JavaxContextTemplateResource
  * @see StringTemplateResource
  * @see UrlTemplateResource
  *

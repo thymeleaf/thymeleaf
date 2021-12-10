@@ -30,6 +30,7 @@ import java.net.MalformedURLException;
 
 import javax.servlet.ServletContext;
 
+import org.thymeleaf.templateresolver.JavaxContextTemplateResolver;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -40,14 +41,14 @@ import org.thymeleaf.util.Validate;
  *   {@code /WEB-INF}.
  * </p>
  * <p>
- *   Objects of this class are usually created by {@link org.thymeleaf.templateresolver.ServletContextTemplateResolver}.
+ *   Objects of this class are usually created by {@link JavaxContextTemplateResolver}.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
-public final class ServletContextTemplateResource implements ITemplateResource {
+public final class JavaxContextTemplateResource implements ITemplateResource {
 
 
     private final ServletContext servletContext;
@@ -56,7 +57,7 @@ public final class ServletContextTemplateResource implements ITemplateResource {
 
 
 
-    public ServletContextTemplateResource(final ServletContext servletContext, final String path, final String characterEncoding) {
+    public JavaxContextTemplateResource(final ServletContext servletContext, final String path, final String characterEncoding) {
 
         super();
 
@@ -111,7 +112,7 @@ public final class ServletContextTemplateResource implements ITemplateResource {
         Validate.notEmpty(relativeLocation, "Relative Path cannot be null or empty");
 
         final String fullRelativeLocation = TemplateResourceUtils.computeRelativeLocation(this.path, relativeLocation);
-        return new ServletContextTemplateResource(this.servletContext, fullRelativeLocation, this.characterEncoding);
+        return new JavaxContextTemplateResource(this.servletContext, fullRelativeLocation, this.characterEncoding);
 
     }
 
