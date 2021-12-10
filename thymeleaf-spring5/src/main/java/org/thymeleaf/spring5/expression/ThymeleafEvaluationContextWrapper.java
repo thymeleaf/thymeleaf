@@ -37,7 +37,7 @@ import org.springframework.expression.TypeLocator;
 import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.thymeleaf.expression.IExpressionObjects;
-import org.thymeleaf.standard.expression.RestrictedRequestAccessUtils;
+import org.thymeleaf.standard.expression.RestrictedJavaxRequestAccessUtils;
 import org.thymeleaf.standard.expression.StandardExpressionObjectFactory;
 import org.thymeleaf.util.Validate;
 
@@ -160,7 +160,7 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
                 if (this.requestParametersRestricted &&
                         (StandardExpressionObjectFactory.REQUEST_EXPRESSION_OBJECT_NAME.equals(name) ||
                                 StandardExpressionObjectFactory.HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_NAME.equals(name))) {
-                    return RestrictedRequestAccessUtils.wrapRequestObject(result);
+                    return RestrictedJavaxRequestAccessUtils.wrapRequestObject(result);
                 }
 
                 return result;

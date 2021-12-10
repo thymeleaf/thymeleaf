@@ -28,7 +28,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.expression.spel.support.StandardTypeConverter;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.spring5.view.ThymeleafView;
-import org.thymeleaf.standard.expression.RestrictedRequestAccessUtils;
+import org.thymeleaf.standard.expression.RestrictedJavaxRequestAccessUtils;
 import org.thymeleaf.standard.expression.StandardExpressionObjectFactory;
 import org.thymeleaf.util.Validate;
 
@@ -112,7 +112,7 @@ public final class ThymeleafEvaluationContext
                 if (this.variableAccessRestricted &&
                         (StandardExpressionObjectFactory.REQUEST_EXPRESSION_OBJECT_NAME.equals(name) ||
                                 StandardExpressionObjectFactory.HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_NAME.equals(name))) {
-                    return RestrictedRequestAccessUtils.wrapRequestObject(result);
+                    return RestrictedJavaxRequestAccessUtils.wrapRequestObject(result);
                 }
 
                 return result;
