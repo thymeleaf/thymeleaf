@@ -19,18 +19,18 @@
  */
 package org.thymeleaf.context;
 
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.util.Validate;
+
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * <p>
@@ -50,7 +50,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public class JavaxWebEngineContext extends AbstractWebEngineContext implements IEngineContext, IJavaxWebContext {
+public class JakartaWebEngineContext extends AbstractWebEngineContext implements IEngineContext, IJakartaWebContext {
 
 
     private final HttpServletRequest request;
@@ -73,7 +73,7 @@ public class JavaxWebEngineContext extends AbstractWebEngineContext implements I
      * </p>
      * <p>
      *   Note that implementations of {@link IEngineContext} are not meant to be used in order to call
-     *   the template engine (use implementations of {@link IContext} such as {@link Context} or {@link JavaxWebContext}
+     *   the template engine (use implementations of {@link IContext} such as {@link Context} or {@link JakartaWebContext}
      *   instead). This is therefore mostly an <b>internal</b> implementation, and users should have no reason
      *   to ever call this constructor except in very specific integration/extension scenarios.
      * </p>
@@ -87,7 +87,7 @@ public class JavaxWebEngineContext extends AbstractWebEngineContext implements I
      * @param locale the locale.
      * @param variables the context variables, probably coming from another {@link IContext} implementation.
      */
-    public JavaxWebEngineContext(
+    public JakartaWebEngineContext(
             final IEngineConfiguration configuration,
             final TemplateData templateData,
             final Map<String,Object> templateResolutionAttributes,
@@ -108,8 +108,8 @@ public class JavaxWebEngineContext extends AbstractWebEngineContext implements I
         this.servletContext = servletContext;
 
         this.requestAttributesVariablesEngineContext =
-                new JavaxRequestAttributesEngineContext(configuration, templateData, templateResolutionAttributes,locale, variables,  this.request);
-        this.requestParametersVariablesMap = new JavaxRequestParametersMap(this.request);
+                new JakartaRequestAttributesEngineContext(configuration, templateData, templateResolutionAttributes,locale, variables,  this.request);
+        this.requestParametersVariablesMap = new JakartaRequestParametersMap(this.request);
         this.applicationAttributesVariablesMap = new ServletContextAttributesMap(this.servletContext);
         this.sessionAttributesVariablesMap = new SessionAttributesMap(this.session);
 
@@ -230,11 +230,11 @@ public class JavaxWebEngineContext extends AbstractWebEngineContext implements I
 
 
 
-    private static final class JavaxRequestParametersMap extends AbstractRequestParametersMap {
+    private static final class JakartaRequestParametersMap extends AbstractRequestParametersMap {
 
         private final HttpServletRequest request;
 
-        JavaxRequestParametersMap(final HttpServletRequest request) {
+        JakartaRequestParametersMap(final HttpServletRequest request) {
             super();
             this.request = request;
         }
@@ -242,7 +242,11 @@ public class JavaxWebEngineContext extends AbstractWebEngineContext implements I
 
         @Override
         Map<String, Object> getParameterMap() {
-            return this.request.getParameterMap();
+            Map<String, Object> result = new HashMap<>();
+            for (Map.Entry<String, String[]> entry : this.request.getParameterMap().entrySet()) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+            return result;
         }
 
         @Override
@@ -253,9 +257,9 @@ public class JavaxWebEngineContext extends AbstractWebEngineContext implements I
 
 
 
-    private static final class JavaxRequestAttributesEngineContext extends AbstractRequestAttributesEngineContext<HttpServletRequest> {
+    private static final class JakartaRequestAttributesEngineContext extends AbstractRequestAttributesEngineContext<HttpServletRequest> {
 
-        JavaxRequestAttributesEngineContext(
+        JakartaRequestAttributesEngineContext(
             final IEngineConfiguration configuration,
             final TemplateData templateData,
             final Map<String,Object> templateResolutionAttributes,
