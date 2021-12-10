@@ -39,7 +39,7 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.WebExpressionContext;
+import org.thymeleaf.context.JavaxWebExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.ISpringTemplateEngine;
 import org.thymeleaf.spring5.context.webmvc.SpringWebMvcThymeleafRequestContext;
@@ -255,8 +255,8 @@ public class ThymeleafView
 
 
         final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
-        final WebExpressionContext context =
-                new WebExpressionContext(configuration, request, response, servletContext, getLocale(), mergedModel);
+        final JavaxWebExpressionContext context =
+                new JavaxWebExpressionContext(configuration, request, response, servletContext, getLocale(), mergedModel);
 
 
         final String templateName;
