@@ -95,6 +95,13 @@ public final class StandardEngineContextFactory implements IEngineContextFactory
                     webContext.getRequest(), webContext.getResponse(), webContext.getServletContext(),
                     webContext.getLocale(), variables);
         }
+        if (context instanceof IJakartaWebContext) {
+            final IJakartaWebContext webContext = (IJakartaWebContext)context;
+            return new JakartaWebEngineContext(
+                    configuration, templateData, templateResolutionAttributes,
+                    webContext.getRequest(), webContext.getResponse(), webContext.getServletContext(),
+                    webContext.getLocale(), variables);
+        }
 
         return new EngineContext(
                 configuration, templateData, templateResolutionAttributes,
