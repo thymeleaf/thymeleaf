@@ -114,7 +114,7 @@
     <!-- NOTE module name is fixed and not set to project.artifactId because this would not be a     -->
     <!-- valid approach for project names containing hyphens, which are not allowed in module names. -->
     <module.name>thymeleaf.testing</module.name>
-    <thymeleaf.version>3.0.4.RELEASE</thymeleaf.version>
+    <thymeleaf.version>3.1.0-SNAPSHOT</thymeleaf.version>
     <thymeleaf-spring5.version>3.0.4.M2</thymeleaf-spring5.version>
     <attoparser.version>2.0.3.RELEASE</attoparser.version>
     <servlet-api.version>3.1.0</servlet-api.version>
