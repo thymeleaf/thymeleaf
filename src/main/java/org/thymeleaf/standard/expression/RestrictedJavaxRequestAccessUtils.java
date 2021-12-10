@@ -37,7 +37,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  * @since 3.0.9
  *
  */
-public final class RestrictedRequestAccessUtils {
+public final class RestrictedJavaxRequestAccessUtils {
 
 
     public static Object wrapRequestObject(final Object obj) {
@@ -48,7 +48,7 @@ public final class RestrictedRequestAccessUtils {
     }
 
 
-    private RestrictedRequestAccessUtils() {
+    private RestrictedJavaxRequestAccessUtils() {
         super();
     }
 
