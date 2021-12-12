@@ -19,19 +19,18 @@
  */
 package org.thymeleaf.templateresolver;
 
-import java.util.Map;
-
-import javax.servlet.ServletContext;
-
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.templateresource.ITemplateResource;
-import org.thymeleaf.templateresource.ServletContextTemplateResource;
+import org.thymeleaf.templateresource.JakartaContextTemplateResource;
 import org.thymeleaf.util.Validate;
+
+import jakarta.servlet.ServletContext;
+import java.util.Map;
 
 /**
  * <p>
  *   Implementation of {@link ITemplateResolver} that extends {@link AbstractConfigurableTemplateResolver}
- *   and creates {@link ServletContextTemplateResource} instances for template resources.
+ *   and creates {@link JakartaContextTemplateResource} instances for template resources.
  * </p>
  * <p>
  *   Note a class with this name existed since 1.0, but it was completely rewritten in Thymeleaf 3.0.
@@ -42,14 +41,14 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public class ServletContextTemplateResolver extends AbstractConfigurableTemplateResolver {
+public class JakartaContextTemplateResolver extends AbstractConfigurableTemplateResolver {
 
 
     private final ServletContext servletContext;
 
 
 
-    public ServletContextTemplateResolver(final ServletContext servletContext) {
+    public JakartaContextTemplateResolver(final ServletContext servletContext) {
         super();
         Validate.notNull(servletContext, "ServletContext cannot be null");
         this.servletContext = servletContext;
@@ -59,7 +58,7 @@ public class ServletContextTemplateResolver extends AbstractConfigurableTemplate
     @Override
     protected ITemplateResource computeTemplateResource(
             final IEngineConfiguration configuration, final String ownerTemplate, final String template, final String resourceName, final String characterEncoding, final Map<String, Object> templateResolutionAttributes) {
-        return new ServletContextTemplateResource(this.servletContext, resourceName, characterEncoding);
+        return new JakartaContextTemplateResource(this.servletContext, resourceName, characterEncoding);
     }
 
 }

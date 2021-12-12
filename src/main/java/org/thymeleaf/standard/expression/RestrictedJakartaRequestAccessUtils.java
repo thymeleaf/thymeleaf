@@ -19,12 +19,11 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-
 import org.thymeleaf.exceptions.TemplateProcessingException;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import java.util.Map;
 
 /**
  * <p>
@@ -37,7 +36,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  * @since 3.0.9
  *
  */
-public final class RestrictedRequestAccessUtils {
+public final class RestrictedJakartaRequestAccessUtils {
 
 
     public static Object wrapRequestObject(final Object obj) {
@@ -48,7 +47,7 @@ public final class RestrictedRequestAccessUtils {
     }
 
 
-    private RestrictedRequestAccessUtils() {
+    private RestrictedJakartaRequestAccessUtils() {
         super();
     }
 

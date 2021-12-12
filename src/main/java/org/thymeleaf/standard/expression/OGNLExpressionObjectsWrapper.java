@@ -68,7 +68,7 @@ final class OGNLExpressionObjectsWrapper extends HashMap<String, Object> {
             if (this.restrictedExpressionExecution &&
                     (StandardExpressionObjectFactory.REQUEST_EXPRESSION_OBJECT_NAME.equals(key) ||
                      StandardExpressionObjectFactory.HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_NAME.equals(key))) {
-                return RestrictedRequestAccessUtils.wrapRequestObject(expressionObject);
+                return RestrictedJavaxRequestAccessUtils.wrapRequestObject(expressionObject);
             }
 
             return expressionObject;

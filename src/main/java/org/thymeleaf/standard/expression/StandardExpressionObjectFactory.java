@@ -25,7 +25,7 @@ import java.util.Set;
 
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.context.IWebContext;
+import org.thymeleaf.context.IJavaxWebContext;
 import org.thymeleaf.expression.Aggregates;
 import org.thymeleaf.expression.Arrays;
 import org.thymeleaf.expression.Bools;
@@ -199,26 +199,26 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
             return context.getLocale();
         }
         if (REQUEST_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            if (context instanceof IWebContext) {
-                return ((IWebContext) context).getRequest();
+            if (context instanceof IJavaxWebContext) {
+                return ((IJavaxWebContext) context).getRequest();
             }
             return null;
         }
         if (RESPONSE_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            if (context instanceof IWebContext) {
-                return ((IWebContext) context).getResponse();
+            if (context instanceof IJavaxWebContext) {
+                return ((IJavaxWebContext) context).getResponse();
             }
             return null;
         }
         if (SESSION_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            if (context instanceof IWebContext) {
-                return ((IWebContext) context).getSession();
+            if (context instanceof IJavaxWebContext) {
+                return ((IJavaxWebContext) context).getSession();
             }
             return null;
         }
         if (SERVLET_CONTEXT_EXPRESSION_OBJECT_NAME.equals(expressionObjectName)) {
-            if (context instanceof IWebContext) {
-                return ((IWebContext) context).getServletContext();
+            if (context instanceof IJavaxWebContext) {
+                return ((IJavaxWebContext) context).getServletContext();
             }
             return null;
         }
@@ -227,8 +227,8 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
              * NOTE "#httpServletRequest" is still usable, but deprecated since Thymeleaf 3.0.
              * Its usage will issue warnings in 3.1, and the object will be removed in 3.2
              */
-            if (context instanceof IWebContext) {
-                return ((IWebContext) context).getRequest();
+            if (context instanceof IJavaxWebContext) {
+                return ((IJavaxWebContext) context).getRequest();
             }
             return null;
         }
@@ -237,8 +237,8 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
              * NOTE "#httpSession" is still usable, but deprecated since Thymeleaf 3.0.
              * Its usage will issue warnings in 3.1, and the object will be removed in 3.2
              */
-            if (context instanceof IWebContext) {
-                return ((IWebContext) context).getSession();
+            if (context instanceof IJavaxWebContext) {
+                return ((IJavaxWebContext) context).getSession();
             }
             return null;
         }

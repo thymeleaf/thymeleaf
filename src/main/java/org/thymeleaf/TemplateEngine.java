@@ -35,6 +35,8 @@ import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.cache.StandardCacheManager;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IEngineContextFactory;
+import org.thymeleaf.context.IJavaxWebContext;
+import org.thymeleaf.context.JavaxWebContext;
 import org.thymeleaf.context.StandardEngineContextFactory;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.engine.TemplateManager;
@@ -149,11 +151,11 @@ import org.thymeleaf.util.Validate;
  * <ul>
  *   <li>{@link org.thymeleaf.context.Context}, a standard implementation containing only
  *       the required data.</li>
- *   <li>{@link org.thymeleaf.context.WebContext}, a web-specific implementation 
- *       extending the {@link org.thymeleaf.context.IWebContext} subinterface, offering
+ *   <li>{@link JavaxWebContext}, a web-specific implementation
+ *       extending the {@link IJavaxWebContext} subinterface, offering
  *       access to request, session and servletcontext (application) attributes in special
  *       expression objects. Using an implementation of
- *       {@link org.thymeleaf.context.IWebContext} is required when using Thymeleaf for 
+ *       {@link IJavaxWebContext} is required when using Thymeleaf for
  *       generating HTML interfaces in web applications based on the Servlet API.</li>
  * </ul>
  * <p>
@@ -171,9 +173,9 @@ import org.thymeleaf.util.Validate;
  *   ctx.setVariable("allItems", items);
  * </code>
  * <p>
- *   A {@link org.thymeleaf.context.WebContext} would also need 
+ *   A {@link JavaxWebContext} would also need
  *   {@link javax.servlet.http.HttpServletRequest}, {@link javax.servlet.http.HttpServletResponse} and
- *   {@link javax.servlet.ServletContext} objects as constructor arguments: 
+ *   {@link javax.servlet.ServletContext} objects as constructor arguments:
  * </p>
  * <code>
  *   final WebContext ctx = new WebContext(request, response, servletContext);<br>

@@ -19,26 +19,21 @@
  */
 package org.thymeleaf.context;
 
+import org.thymeleaf.IEngineConfiguration;
+
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 /**
  * <p>
- *   Basic web-oriented implementation of the {@link IContext} and {@link IWebContext} interfaces.
+ *   Basic web-oriented implementation of the {@link IExpressionContext} and {@link IJakartaWebContext} interfaces.
  * </p>
  * <p>
- *   This context implementation contains all the required Servlet-API artifacts needed for template
- *   execution in web environments, and should be enough for most web-based scenarios of template
- *   processing.
- * </p>
- * <p>
- *   Note a class with this name existed since 2.0.9, but it was completely reimplemented
- *   in Thymeleaf 3.0
+ *   This class is not thread-safe, and should not be shared across executions of templates.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
@@ -46,32 +41,40 @@ import javax.servlet.http.HttpSession;
  * @since 3.0.0
  *
  */
-public final class WebContext extends AbstractContext implements IWebContext {
+public final class JakartaWebExpressionContext extends AbstractExpressionContext implements IJakartaWebContext {
 
     private final HttpServletRequest request;
     private final HttpServletResponse response;
     private final ServletContext servletContext;
 
 
-    public WebContext(final HttpServletRequest request, final HttpServletResponse response,
-                      final ServletContext servletContext) {
-        super();
+    public JakartaWebExpressionContext(final IEngineConfiguration configuration,
+									   final HttpServletRequest request, final HttpServletResponse response,
+									   final ServletContext servletContext) {
+        super(configuration);
         this.request = request;
         this.response = response;
         this.servletContext = servletContext;
     }
 
-    public WebContext(final HttpServletRequest request, final HttpServletResponse response,
-                      final ServletContext servletContext, final Locale locale) {
-        super(locale);
+
+    public JakartaWebExpressionContext(final IEngineConfiguration configuration,
+									   final HttpServletRequest request, final HttpServletResponse response,
+									   final ServletContext servletContext,
+									   final Locale locale) {
+        super(configuration, locale);
         this.request = request;
         this.response = response;
         this.servletContext = servletContext;
     }
 
-    public WebContext(final HttpServletRequest request, final HttpServletResponse response,
-                      final ServletContext servletContext, final Locale locale, final Map<String, Object> variables) {
-        super(locale, variables);
+
+    public JakartaWebExpressionContext(
+            final IEngineConfiguration configuration,
+            final HttpServletRequest request, final HttpServletResponse response,
+            final ServletContext servletContext,
+            final Locale locale, final Map<String, Object> variables) {
+        super(configuration, locale, variables);
         this.request = request;
         this.response = response;
         this.servletContext = servletContext;
