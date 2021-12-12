@@ -17,37 +17,36 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.context;
+package org.thymeleaf.web;
 
-import org.thymeleaf.web.IWebExchange;
+import java.security.Principal;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * <p>
- *   Specialization of the {@link IContext} interface to be implemented by contexts used for template
- *   processing in web environments.
- * </p>
- * <p>
- *   Objects implementing this interface add to the usual {@link IContext} data the web related
- *   artifacts needed to perform web-oriented functions such as URL rewriting or request/session access.
- * </p>
- * <p>
- *   Note this interface was modified in a backwards-incompatible way in Thymeleaf 3.1.0.
- * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
  * @since 3.1.0
- *
+ * 
  */
-public interface IWebContext extends IContext {
+public interface IWebExchange {
 
-	/**
-	 * <p>
-	 *   Returns the {@link IWebExchange} object associated with the template execution.
-	 * </p>
-	 *
-	 * @return the web exchange object.
-	 */
-	public IWebExchange getExchange();
+    public IWebRequest getRequest();
+    public IWebSession getSession();
+    public IWebApplication getApplication();
+
+    public Principal getPrincipal();
+
+    public boolean containsAttribute(final String name);
+    public int getAttributeCount();
+    public Set<String> getAllAttributeNames();
+    public Map<String,Object> getAttributeMap();
+    public Object getAttributeValue(final String name);
+    public void setAttributeValue(final String name, final Object value);
+    public void removeAttribute(final String name);
+
+    public String encodeURL(final String url);
+
 
 }

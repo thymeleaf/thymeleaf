@@ -26,45 +26,44 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.MalformedURLException;
 
-import jakarta.servlet.ServletContext;
-
+import org.thymeleaf.templateresolver.WebApplicationContextTemplateResolver;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
+import org.thymeleaf.web.IWebApplication;
 
 /**
  * <p>
- *   Implementation of {@link ITemplateResource} accessible from the {@link ServletContext} in a web application.
- *   The paths of these resources start at the web application root, and are normally stored inside
- *   {@code /WEB-INF}.
+ *   Implementation of {@link ITemplateResource} accessible from the context of a web application.
+ *   The paths of these resources start at the web application file root which, for instance, in
+ *   servlet-based applications is {@code /WEB-INF}.
  * </p>
  * <p>
- *   Objects of this class are usually created by {@link org.thymeleaf.templateresolver.JakartaContextTemplateResolver}.
+ *   Objects of this class are usually created by {@link WebApplicationContextTemplateResolver}.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
- * @since 3.0.0
+ * @since 3.1.0
  *
  */
-public final class JakartaContextTemplateResource implements ITemplateResource {
+public final class WebApplicationTemplateResource implements ITemplateResource {
 
 
-    private final ServletContext servletContext;
+    private final IWebApplication webApplication;
     private final String path;
     private final String characterEncoding;
 
 
 
-    public JakartaContextTemplateResource(final ServletContext servletContext, final String path, final String characterEncoding) {
+    public WebApplicationTemplateResource(final IWebApplication webApplication, final String path, final String characterEncoding) {
 
         super();
 
-        Validate.notNull(servletContext, "ServletContext cannot be null");
+        Validate.notNull(webApplication, "Web Application object cannot be null");
         Validate.notEmpty(path, "Resource Path cannot be null or empty");
         // Character encoding CAN be null (system default will be used)
 
-        this.servletContext = servletContext;
+        this.webApplication = webApplication;
         final String cleanPath = TemplateResourceUtils.cleanPath(path);
         this.path = (cleanPath.charAt(0) != '/' ? ("/" + cleanPath) : cleanPath);
         this.characterEncoding = characterEncoding;
@@ -90,9 +89,9 @@ public final class JakartaContextTemplateResource implements ITemplateResource {
 
     public Reader reader() throws IOException {
 
-        final InputStream inputStream = this.servletContext.getResourceAsStream(this.path);
+        final InputStream inputStream = this.webApplication.getResourceAsStream(this.path);
         if (inputStream == null) {
-            throw new FileNotFoundException(String.format("ServletContext resource \"%s\" does not exist", this.path));
+            throw new FileNotFoundException(String.format("Web Application resource \"%s\" does not exist", this.path));
         }
 
         if (!StringUtils.isEmptyOrWhitespace(this.characterEncoding)) {
@@ -111,7 +110,7 @@ public final class JakartaContextTemplateResource implements ITemplateResource {
         Validate.notEmpty(relativeLocation, "Relative Path cannot be null or empty");
 
         final String fullRelativeLocation = TemplateResourceUtils.computeRelativeLocation(this.path, relativeLocation);
-        return new JakartaContextTemplateResource(this.servletContext, fullRelativeLocation, this.characterEncoding);
+        return new WebApplicationTemplateResource(this.webApplication, fullRelativeLocation, this.characterEncoding);
 
     }
 
@@ -119,11 +118,7 @@ public final class JakartaContextTemplateResource implements ITemplateResource {
 
 
     public boolean exists() {
-        try {
-            return (this.servletContext.getResource(this.path) != null);
-        } catch (final MalformedURLException e) {
-            return false;
-        }
+        return this.webApplication.resourceExists(this.path);
     }
 
 

@@ -514,7 +514,7 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
         }
 
         // If it is context-relative, it has to be a web context
-        return ((IWebContext)context).getContextPath();
+        return ((IWebContext)context).getExchange().getRequest().getApplicationPath();
 
     }
 
@@ -543,7 +543,7 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
             return link;
         }
 
-        return ((IWebContext)context).encodeURL(link);
+        return ((IWebContext)context).getExchange().encodeURL(link);
 
     }
 

@@ -35,9 +35,9 @@ import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.cache.StandardCacheManager;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IEngineContextFactory;
-import org.thymeleaf.context.IJavaxWebContext;
-import org.thymeleaf.context.JavaxWebContext;
+import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.context.StandardEngineContextFactory;
+import org.thymeleaf.context.WebContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.engine.TemplateManager;
 import org.thymeleaf.exceptions.TemplateEngineException;
@@ -151,12 +151,13 @@ import org.thymeleaf.util.Validate;
  * <ul>
  *   <li>{@link org.thymeleaf.context.Context}, a standard implementation containing only
  *       the required data.</li>
- *   <li>{@link JavaxWebContext}, a web-specific implementation
- *       extending the {@link IJavaxWebContext} subinterface, offering
- *       access to request, session and servletcontext (application) attributes in special
+ *   <li>{@link WebContext}, a web-specific implementation
+ *       extending the {@link IWebContext} subinterface, offering
+ *       access to web based attributes (request, session, application) in special
  *       expression objects. Using an implementation of
- *       {@link IJavaxWebContext} is required when using Thymeleaf for
- *       generating HTML interfaces in web applications based on the Servlet API.</li>
+ *       {@link IWebContext} is required when using Thymeleaf for
+ *       generating HTML interfaces in web applications based on web container APIs
+ *       (e.g. servlet API).</li>
  * </ul>
  * <p>
  *   Creating a {@link org.thymeleaf.context.Context} instance is very simple:
@@ -173,12 +174,14 @@ import org.thymeleaf.util.Validate;
  *   ctx.setVariable("allItems", items);
  * </code>
  * <p>
- *   A {@link JavaxWebContext} would also need
- *   {@link javax.servlet.http.HttpServletRequest}, {@link javax.servlet.http.HttpServletResponse} and
- *   {@link javax.servlet.ServletContext} objects as constructor arguments:
+ *   A {@link WebContext} would also need an implementation of
+ *   {@link org.thymeleaf.web.IWebExchange} as constructor arguments. This web exchange
+ *   object should have been created for the specific web container technology being used
+ *   (e.g. servlet API):
  * </p>
  * <code>
- *   final WebContext ctx = new WebContext(request, response, servletContext);<br>
+ *   final IWebExchange webExchange = ...;<br>
+ *   final WebContext ctx = new WebContext(webExchange);<br>
  *   ctx.setVariable("allItems", items);
  * </code>
  * <p>

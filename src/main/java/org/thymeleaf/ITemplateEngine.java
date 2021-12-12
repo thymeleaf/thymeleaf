@@ -136,7 +136,7 @@ public interface ITemplateEngine {
      * <p>
      * Process the specified template (usually the template name). Output will be written
      * to the specified writer as it is generated from processing the template. This is specially
-     * useful for web environments (using {@link javax.servlet.http.HttpServletResponse#getWriter()}).
+     * useful for web environments.
      * </p>
      * <p>
      * This is actually a convenience method that will internally create a {@link TemplateSpec} and then
@@ -155,8 +155,7 @@ public interface ITemplateEngine {
      * <p>
      * Process the specified template (usually the template name) applying a set of
      * <em>template selectors</em>. Output will be written to the specified writer as it is generated
-     * from processing the template. This is specially useful for web environments
-     * (using {@link javax.servlet.http.HttpServletResponse#getWriter()}).
+     * from processing the template. This is specially useful for web environments.
      * </p>
      * <p>
      * Template selectors allow the possibility to process only a part of the specified template, expressing
@@ -183,7 +182,7 @@ public interface ITemplateEngine {
      * <p>
      * Process a template starting from a {@link TemplateSpec}. Output will be written to the
      * specified writer as it is generated from processing the template. This is specially useful for
-     * web environments (using {@link javax.servlet.http.HttpServletResponse#getWriter()}).
+     * web environments.
      * </p>
      * <p>
      * The template specification will be used as input for the template resolvers, queried in chain

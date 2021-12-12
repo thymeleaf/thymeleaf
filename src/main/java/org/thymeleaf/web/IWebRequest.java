@@ -17,37 +17,39 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.context;
+package org.thymeleaf.web;
 
-import org.thymeleaf.web.IWebExchange;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * <p>
- *   Specialization of the {@link IContext} interface to be implemented by contexts used for template
- *   processing in web environments.
- * </p>
- * <p>
- *   Objects implementing this interface add to the usual {@link IContext} data the web related
- *   artifacts needed to perform web-oriented functions such as URL rewriting or request/session access.
- * </p>
- * <p>
- *   Note this interface was modified in a backwards-incompatible way in Thymeleaf 3.1.0.
- * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
  * @since 3.1.0
- *
+ * 
  */
-public interface IWebContext extends IContext {
+public interface IWebRequest {
 
-	/**
-	 * <p>
-	 *   Returns the {@link IWebExchange} object associated with the template execution.
-	 * </p>
-	 *
-	 * @return the web exchange object.
-	 */
-	public IWebExchange getExchange();
+    public String getMethod();
+    public String getApplicationPath();
+    public String getPathWithinApplication();
+    public String getRequestPath();
+    public String getQueryString();
+
+    public String containsHeader(final String name);
+    public int getHeaderCount();
+    public Set<String> getAllHeaderNames();
+    public Map<String,String> getHeaderMap();
+    public String getHeaderValue(final String name);
+
+    public boolean containsParameter(final String name);
+    public int getParameterCount();
+    public Set<String> getAllParameterNames();
+    public Map<String,String[]> getParameterMap();
+    public String[] getParameterValues(final String name);
+
+
+    public Object getNativeObject();
 
 }

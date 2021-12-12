@@ -25,10 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -40,14 +37,39 @@ import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.inline.NoOpInliner;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.util.Validate;
+import org.thymeleaf.web.IWebApplication;
+import org.thymeleaf.web.IWebExchange;
+import org.thymeleaf.web.IWebRequest;
+import org.thymeleaf.web.IWebSession;
 
-public abstract class AbstractWebEngineContext extends AbstractEngineContext implements IEngineContext, IWebContext {
+/**
+ * <p>
+ *   Basic <b>web</b> implementation of the {@link IEngineContext} interface, with added web-oriented capabilities.
+ * </p>
+ * <p>
+ *   This is the context implementation that will be used by default for web processing. Note that <b>this is an
+ *   internal implementation, and there is no reason for users' code to directly reference or use it instead
+ *   of its implemented interfaces</b>.
+ * </p>
+ * <p>
+ *   This class is NOT thread-safe. Thread-safety is not a requirement for context implementations.
+ * </p>
+ * <p>
+ *   Note this class was modified in a backwards-incompatible way in Thymeleaf 3.1.0.
+ * </p>
+ *
+ * @author Daniel Fern&aacute;ndez
+ *
+ * @since 3.1.0
+ *
+ */
+public class WebEngineContext extends AbstractEngineContext implements IEngineContext, IWebContext {
 
     /*
      * ---------------------------------------------------------------------------
-     * THIS MAP FORWARDS ALL OPERATIONS TO THE UNDERLYING REQUEST, EXCEPT
+     * THIS MAP FORWARDS ALL OPERATIONS TO THE UNDERLYING WEB SUPPORT, EXCEPT
      * FOR THE param (request parameters), session (session attributes) AND
-     * application (servlet context attributes) VARIABLES.
+     * application (servletcontext-equivalent attributes) VARIABLES.
      *
      * NOTE that, even if attributes are leveled so that above level 0 they are
      * considered local and thus disappear after lowering the level, attributes
@@ -64,6 +86,16 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
     private static final String SESSION_VARIABLE_NAME = "session";
     private static final String APPLICATION_VARIABLE_NAME = "application";
 
+    private final IWebExchange webExchange;
+
+    private final RequestAttributesVariablesMap requestAttributesVariablesMap;
+    private final Map<String,Object> requestParametersVariablesMap;
+    private final Map<String,Object> sessionAttributesVariablesMap;
+    private final Map<String,Object> applicationAttributesVariablesMap;
+
+
+
+
     /**
      * <p>
      *   Creates a new instance of this {@link IEngineContext} implementation binding engine execution to
@@ -71,61 +103,79 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
      * </p>
      * <p>
      *   Note that implementations of {@link IEngineContext} are not meant to be used in order to call
-     *   the template engine (use implementations of {@link IContext} such as {@link Context} or {@link JavaxWebContext}
+     *   the template engine (use implementations of {@link IContext} such as {@link Context} or {@link WebContext}
      *   instead). This is therefore mostly an <b>internal</b> implementation, and users should have no reason
      *   to ever call this constructor except in very specific integration/extension scenarios.
      * </p>
      *
      * @param configuration the configuration instance being used.
+     * @param templateData the template data for the template to be processed.
      * @param templateResolutionAttributes the template resolution attributes.
+     * @param webExchange the web exchange object.
      * @param locale the locale.
+     * @param variables the context variables, probably coming from another {@link IContext} implementation.
      */
-    public AbstractWebEngineContext(
+    public WebEngineContext(
             final IEngineConfiguration configuration,
+            final TemplateData templateData,
             final Map<String,Object> templateResolutionAttributes,
-            final Locale locale) {
+            final IWebExchange webExchange,
+            final Locale locale,
+            final Map<String, Object> variables) {
 
         super(configuration, templateResolutionAttributes, locale);
+
+        Validate.notNull(webExchange, "Web exchange cannot be null in web context");
+
+        this.webExchange = webExchange;
+        final IWebRequest webRequest = this.webExchange.getRequest();
+        final IWebSession webSession = this.webExchange.getSession();
+        final IWebApplication webApplication = this.webExchange.getApplication();
+
+        this.requestAttributesVariablesMap =
+                new RequestAttributesVariablesMap(configuration, templateData, templateResolutionAttributes, this.webExchange, locale, variables);
+        this.requestParametersVariablesMap = new RequestParametersMap(webRequest);
+        this.applicationAttributesVariablesMap = new ApplicationAttributesMap(webApplication);
+        this.sessionAttributesVariablesMap = new SessionAttributesMap(webSession);
+
     }
 
-    protected abstract IEngineContext getRequestAttributesEngineContext();
 
-    protected abstract Map<String,Object> getRequestParametersVariablesMap();
-
-    protected abstract Map<String,Object> getSessionAttributesVariablesMap();
-
-    protected abstract Map<String,Object> getApplicationAttributesVariablesMap();
+    @Override
+    public IWebExchange getExchange() {
+        return this.webExchange;
+    }
 
 
     public boolean containsVariable(final String name) {
         if (SESSION_VARIABLE_NAME.equals(name)) {
-            return getSessionAttributesVariablesMap() != null;
+            return this.sessionAttributesVariablesMap != null;
         }
         if (PARAM_VARIABLE_NAME.equals(name)) {
             return true;
         }
-        return APPLICATION_VARIABLE_NAME.equals(name) || getRequestAttributesEngineContext().containsVariable(name);
+        return APPLICATION_VARIABLE_NAME.equals(name) || this.requestAttributesVariablesMap.containsVariable(name);
     }
 
 
     public Object getVariable(final String key) {
         if (SESSION_VARIABLE_NAME.equals(key)) {
-            return getSessionAttributesVariablesMap();
+            return this.sessionAttributesVariablesMap;
         }
         if (PARAM_VARIABLE_NAME.equals(key)) {
-            return getRequestParametersVariablesMap();
+            return this.requestParametersVariablesMap;
         }
         if (APPLICATION_VARIABLE_NAME.equals(key)) {
-            return getApplicationAttributesVariablesMap();
+            return this.applicationAttributesVariablesMap;
         }
-        return getRequestAttributesEngineContext().getVariable(key);
+        return this.requestAttributesVariablesMap.getVariable(key);
     }
 
 
     public Set<String> getVariableNames() {
         // Note this set will NOT include 'param', 'session' or 'application', as they are considered special
         // ways to access attributes/parameters in these Servlet API structures
-        return getRequestAttributesEngineContext().getVariableNames();
+        return this.requestAttributesVariablesMap.getVariableNames();
     }
 
 
@@ -136,7 +186,7 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
             throw new IllegalArgumentException(
                     "Cannot set variable called '" + name + "' into web variables map: such name is a reserved word");
         }
-        getRequestAttributesEngineContext().setVariable(name, value);
+        this.requestAttributesVariablesMap.setVariable(name, value);
     }
 
 
@@ -153,7 +203,7 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
                         "Cannot set variable called '" + name + "' into web variables map: such name is a reserved word");
             }
         }
-        getRequestAttributesEngineContext().setVariables(variables);
+        this.requestAttributesVariablesMap.setVariables(variables);
     }
 
 
@@ -164,91 +214,109 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
             throw new IllegalArgumentException(
                     "Cannot remove variable called '" + name + "' in web variables map: such name is a reserved word");
         }
-        getRequestAttributesEngineContext().removeVariable(name);
+        this.requestAttributesVariablesMap.removeVariable(name);
     }
 
 
     public boolean isVariableLocal(final String name) {
-        return getRequestAttributesEngineContext().isVariableLocal(name);
+        return this.requestAttributesVariablesMap.isVariableLocal(name);
     }
 
 
     public boolean hasSelectionTarget() {
-        return getRequestAttributesEngineContext().hasSelectionTarget();
+        return this.requestAttributesVariablesMap.hasSelectionTarget();
     }
 
 
     public Object getSelectionTarget() {
-        return getRequestAttributesEngineContext().getSelectionTarget();
+        return this.requestAttributesVariablesMap.getSelectionTarget();
     }
 
 
     public void setSelectionTarget(final Object selectionTarget) {
-        getRequestAttributesEngineContext().setSelectionTarget(selectionTarget);
+        this.requestAttributesVariablesMap.setSelectionTarget(selectionTarget);
     }
 
 
 
 
     public IInliner getInliner() {
-        return getRequestAttributesEngineContext().getInliner();
+        return this.requestAttributesVariablesMap.getInliner();
     }
 
     public void setInliner(final IInliner inliner) {
-        getRequestAttributesEngineContext().setInliner(inliner);
+        this.requestAttributesVariablesMap.setInliner(inliner);
     }
 
 
 
 
     public TemplateData getTemplateData() {
-        return getRequestAttributesEngineContext().getTemplateData();
+        return this.requestAttributesVariablesMap.getTemplateData();
     }
 
     public void setTemplateData(final TemplateData templateData) {
-        getRequestAttributesEngineContext().setTemplateData(templateData);
+        this.requestAttributesVariablesMap.setTemplateData(templateData);
     }
 
 
     public List<TemplateData> getTemplateStack() {
-        return getRequestAttributesEngineContext().getTemplateStack();
+        return this.requestAttributesVariablesMap.getTemplateStack();
     }
 
 
 
 
     public void setElementTag(final IProcessableElementTag elementTag) {
-        getRequestAttributesEngineContext().setElementTag(elementTag);
+        this.requestAttributesVariablesMap.setElementTag(elementTag);
     }
 
 
 
 
     public List<IProcessableElementTag> getElementStack() {
-        return getRequestAttributesEngineContext().getElementStack();
+        return this.requestAttributesVariablesMap.getElementStack();
     }
 
 
     public List<IProcessableElementTag> getElementStackAbove(final int contextLevel) {
-        return getRequestAttributesEngineContext().getElementStackAbove(contextLevel);
+        return this.requestAttributesVariablesMap.getElementStackAbove(contextLevel);
     }
 
 
 
 
     public int level() {
-        return getRequestAttributesEngineContext().level();
+        return this.requestAttributesVariablesMap.level();
     }
 
 
     public void increaseLevel() {
-        getRequestAttributesEngineContext().increaseLevel();
+        this.requestAttributesVariablesMap.increaseLevel();
     }
 
 
     public void decreaseLevel() {
-        getRequestAttributesEngineContext().decreaseLevel();
+        this.requestAttributesVariablesMap.decreaseLevel();
     }
+
+
+
+
+    public String getStringRepresentationByLevel() {
+        // Request parameters, session and application attributes can be safely ignored here
+        return this.requestAttributesVariablesMap.getStringRepresentationByLevel();
+    }
+
+
+
+
+    @Override
+    public String toString() {
+        // Request parameters, session and application attributes can be safely ignored here
+        return this.requestAttributesVariablesMap.toString();
+    }
+
 
 
     static Object resolveLazy(final Object variable) {
@@ -262,287 +330,41 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
         return variable;
     }
 
-    private abstract static class NoOpMapImpl implements Map<String,Object> {
 
-        protected NoOpMapImpl() {
+
+
+    private static final class SessionAttributesMap extends NoOpMapImpl {
+
+        private final IWebSession session;
+
+        SessionAttributesMap(final IWebSession session) {
             super();
+            // session might be null
+            this.session = session;
         }
 
-        public int size() {
-            return 0;
-        }
-
-        public boolean isEmpty() {
-            return true;
-        }
-
-        public boolean containsKey(final Object key) {
-            return false;
-        }
-
-        public boolean containsValue(final Object value) {
-            return false;
-        }
-
-        public Object get(final Object key) {
-            return null;
-        }
-
-        public Object put(final String key, final Object value) {
-            throw new UnsupportedOperationException("Cannot add new entry: map is immutable");
-        }
-
-        public Object remove(final Object key) {
-            throw new UnsupportedOperationException("Cannot remove entry: map is immutable");
-        }
-
-        public void putAll(final Map<? extends String, ? extends Object> m) {
-            throw new UnsupportedOperationException("Cannot add new entry: map is immutable");
-        }
-
-        public void clear() {
-            throw new UnsupportedOperationException("Cannot clear: map is immutable");
-        }
-
-        public Set<String> keySet() {
-            return Collections.emptySet();
-        }
-
-        public Collection<Object> values() {
-            return Collections.emptyList();
-        }
-
-        public Set<Entry<String,Object>> entrySet() {
-            return Collections.emptySet();
-        }
-
-
-        static final class MapEntry implements Map.Entry<String,Object> {
-
-            private final String key;
-            private final Object value;
-
-            MapEntry(final String key, final Object value) {
-                super();
-                this.key = key;
-                this.value = value;
-            }
-
-            public String getKey() {
-                return this.key;
-            }
-
-            public Object getValue() {
-                return this.value;
-            }
-
-            public Object setValue(final Object value) {
-                throw new UnsupportedOperationException("Cannot set value: map is immutable");
-            }
-
-        }
-
-
-    }
-
-    static abstract class AbstractAttributesMap extends NoOpMapImpl {
-
-        abstract boolean attributesNotDefined();
-
-        abstract Enumeration<String> getAttributeNames();
-
-        abstract Object getAttribute(String attributeName);
 
         @Override
-        public final int size() {
-            if (attributesNotDefined()) {
+        public int size() {
+            if (this.session == null) {
                 return 0;
             }
-            int size = 0;
-            final Enumeration<String> attributeNames = getAttributeNames();
-            while (attributeNames.hasMoreElements()) {
-                attributeNames.nextElement();
-                size++;
-            }
-            return size;
-        }
-
-        @Override
-        public final boolean isEmpty() {
-            if (attributesNotDefined()) {
-                return true;
-            }
-            final Enumeration<String> attributeNames = getAttributeNames();
-            return !attributeNames.hasMoreElements();
-        }
-
-        @Override
-        public final boolean containsKey(final Object key) {
-            // Even if not completely correct to return 'true' for entries that might not exist, this is needed
-            // in order to avoid Spring's MapAccessor throwing an exception when trying to access an element
-            // that doesn't exist -- in the case of request parameters, session and servletContext attributes most
-            // developers would expect null to be returned in such case, and that's what this 'true' will cause.
-            return true;
-        }
-
-        @Override
-        public final boolean containsValue(final Object value) {
-            // It wouldn't be consistent to have an 'ad hoc' implementation of #containsKey() but a 100% correct
-            // implementation of #containsValue(), so we are leaving this as unsupported.
-            throw new UnsupportedOperationException("Map does not support #containsValue()");
-        }
-
-        @Override
-        public final Object get(final Object key) {
-            if (attributesNotDefined()) {
-                return null;
-            }
-            return resolveLazy(getAttribute(key != null? key.toString() : null));
-        }
-
-        @Override
-        public final Set<String> keySet() {
-            if (attributesNotDefined()) {
-                return Collections.emptySet();
-            }
-            final Set<String> keySet = new LinkedHashSet<String>(5);
-            final Enumeration<String> attributeNames = getAttributeNames();
-            while (attributeNames.hasMoreElements()) {
-                keySet.add(attributeNames.nextElement());
-            }
-            return keySet;
-        }
-
-        @Override
-        public final Collection<Object> values() {
-            if (attributesNotDefined()) {
-                return Collections.emptySet();
-            }
-            final List<Object> values = new ArrayList<Object>(5);
-            final Enumeration<String> attributeNames = getAttributeNames();
-            while (attributeNames.hasMoreElements()) {
-                values.add(getAttribute(attributeNames.nextElement()));
-            }
-            return values;
-        }
-
-        @Override
-        public final Set<Entry<String,Object>> entrySet() {
-            if (attributesNotDefined()) {
-                return Collections.emptySet();
-            }
-            final Set<Entry<String,Object>> entrySet = new LinkedHashSet<Entry<String, Object>>(5);
-            final Enumeration<String> attributeNames = getAttributeNames();
-            while (attributeNames.hasMoreElements()) {
-                final String key = attributeNames.nextElement();
-                final Object value = getAttribute(key);
-                entrySet.add(new MapEntry(key, value));
-            }
-            return entrySet;
-        }
-    }
-
-    static final class RequestParameterValues extends AbstractList<String> {
-
-        private final String[] parameterValues;
-        public final int length;
-
-        RequestParameterValues(final String[] parameterValues) {
-            this.parameterValues = parameterValues;
-            this.length = this.parameterValues.length;
-        }
-
-        @Override
-        public int size() {
-            return this.length;
-        }
-
-        @Override
-        public Object[] toArray() {
-            return this.parameterValues.clone();
-        }
-
-        @Override
-        public <T> T[] toArray(final T[] arr) {
-            if (arr.length < this.length) {
-                final T[] copy = (T[]) Array.newInstance(arr.getClass().getComponentType(), this.length);
-                System.arraycopy(this.parameterValues, 0, copy, 0, this.length);
-                return copy;
-            }
-            System.arraycopy(this.parameterValues, 0, arr, 0, this.length);
-            if (arr.length > this.length) {
-                arr[this.length] = null;
-            }
-            return arr;
-        }
-
-        @Override
-        public String get(final int index) {
-            return this.parameterValues[index];
-        }
-
-        @Override
-        public int indexOf(final Object obj) {
-            final String[] a = this.parameterValues;
-            if (obj == null) {
-                for (int i = 0; i < a.length; i++) {
-                    if (a[i] == null) {
-                        return i;
-                    }
-                }
-            } else {
-                for (int i = 0; i < a.length; i++) {
-                    if (obj.equals(a[i])) {
-                        return i;
-                    }
-                }
-            }
-            return -1;
-        }
-
-        @Override
-        public boolean contains(final Object obj) {
-            return indexOf(obj) != -1;
-        }
-
-
-        @Override
-        public String toString() {
-            // This toString() method will be responsible of outputting non-indexed request parameters in the
-            // way most people expect, i.e. return parameterValues[0] when accessed without index and parameter is
-            // single-valued (${param.a}), returning ArrayList#toString() when accessed without index and parameter
-            // is multi-valued, and finally return the specific value when accessed with index (${param.a[0]})
-            if (this.length == 0) {
-                return "";
-            }
-            if (this.length == 1) {
-                return this.parameterValues[0];
-            }
-            return super.toString();
-        }
-    }
-
-    static abstract class AbstractRequestParametersMap extends NoOpMapImpl {
-
-        abstract Map<String,Object> getParameterMap();
-
-        abstract String[] getParameterValues(String parameterName);
-
-        @Override
-        public int size() {
-            return getParameterMap().size();
+            return this.session.getAttributeCount();
         }
 
         @Override
         public boolean isEmpty() {
-            return getParameterMap().isEmpty();
+            if (this.session == null) {
+                return true;
+            }
+            return this.session.getAttributeCount() == 0;
         }
 
         @Override
         public boolean containsKey(final Object key) {
             // Even if not completely correct to return 'true' for entries that might not exist, this is needed
             // in order to avoid Spring's MapAccessor throwing an exception when trying to access an element
-            // that doesn't exist -- in the case of request parameters, session and servletContext attributes most
+            // that doesn't exist -- in the case of request parameters, session and application attributes most
             // developers would expect null to be returned in such case, and that's what this 'true' will cause.
             return true;
         }
@@ -556,7 +378,141 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
 
         @Override
         public Object get(final Object key) {
-            final String[] parameterValues = getParameterValues(key != null? key.toString() : null);
+            if (this.session == null) {
+                return null;
+            }
+            return resolveLazy(this.session.getAttributeValue(key != null? key.toString() : null));
+        }
+
+        @Override
+        public Set<String> keySet() {
+            if (this.session == null) {
+                return Collections.emptySet();
+            }
+            return this.session.getAllAttributeNames();
+        }
+
+        @Override
+        public Collection<Object> values() {
+            if (this.session == null) {
+                return Collections.emptySet();
+            }
+            return this.session.getAttributeMap().values();
+        }
+
+        @Override
+        public Set<Entry<String,Object>> entrySet() {
+            if (this.session == null) {
+                return Collections.emptySet();
+            }
+            return this.session.getAttributeMap().entrySet();
+        }
+
+    }
+
+
+
+
+    private static final class ApplicationAttributesMap extends NoOpMapImpl {
+
+        private final IWebApplication application;
+
+        ApplicationAttributesMap(final IWebApplication application) {
+            super();
+            this.application = application;
+        }
+
+
+        @Override
+        public int size() {
+            return this.application.getAttributeCount();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return this.application.getAttributeCount() == 0;
+        }
+
+        @Override
+        public boolean containsKey(final Object key) {
+            // Even if not completely correct to return 'true' for entries that might not exist, this is needed
+            // in order to avoid Spring's MapAccessor throwing an exception when trying to access an element
+            // that doesn't exist -- in the case of request parameters, session and application attributes most
+            // developers would expect null to be returned in such case, and that's what this 'true' will cause.
+            return true;
+        }
+
+        @Override
+        public boolean containsValue(final Object value) {
+            // It wouldn't be consistent to have an 'ad hoc' implementation of #containsKey() but a 100% correct
+            // implementation of #containsValue(), so we are leaving this as unsupported.
+            throw new UnsupportedOperationException("Map does not support #containsValue()");
+        }
+
+        @Override
+        public Object get(final Object key) {
+            return resolveLazy(this.application.getAttributeValue(key != null? key.toString() : null));
+        }
+
+        @Override
+        public Set<String> keySet() {
+            return this.application.getAllAttributeNames();
+        }
+
+        @Override
+        public Collection<Object> values() {
+            return this.application.getAttributeMap().values();
+        }
+
+        @Override
+        public Set<Map.Entry<String,Object>> entrySet() {
+            return this.application.getAttributeMap().entrySet();
+        }
+
+    }
+
+
+
+
+    private static final class RequestParametersMap extends NoOpMapImpl {
+
+        private final IWebRequest request;
+
+        RequestParametersMap(final IWebRequest request) {
+            super();
+            this.request = request;
+        }
+
+
+        @Override
+        public int size() {
+            return this.request.getParameterCount();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return this.request.getParameterCount() == 0;
+        }
+
+        @Override
+        public boolean containsKey(final Object key) {
+            // Even if not completely correct to return 'true' for entries that might not exist, this is needed
+            // in order to avoid Spring's MapAccessor throwing an exception when trying to access an element
+            // that doesn't exist -- in the case of request parameters, session and application attributes most
+            // developers would expect null to be returned in such case, and that's what this 'true' will cause.
+            return true;
+        }
+
+        @Override
+        public boolean containsValue(final Object value) {
+            // It wouldn't be consistent to have an 'ad hoc' implementation of #containsKey() but a 100% correct
+            // implementation of #containsValue(), so we are leaving this as unsupported.
+            throw new UnsupportedOperationException("Map does not support #containsValue()");
+        }
+
+        @Override
+        public Object get(final Object key) {
+            final String[] parameterValues = this.request.getParameterValues(key != null? key.toString() : null);
             if (parameterValues == null) {
                 return null;
             }
@@ -565,28 +521,31 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
 
         @Override
         public Set<String> keySet() {
-            return getParameterMap().keySet();
+            return this.request.getAllParameterNames();
         }
 
         @Override
         public Collection<Object> values() {
-            return getParameterMap().values();
+            return (Collection<Object>)(Collection<?>) this.request.getParameterMap().values();
         }
 
         @Override
         public Set<Map.Entry<String,Object>> entrySet() {
-            return getParameterMap().entrySet();
+            return (Set<Map.Entry<String,Object>>)(Set<?>) this.request.getParameterMap().entrySet();
         }
 
     }
 
-    static abstract class AbstractRequestAttributesEngineContext<R> extends AbstractEngineContext implements IEngineContext {
+
+
+
+    private static final class RequestAttributesVariablesMap extends AbstractEngineContext implements IEngineContext {
 
         private static final int DEFAULT_ELEMENT_HIERARCHY_SIZE = 20;
         private static final int DEFAULT_LEVELS_SIZE = 10;
         private static final int DEFAULT_LEVELARRAYS_SIZE = 5;
 
-        private final R request;
+        private final IWebExchange webExchange;
 
         private int level = 0;
         private int index = 0;
@@ -609,17 +568,17 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
 
 
 
-        AbstractRequestAttributesEngineContext(
+        RequestAttributesVariablesMap(
                 final IEngineConfiguration configuration,
                 final TemplateData templateData,
                 final Map<String,Object> templateResolutionAttributes,
-                final R request,
+                final IWebExchange webExchange,
                 final Locale locale,
                 final Map<String, Object> variables) {
 
             super(configuration, templateResolutionAttributes, locale);
 
-            this.request = request;
+            this.webExchange = webExchange;
 
             this.levels = new int[DEFAULT_LEVELS_SIZE];
             this.names = new String[DEFAULT_LEVELS_SIZE][];
@@ -656,44 +615,19 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
 
         }
 
-        final R getRequest() {
-            return this.request;
-        }
-
-        abstract Object getAttribute(String attributeName);
-
-        abstract Enumeration<String> getAttributeNames();
-
-        abstract void setAttribute(String attributeName, Object attributeValue);
 
         public boolean containsVariable(final String name) {
-            return getAttribute(name) != null;
+            return this.webExchange.containsAttribute(name);
         }
 
 
-        public Object getVariable(final String key) {
-            return resolveLazy(getAttribute(key));
+        public Object getVariable(final String name) {
+            return resolveLazy(this.webExchange.getAttributeValue(name));
         }
 
 
         public Set<String> getVariableNames() {
-            // --------------------------
-            // Note this method relies on HttpServletRequest#getAttributeNames(), which is an extremely slow and
-            // inefficient method in implementations like Apache Tomcat's. So the uses of this method should be
-            // very controlled and reduced to the minimum. Specifically, any call that executes e.g. for every
-            // expression evaluation should be disallowed. Only sporadic uses should be done.
-            // Note also it would not be a good idea to cache the attribute names coming from the request if we
-            // want to keep complete independence of the HttpServletRequest object, so that it can be modified
-            // from the outside (e.g. from other libraries like Tiles) with Thymeleaf perfectly integrating with
-            // those modifications.
-            // --------------------------
-            final Set<String> variableNames = new HashSet<String>(10);
-            final Enumeration<String> attributeNamesEnum = getAttributeNames();
-            while (attributeNamesEnum.hasMoreElements()) {
-                variableNames.add(attributeNamesEnum.nextElement());
-            }
-            return variableNames;
-
+            return this.webExchange.getAllAttributeNames();
         }
 
 
@@ -749,7 +683,7 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
                      * attribute are exactly the same. So we don't really have a reason to worry about the attribute
                      * already existing or not when it was set to null.
                      */
-                    this.oldValues[this.index][levelIndex] = getAttribute(name);
+                    this.oldValues[this.index][levelIndex] = this.webExchange.getAttributeValue(name);
 
                     this.newValues[this.index][levelIndex] = value;
 
@@ -760,7 +694,7 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
             }
 
             // No matter if value is null or not. Value null will be equivalent to .removeAttribute()
-            setAttribute(name, value);
+            this.webExchange.setAttributeValue(name, value);
 
         }
 
@@ -1030,11 +964,11 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
                         final String name = this.names[this.index][n];
                         final Object newValue = this.newValues[this.index][n];
                         final Object oldValue = this.oldValues[this.index][n];
-                        final Object currentValue = getAttribute(name);
+                        final Object currentValue = this.webExchange.getAttributeValue(name);
                         if (newValue == currentValue) {
                             // Only if the value matches, in order to avoid modifying values that have been set directly
                             // into the request.
-                            setAttribute(name,oldValue);
+                            this.webExchange.setAttributeValue(name,oldValue);
                         }
                     }
                     this.levelSizes[this.index] = 0;
@@ -1085,7 +1019,7 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
                         if (!oldValuesSum.containsKey(name)) {
                             // This means that, either the value in the request is the same as the newValue, or it was modified
                             // directly at the request and we need to discard this entry.
-                            if (newValue != getAttribute(name)) {
+                            if (newValue != this.webExchange.getAttributeValue(name)) {
                                 continue;
                             }
                         } else {
@@ -1119,9 +1053,8 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
                 }
             }
             final Map<String,Object> requestAttributes = new LinkedHashMap<String, Object>();
-            final Enumeration<String> attrNames = getAttributeNames();
-            while (attrNames.hasMoreElements()) {
-                final String name = attrNames.nextElement();
+            final Set<String> attrNames = this.webExchange.getAllAttributeNames();
+            for (final String name : attrNames) {
                 if (oldValuesSum.containsKey(name)) {
                     final Object oldValue = oldValuesSum.get(name);
                     if (oldValue != null) {
@@ -1129,7 +1062,7 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
                     }
                     oldValuesSum.remove(name);
                 } else {
-                    requestAttributes.put(name, getAttribute(name));
+                    requestAttributes.put(name, this.webExchange.getAttributeValue(name));
                 }
             }
             for (Map.Entry<String,Object> oldValuesSumEntry : oldValuesSum.entrySet()) {
@@ -1167,17 +1100,10 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
 
         @Override
         public String toString() {
-
-            final Map<String,Object> equivalentMap = new LinkedHashMap<String, Object>();
-            final Enumeration<String> attributeNamesEnum = getAttributeNames();
-            while (attributeNamesEnum.hasMoreElements()) {
-                final String name = attributeNamesEnum.nextElement();
-                equivalentMap.put(name, getAttribute(name));
-            }
+            final Map<String,Object> attributeMap = this.webExchange.getAttributeMap();
             final String textInliningStr = (getInliner() != null? "[" + getInliner().getName() + "]" : "" );
             final String templateDataStr = "(" + getTemplateData().getTemplate() + ")";
-            return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "") + textInliningStr + templateDataStr;
-
+            return attributeMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "") + textInliningStr + templateDataStr;
         }
 
 
@@ -1199,6 +1125,148 @@ public abstract class AbstractWebEngineContext extends AbstractEngineContext imp
         }
 
 
+    }
+
+
+
+
+
+    private abstract static class NoOpMapImpl implements Map<String,Object> {
+
+        protected NoOpMapImpl() {
+            super();
+        }
+
+        public int size() {
+            return 0;
+        }
+
+        public boolean isEmpty() {
+            return true;
+        }
+
+        public boolean containsKey(final Object key) {
+            return false;
+        }
+
+        public boolean containsValue(final Object value) {
+            return false;
+        }
+
+        public Object get(final Object key) {
+            return null;
+        }
+
+        public Object put(final String key, final Object value) {
+            throw new UnsupportedOperationException("Cannot add new entry: map is immutable");
+        }
+
+        public Object remove(final Object key) {
+            throw new UnsupportedOperationException("Cannot remove entry: map is immutable");
+        }
+
+        public void putAll(final Map<? extends String, ? extends Object> m) {
+            throw new UnsupportedOperationException("Cannot add new entry: map is immutable");
+        }
+
+        public void clear() {
+            throw new UnsupportedOperationException("Cannot clear: map is immutable");
+        }
+
+        public Set<String> keySet() {
+            return Collections.emptySet();
+        }
+
+        public Collection<Object> values() {
+            return Collections.emptyList();
+        }
+
+        public Set<Entry<String,Object>> entrySet() {
+            return Collections.emptySet();
+        }
+
+    }
+
+
+
+    private static final class RequestParameterValues extends AbstractList<String> {
+
+        private final String[] parameterValues;
+        public final int length;
+
+        RequestParameterValues(final String[] parameterValues) {
+            this.parameterValues = parameterValues;
+            this.length = this.parameterValues.length;
+        }
+
+        @Override
+        public int size() {
+            return this.length;
+        }
+
+        @Override
+        public Object[] toArray() {
+            return this.parameterValues.clone();
+        }
+
+        @Override
+        public <T> T[] toArray(final T[] arr) {
+            if (arr.length < this.length) {
+                final T[] copy = (T[]) Array.newInstance(arr.getClass().getComponentType(), this.length);
+                System.arraycopy(this.parameterValues, 0, copy, 0, this.length);
+                return copy;
+            }
+            System.arraycopy(this.parameterValues, 0, arr, 0, this.length);
+            if (arr.length > this.length) {
+                arr[this.length] = null;
+            }
+            return arr;
+        }
+
+        @Override
+        public String get(final int index) {
+            return this.parameterValues[index];
+        }
+
+        @Override
+        public int indexOf(final Object obj) {
+            final String[] a = this.parameterValues;
+            if (obj == null) {
+                for (int i = 0; i < a.length; i++) {
+                    if (a[i] == null) {
+                        return i;
+                    }
+                }
+            } else {
+                for (int i = 0; i < a.length; i++) {
+                    if (obj.equals(a[i])) {
+                        return i;
+                    }
+                }
+            }
+            return -1;
+        }
+
+        @Override
+        public boolean contains(final Object obj) {
+            return indexOf(obj) != -1;
+        }
+
+
+        @Override
+        public String toString() {
+            // This toString() method will be responsible of outputting non-indexed request parameters in the
+            // way most people expect, i.e. return parameterValues[0] when accessed without index and parameter is
+            // single-valued (${param.a}), returning ArrayList#toString() when accessed without index and parameter
+            // is multi-valued, and finally return the specific value when accessed with index (${param.a[0]})
+            if (this.length == 0) {
+                return "";
+            }
+            if (this.length == 1) {
+                return this.parameterValues[0];
+            }
+            return super.toString();
+        }
     }
 
 }

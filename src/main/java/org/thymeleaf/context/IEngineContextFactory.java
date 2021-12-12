@@ -74,7 +74,7 @@ public interface IEngineContextFactory {
      *   Note also that the {@code context} object passed here as an argument will normally correspond to the
      *   simple {@link IContext} implementation used for calling
      *   {@link org.thymeleaf.ITemplateEngine}{@code .process(...)} and, therefore, will normally be an object
-     *   of class {@link EngineContext}, {@link JavaxWebContext} or similar.
+     *   of class {@link EngineContext}, {@link WebContext} or similar.
      * </p>
      *
      * @param configuration the engine configuration being used.
