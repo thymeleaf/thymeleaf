@@ -33,7 +33,6 @@ import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.standard.util.StandardExpressionUtils;
 
 /**
@@ -134,8 +133,7 @@ public final class OGNLVariableExpressionEvaluator
                 // Note this will never happen with shortcut expressions, as the '#' character with which all
                 // expression object names start is not allowed by the OGNLShortcutExpression parser.
 
-                final IExpressionObjects expressionObjects = context.getExpressionObjects();
-                contextVariablesMap = new OGNLExpressionObjectsWrapper(expressionObjects, expContext.getRestrictVariableAccess());
+                contextVariablesMap = new OGNLExpressionObjectsWrapper(context.getExpressionObjects());
 
                 // We might need to apply restrictions on the request parameters. In the case of OGNL, the only way we
                 // can actually communicate with the PropertyAccessor, (OGNLVariablesMapPropertyAccessor), which is the

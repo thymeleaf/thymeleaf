@@ -37,13 +37,11 @@ import org.thymeleaf.expression.IExpressionObjects;
 final class OGNLExpressionObjectsWrapper extends HashMap<String, Object> {
 
     private final IExpressionObjects expressionObjects;
-    private final boolean restrictedExpressionExecution;
 
 
-    OGNLExpressionObjectsWrapper(final IExpressionObjects expressionObjects, final boolean restrictedExpressionExecution) {
+    OGNLExpressionObjectsWrapper(final IExpressionObjects expressionObjects) {
         super(5);
         this.expressionObjects = expressionObjects;
-        this.restrictedExpressionExecution = restrictedExpressionExecution;
     }
 
 
@@ -61,19 +59,8 @@ final class OGNLExpressionObjectsWrapper extends HashMap<String, Object> {
     public Object get(final Object key) {
 
         if (this.expressionObjects.containsObject(key.toString())) {
-
-            final Object expressionObject = this.expressionObjects.getObject(key.toString());
-
-            // We need to first check if we are in a restricted environment. If so, restrict access to the request.
-            if (this.restrictedExpressionExecution &&
-                    (StandardExpressionObjectFactory.REQUEST_EXPRESSION_OBJECT_NAME.equals(key) ||
-                     StandardExpressionObjectFactory.HTTP_SERVLET_REQUEST_EXPRESSION_OBJECT_NAME.equals(key))) {
-                return RestrictedJavaxRequestAccessUtils.wrapRequestObject(expressionObject);
-            }
-
-            return expressionObject;
+            return this.expressionObjects.getObject(key.toString());
         }
-
         return super.get(key);
 
     }

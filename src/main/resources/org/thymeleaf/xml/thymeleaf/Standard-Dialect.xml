@@ -556,14 +556,6 @@
 	<expression-object name="object"             class="org.thymeleaf.context.IContext"/>
 	<expression-object name="locale"             class="java.util.Locale"/>
 
-	<expression-object name="request"            class="javax.servlet.http.HttpServletRequest"/>
-	<expression-object name="response"           class="javax.servlet.http.HttpServletResponse"/>
-	<expression-object name="session"            class="javax.servlet.http.HttpSession"/>
-	<expression-object name="servletContext"     class="javax.servlet.ServletContext"/>
-
-	<expression-object name="httpServletRequest" class="javax.servlet.http.HttpServletRequest"/>
-	<expression-object name="httpSession"        class="javax.servlet.http.HttpSession"/>
-
 	<expression-object name="conversions" class="org.thymeleaf.expression.Conversions"/>
 	<expression-object name="uris"        class="org.thymeleaf.expression.Uris"/>
 
