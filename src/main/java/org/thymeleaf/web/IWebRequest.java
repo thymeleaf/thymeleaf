@@ -49,7 +49,4 @@ public interface IWebRequest {
     public Map<String,String[]> getParameterMap();
     public String[] getParameterValues(final String name);
 
-
-    public Object getNativeObject();
-
 }

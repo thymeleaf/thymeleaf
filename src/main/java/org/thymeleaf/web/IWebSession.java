@@ -39,7 +39,4 @@ public interface IWebSession {
     public void setAttributeValue(final String name, final Object value);
     public void removeAttribute(final String name);
 
-
-    public Object getNativeObject();
-
 }

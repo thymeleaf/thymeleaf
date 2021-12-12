@@ -42,4 +42,6 @@ public interface IServletWebRequest extends IWebRequest {
         return getParameterMap().keySet();
     }
 
+    public Object getNativeObject();
+
 }

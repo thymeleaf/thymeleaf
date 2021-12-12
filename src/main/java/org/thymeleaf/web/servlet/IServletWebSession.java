@@ -82,7 +82,7 @@ public interface IServletWebSession extends IWebSession {
         // inefficient method in implementations like Apache Tomcat's. So the uses of this method should be
         // very controlled and reduced to the minimum.
         // --------------------------
-        final Map<String,Object> attributeMap = new LinkedHashMap<String,Object>(10);
+        final Map<String, Object> attributeMap = new LinkedHashMap<String, Object>(10);
         final Enumeration<String> attributeNamesEnum = getAttributeNames();
         String attributeName;
         while (attributeNamesEnum.hasMoreElements()) {
@@ -96,5 +96,7 @@ public interface IServletWebSession extends IWebSession {
     default void removeAttribute(final String name) {
         this.setAttributeValue(name, null);
     }
+
+    public Object getNativeObject();
 
 }

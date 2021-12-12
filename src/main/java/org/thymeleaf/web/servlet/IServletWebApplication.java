@@ -108,4 +108,7 @@ public interface IServletWebApplication extends IWebApplication {
             return false;
         }
     }
+
+    public Object getNativeObject();
+
 }

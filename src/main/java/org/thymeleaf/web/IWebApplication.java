@@ -43,6 +43,4 @@ public interface IWebApplication {
     public boolean resourceExists(final String path);
     public InputStream getResourceAsStream(final String path);
 
-    public Object getNativeObject();
-
 }
