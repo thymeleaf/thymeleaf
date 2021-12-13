@@ -67,8 +67,8 @@ public final class JakartaServletWebExchange implements IServletWebExchange {
     }
 
 
-    public static JakartaServletWebExchange build(final HttpServletRequest httpServletRequest,
-                                                  final HttpServletResponse httpServletResponse) {
+    public static JakartaServletWebExchange buildExchange(final HttpServletRequest httpServletRequest,
+                                                          final HttpServletResponse httpServletResponse) {
 
         Validate.notNull(httpServletRequest, "Request cannot be null");
         Validate.notNull(httpServletResponse, "Response cannot be null");

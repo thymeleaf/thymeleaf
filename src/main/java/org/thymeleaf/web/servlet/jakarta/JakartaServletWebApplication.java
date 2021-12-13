@@ -26,6 +26,9 @@ import java.net.URL;
 import java.util.Enumeration;
 
 import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.thymeleaf.util.Validate;
 import org.thymeleaf.web.servlet.IServletWebApplication;
 
@@ -45,6 +48,29 @@ public final class JakartaServletWebApplication implements IServletWebApplicatio
         super();
         Validate.notNull(servletContext, "Servlet context cannot be null");
         this.servletContext = servletContext;
+    }
+
+
+    public static JakartaServletWebApplication buildApplication(final ServletContext servletContext) {
+        return new JakartaServletWebApplication(servletContext);
+    }
+
+    public JakartaServletWebExchange buildExchange(final HttpServletRequest httpServletRequest,
+                                                   final HttpServletResponse httpServletResponse) {
+
+        Validate.notNull(httpServletRequest, "Request cannot be null");
+        Validate.notNull(httpServletResponse, "Response cannot be null");
+        Validate.isTrue(this.servletContext == httpServletRequest.getServletContext(),
+                "Cannot build an application for a request which servlet context does not match with " +
+                "the application that it is being built for.");
+
+        final HttpSession httpSession = httpServletRequest.getSession(false);
+
+        final JakartaServletWebRequest request = new JakartaServletWebRequest(httpServletRequest);
+        final JakartaServletWebSession session = (httpSession == null? null : new JakartaServletWebSession(httpSession));
+
+        return new JakartaServletWebExchange(request, session, this, httpServletResponse);
+
     }
 
 

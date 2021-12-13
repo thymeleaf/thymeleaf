@@ -26,6 +26,9 @@ import java.net.URL;
 import java.util.Enumeration;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.util.Validate;
 import org.thymeleaf.web.servlet.IServletWebApplication;
@@ -46,6 +49,29 @@ public final class JavaxServletWebApplication implements IServletWebApplication 
         super();
         Validate.notNull(servletContext, "Servlet context cannot be null");
         this.servletContext = servletContext;
+    }
+
+
+    public static JavaxServletWebApplication buildApplication(final ServletContext servletContext) {
+        return new JavaxServletWebApplication(servletContext);
+    }
+
+    public JavaxServletWebExchange buildExchange(final HttpServletRequest httpServletRequest,
+                                                 final HttpServletResponse httpServletResponse) {
+
+        Validate.notNull(httpServletRequest, "Request cannot be null");
+        Validate.notNull(httpServletResponse, "Response cannot be null");
+        Validate.isTrue(this.servletContext == httpServletRequest.getServletContext(),
+                "Cannot build an application for a request which servlet context does not match with " +
+                        "the application that it is being built for.");
+
+        final HttpSession httpSession = httpServletRequest.getSession(false);
+
+        final JavaxServletWebRequest request = new JavaxServletWebRequest(httpServletRequest);
+        final JavaxServletWebSession session = (httpSession == null? null : new JavaxServletWebSession(httpSession));
+
+        return new JavaxServletWebExchange(request, session, this, httpServletResponse);
+
     }
 
 

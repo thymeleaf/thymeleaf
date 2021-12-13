@@ -68,8 +68,8 @@ public final class JavaxServletWebExchange implements IServletWebExchange {
     }
 
 
-    public static JavaxServletWebExchange build(final HttpServletRequest httpServletRequest,
-                                                  final HttpServletResponse httpServletResponse) {
+    public static JavaxServletWebExchange buildExchange(final HttpServletRequest httpServletRequest,
+                                                        final HttpServletResponse httpServletResponse) {
 
         Validate.notNull(httpServletRequest, "Request cannot be null");
         Validate.notNull(httpServletResponse, "Response cannot be null");
