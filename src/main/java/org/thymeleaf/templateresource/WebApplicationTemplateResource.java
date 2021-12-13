@@ -27,7 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import org.thymeleaf.templateresolver.WebApplicationContextTemplateResolver;
+import org.thymeleaf.templateresolver.WebApplicationTemplateResolver;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 import org.thymeleaf.web.IWebApplication;
@@ -39,7 +39,7 @@ import org.thymeleaf.web.IWebApplication;
  *   servlet-based applications is {@code /WEB-INF}.
  * </p>
  * <p>
- *   Objects of this class are usually created by {@link WebApplicationContextTemplateResolver}.
+ *   Objects of this class are usually created by {@link WebApplicationTemplateResolver}.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez

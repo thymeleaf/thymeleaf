@@ -38,14 +38,14 @@ import org.thymeleaf.web.IWebApplication;
  * @since 3.1.0
  *
  */
-public class WebApplicationContextTemplateResolver extends AbstractConfigurableTemplateResolver {
+public class WebApplicationTemplateResolver extends AbstractConfigurableTemplateResolver {
 
 
     private final IWebApplication webApplication;
 
 
 
-    public WebApplicationContextTemplateResolver(final IWebApplication webApplication) {
+    public WebApplicationTemplateResolver(final IWebApplication webApplication) {
         super();
         Validate.notNull(webApplication, "Web Application object cannot be null");
         this.webApplication = webApplication;

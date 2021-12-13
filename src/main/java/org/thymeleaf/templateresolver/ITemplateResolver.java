@@ -75,7 +75,7 @@ import org.thymeleaf.templateresource.ITemplateResource;
  * @see ITemplateResource
  * @see ClassLoaderTemplateResolver
  * @see FileTemplateResolver
- * @see WebApplicationContextTemplateResolver
+ * @see WebApplicationTemplateResolver
  * @see StringTemplateResolver
  * @see UrlTemplateResolver
  *
