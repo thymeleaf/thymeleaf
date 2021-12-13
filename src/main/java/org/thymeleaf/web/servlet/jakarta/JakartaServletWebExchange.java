@@ -22,6 +22,7 @@ package org.thymeleaf.web.servlet.jakarta;
 
 import java.security.Principal;
 import java.util.Enumeration;
+import java.util.Locale;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
@@ -104,6 +105,11 @@ public final class JakartaServletWebExchange implements IServletWebExchange {
     @Override
     public Principal getPrincipal() {
         return this.httpServletRequest.getUserPrincipal();
+    }
+
+    @Override
+    public Locale getLocale() {
+        return this.httpServletRequest.getLocale();
     }
 
 

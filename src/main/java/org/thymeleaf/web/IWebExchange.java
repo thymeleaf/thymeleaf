@@ -20,6 +20,7 @@
 package org.thymeleaf.web;
 
 import java.security.Principal;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,6 +42,7 @@ public interface IWebExchange {
     }
 
     public Principal getPrincipal();
+    public Locale getLocale();
 
     public boolean containsAttribute(final String name);
     public int getAttributeCount();

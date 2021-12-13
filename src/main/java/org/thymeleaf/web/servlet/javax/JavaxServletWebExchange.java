@@ -22,6 +22,7 @@ package org.thymeleaf.web.servlet.javax;
 
 import java.security.Principal;
 import java.util.Enumeration;
+import java.util.Locale;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -105,6 +106,11 @@ public final class JavaxServletWebExchange implements IServletWebExchange {
     @Override
     public Principal getPrincipal() {
         return this.httpServletRequest.getUserPrincipal();
+    }
+
+    @Override
+    public Locale getLocale() {
+        return this.httpServletRequest.getLocale();
     }
 
 
