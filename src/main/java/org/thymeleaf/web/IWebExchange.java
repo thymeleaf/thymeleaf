@@ -36,6 +36,10 @@ public interface IWebExchange {
     public IWebSession getSession();
     public IWebApplication getApplication();
 
+    default boolean hasSession() {
+        return getSession() == null;
+    }
+
     public Principal getPrincipal();
 
     public boolean containsAttribute(final String name);

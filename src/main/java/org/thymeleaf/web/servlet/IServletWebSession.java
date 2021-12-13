@@ -19,12 +19,14 @@
  */
 package org.thymeleaf.web.servlet;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.thymeleaf.util.Validate;
 import org.thymeleaf.web.IWebSession;
 
 /**
@@ -41,16 +43,13 @@ public interface IServletWebSession extends IWebSession {
 
     @Override
     default boolean containsAttribute(final String name) {
+        Validate.notNull(name, "Name cannot be null");
+        // Attribute maps in the servlet specification do not allow null values (setting null = remove)
         return getAttributeValue(name) != null;
     }
 
     @Override
     default int getAttributeCount() {
-        // --------------------------
-        // Note this method relies on HttpServletRequest#getAttributeNames(), which is an extremely slow and
-        // inefficient method in implementations like Apache Tomcat's. So the uses of this method should be
-        // very controlled and reduced to the minimum.
-        // --------------------------
         int count = 0;
         final Enumeration<String> attributeNamesEnum = getAttributeNames();
         while (attributeNamesEnum.hasMoreElements()) {
@@ -62,26 +61,16 @@ public interface IServletWebSession extends IWebSession {
 
     @Override
     default Set<String> getAllAttributeNames() {
-        // --------------------------
-        // Note this method relies on HttpServletRequest#getAttributeNames(), which is an extremely slow and
-        // inefficient method in implementations like Apache Tomcat's. So the uses of this method should be
-        // very controlled and reduced to the minimum.
-        // --------------------------
         final Set<String> attributeNames = new LinkedHashSet<String>(10);
         final Enumeration<String> attributeNamesEnum = getAttributeNames();
         while (attributeNamesEnum.hasMoreElements()) {
             attributeNames.add(attributeNamesEnum.nextElement());
         }
-        return attributeNames;
+        return Collections.unmodifiableSet(attributeNames);
     }
 
     @Override
     default Map<String, Object> getAttributeMap() {
-        // --------------------------
-        // Note this method relies on HttpServletRequest#getAttributeNames(), which is an extremely slow and
-        // inefficient method in implementations like Apache Tomcat's. So the uses of this method should be
-        // very controlled and reduced to the minimum.
-        // --------------------------
         final Map<String, Object> attributeMap = new LinkedHashMap<String, Object>(10);
         final Enumeration<String> attributeNamesEnum = getAttributeNames();
         String attributeName;
@@ -89,11 +78,12 @@ public interface IServletWebSession extends IWebSession {
             attributeName = attributeNamesEnum.nextElement();
             attributeMap.put(attributeName, getAttributeValue(attributeName));
         }
-        return attributeMap;
+        return Collections.unmodifiableMap(attributeMap);
     }
 
     @Override
     default void removeAttribute(final String name) {
+        Validate.notNull(name, "Name cannot be null");
         this.setAttributeValue(name, null);
     }
 

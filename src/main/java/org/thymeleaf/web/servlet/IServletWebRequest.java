@@ -19,8 +19,14 @@
  */
 package org.thymeleaf.web.servlet;
 
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
+import org.thymeleaf.util.Validate;
 import org.thymeleaf.web.IWebRequest;
 
 /**
@@ -32,6 +38,72 @@ import org.thymeleaf.web.IWebRequest;
  */
 public interface IServletWebRequest extends IWebRequest {
 
+    public String getServletContext();
+    public String getServletPath();
+    public String getPathInfo();
+
+    @Override
+    default String getApplicationPath() {
+        return getServletContext();
+    }
+
+    @Override
+    default String getPathWithinApplication() {
+        final String servletPath = getServletPath();
+        final String pathInfo = getPathInfo();
+        return (servletPath == null? "" : servletPath) + (pathInfo == null? "" : pathInfo);
+    }
+
+    public Enumeration<String> getHeaderNames();
+
+
+    @Override
+    default boolean containsHeader(final String name) {
+        Validate.notNull(name, "Name cannot be null");
+        // A header is only null when it is not present
+        return getHeaderValue(name) != null;
+    }
+
+    @Override
+    default int getHeaderCount() {
+        int count = 0;
+        final Enumeration<String> headerNamesEnum = getHeaderNames();
+        while (headerNamesEnum.hasMoreElements()) {
+            headerNamesEnum.nextElement();
+            count++;
+        }
+        return count;
+    }
+
+    @Override
+    default Set<String> getAllHeaderNames() {
+        final Set<String> headerNames = new LinkedHashSet<String>(10);
+        final Enumeration<String> headerNamesEnum = getHeaderNames();
+        while (headerNamesEnum.hasMoreElements()) {
+            headerNames.add(headerNamesEnum.nextElement());
+        }
+        return Collections.unmodifiableSet(headerNames);
+    }
+
+    @Override
+    default Map<String, String> getHeaderMap() {
+        final Map<String, String> headerMap = new LinkedHashMap<String, String>(10);
+        final Enumeration<String> headerNamesEnum = getHeaderNames();
+        String headerName;
+        while (headerNamesEnum.hasMoreElements()) {
+            headerName = headerNamesEnum.nextElement();
+            headerMap.put(headerName, getHeaderValue(headerName));
+        }
+        return Collections.unmodifiableMap(headerMap);
+    }
+
+    @Override
+    default boolean containsParameter(final String name) {
+        Validate.notNull(name, "Name cannot be null");
+        // A request parameter is only null when it is not present
+        return getParameterValues(name) != null;
+    }
+
     @Override
     default int getParameterCount() {
         return getParameterMap().size();
@@ -41,6 +113,7 @@ public interface IServletWebRequest extends IWebRequest {
     default Set<String> getAllParameterNames() {
         return getParameterMap().keySet();
     }
+
 
     public Object getNativeObject();
 

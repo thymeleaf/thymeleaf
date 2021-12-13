@@ -19,12 +19,14 @@
  */
 package org.thymeleaf.web.servlet;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.thymeleaf.util.Validate;
 import org.thymeleaf.web.IWebExchange;
 
 /**
@@ -46,6 +48,8 @@ public interface IServletWebExchange extends IWebExchange {
 
     @Override
     default boolean containsAttribute(final String name) {
+        Validate.notNull(name, "Name cannot be null");
+        // Attribute maps in the servlet specification do not allow null values (setting null = remove)
         return getAttributeValue(name) != null;
     }
 
@@ -77,7 +81,7 @@ public interface IServletWebExchange extends IWebExchange {
         while (attributeNamesEnum.hasMoreElements()) {
             attributeNames.add(attributeNamesEnum.nextElement());
         }
-        return attributeNames;
+        return Collections.unmodifiableSet(attributeNames);
     }
 
     @Override
@@ -94,11 +98,12 @@ public interface IServletWebExchange extends IWebExchange {
             attributeName = attributeNamesEnum.nextElement();
             attributeMap.put(attributeName, getAttributeValue(attributeName));
         }
-        return attributeMap;
+        return Collections.unmodifiableMap(attributeMap);
     }
 
     @Override
     default void removeAttribute(final String name) {
+        Validate.notNull(name, "Name cannot be null");
         this.setAttributeValue(name, null);
     }
 

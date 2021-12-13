@@ -32,12 +32,53 @@ import java.util.Set;
 public interface IWebRequest {
 
     public String getMethod();
+
+    public boolean isSecure();
+    default String getScheme() {
+        return isSecure()? "https" : "http";
+    }
+
+    public String getServerName();
+    public Integer getServerPort();
     public String getApplicationPath();
     public String getPathWithinApplication();
-    public String getRequestPath();
     public String getQueryString();
 
-    public String containsHeader(final String name);
+    default String getRequestPath() {
+        final String applicationPath = getApplicationPath();
+        final String pathWithinApplication = getPathWithinApplication();
+        return (applicationPath == null? "" : applicationPath) +
+                (pathWithinApplication == null? "" : pathWithinApplication);
+    }
+
+    default String getRequestURL() {
+
+        final String scheme = getScheme();
+        final String serverName = getServerName();
+        final Integer serverPort = getServerPort();
+        final String requestPath = getRequestPath();
+        final String queryString = getQueryString();
+
+        if (scheme == null || serverName == null || serverPort == null) {
+            throw new UnsupportedOperationException(
+                    "Request scheme, server name or port are null in this environment. Cannot compute request URL");
+        }
+
+        final StringBuilder urlBuilder = new StringBuilder();
+        urlBuilder.append(scheme).append("://").append(serverName);
+        if (!(scheme.equals("http") && serverPort.intValue() == 80) &&
+                !(scheme.equals("https") && serverPort.intValue() == 443)) {
+            urlBuilder.append(':').append(serverPort);
+        }
+        urlBuilder.append(requestPath);
+        if (queryString != null) {
+            urlBuilder.append('?').append(queryString);
+        }
+        return urlBuilder.toString();
+
+    }
+
+    public boolean containsHeader(final String name);
     public int getHeaderCount();
     public Set<String> getAllHeaderNames();
     public Map<String,String> getHeaderMap();
@@ -48,5 +89,12 @@ public interface IWebRequest {
     public Set<String> getAllParameterNames();
     public Map<String,String[]> getParameterMap();
     public String[] getParameterValues(final String name);
+
+    // Only request cookies are modelled, so <Name:String,Value:String[]> is enough.
+    public boolean containsCookie(final String name);
+    public int getCookieCount();
+    public Set<String> getAllCookieNames();
+    public Map<String,String[]> getCookieMap();
+    public String[] getCookieValues(final String name);
 
 }
