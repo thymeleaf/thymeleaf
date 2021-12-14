@@ -28,7 +28,7 @@ import org.thymeleaf.web.IWebExchange;
 
 /**
  * <p>
- *   Basic web-oriented implementation of the {@link IExpressionContext} and {@link IJavaxWebContext} interfaces.
+ *   Basic web-oriented implementation of the {@link IExpressionContext} and {@link IWebContext} interfaces.
  * </p>
  * <p>
  *   This class is not thread-safe, and should not be shared across executions of templates.
