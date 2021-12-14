@@ -118,7 +118,7 @@
     <module.name>thymeleaf.spring5</module.name>
     <springframework.version>5.0.8.RELEASE</springframework.version>
     <springwebflow.version>2.5.0.RELEASE</springwebflow.version>
-    <slf4j.version>1.7.25</slf4j.version>
+    <slf4j.version>1.7.32</slf4j.version>
   </properties>
 
 

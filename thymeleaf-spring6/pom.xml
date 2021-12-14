@@ -127,7 +127,7 @@
     <jakarta-servlet-api.version>5.0.0</jakarta-servlet-api.version>
     <springframework.version>6.0.0-SNAPSHOT</springframework.version>
     <springwebflow.version>2.5.0.RELEASE</springwebflow.version>
-    <slf4j.version>1.7.25</slf4j.version>
+    <slf4j.version>1.7.32</slf4j.version>
   </properties>
 
 
