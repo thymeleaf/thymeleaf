@@ -38,7 +38,7 @@ import org.thymeleaf.context.EngineContext;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IEngineContext;
 import org.thymeleaf.context.ILazyContextVariable;
-import org.thymeleaf.context.JavaxWebContext;
+import org.thymeleaf.context.WebContext;
 import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -90,7 +90,7 @@ public class SpringWebFluxEngineContext
      * </p>
      * <p>
      *   Note that implementations of {@link IEngineContext} are not meant to be used in order to call
-     *   the template engine (use implementations of {@link IContext} such as {@link Context} or {@link JavaxWebContext}
+     *   the template engine (use implementations of {@link IContext} such as {@link Context} or {@link WebContext}
      *   instead). This is therefore mostly an <b>internal</b> implementation, and users should have no reason
      *   to ever call this constructor except in very specific integration/extension scenarios.
      * </p>

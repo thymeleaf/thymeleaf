@@ -32,14 +32,13 @@ import java.util.Set;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.JakartaWebExpressionContext;
+import org.thymeleaf.context.WebExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring6.ISpringTemplateEngine;
 import org.thymeleaf.spring6.context.webmvc.SpringWebMvcThymeleafRequestContext;
@@ -51,6 +50,8 @@ import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.FastStringWriter;
+import org.thymeleaf.web.IWebExchange;
+import org.thymeleaf.web.servlet.jakarta.JakartaServletWebApplication;
 
 
 /**
@@ -197,6 +198,10 @@ public class ThymeleafView
             throws Exception {
 
         final ServletContext servletContext = getServletContext() ;
+        final IWebExchange webExchange =
+                JakartaServletWebApplication.
+                        buildApplication(servletContext).buildExchange(request, response);
+
         final String viewTemplateName = getTemplateName();
         final ISpringTemplateEngine viewTemplateEngine = getTemplateEngine();
 
@@ -255,8 +260,8 @@ public class ThymeleafView
 
 
         final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
-        final JakartaWebExpressionContext context =
-                new JakartaWebExpressionContext(configuration, request, response, servletContext, getLocale(), mergedModel);
+        final WebExpressionContext context =
+                new WebExpressionContext(configuration, webExchange, getLocale(), mergedModel);
 
 
         final String templateName;
