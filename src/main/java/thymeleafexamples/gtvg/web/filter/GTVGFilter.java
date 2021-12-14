@@ -22,15 +22,14 @@ package thymeleafexamples.gtvg.web.filter;
 import java.io.IOException;
 import java.io.Writer;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -38,7 +37,7 @@ import org.thymeleaf.templateresolver.WebApplicationTemplateResolver;
 import org.thymeleaf.web.IWebApplication;
 import org.thymeleaf.web.IWebExchange;
 import org.thymeleaf.web.IWebRequest;
-import org.thymeleaf.web.servlet.javax.JavaxServletWebApplication;
+import org.thymeleaf.web.servlet.jakarta.JakartaServletWebApplication;
 import thymeleafexamples.gtvg.business.entities.User;
 import thymeleafexamples.gtvg.web.controller.IGTVGController;
 import thymeleafexamples.gtvg.web.mapping.ControllerMappings;
@@ -47,7 +46,7 @@ import thymeleafexamples.gtvg.web.mapping.ControllerMappings;
 public class GTVGFilter implements Filter {
 
     private ITemplateEngine templateEngine;
-    private JavaxServletWebApplication application;
+    private JakartaServletWebApplication application;
 
     
     public GTVGFilter() {
@@ -66,7 +65,7 @@ public class GTVGFilter implements Filter {
 
     public void init(final FilterConfig filterConfig) throws ServletException {
         this.application =
-                JavaxServletWebApplication.buildApplication(filterConfig.getServletContext());
+                JakartaServletWebApplication.buildApplication(filterConfig.getServletContext());
         this.templateEngine = buildTemplateEngine(this.application);
     }
 
@@ -74,7 +73,7 @@ public class GTVGFilter implements Filter {
 
 
     public void doFilter(final ServletRequest request, final ServletResponse response,
-            final FilterChain chain) throws IOException, ServletException {
+                         final FilterChain chain) throws IOException, ServletException {
         addUserToSession((HttpServletRequest)request);
         if (!process((HttpServletRequest)request, (HttpServletResponse)response)) {
             chain.doFilter(request, response);
