@@ -75,8 +75,7 @@ public final class StandardExpressionUtils {
     }
 
 
-    /**
-     *
+    /*
      * @since 3.0.12
      */
     public static boolean containsOGNLInstantiationOrStaticOrParam(final String expression) {
