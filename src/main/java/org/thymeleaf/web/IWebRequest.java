@@ -88,6 +88,10 @@ public interface IWebRequest {
     public int getParameterCount();
     public Set<String> getAllParameterNames();
     public Map<String,String[]> getParameterMap();
+    default String getParameterValue(final String name) {
+        final String[] parameterValues = getParameterValues(name);
+        return (parameterValues == null || parameterValues.length == 0) ? null : parameterValues[0];
+    }
     public String[] getParameterValues(final String name);
 
     // Only request cookies are modelled, so <Name:String,Value:String[]> is enough.

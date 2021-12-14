@@ -111,6 +111,12 @@ public final class JavaxServletWebRequest implements IServletWebRequest {
     }
 
     @Override
+    public String getParameterValue(final String name) {
+        Validate.notNull(name, "Name cannot be null");
+        return this.request.getParameter(name);
+    }
+
+    @Override
     public String[] getParameterValues(final String name) {
         Validate.notNull(name, "Name cannot be null");
         return this.request.getParameterValues(name);
