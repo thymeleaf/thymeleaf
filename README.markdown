@@ -24,13 +24,9 @@ Building
  
      mvn compile
      
- Run in a tomcat server:
+ Create a war package:
  
-     mvn tomcat7:run
-     
- Once started, the application should be available at:
- 
-     http://localhost:8080/gtvg
+     mvn package
 
 
 

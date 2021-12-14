@@ -20,11 +20,11 @@
 package thymeleafexamples.gtvg.web.filter;
 
 import java.io.IOException;
+import java.io.Writer;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -32,17 +32,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.thymeleaf.ITemplateEngine;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.WebApplicationTemplateResolver;
+import org.thymeleaf.web.IWebApplication;
+import org.thymeleaf.web.IWebExchange;
+import org.thymeleaf.web.IWebRequest;
+import org.thymeleaf.web.servlet.javax.JavaxServletWebApplication;
 import thymeleafexamples.gtvg.business.entities.User;
-import thymeleafexamples.gtvg.web.application.GTVGApplication;
 import thymeleafexamples.gtvg.web.controller.IGTVGController;
+import thymeleafexamples.gtvg.web.mapping.ControllerMappings;
 
 
 public class GTVGFilter implements Filter {
 
-    
-    private ServletContext servletContext;
-    private GTVGApplication application;
-    
+    private ITemplateEngine templateEngine;
+    private JavaxServletWebApplication application;
+
     
     public GTVGFilter() {
         super();
@@ -59,8 +65,9 @@ public class GTVGFilter implements Filter {
 
 
     public void init(final FilterConfig filterConfig) throws ServletException {
-        this.servletContext = filterConfig.getServletContext();
-        this.application = new GTVGApplication(this.servletContext);
+        this.application =
+                JavaxServletWebApplication.buildApplication(filterConfig.getServletContext());
+        this.templateEngine = buildTemplateEngine(this.application);
     }
 
 
@@ -84,15 +91,18 @@ public class GTVGFilter implements Filter {
     
 
 
-    private boolean process(HttpServletRequest request, HttpServletResponse response)
+    private boolean process(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException {
         
         try {
 
+            final IWebExchange webExchange = this.application.buildExchange(request, response);
+            final IWebRequest webRequest = webExchange.getRequest();
+
             // This prevents triggering engine executions for resource URLs
-            if (request.getRequestURI().startsWith("/css") ||
-                    request.getRequestURI().startsWith("/images") ||
-                    request.getRequestURI().startsWith("/favicon")) {
+            if (webRequest.getPathWithinApplication().startsWith("/css") ||
+                    webRequest.getPathWithinApplication().startsWith("/images") ||
+                    webRequest.getPathWithinApplication().startsWith("/favicon")) {
                 return false;
             }
 
@@ -102,15 +112,10 @@ public class GTVGFilter implements Filter {
              * that will process the request. If no controller is available,
              * return false and let other filters/servlets process the request.
              */
-            IGTVGController controller = this.application.resolveControllerForRequest(request);
+            final IGTVGController controller = ControllerMappings.resolveControllerForRequest(webRequest);
             if (controller == null) {
                 return false;
             }
-
-            /*
-             * Obtain the TemplateEngine instance.
-             */
-            ITemplateEngine templateEngine = this.application.getTemplateEngine();
 
             /*
              * Write the response headers
@@ -121,15 +126,19 @@ public class GTVGFilter implements Filter {
             response.setDateHeader("Expires", 0);
 
             /*
+             * Obtain the response writer
+             */
+            final Writer writer = response.getWriter();
+
+            /*
              * Execute the controller and process view template,
              * writing the results to the response writer. 
              */
-            controller.process(
-                    request, response, this.servletContext, templateEngine);
+            controller.process(webExchange, this.templateEngine, writer);
             
             return true;
             
-        } catch (Exception e) {
+        } catch (final Exception e) {
             try {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             } catch (final IOException ignored) {
@@ -140,6 +149,28 @@ public class GTVGFilter implements Filter {
         
     }
     
-    
+
+    private static ITemplateEngine buildTemplateEngine(final IWebApplication application) {
+
+        final WebApplicationTemplateResolver templateResolver = new WebApplicationTemplateResolver(application);
+
+        // HTML is the default mode, but we will set it anyway for better understanding of code
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        // This will convert "home" to "/WEB-INF/templates/home.html"
+        templateResolver.setPrefix("/WEB-INF/templates/");
+        templateResolver.setSuffix(".html");
+        // Set template cache TTL to 1 hour. If not set, entries would live in cache until expelled by LRU
+        templateResolver.setCacheTTLMs(Long.valueOf(3600000L));
+
+        // Cache is set to true by default. Set to false if you want templates to
+        // be automatically updated when modified.
+        templateResolver.setCacheable(true);
+
+        final TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+
+        return templateEngine;
+
+    }
     
 }

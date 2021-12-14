@@ -19,14 +19,12 @@
  */
 package thymeleafexamples.gtvg.web.controller;
 
+import java.io.Writer;
 import java.util.Calendar;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.WebContext;
+import org.thymeleaf.web.IWebExchange;
 
 public class HomeController implements IGTVGController {
 
@@ -36,15 +34,13 @@ public class HomeController implements IGTVGController {
     }
     
     
-    public void process(
-            final HttpServletRequest request, final HttpServletResponse response,
-            final ServletContext servletContext, final ITemplateEngine templateEngine)
+    public void process(final IWebExchange webExchange, final ITemplateEngine templateEngine, final Writer writer)
             throws Exception {
         
-        WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+        WebContext ctx = new WebContext(webExchange, webExchange.getLocale());
         ctx.setVariable("today", Calendar.getInstance());
         
-        templateEngine.process("home", ctx, response.getWriter());
+        templateEngine.process("home", ctx, writer);
         
     }
 

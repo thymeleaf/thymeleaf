@@ -19,12 +19,11 @@
  */
 package thymeleafexamples.gtvg.web.controller;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.io.Writer;
 
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.WebContext;
+import org.thymeleaf.web.IWebExchange;
 
 public class UserProfileController implements IGTVGController {
 
@@ -34,13 +33,11 @@ public class UserProfileController implements IGTVGController {
     }
     
     
-    public void process(
-            final HttpServletRequest request, final HttpServletResponse response,
-            final ServletContext servletContext, final ITemplateEngine templateEngine)
+    public void process(final IWebExchange webExchange, final ITemplateEngine templateEngine, final Writer writer)
             throws Exception {
         
-        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-        templateEngine.process("userprofile", ctx, response.getWriter());
+        final WebContext ctx = new WebContext(webExchange, webExchange.getLocale());
+        templateEngine.process("userprofile", ctx, writer);
         
     }
 
