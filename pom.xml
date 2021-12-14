@@ -109,7 +109,7 @@
     <module.name>thymeleaf</module.name>
     <javax-servlet-api.version>3.0.1</javax-servlet-api.version>
     <jakarta-servlet-api.version>5.0.0</jakarta-servlet-api.version>
-    <ognl.version>3.1.26</ognl.version>
+    <ognl.version>3.2.21</ognl.version>
     <attoparser.version>2.0.5.RELEASE</attoparser.version>
     <unbescape.version>1.1.6.RELEASE</unbescape.version>
     <jackson.version>2.13.0</jackson.version>

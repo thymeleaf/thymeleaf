@@ -19,9 +19,13 @@
  */
 package org.thymeleaf.standard.expression;
 
+import java.lang.reflect.Member;
+import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.Map;
 
+import ognl.AbstractMemberAccess;
+import ognl.MemberAccess;
 import ognl.OgnlContext;
 import ognl.OgnlException;
 import ognl.OgnlRuntime;
@@ -64,6 +68,13 @@ public final class OGNLVariableExpressionEvaluator
                     OGNLContextPropertyAccessor.RESTRICT_REQUEST_PARAMETERS,
                     OGNLContextPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
 
+    private static MemberAccess MEMBER_ACCESS = new AbstractMemberAccess() {
+        @Override
+        public boolean isAccessible(final Map context, final Object target, final Member member, final String propertyName) {
+            int modifiers = member.getModifiers();
+            return Modifier.isPublic(modifiers);
+        }
+    };
 
     private final boolean applyOGNLShortcuts;
 
@@ -320,7 +331,7 @@ public final class OGNLVariableExpressionEvaluator
 
         // We create the OgnlContext here instead of just sending the Map as context because that prevents OGNL from
         // creating the OgnlContext empty and then setting the context Map variables one by one
-        final OgnlContext ognlContext = new OgnlContext(context);
+        final OgnlContext ognlContext = new OgnlContext(MEMBER_ACCESS, null, null, context);
         return ognl.Ognl.getValue(parsedExpression, ognlContext, root);
 
     }
