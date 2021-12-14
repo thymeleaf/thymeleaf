@@ -17,7 +17,7 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.spring5.expression;
+package org.thymeleaf.spring6.expression;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -27,7 +27,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.expression.spel.support.StandardTypeConverter;
 import org.thymeleaf.expression.IExpressionObjects;
-import org.thymeleaf.spring5.view.ThymeleafView;
+import org.thymeleaf.spring6.view.ThymeleafView;
 import org.thymeleaf.standard.expression.RestrictedJavaxRequestAccessUtils;
 import org.thymeleaf.standard.expression.StandardExpressionObjectFactory;
 import org.thymeleaf.util.Validate;
@@ -77,7 +77,7 @@ public final class ThymeleafEvaluationContext
 
 
     public ThymeleafEvaluationContext(final ApplicationContext applicationContext, final ConversionService conversionService) {
-        
+
         super();
 
         Validate.notNull(applicationContext, "Application Context cannot be null");

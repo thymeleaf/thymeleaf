@@ -24,10 +24,10 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.thymeleaf</groupId>
-  <artifactId>thymeleaf-spring5</artifactId>
+  <artifactId>thymeleaf-spring6</artifactId>
   <packaging>jar</packaging>
   <version>3.1.0-SNAPSHOT</version>
-  <name>thymeleaf-spring5</name>
+  <name>thymeleaf-spring6</name>
   <url>http://www.thymeleaf.org</url>
 
   <description>Modern server-side Java template engine for both web and standalone environments</description>
@@ -106,17 +106,18 @@
 
 
   <properties>
-    <java.version>8</java.version>
-    <maven.compiler.source>${java.version}</maven.compiler.source>
-    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <java.version>17</java.version>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
     <maven.compiler.release>${java.version}</maven.compiler.release>
     <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
     <project.build.propertiesEncoding>ISO-8859-1</project.build.propertiesEncoding>
     <!-- A project-name-based approach is adopted for the module name (instead of a reverse-DNS one) -->
     <!-- NOTE module name is fixed and not set to project.artifactId because this would not be a     -->
     <!-- valid approach for project names containing hyphens, which are not allowed in module names. -->
-    <module.name>thymeleaf.spring5</module.name>
-    <springframework.version>5.0.8.RELEASE</springframework.version>
+    <module.name>thymeleaf.spring6</module.name>
+    <jakarta-servlet-api.version>5.0.0</jakarta-servlet-api.version>
+    <springframework.version>6.0.0-SNAPSHOT</springframework.version>
     <springwebflow.version>2.5.0.RELEASE</springwebflow.version>
     <slf4j.version>1.7.25</slf4j.version>
   </properties>
@@ -205,8 +206,6 @@
           <javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
           <reportOutputDirectory>${project.build.directory}/apidocs</reportOutputDirectory>
           <excludePackageNames>org.springframework</excludePackageNames>
-          <!-- This will avoid adding a folder level for the base module name. Note: Support removed in JDK 13 -->
-          <additionalJOption>--no-module-directories</additionalJOption>
         </configuration>
         <executions>
           <execution>
@@ -327,9 +326,9 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>${jakarta-servlet-api.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>

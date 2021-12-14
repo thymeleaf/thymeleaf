@@ -17,7 +17,7 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.spring5.expression;
+package org.thymeleaf.spring6.expression;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,7 +75,7 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
 
 
     public ThymeleafEvaluationContextWrapper(final EvaluationContext delegate) {
-        
+
         super();
 
         Validate.notNull(delegate, "Evaluation context delegate cannot be null");
@@ -105,7 +105,7 @@ public final class ThymeleafEvaluationContextWrapper implements IThymeleafEvalua
 
     }
 
-    
+
     public TypedValue getRootObject() {
         return this.delegate.getRootObject();
     }

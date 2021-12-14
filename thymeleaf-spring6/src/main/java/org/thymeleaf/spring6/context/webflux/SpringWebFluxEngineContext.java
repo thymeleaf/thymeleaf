@@ -17,7 +17,7 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.spring5.context.webflux;
+package org.thymeleaf.spring6.context.webflux;
 
 import java.util.AbstractList;
 import java.util.Collection;
@@ -42,7 +42,7 @@ import org.thymeleaf.context.JavaxWebContext;
 import org.thymeleaf.engine.TemplateData;
 import org.thymeleaf.inline.IInliner;
 import org.thymeleaf.model.IProcessableElementTag;
-import org.thymeleaf.spring5.context.SpringContextUtils;
+import org.thymeleaf.spring6.context.SpringContextUtils;
 import org.thymeleaf.util.Validate;
 import reactor.core.publisher.Mono;
 

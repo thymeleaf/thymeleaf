@@ -17,7 +17,7 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.spring5.view;
+package org.thymeleaf.spring6.view;
 
 import java.io.Writer;
 import java.lang.reflect.Field;
@@ -29,9 +29,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.ConversionService;
@@ -39,14 +39,14 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.thymeleaf.IEngineConfiguration;
-import org.thymeleaf.context.JavaxWebExpressionContext;
+import org.thymeleaf.context.JakartaWebExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.spring5.ISpringTemplateEngine;
-import org.thymeleaf.spring5.context.webmvc.SpringWebMvcThymeleafRequestContext;
-import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
-import org.thymeleaf.spring5.naming.SpringContextVariableNames;
-import org.thymeleaf.spring5.util.SpringContentTypeUtils;
-import org.thymeleaf.spring5.util.SpringRequestUtils;
+import org.thymeleaf.spring6.ISpringTemplateEngine;
+import org.thymeleaf.spring6.context.webmvc.SpringWebMvcThymeleafRequestContext;
+import org.thymeleaf.spring6.expression.ThymeleafEvaluationContext;
+import org.thymeleaf.spring6.naming.SpringContextVariableNames;
+import org.thymeleaf.spring6.util.SpringContentTypeUtils;
+import org.thymeleaf.spring6.util.SpringRequestUtils;
 import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
@@ -65,13 +65,13 @@ import org.thymeleaf.util.FastStringWriter;
  * <p>
  *   This is the default view implementation resolved by {@link ThymeleafViewResolver}.
  * </p>
- * 
+ *
  * @author Daniel Fern&aacute;ndez
- * 
+ *
  * @since 3.0.3
  *
  */
-public class ThymeleafView 
+public class ThymeleafView
         extends AbstractThymeleafView {
 
     /*
@@ -255,8 +255,8 @@ public class ThymeleafView
 
 
         final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
-        final JavaxWebExpressionContext context =
-                new JavaxWebExpressionContext(configuration, request, response, servletContext, getLocale(), mergedModel);
+        final JakartaWebExpressionContext context =
+                new JakartaWebExpressionContext(configuration, request, response, servletContext, getLocale(), mergedModel);
 
 
         final String templateName;
