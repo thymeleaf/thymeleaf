@@ -104,7 +104,7 @@
 
   
   <properties>
-    <java.version>6</java.version>
+    <java.version>8</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven.compiler.release>${java.version}</maven.compiler.release>
@@ -115,15 +115,15 @@
     <!-- valid approach for project names containing hyphens, which are not allowed in module names. -->
     <module.name>thymeleaf.testing</module.name>
     <thymeleaf.version>3.1.0-SNAPSHOT</thymeleaf.version>
-    <thymeleaf-spring5.version>3.0.4.M2</thymeleaf-spring5.version>
-    <attoparser.version>2.0.3.RELEASE</attoparser.version>
-    <servlet-api.version>3.1.0</servlet-api.version>
-    <mockito.version>1.10.19</mockito.version>
-    <springframework.version>3.0.7.RELEASE</springframework.version>
-    <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
-    <ognl.version>3.0.11</ognl.version>
+    <attoparser.version>2.0.5.RELEASE</attoparser.version>
+    <javax-servlet-api.version>3.0.1</javax-servlet-api.version>
+    <jakarta-servlet-api.version>5.0.0</jakarta-servlet-api.version>
+    <mockito.version>4.1.0</mockito.version>
+    <springframework.version>5.0.0.RELEASE</springframework.version>
+    <springsecurity.version>5.0.0.RELEASE</springsecurity.version>
+    <ognl.version>3.2.21</ognl.version>
     <commons-lang3.version>3.1</commons-lang3.version>
-    <slf4j.version>1.7.25</slf4j.version>
+    <slf4j.version>1.7.32</slf4j.version>
   </properties>
 
   
@@ -310,7 +310,14 @@
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-spring5</artifactId>
-      <version>${thymeleaf-spring5.version}</version>
+      <version>${thymeleaf.version}</version>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.thymeleaf</groupId>
+      <artifactId>thymeleaf-spring6</artifactId>
+      <version>${thymeleaf.version}</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
@@ -336,10 +343,19 @@
     </dependency>
 
     <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>${jakarta-servlet-api.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <version>${servlet-api.version}</version>
-      <scope>compile</scope>
+      <version>${javax-servlet-api.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
 
     <dependency>
