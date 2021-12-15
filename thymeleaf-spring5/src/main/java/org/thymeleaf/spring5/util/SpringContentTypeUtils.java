@@ -21,11 +21,10 @@ package org.thymeleaf.spring5.util;
 
 import java.nio.charset.Charset;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.View;
 import org.thymeleaf.util.ContentTypeUtils;
+import org.thymeleaf.web.IWebExchange;
 
 
 /**
@@ -45,16 +44,16 @@ public final class SpringContentTypeUtils {
 
 
     public static String computeViewContentType(
-            final HttpServletRequest request, final String defaultContentType, final Charset defaultCharset) {
+            final IWebExchange webExchange, final String defaultContentType, final Charset defaultCharset) {
 
-        if (request == null) {
+        if (webExchange == null) {
             throw new IllegalArgumentException("Request cannot be null");
         }
 
 
         // First we will check if there is a content type already resolved by Spring's own content negotiation
         // mechanism (see ContentNegotiatingViewResolver, which is autoconfigured in Spring Boot)
-        final MediaType negotiatedMediaType = (MediaType) request.getAttribute(View.SELECTED_CONTENT_TYPE);
+        final MediaType negotiatedMediaType = (MediaType) webExchange.getAttributeValue(View.SELECTED_CONTENT_TYPE);
         if (negotiatedMediaType != null && negotiatedMediaType.isConcrete()) {
             final Charset negotiatedCharset = negotiatedMediaType.getCharset();
             if (negotiatedCharset != null) {
@@ -78,7 +77,7 @@ public final class SpringContentTypeUtils {
         // If the request path offers clues on the content type that would be more appropriate (because it
         // ends in ".html", ".xml", ".js", etc.), just use it
         final String requestPathContentType =
-                ContentTypeUtils.computeContentTypeForRequestPath(request.getRequestURI(), combinedCharset);
+                ContentTypeUtils.computeContentTypeForRequestPath(webExchange.getRequest().getRequestPath(), combinedCharset);
         if (requestPathContentType != null) {
             return requestPathContentType;
         }

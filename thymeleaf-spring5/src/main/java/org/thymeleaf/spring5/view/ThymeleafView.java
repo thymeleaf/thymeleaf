@@ -343,7 +343,7 @@ public class ThymeleafView
 
             final String computedContentType =
                     SpringContentTypeUtils.computeViewContentType(
-                            request,
+                            webExchange,
                             (templateContentType != null? templateContentType : DEFAULT_CONTENT_TYPE),
                             (templateCharacterEncoding != null? Charset.forName(templateCharacterEncoding) : null));
 
