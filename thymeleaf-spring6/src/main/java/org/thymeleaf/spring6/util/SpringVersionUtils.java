@@ -66,7 +66,17 @@ public final class SpringVersionUtils {
         } else {
 
             if (ClassLoaderUtils.isClassPresent(springPackageName + ".core.io.buffer.DataBuffer")) {
-                SPRING_VERSION_SPEC = VersionUtils.parseVersion("5.0.0.RELEASE");
+                if (!ClassLoaderUtils.isClassPresent(springPackageName + ".lang.UsesJava8")) {
+                    SPRING_VERSION_SPEC = VersionUtils.parseVersion("6.0.0");
+                } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".util.ConcurrentLruCache")) {
+                    SPRING_VERSION_SPEC = VersionUtils.parseVersion("5.3.0");
+                } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".util.SimpleRouteMatcher")) {
+                    SPRING_VERSION_SPEC = VersionUtils.parseVersion("5.2.0.RELEASE");
+                } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".util.function.SupplierUtils")) {
+                    SPRING_VERSION_SPEC = VersionUtils.parseVersion("5.1.0.RELEASE");
+                } else {
+                    SPRING_VERSION_SPEC = VersionUtils.parseVersion("5.0.0.RELEASE");
+                }
             } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".context.annotation.ComponentScans")) {
                 SPRING_VERSION_SPEC = VersionUtils.parseVersion("4.3.0.RELEASE");
             } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".core.annotation.AliasFor")) {
@@ -167,6 +177,11 @@ public final class SpringVersionUtils {
 
     public static boolean isSpring53AtLeast() {
         return isSpringAtLeast(5,3);
+    }
+
+
+    public static boolean isSpring60AtLeast() {
+        return isSpringAtLeast(6,0);
     }
 
 
