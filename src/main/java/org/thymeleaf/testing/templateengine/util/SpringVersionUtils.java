@@ -23,7 +23,10 @@ import org.springframework.core.SpringVersion;
 import org.thymeleaf.util.ClassLoaderUtils;
 
 /**
- * 
+ * <p>
+ *   Utility class useful for determining the version of Spring that is on the classpath.
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  *
  * @since 2.1.2
@@ -71,8 +74,22 @@ public final class SpringVersionUtils {
         } else {
 
             if (ClassLoaderUtils.isClassPresent(springPackageName + ".core.io.buffer.DataBuffer")) {
-                SPRING_VERSION_MAJOR = 5;
-                SPRING_VERSION_MINOR = 0;
+                if (!ClassLoaderUtils.isClassPresent(springPackageName + ".lang.UsesJava8")) {
+                    SPRING_VERSION_MAJOR = 6;
+                    SPRING_VERSION_MINOR = 0;
+                } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".util.ConcurrentLruCache")) {
+                    SPRING_VERSION_MAJOR = 5;
+                    SPRING_VERSION_MINOR = 3;
+                } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".util.SimpleRouteMatcher")) {
+                    SPRING_VERSION_MAJOR = 5;
+                    SPRING_VERSION_MINOR = 2;
+                } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".util.function.SupplierUtils")) {
+                    SPRING_VERSION_MAJOR = 5;
+                    SPRING_VERSION_MINOR = 1;
+                } else {
+                    SPRING_VERSION_MAJOR = 5;
+                    SPRING_VERSION_MINOR = 0;
+                }
             } else if (ClassLoaderUtils.isClassPresent(springPackageName + ".context.annotation.ComponentScans")) {
                 SPRING_VERSION_MAJOR = 4;
                 SPRING_VERSION_MINOR = 3;
@@ -159,6 +176,11 @@ public final class SpringVersionUtils {
 
     public static boolean isSpring50AtLeast() {
         return SPRING_VERSION_MAJOR >= 5;
+    }
+
+
+    public static boolean isSpring60AtLeast() {
+        return SPRING_VERSION_MAJOR >= 6;
     }
 
 
