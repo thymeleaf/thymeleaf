@@ -22,7 +22,6 @@ package org.thymeleaf.spring6.util;
 import java.nio.charset.Charset;
 
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.View;
 import org.thymeleaf.util.ContentTypeUtils;

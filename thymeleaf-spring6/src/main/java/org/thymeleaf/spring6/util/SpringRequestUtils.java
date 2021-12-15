@@ -22,7 +22,6 @@ package org.thymeleaf.spring6.util;
 import java.util.Enumeration;
 
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
 import org.unbescape.uri.UriEscape;
