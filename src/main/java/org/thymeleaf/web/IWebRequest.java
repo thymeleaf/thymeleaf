@@ -33,11 +33,12 @@ public interface IWebRequest {
 
     public String getMethod();
 
-    public boolean isSecure();
-    default String getScheme() {
-        return isSecure()? "https" : "http";
+    default boolean isSecure() {
+        final String scheme = getScheme();
+        return scheme != null && scheme.equalsIgnoreCase("https");
     }
-
+    
+    public String getScheme();
     public String getServerName();
     public Integer getServerPort();
     public String getApplicationPath();

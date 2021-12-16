@@ -59,8 +59,8 @@ public final class JavaxServletWebRequest implements IServletWebRequest {
     }
 
     @Override
-    public boolean isSecure() {
-        return this.request.isSecure();
+    public String getScheme() {
+        return this.request.getScheme();
     }
 
     @Override

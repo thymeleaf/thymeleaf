@@ -58,8 +58,8 @@ public final class JakartaServletWebRequest implements IServletWebRequest {
     }
 
     @Override
-    public boolean isSecure() {
-        return this.request.isSecure();
+    public String getScheme() {
+        return this.request.getScheme();
     }
 
     @Override
