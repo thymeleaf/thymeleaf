@@ -30,8 +30,6 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.ui.context.Theme;
 import org.springframework.validation.Errors;
-import org.thymeleaf.spring6.context.webflux.SpringWebFluxThymeleafRequestContext;
-import org.thymeleaf.spring6.context.webmvc.SpringWebMvcThymeleafRequestContext;
 
 /**
  * <p>
@@ -40,8 +38,8 @@ import org.thymeleaf.spring6.context.webmvc.SpringWebMvcThymeleafRequestContext;
  *   {@code RequestContext}.
  * </p>
  *
- * @see SpringWebMvcThymeleafRequestContext
- * @see SpringWebFluxThymeleafRequestContext
+ * @see org.thymeleaf.spring6.context.webmvc.SpringWebMvcThymeleafRequestContext
+ * @see org.thymeleaf.spring6.context.webflux.SpringWebFluxThymeleafRequestContext
  *
  * @author Daniel Fern&aacute;ndez
  *
