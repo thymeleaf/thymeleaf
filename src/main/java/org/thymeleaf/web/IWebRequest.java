@@ -104,6 +104,10 @@ public interface IWebRequest {
     public int getCookieCount();
     public Set<String> getAllCookieNames();
     public Map<String,String[]> getCookieMap();
+    default String getCookieValue(final String name) {
+        final String[] cookieValues = getCookieValues(name);
+        return (cookieValues == null || cookieValues.length == 0) ? null : cookieValues[0];
+    }
     public String[] getCookieValues(final String name);
 
 }
