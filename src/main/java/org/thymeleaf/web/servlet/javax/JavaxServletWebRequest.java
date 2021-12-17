@@ -100,7 +100,13 @@ public final class JavaxServletWebRequest implements IServletWebRequest {
     }
 
     @Override
+    public Enumeration<String> getHeaders(final String name) {
+        return this.request.getHeaders(name);
+    }
+
+    @Override
     public String getHeaderValue(final String name) {
+        Validate.notNull(name, "Name cannot be null");
         return this.request.getHeader(name);
     }
 

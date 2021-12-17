@@ -37,7 +37,7 @@ public interface IWebRequest {
         final String scheme = getScheme();
         return scheme != null && scheme.equalsIgnoreCase("https");
     }
-    
+
     public String getScheme();
     public String getServerName();
     public Integer getServerPort();
@@ -82,8 +82,12 @@ public interface IWebRequest {
     public boolean containsHeader(final String name);
     public int getHeaderCount();
     public Set<String> getAllHeaderNames();
-    public Map<String,String> getHeaderMap();
-    public String getHeaderValue(final String name);
+    public Map<String,String[]> getHeaderMap();
+    default String getHeaderValue(final String name) {
+        final String[] headerValues = getHeaderValues(name);
+        return (headerValues == null || headerValues.length == 0) ? null : headerValues[0];
+    }
+    public String[] getHeaderValues(final String name);
 
     public boolean containsParameter(final String name);
     public int getParameterCount();

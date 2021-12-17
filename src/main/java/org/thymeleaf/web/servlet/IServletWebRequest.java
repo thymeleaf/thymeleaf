@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,6 +56,7 @@ public interface IServletWebRequest extends IWebRequest {
     }
 
     public Enumeration<String> getHeaderNames();
+    public Enumeration<String> getHeaders(final String name);
 
 
     @Override
@@ -86,15 +88,27 @@ public interface IServletWebRequest extends IWebRequest {
     }
 
     @Override
-    default Map<String, String> getHeaderMap() {
-        final Map<String, String> headerMap = new LinkedHashMap<String, String>(10);
+    default Map<String, String[]> getHeaderMap() {
+        final Map<String, String[]> headerMap = new LinkedHashMap<String, String[]>(10);
         final Enumeration<String> headerNamesEnum = getHeaderNames();
         String headerName;
         while (headerNamesEnum.hasMoreElements()) {
             headerName = headerNamesEnum.nextElement();
-            headerMap.put(headerName, getHeaderValue(headerName));
+            headerMap.put(headerName, getHeaderValues(headerName));
         }
         return Collections.unmodifiableMap(headerMap);
+    }
+
+    @Override
+    default String[] getHeaderValues(final String name) {
+        Validate.notNull(name, "Name cannot be null");
+        final Enumeration<String> headerValues = getHeaders(name);
+        if (headerValues == null || !headerValues.hasMoreElements()) {
+            // request.getHeaders() returns an empty enumeration if the header does not exist, but we want null
+            return null;
+        }
+        final List<String> headerValueList = Collections.list(headerValues);
+        return headerValueList.toArray(new String[headerValueList.size()]);
     }
 
     @Override
