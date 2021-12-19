@@ -180,6 +180,18 @@ public class EngineConfiguration implements IEngineConfiguration {
         return this.dialectSetConfiguration.getDialects();
     }
 
+    public Set<IDialect> getDialectsOfType(final Class<?> type) {
+        Validate.notNull(type, "Type cannot be null");
+        final Set<IDialect> filteredDialects = new LinkedHashSet<IDialect>();
+        for (final IDialect dialect : this.dialectSetConfiguration.getDialects()) {
+            if (type.isInstance(dialect)) {
+                filteredDialects.add(dialect);
+            }
+        }
+        return filteredDialects;
+    }
+
+
     public boolean isStandardDialectPresent() {
         return this.dialectSetConfiguration.isStandardDialectPresent();
     }
