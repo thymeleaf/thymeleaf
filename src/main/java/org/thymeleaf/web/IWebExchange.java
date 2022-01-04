@@ -52,7 +52,7 @@ public interface IWebExchange {
     public void setAttributeValue(final String name, final Object value);
     public void removeAttribute(final String name);
 
-    public String encodeURL(final String url);
+    public String transformURL(final String url);
 
 
 }

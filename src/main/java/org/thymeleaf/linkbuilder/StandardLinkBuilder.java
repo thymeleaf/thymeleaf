@@ -543,7 +543,7 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
             return link;
         }
 
-        return ((IWebContext)context).getExchange().encodeURL(link);
+        return ((IWebContext)context).getExchange().transformURL(link);
 
     }
 
