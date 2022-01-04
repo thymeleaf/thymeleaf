@@ -34,7 +34,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.1.0
  *
  */
-public final class SpringWebFluxWebRequest implements ISpringWebFluxWebRequest {
+final class SpringWebFluxWebRequest implements ISpringWebFluxWebRequest {
 
     private final ServerHttpRequest request;
 

@@ -51,6 +51,16 @@ public final class SpringWebFluxWebApplication implements ISpringWebFluxWebAppli
         return new SpringWebFluxWebApplication();
     }
 
+    public SpringWebFluxWebExchange buildExchange(final ServerWebExchange exchange) {
+
+        Validate.notNull(exchange, "ServerWebExchange cannot be null");
+
+        final SpringWebFluxWebRequest request = new SpringWebFluxWebRequest(exchange.getRequest());
+
+        return new SpringWebFluxWebExchange(request, this, exchange);
+
+    }
+
 
     @Override
     public Map<String, Object> getAttributes() {
@@ -80,12 +90,6 @@ public final class SpringWebFluxWebApplication implements ISpringWebFluxWebAppli
     public InputStream getResourceAsStream(final String path) {
         Validate.notNull(path, "Path cannot be null");
         throw new UnsupportedOperationException("No support for webapplication-based resource resolution in Spring WebFlux");
-    }
-
-
-    @Override
-    public Object getNativeObject() {
-        return null;
     }
 
 }

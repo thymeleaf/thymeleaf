@@ -64,7 +64,4 @@ public interface ISpringWebFluxWebApplication extends IWebApplication {
         return getAttributes().get(name);
     }
 
-
-    public Object getNativeObject();
-
 }

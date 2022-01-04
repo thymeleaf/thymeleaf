@@ -59,6 +59,7 @@ import org.thymeleaf.spring5.context.webflux.SpringWebFluxExpressionContext;
 import org.thymeleaf.spring5.context.webflux.SpringWebFluxThymeleafRequestContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
+import org.thymeleaf.spring5.util.SpringReactiveModelAdditionsUtils;
 import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
@@ -105,37 +106,6 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
      */
     public static final int DEFAULT_RESPONSE_CHUNK_SIZE_BYTES = Integer.MAX_VALUE;
 
-
-    /**
-     * <p>
-     *   This prefix should be used in order to allow dialects to provide reactive stream objects
-     *   that should be resolved (in an unblocked manner) just before the execution of the view. The idea is to allow
-     *   these streams to be included in the standard reactive Spring view model resolution mechanisms so that Thymeleaf
-     *   does not have to block during the execution of the view in order to obtain the value. The result will be as
-     *   if reactive stream objects had been added by the controller methods.
-     * </p>
-     * <p>
-     *   The name of the attributes being added to the Model will be the name of the execution attribute minus the
-     *   prefix. So {@code ThymeleafReactiveModelAdditions:somedata} will result in a Model attribute called
-     *   {@code somedata}.
-     * </p>
-     * <p>
-     *   Values of these execution attributes are allowed to be:
-     * </p>
-     * <ul>
-     *     <li>{@code Publisher<?>} (including {@code Flux<?>} and {@code Mono<?>}).</li>
-     *     <li>{@code Supplier<? extends Publisher<?>>}: The supplier will be called at {@code View}
-     *          rendering time and the result will be added to the Model.</li>
-     *     <li>{@code Function<ServerWebExchange,? extends Publisher<?>>}: The function will be called
-     *          at {@code View} rendering time and the result will be added to the Model.</li>
-     * </ul>
-     * <p>
-     *     Value: {@code "ThymeleafReactiveModelAdditions:"}
-     * </p>
-     *
-     * @since 3.0.10
-     */
-    public static final String REACTIVE_MODEL_ADDITIONS_EXECUTION_ATTRIBUTE_PREFIX = "ThymeleafReactiveModelAdditions:";
 
     private static final String WEBFLUX_CONVERSION_SERVICE_NAME = "webFluxConversionService";
 
@@ -339,13 +309,12 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         Map<String,Object> enrichedModel = null;
         for (final String executionAttributeName : executionAttributes.keySet()) {
 
-            if (executionAttributeName != null && executionAttributeName.startsWith(REACTIVE_MODEL_ADDITIONS_EXECUTION_ATTRIBUTE_PREFIX)) {
+            if (SpringReactiveModelAdditionsUtils.isReactiveModelAdditionName(executionAttributeName)) {
                 // This execution attribute defines a reactive stream object that should be added to the model for
                 // non-blocking resolution at view rendering time
 
                 final Object executionAttributeValue = executionAttributes.get(executionAttributeName);
-                final String modelAttributeName =
-                        executionAttributeName.substring(REACTIVE_MODEL_ADDITIONS_EXECUTION_ATTRIBUTE_PREFIX.length());
+                final String modelAttributeName = SpringReactiveModelAdditionsUtils.fromReactiveModelAdditionName(executionAttributeName);
                 Publisher<?> modelAttributeValue = null;
 
                 if (executionAttributeValue != null) {

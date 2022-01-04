@@ -24,18 +24,42 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.util.Validate;
-import org.thymeleaf.web.IWebSession;
+import org.thymeleaf.web.IWebExchange;
 
 /**
+ * <p>
+ *   Spring WebFlux-based interface for a web exchange.
+ * </p>
+ * <p>
+ *   Note {@link #getSession()} and {@link #getPrincipal()} might return null not only if they are
+ *   indeed null, but also if they have not yet been resolved. These structures are declared as {@code Mono<?>}
+ *   in WebFlux exchange and request structures, and will only be resolved just before the rendering of the view starts.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
  * @since 3.1.0
  *
  */
-public interface ISpringWebFluxWebSession extends IWebSession {
+public interface ISpringWebFluxWebExchange extends IWebExchange {
 
-    public boolean isStarted();
+
+    public ISpringWebFluxWebRequest getRequest();
+    public ISpringWebFluxWebSession getSession();
+    public ISpringWebFluxWebApplication getApplication();
+
+
+    @Override
+    default boolean hasSession() {
+        /*
+         * In Spring WebFlux, the existence of a WebSession objet does not necessarily mean
+         * that a session has been created. Session will not exist (be started) until explicitly
+         * started or any attributes are stored into it.
+         */
+        final ISpringWebFluxWebSession webSession = getSession();
+        return (webSession != null && webSession.isStarted());
+    }
+
 
     public Map<String, Object> getAttributes();
 
@@ -68,5 +92,6 @@ public interface ISpringWebFluxWebSession extends IWebSession {
 
 
     public Object getNativeObject();
+
 
 }

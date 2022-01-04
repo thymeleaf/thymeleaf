@@ -21,14 +21,10 @@
 package org.thymeleaf.spring5.web.webflux;
 
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Map;
-
-import javax.servlet.http.HttpSession;
 
 import org.springframework.web.server.WebSession;
 import org.thymeleaf.util.Validate;
-import org.thymeleaf.web.IWebSession;
 
 /**
  *
@@ -37,7 +33,7 @@ import org.thymeleaf.web.IWebSession;
  * @since 3.1.0
  *
  */
-public final class SpringWebFluxWebSession implements ISpringWebFluxWebSession {
+final class SpringWebFluxWebSession implements ISpringWebFluxWebSession {
 
     private final WebSession session;
 
@@ -46,6 +42,11 @@ public final class SpringWebFluxWebSession implements ISpringWebFluxWebSession {
         super();
         Validate.notNull(session, "Session cannot be null");
         this.session = session;
+    }
+
+    @Override
+    public boolean isStarted() {
+        return this.session.isStarted();
     }
 
     @Override
