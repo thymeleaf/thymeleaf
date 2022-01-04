@@ -1,7 +1,7 @@
 /*
  * =============================================================================
  *
- *   Copyright (c) 2011-2021, The THYMELEAF team (http://www.thymeleaf.org)
+ *   Copyright (c) 2011-2022, The THYMELEAF team (http://www.thymeleaf.org)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  * =============================================================================
  */
 
-package org.thymeleaf.web.servlet.jakarta;
+package org.thymeleaf.web.servlet;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,7 +40,7 @@ import org.thymeleaf.web.servlet.IServletWebRequest;
  * @since 3.1.0
  *
  */
-public final class JakartaServletWebRequest implements IServletWebRequest {
+final class JakartaServletWebRequest implements IServletWebRequest {
 
     private final HttpServletRequest request;
 

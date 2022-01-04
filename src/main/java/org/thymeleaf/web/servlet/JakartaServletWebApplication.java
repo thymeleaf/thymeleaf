@@ -1,7 +1,7 @@
 /*
  * =============================================================================
  *
- *   Copyright (c) 2011-2021, The THYMELEAF team (http://www.thymeleaf.org)
+ *   Copyright (c) 2011-2022, The THYMELEAF team (http://www.thymeleaf.org)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  * =============================================================================
  */
 
-package org.thymeleaf.web.servlet.jakarta;
+package org.thymeleaf.web.servlet;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -30,7 +30,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.thymeleaf.util.Validate;
-import org.thymeleaf.web.servlet.IServletWebApplication;
 
 /**
  *
@@ -55,8 +54,8 @@ public final class JakartaServletWebApplication implements IServletWebApplicatio
         return new JakartaServletWebApplication(servletContext);
     }
 
-    public JakartaServletWebExchange buildExchange(final HttpServletRequest httpServletRequest,
-                                                   final HttpServletResponse httpServletResponse) {
+    public IServletWebExchange buildExchange(final HttpServletRequest httpServletRequest,
+                                             final HttpServletResponse httpServletResponse) {
 
         Validate.notNull(httpServletRequest, "Request cannot be null");
         Validate.notNull(httpServletResponse, "Response cannot be null");

@@ -1,7 +1,7 @@
 /*
  * =============================================================================
  *
- *   Copyright (c) 2011-2021, The THYMELEAF team (http://www.thymeleaf.org)
+ *   Copyright (c) 2011-2022, The THYMELEAF team (http://www.thymeleaf.org)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -18,22 +18,16 @@
  * =============================================================================
  */
 
-package org.thymeleaf.web.servlet.javax;
+package org.thymeleaf.web.servlet;
 
 import java.security.Principal;
 import java.util.Enumeration;
 import java.util.Locale;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.util.Validate;
-import org.thymeleaf.web.servlet.IServletWebApplication;
-import org.thymeleaf.web.servlet.IServletWebExchange;
-import org.thymeleaf.web.servlet.IServletWebRequest;
-import org.thymeleaf.web.servlet.IServletWebSession;
 
 /**
  *
@@ -42,7 +36,7 @@ import org.thymeleaf.web.servlet.IServletWebSession;
  * @since 3.1.0
  *
  */
-public final class JavaxServletWebExchange implements IServletWebExchange {
+final class JavaxServletWebExchange implements IServletWebExchange {
 
     private final JavaxServletWebRequest request;
     private final JavaxServletWebSession session; // can be null
@@ -66,24 +60,6 @@ public final class JavaxServletWebExchange implements IServletWebExchange {
         this.application = application;
         this.httpServletRequest = (HttpServletRequest) this.request.getNativeObject();
         this.httpServletResponse = httpServletResponse;
-    }
-
-
-    public static JavaxServletWebExchange buildExchange(final HttpServletRequest httpServletRequest,
-                                                        final HttpServletResponse httpServletResponse) {
-
-        Validate.notNull(httpServletRequest, "Request cannot be null");
-        Validate.notNull(httpServletResponse, "Response cannot be null");
-
-        final HttpSession httpSession = httpServletRequest.getSession(false);
-        final ServletContext servletContext = httpServletRequest.getServletContext();
-
-        final JavaxServletWebRequest request = new JavaxServletWebRequest(httpServletRequest);
-        final JavaxServletWebSession session = (httpSession == null? null : new JavaxServletWebSession(httpSession));
-        final JavaxServletWebApplication application = new JavaxServletWebApplication(servletContext);
-
-        return new JavaxServletWebExchange(request, session, application, httpServletResponse);
-
     }
 
 
@@ -133,7 +109,7 @@ public final class JavaxServletWebExchange implements IServletWebExchange {
 
 
     @Override
-    public String encodeURL(final String url) {
+    public String transformURL(final String url) {
         return this.httpServletResponse.encodeURL(url);
     }
 

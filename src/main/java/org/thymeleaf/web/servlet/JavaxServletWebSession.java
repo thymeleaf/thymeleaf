@@ -1,7 +1,7 @@
 /*
  * =============================================================================
  *
- *   Copyright (c) 2011-2021, The THYMELEAF team (http://www.thymeleaf.org)
+ *   Copyright (c) 2011-2022, The THYMELEAF team (http://www.thymeleaf.org)
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -18,11 +18,12 @@
  * =============================================================================
  */
 
-package org.thymeleaf.web.servlet.jakarta;
+package org.thymeleaf.web.servlet;
 
 import java.util.Enumeration;
 
-import jakarta.servlet.http.HttpSession;
+import javax.servlet.http.HttpSession;
+
 import org.thymeleaf.util.Validate;
 import org.thymeleaf.web.servlet.IServletWebSession;
 
@@ -33,12 +34,12 @@ import org.thymeleaf.web.servlet.IServletWebSession;
  * @since 3.1.0
  *
  */
-public final class JakartaServletWebSession implements IServletWebSession {
+final class JavaxServletWebSession implements IServletWebSession {
 
     private final HttpSession session;
 
 
-    JakartaServletWebSession(final HttpSession session) {
+    JavaxServletWebSession(final HttpSession session) {
         super();
         Validate.notNull(session, "Session cannot be null");
         this.session = session;
