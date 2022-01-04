@@ -37,44 +37,44 @@ import org.thymeleaf.util.Validate;
  */
 final class JakartaServletWebExchange implements IServletWebExchange {
 
-    private final JakartaServletWebRequest request;
-    private final JakartaServletWebSession session; // can be null
-    private final JakartaServletWebApplication application;
+    private final JakartaServletWebRequest webRequest;
+    private final JakartaServletWebSession webSession; // can be null
+    private final JakartaServletWebApplication webApplication;
 
     private final HttpServletRequest httpServletRequest;
     private final HttpServletResponse httpServletResponse;
 
 
-    JakartaServletWebExchange(final JakartaServletWebRequest request,
-                              final JakartaServletWebSession session,
-                              final JakartaServletWebApplication application,
+    JakartaServletWebExchange(final JakartaServletWebRequest webRequest,
+                              final JakartaServletWebSession webSession,
+                              final JakartaServletWebApplication webApplication,
                               final HttpServletResponse httpServletResponse) {
         super();
-        Validate.notNull(request, "Request cannot be null");
+        Validate.notNull(webRequest, "Web Request cannot be null");
         // session CAN be null
-        Validate.notNull(application, "Application cannot be null");
+        Validate.notNull(webApplication, "Web Application cannot be null");
         Validate.notNull(httpServletResponse, "Response cannot be null");
-        this.request = request;
-        this.session = session;
-        this.application = application;
-        this.httpServletRequest = (HttpServletRequest) this.request.getNativeObject();
+        this.webRequest = webRequest;
+        this.webSession = webSession;
+        this.webApplication = webApplication;
+        this.httpServletRequest = (HttpServletRequest) this.webRequest.getNativeObject();
         this.httpServletResponse = httpServletResponse;
     }
 
 
     @Override
     public IServletWebRequest getRequest() {
-        return this.request;
+        return this.webRequest;
     }
 
     @Override
     public IServletWebSession getSession() {
-        return this.session;
+        return this.webSession;
     }
 
     @Override
     public IServletWebApplication getApplication() {
-        return this.application;
+        return this.webApplication;
     }
 
 
