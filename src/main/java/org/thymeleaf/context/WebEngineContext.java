@@ -88,10 +88,10 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
     private final IWebExchange webExchange;
 
-    private final ExchangeAttributesVariablesMap exchangeAttributesVariablesMap;
-    private final Map<String,Object> requestParametersVariablesMap;
-    private final Map<String,Object> sessionAttributesVariablesMap;
-    private final Map<String,Object> applicationAttributesVariablesMap;
+    private final ExchangeAttributeMap exchangeAttributeMap;
+    private final Map<String,Object> requestParameterMap;
+    private final Map<String,Object> sessionAttributeMap;
+    private final Map<String,Object> applicationAttributeMap;
 
 
 
@@ -132,11 +132,11 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
         final IWebSession webSession = this.webExchange.getSession();
         final IWebApplication webApplication = this.webExchange.getApplication();
 
-        this.exchangeAttributesVariablesMap =
-                new ExchangeAttributesVariablesMap(configuration, templateData, templateResolutionAttributes, this.webExchange, locale, variables);
-        this.requestParametersVariablesMap = new RequestParametersMap(webRequest);
-        this.applicationAttributesVariablesMap = new ApplicationAttributesMap(webApplication);
-        this.sessionAttributesVariablesMap = new SessionAttributesMap(webSession);
+        this.exchangeAttributeMap =
+                new ExchangeAttributeMap(configuration, templateData, templateResolutionAttributes, this.webExchange, locale, variables);
+        this.requestParameterMap = new RequestParameterMap(webRequest);
+        this.applicationAttributeMap = new ApplicationAttributeMap(webApplication);
+        this.sessionAttributeMap = new SessionAttributeMap(webSession);
 
     }
 
@@ -149,33 +149,33 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
     public boolean containsVariable(final String name) {
         if (SESSION_VARIABLE_NAME.equals(name)) {
-            return this.sessionAttributesVariablesMap != null;
+            return this.sessionAttributeMap != null;
         }
         if (PARAM_VARIABLE_NAME.equals(name)) {
             return true;
         }
-        return APPLICATION_VARIABLE_NAME.equals(name) || this.exchangeAttributesVariablesMap.containsVariable(name);
+        return APPLICATION_VARIABLE_NAME.equals(name) || this.exchangeAttributeMap.containsVariable(name);
     }
 
 
     public Object getVariable(final String key) {
         if (SESSION_VARIABLE_NAME.equals(key)) {
-            return this.sessionAttributesVariablesMap;
+            return this.sessionAttributeMap;
         }
         if (PARAM_VARIABLE_NAME.equals(key)) {
-            return this.requestParametersVariablesMap;
+            return this.requestParameterMap;
         }
         if (APPLICATION_VARIABLE_NAME.equals(key)) {
-            return this.applicationAttributesVariablesMap;
+            return this.applicationAttributeMap;
         }
-        return this.exchangeAttributesVariablesMap.getVariable(key);
+        return this.exchangeAttributeMap.getVariable(key);
     }
 
 
     public Set<String> getVariableNames() {
         // Note this set will NOT include 'param', 'session' or 'application', as they are considered special
         // ways to access attributes/parameters in these Servlet API structures
-        return this.exchangeAttributesVariablesMap.getVariableNames();
+        return this.exchangeAttributeMap.getVariableNames();
     }
 
 
@@ -186,7 +186,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
             throw new IllegalArgumentException(
                     "Cannot set variable called '" + name + "' into web variables map: such name is a reserved word");
         }
-        this.exchangeAttributesVariablesMap.setVariable(name, value);
+        this.exchangeAttributeMap.setVariable(name, value);
     }
 
 
@@ -203,7 +203,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
                         "Cannot set variable called '" + name + "' into web variables map: such name is a reserved word");
             }
         }
-        this.exchangeAttributesVariablesMap.setVariables(variables);
+        this.exchangeAttributeMap.setVariables(variables);
     }
 
 
@@ -214,90 +214,90 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
             throw new IllegalArgumentException(
                     "Cannot remove variable called '" + name + "' in web variables map: such name is a reserved word");
         }
-        this.exchangeAttributesVariablesMap.removeVariable(name);
+        this.exchangeAttributeMap.removeVariable(name);
     }
 
 
     public boolean isVariableLocal(final String name) {
-        return this.exchangeAttributesVariablesMap.isVariableLocal(name);
+        return this.exchangeAttributeMap.isVariableLocal(name);
     }
 
 
     public boolean hasSelectionTarget() {
-        return this.exchangeAttributesVariablesMap.hasSelectionTarget();
+        return this.exchangeAttributeMap.hasSelectionTarget();
     }
 
 
     public Object getSelectionTarget() {
-        return this.exchangeAttributesVariablesMap.getSelectionTarget();
+        return this.exchangeAttributeMap.getSelectionTarget();
     }
 
 
     public void setSelectionTarget(final Object selectionTarget) {
-        this.exchangeAttributesVariablesMap.setSelectionTarget(selectionTarget);
+        this.exchangeAttributeMap.setSelectionTarget(selectionTarget);
     }
 
 
 
 
     public IInliner getInliner() {
-        return this.exchangeAttributesVariablesMap.getInliner();
+        return this.exchangeAttributeMap.getInliner();
     }
 
     public void setInliner(final IInliner inliner) {
-        this.exchangeAttributesVariablesMap.setInliner(inliner);
+        this.exchangeAttributeMap.setInliner(inliner);
     }
 
 
 
 
     public TemplateData getTemplateData() {
-        return this.exchangeAttributesVariablesMap.getTemplateData();
+        return this.exchangeAttributeMap.getTemplateData();
     }
 
     public void setTemplateData(final TemplateData templateData) {
-        this.exchangeAttributesVariablesMap.setTemplateData(templateData);
+        this.exchangeAttributeMap.setTemplateData(templateData);
     }
 
 
     public List<TemplateData> getTemplateStack() {
-        return this.exchangeAttributesVariablesMap.getTemplateStack();
+        return this.exchangeAttributeMap.getTemplateStack();
     }
 
 
 
 
     public void setElementTag(final IProcessableElementTag elementTag) {
-        this.exchangeAttributesVariablesMap.setElementTag(elementTag);
+        this.exchangeAttributeMap.setElementTag(elementTag);
     }
 
 
 
 
     public List<IProcessableElementTag> getElementStack() {
-        return this.exchangeAttributesVariablesMap.getElementStack();
+        return this.exchangeAttributeMap.getElementStack();
     }
 
 
     public List<IProcessableElementTag> getElementStackAbove(final int contextLevel) {
-        return this.exchangeAttributesVariablesMap.getElementStackAbove(contextLevel);
+        return this.exchangeAttributeMap.getElementStackAbove(contextLevel);
     }
 
 
 
 
     public int level() {
-        return this.exchangeAttributesVariablesMap.level();
+        return this.exchangeAttributeMap.level();
     }
 
 
     public void increaseLevel() {
-        this.exchangeAttributesVariablesMap.increaseLevel();
+        this.exchangeAttributeMap.increaseLevel();
     }
 
 
     public void decreaseLevel() {
-        this.exchangeAttributesVariablesMap.decreaseLevel();
+        this.exchangeAttributeMap.decreaseLevel();
     }
 
 
@@ -305,7 +305,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
     public String getStringRepresentationByLevel() {
         // Request parameters, session and application attributes can be safely ignored here
-        return this.exchangeAttributesVariablesMap.getStringRepresentationByLevel();
+        return this.exchangeAttributeMap.getStringRepresentationByLevel();
     }
 
 
@@ -314,7 +314,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
     @Override
     public String toString() {
         // Request parameters, session and application attributes can be safely ignored here
-        return this.exchangeAttributesVariablesMap.toString();
+        return this.exchangeAttributeMap.toString();
     }
 
 
@@ -333,11 +333,11 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
 
 
-    private static final class SessionAttributesMap extends NoOpMapImpl {
+    private static final class SessionAttributeMap extends NoOpMapImpl {
 
         private final IWebSession session;
 
-        SessionAttributesMap(final IWebSession session) {
+        SessionAttributeMap(final IWebSession session) {
             super();
             // session might be null
             this.session = session;
@@ -413,11 +413,11 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
 
 
-    private static final class ApplicationAttributesMap extends NoOpMapImpl {
+    private static final class ApplicationAttributeMap extends NoOpMapImpl {
 
         private final IWebApplication application;
 
-        ApplicationAttributesMap(final IWebApplication application) {
+        ApplicationAttributeMap(final IWebApplication application) {
             super();
             this.application = application;
         }
@@ -474,11 +474,11 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
 
 
-    private static final class RequestParametersMap extends NoOpMapImpl {
+    private static final class RequestParameterMap extends NoOpMapImpl {
 
         private final IWebRequest request;
 
-        RequestParametersMap(final IWebRequest request) {
+        RequestParameterMap(final IWebRequest request) {
             super();
             this.request = request;
         }
@@ -539,7 +539,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
 
 
-    private static final class ExchangeAttributesVariablesMap extends AbstractEngineContext implements IEngineContext {
+    private static final class ExchangeAttributeMap extends AbstractEngineContext implements IEngineContext {
 
         private static final int DEFAULT_ELEMENT_HIERARCHY_SIZE = 20;
         private static final int DEFAULT_LEVELS_SIZE = 10;
@@ -568,7 +568,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
 
 
-        ExchangeAttributesVariablesMap(
+        ExchangeAttributeMap(
                 final IEngineConfiguration configuration,
                 final TemplateData templateData,
                 final Map<String,Object> templateResolutionAttributes,
