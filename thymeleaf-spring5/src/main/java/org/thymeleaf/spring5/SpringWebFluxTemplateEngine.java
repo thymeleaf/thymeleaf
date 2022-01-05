@@ -43,6 +43,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.TemplateSpec;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IEngineContext;
+import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.engine.DataDrivenTemplateIterator;
 import org.thymeleaf.engine.ISSEThrottledTemplateWriterControl;
 import org.thymeleaf.engine.IThrottledTemplateWriterControl;
@@ -51,9 +52,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.IReactiveSSEDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.ISpringWebFluxContext;
-import org.thymeleaf.spring5.context.webflux.SpringWebFluxContext;
-import org.thymeleaf.spring5.context.webflux.SpringWebFluxEngineContextFactory;
-import org.thymeleaf.spring5.linkbuilder.webflux.SpringWebFluxLinkBuilder;
+import org.thymeleaf.spring5.web.webflux.ISpringWebFluxWebExchange;
 import org.thymeleaf.util.LoggingUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -91,16 +90,7 @@ public class SpringWebFluxTemplateEngine
 
 
     public SpringWebFluxTemplateEngine() {
-
         super();
-        // In Spring WebFlux environments, we will need to use a special context factory in order to
-        // use an environment-tailored implementation of IEngineContext.
-        this.setEngineContextFactory(new SpringWebFluxEngineContextFactory());
-        // In Spring WebFlux environments, we will need to use a special link builder able to adapt
-        // the creation of URLs as a result of @{...} expressions in a way that makes sense in this
-        // environment.
-        this.setLinkBuilder(new SpringWebFluxLinkBuilder());
-
     }
 
 
@@ -343,9 +333,14 @@ public class SpringWebFluxTemplateEngine
         final long sseEventsID =
                 (dataDriver instanceof IReactiveSSEDataDriverContextVariable?
                         ((IReactiveSSEDataDriverContextVariable) dataDriver).getSseEventsFirstID() : 0L);
-        final ReactiveAdapterRegistry reactiveAdapterRegistry =
-                (context instanceof SpringWebFluxContext ?
-                        ((SpringWebFluxContext)context).getReactiveAdapterRegistry() : null);
+        final ReactiveAdapterRegistry reactiveAdapterRegistry;
+        if (context instanceof IWebContext && ((IWebContext)context).getExchange() instanceof ISpringWebFluxWebExchange) {
+            reactiveAdapterRegistry =
+                    ((ISpringWebFluxWebExchange)((IWebContext)context).getExchange()).
+                            getApplication().getReactiveAdapterRegistry();
+        } else {
+            reactiveAdapterRegistry = null;
+        }
 
 
         // STEP 2: Replace the data driver variable with a DataDrivenTemplateIterator

@@ -51,18 +51,20 @@ import org.springframework.web.reactive.result.view.RequestContext;
 import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.IContext;
+import org.thymeleaf.context.WebExpressionContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
 import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
-import org.thymeleaf.spring5.context.webflux.SpringWebFluxExpressionContext;
 import org.thymeleaf.spring5.context.webflux.SpringWebFluxThymeleafRequestContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 import org.thymeleaf.spring5.util.SpringReactiveModelAdditionsUtils;
+import org.thymeleaf.spring5.web.webflux.SpringWebFluxWebApplication;
 import org.thymeleaf.standard.expression.FragmentExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.web.IWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -433,6 +435,19 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
         /*
          * ----------------------------------------------------------------------------------------------------------
+         * INSTANTIATION OF THE WEB EXCHANGE
+         * ----------------------------------------------------------------------------------------------------------
+         * - We need now to create a WebFlux-specific web exchange implementation that will allow the Thymeleaf
+         *   context to work seamlessly with web-bases Spring WebFlux structures.
+         * ----------------------------------------------------------------------------------------------------------
+         */
+        final IWebExchange webExchange =
+                SpringWebFluxWebApplication.
+                        buildApplication(getReactiveAdapterRegistry()).buildExchange(exchange);
+
+
+        /*
+         * ----------------------------------------------------------------------------------------------------------
          * INSTANTIATION OF THE CONTEXT
          * ----------------------------------------------------------------------------------------------------------
          * - Once the model has been merged, we can create the Thymeleaf context object itself.
@@ -444,9 +459,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
          */
 
         final IEngineConfiguration configuration = viewTemplateEngine.getConfiguration();
-        final SpringWebFluxExpressionContext context =
-                new SpringWebFluxExpressionContext(
-                        configuration, exchange, getReactiveAdapterRegistry(), getLocale(), mergedModel);
+        final WebExpressionContext context =
+                new WebExpressionContext(configuration, webExchange, getLocale(), mergedModel);
 
 
         /*
