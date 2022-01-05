@@ -34,11 +34,8 @@ import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.MediaType;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebSession;
 import org.thymeleaf.IThrottledTemplateProcessor;
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.TemplateSpec;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IEngineContext;
@@ -50,9 +47,9 @@ import org.thymeleaf.engine.ThrottledTemplateProcessor;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring6.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring6.context.webflux.IReactiveSSEDataDriverContextVariable;
-import org.thymeleaf.spring6.context.webflux.ISpringWebFluxContext;
 import org.thymeleaf.spring6.web.webflux.ISpringWebFluxWebExchange;
 import org.thymeleaf.util.LoggingUtils;
+import org.thymeleaf.web.IWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -189,7 +186,7 @@ public class SpringWebFluxTemplateEngine
 
                             if (logger.isTraceEnabled()) {
                                 logger.trace("[THYMELEAF][{}] STARTING STREAM PROCESS (FULL MODE) OF TEMPLATE \"{}\" WITH LOCALE {}",
-                                        new Object[]{threadIndex(), LoggingUtils.loggifyTemplateName(templateName), context.getLocale()});
+                                        new Object[]{TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(templateName), context.getLocale()});
                             }
 
                             final DataBuffer dataBuffer = bufferFactory.allocateBuffer();
@@ -204,7 +201,7 @@ public class SpringWebFluxTemplateEngine
                                 logger.error(
                                         String.format(
                                                 "[THYMELEAF][%s] Exception processing template \"%s\": %s",
-                                                new Object[] {threadIndex(), LoggingUtils.loggifyTemplateName(templateName), t.getMessage()}),
+                                                new Object[] {TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(templateName), t.getMessage()}),
                                         t);
                                 subscriber.error(t);
                                 return;
@@ -216,7 +213,7 @@ public class SpringWebFluxTemplateEngine
                                 logger.trace(
                                         "[THYMELEAF][{}] FINISHED STREAM PROCESS (FULL MODE) OF TEMPLATE \"{}\" WITH LOCALE {}. PRODUCED {} BYTES",
                                         new Object[]{
-                                                threadIndex(), LoggingUtils.loggifyTemplateName(templateName),
+                                                TemplateEngine.threadIndex(), LoggingUtils.loggifyTemplateName(templateName),
                                                 context.getLocale(), Integer.valueOf(bytesProduced)});
                             }
 
@@ -259,7 +256,7 @@ public class SpringWebFluxTemplateEngine
                                 "[THYMELEAF][{}][{}] STARTING PARTIAL STREAM PROCESS (CHUNKED MODE, THROTTLER ID " +
                                         "\"{}\", CHUNK {}) FOR TEMPLATE \"{}\" WITH LOCALE {}",
                                 new Object[]{
-                                        threadIndex(), throttledProcessor.getProcessorIdentifier(),
+                                        TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
                                         throttledProcessor.getProcessorIdentifier(), Integer.valueOf(throttledProcessor.getChunkCount()),
                                         LoggingUtils.loggifyTemplateName(templateName), context.getLocale()});
                     }
@@ -280,7 +277,7 @@ public class SpringWebFluxTemplateEngine
                                 "[THYMELEAF][{}][{}] FINISHED PARTIAL STREAM PROCESS (CHUNKED MODE, THROTTLER ID " +
                                         "\"{}\", CHUNK {}) FOR TEMPLATE \"{}\" WITH LOCALE {}. PRODUCED {} BYTES",
                                 new Object[]{
-                                        threadIndex(), throttledProcessor.getProcessorIdentifier(),
+                                        TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
                                         throttledProcessor.getProcessorIdentifier(), Integer.valueOf(throttledProcessor.getChunkCount()),
                                         LoggingUtils.loggifyTemplateName(templateName), context.getLocale(), Integer.valueOf(bytesProduced)});
                     }
@@ -294,7 +291,7 @@ public class SpringWebFluxTemplateEngine
                                     "[THYMELEAF][{}][{}] FINISHED ALL STREAM PROCESS (CHUNKED MODE, THROTTLER ID " +
                                             "\"{}\") FOR TEMPLATE \"{}\" WITH LOCALE {}. PRODUCED A TOTAL OF {} BYTES IN {} CHUNKS",
                                     new Object[]{
-                                            threadIndex(), throttledProcessor.getProcessorIdentifier(),
+                                            TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
                                             throttledProcessor.getProcessorIdentifier(),
                                             LoggingUtils.loggifyTemplateName(templateName), context.getLocale(),
                                             Long.valueOf(throttledProcessor.getTotalBytesProduced()),
@@ -482,7 +479,7 @@ public class SpringWebFluxTemplateEngine
                                         "[THYMELEAF][{}][{}] STARTING PARTIAL STREAM PROCESS (DATA-DRIVEN MODE, THROTTLER ID " +
                                                 "\"{}\", CHUNK {}) FOR TEMPLATE \"{}\" WITH LOCALE {}",
                                         new Object[]{
-                                                threadIndex(), throttledProcessor.getProcessorIdentifier(),
+                                                TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
                                                 throttledProcessor.getProcessorIdentifier(), Integer.valueOf(throttledProcessor.getChunkCount()),
                                                 LoggingUtils.loggifyTemplateName(templateName), context.getLocale()});
                             }
@@ -509,7 +506,7 @@ public class SpringWebFluxTemplateEngine
                                         "[THYMELEAF][{}][{}] FINISHED PARTIAL STREAM PROCESS (DATA-DRIVEN MODE, THROTTLER ID " +
                                                 "\"{}\", CHUNK {}) FOR TEMPLATE \"{}\" WITH LOCALE {}. PRODUCED {} BYTES",
                                         new Object[]{
-                                                threadIndex(), throttledProcessor.getProcessorIdentifier(),
+                                                TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
                                                 throttledProcessor.getProcessorIdentifier(), Integer.valueOf(throttledProcessor.getChunkCount()),
                                                 LoggingUtils.loggifyTemplateName(templateName), context.getLocale(), Integer.valueOf(bytesProduced)});
                             }
@@ -533,7 +530,7 @@ public class SpringWebFluxTemplateEngine
                                             "[THYMELEAF][{}][{}] FINISHED ALL STREAM PROCESS (DATA-DRIVEN MODE, THROTTLER ID " +
                                                     "\"{}\") FOR TEMPLATE \"{}\" WITH LOCALE {}. PRODUCED A TOTAL OF {} BYTES IN {} CHUNKS",
                                             new Object[]{
-                                                    threadIndex(), throttledProcessor.getProcessorIdentifier(),
+                                                    TemplateEngine.threadIndex(), throttledProcessor.getProcessorIdentifier(),
                                                     throttledProcessor.getProcessorIdentifier(),
                                                     LoggingUtils.loggifyTemplateName(templateName), context.getLocale(),
                                                     Long.valueOf(throttledProcessor.getTotalBytesProduced()),
@@ -614,10 +611,10 @@ public class SpringWebFluxTemplateEngine
             return context;
         }
 
-        // Not an IEngineContext, but might still be an ISpringWebFluxContext and we don't want to lose that info
-        if (context instanceof ISpringWebFluxContext) {
-            return new DataDrivenSpringWebFluxContextWrapper(
-                    (ISpringWebFluxContext)context, dataDriverVariableName, dataDrivenTemplateIterator);
+        // Not an IEngineContext, but might still be an IWebContext, and we don't want to lose that info
+        if (context instanceof IWebContext) {
+            return new DataDrivenWebContextWrapper(
+                    (IWebContext)context, dataDriverVariableName, dataDrivenTemplateIterator);
         }
 
         // Not a recognized context interface: just use a default implementation
@@ -818,38 +815,23 @@ public class SpringWebFluxTemplateEngine
 
 
     /*
-     * This wrapper of an ISpringWebFluxContext is meant to wrap the original context object sent to the
+     * This wrapper of an IWebContext is meant to wrap the original context object sent to the
      * template engine while hiding the data driver variable, returning a DataDrivenTemplateIterator in its place.
      */
-    static class DataDrivenSpringWebFluxContextWrapper
-            extends DataDrivenContextWrapper implements ISpringWebFluxContext {
+    static class DataDrivenWebContextWrapper
+            extends DataDrivenContextWrapper implements IWebContext {
 
-        private final ISpringWebFluxContext context;
+        private final IWebContext context;
 
-        DataDrivenSpringWebFluxContextWrapper(
-                final ISpringWebFluxContext context, final String dataDriverVariableName,
+        DataDrivenWebContextWrapper(
+                final IWebContext context, final String dataDriverVariableName,
                 final DataDrivenTemplateIterator dataDrivenTemplateIterator) {
             super(context, dataDriverVariableName, dataDrivenTemplateIterator);
             this.context = context;
         }
 
         @Override
-        public ServerHttpRequest getRequest() {
-            return this.context.getRequest();
-        }
-
-        @Override
-        public ServerHttpResponse getResponse() {
-            return this.context.getResponse();
-        }
-
-        @Override
-        public Mono<WebSession> getSession() {
-            return this.context.getSession();
-        }
-
-        @Override
-        public ServerWebExchange getExchange() {
+        public IWebExchange getExchange() {
             return this.context.getExchange();
         }
 
