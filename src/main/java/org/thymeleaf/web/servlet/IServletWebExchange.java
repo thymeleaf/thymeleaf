@@ -108,4 +108,20 @@ public interface IServletWebExchange extends IWebExchange {
     }
 
 
+    default Object getNativeRequestObject() {
+        return getRequest().getNativeObject();
+    }
+
+    default Object getNativeApplicationObject() {
+        return getApplication().getNativeObject();
+    }
+
+    default Object getNativeSessionObject() {
+        final IServletWebSession webSession = getSession();
+        return (webSession != null)? webSession.getNativeObject() : null;
+    }
+
+    public Object getNativeResponseObject();
+
+
 }

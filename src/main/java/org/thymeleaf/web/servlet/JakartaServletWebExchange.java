@@ -112,4 +112,10 @@ final class JakartaServletWebExchange implements IServletWebExchange {
         return this.httpServletResponse.encodeURL(url);
     }
 
+
+    @Override
+    public Object getNativeResponseObject() {
+        return this.httpServletResponse;
+    }
+
 }
