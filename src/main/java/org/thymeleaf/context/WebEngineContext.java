@@ -89,9 +89,9 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
     private final IWebExchange webExchange;
 
     private final ExchangeAttributeMap exchangeAttributeMap;
-    private final Map<String,Object> requestParameterMap;
-    private final Map<String,Object> sessionAttributeMap;
-    private final Map<String,Object> applicationAttributeMap;
+    private final RequestParameterMap requestParameterMap;
+    private final SessionAttributeMap sessionAttributeMap;
+    private final ApplicationAttributeMap applicationAttributeMap;
 
 
 
@@ -128,15 +128,12 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
         Validate.notNull(webExchange, "Web exchange cannot be null in web context");
 
         this.webExchange = webExchange;
-        final IWebRequest webRequest = this.webExchange.getRequest();
-        final IWebSession webSession = this.webExchange.getSession();
-        final IWebApplication webApplication = this.webExchange.getApplication();
 
         this.exchangeAttributeMap =
                 new ExchangeAttributeMap(configuration, templateData, templateResolutionAttributes, this.webExchange, locale, variables);
-        this.requestParameterMap = new RequestParameterMap(webRequest);
-        this.applicationAttributeMap = new ApplicationAttributeMap(webApplication);
-        this.sessionAttributeMap = new SessionAttributeMap(webSession);
+        this.requestParameterMap = new RequestParameterMap(this.webExchange);
+        this.applicationAttributeMap = new ApplicationAttributeMap(this.webExchange);
+        this.sessionAttributeMap = new SessionAttributeMap(this.webExchange);
 
     }
 
@@ -335,29 +332,36 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
     private static final class SessionAttributeMap extends NoOpMapImpl {
 
-        private final IWebSession session;
+        // At build time, we store the exchange and not the application so that we give the web structures
+        // the opportunity to be computed lazily at runtime (e.g. for lazy/reactive resolution).
+        private final IWebExchange webExchange;
 
-        SessionAttributeMap(final IWebSession session) {
+        SessionAttributeMap(final IWebExchange webExchange) {
             super();
-            // session might be null
-            this.session = session;
+            this.webExchange = webExchange;
+        }
+
+        private IWebSession getSession() {
+            return this.webExchange.getSession();
         }
 
 
         @Override
         public int size() {
-            if (this.session == null) {
+            final IWebSession webSession = getSession();
+            if (webSession == null) {
                 return 0;
             }
-            return this.session.getAttributeCount();
+            return webSession.getAttributeCount();
         }
 
         @Override
         public boolean isEmpty() {
-            if (this.session == null) {
+            final IWebSession webSession = getSession();
+            if (webSession == null) {
                 return true;
             }
-            return this.session.getAttributeCount() == 0;
+            return webSession.getAttributeCount() == 0;
         }
 
         @Override
@@ -378,34 +382,38 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
         @Override
         public Object get(final Object key) {
-            if (this.session == null) {
+            final IWebSession webSession = getSession();
+            if (webSession == null) {
                 return null;
             }
-            return resolveLazy(this.session.getAttributeValue(key != null? key.toString() : null));
+            return resolveLazy(webSession.getAttributeValue(key != null? key.toString() : null));
         }
 
         @Override
         public Set<String> keySet() {
-            if (this.session == null) {
+            final IWebSession webSession = getSession();
+            if (webSession == null) {
                 return Collections.emptySet();
             }
-            return this.session.getAllAttributeNames();
+            return webSession.getAllAttributeNames();
         }
 
         @Override
         public Collection<Object> values() {
-            if (this.session == null) {
+            final IWebSession webSession = getSession();
+            if (webSession == null) {
                 return Collections.emptySet();
             }
-            return this.session.getAttributeMap().values();
+            return webSession.getAttributeMap().values();
         }
 
         @Override
         public Set<Entry<String,Object>> entrySet() {
-            if (this.session == null) {
+            final IWebSession webSession = getSession();
+            if (webSession == null) {
                 return Collections.emptySet();
             }
-            return this.session.getAttributeMap().entrySet();
+            return webSession.getAttributeMap().entrySet();
         }
 
     }
@@ -415,22 +423,32 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
     private static final class ApplicationAttributeMap extends NoOpMapImpl {
 
-        private final IWebApplication application;
+        // At build time, we store the exchange and not the application so that we give the web structures
+        // the opportunity to be computed lazily at runtime (e.g. for lazy/reactive resolution).
+        private final IWebExchange webExchange;
+        private IWebApplication webApplication;
 
-        ApplicationAttributeMap(final IWebApplication application) {
+        ApplicationAttributeMap(final IWebExchange webExchange) {
             super();
-            this.application = application;
+            this.webExchange = webExchange;
+        }
+
+        private IWebApplication getApplication() {
+            if (this.webApplication == null) {
+                this.webApplication = this.webExchange.getApplication();
+            }
+            return this.webApplication;
         }
 
 
         @Override
         public int size() {
-            return this.application.getAttributeCount();
+            return getApplication().getAttributeCount();
         }
 
         @Override
         public boolean isEmpty() {
-            return this.application.getAttributeCount() == 0;
+            return getApplication().getAttributeCount() == 0;
         }
 
         @Override
@@ -451,22 +469,22 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
         @Override
         public Object get(final Object key) {
-            return resolveLazy(this.application.getAttributeValue(key != null? key.toString() : null));
+            return resolveLazy(getApplication().getAttributeValue(key != null? key.toString() : null));
         }
 
         @Override
         public Set<String> keySet() {
-            return this.application.getAllAttributeNames();
+            return getApplication().getAllAttributeNames();
         }
 
         @Override
         public Collection<Object> values() {
-            return this.application.getAttributeMap().values();
+            return getApplication().getAttributeMap().values();
         }
 
         @Override
         public Set<Map.Entry<String,Object>> entrySet() {
-            return this.application.getAttributeMap().entrySet();
+            return getApplication().getAttributeMap().entrySet();
         }
 
     }
@@ -476,22 +494,32 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
     private static final class RequestParameterMap extends NoOpMapImpl {
 
-        private final IWebRequest request;
+        // At build time, we store the exchange and not the request so that we give the web structures
+        // the opportunity to be computed lazily at runtime (e.g. for lazy/reactive resolution).
+        private final IWebExchange webExchange;
+        private IWebRequest webRequest;
 
-        RequestParameterMap(final IWebRequest request) {
+        RequestParameterMap(final IWebExchange webExchange) {
             super();
-            this.request = request;
+            this.webExchange = webExchange;
+        }
+
+        private IWebRequest getRequest() {
+            if (this.webRequest == null) {
+                this.webRequest = this.webExchange.getRequest();
+            }
+            return this.webRequest;
         }
 
 
         @Override
         public int size() {
-            return this.request.getParameterCount();
+            return getRequest().getParameterCount();
         }
 
         @Override
         public boolean isEmpty() {
-            return this.request.getParameterCount() == 0;
+            return getRequest().getParameterCount() == 0;
         }
 
         @Override
@@ -512,7 +540,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
         @Override
         public Object get(final Object key) {
-            final String[] parameterValues = this.request.getParameterValues(key != null? key.toString() : null);
+            final String[] parameterValues = getRequest().getParameterValues(key != null? key.toString() : null);
             if (parameterValues == null) {
                 return null;
             }
@@ -521,17 +549,17 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
         @Override
         public Set<String> keySet() {
-            return this.request.getAllParameterNames();
+            return getRequest().getAllParameterNames();
         }
 
         @Override
         public Collection<Object> values() {
-            return (Collection<Object>)(Collection<?>) this.request.getParameterMap().values();
+            return (Collection<Object>)(Collection<?>) getRequest().getParameterMap().values();
         }
 
         @Override
         public Set<Map.Entry<String,Object>> entrySet() {
-            return (Set<Map.Entry<String,Object>>)(Set<?>) this.request.getParameterMap().entrySet();
+            return (Set<Map.Entry<String,Object>>)(Set<?>) getRequest().getParameterMap().entrySet();
         }
 
     }
