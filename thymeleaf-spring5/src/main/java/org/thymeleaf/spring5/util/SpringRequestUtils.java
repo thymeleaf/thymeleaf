@@ -19,12 +19,11 @@
  */
 package org.thymeleaf.spring5.util;
 
-import java.util.Enumeration;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
+import org.thymeleaf.web.IWebRequest;
 import org.unbescape.uri.UriEscape;
 
 /**
@@ -38,7 +37,7 @@ public final class SpringRequestUtils {
 
 
 
-    public static void checkViewNameNotInRequest(final String viewName, final HttpServletRequest request) {
+    public static void checkViewNameNotInRequest(final String viewName, final IWebRequest request) {
 
         final String vn = StringUtils.pack(viewName);
 
@@ -50,23 +49,26 @@ public final class SpringRequestUtils {
 
         boolean found = false;
 
-        final String requestURI = StringUtils.pack(UriEscape.unescapeUriPath(request.getRequestURI()));
-        if (requestURI != null && containsExpression(requestURI)) {
+        final String pathWithinApplication =
+                StringUtils.pack(UriEscape.unescapeUriPath(request.getPathWithinApplication()));
+        if (pathWithinApplication != null && containsExpression(pathWithinApplication)) {
             // View name contains an expression, and it seems the path does too. This is too dangerous.
             found = true;
         }
 
         if (!found) {
-            final Enumeration<String> paramNames = request.getParameterNames();
-            String[] paramValues;
-            String paramValue;
-            while (!found && paramNames.hasMoreElements()) {
-                paramValues = request.getParameterValues(paramNames.nextElement());
-                for (int i = 0; !found && i < paramValues.length; i++) {
-                    paramValue = StringUtils.pack(paramValues[i]);
-                    if (paramValue != null && containsExpression(paramValue) && vn.contains(paramValue)) {
-                        // Request parameter contains an expression, and it is contained in the view name. Too dangerous.
-                        found = true;
+            final Map<String,String[]> parameterMap = request.getParameterMap();
+            if (parameterMap != null && !parameterMap.isEmpty()) {
+                for (final String[] parameterValues : parameterMap.values()) {
+                    for (int i = 0; !found && i < parameterValues.length; i++) {
+                        final String parameterValue = StringUtils.pack(parameterValues[i]);
+                        if (parameterValue != null && containsExpression(parameterValue) && vn.contains(parameterValue)) {
+                            // Request parameter contains an expression, and it is contained in the view name. Too dangerous.
+                            found = true;
+                        }
+                    }
+                    if (found) {
+                        break;
                     }
                 }
             }
