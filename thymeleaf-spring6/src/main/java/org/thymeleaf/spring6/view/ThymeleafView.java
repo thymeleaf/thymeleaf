@@ -277,7 +277,7 @@ public class ThymeleafView
 
             // A check must be made that the template name is not included in the URL, so that we make sure
             // no code to be executed comes from direct user input.
-            SpringRequestUtils.checkViewNameNotInRequest(viewTemplateName, request);
+            SpringRequestUtils.checkViewNameNotInRequest(viewTemplateName, webExchange.getRequest());
 
             final IStandardExpressionParser parser = StandardExpressions.getExpressionParser(configuration);
 

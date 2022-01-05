@@ -59,6 +59,23 @@ public class SpringContextUtils {
      */
     public static final String WEB_SESSION_ATTRIBUTE_NAME = "thymeleafWebSession";
 
+    /**
+     * <p>
+     *   This is the name of the model attribute that will hold the (asychronously resolved)
+     *   {@code Principal} object in order to be used whenever needed, avoiding the need to block
+     *   for obtaining it from the {@code ServerWebExchange}.
+     * </p>
+     * <p>
+     *     Value: {@code "thymeleafWebExchangePrincipal"}
+     * </p>
+     *
+     * @see org.springframework.web.server.ServerWebExchange
+     * @see java.security.Principal
+     *
+     * @since 3.1.0
+     */
+    public static final String WEB_EXCHANGE_PRINCIPAL_ATTRIBUTE_NAME = "thymeleafWebExchangePrincipal";
+
 
     /**
      * <p>
