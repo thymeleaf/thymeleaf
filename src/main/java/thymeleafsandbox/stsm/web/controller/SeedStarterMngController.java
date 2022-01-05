@@ -29,6 +29,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import thymeleafsandbox.stsm.business.entities.Feature;
 import thymeleafsandbox.stsm.business.entities.Row;
 import thymeleafsandbox.stsm.business.entities.SeedStarter;
@@ -39,6 +40,7 @@ import thymeleafsandbox.stsm.business.services.VarietyService;
 
 
 @Controller
+@SessionAttributes("allFeatures")
 public class SeedStarterMngController {
 
 
