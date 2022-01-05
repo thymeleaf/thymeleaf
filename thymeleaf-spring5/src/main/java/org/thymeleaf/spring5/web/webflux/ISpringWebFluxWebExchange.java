@@ -66,6 +66,8 @@ public interface ISpringWebFluxWebExchange extends IWebExchange {
     @Override
     default boolean containsAttribute(final String name) {
         Validate.notNull(name, "Name cannot be null");
+        // Attribute map in ServerWebExchange, which does not allow null values. So containsKey is enough
+        // to be equivalent to the Servlet implementations (in which null = removal)
         return getAttributes().containsKey(name);
     }
 

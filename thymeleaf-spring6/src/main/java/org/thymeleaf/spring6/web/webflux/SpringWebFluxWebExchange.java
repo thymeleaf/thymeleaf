@@ -118,7 +118,11 @@ final class SpringWebFluxWebExchange implements ISpringWebFluxWebExchange {
     @Override
     public void setAttributeValue(final String name, final Object value) {
         Validate.notNull(name, "Name cannot be null");
-        this.exchange.getAttributes().put(name, value);
+        if (value == null) {
+            this.exchange.getAttributes().remove(name);
+        } else {
+            this.exchange.getAttributes().put(name, value);
+        }
     }
 
     @Override

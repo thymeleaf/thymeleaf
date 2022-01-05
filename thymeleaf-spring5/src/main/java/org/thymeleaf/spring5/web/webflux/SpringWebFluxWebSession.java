@@ -63,7 +63,11 @@ final class SpringWebFluxWebSession implements ISpringWebFluxWebSession {
     @Override
     public void setAttributeValue(final String name, final Object value) {
         Validate.notNull(name, "Name cannot be null");
-        this.session.getAttributes().put(name, value);
+        if (value == null) {
+            this.session.getAttributes().remove(name);
+        } else {
+            this.session.getAttributes().put(name, value);
+        }
     }
 
     @Override
