@@ -23,6 +23,7 @@ package org.thymeleaf.spring5.web.webflux;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.core.ReactiveAdapterRegistry;
 import org.thymeleaf.util.Validate;
 import org.thymeleaf.web.IWebApplication;
 
@@ -34,6 +35,8 @@ import org.thymeleaf.web.IWebApplication;
  *
  */
 public interface ISpringWebFluxWebApplication extends IWebApplication {
+
+    public ReactiveAdapterRegistry getReactiveAdapterRegistry();
 
     public Map<String, Object> getAttributes();
 

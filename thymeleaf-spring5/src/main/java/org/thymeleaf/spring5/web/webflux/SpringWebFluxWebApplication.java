@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Map;
 
+import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.util.Validate;
 
@@ -41,14 +42,19 @@ public final class SpringWebFluxWebApplication implements ISpringWebFluxWebAppli
      * So for the attribute part of this interface, this implementation will simply keep an empty attribute map.
      */
 
+    private final ReactiveAdapterRegistry reactiveAdapterRegistry;
 
-    SpringWebFluxWebApplication() {
+
+    SpringWebFluxWebApplication(final ReactiveAdapterRegistry reactiveAdapterRegistry) {
         super();
+        // reactiveAdapterRegistry can be null
+        this.reactiveAdapterRegistry = reactiveAdapterRegistry;
     }
 
 
-    public static SpringWebFluxWebApplication buildApplication() {
-        return new SpringWebFluxWebApplication();
+    public static SpringWebFluxWebApplication buildApplication(final ReactiveAdapterRegistry reactiveAdapterRegistry) {
+        // reactiveAdapterRegistry can be null
+        return new SpringWebFluxWebApplication(reactiveAdapterRegistry);
     }
 
     public SpringWebFluxWebExchange buildExchange(final ServerWebExchange exchange) {
@@ -61,6 +67,11 @@ public final class SpringWebFluxWebApplication implements ISpringWebFluxWebAppli
 
     }
 
+
+    @Override
+    public ReactiveAdapterRegistry getReactiveAdapterRegistry() {
+        return this.reactiveAdapterRegistry;
+    }
 
     @Override
     public Map<String, Object> getAttributes() {
