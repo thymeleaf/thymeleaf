@@ -24,7 +24,6 @@ import java.util.Enumeration;
 
 import jakarta.servlet.http.HttpSession;
 import org.thymeleaf.util.Validate;
-import org.thymeleaf.web.servlet.IServletWebSession;
 
 /**
  *
