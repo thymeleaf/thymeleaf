@@ -41,8 +41,8 @@ public interface IWebRequest {
     public String getScheme();
     public String getServerName();
     public Integer getServerPort();
-    public String getApplicationPath();
-    public String getPathWithinApplication();
+    public String getApplicationPath();       // encoded
+    public String getPathWithinApplication(); // encoded
     public String getQueryString();
 
     default String getRequestPath() {

@@ -73,18 +73,15 @@ final class JakartaServletWebRequest implements IServletWebRequest {
     }
 
     @Override
-    public String getServletContext() {
-        return this.request.getContextPath();
+    public String getContextPath() {
+        final String contextPath = this.request.getContextPath();
+        // This protects against a redirection behaviour in Jetty
+        return (contextPath != null && contextPath.length() == 1 && contextPath.charAt(0) == '/')? "" : contextPath;
     }
 
     @Override
-    public String getServletPath() {
-        return this.request.getServletPath();
-    }
-
-    @Override
-    public String getPathInfo() {
-        return this.request.getPathInfo();
+    public String getRequestURI() {
+        return this.request.getRequestURI();
     }
 
     @Override

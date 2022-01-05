@@ -39,20 +39,25 @@ import org.thymeleaf.web.IWebRequest;
  */
 public interface IServletWebRequest extends IWebRequest {
 
-    public String getServletContext();
-    public String getServletPath();
-    public String getPathInfo();
+    public String getContextPath();
+    public String getRequestURI();
 
     @Override
     default String getApplicationPath() {
-        return getServletContext();
+        return getContextPath();
     }
 
     @Override
     default String getPathWithinApplication() {
-        final String servletPath = getServletPath();
-        final String pathInfo = getPathInfo();
-        return (servletPath == null? "" : servletPath) + (pathInfo == null? "" : pathInfo);
+        final String requestURI = getRequestURI();
+        final String applicationPath = getApplicationPath();
+        if (requestURI == null) {
+            return null;
+        }
+        if (applicationPath == null || applicationPath.length() == 0) {
+            return requestURI;
+        }
+        return (requestURI.substring(applicationPath.length()));
     }
 
     public Enumeration<String> getHeaderNames();
