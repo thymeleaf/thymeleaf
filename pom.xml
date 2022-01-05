@@ -103,6 +103,14 @@
       </snapshots>
     </repository>
     <repository>
+      <id>springio-snapshots</id>
+      <name>Spring Snapshots</name>
+      <url>https://repo.spring.io/snapshot</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
       <id>spring-milestones</id>
       <name>Spring Milestones</name>
       <url>https://repo.spring.io/milestone</url>
@@ -114,13 +122,13 @@
 
 
   <properties>
-    <java.version>6</java.version>
+    <java.version>17</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven.compiler.release>${java.version}</maven.compiler.release>
     <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
     <thymeleaf.version>3.1.0-SNAPSHOT</thymeleaf.version>
-    <springframework.version>5.1.0.RELEASE</springframework.version>
+    <springframework.version>6.0.0-SNAPSHOT</springframework.version>
   </properties>
   
 
@@ -214,19 +222,19 @@
         
     <dependency>
       <groupId>org.thymeleaf</groupId>
-      <artifactId>thymeleaf-spring5</artifactId>
+      <artifactId>thymeleaf-spring6</artifactId>
       <version>${thymeleaf.version}</version>
       <scope>compile</scope>
     </dependency>
-    
-        
+
+
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>3.1.0</version>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>5.0.0</version>
       <scope>provided</scope>
     </dependency>
-        
+
         
     <dependency>
       <groupId>org.springframework</groupId>
