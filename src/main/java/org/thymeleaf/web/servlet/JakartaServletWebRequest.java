@@ -206,7 +206,7 @@ final class JakartaServletWebRequest implements IServletWebRequest {
 
 
     @Override
-    public Object getNativeObject() {
+    public Object getNativeRequestObject() {
         return this.request;
     }
 

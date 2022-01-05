@@ -63,7 +63,7 @@ final class JakartaServletWebSession implements IServletWebSession {
 
 
     @Override
-    public Object getNativeObject() {
+    public Object getNativeSessionObject() {
         return this.session;
     }
 

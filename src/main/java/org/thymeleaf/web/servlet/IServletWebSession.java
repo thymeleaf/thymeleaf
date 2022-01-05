@@ -87,6 +87,6 @@ public interface IServletWebSession extends IWebSession {
         this.setAttributeValue(name, null);
     }
 
-    public Object getNativeObject();
+    public Object getNativeSessionObject();
 
 }

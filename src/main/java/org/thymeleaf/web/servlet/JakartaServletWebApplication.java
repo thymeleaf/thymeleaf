@@ -105,7 +105,7 @@ public final class JakartaServletWebApplication implements IServletWebApplicatio
 
 
     @Override
-    public Object getNativeObject() {
+    public Object getNativeServletContextObject() {
         return this.servletContext;
     }
 

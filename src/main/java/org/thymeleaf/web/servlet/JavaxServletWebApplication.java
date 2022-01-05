@@ -106,7 +106,7 @@ public final class JavaxServletWebApplication implements IServletWebApplication 
 
 
     @Override
-    public Object getNativeObject() {
+    public Object getNativeServletContextObject() {
         return this.servletContext;
     }
 

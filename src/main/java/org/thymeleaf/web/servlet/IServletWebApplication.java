@@ -100,6 +100,6 @@ public interface IServletWebApplication extends IWebApplication {
         }
     }
 
-    public Object getNativeObject();
+    public Object getNativeServletContextObject();
 
 }

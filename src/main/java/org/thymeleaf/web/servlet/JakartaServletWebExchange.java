@@ -57,7 +57,7 @@ final class JakartaServletWebExchange implements IServletWebExchange {
         this.webRequest = webRequest;
         this.webSession = webSession;
         this.webApplication = webApplication;
-        this.httpServletRequest = (HttpServletRequest) this.webRequest.getNativeObject();
+        this.httpServletRequest = (HttpServletRequest) this.webRequest.getNativeRequestObject();
         this.httpServletResponse = httpServletResponse;
     }
 
@@ -112,6 +112,11 @@ final class JakartaServletWebExchange implements IServletWebExchange {
         return this.httpServletResponse.encodeURL(url);
     }
 
+
+    @Override
+    public Object getNativeRequestObject() {
+        return this.httpServletRequest;
+    }
 
     @Override
     public Object getNativeResponseObject() {

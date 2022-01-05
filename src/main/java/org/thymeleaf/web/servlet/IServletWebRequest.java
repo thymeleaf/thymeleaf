@@ -134,6 +134,6 @@ public interface IServletWebRequest extends IWebRequest {
     }
 
 
-    public Object getNativeObject();
+    public Object getNativeRequestObject();
 
 }

@@ -207,7 +207,7 @@ final class JavaxServletWebRequest implements IServletWebRequest {
 
 
     @Override
-    public Object getNativeObject() {
+    public Object getNativeRequestObject() {
         return this.request;
     }
 
