@@ -86,7 +86,7 @@ final class SpringWebFluxWebRequest implements ISpringWebFluxWebRequest {
 
 
     @Override
-    public Object getNativeObject() {
+    public Object getNativeRequestObject() {
         return this.request;
     }
 

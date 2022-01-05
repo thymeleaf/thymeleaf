@@ -132,7 +132,7 @@ final class SpringWebFluxWebExchange implements ISpringWebFluxWebExchange {
     }
 
     @Override
-    public Object getNativeObject() {
+    public Object getNativeExchangeObject() {
         return this.exchange;
     }
 

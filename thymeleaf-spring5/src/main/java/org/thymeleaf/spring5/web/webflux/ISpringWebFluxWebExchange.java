@@ -93,7 +93,7 @@ public interface ISpringWebFluxWebExchange extends IWebExchange {
     }
 
 
-    public Object getNativeObject();
+    public Object getNativeExchangeObject();
 
 
 }

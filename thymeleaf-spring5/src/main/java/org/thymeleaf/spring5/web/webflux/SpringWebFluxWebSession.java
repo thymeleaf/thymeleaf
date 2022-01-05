@@ -77,7 +77,7 @@ final class SpringWebFluxWebSession implements ISpringWebFluxWebSession {
     }
 
     @Override
-    public Object getNativeObject() {
+    public Object getNativeSessionObject() {
         return this.session;
     }
 

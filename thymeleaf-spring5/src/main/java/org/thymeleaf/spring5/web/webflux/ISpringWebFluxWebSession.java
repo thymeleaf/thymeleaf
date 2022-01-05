@@ -67,6 +67,6 @@ public interface ISpringWebFluxWebSession extends IWebSession {
     }
 
 
-    public Object getNativeObject();
+    public Object getNativeSessionObject();
 
 }

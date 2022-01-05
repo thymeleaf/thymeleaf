@@ -174,6 +174,6 @@ public interface ISpringWebFluxWebRequest extends IWebRequest {
     }
 
 
-    public Object getNativeObject();
+    public Object getNativeRequestObject();
 
 }
