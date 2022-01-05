@@ -487,7 +487,7 @@ public class ThymeleafViewResolver
      * <p>
      *   In the default implementation (default is <b>{@code true}</b>), this will enforce HTTP status
      *   code 302 in any case, i.e. delegate to
-     *   {@link javax.servlet.http.HttpServletResponse#sendRedirect(String)}. Turning this off
+     *   {@link jakarta.servlet.http.HttpServletResponse#sendRedirect(String)}. Turning this off
      *   will send HTTP status code 303, which is the correct code for HTTP 1.1 clients, but not understood
      *   by HTTP 1.0 clients.
      * </p>
