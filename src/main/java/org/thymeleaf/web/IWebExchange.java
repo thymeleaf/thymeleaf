@@ -42,7 +42,10 @@ public interface IWebExchange {
     }
 
     public Principal getPrincipal();
+
     public Locale getLocale();
+    public String getContentType();
+    public String getCharacterEncoding();
 
     public boolean containsAttribute(final String name);
     public int getAttributeCount();
