@@ -86,7 +86,7 @@ final class JakartaServletWebExchange implements IServletWebExchange {
 
     @Override
     public Locale getLocale() {
-        return this.httpServletRequest.getLocale();
+        return this.httpServletResponse.getLocale();
     }
 
     @Override
