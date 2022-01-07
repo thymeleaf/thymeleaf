@@ -320,7 +320,7 @@
         <version>3.0.0</version>
         <executions>
           <!-- Copy javadoc's "element-list" file to "package-list" in order to allow projects    -->
-          <!-- using versions of the javadoc tool < JDK9 to properly link to Thymeleaf's javadoc  -->
+          <!-- using versions of the javadoc tool < JDK9 to properly link to Thymeleaf's javadoc -->
           <!-- as an external link.                                                               -->
           <!-- NOTE this modifies the javadoc AFTER the creation of the jar as it is not possible -->
           <!-- to do so by previously configuring javadoc:javadoc in the prepare-package phase    -->
