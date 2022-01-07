@@ -223,8 +223,6 @@
           <javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
           <reportOutputDirectory>${project.build.directory}/apidocs</reportOutputDirectory>
           <excludePackageNames>org.springframework</excludePackageNames>
-          <!-- This will avoid adding a folder level for the base module name. Note: Support removed in JDK 13 -->
-          <additionalJOption>--no-module-directories</additionalJOption>
         </configuration>
         <executions>
           <execution>
