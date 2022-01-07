@@ -116,6 +116,7 @@
     <!-- NOTE module name is fixed and not set to project.artifactId because this would not be a     -->
     <!-- valid approach for project names containing hyphens, which are not allowed in module names. -->
     <module.name>thymeleaf.spring5</module.name>
+    <servlet-api.version>2.5</servlet-api.version>
     <springframework.version>5.0.8.RELEASE</springframework.version>
     <springwebflow.version>2.5.0.RELEASE</springwebflow.version>
     <slf4j.version>1.7.32</slf4j.version>
@@ -296,7 +297,9 @@
             </goals>
             <configuration>
               <target name="copy javadocs element-list to package-list">
-                <copy file="${project.build.directory}/apidocs/element-list" tofile="${project.build.directory}/apidocs/package-list" failonerror="false" />
+                <copy file="${project.build.directory}/apidocs/element-list"
+                      tofile="${project.build.directory}/apidocs/package-list"
+                      failonerror="false"/>
               </target>
             </configuration>
           </execution>
@@ -329,7 +332,7 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
+      <version>${servlet-api.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>

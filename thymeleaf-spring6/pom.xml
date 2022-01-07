@@ -115,8 +115,8 @@
 
   <properties>
     <java.version>17</java.version>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven.compiler.release>${java.version}</maven.compiler.release>
     <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
     <project.build.propertiesEncoding>ISO-8859-1</project.build.propertiesEncoding>
@@ -124,7 +124,7 @@
     <!-- NOTE module name is fixed and not set to project.artifactId because this would not be a     -->
     <!-- valid approach for project names containing hyphens, which are not allowed in module names. -->
     <module.name>thymeleaf.spring6</module.name>
-    <jakarta-servlet-api.version>5.0.0</jakarta-servlet-api.version>
+    <servlet-api.version>5.0.0</servlet-api.version>
     <springframework.version>6.0.0-SNAPSHOT</springframework.version>
     <springwebflow.version>2.5.0.RELEASE</springwebflow.version>
     <slf4j.version>1.7.32</slf4j.version>
@@ -303,7 +303,9 @@
             </goals>
             <configuration>
               <target name="copy javadocs element-list to package-list">
-                <copy file="${project.build.directory}/apidocs/element-list" tofile="${project.build.directory}/apidocs/package-list" failonerror="false" />
+                <copy file="${project.build.directory}/apidocs/element-list"
+                      tofile="${project.build.directory}/apidocs/package-list"
+                      failonerror="false"/>
               </target>
             </configuration>
           </execution>
@@ -336,7 +338,7 @@
     <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
-      <version>${jakarta-servlet-api.version}</version>
+      <version>${servlet-api.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
