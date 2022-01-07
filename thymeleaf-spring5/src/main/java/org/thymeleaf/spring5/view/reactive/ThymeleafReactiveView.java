@@ -435,6 +435,18 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
 
         /*
          * ----------------------------------------------------------------------------------------------------------
+         * OBTENTION OF LOCALE AND ENCODING
+         * ----------------------------------------------------------------------------------------------------------
+         * - These are needed both for creating a context and for executing the template processor
+         * ----------------------------------------------------------------------------------------------------------
+         */
+        final Locale templateLocale = getLocale();
+        // Get the charset from the selected content type (or use default)
+        final Charset charset = getCharset(contentType).orElse(getDefaultCharset());
+
+
+        /*
+         * ----------------------------------------------------------------------------------------------------------
          * INSTANTIATION OF THE WEB EXCHANGE
          * ----------------------------------------------------------------------------------------------------------
          * - We need now to create a WebFlux-specific web exchange implementation that will allow the Thymeleaf
@@ -443,7 +455,8 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
          */
         final IWebExchange webExchange =
                 SpringWebFluxWebApplication.
-                        buildApplication(getReactiveAdapterRegistry()).buildExchange(exchange);
+                        buildApplication(getReactiveAdapterRegistry()).buildExchange(
+                                exchange, templateLocale, contentType, charset);
 
 
         /*
@@ -546,13 +559,10 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         final int templateResponseMaxChunkSizeBytes = getResponseMaxChunkSizeBytes();
 
         final HttpHeaders responseHeaders = exchange.getResponse().getHeaders();
-        final Locale templateLocale = getLocale();
         if (templateLocale != null) {
+            // NOTE this should in fact never be null, as in such case WebFlux should have selected the default locale
             responseHeaders.setContentLanguage(templateLocale);
         }
-
-        // Get the charset from the selected content type (or use default)
-        final Charset charset = getCharset(contentType).orElse(getDefaultCharset());
 
 
         /*

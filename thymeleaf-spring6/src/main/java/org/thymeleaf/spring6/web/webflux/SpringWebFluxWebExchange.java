@@ -20,11 +20,13 @@
 
 package org.thymeleaf.spring6.web.webflux;
 
+import java.nio.charset.Charset;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebSession;
 import org.thymeleaf.spring6.context.SpringContextUtils;
@@ -46,18 +48,30 @@ final class SpringWebFluxWebExchange implements ISpringWebFluxWebExchange {
     private boolean webSessionInitialized;
 
     private final ServerWebExchange exchange;
+    private final Locale locale;
+    private final MediaType mediaType;
+    private final Charset charset;
 
 
     SpringWebFluxWebExchange(final SpringWebFluxWebRequest webRequest,
                              final SpringWebFluxWebApplication webApplication,
-                             final ServerWebExchange exchange) {
+                             final ServerWebExchange exchange,
+                             final Locale locale,
+                             final MediaType mediaType,
+                             final Charset charset) {
         super();
         Validate.notNull(webRequest, "Request cannot be null");
         Validate.notNull(webApplication, "Application cannot be null");
         Validate.notNull(exchange, "Server Web Exchange cannot be null");
+        Validate.notNull(locale, "Locale cannot be null");
+        Validate.notNull(mediaType, "Media Type cannot be null");
+        Validate.notNull(charset, "Charset cannot be null");
         this.webRequest = webRequest;
         this.webApplication = webApplication;
         this.exchange = exchange;
+        this.locale = locale;
+        this.mediaType = mediaType;
+        this.charset = charset;
         // Session is lazily initialized because it requires the model to have been resolved (from Mono<Session>)
         this.webSession = null;
         this.webSessionInitialized = false;
@@ -98,9 +112,22 @@ final class SpringWebFluxWebExchange implements ISpringWebFluxWebExchange {
         return this.exchange.getAttribute(SpringContextUtils.WEB_EXCHANGE_PRINCIPAL_ATTRIBUTE_NAME);
     }
 
+
     @Override
     public Locale getLocale() {
-        return this.exchange.getLocaleContext().getLocale();
+        // We prefer this to the one established in ServerWebExchange, as the in Spring WebFlux environments
+        // the view that is being processed might establish its own value for the locale.
+        return this.locale;
+    }
+
+    @Override
+    public String getContentType() {
+        return this.mediaType.toString();
+    }
+
+    @Override
+    public String getCharacterEncoding() {
+        return this.charset.name();
     }
 
 

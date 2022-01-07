@@ -21,10 +21,13 @@
 package org.thymeleaf.spring5.web.webflux;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.core.ReactiveAdapterRegistry;
+import org.springframework.http.MediaType;
 import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.util.Validate;
 
@@ -57,13 +60,17 @@ public final class SpringWebFluxWebApplication implements ISpringWebFluxWebAppli
         return new SpringWebFluxWebApplication(reactiveAdapterRegistry);
     }
 
-    public SpringWebFluxWebExchange buildExchange(final ServerWebExchange exchange) {
+    public SpringWebFluxWebExchange buildExchange(
+            final ServerWebExchange exchange, final Locale locale, final MediaType mediaType, final Charset charset) {
 
         Validate.notNull(exchange, "ServerWebExchange cannot be null");
+        Validate.notNull(locale, "Locale cannot be null");
+        Validate.notNull(mediaType, "Media Type cannot be null");
+        Validate.notNull(charset, "Charset cannot be null");
 
         final SpringWebFluxWebRequest request = new SpringWebFluxWebRequest(exchange.getRequest());
 
-        return new SpringWebFluxWebExchange(request, this, exchange);
+        return new SpringWebFluxWebExchange(request, this, exchange, locale, mediaType, charset);
 
     }
 
