@@ -196,34 +196,34 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         return this.beanName;
     }
 
-    
+
     public void setBeanName(final String beanName) {
         this.beanName = beanName;
     }
 
-    
+
 
 
     public String getTemplateName() {
         return this.templateName;
     }
-	
-    
+
+
 	public void setTemplateName(final String templateName) {
 		this.templateName = templateName;
 	}
 
-	
+
 
 
     protected Locale getLocale() {
         return this.locale;
     }
 
-    
+
     protected void setLocale(final Locale locale) {
         this.locale = locale;
-        
+
     }
 
 
@@ -255,13 +255,13 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
         return this.templateEngine;
     }
 
-    
+
     protected void setTemplateEngine(final ISpringWebFluxTemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
 
 
-    
+
 
     public Map<String,Object> getStaticVariables() {
         if (this.staticVariables == null) {
@@ -614,7 +614,7 @@ public class ThymeleafReactiveView extends AbstractView implements BeanNameAware
     }
 
 
-    
+
 
     private static Optional<Charset> getCharset(final MediaType mediaType) {
         return mediaType != null ? Optional.ofNullable(mediaType.getCharset()) : Optional.empty();
