@@ -60,7 +60,7 @@ public final class SpringWebFluxWebApplication implements ISpringWebFluxWebAppli
         return new SpringWebFluxWebApplication(reactiveAdapterRegistry);
     }
 
-    public SpringWebFluxWebExchange buildExchange(
+    public ISpringWebFluxWebExchange buildExchange(
             final ServerWebExchange exchange, final Locale locale, final MediaType mediaType, final Charset charset) {
 
         Validate.notNull(exchange, "ServerWebExchange cannot be null");
