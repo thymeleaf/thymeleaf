@@ -46,6 +46,8 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
+import org.thymeleaf.spring5.context.webmvc.SpringWebMvcThymeleafRequestContext;
+import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 import org.thymeleaf.testing.templateengine.context.web.ITestWebExchangeBuilder;
 import org.thymeleaf.testing.templateengine.context.web.WebProcessingContextBuilder;
@@ -152,11 +154,20 @@ public class SpringMVCWebProcessingContextBuilder extends WebProcessingContextBu
 
 
         /*
-         * SPRING-VERSION-SPECIFIC INITIALIZATIONS
+         * THYMELEAF EVALUATION CONTEXT
          */
-        SpringVersionSpecificContextInitialization.
-                versionSpecificAdditionalVariableProcessing(
-                        appCtx, conversionService, httpServletRequest, httpServletResponse, servletContext, variables);
+        final ThymeleafEvaluationContext evaluationContext =
+                new ThymeleafEvaluationContext(appCtx, conversionService);
+
+        variables.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
+
+
+        /*
+         * THYMELEAF REQUEST CONTEXT
+         */
+        final SpringWebMvcThymeleafRequestContext thymeleafRequestContext =
+                new SpringWebMvcThymeleafRequestContext(requestContext, httpServletRequest);
+        variables.put(SpringContextVariableNames.THYMELEAF_REQUEST_CONTEXT, thymeleafRequestContext);
 
 
         /*

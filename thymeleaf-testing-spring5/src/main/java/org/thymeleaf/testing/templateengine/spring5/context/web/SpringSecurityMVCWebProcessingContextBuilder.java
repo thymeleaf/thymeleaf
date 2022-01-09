@@ -33,6 +33,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.thymeleaf.testing.templateengine.context.web.ITestWebExchangeBuilder;
 import org.thymeleaf.testing.templateengine.testable.ITest;
 import org.thymeleaf.util.Validate;
 
@@ -49,8 +50,8 @@ public class SpringSecurityMVCWebProcessingContextBuilder extends SpringMVCWebPr
     private String authenticationManagerBeanName = DEFAULT_AUTHENTICATION_MANAGER_BEAN_NAME;
     
     
-    public SpringSecurityMVCWebProcessingContextBuilder() {
-        super();
+    public SpringSecurityMVCWebProcessingContextBuilder(final ITestWebExchangeBuilder testWebExchangeBuilder) {
+        super(testWebExchangeBuilder);
     }
 
     
