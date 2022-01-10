@@ -53,10 +53,12 @@ public class SpringSecurityMVCWebProcessingContextBuilder extends SpringMVCWebPr
         super(testWebExchangeBuilder);
     }
 
-    
+    public SpringSecurityMVCWebProcessingContextBuilder() {
+        super();
+    }
 
-    
-    
+
+
     public String getAuthenticationManagerBeanName() {
         return this.authenticationManagerBeanName;
     }

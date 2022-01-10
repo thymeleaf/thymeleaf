@@ -50,6 +50,7 @@ import org.thymeleaf.spring5.context.webmvc.SpringWebMvcThymeleafRequestContext;
 import org.thymeleaf.spring5.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring5.naming.SpringContextVariableNames;
 import org.thymeleaf.testing.templateengine.context.web.ITestWebExchangeBuilder;
+import org.thymeleaf.testing.templateengine.context.web.JavaxServletTestWebExchangeBuilder;
 import org.thymeleaf.testing.templateengine.context.web.WebProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.testable.ITest;
@@ -78,6 +79,10 @@ public class SpringMVCWebProcessingContextBuilder extends WebProcessingContextBu
 
     public SpringMVCWebProcessingContextBuilder(final ITestWebExchangeBuilder testWebExchangeBuilder) {
         super(testWebExchangeBuilder);
+    }
+
+    public SpringMVCWebProcessingContextBuilder() {
+        this(JavaxServletTestWebExchangeBuilder.create());
     }
 
 
