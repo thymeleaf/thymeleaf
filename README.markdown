@@ -15,7 +15,6 @@ team.
 
 This repository contains 3 projects:
 
- * **thymeleaf-extras-springsecurity3** for integration with Spring Security 3.x
  * **thymeleaf-extras-springsecurity4** for integration with Spring Security 4.x
  * **thymeleaf-extras-springsecurity5** for integration with Spring Security 5.x
  * **thymeleaf-extras-springsecurity6** for integration with Spring Security 6.x
@@ -47,7 +46,6 @@ Maven info
 
  * groupId: `org.thymeleaf.extras`   
  * artifactId: 
-    * Spring Security 3 integration package: `thymeleaf-extras-springsecurity3`
     * Spring Security 4 integration package: `thymeleaf-extras-springsecurity4`
     * Spring Security 5 integration package: `thymeleaf-extras-springsecurity5`
     * Spring Security 6 integration package: `thymeleaf-extras-springsecurity6`
