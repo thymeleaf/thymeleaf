@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -46,7 +47,18 @@ import org.mockito.stubbing.Answer;
 import org.thymeleaf.util.Validate;
 import org.unbescape.uri.UriEscape;
 
-public class JavaxServletMockUtils {
+public final class JavaxServletMockUtils {
+
+    public static final String DEFAULT_METHOD = "GET";
+    public static final String DEFAULT_SCHEME = "http";
+    public static final String DEFAULT_SERVER_NAME = "testing-server";
+    public static final int DEFAULT_SERVER_PORT = 80;
+    public static final String DEFAULT_CONTEXT_PATH = "/testing";
+    public static final String DEFAULT_CONTENT_TYPE = "text/html";
+    public static final String DEFAULT_CHARACTER_ENCODING = "UTF-8";
+    public static final Locale DEFAULT_LOCALE = new Locale("en", "US");
+    public static final Function<String,String> DEFAULT_TRANSFORM_URL_FUNCTION = (url) -> url;
+
 
 
     private JavaxServletMockUtils() {
@@ -54,8 +66,27 @@ public class JavaxServletMockUtils {
     }
 
 
-    public static HttpServletRequest createMockHttpServletRequest(
-            final String testName,
+    public static JavaxServletHttpServletRequestBuilder buildRequest(final ServletContext servletContext, final String path) {
+        return new JavaxServletHttpServletRequestBuilder(servletContext, path);
+    }
+
+    public static JavaxServletHttpSessionBuilder buildSession(final ServletContext servletContext) {
+        return new JavaxServletHttpSessionBuilder(servletContext);
+    }
+
+    public static JavaxServletHttpServletResponseBuilder buildResponse() {
+        return new JavaxServletHttpServletResponseBuilder();
+    }
+
+    public static JavaxServletServletContextBuilder buildServletContext() {
+        return new JavaxServletServletContextBuilder();
+    }
+
+
+
+    private static HttpServletRequest createMockHttpServletRequest(
+            final ServletContext servletContext,
+            final String path,
             final HttpSession session,
             final Map<String, Object> attributeMap,
             final Map<String, String[]> parameterMap,
@@ -66,8 +97,20 @@ public class JavaxServletMockUtils {
             final String contentType, final String characterEncoding,
             final Locale locale) {
 
+        Validate.notNull(servletContext, "Servlet Context cannot be null");
+        Validate.notEmpty(path, "Path cannot be null or empty");
+        Validate.notNull(attributeMap, "Attribute Map cannot be null");
+        Validate.notNull(parameterMap, "Parameter Map cannot be null");
+        Validate.notNull(method, "Method cannot be null");
+        Validate.notNull(scheme, "Scheme cannot be null");
+        Validate.notNull(serverName, "Server Name cannot be null");
+        Validate.notNull(contextPath, "Context Path cannot be null");
+        Validate.notNull(contentType, "Content Type cannot be null");
+        Validate.notNull(characterEncoding, "Character Encoding cannot be null");
+        Validate.notNull(locale, "Locale cannot be null");
+
         final String protocol = "HTTP/1.1";
-        final String servletPath = "/" + testNameToServletPath(testName);
+        final String servletPath = "/" + UriEscape.escapeUriPath((path.charAt(0) != '/')? path : path.substring(1));
         final String requestURI = contextPath + servletPath;
         final String requestURL = scheme + "://" + serverName + requestURI;
         final String queryString = buildQueryString(parameterMap);
@@ -75,6 +118,8 @@ public class JavaxServletMockUtils {
         final Enumeration<String> headerNames = new ObjectEnumeration<String>(null);
 
         final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+
+        Mockito.when(request.getServletContext()).thenReturn(servletContext);
 
         Mockito.when(request.getContentType()).thenReturn(contentType);
         Mockito.when(request.getCharacterEncoding()).thenReturn(characterEncoding);
@@ -113,11 +158,14 @@ public class JavaxServletMockUtils {
 
 
 
-    public static HttpSession createMockHttpSession(final ServletContext context, final Map<String, Object> attributeMap) {
+    private static HttpSession createMockHttpSession(final ServletContext servletContext, final Map<String, Object> attributeMap) {
+
+        Validate.notNull(servletContext, "Servlet Context canot be null");
+        Validate.notNull(attributeMap, "Attribute Map cannot be null");
 
         final HttpSession session = Mockito.mock(HttpSession.class);
 
-        Mockito.when(session.getServletContext()).thenReturn(context);
+        Mockito.when(session.getServletContext()).thenReturn(servletContext);
 
         Mockito.when(session.getAttributeNames()).thenAnswer(new GetVariableNamesAnswer(attributeMap));
         Mockito.when(session.getAttribute(ArgumentMatchers.anyString())).thenAnswer(new GetAttributeAnswer(attributeMap));
@@ -130,8 +178,10 @@ public class JavaxServletMockUtils {
 
 
 
-    public static HttpServletResponse createMockHttpServletResponse(
-            final Function<String,String> transformUrlFunction) {
+    private static HttpServletResponse createMockHttpServletResponse(final Function<String,String> transformUrlFunction) {
+
+        Validate.notNull(transformUrlFunction, "transformUrl Function cannot be null");
+
         final HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         Mockito.when(response.encodeURL(ArgumentMatchers.anyString())).thenAnswer(new EncodeUrlAnswer(transformUrlFunction));
         return response;
@@ -139,9 +189,11 @@ public class JavaxServletMockUtils {
 
 
 
-    public static ServletContext createMockServletContext(
-            final Map<String, Object> attributeMap,
-            final String contextPath) {
+    private static ServletContext createMockServletContext(
+            final String contextPath, final Map<String, Object> attributeMap) {
+
+        Validate.notNull(contextPath, "Context Path cannot be null");
+        Validate.notNull(attributeMap, "Attribute Map cannot be null");
 
         final ServletContext servletContext = Mockito.mock(ServletContext.class);
 
@@ -155,6 +207,166 @@ public class JavaxServletMockUtils {
         Mockito.when(servletContext.getInitParameter(ArgumentMatchers.anyString())).thenReturn(null);
 
         return servletContext;
+    }
+
+
+    public static final class JavaxServletHttpServletRequestBuilder {
+
+        private final ServletContext servletContext;
+        private final String path;
+        private HttpSession session = null;
+        private Map<String, Object> attributeMap = null;
+        private Map<String, String[]> parameterMap = null;
+        private String method = DEFAULT_METHOD;
+        private String scheme = DEFAULT_SCHEME;
+        private String serverName = DEFAULT_SERVER_NAME;
+        private int port = DEFAULT_SERVER_PORT;
+        private String contextPath = DEFAULT_CONTEXT_PATH;
+        private String contentType = DEFAULT_CONTENT_TYPE;
+        private String characterEncoding = DEFAULT_CHARACTER_ENCODING;
+        private Locale locale = DEFAULT_LOCALE;
+
+        private JavaxServletHttpServletRequestBuilder(final ServletContext servletContext, final String path) {
+            super();
+            this.servletContext = servletContext;
+            this.path = path;
+        }
+
+        public JavaxServletHttpServletRequestBuilder session(final HttpSession session) {
+            this.session = session;
+            return this;
+        }
+
+        public JavaxServletHttpServletRequestBuilder attributeMap(final Map<String, Object> attributeMap) {
+            this.attributeMap = attributeMap;
+            return this;
+        }
+
+        public JavaxServletHttpServletRequestBuilder parameterMap(final Map<String, String[]> parameterMap) {
+            this.parameterMap = parameterMap;
+            return this;
+        }
+
+        public JavaxServletHttpServletRequestBuilder method(final String method) {
+            this.method = method;
+            return this;
+        }
+
+        public JavaxServletHttpServletRequestBuilder scheme(final String scheme) {
+            this.scheme = scheme;
+            return this;
+        }
+
+        public JavaxServletHttpServletRequestBuilder serverName(final String serverName) {
+            this.serverName = serverName;
+            return this;
+        }
+
+        public JavaxServletHttpServletRequestBuilder port(final int port) {
+            this.port = port;
+            return this;
+        }
+
+        public JavaxServletHttpServletRequestBuilder contextPath(final String contextPath) {
+            this.contextPath = contextPath;
+            return this;
+        }
+
+        public JavaxServletHttpServletRequestBuilder contentType(final String contentType) {
+            this.contentType = contentType;
+            return this;
+        }
+
+        public JavaxServletHttpServletRequestBuilder characterEncoding(final String characterEncoding) {
+            this.characterEncoding = characterEncoding;
+            return this;
+        }
+
+        public JavaxServletHttpServletRequestBuilder locale(final Locale locale) {
+            this.locale = locale;
+            return this;
+        }
+
+        public HttpServletRequest build() {
+            return createMockHttpServletRequest(
+                    this.servletContext, this.path, this.session,
+                    (this.attributeMap != null)? this.attributeMap : new HashMap<>(),
+                    (this.parameterMap != null)? this.parameterMap : new HashMap<>(),
+                    this.method, this.scheme, this.serverName, this.port,
+                    this.contextPath, this.contentType, this.characterEncoding, this.locale);
+        }
+
+    }
+
+
+    public static final class JavaxServletHttpSessionBuilder {
+
+        private final ServletContext servletContext;
+        private Map<String, Object> attributeMap = null;
+
+        private JavaxServletHttpSessionBuilder(final ServletContext servletContext) {
+            super();
+            this.servletContext = servletContext;
+        }
+
+        public JavaxServletHttpSessionBuilder attributeMap(final Map<String, Object> attributeMap) {
+            this.attributeMap = attributeMap;
+            return this;
+        }
+
+        public HttpSession build() {
+            return createMockHttpSession(
+                    this.servletContext, (this.attributeMap != null)? this.attributeMap : new HashMap<>());
+        }
+
+    }
+
+
+    public static final class JavaxServletHttpServletResponseBuilder {
+
+        private Function<String,String> transformUrlFunction = DEFAULT_TRANSFORM_URL_FUNCTION;
+
+        private JavaxServletHttpServletResponseBuilder() {
+            super();
+        }
+
+        public JavaxServletHttpServletResponseBuilder transformUrlFunction(
+                final Function<String, String> transformUrlFunction) {
+            this.transformUrlFunction = transformUrlFunction;
+            return this;
+        }
+
+        public HttpServletResponse build() {
+            return createMockHttpServletResponse(this.transformUrlFunction);
+        }
+
+    }
+
+
+    public static final class JavaxServletServletContextBuilder {
+
+        private String contextPath = DEFAULT_CONTEXT_PATH;
+        private Map<String,Object> attributeMap = null;
+
+        private JavaxServletServletContextBuilder() {
+            super();
+        }
+
+        public JavaxServletServletContextBuilder contextPath(final String contextPath) {
+            this.contextPath = contextPath;
+            return this;
+        }
+
+        public JavaxServletServletContextBuilder attributeMap(final Map<String, Object> attributeMap) {
+            this.attributeMap = attributeMap;
+            return this;
+        }
+
+        public ServletContext build() {
+            return createMockServletContext(
+                    this.contextPath, (this.attributeMap != null)? this.attributeMap : new HashMap<>());
+        }
+
     }
 
 

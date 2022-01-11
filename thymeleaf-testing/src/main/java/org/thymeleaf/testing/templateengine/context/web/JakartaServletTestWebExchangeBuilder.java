@@ -29,6 +29,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.thymeleaf.testing.templateengine.testable.ITest;
 import org.thymeleaf.testing.templateengine.util.JakartaServletMockUtils;
+import org.thymeleaf.testing.templateengine.util.TestNamingUtils;
 import org.thymeleaf.util.Validate;
 import org.thymeleaf.web.IWebExchange;
 import org.thymeleaf.web.servlet.JakartaServletWebApplication;
@@ -36,24 +37,15 @@ import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
 public class JakartaServletTestWebExchangeBuilder implements ITestWebExchangeBuilder {
 
-    private static final String DEFAULT_METHOD = "GET";
-    private static final String DEFAULT_SCHEME = "http";
-    private static final String DEFAULT_SERVER_NAME = "testing-server";
-    private static final int DEFAULT_SERVER_PORT = 80;
-    private static final String DEFAULT_CONTEXT_PATH = "/testing";
-    private static final String DEFAULT_CONTENT_TYPE = "text/html";
-    private static final String DEFAULT_CHARACTER_ENCODING = "UTF-8";
-    private static final Function<String,String> DEFAULT_TRANSFORM_URL_FUNCTION = (url) -> url;
 
-
-    private String method = DEFAULT_METHOD;
-    private String scheme = DEFAULT_SCHEME;
-    private String serverName = DEFAULT_SERVER_NAME;
-    private int port = DEFAULT_SERVER_PORT;
-    private String contextPath = DEFAULT_CONTEXT_PATH;
-    private String contentType = DEFAULT_CONTENT_TYPE;
-    private String characterEncoding = DEFAULT_CHARACTER_ENCODING;
-    private Function<String,String> transformUrlFunction = DEFAULT_TRANSFORM_URL_FUNCTION;
+    private String method = JakartaServletMockUtils.DEFAULT_METHOD;
+    private String scheme = JakartaServletMockUtils.DEFAULT_SCHEME;
+    private String serverName = JakartaServletMockUtils.DEFAULT_SERVER_NAME;
+    private int port = JakartaServletMockUtils.DEFAULT_SERVER_PORT;
+    private String contextPath = JakartaServletMockUtils.DEFAULT_CONTEXT_PATH;
+    private String contentType = JakartaServletMockUtils.DEFAULT_CONTENT_TYPE;
+    private String characterEncoding = JakartaServletMockUtils.DEFAULT_CHARACTER_ENCODING;
+    private Function<String,String> transformUrlFunction = JakartaServletMockUtils.DEFAULT_TRANSFORM_URL_FUNCTION;
 
 
     private JakartaServletTestWebExchangeBuilder() {
@@ -129,17 +121,36 @@ public class JakartaServletTestWebExchangeBuilder implements ITestWebExchangeBui
         Validate.notNull(locale, "Locale cannot be null");
 
         final ServletContext servletContext =
-                JakartaServletMockUtils.createMockServletContext(applicationAttributes, this.contextPath);
+                JakartaServletMockUtils.buildServletContext()
+                        .attributeMap(applicationAttributes)
+                        .build();
+
         final HttpSession httpSession =
                 (sessionAttributes != null && !sessionAttributes.isEmpty())?
-                        JakartaServletMockUtils.createMockHttpSession(servletContext, sessionAttributes) : null;
+                        JakartaServletMockUtils.buildSession(servletContext)
+                                .attributeMap(sessionAttributes)
+                                .build()
+                        : null;
+
         final HttpServletResponse httpServletResponse =
-                JakartaServletMockUtils.createMockHttpServletResponse(this.transformUrlFunction);
+                JakartaServletMockUtils.buildResponse()
+                        .transformUrlFunction(this.transformUrlFunction)
+                        .build();
+
         final HttpServletRequest httpServletRequest =
-                JakartaServletMockUtils.createMockHttpServletRequest(
-                        test.getName(), httpSession, exchangeAttributes, requestParameters,
-                        this.method, this.scheme, this.serverName, this.port, this.contextPath,
-                        this.contentType, this.characterEncoding, locale);
+                JakartaServletMockUtils.buildRequest(servletContext, TestNamingUtils.normalizeTestName(test.getName()))
+                        .session(httpSession)
+                        .attributeMap(exchangeAttributes)
+                        .parameterMap(requestParameters)
+                        .method(this.method)
+                        .scheme(this.scheme)
+                        .serverName(this.serverName)
+                        .port(this.port)
+                        .contextPath(this.contextPath)
+                        .contentType(this.contentType)
+                        .characterEncoding(this.characterEncoding)
+                        .locale(locale)
+                        .build();
 
         return JakartaServletWebApplication.
                     buildApplication(servletContext).buildExchange(httpServletRequest, httpServletResponse);

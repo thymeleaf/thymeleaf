@@ -30,6 +30,7 @@ import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.testing.templateengine.testable.ITest;
 import org.thymeleaf.testing.templateengine.util.JavaxServletMockUtils;
+import org.thymeleaf.testing.templateengine.util.TestNamingUtils;
 import org.thymeleaf.util.Validate;
 import org.thymeleaf.web.IWebExchange;
 import org.thymeleaf.web.servlet.JavaxServletWebApplication;
@@ -37,24 +38,16 @@ import org.thymeleaf.web.servlet.JavaxServletWebApplication;
 
 public class JavaxServletTestWebExchangeBuilder implements ITestWebExchangeBuilder {
 
-    private static final String DEFAULT_METHOD = "GET";
-    private static final String DEFAULT_SCHEME = "http";
-    private static final String DEFAULT_SERVER_NAME = "testing-server";
-    private static final int DEFAULT_SERVER_PORT = 80;
-    private static final String DEFAULT_CONTEXT_PATH = "/testing";
-    private static final String DEFAULT_CONTENT_TYPE = "text/html";
-    private static final String DEFAULT_CHARACTER_ENCODING = "UTF-8";
-    private static final Function<String,String> DEFAULT_TRANSFORM_URL_FUNCTION = (url) -> url;
 
 
-    private String method = DEFAULT_METHOD;
-    private String scheme = DEFAULT_SCHEME;
-    private String serverName = DEFAULT_SERVER_NAME;
-    private int port = DEFAULT_SERVER_PORT;
-    private String contextPath = DEFAULT_CONTEXT_PATH;
-    private String contentType = DEFAULT_CONTENT_TYPE;
-    private String characterEncoding = DEFAULT_CHARACTER_ENCODING;
-    private Function<String,String> transformUrlFunction = DEFAULT_TRANSFORM_URL_FUNCTION;
+    private String method = JavaxServletMockUtils.DEFAULT_METHOD;
+    private String scheme = JavaxServletMockUtils.DEFAULT_SCHEME;
+    private String serverName = JavaxServletMockUtils.DEFAULT_SERVER_NAME;
+    private int port = JavaxServletMockUtils.DEFAULT_SERVER_PORT;
+    private String contextPath = JavaxServletMockUtils.DEFAULT_CONTEXT_PATH;
+    private String contentType = JavaxServletMockUtils.DEFAULT_CONTENT_TYPE;
+    private String characterEncoding = JavaxServletMockUtils.DEFAULT_CHARACTER_ENCODING;
+    private Function<String,String> transformUrlFunction = JavaxServletMockUtils.DEFAULT_TRANSFORM_URL_FUNCTION;
 
 
     private JavaxServletTestWebExchangeBuilder() {
@@ -130,17 +123,36 @@ public class JavaxServletTestWebExchangeBuilder implements ITestWebExchangeBuild
         Validate.notNull(locale, "Locale cannot be null");
 
         final ServletContext servletContext =
-                JavaxServletMockUtils.createMockServletContext(applicationAttributes, this.contextPath);
+                JavaxServletMockUtils.buildServletContext()
+                        .attributeMap(applicationAttributes)
+                        .build();
+
         final HttpSession httpSession =
                 (sessionAttributes != null && !sessionAttributes.isEmpty())?
-                        JavaxServletMockUtils.createMockHttpSession(servletContext, sessionAttributes) : null;
+                        JavaxServletMockUtils.buildSession(servletContext)
+                                .attributeMap(sessionAttributes)
+                                .build()
+                        : null;
+
         final HttpServletResponse httpServletResponse =
-                JavaxServletMockUtils.createMockHttpServletResponse(this.transformUrlFunction);
+                JavaxServletMockUtils.buildResponse()
+                        .transformUrlFunction(this.transformUrlFunction)
+                        .build();
+
         final HttpServletRequest httpServletRequest =
-                JavaxServletMockUtils.createMockHttpServletRequest(
-                        test.getName(), httpSession, exchangeAttributes, requestParameters,
-                        this.method, this.scheme, this.serverName, this.port, this.contextPath,
-                        this.contentType, this.characterEncoding, locale);
+                JavaxServletMockUtils.buildRequest(servletContext, TestNamingUtils.normalizeTestName(test.getName()))
+                        .session(httpSession)
+                        .attributeMap(exchangeAttributes)
+                        .parameterMap(requestParameters)
+                        .method(this.method)
+                        .scheme(this.scheme)
+                        .serverName(this.serverName)
+                        .port(this.port)
+                        .contextPath(this.contextPath)
+                        .contentType(this.contentType)
+                        .characterEncoding(this.characterEncoding)
+                        .locale(locale)
+                        .build();
 
         return JavaxServletWebApplication.
                     buildApplication(servletContext).buildExchange(httpServletRequest, httpServletResponse);
