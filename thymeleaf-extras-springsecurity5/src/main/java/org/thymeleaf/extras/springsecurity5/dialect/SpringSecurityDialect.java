@@ -72,7 +72,7 @@ public class SpringSecurityDialect
     // NOTE here we are not using the constant from the ReactiveThymeleafView class (instead we replicate its same
     // value "ThymeleafReactiveModelAdditions:" so that we don't create a hard dependency on the thymeleaf-spring5
     // package, so that this class could be used in the future with, for example, a
-    // thymeleaf-spring6 integration package if needed.
+    // thymeleaf-spring5 integration package if needed.
     private static final String SECURITY_CONTEXT_EXECUTION_ATTRIBUTE_NAME =
             "ThymeleafReactiveModelAdditions:" + SpringSecurityContextUtils.SECURITY_CONTEXT_MODEL_ATTRIBUTE_NAME;
     private static final String CSRF_EXECUTION_ATTRIBUTE_NAME =

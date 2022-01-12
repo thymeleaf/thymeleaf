@@ -26,7 +26,7 @@
   <groupId>org.thymeleaf.extras</groupId>
   <artifactId>thymeleaf-extras-springsecurity5</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.5-SNAPSHOT</version>
+  <version>3.1.0-SNAPSHOT</version>
   <name>thymeleaf-extras-springsecurity5</name>
   <url>http://www.thymeleaf.org</url>
 
@@ -125,10 +125,10 @@
     <!-- valid approach for project names containing hyphens, which are not allowed in module names. -->
     <module.name>thymeleaf.extras.springsecurity5</module.name>
     <servlet-api.version>2.5</servlet-api.version>
-    <thymeleaf.version>3.0.10.RELEASE</thymeleaf.version>
-    <springsecurity.version>5.0.3.RELEASE</springsecurity.version>
-    <reactor.version>3.1.2.RELEASE</reactor.version>
-    <slf4j.version>1.7.25</slf4j.version>
+    <thymeleaf.version>3.1.0-SNAPSHOT</thymeleaf.version>
+    <springsecurity.version>5.6.1</springsecurity.version>
+    <reactor.version>3.4.14</reactor.version>
+    <slf4j.version>1.7.32</slf4j.version>
   </properties>
 
 

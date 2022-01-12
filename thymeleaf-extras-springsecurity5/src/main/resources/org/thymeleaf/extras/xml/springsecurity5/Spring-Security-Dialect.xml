@@ -33,27 +33,27 @@
 		name="authentication"
 		class="org.thymeleaf.extras.springsecurity5.dialect.processor.AuthenticationAttrProcessor">
 		<documentation
-			reference="Thymeleaf Spring Security 4 integration module readme"/>
+			reference="Thymeleaf Spring Security 5 integration module readme"/>
 	</attribute-processor>
 
 	<attribute-processor
 		name="authorize"
 		class="org.thymeleaf.extras.springsecurity5.dialect.processor.AuthorizeAttrProcessor">
 		<documentation
-			reference="Thymeleaf Spring Security 4 integration module readme"/>
+			reference="Thymeleaf Spring Security 5 integration module readme"/>
 	</attribute-processor>
 
 	<attribute-processor
 		name="authorize-acl"
 		class="org.thymeleaf.extras.springsecurity5.dialect.processor.AuthorizeAclAttrProcessor">
 		<documentation
-			reference="Thymeleaf Spring Security 4 integration module readme"/>
+			reference="Thymeleaf Spring Security 5 integration module readme"/>
 	</attribute-processor>
 
 	<attribute-processor
 		name="authorize-expr">
 		<documentation
-			reference="Thymeleaf Spring Security 4 integration module readme">
+			reference="Thymeleaf Spring Security 5 integration module readme">
 			<![CDATA[
 			An alias for <b>sec:authorize</b>, renders the element children (*tag
 			content*) if the authenticated user is authorized to see it according
@@ -66,7 +66,7 @@
 		name="authorize-url"
 		class="org.thymeleaf.extras.springsecurity5.dialect.processor.AuthorizeUrlAttrProcessor">
 		<documentation
-			reference="Thymeleaf Spring Security 4 integration module readme"/>
+			reference="Thymeleaf Spring Security 5 integration module readme"/>
 	</attribute-processor>
 
 
