@@ -15,9 +15,8 @@ team.
 
 This repository contains 3 projects:
 
- * **thymeleaf-extras-springsecurity3** for integration with Spring Security 3.x
- * **thymeleaf-extras-springsecurity4** for integration with Spring Security 4.x
  * **thymeleaf-extras-springsecurity5** for integration with Spring Security 5.x
+ * **thymeleaf-extras-springsecurity6** for integration with Spring Security 6.x
 
 Current versions: 
 
@@ -46,9 +45,8 @@ Maven info
 
  * groupId: `org.thymeleaf.extras`   
  * artifactId: 
-    * Spring Security 3 integration package: `thymeleaf-extras-springsecurity3`
-    * Spring Security 4 integration package: `thymeleaf-extras-springsecurity4`
     * Spring Security 5 integration package: `thymeleaf-extras-springsecurity5`
+    * Spring Security 6 integration package: `thymeleaf-extras-springsecurity6`
 
 
 Distribution packages
@@ -61,9 +59,8 @@ Distribution packages (binaries + sources + javadoc) can be downloaded from
 Features
 --------
 
-This module provides a new dialect called `org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect`, 
-`org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect` or 
-`org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect` (depending
+This module provides a new dialect called `org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect` or 
+`org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect` (depending
 on the Spring Security version), with default prefix `sec`. It includes:
   
  * New expression utility objects:
@@ -90,8 +87,8 @@ on the Spring Security version), with default prefix `sec`. It includes:
 Configuration
 -------------
 
-In order to use the thymeleaf-extras-springsecurity[3|4|5] modules in our Spring
-MVC application (or thymeleaf-extras-springsecurity5 in a Spring WebFlux
+In order to use the thymeleaf-extras-springsecurity[5|6] modules in our Spring
+MVC application (or thymeleaf-extras-springsecurity6 in a Spring WebFlux
 application), we will first need to configure our application in the usual way
 for Spring + Thymeleaf applications (*TemplateEngine* bean, *template resolvers*, 
 etc.), and add the SpringSecurity dialect to our Template Engine so that we can
@@ -102,8 +99,8 @@ use the `sec:*` attributes and special expression utility objects:
   ...
   <property name="additionalDialects">
     <set>
-      <!-- Note the package would change to 'springsecurity[3|4]' if you are using that version -->
-      <bean class="org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect"/>
+      <!-- Note the package would change to 'springsecurity[5]' if you are using that version -->
+      <bean class="org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect"/>
     </set>
   </property>
 ...
@@ -114,7 +111,7 @@ And that's all!
 
 **NOTE**: If we are using Thymeleaf in a Spring Boot application, all that will
 be needed is to add the corresponding Thymeleaf and Spring Security starters to
-our application as well as the `thymeleaf-extras-springsecurity[3|4|5]`
+our application as well as the `thymeleaf-extras-springsecurity[5|6]`
 dependency, and this dialect will be automatically configured for us.
 
 
@@ -138,7 +135,7 @@ or `th:unless` tags:
 </div>
 ```
 
-The `#authorization` object is an instance of `org.thymeleaf.extras.springsecurity[3|4].auth.Authorization`,
+The `#authorization` object is an instance of `org.thymeleaf.extras.springsecurity[5|6].auth.Authorization`,
 see this class and its documentation to understand all the methods offered.
 
 
