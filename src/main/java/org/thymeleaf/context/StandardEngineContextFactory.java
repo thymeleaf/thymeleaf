@@ -72,8 +72,8 @@ public final class StandardEngineContextFactory implements IEngineContextFactory
         final Set<String> variableNames = context.getVariableNames();
 
         if (variableNames == null || variableNames.isEmpty()) {
-            if (context instanceof IWebContext) {
-                final IWebContext webContext = (IWebContext)context;
+            if (Contexts.isWebContext(context)) {
+                final IWebContext webContext = Contexts.asWebContext(context);
                 return new WebEngineContext(
                         configuration, templateData, templateResolutionAttributes,
                         webContext.getExchange(),
@@ -88,8 +88,8 @@ public final class StandardEngineContextFactory implements IEngineContextFactory
         for (final String variableName : variableNames) {
             variables.put(variableName, context.getVariable(variableName));
         }
-        if (context instanceof IWebContext) {
-            final IWebContext webContext = (IWebContext)context;
+        if (Contexts.isWebContext(context)) {
+            final IWebContext webContext = Contexts.asWebContext(context);
             return new WebEngineContext(
                     configuration, templateData, templateResolutionAttributes,
                     webContext.getExchange(),

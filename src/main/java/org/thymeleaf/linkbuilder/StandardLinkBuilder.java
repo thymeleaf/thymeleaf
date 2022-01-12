@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.thymeleaf.context.Contexts;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -507,14 +508,14 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
     protected String computeContextPath(
             final IExpressionContext context, final String base, final Map<String, Object> parameters) {
 
-        if (!(context instanceof IWebContext)) {
+        if (!Contexts.isWebContext(context)) {
             throw new TemplateProcessingException(
                     "Link base \"" + base + "\" cannot be context relative (/...) unless the context " +
                     "used for executing the engine implements the " + IWebContext.class.getName() + " interface");
         }
 
         // If it is context-relative, it has to be a web context
-        return ((IWebContext)context).getExchange().getRequest().getApplicationPath();
+        return Contexts.getWebExchange(context).getRequest().getApplicationPath();
 
     }
 
@@ -539,11 +540,11 @@ public class StandardLinkBuilder extends AbstractLinkBuilder {
      */
     protected String processLink(final IExpressionContext context, final String link) {
 
-        if (!(context instanceof IWebContext)) {
+        if (!Contexts.isWebContext(context)) {
             return link;
         }
 
-        return ((IWebContext)context).getExchange().transformURL(link);
+        return Contexts.getWebExchange(context).transformURL(link);
 
     }
 
