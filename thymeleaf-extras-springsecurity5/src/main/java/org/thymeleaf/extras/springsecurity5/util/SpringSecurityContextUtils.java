@@ -21,6 +21,7 @@ package org.thymeleaf.extras.springsecurity5.util;
 
 import java.util.Enumeration;
 
+import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -33,6 +34,11 @@ import org.springframework.web.server.ServerWebExchange;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IWebContext;
+import org.thymeleaf.context.WebEngineContext;
+import org.thymeleaf.web.IWebExchange;
+import org.thymeleaf.web.servlet.IServletWebApplication;
+import org.thymeleaf.web.servlet.IServletWebExchange;
+import org.thymeleaf.web.servlet.IServletWebRequest;
 
 /**
  * 
@@ -139,14 +145,15 @@ public final class SpringSecurityContextUtils {
 
 
         static Object getRequestAttribute(final IContext context, final String attributeName) {
-            final javax.servlet.http.HttpServletRequest request = ((IWebContext)context).getRequest();
-            return request.getAttribute(attributeName);
+            return ((IWebContext)context).getExchange().getAttributeValue(attributeName);
         }
 
 
         static String getContextPath(final IContext context) {
-            final javax.servlet.http.HttpServletRequest request = ((IWebContext)context).getRequest();
-            return request.getContextPath();
+            WebEngineContext webEngineContext = (WebEngineContext) context;
+            IWebExchange webExchange = webEngineContext.getExchange();
+            IServletWebExchange servletWebExchange = (IServletWebExchange) webExchange;
+            return servletWebExchange.getRequest().getContextPath();
         }
 
 
@@ -165,7 +172,8 @@ public final class SpringSecurityContextUtils {
          */
         static ApplicationContext findRequiredWebApplicationContext(final IContext context) {
 
-            final javax.servlet.ServletContext servletContext = ((IWebContext)context).getServletContext();
+            IServletWebApplication application = (IServletWebApplication) ((IWebContext) context).getExchange().getApplication();
+            ServletContext servletContext = (ServletContext) application.getNativeServletContextObject();
 
             WebApplicationContext wac = WebApplicationContextUtils.getWebApplicationContext(servletContext);
             if (wac == null) {

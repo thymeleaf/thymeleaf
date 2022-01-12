@@ -55,13 +55,13 @@ public final class SpringVersionSpecificUtils {
 
     static {
 
-        if (SpringVersionUtils.isSpring50AtLeast()) {
+        if (SpringVersionUtils.isSpring50AtLeast() && ! SpringVersionUtils.isSpring60AtLeast()) {
 
-            LOG.trace("[THYMELEAF][TESTING] Spring 5.0+ found on classpath. Initializing version-specific utilities for Spring 5");
+            LOG.trace("[THYMELEAF][TESTING] Spring 5.x+ found on classpath. Initializing version-specific utilities for Spring 5");
 
             try {
                 final Class<?> implClass = ClassLoaderUtils.loadClass(SPRING5_DELEGATE_CLASS);
-                spring5Delegate = (ISpringVersionSpecificUtility) implClass.newInstance();
+                spring5Delegate = (ISpringVersionSpecificUtility) implClass.getDeclaredConstructor().newInstance();
             } catch (final Exception e) {
                 throw new ExceptionInInitializerError(
                         new ConfigurationException(
@@ -74,7 +74,7 @@ public final class SpringVersionSpecificUtils {
             throw new ExceptionInInitializerError(
                     new ConfigurationException(
                         "The Spring-version-specific infrastructure could not create utility for the specific " +
-                        "version of Spring being used. Currently only Spring 5.x or newer is supported."));
+                        "version of Spring being used. Currently only Spring 5.x is supported."));
 
         }
 
@@ -92,7 +92,7 @@ public final class SpringVersionSpecificUtils {
 
         throw new ConfigurationException(
                 "The authorization infrastructure could not create initializer for the specific version of Spring being" +
-                "used. Currently only Spring 5.x or newer is supported.");
+                "used. Currently only Spring 5.x is supported.");
 
     }
 
@@ -107,7 +107,7 @@ public final class SpringVersionSpecificUtils {
 
         throw new ConfigurationException(
                 "The authorization infrastructure could not create initializer for the specific version of Spring being" +
-                "used. Currently only Spring 5.x or newer is supported.");
+                "used. Currently only Spring 5.x is supported.");
 
     }
 
@@ -120,7 +120,7 @@ public final class SpringVersionSpecificUtils {
 
         throw new ConfigurationException(
                 "The authorization infrastructure could not create initializer for the specific version of Spring being" +
-                "used. Currently only Spring 5.x or newer is supported.");
+                "used. Currently only Spring 5.x is supported.");
 
     }
 
@@ -133,7 +133,7 @@ public final class SpringVersionSpecificUtils {
 
         throw new ConfigurationException(
                 "The authorization infrastructure could not create initializer for the specific version of Spring being" +
-                "used. Currently only Spring 5.x or newer is supported.");
+                "used. Currently only Spring 5.x is supported.");
 
     }
 

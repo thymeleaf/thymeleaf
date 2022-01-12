@@ -162,6 +162,11 @@ public final class SpringVersionUtils {
     }
 
 
+    public static boolean isSpring60AtLeast() {
+        return SPRING_VERSION_MAJOR >= 6;
+    }
+
+
     public static boolean isSpringWebMvcPresent() {
         return SPRING_WEB_MVC_PRESENT;
     }
