@@ -45,9 +45,9 @@ import org.thymeleaf.engine.ISSEThrottledTemplateWriterControl;
 import org.thymeleaf.engine.IThrottledTemplateWriterControl;
 import org.thymeleaf.engine.ThrottledTemplateProcessor;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.spring6.context.Contexts;
 import org.thymeleaf.spring6.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring6.context.webflux.IReactiveSSEDataDriverContextVariable;
-import org.thymeleaf.spring6.web.webflux.ISpringWebFluxWebExchange;
 import org.thymeleaf.util.LoggingUtils;
 import org.thymeleaf.web.IWebExchange;
 import reactor.core.publisher.Flux;
@@ -330,10 +330,9 @@ public class SpringWebFluxTemplateEngine
                 (dataDriver instanceof IReactiveSSEDataDriverContextVariable?
                         ((IReactiveSSEDataDriverContextVariable) dataDriver).getSseEventsFirstID() : 0L);
         final ReactiveAdapterRegistry reactiveAdapterRegistry;
-        if (context instanceof IWebContext && ((IWebContext)context).getExchange() instanceof ISpringWebFluxWebExchange) {
+        if (Contexts.isSpringWebFluxWebContext(context)) {
             reactiveAdapterRegistry =
-                    ((ISpringWebFluxWebExchange)((IWebContext)context).getExchange()).
-                            getApplication().getReactiveAdapterRegistry();
+                    Contexts.getSpringWebFluxWebExchange(context).getApplication().getReactiveAdapterRegistry();
         } else {
             reactiveAdapterRegistry = null;
         }
@@ -612,9 +611,9 @@ public class SpringWebFluxTemplateEngine
         }
 
         // Not an IEngineContext, but might still be an IWebContext, and we don't want to lose that info
-        if (context instanceof IWebContext) {
+        if (Contexts.isWebContext(context)) {
             return new DataDrivenWebContextWrapper(
-                    (IWebContext)context, dataDriverVariableName, dataDrivenTemplateIterator);
+                    Contexts.asWebContext(context), dataDriverVariableName, dataDrivenTemplateIterator);
         }
 
         // Not a recognized context interface: just use a default implementation
