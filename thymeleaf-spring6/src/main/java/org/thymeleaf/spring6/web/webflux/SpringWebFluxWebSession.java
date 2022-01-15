@@ -45,7 +45,7 @@ final class SpringWebFluxWebSession implements ISpringWebFluxWebSession {
     }
 
     @Override
-    public boolean isStarted() {
+    public boolean exists() {
         return this.session.isStarted();
     }
 

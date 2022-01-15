@@ -49,18 +49,6 @@ public interface ISpringWebFluxWebExchange extends IWebExchange {
     public ISpringWebFluxWebApplication getApplication();
 
 
-    @Override
-    default boolean hasSession() {
-        /*
-         * In Spring WebFlux, the existence of a WebSession objet does not necessarily mean
-         * that a session has been created. Session will not exist (be started) until explicitly
-         * started or any attributes are stored into it.
-         */
-        final ISpringWebFluxWebSession webSession = getSession();
-        return (webSession != null && webSession.isStarted());
-    }
-
-
     public Map<String, Object> getAttributes();
 
     @Override

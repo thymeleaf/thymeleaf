@@ -35,8 +35,6 @@ import org.thymeleaf.web.IWebSession;
  */
 public interface ISpringWebFluxWebSession extends IWebSession {
 
-    public boolean isStarted();
-
     public Map<String, Object> getAttributes();
 
     @Override
