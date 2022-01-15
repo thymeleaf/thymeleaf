@@ -126,11 +126,9 @@ public class JakartaServletTestWebExchangeBuilder implements ITestWebExchangeBui
                         .build();
 
         final HttpSession httpSession =
-                (sessionAttributes != null && !sessionAttributes.isEmpty())?
-                        JakartaServletMockUtils.buildSession(servletContext)
-                                .attributeMap(sessionAttributes)
-                                .build()
-                        : null;
+                JakartaServletMockUtils.buildSession(servletContext)
+                        .attributeMap(sessionAttributes)
+                        .build();
 
         final HttpServletResponse httpServletResponse =
                 JakartaServletMockUtils.buildResponse()
