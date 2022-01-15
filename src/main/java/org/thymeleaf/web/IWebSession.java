@@ -31,6 +31,8 @@ import java.util.Set;
  */
 public interface IWebSession {
 
+    public boolean exists();
+
     public boolean containsAttribute(final String name);
     public int getAttributeCount();
     public Set<String> getAllAttributeNames();

@@ -20,8 +20,10 @@
 
 package org.thymeleaf.web.servlet;
 
+import java.util.Collections;
 import java.util.Enumeration;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.util.Validate;
@@ -35,30 +37,47 @@ import org.thymeleaf.util.Validate;
  */
 final class JavaxServletWebSession implements IServletWebSession {
 
-    private final HttpSession session;
+    private final HttpServletRequest request;
+    private HttpSession session;
 
 
-    JavaxServletWebSession(final HttpSession session) {
+    JavaxServletWebSession(final HttpServletRequest request) {
         super();
-        Validate.notNull(session, "Session cannot be null");
-        this.session = session;
+        Validate.notNull(request, "Request cannot be null");
+        this.request = request;
+        this.session = this.request.getSession(false); // Might initialize property as null
     }
 
 
     @Override
+    public boolean exists() {
+        return this.session != null;
+    }
+
+    @Override
     public Enumeration<String> getAttributeNames() {
+        if (this.session == null) {
+            return Collections.emptyEnumeration();
+        }
         return this.session.getAttributeNames();
     }
 
     @Override
     public Object getAttributeValue(final String name) {
         Validate.notNull(name, "Name cannot be null");
+        if (this.session == null) {
+            return null;
+        }
         return this.session.getAttribute(name);
     }
 
     @Override
     public void setAttributeValue(final String name, final Object value) {
         Validate.notNull(name, "Name cannot be null");
+        if (this.session == null) {
+            // Setting an attribute will actually create a new session
+            this.session = this.request.getSession(true);
+        }
         this.session.setAttribute(name, value);
     }
 

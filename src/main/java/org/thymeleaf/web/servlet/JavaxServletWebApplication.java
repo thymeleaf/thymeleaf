@@ -28,7 +28,6 @@ import java.util.Enumeration;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.util.Validate;
 
@@ -64,10 +63,8 @@ public final class JavaxServletWebApplication implements IServletWebApplication 
                 "Cannot build an application for a request which servlet context does not match with " +
                         "the application that it is being built for.");
 
-        final HttpSession httpSession = httpServletRequest.getSession(false);
-
         final JavaxServletWebRequest request = new JavaxServletWebRequest(httpServletRequest);
-        final JavaxServletWebSession session = (httpSession == null? null : new JavaxServletWebSession(httpSession));
+        final JavaxServletWebSession session = new JavaxServletWebSession(httpServletRequest);
 
         return new JavaxServletWebExchange(request, session, this, httpServletResponse);
 

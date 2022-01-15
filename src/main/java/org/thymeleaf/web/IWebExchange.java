@@ -38,7 +38,8 @@ public interface IWebExchange {
     public IWebApplication getApplication();
 
     default boolean hasSession() {
-        return getSession() == null;
+        final IWebSession webSession = getSession();
+        return webSession != null && webSession.exists();
     }
 
     public Principal getPrincipal();

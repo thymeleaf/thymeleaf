@@ -28,7 +28,6 @@ import java.util.Enumeration;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -63,10 +62,8 @@ public final class JakartaServletWebApplication implements IServletWebApplicatio
                 "Cannot build an application for a request which servlet context does not match with " +
                 "the application that it is being built for.");
 
-        final HttpSession httpSession = httpServletRequest.getSession(false);
-
         final JakartaServletWebRequest request = new JakartaServletWebRequest(httpServletRequest);
-        final JakartaServletWebSession session = (httpSession == null? null : new JakartaServletWebSession(httpSession));
+        final JakartaServletWebSession session = new JakartaServletWebSession(httpServletRequest);
 
         return new JakartaServletWebExchange(request, session, this, httpServletResponse);
 
