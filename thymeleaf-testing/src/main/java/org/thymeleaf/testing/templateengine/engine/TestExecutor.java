@@ -39,8 +39,6 @@ import org.thymeleaf.context.IContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.testing.templateengine.context.IProcessingContextBuilder;
-import org.thymeleaf.testing.templateengine.context.web.JavaxServletTestWebExchangeBuilder;
-import org.thymeleaf.testing.templateengine.context.web.WebProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.engine.cache.TestCacheManager;
 import org.thymeleaf.testing.templateengine.engine.resolver.TestEngineMessageResolver;
 import org.thymeleaf.testing.templateengine.engine.resolver.TestEngineTemplateResolver;
@@ -65,9 +63,9 @@ public final class TestExecutor {
 
     public enum ThrottleType { CHARS, BYTES }
 
+    private final IProcessingContextBuilder processingContextBuilder;
+
     private ITestableResolver testableResolver = new StandardTestableResolver();
-    private IProcessingContextBuilder processingContextBuilder =
-            new WebProcessingContextBuilder(JavaxServletTestWebExchangeBuilder.create());
     private List<IDialect> dialects = Collections.singletonList((IDialect)new StandardDialect());
     private int throttleStep = Integer.MAX_VALUE;
     private ThrottleType throttleType = ThrottleType.CHARS;
@@ -108,8 +106,10 @@ public final class TestExecutor {
     
     
     
-    public TestExecutor() {
+    public TestExecutor(final IProcessingContextBuilder processingContextBuilder) {
         super();
+        Validate.notNull(processingContextBuilder, "Processing Context Builder cannot be null");
+        this.processingContextBuilder = processingContextBuilder;
     }
 
     
@@ -122,23 +122,13 @@ public final class TestExecutor {
     public void setTestableResolver(final ITestableResolver testableResolver) {
         this.testableResolver = testableResolver;
     }
-    
 
-    
-    
+
     public IProcessingContextBuilder getProcessingContextBuilder() {
         return this.processingContextBuilder;
     }
 
-    public void setProcessingContextBuilder(final IProcessingContextBuilder processingContextBuilder) {
-        Validate.notNull(processingContextBuilder, "Processing Context Builder cannot be null");
-        this.processingContextBuilder = processingContextBuilder;
-    }
 
-    
-    
-    
-    
     public void setDialects(final List<? extends IDialect> dialects) {
         this.dialects = new ArrayList<IDialect>();
         this.dialects.addAll(dialects);
