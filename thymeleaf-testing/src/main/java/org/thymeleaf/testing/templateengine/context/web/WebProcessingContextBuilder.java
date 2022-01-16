@@ -123,7 +123,7 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
             final Object[] value = requestParametersObjEntry.getValue();
             final String[] newValue = new String[value.length];
             for (int i = 0; i < value.length; i++) {
-                newValue[i] = (value[i] == null)? null : value.toString();
+                newValue[i] = (value[i] == null)? null : value[i].toString();
             }
             requestParameters.put(requestParametersObjEntry.getKey(), newValue);
         }
