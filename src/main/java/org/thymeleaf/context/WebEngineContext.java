@@ -1217,7 +1217,7 @@ public class WebEngineContext extends AbstractEngineContext implements IEngineCo
 
 
 
-    private static final class RequestParameterValues extends AbstractList<String> {
+    public static final class RequestParameterValues extends AbstractList<String> {
 
         private final String[] parameterValues;
         public final int length;
