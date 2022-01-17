@@ -128,11 +128,9 @@ public class JavaxServletTestWebExchangeBuilder implements ITestWebExchangeBuild
                         .build();
 
         final HttpSession httpSession =
-                (sessionAttributes != null && !sessionAttributes.isEmpty())?
-                        JavaxServletMockUtils.buildSession(servletContext)
-                                .attributeMap(sessionAttributes)
-                                .build()
-                        : null;
+                JavaxServletMockUtils.buildSession(servletContext)
+                        .attributeMap(sessionAttributes)
+                        .build();
 
         final HttpServletResponse httpServletResponse =
                 JavaxServletMockUtils.buildResponse()
