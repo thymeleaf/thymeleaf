@@ -23,8 +23,10 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import ognl.AbstractMemberAccess;
+import ognl.ClassResolver;
 import ognl.MemberAccess;
 import ognl.OgnlContext;
 import ognl.OgnlException;
@@ -38,6 +40,7 @@ import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.standard.util.StandardExpressionUtils;
+import org.thymeleaf.util.ExpressionUtils;
 
 /**
  * <p>
@@ -75,6 +78,8 @@ public final class OGNLVariableExpressionEvaluator
             return Modifier.isPublic(modifiers);
         }
     };
+
+    private static ThymeleafACLClassResolver CLASS_RESOLVER = new ThymeleafACLClassResolver();
 
     private final boolean applyOGNLShortcuts;
 
@@ -331,7 +336,7 @@ public final class OGNLVariableExpressionEvaluator
 
         // We create the OgnlContext here instead of just sending the Map as context because that prevents OGNL from
         // creating the OgnlContext empty and then setting the context Map variables one by one
-        final OgnlContext ognlContext = new OgnlContext(MEMBER_ACCESS, null, null, context);
+        final OgnlContext ognlContext = new OgnlContext(MEMBER_ACCESS, CLASS_RESOLVER, null, context);
         return ognl.Ognl.getValue(parsedExpression, ognlContext, root);
 
     }
@@ -354,5 +359,61 @@ public final class OGNLVariableExpressionEvaluator
     }
 
 
+    static final class ThymeleafACLClassResolver implements ClassResolver {
+
+        private final ClassResolver classResolver;
+
+        public ThymeleafACLClassResolver() {
+            super();
+            this.classResolver = new ThymeleafDefaultClassResolver();
+        }
+
+        @Override
+        public Class<?> classForName(final String className, final Map context) throws ClassNotFoundException {
+            if (className != null && !ExpressionUtils.isTypeAllowed(className)) {
+                throw new TemplateProcessingException(
+                        String.format(
+                                "Access is forbidden for type '%s' in Thymeleaf expressions. " +
+                                "Blacklisted packages are: %s. Whitelisted classes are: %s.",
+                                className, ExpressionUtils.getBlacklist(), ExpressionUtils.getWhitelist()));
+            }
+            return this.classResolver.classForName(className, context);
+        }
+
+    }
+
+
+    /*
+     * We need to implement this instead of directly using OGNL's DefaultClassResolver because OGNL's
+     * will always try to prepend "java.lang." to classes that it cannot find, which in our case is dangerous.     *
+     * Other than that, the code in this class is the same as "ognl.DefaultClassResolver".
+     */
+    static final class ThymeleafDefaultClassResolver implements ClassResolver {
+
+        private final ConcurrentHashMap<String, Class> classes = new ConcurrentHashMap<>(101);
+
+        public ThymeleafDefaultClassResolver() {
+            super();
+        }
+
+        public Class classForName(final String className, final Map context) throws ClassNotFoundException {
+            Class result = this.classes.get(className);
+            if (result != null) {
+                return result;
+            }
+            try {
+                result = toClassForName(className);
+            } catch (ClassNotFoundException e) {
+                throw e;
+            }
+            this.classes.putIfAbsent(className, result);
+            return result;
+        }
+
+        private Class toClassForName(String className) throws ClassNotFoundException {
+            return Class.forName(className);
+        }
+
+    }
 
 }
