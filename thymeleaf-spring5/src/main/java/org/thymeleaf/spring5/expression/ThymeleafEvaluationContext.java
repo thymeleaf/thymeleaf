@@ -24,12 +24,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.expression.EvaluationException;
+import org.springframework.expression.TypeLocator;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.expression.spel.support.StandardTypeConverter;
+import org.springframework.expression.spel.support.StandardTypeLocator;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.spring5.view.ThymeleafView;
 import org.thymeleaf.standard.expression.RestrictedRequestAccessUtils;
 import org.thymeleaf.standard.expression.StandardExpressionObjectFactory;
+import org.thymeleaf.util.ExpressionUtils;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -66,6 +70,7 @@ public final class ThymeleafEvaluationContext
 
 
     private static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
+    private static final TypeLocator TYPE_LOCATOR = new ThymeleafEvaluationContextACLTypeLocator();
 
 
     private final ApplicationContext applicationContext;
@@ -91,6 +96,9 @@ public final class ThymeleafEvaluationContext
 
         this.addPropertyAccessor(SPELContextPropertyAccessor.INSTANCE);
         this.addPropertyAccessor(MAP_ACCESSOR_INSTANCE);
+
+        // We need to establish a custom type locator in order to forbid access to certain dangerous classes in expressions
+        this.setTypeLocator(TYPE_LOCATOR);
 
     }
 
@@ -145,5 +153,32 @@ public final class ThymeleafEvaluationContext
         this.expressionObjects = expressionObjects;
     }
 
+
+
+    static final class ThymeleafEvaluationContextACLTypeLocator implements TypeLocator {
+
+        private final StandardTypeLocator typeLocator;
+
+        ThymeleafEvaluationContextACLTypeLocator() {
+            super();
+            this.typeLocator = new StandardTypeLocator();
+            // A default prefix on "java.lang" is added by default, but we will remove it in order to avoid
+            // the filter forbidding all "java.lang.*" classes to be bypassed.
+            this.typeLocator.removeImport("java.lang");
+        }
+
+        @Override
+        public Class<?> findType(final String typeName) throws EvaluationException {
+            if (typeName != null && !ExpressionUtils.isTypeAllowed(typeName)) {
+                throw new EvaluationException(
+                        String.format(
+                                "Access is forbidden for type '%s' in Thymeleaf expressions. " +
+                                "Blacklisted packages are: %s. Whitelisted classes are: %s.",
+                                typeName, ExpressionUtils.getBlacklist(), ExpressionUtils.getWhitelist()));
+            }
+            return this.typeLocator.findType(typeName);
+        }
+
+    }
 
 }
