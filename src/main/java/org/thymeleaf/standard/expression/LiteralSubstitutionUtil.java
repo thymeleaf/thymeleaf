@@ -69,6 +69,7 @@ final class LiteralSubstitutionUtil {
 
         boolean inLiteralSubstitution = false;
         boolean inLiteralSubstitutionInsertion = false;
+        int literalSubstitutionIndex = -1;
 
         int expLevel = 0;
         boolean inLiteral = false;
@@ -86,15 +87,24 @@ final class LiteralSubstitutionUtil {
                     strBuilder.append(input,0,i);
                 }
                 inLiteralSubstitution = true;
+                literalSubstitutionIndex = i;
 
             } else if (c == LITERAL_SUBSTITUTION_DELIMITER && inLiteralSubstitution && inNothing) {
 
-                if (inLiteralSubstitutionInsertion) {
+                if ((i - literalSubstitutionIndex) == 1) {
+                    // This was an empty literal substitution, which we are not going to process so that it
+                    // cannot be used to mangle in the parsing, interpretation and validity checks of other
+                    // expressions.
+                    strBuilder
+                            .append(LITERAL_SUBSTITUTION_DELIMITER)
+                            .append(LITERAL_SUBSTITUTION_DELIMITER);
+                } else if (inLiteralSubstitutionInsertion) {
                     strBuilder.append('\'');
                     inLiteralSubstitutionInsertion = false;
                 }
 
                 inLiteralSubstitution = false;
+                literalSubstitutionIndex = -1;
 
             } else if (inNothing &&
                     (c == VariableExpression.SELECTOR ||
