@@ -19,11 +19,16 @@
  */
 package org.thymeleaf.standard.expression;
 
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import ognl.ClassResolver;
+import ognl.DefaultMemberAccess;
+import ognl.MemberAccess;
 import ognl.OgnlContext;
 import ognl.OgnlException;
 import ognl.OgnlRuntime;
@@ -68,7 +73,7 @@ public final class OGNLVariableExpressionEvaluator
                     OGNLContextPropertyAccessor.RESTRICT_REQUEST_PARAMETERS,
                     OGNLContextPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
 
-
+    private static MemberAccess MEMBER_ACCESS = new ThymeleafACLMemberAccess();
     private static ThymeleafACLClassResolver CLASS_RESOLVER = new ThymeleafACLClassResolver();
 
     private final boolean applyOGNLShortcuts;
@@ -327,7 +332,7 @@ public final class OGNLVariableExpressionEvaluator
 
         // We create the OgnlContext here instead of just sending the Map as context because that prevents OGNL from
         // creating the OgnlContext empty and then setting the context Map variables one by one
-        final OgnlContext ognlContext = new OgnlContext(CLASS_RESOLVER, null, null, context);
+        final OgnlContext ognlContext = new OgnlContext(CLASS_RESOLVER, null, MEMBER_ACCESS, context);
         return ognl.Ognl.getValue(parsedExpression, ognlContext, root);
 
     }
@@ -383,7 +388,7 @@ public final class OGNLVariableExpressionEvaluator
 
         private final ConcurrentHashMap<String, Class> classes = new ConcurrentHashMap<String, Class>(101);
 
-        public ThymeleafDefaultClassResolver() {
+        ThymeleafDefaultClassResolver() {
             super();
         }
 
@@ -405,6 +410,37 @@ public final class OGNLVariableExpressionEvaluator
             return Class.forName(className);
         }
 
+    }
+
+
+    static final class ThymeleafACLMemberAccess extends DefaultMemberAccess {
+
+        ThymeleafACLMemberAccess() {
+            super(false);
+        }
+
+        @Override
+        public boolean isAccessible(final Map context, final Object target, final Member member, final String propertyName) {
+            int modifiers = member.getModifiers();
+            if (!Modifier.isPublic(modifiers)) {
+                return false;
+            }
+            if (member instanceof Method) {
+                final Class<?> declaringClass = member.getDeclaringClass();
+                if (!ExpressionUtils.isTypeAllowed(declaringClass.getName())) {
+                    // We will only specifically allow calling "Object.getClass()" and "Class.getName()"
+                    if (!(Class.class.equals(declaringClass) && "getName".equals(member.getName()))
+                            && !(Object.class.equals(declaringClass) && "getClass".equals(member.getName()))) {
+                        throw new TemplateProcessingException(
+                                String.format(
+                                        "Calling methods is forbidden for type '%s' in Thymeleaf expressions. " +
+                                        "Blacklisted packages are: %s. Whitelisted classes are: %s.",
+                                        declaringClass.getName(), ExpressionUtils.getBlacklist(), ExpressionUtils.getWhitelist()));
+                    }
+                }
+            }
+            return super.isAccessible(context, target, member, propertyName);
+        }
     }
 
 }
