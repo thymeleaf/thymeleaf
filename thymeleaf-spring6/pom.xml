@@ -352,7 +352,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
+      <version>${springframework.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -360,7 +360,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
+      <version>${springframework.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -368,7 +368,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webflux</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
+      <version>${springframework.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -376,7 +376,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
+      <version>${springframework.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -384,7 +384,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-expression</artifactId>
-      <version>6.0.0-SNAPSHOT</version>
+      <version>${springframework.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
