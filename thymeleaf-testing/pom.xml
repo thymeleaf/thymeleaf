@@ -24,7 +24,7 @@
   <groupId>org.thymeleaf</groupId>
   <artifactId>thymeleaf-testing</artifactId>
   <packaging>jar</packaging>
-  <version>3.1.0-SNAPSHOT</version>
+  <version>3.1.0.M1</version>
   <name>thymeleaf-testing</name>
   <url>http://www.thymeleaf.org</url>
 
@@ -47,7 +47,7 @@
     <url>scm:git:git@github.com:thymeleaf/thymeleaf-testing.git</url>
     <connection>scm:git:git@github.com:thymeleaf/thymeleaf-testing.git</connection>
     <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf-testing.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>thymeleaf-testing-3.1.0.M1</tag>
   </scm>
 
   <developers>
@@ -298,9 +298,7 @@
             </goals>
             <configuration>
               <target name="copy javadocs element-list to package-list">
-                <copy file="${project.build.directory}/apidocs/element-list"
-                      tofile="${project.build.directory}/apidocs/package-list"
-                      failonerror="false"/>
+                <copy file="${project.build.directory}/apidocs/element-list" tofile="${project.build.directory}/apidocs/package-list" failonerror="false" />
               </target>
             </configuration>
           </execution>
@@ -318,7 +316,7 @@
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf</artifactId>
-      <version>${thymeleaf.version}</version>
+      <version>3.1.0.M1</version>
       <scope>compile</scope>
     </dependency>
 
