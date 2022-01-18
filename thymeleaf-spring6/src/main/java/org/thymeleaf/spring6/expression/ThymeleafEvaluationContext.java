@@ -19,13 +19,22 @@
  */
 package org.thymeleaf.spring6.expression;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.expression.AccessException;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.EvaluationException;
+import org.springframework.expression.MethodExecutor;
+import org.springframework.expression.MethodResolver;
 import org.springframework.expression.TypeLocator;
+import org.springframework.expression.spel.support.ReflectiveMethodResolver;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.expression.spel.support.StandardTypeConverter;
 import org.springframework.expression.spel.support.StandardTypeLocator;
@@ -69,6 +78,8 @@ public final class ThymeleafEvaluationContext
 
     private static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
     private static final TypeLocator TYPE_LOCATOR = new ThymeleafEvaluationContextACLTypeLocator();
+    private static final List<MethodResolver> METHOD_RESOLVERS =
+            Collections.singletonList(new ThymeleafEvaluationContextACLMethodResolver());
 
 
     private final ApplicationContext applicationContext;
@@ -97,6 +108,9 @@ public final class ThymeleafEvaluationContext
 
         // We need to establish a custom type locator in order to forbid access to certain dangerous classes in expressions
         this.setTypeLocator(TYPE_LOCATOR);
+
+        // We need to establish a custom method resolver in order to forbid calling methods on any of the blacklisted classes
+        this.setMethodResolvers(METHOD_RESOLVERS);
 
     }
 
@@ -161,6 +175,36 @@ public final class ThymeleafEvaluationContext
                                 typeName, ExpressionUtils.getBlacklist(), ExpressionUtils.getWhitelist()));
             }
             return this.typeLocator.findType(typeName);
+        }
+
+    }
+
+
+
+    static final class ThymeleafEvaluationContextACLMethodResolver extends ReflectiveMethodResolver {
+
+        ThymeleafEvaluationContextACLMethodResolver() {
+            super();
+        }
+
+        @Override
+        public MethodExecutor resolve(
+                final EvaluationContext context, final Object targetObject,
+                final String name, final List<TypeDescriptor> argumentTypes) throws AccessException {
+
+            final Class<?> type = (targetObject instanceof Class ? (Class<?>) targetObject : targetObject.getClass());
+            if (!ExpressionUtils.isTypeAllowed(type.getName())) {
+                // We will only specifically allow calling "Object.getClass()" and "Class.getName()"
+                if (!(Class.class.equals(type) && "getName".equals(name))
+                        && !(Object.class.equals(type) && "getClass".equals(name))) {
+                    throw new EvaluationException(
+                            String.format(
+                                    "Calling methods is forbidden for type '%s' in Thymeleaf expressions. " +
+                                    "Blacklisted packages are: %s. Whitelisted classes are: %s.",
+                                    type.getName(), ExpressionUtils.getBlacklist(), ExpressionUtils.getWhitelist()));
+                }
+            }
+            return super.resolve(context, targetObject, name, argumentTypes);
         }
 
     }
