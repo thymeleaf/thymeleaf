@@ -129,7 +129,7 @@
     <!-- A project-name-based approach is adopted for the module name (instead of a reverse-DNS one) -->
     <!-- NOTE module name is fixed and not set to project.artifactId because this would not be a     -->
     <!-- valid approach for project names containing hyphens, which are not allowed in module names. -->
-    <module.name>thymeleaf.testing</module.name>
+    <module.name>thymeleaf.testing.spring5</module.name>
     <thymeleaf.version>3.1.0-SNAPSHOT</thymeleaf.version>
     <javax-servlet-api.version>3.0.1</javax-servlet-api.version>
     <springframework.version>5.0.0.RELEASE</springframework.version>
