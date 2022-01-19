@@ -109,7 +109,7 @@
 		</repository>
 		<repository>
 			<id>jboss</id>
-			<url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+			<url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
