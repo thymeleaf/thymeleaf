@@ -114,13 +114,14 @@
 
 
   <properties>
-    <java.version>6</java.version>
+    <java.version>17</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven.compiler.release>${java.version}</maven.compiler.release>
     <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
-    <thymeleaf.version>3.0.12.RELEASE</thymeleaf.version>
-    <springframework.version>5.1.0.RELEASE</springframework.version>
+    <servlet-api.version>5.0.0</servlet-api.version>
+    <thymeleaf.version>3.1.0-SNAPSHOT</thymeleaf.version>
+    <springframework.version>6.0.0-SNAPSHOT</springframework.version>
   </properties>
   
 
@@ -230,10 +231,11 @@
 
 
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>3.1.0</version>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>${servlet-api.version}</version>
       <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
         
         
