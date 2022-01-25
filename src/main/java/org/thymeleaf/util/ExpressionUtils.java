@@ -20,12 +20,12 @@
 
 package org.thymeleaf.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class ExpressionUtils {
 
@@ -75,13 +75,19 @@ public final class ExpressionUtils {
 
 
     public static List<String> getBlacklist() {
-        return BLACKLISTED_CLASS_NAME_PREFIXES.stream()
-                .sorted().map(p -> String.format("%s.*", p)).collect(Collectors.toList());
+        final List<String> blacklist = new ArrayList<String>();
+        for (final String prefix : BLACKLISTED_CLASS_NAME_PREFIXES) {
+            blacklist.add(String.format("%s.*", prefix));
+        }
+        return blacklist;
     }
 
     public static List<String> getWhitelist() {
-        return Stream.concat(WHITELISTED_JAVA_CLASS_NAMES.stream(), Stream.of("java.time.*"))
-                .sorted().collect(Collectors.toList());
+        final List<String> whitelist = new ArrayList<String>();
+        whitelist.addAll(WHITELISTED_JAVA_CLASS_NAMES);
+        whitelist.add("java.time.*");
+        Collections.sort(whitelist);
+        return whitelist;
     }
 
 
