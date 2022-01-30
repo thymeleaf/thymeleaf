@@ -45,7 +45,14 @@ public final class ExpressionUtils {
                     "java.util.ArrayList", "java.util.LinkedList", "java.util.HashMap", "java.util.LinkedHashMap",
                     "java.util.HashSet", "java.util.LinkedHashSet", "java.util.Iterator", "java.util.Enumeration",
                     "java.util.Locale", "java.util.Properties", "java.util.Date", "java.util.Calendar",
-                    "java.util.Collection"));
+                    "java.util.Collection",
+                    "javax.servlet.http.HttpServletRequest",
+                    "javax.servlet.http.HttpServletRequestWrapper",
+                    "javax.servlet.ServletRequest",
+                    "javax.servlet.ServletRequestWrapper",
+                    "javax.servlet.HttpSession",
+                    "javax.servlet.http.HttpServletResponse",
+                    "javax.servlet.ServletResponse"));
 
 
 
@@ -54,9 +61,9 @@ public final class ExpressionUtils {
         final int i0 = typeName.indexOf('.');
         if (i0 >= 0) {
             final String package0 = typeName.substring(0, i0);
-            if ("java".equals(package0)) { // This is the only prefix that allows whitelisting
+            if ("java".equals(package0) || "javax".equals(package0)) { // These are the only prefixes that allows whitelisting
                 return WHITELISTED_JAVA_CLASS_NAMES.contains(typeName);
-            } else if ("javax".equals(package0) || "jakarta".equals(package0)) {
+            } else if ("jakarta".equals(package0)) {
                 return false;
             } else if ("org".equals(package0)) {
                 if (typeName.startsWith("org.ietf.jgss")
