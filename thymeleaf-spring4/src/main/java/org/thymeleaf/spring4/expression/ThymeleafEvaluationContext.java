@@ -172,8 +172,8 @@ public final class ThymeleafEvaluationContext
                 throw new EvaluationException(
                         String.format(
                                 "Access is forbidden for type '%s' in Thymeleaf expressions. " +
-                                "Blacklisted packages are: %s. Whitelisted classes are: %s.",
-                                typeName, ExpressionUtils.getBlacklist(), ExpressionUtils.getWhitelist()));
+                                "Blacklisted classes are: %s.",
+                                typeName, ExpressionUtils.getBlacklist()));
             }
             return this.typeLocator.findType(typeName);
         }
