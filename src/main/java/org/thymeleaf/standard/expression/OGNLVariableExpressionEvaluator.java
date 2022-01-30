@@ -370,8 +370,8 @@ public final class OGNLVariableExpressionEvaluator
                 throw new TemplateProcessingException(
                         String.format(
                                 "Access is forbidden for type '%s' in Thymeleaf expressions. " +
-                                "Blacklisted packages are: %s. Whitelisted classes are: %s.",
-                                className, ExpressionUtils.getBlacklist(), ExpressionUtils.getWhitelist()));
+                                "Blacklisted classes are: %s.",
+                                className, ExpressionUtils.getBlacklist()));
             }
             return this.classResolver.classForName(className, context);
         }
@@ -434,8 +434,8 @@ public final class OGNLVariableExpressionEvaluator
                         throw new TemplateProcessingException(
                                 String.format(
                                         "Calling methods is forbidden for type '%s' in Thymeleaf expressions. " +
-                                        "Blacklisted packages are: %s. Whitelisted classes are: %s.",
-                                        declaringClass.getName(), ExpressionUtils.getBlacklist(), ExpressionUtils.getWhitelist()));
+                                        "Blacklisted classes are: %s.",
+                                        declaringClass.getName(), ExpressionUtils.getBlacklist()));
                     }
                 }
             }
