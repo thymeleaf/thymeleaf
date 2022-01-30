@@ -18,15 +18,22 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${basedir}/../thymeleaf-spring/thymeleaf-spring5/target/checkout/thymeleaf-spring5/target/apidocs/</directory>
-      <outputDirectory>/apidocs/thymeleaf-spring5/</outputDirectory>
+      <directory>${basedir}/../thymeleaf-spring/thymeleaf-spring3/target/checkout/thymeleaf-spring3/target/apidocs/</directory>
+      <outputDirectory>/apidocs/thymeleaf-spring3/</outputDirectory>
       <includes>
         <include>**/*</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${basedir}/../thymeleaf-spring/thymeleaf-spring6/target/checkout/thymeleaf-spring6/target/apidocs/</directory>
-      <outputDirectory>/apidocs/thymeleaf-spring6/</outputDirectory>
+      <directory>${basedir}/../thymeleaf-spring/thymeleaf-spring4/target/checkout/thymeleaf-spring4/target/apidocs/</directory>
+      <outputDirectory>/apidocs/thymeleaf-spring4/</outputDirectory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${basedir}/../thymeleaf-spring/thymeleaf-spring5/target/checkout/thymeleaf-spring5/target/apidocs/</directory>
+      <outputDirectory>/apidocs/thymeleaf-spring5/</outputDirectory>
       <includes>
         <include>**/*</include>
       </includes>
@@ -41,21 +48,30 @@
       </includes>
     </fileSet>
     <fileSet>
+      <directory>${basedir}/../thymeleaf-spring/thymeleaf-spring3/target/checkout/thymeleaf-spring3/target/</directory>
+      <outputDirectory>/dist</outputDirectory>
+      <includes>
+        <include>thymeleaf-spring3-${project.version}.jar</include>
+        <include>thymeleaf-spring3-${project.version}-javadoc.jar</include>
+        <include>thymeleaf-spring3-${project.version}-sources.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${basedir}/../thymeleaf-spring/thymeleaf-spring4/target/checkout/thymeleaf-spring4/target/</directory>
+      <outputDirectory>/dist</outputDirectory>
+      <includes>
+        <include>thymeleaf-spring4-${project.version}.jar</include>
+        <include>thymeleaf-spring4-${project.version}-javadoc.jar</include>
+        <include>thymeleaf-spring4-${project.version}-sources.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
       <directory>${basedir}/../thymeleaf-spring/thymeleaf-spring5/target/checkout/thymeleaf-spring5/target/</directory>
       <outputDirectory>/dist</outputDirectory>
       <includes>
         <include>thymeleaf-spring5-${project.version}.jar</include>
         <include>thymeleaf-spring5-${project.version}-javadoc.jar</include>
         <include>thymeleaf-spring5-${project.version}-sources.jar</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${basedir}/../thymeleaf-spring/thymeleaf-spring6/target/checkout/thymeleaf-spring6/target/</directory>
-      <outputDirectory>/dist</outputDirectory>
-      <includes>
-        <include>thymeleaf-spring6-${project.version}.jar</include>
-        <include>thymeleaf-spring6-${project.version}-javadoc.jar</include>
-        <include>thymeleaf-spring6-${project.version}-sources.jar</include>
       </includes>
     </fileSet>
     <fileSet>
@@ -77,8 +93,9 @@
       <scope>runtime</scope>
       <excludes>
         <exclude>org.thymeleaf:thymeleaf</exclude>
-	<exclude>org.thymeleaf:thymeleaf-spring5</exclude>
-	<exclude>org.thymeleaf:thymeleaf-spring6</exclude>
+        <exclude>org.thymeleaf:thymeleaf-spring3</exclude>
+        <exclude>org.thymeleaf:thymeleaf-spring4</exclude>
+        <exclude>org.thymeleaf:thymeleaf-spring5</exclude>
         <exclude>org.thymeleaf:thymeleaf-dist</exclude>
       </excludes>
     </dependencySet>
