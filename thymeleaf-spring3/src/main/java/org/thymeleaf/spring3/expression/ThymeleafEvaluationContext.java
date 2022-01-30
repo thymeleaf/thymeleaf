@@ -80,7 +80,7 @@ public final class ThymeleafEvaluationContext
     private static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
     private static final TypeLocator TYPE_LOCATOR = new ThymeleafEvaluationContextACLTypeLocator();
     private static final List<MethodResolver> METHOD_RESOLVERS =
-            Collections.singletonList(new ThymeleafEvaluationContextACLMethodResolver());
+            Collections.singletonList((MethodResolver)new ThymeleafEvaluationContextACLMethodResolver());
 
 
     private final ApplicationContext applicationContext;
