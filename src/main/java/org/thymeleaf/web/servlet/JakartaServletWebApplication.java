@@ -37,7 +37,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.1.0
  *
  */
-public final class JakartaServletWebApplication implements IServletWebApplication {
+public class JakartaServletWebApplication implements IServletWebApplication {
 
     private final ServletContext servletContext;
 
