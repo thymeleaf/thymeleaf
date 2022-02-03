@@ -28,7 +28,7 @@ import java.util.Set;
 
 public final class ExpressionUtils {
 
-    private static final Set<String> BLACKLISTED_CLASS_NAME_PREFIXES =
+    private static final Set<String> BLOCKED_CLASS_NAME_PREFIXES =
             new HashSet<String>(Arrays.asList(
                     "java.lang.Runtime", "java.lang.Thread", "java.lang.Class", "java.lang.ClassLoader",
                     "java.lang.Runnable", "java.lang.reflect.Executable",
@@ -44,8 +44,8 @@ public final class ExpressionUtils {
         final int i0 = typeName.indexOf('.');
         if (i0 >= 0) {
             final String package0 = typeName.substring(0, i0);
-            if ("java".equals(package0)) { // This is the only prefix that might be blacklisted
-                for (final String prefix : BLACKLISTED_CLASS_NAME_PREFIXES) {
+            if ("java".equals(package0)) { // This is the only prefix that might be blocked
+                for (final String prefix : BLOCKED_CLASS_NAME_PREFIXES) {
                     if (typeName.startsWith(prefix)) {
                         return false;
                     }
@@ -58,10 +58,10 @@ public final class ExpressionUtils {
 
 
 
-    public static List<String> getBlacklist() {
-        final List<String> blacklist = new ArrayList<String>();
-        blacklist.addAll(BLACKLISTED_CLASS_NAME_PREFIXES);
-        return blacklist;
+    public static List<String> getBlockedClasses() {
+        final List<String> blocked = new ArrayList<String>();
+        blocked.addAll(BLOCKED_CLASS_NAME_PREFIXES);
+        return blocked;
     }
 
 
