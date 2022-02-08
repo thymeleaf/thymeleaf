@@ -29,13 +29,13 @@ import java.util.stream.Stream;
 
 public final class ExpressionUtils {
 
-    private static final Set<String> BLACKLISTED_CLASS_NAME_PREFIXES =
+    private static final Set<String> BLOCKED_CLASS_NAME_PREFIXES =
             new HashSet<String>(Arrays.asList(
                     "java", "javax", "jakarta", "org.ietf.jgss", "org.omg", "org.w3c.dom", "org.xml.sax"));
 
 
     // The whole "java.time.*" package will also be whitelisted
-    private static final Set<String> WHITELISTED_JAVA_CLASS_NAMES =
+    private static final Set<String> ALLOWED_JAVA_CLASS_NAMES =
             new HashSet<String>(Arrays.asList(
                     "java.lang.Boolean", "java.lang.Byte", "java.lang.Character", "java.lang.Double",
                     "java.lang.Enum", "java.lang.Float", "java.lang.Integer", "java.lang.Long", "java.lang.Math",
@@ -55,7 +55,7 @@ public final class ExpressionUtils {
         if (i0 >= 0) {
             final String package0 = typeName.substring(0, i0);
             if ("java".equals(package0)) { // This is the only prefix that allows whitelisting
-                return WHITELISTED_JAVA_CLASS_NAMES.contains(typeName);
+                return ALLOWED_JAVA_CLASS_NAMES.contains(typeName);
             } else if ("javax".equals(package0) || "jakarta".equals(package0)) {
                 return false;
             } else if ("org".equals(package0)) {
@@ -74,13 +74,13 @@ public final class ExpressionUtils {
 
 
 
-    public static List<String> getBlacklist() {
-        return BLACKLISTED_CLASS_NAME_PREFIXES.stream()
+    public static List<String> getBlockedClasses() {
+        return BLOCKED_CLASS_NAME_PREFIXES.stream()
                 .sorted().map(p -> String.format("%s.*", p)).collect(Collectors.toList());
     }
 
-    public static List<String> getWhitelist() {
-        return Stream.concat(WHITELISTED_JAVA_CLASS_NAMES.stream(), Stream.of("java.time.*"))
+    public static List<String> getAllowedClasses() {
+        return Stream.concat(ALLOWED_JAVA_CLASS_NAMES.stream(), Stream.of("java.time.*"))
                 .sorted().collect(Collectors.toList());
     }
 
