@@ -1,12 +1,6 @@
 <!--
 Thanks for raising a Thymeleaf issue.
 
-****
-This repository contains the Thymeleaf core. If your issue is specific to
-the integration with Spring or you think it could be, please add your ticket
-at the "thymeleaf/thymeleaf-spring" repository instead.
-****
-
 For ENHANCEMENTS or SUGGESTIONS:
 
 Please describe the problem that you are trying to solve in the maximum

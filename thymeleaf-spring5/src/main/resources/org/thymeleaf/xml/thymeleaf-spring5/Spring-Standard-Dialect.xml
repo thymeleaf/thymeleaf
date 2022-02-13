@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ =============================================================================
+  ~
+  ~   Copyright (c) 2011-2018, The THYMELEAF team (http://www.thymeleaf.org)
+  ~
+  ~   Licensed under the Apache License, Version 2.0 (the "License");
+  ~   you may not use this file except in compliance with the License.
+  ~   You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~   Unless required by applicable law or agreed to in writing, software
+  ~   distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~
+  ~ =============================================================================
+  -->
+
+<dialect xmlns="http://www.thymeleaf.org/extras/dialect"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.thymeleaf.org/extras/dialect
+	                    http://www.thymeleaf.org/xsd/thymeleaf-extras-dialect-3.0.xsd"
+	prefix="th"
+	namespace-uri="http://www.thymeleaf.org/spring"
+	namespace-strict="false"
+	class="org.thymeleaf.spring5.dialect.SpringStandardDialect">
+
+
+	<!-- Introduced processors -->
+	<!-- ===================== -->
+
+	<attribute-processor
+		name="errorclass"
+		class="org.thymeleaf.spring5.processor.SpringErrorClassTagProcessor">
+		<documentation
+			see-also="fields.hasErrors"
+			reference="Validation and Error Messages"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#validation-and-error-messages">http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#validation-and-error-messages</a>
+		]]></documentation>
+	</attribute-processor>
+
+	<attribute-processor
+		name="errors"
+		class="org.thymeleaf.spring5.processor.SpringErrorsTagProcessor">
+		<documentation
+			see-also="fields.errors"
+			reference="Validation and Error Messages"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#validation-and-error-messages">http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#validation-and-error-messages</a>
+		]]></documentation>
+	</attribute-processor>
+
+	<attribute-processor
+		name="uerrors"
+		class="org.thymeleaf.spring5.processor.SpringUErrorsTagProcessor">
+		<documentation
+			see-also="fields.errors"
+			reference="Validation and Error Messages"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#validation-and-error-messages">http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#validation-and-error-messages</a>
+		]]></documentation>
+	</attribute-processor>
+
+	<attribute-processor
+		name="field"
+		class="org.thymeleaf.spring5.processor.AbstractSpringFieldTagProcessor">
+		<documentation
+			reference="Creating a Form"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#creating-a-form">http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#creating-a-form</a>
+		]]></documentation>
+		<restrictions
+			tags="input option select textarea"/>
+	</attribute-processor>
+
+	<attribute-processor
+		name="object"
+		class="org.thymeleaf.spring5.processor.SpringObjectTagProcessor">
+		<documentation
+			reference="Creating a Form"><![CDATA[
+			<a href="http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#creating-a-form">http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#creating-a-form</a>
+		]]></documentation>
+	</attribute-processor>
+
+
+	<!-- URL and form-specific attribute processors -->
+	<!-- ========================================== -->
+
+	<attribute-processor
+		name="action"
+		class="org.thymeleaf.spring5.processor.SpringActionTagProcessor"/>
+
+	<attribute-processor
+		name="href"
+		class="org.thymeleaf.spring5.processor.SpringHrefTagProcessor"/>
+
+	<attribute-processor
+		name="method"
+		class="org.thymeleaf.spring5.processor.SpringMethodTagProcessor"/>
+
+	<attribute-processor
+		name="src"
+		class="org.thymeleaf.spring5.processor.SpringSrcTagProcessor"/>
+
+	<attribute-processor
+		name="value"
+		class="org.thymeleaf.spring5.processor.SpringValueTagProcessor"/>
+
+
+	<!-- General field attribute processors -->
+	<!-- ================================== -->
+
+	<attribute-processor name="color"/>
+	<attribute-processor name="date"/>
+	<attribute-processor name="datetime-local"/>
+	<attribute-processor name="email"/>
+	<attribute-processor name="month"/>
+	<attribute-processor name="number"/>
+	<attribute-processor name="range"/>
+	<attribute-processor name="search"/>
+	<attribute-processor name="tel"/>
+	<attribute-processor name="time"/>
+	<attribute-processor name="url"/>
+	<attribute-processor name="week"/>
+
+
+	<!-- Additional expression objects -->
+	<!-- ============================= -->
+
+	<expression-object name="fields"            class="org.thymeleaf.spring5.expression.Fields"/>
+	<expression-object name="mvc"               class="org.thymeleaf.spring5.expression.Mvc"/>
+	<expression-object name="requestdatavalues" class="org.thymeleaf.spring5.expression.RequestDataValues"/>
+	<expression-object name="themes"            class="org.thymeleaf.spring5.expression.Themes"/>
+
+</dialect>
