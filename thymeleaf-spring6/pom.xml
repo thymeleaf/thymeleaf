@@ -46,9 +46,9 @@
   </organization>
 
   <scm>
-    <url>scm:git:git@github.com:thymeleaf/thymeleaf-spring.git</url>
-    <connection>scm:git:git@github.com:thymeleaf/thymeleaf-spring.git</connection>
-    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf-spring.git</developerConnection>
+    <url>scm:git:git@github.com:thymeleaf/thymeleaf.git</url>
+    <connection>scm:git:git@github.com:thymeleaf/thymeleaf.git</connection>
+    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
@@ -128,6 +128,9 @@
     <maven.compiler.release>${java.version}</maven.compiler.release>
     <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
     <project.build.propertiesEncoding>ISO-8859-1</project.build.propertiesEncoding>
+    <!-- These are needed for showing the build timestamp correctly at the thymeleaf.properties file -->
+    <timestamp>${maven.build.timestamp}</timestamp>
+    <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
     <!-- A project-name-based approach is adopted for the module name (instead of a reverse-DNS one) -->
     <!-- NOTE module name is fixed and not set to project.artifactId because this would not be a     -->
     <!-- valid approach for project names containing hyphens, which are not allowed in module names. -->

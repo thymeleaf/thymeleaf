@@ -93,6 +93,18 @@
     </repository>
   </distributionManagement>
 
+  <repositories>
+    <repository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+
   <properties>
     <java.version>8</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -115,17 +127,6 @@
     <jackson.version>2.13.0</jackson.version>
     <slf4j.version>1.7.32</slf4j.version>
   </properties>
-
-  <repositories>
-    <repository>
-      <id>sonatype-nexus-snapshots</id>
-      <name>Sonatype Nexus Snapshots</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
 
   <build>
@@ -273,6 +274,22 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
         <version>2.5.3</version>
+        <configuration>
+          <mavenExecutorId>forked-path</mavenExecutorId>
+        </configuration>
+        <executions>
+          <execution>
+            <!-- This is needed in order to allow Maven to release a project that is not in the root -->
+            <!-- of a GitHub repository, but in a subfolder.                                         -->
+            <id>default</id>
+            <goals>
+              <goal>perform</goal>
+            </goals>
+            <configuration>
+              <pomFileName>${project.artifactId}/pom.xml</pomFileName>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
       <!-- IMPORTANT: This plugin should always appear AFTER maven-release-plugin in this pom.xml -->
