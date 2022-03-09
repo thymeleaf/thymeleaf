@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ =============================================================================
+  ~
+  ~   Copyright (c) 2011-2018, The THYMELEAF team (http://www.thymeleaf.org)
+  ~
+  ~   Licensed under the Apache License, Version 2.0 (the "License");
+  ~   you may not use this file except in compliance with the License.
+  ~   You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~   Unless required by applicable law or agreed to in writing, software
+  ~   distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~
+  ~ =============================================================================
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.thymeleaf</groupId>
+  <artifactId>thymeleaf-main</artifactId>
+  <packaging>pom</packaging>
+  <version>${revision}</version>
+  <name>thymeleaf parent POM</name>
+  <description>Modern server-side Java template engine for both web and standalone environments</description>
+  <url>http://www.thymeleaf.org</url>
+
+
+  <organization>
+    <name>The THYMELEAF team</name>
+    <url>http://www.thymeleaf.org</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>danielfernandez</id>
+      <name>Daniel Fernandez</name>
+      <email>daniel.fernandez AT 11thlabs DOT org</email>
+      <roles>
+        <role>Project Admin</role>
+        <role>Lead Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>jmiguelsamper</id>
+      <name>Jose Miguel Samper</name>
+      <email>jmiguelsamper AT users DOT sourceforge DOT net</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>ultraq</id>
+      <name>Emanuel Rabina</name>
+      <email>emanuelrabina AT gmail DOT com</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <scm>
+    <url>scm:git:git@github.com:thymeleaf/thymeleaf.git</url>
+    <connection>scm:git:git@github.com:thymeleaf/thymeleaf.git</connection>
+    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+    </repository>
+  </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <modules>
+    <module>thymeleaf</module>
+    <module>thymeleaf-spring5</module>
+    <module>thymeleaf-spring6</module>
+  </modules>
+
+
+  <properties>
+    <revision>3.1.0-SNAPSHOT</revision>
+    <java.version>8</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <maven.compiler.release>${java.version}</maven.compiler.release>
+    <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
+    <project.build.propertiesEncoding>ISO-8859-1</project.build.propertiesEncoding>
+    <!-- These are needed for showing the build timestamp correctly at the thymeleaf.properties file -->
+    <timestamp>${maven.build.timestamp}</timestamp>
+    <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
+    <!-- ======================     -->
+    <!-- DEPENDENCY versions        -->
+    <!-- ======================     -->
+    <javax-servlet-api.version>3.0.1</javax-servlet-api.version>
+    <jakarta-servlet-api.version>5.0.0</jakarta-servlet-api.version>
+    <ognl.version>3.2.21</ognl.version>
+    <attoparser.version>2.0.5.RELEASE</attoparser.version>
+    <unbescape.version>1.1.6.RELEASE</unbescape.version>
+    <jackson.version>2.13.0</jackson.version>
+    <slf4j.version>1.7.32</slf4j.version>
+    <!-- ======================     -->
+    <!-- MAVEN PLUGIN versions      -->
+    <!-- ==============0=======     -->
+    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+    <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+    <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+    <maven-javadoc-plugin.version>3.3.1</maven-javadoc-plugin.version>
+    <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+    <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+    <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+    <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
+    <maven-antrun-plugin.version>3.0.0</maven-antrun-plugin.version>
+  </properties>
+
+
+  <dependencyManagement>
+    <dependencies>
+
+      <dependency>
+        <groupId>org.thymeleaf</groupId>
+        <artifactId>thymeleaf</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>${jakarta-servlet-api.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>${javax-servlet-api.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>ognl</groupId>
+        <artifactId>ognl</artifactId>
+        <version>${ognl.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.attoparser</groupId>
+        <artifactId>attoparser</artifactId>
+        <version>${attoparser.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.unbescape</groupId>
+        <artifactId>unbescape</artifactId>
+        <version>${unbescape.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jsr310</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+
+
+  <build>
+
+    <pluginManagement>
+      <plugins>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven-compiler-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${maven-resources-plugin.version}</version>
+          <configuration>
+            <encoding>${project.build.sourceEncoding}</encoding>
+            <propertiesEncoding>${project.build.propertiesEncoding}</propertiesEncoding>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${maven-jar-plugin.version}</version>
+          <configuration>
+            <archive>
+              <addMavenDescriptor>false</addMavenDescriptor>
+              <manifest>
+                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              </manifest>
+              <manifestEntries>
+                <!-- These two entries are non-standard, specified by the Apache Software Foundation in -->
+                <!-- their release preparation procedures as a way to pass this information on to the   -->
+                <!-- library users. See: http://commons.apache.org/releases/prepare.html                -->
+                <X-Compile-Source-JDK>${maven.compiler.source}</X-Compile-Source-JDK>
+                <X-Compile-Target-JDK>${maven.compiler.target}</X-Compile-Target-JDK>
+                <!-- Set the Built-By attribute in MANIFEST.MF to avoid displaying specific user names. -->
+                <Built-By>thymeleaf</Built-By>
+                <!-- Setting this automatic module name will fix the module name used by unbescape even -->
+                <!-- if the library is not yet fully modularised.                                       -->
+                <!-- NOTE this will have to be set at the modules.                                      -->
+                <Automatic-Module-Name>${module.name}</Automatic-Module-Name>
+              </manifestEntries>
+            </archive>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${maven-javadoc-plugin.version}</version>
+          <configuration>
+            <show>protected</show>
+            <noqualifier>java.lang</noqualifier>
+            <source>${maven.compiler.source}</source>
+            <release>${maven.compiler.release}</release>
+            <overview>${basedir}/src/main/javadoc/overview.html</overview>
+            <javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
+            <reportOutputDirectory>${project.build.directory}/apidocs</reportOutputDirectory>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>${maven-source-plugin.version></version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>${maven-gpg-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>${maven-deploy-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>${maven-release-plugin.version}</version>
+          <configuration>
+            <mavenExecutorId>forked-path</mavenExecutorId>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>${maven-antrun-plugin.version}</version>
+        </plugin>
+
+      </plugins>
+    </pluginManagement>
+
+
+  </build>
+
+
+  <profiles>
+
+    <profile>
+      <id>thymeleaf-jars</id>
+      <activation>
+        <property>
+          <name>project.packaging</name>
+          <value>jar</value>
+        </property>
+      </activation>
+      <build>
+        <resources>
+          <resource>
+            <directory>.</directory>
+            <targetPath>META-INF</targetPath>
+            <includes>
+              <include>LICENSE.txt</include>
+              <include>NOTICE.txt</include>
+            </includes>
+          </resource>
+        </resources>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <executions>
+              <execution>
+                <!-- This is needed in order to allow Maven to release a project that is not in the root -->
+                <!-- of a GitHub repository, but in a subfolder.                                         -->
+                <id>default</id>
+                <goals>
+                  <goal>perform</goal>
+                </goals>
+                <configuration>
+                  <pomFileName>${project.artifactId}/pom.xml</pomFileName>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- IMPORTANT: This plugin should always appear AFTER maven-release-plugin in this pom.xml -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <!-- Copy javadoc's "element-list" file to "package-list" in order to allow projects    -->
+              <!-- using versions of the javadoc tool < JDK9 to properly link to Thymeleaf's javadoc -->
+              <!-- as an external link.                                                               -->
+              <!-- NOTE this modifies the javadoc AFTER the creation of the jar as it is not possible -->
+              <!-- to do so by previously configuring javadoc:javadoc in the prepare-package phase    -->
+              <!-- because this "package-list" modification would trigger a second execution of the   -->
+              <!-- javadoc tool in the javadoc:jar goal.                                              -->
+              <execution>
+                <id>copy-javadoc-element-list-to-package-list</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target name="copy javadocs element-list to package-list">
+                    <copy file="${project.build.directory}/apidocs/element-list" tofile="${project.build.directory}/apidocs/package-list" failonerror="false" />
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
+
+</project>
