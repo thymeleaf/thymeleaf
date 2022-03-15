@@ -105,13 +105,6 @@
     </repository>
   </repositories>
 
-  <modules>
-    <module>thymeleaf</module>
-    <module>thymeleaf-spring5</module>
-    <module>thymeleaf-spring6</module>
-  </modules>
-
-
   <properties>
     <revision>3.1.0-SNAPSHOT</revision>
     <java.version>8</java.version>
@@ -311,6 +304,13 @@
 
 
   </build>
+
+
+  <modules>
+    <module>thymeleaf</module>
+    <module>thymeleaf-spring5</module>
+    <module>thymeleaf-spring6</module>
+  </modules>
 
 
   <profiles>
