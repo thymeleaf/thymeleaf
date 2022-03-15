@@ -340,6 +340,7 @@
             <artifactId>maven-javadoc-plugin</artifactId>
             <executions>
               <execution>
+                <id>javadoc-jar</id>
                 <phase>package</phase>
                 <goals>
                   <goal>jar</goal>
@@ -352,6 +353,7 @@
             <artifactId>maven-source-plugin</artifactId>
             <executions>
               <execution>
+                <id>source-jar</id>
                 <phase>package</phase>
                 <goals>
                   <goal>jar</goal>
@@ -364,7 +366,7 @@
             <artifactId>maven-gpg-plugin</artifactId>
             <executions>
               <execution>
-                <id>sign-artifacts</id>
+                <id>gpg-sign</id>
                 <phase>verify</phase>
                 <goals>
                   <goal>sign</goal>
@@ -379,7 +381,7 @@
               <execution>
                 <!-- This is needed in order to allow Maven to release a project that is not in the root -->
                 <!-- of a GitHub repository, but in a subfolder.                                         -->
-                <id>default</id>
+                <id>release-perform</id>
                 <goals>
                   <goal>perform</goal>
                 </goals>
