@@ -27,7 +27,7 @@
   <groupId>org.thymeleaf</groupId>
   <artifactId>thymeleaf-main</artifactId>
   <packaging>pom</packaging>
-  <version>${revision}</version>
+  <version>3.1.0-SNAPSHOT</version>
   <name>thymeleaf parent POM</name>
   <description>Modern server-side Java template engine for both web and standalone environments</description>
   <url>http://www.thymeleaf.org</url>
@@ -106,7 +106,6 @@
   </repositories>
 
   <properties>
-    <revision>3.1.0-SNAPSHOT</revision>
     <java.version>8</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -134,7 +133,6 @@
     <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
     <maven-javadoc-plugin.version>3.3.1</maven-javadoc-plugin.version>
     <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-    <maven-flatten-plugin.version>1.2.7</maven-flatten-plugin.version>
     <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
     <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
     <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
@@ -275,16 +273,6 @@
         </plugin>
 
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>flatten-maven-plugin</artifactId>
-          <version>${maven-flatten-plugin.version}</version>
-          <configuration>
-            <updatePomFile>true</updatePomFile>
-            <flattenMode>resolveCiFriendliesOnly</flattenMode>
-          </configuration>
-        </plugin>
-
-        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
           <version>${maven-gpg-plugin.version}</version>
@@ -347,26 +335,6 @@
           </resource>
         </resources>
         <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>flatten-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>flatten-pom</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>flatten</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>flatten-clean</id>
-                <phase>clean</phase>
-                <goals>
-                  <goal>clean</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
