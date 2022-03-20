@@ -65,7 +65,7 @@ import org.thymeleaf.util.Validate;
  *   This is the only implementation of {@link ITemplateEngine} provided out of the box by Thymeleaf.
  * </p>
  *
- * <h3>Creating an instance of {@code TemplateEngine}</h3>
+ * <strong>Creating an instance of {@code TemplateEngine}</strong>
  * <p>
  *   An instance of this class can be created at any time by calling its constructor:
  * </p>
@@ -78,7 +78,7 @@ import org.thymeleaf.util.Validate;
  *   dialect/configuration) and use it to process multiple templates.
  * </p>
  * 
- * <h3>Configuring the {@code TemplateEngine}</h3>
+ * <strong>Configuring the {@code TemplateEngine}</strong>
  * <p>
  *   Once created, an instance of {@code TemplateEngine} has to be typically configured a
  *   mechanism for <em>resolving templates</em> (i.e. obtaining and reading them):
@@ -133,8 +133,8 @@ import org.thymeleaf.util.Validate;
  *  caches will be used.
  * </p>
  * 
- * <h3>Template Execution</h3>
- * <h4>1. Creating a context</h4>
+ * <strong>Template Execution</strong>
+ * <em>1. Creating a context</em>
  * <p>
  *   All template executions require a <i>context</i>. A context is an object that
  *   implements the {@link IContext} interface, and that contains at least the following
@@ -188,7 +188,7 @@ import org.thymeleaf.util.Validate;
  *   See the documentation for these specific implementations for more details.
  * </p>
  * 
- * <h4>2. Template Processing</h4>
+ * <em>2. Template Processing</em>
  * <p>
  *   In order to execute templates, the different {@code process(...)} methods should
  *   be used. Those are mostly divided into two blocks: those that return the template processing
