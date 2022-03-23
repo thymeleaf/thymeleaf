@@ -36,6 +36,13 @@
   <packaging>pom</packaging>
   <name>thymeleaf lib</name>
 
+  <properties>
+    <!-- ======================     -->
+    <!-- JPMS MODULE management     -->
+    <!-- ======================     -->
+    <module.name>TO_BE_OVERWRITTEN_BY_CHILDREN</module.name>
+  </properties>
+
   <build>
 
     <resources>
@@ -48,6 +55,55 @@
         </includes>
       </resource>
     </resources>
+
+    <pluginManagement>
+      <plugins>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <configuration>
+            <archive>
+              <addMavenDescriptor>false</addMavenDescriptor>
+              <manifest>
+                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              </manifest>
+              <manifestEntries>
+                <!-- These two entries are non-standard, specified by the Apache Software Foundation in -->
+                <!-- their release preparation procedures as a way to pass this information on to the   -->
+                <!-- library users. See: http://commons.apache.org/releases/prepare.html                -->
+                <X-Compile-Source-JDK>${maven.compiler.source}</X-Compile-Source-JDK>
+                <X-Compile-Target-JDK>${maven.compiler.target}</X-Compile-Target-JDK>
+                <!-- Set the Built-By attribute in MANIFEST.MF to avoid displaying specific user names. -->
+                <Built-By>thymeleaf</Built-By>
+                <!-- Setting this automatic module name will fix the module name used by unbescape even -->
+                <!-- if the library is not yet fully modularised.                                       -->
+                <!-- NOTE this will have to be set at the modules.                                      -->
+                <Automatic-Module-Name>${module.name}</Automatic-Module-Name>
+              </manifestEntries>
+            </archive>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <configuration>
+            <show>protected</show>
+            <noqualifier>java.lang</noqualifier>
+            <source>${maven.compiler.source}</source>
+            <release>${maven.compiler.release}</release>
+            <overview>${basedir}/src/main/javadoc/overview.html</overview>
+            <javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
+            <reportOutputDirectory>${project.build.directory}/apidocs</reportOutputDirectory>
+            <doclint>all,-missing</doclint>
+          </configuration>
+        </plugin>
+
+      </plugins>
+    </pluginManagement>
+
 
     <plugins>
 
