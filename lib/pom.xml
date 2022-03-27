@@ -37,9 +37,13 @@
   <name>thymeleaf lib</name>
 
   <properties>
-    <!-- ======================     -->
+    <!-- =========================  -->
+    <!-- Thymeleaf parent location  -->
+    <!-- =========================  -->
+    <thymeleaf-parent.basedir>${project.basedir}/../..</thymeleaf-parent.basedir>
+    <!-- =========================  -->
     <!-- JPMS MODULE management     -->
-    <!-- ======================     -->
+    <!-- =========================  -->
     <module.name>TO_BE_OVERWRITTEN_BY_CHILDREN</module.name>
   </properties>
 
@@ -47,7 +51,7 @@
 
     <resources>
       <resource>
-        <directory>${project.basedir}/../..</directory>
+        <directory>${thymeleaf-parent.basedir}</directory>
         <targetPath>META-INF</targetPath>
         <includes>
           <include>LICENSE.txt</include>
@@ -192,6 +196,7 @@
     <module>thymeleaf</module>
     <module>thymeleaf-spring5</module>
     <module>thymeleaf-spring6</module>
+    <module>testing</module>
   </modules>
 
 </project>
