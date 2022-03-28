@@ -33,8 +33,6 @@
   <artifactId>thymeleaf-spring5</artifactId>
   <packaging>jar</packaging>
   <name>thymeleaf-spring5</name>
-  <description>Modern server-side Java template engine for both web and standalone environments</description>
-  <url>http://www.thymeleaf.org</url>
 
   <properties>
     <!-- A project-name-based approach is adopted for the module name (instead of a reverse-DNS one) -->
