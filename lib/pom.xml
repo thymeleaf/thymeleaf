@@ -38,9 +38,10 @@
 
   <properties>
     <!-- =========================  -->
-    <!-- Thymeleaf parent location  -->
+    <!-- Build file locations       -->
     <!-- =========================  -->
     <thymeleaf-parent.basedir>${project.basedir}/../..</thymeleaf-parent.basedir>
+    <thymeleaf-module.release.pomfilename>lib/${project.artifactId}/pom.xml</thymeleaf-module.release.pomfilename>
     <!-- =========================  -->
     <!-- JPMS MODULE management     -->
     <!-- =========================  -->
@@ -154,7 +155,7 @@
                 <goal>perform</goal>
               </goals>
               <configuration>
-                <pomFileName>${project.artifactId}/pom.xml</pomFileName>
+                <pomFileName>${thymeleaf-module.release.pomfilename}</pomFileName>
               </configuration>
             </execution>
           </executions>

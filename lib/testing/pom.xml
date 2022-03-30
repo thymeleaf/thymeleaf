@@ -37,9 +37,10 @@
 
   <properties>
     <!-- =========================  -->
-    <!-- Thymeleaf parent location  -->
+    <!-- Build file locations       -->
     <!-- =========================  -->
     <thymeleaf-parent.basedir>${project.basedir}/../../..</thymeleaf-parent.basedir>
+    <thymeleaf-module.release.pomfilename>lib/testing/${project.artifactId}/pom.xml</thymeleaf-module.release.pomfilename>
   </properties>
 
   <modules>
