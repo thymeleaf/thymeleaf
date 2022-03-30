@@ -139,6 +139,7 @@
     <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
     <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
     <maven-antrun-plugin.version>3.0.0</maven-antrun-plugin.version>
+    <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
   </properties>
 
 
@@ -311,12 +312,19 @@
           <version>${maven-antrun-plugin.version}</version>
         </plugin>
 
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>${maven-assembly-plugin.version}</version>
+        </plugin>
+
       </plugins>
     </pluginManagement>
 
   </build>
 
   <modules>
+    <module>dist</module>
     <module>lib</module>
   </modules>
 
