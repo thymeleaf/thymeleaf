@@ -1,0 +1,1 @@
+**Important** before using any of these materials, read the Third Party notice text here: https://github.com/thymeleaf/thymeleaf-dist/blob/20130822/NOTICE_THIRDPARTY.markdown

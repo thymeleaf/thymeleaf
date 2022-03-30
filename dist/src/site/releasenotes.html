@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+	<title>Release notes - Thymeleaf</title>
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+	<link rel="icon" href="images/favicon.ico"/>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,400italic,700,700italic"/>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic,700italic"/>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/2.1.3/normalize.min.css" media="screen"/>
+	<link rel="stylesheet" href="styles/thymeleaf.css" media="screen"/>
+
+	<script src="https://unpkg.com/dumb-query-selector@3.0.0/dumb-query-selector.js" defer></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/prism.min.js" data-manual
+		defer integrity="sha256-HWJnMZHGx7U1jmNfxe4yaQedmpo/mtxWSIXvcJkLIf4=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/plugins/unescaped-markup/prism-unescaped-markup.js"
+		defer integrity="sha256-THYQfN3ZkC8QQ5I4JxslpEaXIT7tUakaV9/e69MYEuU=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/plugins/normalize-whitespace/prism-normalize-whitespace.min.js"
+		defer integrity="sha256-abVQckxqXkWO8NiZk8TBPHzv3/LObzIqzzQWz0kV0F0=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/plugins/line-numbers/prism-line-numbers.js"
+		defer integrity="sha256-ISWqAwOAxClmLCu22st3+xU4+kVYHrE8jdn6ONzjg5Q=" crossorigin="anonymous"></script>
+	<script src="scripts/thymeleaf.js" defer></script>
+</head>
+
+<body id="thymeleaf-releases">
+
+	<div class="fluid-container toolbar-container">
+		<nav class="fluid-block toolbar">
+			<div class="toolbar-menu">
+				<div class="toolbar-menu-location">Download</div>
+				<button id="site-menu-button" type="button" class="toolbar-menu-button">Site Menu</button>
+			</div>
+			<div id="site-menu" class="toolbar-menu-items">
+				<ul class="toolbar-links">
+					<li><a href="index.html" class="toolbar-link">Home</a></li>
+					<li><a href="download.html" class="toolbar-link">Download</a></li>
+					<li><a href="documentation.html" class="toolbar-link">Docs</a></li>
+					<li><a href="ecosystem.html" class="toolbar-link">Ecosystem</a></li>
+					<li><a href="faq.html" class="toolbar-link">FAQ</a></li>
+				</ul>
+				<ul id="site-nav-links" class="toolbar-links">
+					<li><a href="https://twitter.com/thymeleaf" class="toolbar-link">Twitter</a></li>
+					<li><a href="https://github.com/thymeleaf" class="toolbar-link">GitHub</a></li>
+				</ul>
+			</div>
+		</nav>
+	</div>
+
+	<div class="hero-container fluid-container">
+		<header class="hero-header fluid-block">
+			<div class="hero-header-text">
+				<h1 class="hero-header-title">Thymeleaf</h1>
+			</div>
+			<div class="hero-header-image">
+				<img src="images/thymeleaf.png" alt="Thymeleaf logo" class="hero-header-logo"/>
+			</div>
+		</header>
+	</div>
+
+	<div class="fluid-container">
+		<main class="fluid-block">
+
+			<!-- Create a new section or copy this one for every new announcement -->
+			<section>
+				<header>
+					<h2>
+						<a id="thymeleaf-3.0.15" href="#thymeleaf-3.0.15" class="anchor"></a>
+						Thymeleaf 3.0.15 &mdash; Release Notes
+					</h2>
+				</header>
+				<p><time datetime="2022-01-31">31 January 2022</time></p>
+
+				<p><strong>Thymeleaf 3.0.15</strong> (<code>3.0.15.RELEASE</code>) has
+					just been published.</p>
+
+				<p>This is a <em>highly recommended</em> security update with some
+					bugfixing and feature changes.</p>
+				<p>Security improvements:</p>
+				<ul>
+					<li>Fixed inconsistent restricted variable access check due to caching.</li>
+					<li>Improved detection of restricted expression execution scenarios.</li>
+					<li>Improved detection of restricted usages of view names in direct request input.</li>
+				</ul>
+
+				<p>This version should work as a drop-in replacement for 3.0.x versions.
+					Have a look at our <a href="download.html">Download Page</a> to learn
+					how to obtain it.</p>
+
+				<p>If you are interested, you can have a look at the list of issues on
+					GitHub, which usually contain more detailed explanations:</p>
+				<ul>
+					<li><i>thymeleaf:</i> <a href="https://github.com/thymeleaf/thymeleaf/milestone/60?closed=1">see milestone</a>.</li>
+					<li><i>thymeleaf-spring:</i> <a href="https://github.com/thymeleaf/thymeleaf-spring/milestone/44?closed=1">see milestone</a>.</li>
+				</ul>
+			</section>
+
+			<!-- Create a new section or copy this one for every new announcement -->
+			<section>
+				<header>
+					<h2>
+						<a id="thymeleaf-3.0.14" href="#thymeleaf-3.0.14" class="anchor"></a>
+						Thymeleaf 3.0.14 &mdash; Release Notes
+					</h2>
+				</header>
+				<p><time datetime="2021-12-08">08 December 2021</time></p>
+
+				<p><strong>Thymeleaf 3.0.14</strong> (<code>3.0.14.RELEASE</code>) has
+					just been published.</p>
+
+				<p>This is a <em>highly recommended</em> security update with some
+					bugfixing and feature changes.</p>
+				<p>Security improvements:</p>
+				<ul>
+					<li>Fixed inconsistent restricted variable access check due to caching.</li>
+					<li>Improved detection of restricted expression execution scenarios.</li>
+					<li>Improved detection of restricted usages of view names in direct request input.</li>
+				</ul>
+
+				<p>This version should work as a drop-in replacement for 3.0.x versions.
+					Have a look at our <a href="download.html">Download Page</a> to learn
+					how to obtain it.</p>
+
+				<p>If you are interested, you can have a look at the list of issues on
+					GitHub, which usually contain more detailed explanations:</p>
+				<ul>
+					<li><i>thymeleaf:</i> <a href="https://github.com/thymeleaf/thymeleaf/milestone/59?closed=1">see milestone</a>.</li>
+					<li><i>thymeleaf-spring:</i> <a href="https://github.com/thymeleaf/thymeleaf-spring/milestone/43?closed=1">see milestone</a>.</li>
+				</ul>
+			</section>
+
+			<!-- Create a new section or copy this one for every new announcement -->
+			<section>
+				<header>
+					<h2>
+						<a id="thymeleaf-3.0.13" href="#thymeleaf-3.0.13" class="anchor"></a>
+						Thymeleaf 3.0.13 &mdash; Release Notes
+					</h2>
+				</header>
+				<p><time datetime="2021-11-29">29 November 2021</time></p>
+
+				<p><strong>Thymeleaf 3.0.13</strong> (<code>3.0.13.RELEASE</code>) has
+					just been published.</p>
+
+				<p>This is a <em>highly recommended</em> security update with some
+					bugfixing and feature changes.</p>
+				<p>Security improvements:</p>
+				<ul>
+					<li>Fixed <strong>CVE-2021-43466</strong>: Specific scenarios in template injection may
+						lead to remote code execution.</li>
+				</ul>
+				<p>Issues fixed:</p>
+				<ul>
+					<li>Fixed incorrect double-unescaping of request parameters breaking processing of forms
+						during restricted mode checks.</li>
+					<li>Fixed <kbd>SpringStandardDialect</kbd> not allowing the use of a custom
+						<kbd>IStandardConversionService</kbd>.</li>
+				</ul>
+
+				<p>This version should work as a drop-in replacement for 3.0.x versions.
+					Have a look at our <a href="download.html">Download Page</a> to learn
+					how to obtain it.</p>
+
+				<p>If you are interested, you can have a look at the list of issues on
+					GitHub, which usually contain more detailed explanations:</p>
+				<ul>
+					<li><i>thymeleaf:</i> <a href="https://github.com/thymeleaf/thymeleaf/milestone/58?closed=1">see milestone</a>.</li>
+					<li><i>thymeleaf-spring:</i> <a href="https://github.com/thymeleaf/thymeleaf-spring/milestone/42?closed=1">see milestone</a>.</li>
+				</ul>
+			</section>
+
+			<!-- Create a new section or copy this one for every new announcement -->
+			<section>
+				<header>
+					<h2>
+						<a id="thymeleaf-3.0.12" href="#thymeleaf-3.0.12" class="anchor"></a>
+						Thymeleaf 3.0.12 &mdash; Release Notes
+					</h2>
+				</header>
+				<p><time datetime="2020-12-21">21 December 2020</time></p>
+
+				<p><strong>Thymeleaf 3.0.12</strong> (<code>3.0.12.RELEASE</code>) has
+				just been published.</p>
+
+				<p>This is a <em>highly recommended</em> security update with some 
+					bugfixing and feature changes.</p>
+				<p>Security improvements:</p>
+				<ul>
+					<li>Avoided instantiation of new objects and calls to static classes in 
+						<a href="https://github.com/thymeleaf/thymeleaf/issues/809"><em>restricted expression
+						evaluation mode</em></a>, both for OGNL and SpringEL-based scenarios.</li>
+					<li>Users of <strong>Spring</strong>: Avoided execution of view names as a fragment 
+						expressions when the view name is contained in the URL path or query parameters.</li>
+				</ul>
+				<p>Issues fixed:</p>
+				<ul>
+					<li>Fixed <kbd>#numbers.format*(...)</kbd> expression utility methods not producing 
+						numbers using the correct digit symbols for locales that use 
+						them (e.g. farsi), in JDK versions where NumberFormat does this.</li>
+					<li>Fixed <kbd>package-list</kbd> not being produced for JavaDoc since JDK 11 
+						started being used for compiling the project.</li>
+					<li>Users of <strong>Spring</strong>: Fixed memory leak at 
+						<kbd>ThymeleafViewResolver</kbd> in redirects to dynamically built URLs.</li>
+				</ul>
+				<p>Feature changes:</p>
+				<ul>
+					<li>Users of <strong>Spring 5.x</strong>: Added <kbd>encode()</kbd> method to the 
+						<kbd>#mvc.url(...)</kbd> expression utility methods.</li>
+					<li>Users of <strong>Spring 5.x and Spring WebFlow</strong>: Adapted support of 
+						WebFlow to Spring WebFlow 2.5 after changes in API (WebFlow 2.5.0+ is now required).</li>
+				</ul>
+				<p>Dependency updates:</p>
+				<ul>
+					<li>OGNL updated to 3.1.26.</li>
+					<li>Jackson updated to 2.11.3.</li>
+				</ul>
+
+				<p>This version should work as a drop-in replacement for 3.0.x versions.
+				Have a look at our <a href="download.html">Download Page</a> to learn
+				how to obtain it.</p>
+
+				<p>If you are interested, you can have a look at the list of issues on
+				GitHub, which usually contain more detailed explanations:</p>
+				<ul>
+					<li><i>thymeleaf:</i> <a href="https://github.com/thymeleaf/thymeleaf/milestone/24?closed=1">see milestone</a>.</li>
+					<li><i>thymeleaf-spring:</i> <a href="https://github.com/thymeleaf/thymeleaf-spring/milestone/21?closed=1">see milestone</a>.</li>
+				</ul>
+			</section>
+			
+			<!-- Create a new section or copy this one for every new announcement -->
+			<section>
+				<header>
+					<h2>
+						<a id="thymeleaf-3.0.11" href="#thymeleaf-3.0.11" class="anchor"></a>
+						Thymeleaf 3.0.11 &mdash; Release Notes
+					</h2>
+				</header>
+				<p><time datetime="2018-11-29">29 October 2018</time></p>
+
+				<p><strong>Thymeleaf 3.0.11</strong> (<code>3.0.11.RELEASE</code>) has
+				just been published.</p>
+
+				<p>This is a maintenance release with some minor bugfixing for a couple
+				of issues introduced with 3.0.10. These issues affected:</p>
+				<ul>
+					<li>Users of <strong>JPMS</strong> (Java Platform Module System): some
+						Thymeleaf modules declared invalid module names.</li>
+					<li>Users of Spring <strong>WebFlux.fn</strong> (functional side of
+						Spring WebFlux): an exception was being thrown when templates using
+						the SpringStandard dialect were rendered.</li>
+				</ul>
+
+				<p>This version should work as a drop-in replacement for 3.0.x versions.
+				Have a look at our <a href="download.html">Download Page</a> to learn
+				how to obtain it.</p>
+
+				<p>If you are currently using a version older than 3.0.10, <strong>please
+				visit <a href="http://forum.thymeleaf.org/Thymeleaf-3-0-10-JUST-PUBLISHED-td4031348.html">the
+				release announcement for 3.0.10</a></strong> in order to know more about
+				new features.</p>
+
+				<p>If you are interested, you can have a look at the list of issues on
+				GitHub, which usually contain more detailed explanations:</p>
+				<ul>
+					<li><i>thymeleaf:</i> <a href="https://github.com/thymeleaf/thymeleaf/issues?labels=version%3A3.0.11&state=closed">see milestone</a>.</li>
+					<li><i>thymeleaf-spring:</i> <a href="https://github.com/thymeleaf/thymeleaf-spring/issues?labels=version%3A3.0.11&page=1&state=closed">see milestone</a>.</li>
+				</ul>
+
+			</section>
+
+		</main>
+	</div>
+
+	<div class="fluid-container footer-container">
+		<footer class="footer fluid-block">
+			<div class="footer-sections">
+				<h5>On this site</h5>
+				<ul class="footer-sections-links">
+					<li><a href="index.html">Home</a></li>
+					<li><a href="download.html">Download</a></li>
+					<li><a href="documentation.html">Docs</a></li>
+					<li><a href="ecosystem.html">Ecosystem</a></li>
+					<li><a href="faq.html">FAQ</a></li>
+					<li id="footer-issue-tracking"><a href="issuetracking.html">Issue Tracking</a></li>
+					<li><a href="team.html">The Thymeleaf Team</a></li>
+					<li><a href="whoisusingthymeleaf.html">Who's using Thymeleaf?</a></li>
+				</ul>
+			</div>
+			<div>
+				<h5>External links</h5>
+				<ul class="footer-sections-links">
+					<li><a href="https://twitter.com/thymeleaf">Follow us on Twitter</a></li>
+					<li><a href="https://github.com/thymeleaf">Fork us on GitHub</a></li>
+				</ul>
+			</div>
+		</footer>
+		<div class="copyright fluid-block">Copyright &copy; The Thymeleaf Team</div>
+		<div class="license fluid-block">
+			Thymeleaf is <strong>open source</strong> software distributed under the
+			<a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache License 2.0</a><br/>
+			This website (excluding the names and logos of Thymeleaf users) is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0 License</a>
+		</div>
+	</div>
+
+</body>
+
+</html>

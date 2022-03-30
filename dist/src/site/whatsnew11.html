@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>What's new in Thymeleaf 1.1 - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
+    <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
+    <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+      {lang:'en', parsetags:'explicit'}
+    </script>
+    <script type="text/javascript" src="sh/scripts/shCore.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushXml.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushJava.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushPlain.js"></script>
+    <link href="sh/styles/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="sh/styles/shThemeThymeleaf.css" rel="stylesheet" type="text/css" />
+  </head>
+
+
+  <body lang="en" dir="ltr">
+
+  <div id="page">
+
+  
+   <div id="menu">
+     <ul>
+       <li><a href="index.html" title="Home">Home</a></li>
+       <li><a href="download.html" title="Download">Download</a></li>
+       <li><a href="documentation.html" title="Documentation">Documentation</a></li>
+       <li><a href="ecosystem.html" title="Ecosystem">Ecosystem</a></li>
+       <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
+       <li><a href="issuetracking.html" title="Issue Tracking">Issue Tracking</a></li>
+     </ul>
+   </div>
+
+   <div id="header">
+     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
+   </div>
+
+   <div id="breadcrumb">
+      <a href="index.html">thymeleaf</a>
+      ::
+      <a href="documentation.html">documentation</a> 
+      ::
+      <span class="current">what's new in thymeleaf 1.1</span>
+   </div>
+
+
+   <div id="content">
+
+    <h1>What's new in Thymeleaf 1.1</h1>
+
+    <h2>A new expression system: the <i>Standard Expressions</i></h2>
+
+    <p>
+      The old <i>value expression</i> system had a series of limitations, especially
+      regarding to operators to be applied between expressions. In Thymeleaf 1.1 this system
+      is substituted in both the Standard and SpringStandard dialects
+      by a new <i>Standard Expression</i> system, which builds on the
+      previous one and keeps all of its syntax &mdash; so that all your templates still
+      work alright &mdash; and adds the following new features:
+    </p>
+    <ul>
+      <li>Numeric literals: <kbd>1</kbd>, <kbd>32</kbd>, <kbd>42.3</kbd>, <kbd>11.34</kbd>, etc.</li>
+      <li>Unary operators: <kbd>!</kbd> (boolean negation), <kbd>-</kbd> (numeric minus sign)</li>
+      <li>String operators: <kbd>+</kbd> (String concatenation)</li>
+      <li>Numeric binary operators and comparators: <kbd>+</kbd>, <kbd>-</kbd>, <kbd>*</kbd>, 
+          <kbd>/</kbd>, <kbd>%</kbd>, <kbd>&gt;</kbd>, <kbd>&lt;</kbd>, <kbd>&gt;=</kbd>,<kbd>&lt;=</kbd></li>
+      <li>Boolean binary operators: <kbd>and</kbd>, <kbd>or</kbd></li>
+      <li>Equality checks: <kbd>==</kbd>, <kbd>!=</kbd></li>
+    </ul>
+
+    <p>
+      For example, now you can concatenate Strings easily in your expressions, like:
+    </p>
+    
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <p th:text="#{title.username} + ': ' + ${user.name}">
+    ]]></script>
+
+
+    <h2>No more Value Processors</h2>
+
+    <p>
+      Thymeleaf 1.0 defined three types of <i>processors</i>: <i>attribute processors</i>,
+      <i>tag processors</i> and <i>value processors</i>. The latter type, value processors,
+      were defined as utility objects that executed common logic needed to process
+      expressions, usually called from attribute or tag processors.
+    </p>
+    <p>
+      This resulted in code similar to this in order to execute an expression from an
+      attribute value:
+    </p>
+    
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+        final StandardValueProcessor valueProcessor =
+            arguments.getConfiguration().getValueProcessorByClass(this, StandardValueProcessor.class);
+
+        final Value value =
+            StandardSyntax.parseValue(attributeValue, valueProcessor, arguments, templateResolution);
+
+        final String result =
+            (String) valueProcessor.getValue(arguments, templateResolution, value);
+    ]]></script>
+    
+    <p>
+      Thymeleaf 1.1 completely removes the concept of <i>value processor</i> from its API, so that
+      it allows each dialect to implement expression resolution in the way preferred by its
+      developers.  
+    </p>
+    <p>
+      For example, the <i>Standard</i> and <i>SpringStandard</i> dialects now implement
+      the resolution of <i>Standard Expressions</i> using the <kbd>StandardExpressionProcessor</kbd> class,
+      so that all the code above can now be written in a much more concise way:  
+    </p>
+    
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+        final String result =
+            (String) StandardExpressionProcessor.processExpression(arguments, templateResolution, attributeValue);
+    ]]></script>
+
+    
+    
+    
+    <h2>New <kbd>th:substituteby</kbd> attribute in the standard dialects</h2>
+
+    
+    <p>
+      Thymeleaf 1.1 adds a new attribute to both the Standard and SpringStandard dialects
+      called <kbd>th:substituteby</kbd>, which works very similarly to the already
+      existing <kbd>th:include</kbd> for including a fragment from an external template, 
+      but actually substitutes the host tag by the fragment's, instead of only substituting
+      its contents &mdash; which is what <kbd>th:include</kbd> does. 
+    </p>
+    
+    <p>
+      In order to see the differences between these tags, the following fragment:
+    </p>
+    
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <footer th:fragment="copy">
+            &copy; 2011 The Good Thymes Virtual Grocery
+        </footer>
+    ]]></script>
+
+    <p>
+      Referenced in your template with both a <kbd>th:include</kbd> and a <kbd>th:substituteby</kbd>:
+    </p>
+    
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <body>
+            ...
+            <div th:include="footer :: copy"></div>
+            <div th:substituteby="footer :: copy"></div>
+            ...
+        </body>
+    ]]></script>
+    
+    <p>
+      The results will be slightly different, because <kbd>th:include</kbd> will only
+      copy the fragment's contents whereas <kbd>th:substituteby</kbd> will actually
+      replace the host tag by the whole fragment:
+    </p>
+
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <body>
+            ...
+            <div>
+                &copy; 2011 The Good Thymes Virtual Grocery
+            </div>
+            <footer>
+                &copy; 2011 The Good Thymes Virtual Grocery
+            </footer>
+            ...
+        </body>
+    ]]></script>
+
+    
+    
+    
+    
+    <h2>New XHTML DTDs for the standard dialects</h2>
+
+
+    <p>
+      The new <kbd>th:substituteby</kbd> attribute requires a change in the existing
+      Thymeleaf DTDs (those specified with a <kbd>DOCTYPE SYSTEM</kbd> clause), in order
+      to include this new attribute and allow its validation.
+    </p>
+
+    <p>
+      New versions of the DTDs for the Standard and SpringStandard dialects
+      have been created, so that the old <kbd>DOCTYPE</kbd> declarations:
+    </p>
+    
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-1.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-1.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-1.dtd">
+
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-1.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-1.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-1.dtd">
+    ]]></script>
+
+    <p>
+      Can now be substituted by new versions containing the new attribute:
+    </p>
+    
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-2.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-2.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-2.dtd">
+
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-2.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-2.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-2.dtd">
+    ]]></script>
+
+
+    <h2>New date utility functions</h2>
+    
+    <p>
+      Thymeleaf 1.1 adds new functions to the <kbd>#dates</kbd> and <kbd>#calendars</kbd>
+      utility function objects, which can be used in variable expressions as usual:
+    </p>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        #dates.hour(now)
+        #dates.minute(now)
+        #dates.second(now)
+        #dates.millisecond(now)
+    ]]></script>
+    <p>
+      <i>Since 1.1.2, also:</i>
+    </p>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        #dates.createNow()
+        #dates.createToday()
+        #dates.create(year,month,day)
+        #dates.create(year,month,day,hour,minute)
+        #dates.create(year,month,day,hour,minute,second)
+        #dates.create(year,month,day,hour,minute,second,millisecond)
+    ]]></script>
+
+
+    <h2>Changes in condition evaluation</h2>
+
+    <p>
+      Condition evaluation &mdash;used in <kbd>th:if</kbd> or <kbd>th:unless</kbd> attributes, for
+      example&mdash; changes a bit in Thymeleaf 1.1 so that the Strings
+      <kbd>"false"</kbd>, <kbd>"no"</kbd> and <kbd>"off"</kbd> now evaluate as
+      <b>false</b>, instead of <i>true</i> as they did before (Thymeleaf 1.0 evaluated
+      as <i>true</i> any non-null String). 
+    </p>
+
+
+    <h2>Performance optimization</h2>
+    
+    <p>
+      When a template is stored into the cache, Thymeleaf 1.1 now scans its whole DOM tree
+      in order to determine which nodes &mdash;and also entire trees&mdash;
+      are <i>not executable</i> (because no attribute or tag processor can be applied to them),
+      and marks those DOM nodes so that they are skipped when actually processing the template.
+    </p>
+    <p>
+      This improves performance by allowing the engine to focus only on those nodes that
+      trigger real execution logic once it retrieves a template from the cache. 
+    </p>
+
+  
+    <h2>Fixed HTML entity processing</h2>
+
+    <p>
+      Thymeleaf 1.1 fixes a behaviour in version 1.0 regarding HTML entities 
+      (<kbd>&amp;nbsp;</kbd>, <kbd>&amp;pound;</kbd>, <kbd>&amp;aacute;</kbd>, etc.)
+      that made the engine raise an
+      exception like this: 
+    </p>
+    
+    <script type="syntaxhighlighter" class="brush:plain;gutter:false"><![CDATA[
+      The entity "nbsp" was referenced, but not declared.
+    ]]></script>
+    
+    <p>
+      ...in the following cases:
+    </p>
+    
+    <ul>
+      <li>When <kbd>th:utext</kbd> was used for writing a String containing
+          one of such entities.</li>
+      <li>In HTML5 templates, every time an HTML entity was used.</li>
+    </ul>
+    
+    <p>
+      Thymeleaf 1.1 fixes this so that not only the presence of these entities
+      does not cause an error, but also they are preserved as they are 
+      (this is, in <i>escaped</i> form) in output.
+    </p>
+
+  
+    <h2>Modified LEGACYHTML5 mode (since 1.1.2)</h2>
+
+    <p>
+      For performance and reliability reasons, the <kbd>LEGACYHTML5</kbd> mode now uses 
+      <b>nekoHTML 1.9.15</b> or newer as an auxiliary library instead of <b>htmlcleaner</b>, 
+      which was used in previous versions.
+    </p>
+
+  
+    <h2>Dart inlining mode (since 1.1.2)</h2>
+
+    <p>
+      Thymeleaf 1.1.2 adds a new "<kbd>dart</kbd>" inlining mode to its Standard Dialects 
+      (besides <kbd>text</kbd> and <kbd>javascript</kbd>) which allows you to inline your data 
+      in your Dart scripts in the same way as you can currently do with JavaScript..
+    </p>
+
+
+    <h2>Minor modifications and bug fixing</h2>
+
+    <p>
+      Of course, many minor modifications and bug fixes have been applied too. In order to know
+      more, <a href="download.html">have a look at the changelogs</a>.
+    </p>
+    
+
+   </div>
+   
+   
+   <div id="footer">
+     <div id="googleplus">
+       <div id="plusone-div" class="plusone"></div>
+       <script type="text/javascript">
+           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
+       </script>
+     </div>
+     <div id="twitter">
+       <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>
+       <script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
+     </div>
+     <div id="copy">
+       Copyright &copy; The <a href="team.html">THYMELEAF Team</a>. See <a href="documentation.html">applicable licenses</a>.
+     </div>
+   </div>
+   
+  </div>
+
+  <script type="text/javascript">
+      SyntaxHighlighter.all();
+  </script>
+
+  </body>
+  
+</html>

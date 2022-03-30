@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>What's new in Thymeleaf 2.1 - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
+    <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
+    <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+      {lang:'en', parsetags:'explicit'}
+    </script>
+    <script type="text/javascript" src="sh/scripts/shCore.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushXml.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushJava.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushPlain.js"></script>
+    <link href="sh/styles/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="sh/styles/shThemeThymeleaf.css" rel="stylesheet" type="text/css" />
+  </head>
+
+
+  <body lang="en" dir="ltr">
+
+  <div id="page">
+
+  
+   <div id="menu">
+     <ul>
+       <li><a href="index.html" title="Home">Home</a></li>
+       <li><a href="download.html" title="Download">Download</a></li>
+       <li><a href="documentation.html" title="Documentation">Documentation</a></li>
+       <li><a href="ecosystem.html" title="Ecosystem">Ecosystem</a></li>
+       <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
+       <li><a href="issuetracking.html" title="Issue Tracking">Issue Tracking</a></li>
+     </ul>
+   </div>
+
+   <div id="header">
+     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
+   </div>
+
+   <div id="breadcrumb">
+      <a href="index.html">thymeleaf</a>
+      ::
+      <a href="documentation.html">documentation</a> 
+      ::
+      <span class="current">what's new in thymeleaf 2.1</span>
+   </div>
+
+
+   <div id="content">
+
+    <h1>What's new in Thymeleaf 2.1</h1>
+
+
+	<p>
+      Thymeleaf 2.1 includes a lot of new powerful features. Here they are:
+	</p>
+    <ul>
+        <li><a href="#core"><strong>New Features in Thymeleaf Core</strong></a>:
+            <ul>
+              <li>Fragment inclusion:
+                <ul>
+                  <li><a href="#stf">Same-template fragments</a></li>
+                  <li><a href="#fsig">Parameterizable fragment signatures</a></li>
+                </ul>
+              </li>
+              <li>Expression improvements:
+                <ul>
+                  <li><a href="#doms">More powerful DOM selector syntax</a></li>
+                  <li><a href="#littok">Literal tokens</a></li>
+                  <li><a href="#bnlit">Boolean and null literals</a></li>
+                  <li><a href="#lsub">Literal substitutions</a></li>
+                  <li><a href="#pru">Protocol-relative URLs</a></li>
+                </ul>
+              </li>
+              <li>Markup processing improvements:
+                <ul>
+                  <li><a href="#plcom">Parser-level comment blocks</a></li>
+                  <li><a href="#pocb">Prototype-only comment blocks</a></li>
+                </ul>
+              </li>
+              <li>New Standard Dialect features:
+                <ul>
+                  <li><a href="#remove">Improved <kbd>th:remove</kbd> attribute</a></li>
+                  <li><a href="#bloc">Synthetic <kbd>th:block</kbd> tag</a></li>
+                  <li><a href="#data">Support for HTML5-friendly attribute and element names</a></li>
+                  <li><a href="#assr">New <kbd>th:assert</kbd> for in-template assertions</a></li>
+                  <li><a href="#repl">New <kbd>th:replace</kbd> as a synonym of <kbd>th:substituteby</kbd></a></li>
+                  <li><a href="#with">Reuse variables in <kbd>th:with</kbd></a></li>
+                </ul>
+              </li>
+            </ul>
+        </li>
+        <li><a href="#spring"><strong>New Features in Spring Integration</strong></a>:
+            <ul>
+                <li>Better integration with Spring features:
+                    <ul>
+                        <li><a href="#spbean">More integrated acccess to beans from expressions</a></li>
+                        <li><a href="#spconv">Integration of Spring type conversion infrastructure</a></li>
+                        <li><a href="#spres">Spring-resource based template resolver</a></li>
+                    </ul>
+                </li>
+                <li>Ease of use:
+                    <ul>
+                        <li><a href="#spfrag">Render view fragments directly from controllers</a></li>
+                    </ul>
+                </li>
+                <li>Form error handling:
+                    <ul>
+                        <li><a href="#errcl">New <kbd>th:errorclass</kbd> for adding CSS class to form fields in error</a></li>
+                        <li><a href="#sperr">Additional form validation error reporting options</a></li>
+                    </ul>
+                </li>
+                <li>Security:
+                    <ul>
+                        <li><a href="#reqdata">Transparent integration with Spring's <kbd>RequestDataValueProcessor</kbd></a></li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+
+       <h1><a name="core"></a>New Features in Thymeleaf Core</h1>
+
+       <h2><a name="stf"></a>Same-template fragments</h2>
+
+       <p>
+           Thymeleaf now allows including fragments from the same template. There are two available
+           syntaxes: one specifying no template name:
+       </p>
+
+       <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+           <div th:include="::fragment_name">...</div>
+       ]]></script>
+
+       <p>
+           ...and another one specifying the keyword <kbd>this</kbd>:
+       </p>
+
+       <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+           <div th:include="this :: fragment_name">...</div>
+       ]]></script>
+
+
+
+
+       <h2><a name="fsig"></a>Parameterizable fragment signatures</h2>
+
+       <p>
+           In order to create a more <i>function-like</i> mechanism for the use of template fragments, fragments
+           defined with <kbd>th:fragment</kbd> can now specify a set of parameters:
+       </p>
+
+       <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+           <div th:fragment="frag (onevar,twovar)">
+               <p th:text="${onevar} + ' - ' + ${twovar}">...</p>
+           </div>
+       ]]></script>
+
+       <p>
+           This requires the use of one of these two syntaxes to call the fragment from <kbd>th:include</kbd>,
+           <kbd>th:substituteby</kbd> or <kbd>th:replace</kbd>:
+       </p>
+
+       <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+           <div th:include="::frag (${value1},${value2})">...</div>
+       ]]></script>
+       <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+           <div th:include="::frag (onevar=${value1},twovar=${value2})">...</div>
+       ]]></script>
+
+       <p>
+           Note that order is not important in the last option:
+       </p>
+
+       <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+           <div th:include="::frag (twovar=${value2},onevar=${value1})">...</div>
+       ]]></script>
+
+       <h4>Fragment local variables without fragment signature</h4>
+
+       <p>
+            Even if fragments are defined without signature, like this:
+       </p>
+
+       <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+           <div th:fragment="frag">
+               ...
+           </div>
+       ]]></script>
+
+       <p>
+            We could use the second syntax specified above to call them (and only the second one):
+       </p>
+
+       <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+           <div th:include="::frag (onevar=${value1},twovar=${value2})">
+       ]]></script>
+
+       <p>
+            This would be, in fact, equivalent to a combination of <kbd>th:include</kbd> and <kbd>th:with</kbd>:
+       </p>
+
+       <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+           <div th:include="::frag" th:with="onevar=${value1},twovar=${value2}">
+       ]]></script>
+
+       <p>
+           But the difference is, this will also work with <kbd>th:substituteby</kbd> (and the new <kbd>th:replace</kbd>).
+           Until now these attributes didn't work well with <kbd>th:with</kbd> because they effectively removed the host
+           tag before <kbd>th:with</kbd> got executed:
+       </p>
+
+       <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+           <!-- th:with will never be executed. Variables will never be created -->
+           <div th:replace="::frag" th:with="onevar=${value1},twovar=${value2}">
+       ]]></script>
+
+       <p>
+           <strong>Note</strong> that this specification of local variables for a fragment &mdash;no matter whether it
+           has a signature or not&mdash; does not cause an initialization of the context to zero.
+           Fragments will still be able to access every context variable being used at the calling
+           template like they currently are.
+       </p>
+
+
+
+
+        <h2><a name="doms"></a>More powerful DOM selector syntax</h2>
+
+
+        <p>
+            DOM Selector syntax has been enhanced to include more selection possibilities and easier
+            selection of DOM fragments. These selectors are a way to specify fragments already available since
+            thymeleaf 2.0:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:include="mytemplate :: [//div[@class='content']]">...</div>
+        ]]></script>
+
+        <p>
+            Thymeleaf 2.1 adds to these Selectors some syntax features borrowed from CSS and jQuery, in order to make them
+            more powerful and easy to use:
+        </p>
+
+        <ul>
+            <li>Now <kbd>x</kbd> is exactly equivalent to <kbd>//x</kbd> (search an element with name or <em>reference</em> "<kbd>x</kbd>"
+                at any depth level).</li>
+            <li>Allowed selectors without element name/reference, as long as it includes a specification of arguments. So
+                <kbd>[@class='oneclass']</kbd> is now a valid selector that looks for any elements (<em>tags</em>) with a
+                <kbd>class</kbd> attribute with value <kbd>"oneclass"</kbd>.</li>
+            <li>Attribute selection enhancements:
+                <ul>
+                    <li>Besides "<kbd>=</kbd>" (equal)., other comparison operators are now also valid: "<kbd>!=</kbd>" (not equal),
+                        "<kbd>^=</kbd>" (starts with) and "<kbd>$=</kbd>" (ends with). For example:
+                        <kbd>x[@class^='section']</kbd> means <em>elements with name <kbd>x</kbd> and a value for
+                            attribute class that starts with <kbd>section</kbd></em>.</li>
+                    <li>Attributes can be specified both starting with <kbd>@</kbd> (XPath-style) and without
+                        (jQuery-style). So <kbd>x[z='v']</kbd> is now equivalent to <kbd>x[@z='v']</kbd>.</li>
+                    <li>Multiple-attribute modifiers can now be joined both with "<kbd>and</kbd>" (XPath-style) and also by
+                        chaining multiple modifiers (jQuery-style). So <kbd>x[@z1='v1' and @z2='v2']</kbd> is
+                        actually equivalent to <kbd>x[@z1='v1'][@z2='v2']</kbd> (and also to
+                        <kbd>x[z1='v1'][z2='v2']</kbd>).</li>
+                </ul>
+            </li>
+            <li>Direct selectors:
+                <ul>
+                    <li><kbd>x.oneclass</kbd> is now equivalent to <kbd>x[class='oneclass']</kbd>.</li>
+                    <li><kbd>.oneclass</kbd> is now equivalent to <kbd>[class='oneclass']</kbd>.</li>
+                    <li><kbd>x#oneid</kbd> is now equivalent to <kbd>x[id='oneid']</kbd>.</li>
+                    <li><kbd>#oneid</kbd> is now equivalent to <kbd>[id='oneid']</kbd>.</li>
+                    <li><kbd>x%oneref</kbd> means nodes -not just <em>elements</em>- with name <kbd>x</kbd> that match reference
+                        <kbd>oneref</kbd> according to a specified <kbd>DOMSelector.INodeReferenceChecker</kbd> implementation.</li>
+                    <li><kbd>%oneref</kbd> means nodes -not just <em>elements</em>- with any name that match reference
+                        <kbd>oneref</kbd> according to a specified <kbd>DOMSelector.INodeReferenceChecker</kbd> implementation.
+                        <ul>
+                            <li>Note this is actually equivalent to simply <kbd>oneref</kbd> because references can be used instead of element names.</li>
+                        </ul>
+                    </li>
+                    <li>Direct selectors and attribute selectors can be mixed: <kbd>a.external[@href^='https']</kbd>.</li>
+                </ul>
+            </li>
+            <li>Specific feature: DOM Selectors now understand the <kbd>class</kbd> attribute to be multivalued, and therefore allow the
+                application of selectors on this attribute even if the element has several class values.
+                For example, <kbd>div[class='two']</kbd> will match <kbd>&lt;div class="one two three"/&gt;<kbd></kbd></li>
+        </ul>
+
+        <p>
+            So now the above DOM Selector expression:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:include="mytemplate :: [//div[@class='content']]">...</div>
+        ]]></script>
+
+        <p>
+            ...could be written as:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:include="mytemplate :: [div.content]">...</div>
+        ]]></script>
+
+        <h4>Fragment specifications adapted to new DOM Selectors</h4>
+
+        <p>
+            Also, in order to better take advantage of the new selector syntax, the syntax of the fragment inclusion
+            attributes (like the above <kbd>th:include</kbd>) has been modified to <em>convert every fragment selection
+            into a DOM selection</em>, so that brackets <kbd>[...]</kbd> are no longer needed (though <em>allowed</em>).
+        </p>
+
+        <p>
+            So the following, with no brackets, is now equivalent to the bracketed selector seen above:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:include="mytemplate :: div.content">...</div>
+        ]]></script>
+
+        <p>
+            So, summarizing, this:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:replace="mytemplate :: myfrag">...</div>
+        ]]></script>
+
+        <p>
+            Will look for a <kbd>th:fragment="myfrag"</kbd> fragment signature. But would also look for tags with name <kbd>myfrag</kbd>
+            if they existed (which they don't, in HTML). Note the difference with:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:replace="mytemplate :: .myfrag">...</div>
+        ]]></script>
+
+        <p>
+            ...which will actually look for any elements with <kbd>class="myfrag"</kbd>, without caring about <kbd>th:fragment</kbd>
+            signatures.
+        </p>
+
+
+
+
+        <h2><a name="littok"></a>Literal tokens</h2>
+
+
+        <p>
+            Thymeleaf 2.1 allows for a little bit of simplification in Standard Expressions (i.e. outside
+            OGNL or SpringEL variable expressions), thanks to the
+            introduction of <em>literal tokens</em>.
+        </p>
+        <p>
+            These tokens work exactly the same as literals (<kbd>'...'</kbd>), but they
+            only allow letters (<kbd>A-Z</kbd> and <kbd>a-z</kbd>), numbers (<kbd>0-9</kbd>), brackets
+            (<kbd>[</kbd> and <kbd>]</kbd>), dots (<kbd>.</kbd>), hyphens (<kbd>-</kbd>) and underscores
+            (<kbd>_</kbd>). So no whitespaces, no commas, etc.
+        </p>
+        <p>
+            The nice part? tokens don't need any quotes surrounding them. So we can now do this:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:class="content">...</div>
+        ]]></script>
+
+        <p>
+            ...instead of:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:class="'content'">...</div>
+        ]]></script>
+
+
+        <h2><a name="bnlit"></a>Boolean and null tokens</h2>
+
+
+        <p>
+            Boolean and null tokens can now be used (they are <em>reserved tokens</em>). The following is now valid:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:if="${user.isAdmin()} == false"> ...
+        ]]></script>
+
+        <p>
+            Note the difference with what was allowed in 2.0, when the only way to do this was to specify the
+            <kbd>false</kbd> token inside the OGNL/SpringEL expression and therefore let these expression engines
+            evaluate it (not thymeleaf).
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:if="${user.isAdmin() == false}"> ...
+        ]]></script>
+
+        <p>
+            The <kbd>null</kbd> token also works as expected:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:if="${variable.something} == null"> ...
+        ]]></script>
+
+
+
+        <h2><a name="lsub"></a>Literal substitutions</h2>
+
+
+        <p>
+            The new literal substitutions in Thymeleaf Standard Expressions allow the easy formatting of strings which
+            may contain values from variables without the need to append literals with <kbd>'...' + '...'</kbd>.
+        </p>
+        <p>
+            These substitutions must be surrounded by vertical bars (<kbd>|</kbd>), like:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <span th:text="|Welcome to our application, ${user.name}!|">
+        ]]></script>
+
+        <p>
+            Which is actually equivalent to:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+           <span th:text="'Welcome to our application, ' + ${user.name} + '!'">
+        ]]></script>
+
+        <p>
+            Literal substitutions can be combined with other types of expressions:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+           <span th:text="${onevar} + ' ' + |${twovar}, ${threevar}|">
+        ]]></script>
+
+        <p>
+            <strong>Note</strong>: Note: only variable expressions are allowed inside <kbd>|...|</kbd> literal
+            substitutions. No other literals (<kbd>'...'</kbd>), boolean/numeric tokens, conditional expressions etc.
+            are.
+        </p>
+
+
+
+
+
+        <h2><a name="pru"></a>Protocol-relative URLs</h2>
+
+
+        <p>
+            Thymeleaf 2.1 allows now protocol-relative URLs, like:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            &lt;script th:src="@{//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js}">&lt;/script>
+        ]]></script>
+
+
+
+
+
+        <h2><a name="plcom"></a>Parser-level comment blocks</h2>
+
+
+        <p>
+            Parser-level comment blocks are code that will be simply removed from the template when
+            thymeleaf parses it. They should look like this:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <!--/* This code will be removed at thymeleaf parsing time! */-->
+        ]]></script>
+
+        <p>
+            Thymeleaf will remove absolutely everything between <kbd>&lt;!--/* and */--&gt;</kbd>, so
+            these comment blocks can be used not only for template comments that shouldn't appear in the final result,
+            but also for displaying code when a template is statically open, knowing that it will be removed when thymeleaf processes it:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <!--/*-->
+            <div>
+                you can see me only before thymeleaf processes me!
+            </div>
+            <!--*/-->
+        ]]></script>
+
+        <p>
+            This might come very handy for prototyping tables with a lot of <kbd>&lt;tr&gt;</kbd>'s, for example:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <table>
+                <tr th:each="x : ${xs}">
+                    ...
+                </tr>
+                <!--/*-->
+                <tr>
+                    ...
+                </tr>
+                <tr>
+                    ...
+                </tr>
+                <!--*/-->
+            </table>
+        ]]></script>
+
+        <p>
+            Note that this feature is <em>dialect-independent</em>. So it will be available for us even if we don't
+            use the Standard Dialects.
+        </p>
+
+
+
+
+
+        <h2><a name="pocb"></a>Prototype-only comment blocks</h2>
+
+
+        <p>
+            As an evolution of parser-level comment blocks, Thymeleaf 2.1 allows the definition of
+            special comment blocks marked to be comments when the template is open statically (i.e. as a <em>prototype</em>),
+            but <em>considered normal markup</em> by thymeleaf when executing the template.
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <span>hello!</span>
+            <!--/*/
+              <div th:text="${...}">
+                ...
+              </div>
+            /*/-->
+            <span>goodbye!</span>
+        ]]></script>
+
+        <p>
+           Thymeleaf's parsing system will simply remove the <kbd>&lt;!--/*/</kbd> and <kbd>/*/--&gt;</kbd> markers, but
+           not its contents, which will be left therefore <em>uncommented</em>. So when executing the template,
+           thymeleaf will actually see this:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <span>hello!</span>
+
+              <div th:text="${...}">
+                ...
+              </div>
+
+            <span>goodbye!</span>
+        ]]></script>
+
+        <p>
+            As with parser-level comment blocks, note that this feature is also <em>dialect-independent</em>.
+        </p>
+
+
+
+
+        <h2><a name="remove"></a>Improved <kbd>th:remove</kbd> attribute</h2>
+
+
+        <p>
+            The <kbd>th:remove</kbd> attribute can take now any Thymeleaf Standard Expression, as long as it returns
+            one of the following String values:
+        </p>
+
+        <ul>
+            <li><kbd>all</kbd></li>
+            <li><kbd>tag</kbd></li>
+            <li><kbd>body</kbd></li>
+            <li><kbd>all-but-first</kbd></li>
+            <li><kbd>none</kbd></li>
+        </ul>
+
+        <p>
+            This means removals could now be conditional, like:
+        </p>
+
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <a href="/something" th:remove="${condition}? tag : none">Link text not to be removed</a>
+        ]]></script>
+
+        <p>
+            Also note that <kbd>th:remove</kbd> could consider <kbd>null</kbd> a synonym to <kbd>none</kbd>, so that the
+            following works exactly as the example above:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <a href="/something" th:remove="${condition}? tag">Link text not to be removed</a>
+        ]]></script>
+
+        <p>
+            If <kbd>${condition}</kbd> is false, null will be returned, and thus no removal will be performed.
+        </p>
+
+
+
+
+
+        <h2><a name="bloc"></a>Synthetic <kbd>th:block</kbd> tag</h2>
+
+
+        <p>
+            Thymeleaf 2.1 adds the first <em>element processor</em> to the Standard Dialects (until now, all processors
+            were <em>attribute-based</em>): <kbd>th:block</kbd>
+        </p>
+
+        <p>
+            <kbd>th:block</kbd> is a mere attribute container that allows template developers to specify whichever
+            attributes they want, executes them, and then simply dissapears without a trace. So it could be useful, for
+            example, when creating iterated tables that require more than one <kbd>&lt;tr&gt;</kbd> for each element:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <table>
+              <th:block th:each="user : ${users}">
+                <tr>
+                    <td th:text="${user.login}">...</td>
+                    <td th:text="${user.name}">...</td>
+                </tr>
+                <tr>
+                    <td colspan="2" th:text="${user.address}">...</td>
+                </tr>
+              </th:block>
+            </table>
+        ]]></script>
+
+        <p>
+            And especially useful when used in combination with <em>prototype-only comment blocks</em>:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <table>
+                <!--/*/ <th:block th:each="user : ${users}"> /*/-->
+                <tr>
+                    <td th:text="${user.login}">...</td>
+                    <td th:text="${user.name}">...</td>
+                </tr>
+                <tr>
+                    <td colspan="2" th:text="${user.address}">...</td>
+                </tr>
+                <!--/*/ </th:block> /*/-->
+            </table>
+        ]]></script>
+
+        <p>
+            Note how this solution allows templates to be valid HTML (no need to add forbidden <kbd>&lt;div&gt;</kbd>
+            blocks inside <kbd>&lt;table&gt;</kbd>), and still work OK when open statically in browsers as prototypes!
+        </p>
+
+
+
+
+
+        <h2><a name="data"></a>Support for HTML5-friendly attribute and element names</h2>
+
+
+        <p>
+            Thymeleaf 2.1 adds a completely new syntax we can use to apply processors to our templates, more
+            <em>HTML5-friendly</em>.
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <table>
+                <tr data-th-each="user : ${users}">
+                    <td data-th-text="${user.login}">...</td>
+                    <td data-th-text="${user.name}">...</td>
+                </tr>
+            </table>
+        ]]></script>
+
+        <p>
+            The <kbd>data-{prefix}-{name}</kbd> syntax is the standard way to write <em>custom attributes</em> in
+            HTML5, without requiring developers to use any namespaced names like <kbd>th:*</kbd>. Thymeleaf 2.1 makes
+            this syntax automatically available to all our dialects (not only the Standard ones).
+        </p>
+
+        <p>
+            There is also a new syntax to specify custom tags: <kbd>{prefix}-{name}</kbd>, which follows the
+            <em>W3C Custom Elements</em> specification (a part of the larger <em>W3C Web Components</em> spec). We
+            can use this, for example, for the new <kbd>th:block</kbd> element (or also <kbd>th-block</kbd>):
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <!-- ======================================================= -->
+            <!-- Fully HTML5-valid, both prototype and working template! -->
+            <!-- ======================================================= -->
+            <table>
+                <!--/*/ <th-block data-th-each="user : ${users}"> /*/-->
+                <tr>
+                    <td data-th-text="${user.login}">...</td>
+                    <td data-th-text="${user.name}">...</td>
+                </tr>
+                <tr>
+                    <td colspan="2" data-th-text="${user.address}">...</td>
+                </tr>
+                <!--/*/ </th-block> /*/-->
+            </table>
+        ]]></script>
+
+        <p>
+            <strong>Important</strong>: this new syntax is an <strong>addition</strong> to the namespaced <kbd>th:*</kbd>
+            one, it does not replace it. There is no intention at all to deprecate the namespaced syntax in the future.
+        </p>
+
+
+
+
+        <h2><a name="assr"></a>New <kbd>th:assert</kbd> for in-template assertions</h2>
+
+
+        <p>
+            A new <em>attribute processor</em> is now available: <kbd>th:assert</kbd>. This attribute can specify
+            a comma-separated list of expressions which should be evaluated and produce <kbd>true</kbd> for every
+            evaluation, raising an exception if not.
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:assert="${onevar},(${twovar} != 43)">...</div>
+        ]]></script>
+
+        <p>
+            This comes in handy for validating parameters at a fragment signature:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <header th:fragment="contentheader(title)" th:assert="${!#strings.isEmpty(title)}">...</header>
+        ]]></script>
+
+
+
+
+
+        <h2><a name="repl"></a>New <kbd>th:replace</kbd> as a synonym of <kbd>th:substituteby</kbd></h2>
+
+
+        <p>
+            For semantic reasons, a new <kbd>th:replace</kbd> has been introduced as a full synonym of
+            <kbd>th:substituteby</kbd> (in fact, it was <em>sneakily</em> added in 2.0.18):
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:replace="mytemplate :: .myfrag">...</div>
+        ]]></script>
+
+        <p>
+            Template developers are now recommended to use <kbd>th:replace</kbd> instead of <kbd>th:substituteby</kbd>,
+            as the latter will probably be deprecated (not <em>removed</em>) in thymeleaf 3.0.
+        </p>
+
+
+
+
+        <h2><a name="with"></a>Reuse variables in <kbd>th:with</kbd></h2>
+
+
+        <p>
+            As a minor optimization, the <kbd>th:with</kbd> attribute now allows <em>reusing</em> variables defined
+            in the same attribute:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:with="company=${user.company + ' Co.'},account=${accounts[company]}">...</div>
+        ]]></script>
+
+
+
+
+        <br /><br /><br />
+
+
+
+
+        <h1><a name="spring"></a>New Features in Spring Integration</h1>
+
+
+
+        <h2><a name="spbean"></a>More integrated acccess to beans from expressions</h2>
+
+        <p>
+            Thymeleaf now allows us to access beans registered in our Spring application context in the standard
+            way defined by Spring EL, which is using the syntax <kbd>@beanName</kbd>:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:text="${@authService.getUserName()}">...</div>
+        ]]></script>
+
+        <p>
+            Until now, we could access beans with the thymeleaf-specific
+            syntax <kbd>beans.beanName</kbd>:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:text="${beans.authService.getUserName()}">...</div>
+        ]]></script>
+
+        <p>
+            Note that this latter syntax is now considered deprecated in favour of the standard Spring EL
+            one (<kbd>@beanName</kbd>).
+        </p>
+
+
+
+        <h2><a name="spconv"></a>Integration of Spring type conversion infrastructure</h2>
+
+        <p>
+            Spring 3 introduced a type conversion system more general than <i>Property Editors</i>: the
+            <i>Spring Type Conversion System</i> (see
+            <a href="http://docs.spring.io/spring/docs/3.2.x/spring-framework-reference/html/validation.html#core-convert"
+            target="_blank">[docs.spring.io]</a>). This system is mainly based on <i>Converters</i>
+            (X-to-Y one-way conversion) and <i>Formatters</i> (X-to-String two-way conversion), easily implemented
+            by means of their corresponding interfaces, and registered at a <i>conversion service</i> in the
+            application context.
+        </p>
+        <p>
+            Thymeleaf now seamlessly integrates with our <i>conversion service</i> thanks to the introduction of
+            double-bracket expressions, which apply conversion on their result:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <p th:text="${{val}}">...</p>
+        ]]></script>
+
+        <p>
+            So we can now have a formatter like this:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+            public class CalendarFormatter implements Formatter<Calendar> {
+
+                private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
+
+                public CalendarFormatter() {
+                    super();
+                }
+
+                public Calendar parse(String text, Locale locale) throws ParseException {
+                    synchronized (SDF) {
+                        final Date date = SDF.parse(text);
+                        final Calendar cal = Calendar.getInstance();
+                        cal.setTimeInMillis(date.getTime());
+                        return cal;
+                    }
+                }
+
+                public String print(Calendar object, Locale locale) {
+                    synchronized (SDF) {
+                        return SDF.format(object.getTime());
+                    }
+                }
+
+            }
+        ]]></script>
+
+        <p>
+            Registered in our application context like this:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+            <mvc:annotation-driven conversion-service="conversionService"/>
+
+            <bean id="conversionService"
+                  class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+                <property name="formatters">
+                    <set>
+                        <bean class="mycompany.myapp.CalendarFormatter"/>
+                    </set>
+                </property>
+            </bean>
+        ]]></script>
+
+        <p>
+            Thymeleaf will allow us to use our formatter whenever we need it. So given a
+            <kbd>Calendar</kbd> variable in context with name <kbd>onedate</kbd>, the following:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <p th:text="${{onedate}}">...</p>
+            <p th:text="|The date is ${{onedate}}|">...</p>
+        ]]></script>
+
+        <p>
+            Results in:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <p>1492-10-12</p>
+            <p>The date is 1492-10-12</p>
+        ]]></script>
+
+
+
+        <h4>Conversion in Spring forms</h4>
+
+        <p>
+            Besides, whenever the converted (double-bracketed) expression refers to a Spring-bound object
+            (e.g. a form-backing bean) thymeleaf will not only apply the conversion service but also the
+            property editors and also any formatting annotations. So given:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+            <form th:object="${obj}">
+                <p>Date: <span th:text="*{{date}}">somedate</span></p>
+            </form>
+        ]]></script>
+
+        <p>
+        If that date field in <kbd>${obj}</kbd> has an annotation like:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+            @DateTimeFormat(pattern = "yyyy-MM-dd")
+            private Date date;
+        ]]></script>
+
+
+        <p>
+            The result will be:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+            <form>
+                <p>Date: <span>1492-10-12</span></p>
+            </form>
+        ]]></script>
+
+
+
+        <h4>The <kbd>#conversions</kbd> utility object</h4>
+
+
+        <p>
+            Besides this double-bracket syntax, a new expression utility object has been added,
+            allowing the manual execution of the conversion service whenever needed:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+            <p th:text="${'Val: ' + #conversions.convert(val,'String')}">...</p>
+        ]]></script>
+
+        <p>
+            Syntax for this utility object:
+        </p>
+
+        <ul>
+            <li><kbd>#conversions.convert(Object,Class)</kbd>: converts the object to the specified class.</li>
+            <li><kbd>#conversions.convert(Object,String)</kbd>: same as above, but specifying the target class
+                as a String (note the <kbd>java.lang.</kbd> package can be ommitted).</li>
+        </ul>
+
+
+
+
+        <h2><a name="spres"></a>Spring-resource based template resolver</h2>
+
+        <p>
+            Thymeleaf now includes a new <kbd>ITemplateResolver</kbd> implementation, besides the standard ones. This
+            new implementation is called
+            <kbd>org.thymeleaf.spring3.templateresolver.SpringResourceTemplateResolver</kbd>. It can be specified
+            at the application context like:
+        </p>
+
+
+        <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+            ...
+            <bean id="templateResolver"
+                  class="org.thymeleaf.spring3.templateresolver.SpringResourceTemplateResolver">
+                <property name="templateMode" value="HTML5" />
+                <property name="cacheable" value="true" />
+            </bean>
+
+            <bean id="templateEngine"
+                  class="org.thymeleaf.spring3.SpringTemplateEngine">
+                <property name="templateResolver" ref="templateResolver" />
+            </bean>
+            ...
+        ]]></script>
+
+        <p>
+            This new implementation delegates on Spring's own resource resolution mechanism
+            (<kbd>ApplicationContext.getResource(resourceName)</kbd>), so templates can be now selected
+            in the same ways Spring itself allows to specify resources, like:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+            @RequestMapping("/")
+            public String index() {
+                ...
+                return "classpath:appres/templates/index.html";
+            }
+        ]]></script>
+
+
+
+        <h2><a name="spfrag"></a>Render view fragments directly from controllers</h2>
+
+        <p>
+            Thymeleaf now allows specifying template fragments whenever a view name is returned after controller
+            execution. So given the following template called <kbd>myTemplate</kbd>:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <!DOCTYPE html>
+            <html>
+              ...
+              <body>
+                ...
+                <div th:fragment="myFrag">
+                  <ul th:each="p : ${products}">
+                    <li th:text="${p.name}">One product</li>
+                  </ul>
+                </div>
+                ...
+              </body>
+            </html>
+        ]]></script>
+
+        <p>
+            A Spring MVC controller can render the <kbd>myFrag</kbd> fragment with:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+            @RequestMapping("/frag")
+            public String showFrag(final ModelMap model) {
+                model.addAttribute("products", this.productRepository.findAll());
+                return "myTemplate :: myFrag";
+            }
+        ]]></script>
+
+        <p>
+            This is a very useful feature for controller methods meant to be called via AJAX, which can now
+            just render the part of the HTML they really need.
+        </p>
+
+        <p>
+            Besides, the new DOM Selector syntax provides a lot of power, and there is actually no need to
+            specify <kbd>th:fragment</kbd> at all:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            ...
+            <div id="content">
+                ...
+            </div>
+            ...
+        ]]></script>
+
+        <p>
+            ...and then:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+            @RequestMapping("/frag")
+            public String showFrag() {
+                ...
+                return "myTemplate :: #content";
+            }
+        ]]></script>
+
+
+
+
+        <h2><a name="errcl"></a>New <kbd>th:errorclass</kbd> for adding CSS class to form fields in error</h2>
+
+        <p>
+            Until now, whenever we wanted to apply a specific CSS class to an input field in a form when
+            there were errors for that field, we needed to use the <kbd>th:class</kbd> or <kbd>th:classappend</kbd>
+            attributes like this:
+        </p>
+
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <input type="text" th:field="*{age}"
+                   th:class="${#fields.hasErrors('age')}? 'error'" />
+        ]]></script>
+
+        <p>
+            In Thymeleaf 2.1, in order to simplify this structure, a new <kbd>th:errorclass</kbd> attribute
+            processor has been introduced. This processor will read the name of the field from the <kbd>name</kbd>
+            or <kbd>th:field</kbd> attribute in the same tag, and apply the specified class if such field has errors.
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <input type="text" th:field="*{age}" th:errorclass="'error'" />
+        ]]></script>
+
+        <p>
+            Note the <kbd>'error'</kbd> literal is in fact a token, so no single quotes are really needed:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <input type="text" th:field="*{age}" th:errorclass="error" />
+        ]]></script>
+
+        <p>
+            The result is much more concise. Note also that <kbd>th:errorclass</kbd> works like
+            <kbd>th:classappend</kbd>, not <kbd>th:class</kbd>. So the specified class will in fact be
+            <em>appended</em> to any existing ones. So:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <input type="text" th:field="*{age}"
+                   class="input" th:errorclass="error" />
+        ]]></script>
+
+        <p>
+            Will result, if the age field has errors, in:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <input type="text" id="age" name="age" value="23" class="input error" />
+        ]]></script>
+
+
+
+        <h2><a name="sperr"></a>Additional form validation error reporting options</h2>
+
+        <p>
+            Thymeleaf now implements a more comprehensive expression support for form validation errors (besides all the previously supported
+            artifacts):
+        </p>
+
+        <ul>
+            <li>Field errors:
+                <ul>
+                    <li>Conditional: <kbd>${#fields.hasErrors('*{fieldName}')}</kbd></li>
+                    <li>Error list: <kbd>${#fields.errors('*{fieldName}')}</kbd></li>
+                </ul>
+            </li>
+            <li>Global errors:
+                <ul>
+                    <li>Conditional: <kbd>${#fields.hasGlobalErrors()}</kbd>, <kbd>${#fields.hasErrors('global')}</kbd></li>
+                    <li>Error list: <kbd>${#fields.globalErrors()}</kbd>, <kbd>${#fields.errors('global')}</kbd></li>
+                </ul>
+            </li>
+            <li>All errors:
+                <ul>
+                    <li>Conditional: <kbd>${#fields.hasAnyErrors()}</kbd>, <kbd>${#fields.hasErrors()}</kbd>, <kbd>${#fields.hasErrors('all')}</kbd></li>
+                    <li>Error list: <kbd>${#fields.allErrors()}</kbd>, <kbd>${#fields.errors()}</kbd>, <kbd>${#fields.errors('all')}</kbd></li>
+                </ul>
+            </li>
+        </ul>
+
+        <p>
+            And now form validation errors can also be accessed outside forms themselves, by prepending the
+            form-backing bean name (and using <kbd>${...}</kbd> instead of <kbd>*{...}</kbd>):
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <div th:errors="${myForm}"></div>
+            <div th:errors="${myForm.date}"></div>
+            <div th:errors="${myForm.*}"></div>
+
+            <div th:if="${#fields.hasErrors('${myForm}')}"></div>
+            <div th:if="${#fields.hasErrors('${myForm.date}')}"></div>
+            <div th:if="${#fields.hasErrors('${myForm.*}')}"></div>
+
+            <form th:object="${myForm}">
+                ...
+            </form>
+        ]]></script>
+
+
+
+        <h2><a name="reqdata"></a>Transparent integration with Spring's <kbd>RequestDataValueProcessor</kbd></h2>
+
+        <p>
+            Thymeleaf now seamlessly integrates with Spring's <kbd>RequestDataValueProcessor</kbd> interface. This
+            interface allows the interception of link URLs, form URLs and form field values before they are written
+            to the markup result, as well as transparently adding hidden form fields that enable security features
+            like e.g. protection agains CSRF <em>(Cross-Site Request Forgery)</em>.
+        </p>
+        <p>
+            See the <a target="_blank"
+            href="http://docs.spring.io/spring/docs/3.1.4.RELEASE/javadoc-api/org/springframework/web/servlet/support/RequestDataValueProcessor.html">interface
+            definition here</a>, and also <a target="_blank"
+            href="http://blog.eyallupu.com/2012/04/csrf-defense-in-spring-mvc-31.html">this article</a> as
+            an example of its use for CSRF.
+        </p>
+        <p>
+            An implementation of <kbd>RequestDataValueProcessor</kbd> can be easily configured at the Application Context:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+            <?xml version="1.0" encoding="UTF-8"?>
+            <beans xmlns="http://www.springframework.org/schema/beans"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                 http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+                ...
+
+                <bean name="requestDataValueProcessor"
+                      class="net.example.requestdata.processor.MyRequestDataValueProcessor" />
+
+            </beans>
+        ]]></script>
+
+        <p>
+            ...and Thymeleaf uses it this way:
+        </p>
+
+        <ul>
+            <li><kbd>th:href</kbd> and <kbd>th:src</kbd> call <kbd>RequestDataValueProcessor.processUrl(...)</kbd> before
+                rendering the URL.</li>
+            <li><kbd>th:action</kbd> calls <kbd>RequestDataValueProcessor.processAction(...)</kbd> before rendering
+                the form's <kbd>action</kbd> attribute, and additionally it detects when this attribute is being
+                applied on a <kbd>&lt;form&gt;</kbd> tag &mdash;which should be the only place, anyway&mdash;, and in such
+                case calls <kbd>RequestDataValueProcessor.getExtraHiddenFields(...)</kbd> and adds the returned
+                hidden fields just before the closing <kbd>&lt;/form&gt;</kbd> tag.</li>
+            <li><kbd>th:value</kbd> calls <kbd>RequestDataValueProcessor.processFormFieldValue(...)</kbd> for
+                rendering the value it refers to, unless there is a <kbd>th:field</kbd> present in the same
+                tag (in which case <kbd>th:field</kbd> will take care).</li>
+            <li><kbd>th:field</kbd> calls <kbd>RequestDataValueProcessor.processFormFieldValue(...)</kbd> for
+                rendering the value of the field it applies to (or the tag body if it is a
+                <kbd>&lt;textarea&gt;</kbd>).</li>
+        </ul>
+
+        <p>
+            Note this feature will only be available for Spring versions 3.1 and newer.
+        </p>
+
+
+
+   </div>
+   
+   
+   <div id="footer">
+     <div id="googleplus">
+       <div id="plusone-div" class="plusone"></div>
+       <script type="text/javascript">
+           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
+       </script>
+     </div>
+     <div id="twitter">
+       <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>
+       <script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
+     </div>
+     <div id="copy">
+       Copyright &copy; The <a href="team.html">THYMELEAF Team</a>. See <a href="documentation.html">applicable licenses</a>.
+     </div>
+   </div>
+   
+  </div>
+
+  <script type="text/javascript">
+      SyntaxHighlighter.all();
+  </script>
+
+  </body>
+  
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+	<title>Issue Tracking - Thymeleaf</title>
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+	<link rel="icon" href="images/favicon.ico"/>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,400italic,700,700italic"/>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic,700italic"/>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/2.1.3/normalize.min.css" media="screen"/>
+	<link rel="stylesheet" href="styles/thymeleaf.css" media="screen"/>
+
+	<script src="https://unpkg.com/dumb-query-selector@3.0.0/dumb-query-selector.js" defer></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/prism.min.js" data-manual
+		defer integrity="sha256-HWJnMZHGx7U1jmNfxe4yaQedmpo/mtxWSIXvcJkLIf4=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/plugins/unescaped-markup/prism-unescaped-markup.js"
+		defer integrity="sha256-THYQfN3ZkC8QQ5I4JxslpEaXIT7tUakaV9/e69MYEuU=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/plugins/normalize-whitespace/prism-normalize-whitespace.min.js"
+		defer integrity="sha256-abVQckxqXkWO8NiZk8TBPHzv3/LObzIqzzQWz0kV0F0=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/plugins/line-numbers/prism-line-numbers.js"
+		defer integrity="sha256-ISWqAwOAxClmLCu22st3+xU4+kVYHrE8jdn6ONzjg5Q=" crossorigin="anonymous"></script>
+	<script src="scripts/thymeleaf.js" defer></script>
+</head>
+
+<body id="thymeleaf-issuetracking">
+
+	<div class="fluid-container toolbar-container">
+		<nav class="fluid-block toolbar">
+			<div class="toolbar-menu">
+				<div class="toolbar-menu-location">Issue Tracking</div>
+				<button id="site-menu-button" type="button" class="toolbar-menu-button">Site Menu</button>
+			</div>
+			<div id="site-menu" class="toolbar-menu-items">
+				<ul class="toolbar-links">
+					<li><a href="index.html" class="toolbar-link">Home</a></li>
+					<li><a href="download.html" class="toolbar-link">Download</a></li>
+					<li><a href="documentation.html" class="toolbar-link">Docs</a></li>
+					<li><a href="ecosystem.html" class="toolbar-link">Ecosystem</a></li>
+					<li><a href="faq.html" class="toolbar-link">FAQ</a></li>
+				</ul>
+				<ul id="site-nav-links" class="toolbar-links">
+					<li><a href="https://twitter.com/thymeleaf" class="toolbar-link">Twitter</a></li>
+					<li><a href="https://github.com/thymeleaf" class="toolbar-link">GitHub</a></li>
+				</ul>
+			</div>
+		</nav>
+	</div>
+
+	<div class="hero-container fluid-container">
+		<header class="hero-header fluid-block">
+			<div class="hero-header-text">
+				<h1 class="hero-header-title">Thymeleaf</h1>
+			</div>
+			<div class="hero-header-image">
+				<img src="images/thymeleaf.png" alt="Thymeleaf logo" class="hero-header-logo"/>
+			</div>
+		</header>
+	</div>
+
+	<div class="fluid-container">
+		<main class="fluid-block">
+			<section>
+				<header>
+					<h2>
+						<a id="issue-tracking" href="#issue-tracking" class="anchor"></a>
+						Issue Tracking
+					</h2>
+				</header>
+				<p>We use GitHub for our issue tracking and have several repositories
+				for various parts of the Thymeleaf project, so be sure to use the right
+				one to make any bug reports, raise any issues, or even make pull
+				requests!</p>
+
+				<section class="subsection">
+					<header>
+						<h3>
+							<a id="core-packages" href="#core-packages" class="anchor"></a>
+							Core packages
+						</h3>
+					</header>
+					<ul>
+						<li>Thymeleaf: <a href="https://github.com/thymeleaf/thymeleaf"">https://github.com/thymeleaf/thymeleaf/issues</a></li>
+						<li>Thymeleaf Spring integration: <a href="https://github.com/thymeleaf/thymeleaf-spring"">https://github.com/thymeleaf/thymeleaf-spring/issues</a></li>
+						<li>Thymeleaf Testing framework: <a href="https://github.com/thymeleaf/thymeleaf-testing"">https://github.com/thymeleaf/thymeleaf-testing/issues</a></li>
+					</ul>
+				</section>
+
+				<section class="subsection">
+					<header>
+						<h3>
+							<a id="example-applications" href="#example-applications" class="anchor"></a>
+							Example applications
+						</h3>
+					</header>
+					<ul>
+						<li>Good Thymes Virtual Grocery: <a href="https://github.com/thymeleaf/thymeleafexamples-gtvg/issues"">https://github.com/thymeleaf/thymeleafexamples-gtvg/issues</a></li>
+						<li>Spring Thyme Seedstarter Manager: <a href="https://github.com/thymeleaf/thymeleafexamples-stsm/issues"">https://github.com/thymeleaf/thymeleafexamples-stsm/issues</a></li>
+						<li>ExtraThyme: <a href="https://github.com/thymeleaf/thymeleafexamples-extrathyme/issues"">https://github.com/thymeleaf/thymeleafexamples-extrathyme/issues</a></li>
+						<li>Thymeleaf vs JSP: <a href="https://github.com/thymeleaf/thymeleafexamples-thvsjsp/issues"">https://github.com/thymeleaf/thymeleafexamples-thvsjsp/issues</a></li>
+						<li>Say Hello!: <a href="https://github.com/thymeleaf/thymeleafexamples-sayhello/issues"">https://github.com/thymeleaf/thymeleafexamples-sayhello/issues</a></li>
+						<li>SpringMail: <a href="https://github.com/thymeleaf/thymeleafexamples-springmail/issues"">https://github.com/thymeleaf/thymeleafexamples-springmail/issues</a></li>
+						<li>SpringSecurity: <a href="https://github.com/thymeleaf/thymeleafexamples-springsecurity/issues"">https://github.com/thymeleaf/thymeleafexamples-springsecurity/issues</a></li>
+						<li>Spring PetClinic + Thymeleaf: <a href="https://github.com/thymeleaf/thymeleafexamples-petclinic/issues"">https://github.com/thymeleaf/thymeleafexamples-petclinic/issues</a></li>
+					</ul>
+				</section>
+
+				<section class="subsection">
+					<header>
+						<h3>
+							<a id="supporting-projects" href="#supporting-projects" class="anchor"></a>
+							Supporting projects
+						</h3>
+					</header>
+					<ul>
+						<li>Distribution package: <a href="https://github.com/thymeleaf/thymeleaf-dist/issues"">https://github.com/thymeleaf/thymeleaf-dist/issues</a></li>
+						<li>Documentation (articles and tutorials): <a href="https://github.com/thymeleaf/thymeleaf-docs/issues"">https://github.com/thymeleaf/thymeleaf-docs/issues</a></li>
+						<li>This website (excluding docs): <a href="https://github.com/thymeleaf/thymeleaf.github.com/issues"">https://github.com/thymeleaf/thymeleaf.github.com/issues</a></li>
+					</ul>
+				</section>
+
+			</section>
+		</main>
+	</div>
+
+	<div class="fluid-container footer-container">
+		<footer class="footer fluid-block">
+			<div class="footer-sections">
+				<h5>On this site</h5>
+				<ul class="footer-sections-links">
+					<li><a href="index.html">Home</a></li>
+					<li><a href="download.html">Download</a></li>
+					<li><a href="documentation.html">Docs</a></li>
+					<li><a href="ecosystem.html">Ecosystem</a></li>
+					<li><a href="faq.html">FAQ</a></li>
+					<li id="footer-issue-tracking"><a href="issuetracking.html">Issue Tracking</a></li>
+					<li><a href="team.html">The Thymeleaf Team</a></li>
+					<li><a href="whoisusingthymeleaf.html">Who's using Thymeleaf?</a></li>
+				</ul>
+			</div>
+			<div>
+				<h5>External links</h5>
+				<ul class="footer-sections-links">
+					<li><a href="https://twitter.com/thymeleaf">Follow us on Twitter</a></li>
+					<li><a href="https://github.com/thymeleaf">Fork us on GitHub</a></li>
+				</ul>
+			</div>
+		</footer>
+		<div class="copyright fluid-block">Copyright &copy; The Thymeleaf Team</div>
+		<div class="license fluid-block">
+			Thymeleaf is <strong>open source</strong> software distributed under the
+			<a href="https://www.apache.org/licenses/LICENSE-2.0.html">Apache License 2.0</a><br/>
+			This website (excluding the names and logos of Thymeleaf users) is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0 License</a>
+		</div>
+	</div>
+
+</body>
+
+</html>
