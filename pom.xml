@@ -34,7 +34,7 @@
 
 
   <organization>
-    <name>The THYMELEAF team</name>
+    <name>Thymeleaf</name>
     <url>http://www.thymeleaf.org</url>
   </organization>
 
@@ -48,37 +48,14 @@
 
   <developers>
     <developer>
-      <id>danielfernandez</id>
-      <name>Daniel Fernandez</name>
-      <email>daniel.fernandez AT 11thlabs DOT org</email>
-      <roles>
-        <role>Project Admin</role>
-        <role>Lead Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>jmiguelsamper</id>
-      <name>Jose Miguel Samper</name>
-      <email>jmiguelsamper AT users DOT sourceforge DOT net</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>ultraq</id>
-      <name>Emanuel Rabina</name>
-      <email>emanuelrabina AT gmail DOT com</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
+      <name>Thymeleaf</name>
+      <organization>The Thymeleaf Team</organization>
+      <organizationUrl>https://www.thymeleaf.org/team.html</organizationUrl>
     </developer>
   </developers>
 
   <scm>
-    <url>scm:git:git@github.com:thymeleaf/thymeleaf.git</url>
-    <connection>scm:git:git@github.com:thymeleaf/thymeleaf.git</connection>
-    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf.git</developerConnection>
-    <tag>HEAD</tag>
+    <url>https://github.com/thymeleaf/thymeleaf</url>
   </scm>
 
   <distributionManagement>
