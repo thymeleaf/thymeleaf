@@ -40,8 +40,8 @@
     <!-- =========================  -->
     <!-- Build file locations       -->
     <!-- =========================  -->
-    <thymeleaf-parent.basedir>${project.basedir}/../..</thymeleaf-parent.basedir>
-    <thymeleaf-module.release.pomfilename>lib/${project.artifactId}/pom.xml</thymeleaf-module.release.pomfilename>
+    <disclaimer-files.basedir>${project.basedir}/../..</disclaimer-files.basedir>
+    <release.checkout.pomfilename>lib/${project.artifactId}/pom.xml</release.checkout.pomfilename>
     <!-- =========================  -->
     <!-- JPMS MODULE management     -->
     <!-- =========================  -->
@@ -52,7 +52,7 @@
 
     <resources>
       <resource>
-        <directory>${thymeleaf-parent.basedir}</directory>
+        <directory>${disclaimer-files.basedir}</directory>
         <targetPath>META-INF</targetPath>
         <includes>
           <include>LICENSE.txt</include>
@@ -155,7 +155,7 @@
                 <goal>perform</goal>
               </goals>
               <configuration>
-                <pomFileName>${thymeleaf-module.release.pomfilename}</pomFileName>
+                <pomFileName>${release.checkout.pomfilename}</pomFileName>
               </configuration>
             </execution>
           </executions>
