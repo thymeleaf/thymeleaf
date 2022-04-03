@@ -56,7 +56,7 @@
 
   <scm>
     <url>https://github.com/thymeleaf/thymeleaf</url>
-    <connection>scm:git:https://github.com/thymeleaf/thymeleaf</connection>
+    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf</developerConnection>
   </scm>
 
   <distributionManagement>
