@@ -40,7 +40,6 @@
     <!-- Build file locations       -->
     <!-- =========================  -->
     <disclaimer-files.basedir>${project.basedir}/../../..</disclaimer-files.basedir>
-    <release.checkout.pomfilename>lib/testing/${project.artifactId}/pom.xml</release.checkout.pomfilename>
   </properties>
 
   <modules>
