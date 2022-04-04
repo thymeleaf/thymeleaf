@@ -11,49 +11,49 @@
   
   <fileSets>
     <fileSet>
-      <directory>${project.basedir}/../lib/thymeleaf/target/checkout/lib/thymeleaf/target/apidocs/</directory>
+      <directory>${project.basedir}/../lib/thymeleaf/target/apidocs/</directory>
       <outputDirectory>/apidocs/thymeleaf/</outputDirectory>
       <includes>
         <include>**/*</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/../lib/thymeleaf-spring5/target/checkout/lib/thymeleaf-spring5/target/apidocs/</directory>
+      <directory>${project.basedir}/../lib/thymeleaf-spring5/target/apidocs/</directory>
       <outputDirectory>/apidocs/thymeleaf-spring5/</outputDirectory>
       <includes>
         <include>**/*</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/../lib/thymeleaf-spring6/target/checkout/lib/thymeleaf-spring6/target/apidocs/</directory>
+      <directory>${project.basedir}/../lib/thymeleaf-spring6/target/apidocs/</directory>
       <outputDirectory>/apidocs/thymeleaf-spring6/</outputDirectory>
       <includes>
         <include>**/*</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/../lib/testing/thymeleaf-testing/target/checkout/lib/testing/thymeleaf-testing/target/apidocs/</directory>
+      <directory>${project.basedir}/../lib/testing/thymeleaf-testing/target/apidocs/</directory>
       <outputDirectory>/apidocs/thymeleaf-testing/</outputDirectory>
       <includes>
         <include>**/*</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/../lib/testing/thymeleaf-testing-spring5/target/checkout/lib/testing/thymeleaf-testing-spring5/target/apidocs/</directory>
+      <directory>${project.basedir}/../lib/testing/thymeleaf-testing-spring5/target/apidocs/</directory>
       <outputDirectory>/apidocs/thymeleaf-testing-spring5/</outputDirectory>
       <includes>
         <include>**/*</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/../lib/testing/thymeleaf-testing-spring6/target/checkout/lib/testing/thymeleaf-testing-spring6/target/apidocs/</directory>
+      <directory>${project.basedir}/../lib/testing/thymeleaf-testing-spring6/target/apidocs/</directory>
       <outputDirectory>/apidocs/thymeleaf-testing-spring6/</outputDirectory>
       <includes>
         <include>**/*</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/../lib/thymeleaf/target/checkout/lib/thymeleaf/target/</directory>
+      <directory>${project.basedir}/../lib/thymeleaf/target/</directory>
       <outputDirectory>/dist</outputDirectory>
       <includes>
         <include>thymeleaf-${project.version}.jar</include>
@@ -62,7 +62,7 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/../lib/thymeleaf-spring5/target/checkout/lib/thymeleaf-spring5/target/</directory>
+      <directory>${project.basedir}/../lib/thymeleaf-spring5/target/</directory>
       <outputDirectory>/dist</outputDirectory>
       <includes>
         <include>thymeleaf-spring5-${project.version}.jar</include>
@@ -71,7 +71,7 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/../lib/thymeleaf-spring6/target/checkout/lib/thymeleaf-spring6/target/</directory>
+      <directory>${project.basedir}/../lib/thymeleaf-spring6/target/</directory>
       <outputDirectory>/dist</outputDirectory>
       <includes>
         <include>thymeleaf-spring6-${project.version}.jar</include>
@@ -80,7 +80,7 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/../lib/testing/thymeleaf-testing/target/checkout/lib/testing/thymeleaf-testing/target/</directory>
+      <directory>${project.basedir}/../lib/testing/thymeleaf-testing/target/</directory>
       <outputDirectory>/dist</outputDirectory>
       <includes>
         <include>thymeleaf-testing-${project.version}.jar</include>
@@ -89,7 +89,7 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/../lib/testing/thymeleaf-testing-spring5/target/checkout/lib/testing/thymeleaf-testing-spring5/target/</directory>
+      <directory>${project.basedir}/../lib/testing/thymeleaf-testing-spring5/target/</directory>
       <outputDirectory>/dist</outputDirectory>
       <includes>
         <include>thymeleaf-testing-spring5-${project.version}.jar</include>
@@ -98,7 +98,7 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/../lib/testing/thymeleaf-testing-spring6/target/checkout/lib/testing/thymeleaf-testing-spring6/target/</directory>
+      <directory>${project.basedir}/../lib/testing/thymeleaf-testing-spring6/target/</directory>
       <outputDirectory>/dist</outputDirectory>
       <includes>
         <include>thymeleaf-testing-spring6-${project.version}.jar</include>
