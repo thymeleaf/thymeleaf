@@ -41,7 +41,6 @@
     <!-- Build file locations       -->
     <!-- =========================  -->
     <disclaimer-files.basedir>${project.basedir}/../..</disclaimer-files.basedir>
-    <release.checkout.pomfilename>lib/${project.artifactId}/pom.xml</release.checkout.pomfilename>
     <!-- =========================  -->
     <!-- JPMS MODULE management     -->
     <!-- =========================  -->
@@ -129,25 +128,6 @@
           </executions>
         </plugin>
 
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <executions>
-            <execution>
-              <!-- This is needed in order to allow Maven to release a project that is not in the root -->
-              <!-- of a GitHub repository, but in a subfolder.                                         -->
-              <id>release-perform</id>
-              <goals>
-                <goal>perform</goal>
-              </goals>
-              <configuration>
-                <pomFileName>${release.checkout.pomfilename}</pomFileName>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-
-        <!-- IMPORTANT: This plugin should always appear AFTER maven-release-plugin in pom.xml      -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
