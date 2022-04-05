@@ -2,7 +2,7 @@
  thymeleaf
  ---------
  
- To learn more and download latest version:
+ In order to learn more and download the latest version:
  
      http://www.thymeleaf.org
 
