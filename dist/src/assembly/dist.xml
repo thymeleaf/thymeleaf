@@ -107,7 +107,7 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/..</directory>
+      <directory>${thymeleaf-parent.basedir}</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
         <include>LICENSE.txt</include>
