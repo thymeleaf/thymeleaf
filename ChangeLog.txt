@@ -1,3 +1,26 @@
+3.1.0.M2
+========
+- Refactored project structure: merged thymeleaf-spring, thymeleaf-testing and thymeleaf-dist
+  into main "thymeleaf" repository.
+- Added Maven multiproject infrastructure: added thymeleaf-parent, thymeleaf-lib and thymeleaf-testing-lib
+  pom artifacts.
+- Added project-wide BOM (thymeleaf-parent) for the unified management of dependency and plugin versions.
+- Removed website content from "dist" (thymeleaf-dist) in favour of the thymeleaf.github.com repository.
+- Refactored build and release procedure: replaced use of maven-release-plugin with maven-deploy-plugin.
+
+
+
+3.1.0.M1
+========
+- Support Servlet 5.0 (jakarta.*) namespace besides Servlet < 5 (javax.*).
+- Support Spring 6.0 (6.0.0-SNAPSHOT): new lib module thymeleaf-spring6.
+- Removed support for Spring 3.x and Spring 4.x.
+- Set minimum JDK compatibility level to JDK 8 project-wide (JDK 17 for thymeleaf-spring6).
+- Seggregated Spring support in thymeleaf-testing into specific modules: thymeleaf-testing-spring5
+  and thymeleaf-testing-spring6.
+
+
+
 3.0.15
 ======
 - Fix expression parsing inconsistency provoked by empty literal substitutions.
