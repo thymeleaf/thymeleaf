@@ -4,39 +4,6 @@ Thymeleaf Testing Library
 
 -------------------------------------------------------------
 
-**[Please make sure to select the branch corresponding to the version of Thymeleaf you are using]**
-
-
-Status
-------
-
-This is an auxiliary testing library, not directly a part of the Thymeleaf core but part of the project, developed and supported by the [Thymeleaf Team](http://www.thymeleaf.org/team.html).
-
-Current versions:
-
-  * **3.0.4.RELEASE** - for Thymeleaf 3.0 (requires 3.0.4+)
-  * **2.1.4.RELEASE** - for Thymeleaf 2.1 (requires 2.1.2+)
-
-
-License
--------
-
-This software is licensed under the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0.html).
-
-
-Requirements (3.0.x)
---------------------
-
-  *   Thymeleaf **3.0.4+**
-  *   Attoparser **2.0.3.RELEASE+**
-
-
-Maven info
-----------
-
-  *   groupId: `org.thymeleaf`
-  *   artifactId: `thymeleaf-testing`
-
 
 Features
 --------
