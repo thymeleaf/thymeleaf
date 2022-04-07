@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="../../../css/gtvg.css" th:href="@{/css/gtvg.css}" />
+  </head>
+
+  <body id="body">
+
+    <h1>Comments for product: <span th:text="${prod.name}">Hot Garlic</span></h1>
+  
+    <table>
+      <tr th:each="c : ${prod.comments}" th:class="${cStat.odd}? 'odd'">
+        <td th:text="${c.text}">Garlic is just fantastic!</td>
+      </tr>
+    </table>
+  
+    <p>
+      <a href="list.html" th:href="@{/product/list}">Return to product list</a>
+    </p>
+    
+  </body>
+  
+</html>
+
