@@ -39,11 +39,6 @@
     <!-- NOTE module name is fixed and not set to project.artifactId because this would not be a     -->
     <!-- valid approach for project names containing hyphens, which are not allowed in module names. -->
     <module.name>thymeleaf.spring5</module.name>
-    <!-- ======================     -->
-    <!-- DEPENDENCY versions        -->
-    <!-- ======================     -->
-    <springframework.version>5.0.8.RELEASE</springframework.version>
-    <springwebflow.version>2.5.0.RELEASE</springwebflow.version>
   </properties>
 
   <build>
@@ -89,7 +84,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
-      <version>${springframework.version}</version>
+      <version>${spring5.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -97,7 +92,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
-      <version>${springframework.version}</version>
+      <version>${spring5.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -105,7 +100,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webflux</artifactId>
-      <version>${springframework.version}</version>
+      <version>${spring5.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -113,7 +108,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>${springframework.version}</version>
+      <version>${spring5.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -121,7 +116,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-expression</artifactId>
-      <version>${springframework.version}</version>
+      <version>${spring5.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -129,7 +124,7 @@
     <dependency>
       <groupId>org.springframework.webflow</groupId>
       <artifactId>spring-webflow</artifactId>
-      <version>${springwebflow.version}</version>
+      <version>${spring-webflow.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
