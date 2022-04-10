@@ -31,7 +31,6 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.thymeleaf</groupId>
   <artifactId>thymeleaf-lib</artifactId>
   <packaging>pom</packaging>
   <name>thymeleaf lib</name>
