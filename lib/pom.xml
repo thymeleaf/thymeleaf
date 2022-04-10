@@ -81,7 +81,7 @@
                 <X-Compile-Target-JDK>${maven.compiler.target}</X-Compile-Target-JDK>
                 <!-- Set the Built-By attribute in MANIFEST.MF to avoid displaying specific user names. -->
                 <Built-By>thymeleaf</Built-By>
-                <!-- Setting this automatic module name will fix the module name used by unbescape even -->
+                <!-- Setting this automatic module name will fix the module name used by thymeleaf even -->
                 <!-- if the library is not yet fully modularised.                                       -->
                 <!-- NOTE this will have to be set at the modules.                                      -->
                 <Automatic-Module-Name>${module.name}</Automatic-Module-Name>
