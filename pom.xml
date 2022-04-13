@@ -90,6 +90,7 @@
     <maven.compiler.release>${java.version}</maven.compiler.release>
     <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
     <project.build.propertiesEncoding>ISO-8859-1</project.build.propertiesEncoding>
+    <resource.delimiter>@</resource.delimiter>
     <!-- These are needed for showing the build timestamp correctly at the thymeleaf.properties file -->
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
@@ -279,6 +280,14 @@
           <configuration>
             <encoding>${project.build.sourceEncoding}</encoding>
             <propertiesEncoding>${project.build.propertiesEncoding}</propertiesEncoding>
+            <delimiters>
+              <!-- We set the resource delimiters to only @*@ in order to avoid the ${*} syntax -->
+              <!-- colliding with properties meant to be resolved by Spring.                    -->
+              <delimiter>${resource.delimiter}</delimiter>
+            </delimiters>
+            <useDefaultDelimiters>false</useDefaultDelimiters>
+          </configuration>
+        </plugin>
           </configuration>
         </plugin>
 
