@@ -91,7 +91,7 @@
     <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
     <project.build.propertiesEncoding>ISO-8859-1</project.build.propertiesEncoding>
     <resource.delimiter>@</resource.delimiter>
-    <!-- These are needed for showing the build timestamp correctly at the thymeleaf.properties file -->
+    <!-- These are needed for showing the build timestamp correctly at thymeleaf.properties.    -->
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
     <!-- ======================     -->
@@ -382,9 +382,8 @@
           </executions>
         </plugin>
 
-        <!-- NOTE releases will be performed by means of the deploy -->
-        <!-- plugin. maven-releases-plugin will not be invoked as a -->
-        <!-- part of the release cycle.                             -->
+        <!-- NOTE releases will be performed by means of maven-deploy-plugin. This means that   -->
+        <!-- the maven-releases-plugin will not be needed as a part of the release cycle.       -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
@@ -420,7 +419,7 @@
 
     <plugins>
 
-      <!-- The maven-gpg-plugin needs to be set for execution at this point because the pom     -->
+      <!-- NOTE maven-gpg-plugin needs to be set for execution at this point because the pom    -->
       <!-- artifact generated for thymeleaf-parent also needs to be signed for deployment.      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

@@ -73,9 +73,9 @@
                 <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
               </manifest>
               <manifestEntries>
-                <!-- Setting this automatic module name will fix the module name used by thymeleaf even -->
-                <!-- if the library is not yet fully modularised.                                       -->
-                <!-- NOTE this will have to be set at the modules.                                      -->
+                <!-- Setting this automatic module name will fix the module name used by        -->
+                <!-- thymeleaf even if the library is not yet fully modularised.                -->
+                <!-- NOTE this will have to be set at each of the modules' pom.xml files.       -->
                 <Automatic-Module-Name>${module.name}</Automatic-Module-Name>
               </manifestEntries>
             </archive>
@@ -124,13 +124,13 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
           <executions>
-            <!-- Copy javadoc's "element-list" file to "package-list" in order to allow projects    -->
-            <!-- using versions of the javadoc tool < JDK9 to properly link to Thymeleaf's javadoc  -->
-            <!-- as an external link.                                                               -->
-            <!-- NOTE this modifies the javadoc AFTER the creation of the jar as it is not possible -->
-            <!-- to do so by previously configuring javadoc:javadoc in the prepare-package phase    -->
-            <!-- because this "package-list" modification would trigger a second execution of the   -->
-            <!-- javadoc tool in the javadoc:jar goal.                                              -->
+            <!-- Copy javadoc's "element-list" file to "package-list" in order to allow         -->
+            <!-- projects using versions of the javadoc tool < JDK9 to properly link to         -->
+            <!-- Thymeleaf's javadoc as an external link.                                       -->
+            <!-- NOTE this modifies the javadoc AFTER the creation of the jar as it is not      -->
+            <!-- possible to do so by previously configuring javadoc:javadoc in the             -->
+            <!-- prepare-package phase because this "package-list" modification would trigger a -->
+            <!-- second execution of the javadoc tool in the javadoc:jar goal.                  -->
             <execution>
               <id>copy-javadoc-element-list-to-package-list</id>
               <phase>package</phase>
@@ -139,7 +139,9 @@
               </goals>
               <configuration>
                 <target name="copy javadocs element-list to package-list">
-                  <copy file="${project.build.directory}/apidocs/element-list" tofile="${project.build.directory}/apidocs/package-list" failonerror="false" />
+                  <copy file="${project.build.directory}/apidocs/element-list"
+                        tofile="${project.build.directory}/apidocs/package-list"
+                        failonerror="false" />
                 </target>
               </configuration>
             </execution>
