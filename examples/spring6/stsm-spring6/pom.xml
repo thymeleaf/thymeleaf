@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ========================================================================= -->
+<!--                                                                           -->
+<!--   Copyright (c) 2011-2016, The THYMELEAF team (http://www.thymeleaf.org)  -->
+<!--                                                                           -->
+<!--   Licensed under the Apache License, Version 2.0 (the "License");         -->
+<!--   you may not use this file except in compliance with the License.        -->
+<!--   You may obtain a copy of the License at                                 -->
+<!--                                                                           -->
+<!--       http://www.apache.org/licenses/LICENSE-2.0                          -->
+<!--                                                                           -->
+<!--   Unless required by applicable law or agreed to in writing, software     -->
+<!--   distributed under the License is distributed on an "AS IS" BASIS,       -->
+<!--   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or         -->
+<!--   implied. See the License for the specific language governing            -->
+<!--   permissions and limitations under the License.                          -->
+<!--                                                                           -->
+<!-- ========================================================================= -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>thymeleafexamples</groupId>
+  <artifactId>stsm</artifactId>
+  <packaging>war</packaging>
+  <version>ci</version>
+  <name>Thymeleaf Examples - Spring Thyme Seedstarter Manager</name>
+
+  <description>Modern server-side Java template engine for both web and standalone environments</description>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <organization>
+    <name>The THYMELEAF team</name>
+    <url>http://www.thymeleaf.org</url>
+  </organization>
+  
+  <scm>
+    <url>scm:git:git@github.com:thymeleaf/thymeleafexamples-stsm.git</url>
+    <connection>scm:git:git@github.com:thymeleaf/thymeleafexamples-stsm.git</connection>
+    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleafexamples-stsm.git</developerConnection>
+  </scm>
+  
+  <developers>
+    <developer>
+      <id>danielfernandez</id>
+      <name>Daniel Fernandez</name>
+      <email>daniel.fernandez AT 11thlabs DOT org</email>
+      <roles>
+        <role>Project Admin</role>
+        <role>Lead Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>jmiguelsamper</id>
+      <name>Jose Miguel Samper</name>
+      <email>jmiguelsamper AT users DOT sourceforge DOT net</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>ultraq</id>
+      <name>Emanuel Rabina</name>
+      <email>emanuelrabina AT gmail DOT com</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+     </developer>
+  </developers>
+  
+
+  <repositories>
+    <repository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>jboss</id>
+      <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>spring-snapshots</id>
+      <name>Spring Snapshots</name>
+      <url>https://repo.spring.io/snapshot</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>springio-snapshots</id>
+      <name>Spring Snapshots</name>
+      <url>https://repo.spring.io/snapshot</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>spring-milestones</id>
+      <name>Spring Milestones</name>
+      <url>https://repo.spring.io/milestone</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+
+  <properties>
+    <java.version>17</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <maven.compiler.release>${java.version}</maven.compiler.release>
+    <project.build.sourceEncoding>US-ASCII</project.build.sourceEncoding>
+    <thymeleaf.version>3.1.0-SNAPSHOT</thymeleaf.version>
+    <springframework.version>6.0.0-SNAPSHOT</springframework.version>
+  </properties>
+  
+
+  <build>
+  
+    <resources>
+    
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>src/main/java</directory>
+        <includes>
+          <include>**/*.properties</include>
+          <include>**/*.xml</include>
+          <include>**/*.html</include>
+        </includes>
+      </resource>
+      
+    </resources>
+        
+    <plugins>
+    
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.2.0</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.3.1</version>
+        <configuration>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <version>2.2</version>
+      </plugin>
+
+    </plugins>
+        
+  </build>
+
+  <profiles>
+    
+    <profile>
+      <id>build-dist</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+              <execution>
+                <id>make-assembly-dist</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <configuration>
+                  <descriptors>
+                    <descriptor>${basedir}/src/assembly/sources.xml</descriptor>
+                  </descriptors>
+                  <appendAssemblyId>true</appendAssemblyId>
+                  <finalName>${project.groupId}-${project.artifactId}-${project.version}</finalName>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+      
+  </profiles>
+
+
+  <dependencies>
+        
+        
+    <dependency>
+      <groupId>org.thymeleaf</groupId>
+      <artifactId>thymeleaf-spring6</artifactId>
+      <version>${thymeleaf.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
+
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>5.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+        
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>${springframework.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>${springframework.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+      <version>${springframework.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aop</artifactId>
+      <version>${springframework.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aspects</artifactId>
+      <version>${springframework.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-expression</artifactId>
+      <version>${springframework.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>${springframework.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>${springframework.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
+        
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <version>2.0.1.Final</version>
+      <scope>compile</scope>
+    </dependency>
+        
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator-annotation-processor</artifactId>
+      <version>5.3.2.Final</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.25</version>
+      <scope>compile</scope>
+    </dependency>
+        
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.7.25</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.15</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.sun.jdmk</groupId>
+          <artifactId>jmxtools</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.jmx</groupId>
+          <artifactId>jmxri</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.jms</groupId>
+          <artifactId>jms</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+        
+  </dependencies>
+  
+</project>
