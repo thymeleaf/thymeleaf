@@ -94,6 +94,8 @@
   <modules>
     <module>core/gtvg-jakarta</module>
     <module>core/gtvg-javax</module>
+    <module>spring5/stsm-spring5</module>
+    <module>spring6/stsm-spring6</module>
   </modules>
 
 </project>
