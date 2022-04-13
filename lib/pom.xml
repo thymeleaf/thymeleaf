@@ -66,20 +66,13 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <configuration>
+            <!-- Configuration will be inherited from thymeleaf-parent. At this level we will   -->
+            <!-- add some additional properties.                                                -->
             <archive>
-              <addMavenDescriptor>false</addMavenDescriptor>
               <manifest>
                 <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
               </manifest>
               <manifestEntries>
-                <!-- These two entries are non-standard, specified by the Apache Software Foundation in -->
-                <!-- their release preparation procedures as a way to pass this information on to the   -->
-                <!-- library users. See: http://commons.apache.org/releases/prepare.html                -->
-                <X-Compile-Source-JDK>${maven.compiler.source}</X-Compile-Source-JDK>
-                <X-Compile-Target-JDK>${maven.compiler.target}</X-Compile-Target-JDK>
-                <!-- Set the Built-By attribute in MANIFEST.MF to avoid displaying specific user names. -->
-                <Built-By>thymeleaf</Built-By>
                 <!-- Setting this automatic module name will fix the module name used by thymeleaf even -->
                 <!-- if the library is not yet fully modularised.                                       -->
                 <!-- NOTE this will have to be set at the modules.                                      -->

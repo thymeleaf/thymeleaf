@@ -329,6 +329,24 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>${maven-jar-plugin.version}</version>
+          <configuration>
+            <archive>
+              <addMavenDescriptor>false</addMavenDescriptor>
+              <manifest>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              </manifest>
+              <manifestEntries>
+                <!-- These two entries are non-standard, specified by the Apache Software       -->
+                <!-- Foundation in their release preparation procedures as a way to pass this   -->
+                <!-- information on to the library users. See:                                  -->
+                <!-- http://commons.apache.org/releases/prepare.html                            -->
+                <X-Compile-Source-JDK>${maven.compiler.source}</X-Compile-Source-JDK>
+                <X-Compile-Target-JDK>${maven.compiler.target}</X-Compile-Target-JDK>
+                <!-- Set the Built-By attribute to avoid displaying specific usernames.         -->
+                <Built-By>thymeleaf</Built-By>
+              </manifestEntries>
+            </archive>
+          </configuration>
         </plugin>
 
         <plugin>
