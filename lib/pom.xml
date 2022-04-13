@@ -69,9 +69,6 @@
             <!-- Configuration will be inherited from thymeleaf-parent. At this level we will   -->
             <!-- add some additional properties.                                                -->
             <archive>
-              <manifest>
-                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-              </manifest>
               <manifestEntries>
                 <!-- Setting this automatic module name will fix the module name used by        -->
                 <!-- thymeleaf even if the library is not yet fully modularised.                -->
