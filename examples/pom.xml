@@ -95,7 +95,11 @@
     <module>core/gtvg-jakarta</module>
     <module>core/gtvg-javax</module>
     <module>spring5/stsm-spring5</module>
+    <module>spring5/stsm-boot-spring5-mvc</module>
+    <module>spring5/stsm-boot-spring5-webflux</module>
     <module>spring6/stsm-spring6</module>
+    <module>spring6/stsm-boot-spring6-mvc</module>
+    <module>spring6/stsm-boot-spring6-webflux</module>
   </modules>
 
 </project>
