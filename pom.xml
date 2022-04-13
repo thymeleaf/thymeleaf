@@ -278,6 +278,10 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven-compiler-plugin.version}</version>
+          <configuration>
+            <!-- This will generate metadata for reflection on method parameters (JDK8+)        -->
+            <parameters>true</parameters>
+          </configuration>
         </plugin>
 
         <plugin>
