@@ -39,6 +39,8 @@
     <!-- NOTE module name is fixed and not set to project.artifactId because this would not be a     -->
     <!-- valid approach for project names containing hyphens, which are not allowed in module names. -->
     <module.name>thymeleaf.spring5</module.name>
+    <!-- Spring version is set to the predefined Spring 5 version property.                     -->
+    <spring.version>${spring5.version}</spring.version>
   </properties>
 
   <build>
@@ -84,7 +86,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
-      <version>${spring5.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -92,7 +93,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
-      <version>${spring5.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -100,7 +100,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webflux</artifactId>
-      <version>${spring5.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -108,7 +107,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>${spring5.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -116,7 +114,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-expression</artifactId>
-      <version>${spring5.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -124,7 +121,6 @@
     <dependency>
       <groupId>org.springframework.webflow</groupId>
       <artifactId>spring-webflow</artifactId>
-      <version>${spring-webflow.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>

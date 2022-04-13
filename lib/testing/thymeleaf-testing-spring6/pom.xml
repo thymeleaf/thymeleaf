@@ -40,6 +40,10 @@
     <!-- NOTE module name is fixed and not set to project.artifactId because this would not be a     -->
     <!-- valid approach for project names containing hyphens, which are not allowed in module names. -->
     <module.name>thymeleaf.testing.spring6</module.name>
+    <!-- Spring version is set to the predefined Spring 6 version property.                     -->
+    <spring.version>${spring6.version}</spring.version>
+    <!-- Spring Security version is set to the predefined Spring Security 6 version property.   -->
+    <spring-security.version>${spring-security6.version}</spring-security.version>
   </properties>
 
   <build>
@@ -83,7 +87,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
-      <version>${spring6.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -91,7 +94,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
-      <version>${spring6.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -99,7 +101,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>${spring6.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -107,7 +108,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-expression</artifactId>
-      <version>${spring6.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -115,7 +115,6 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-core</artifactId>
-      <version>${spring-security6.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -123,7 +122,6 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-web</artifactId>
-      <version>${spring-security6.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -131,7 +129,6 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-config</artifactId>
-      <version>${spring-security6.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -139,7 +136,6 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-taglibs</artifactId>
-      <version>${spring-security6.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
