@@ -120,6 +120,7 @@
     <!-- ======================     -->
     <!-- MAVEN PLUGIN versions      -->
     <!-- ======================     -->
+    <maven-dependency-plugin.version>3.3.0</maven-dependency-plugin.version>
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
     <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
     <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
@@ -266,6 +267,12 @@
 
     <pluginManagement>
       <plugins>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>${maven-dependency-plugin.version}</version>
+        </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
