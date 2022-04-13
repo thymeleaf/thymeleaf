@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ========================================================================= -->
+<!--                                                                           -->
+<!--   Copyright (c) 2011-2016, The THYMELEAF team (http://www.thymeleaf.org)  -->
+<!--                                                                           -->
+<!--   Licensed under the Apache License, Version 2.0 (the "License");         -->
+<!--   you may not use this file except in compliance with the License.        -->
+<!--   You may obtain a copy of the License at                                 -->
+<!--                                                                           -->
+<!--       http://www.apache.org/licenses/LICENSE-2.0                          -->
+<!--                                                                           -->
+<!--   Unless required by applicable law or agreed to in writing, software     -->
+<!--   distributed under the License is distributed on an "AS IS" BASIS,       -->
+<!--   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or         -->
+<!--   implied. See the License for the specific language governing            -->
+<!--   permissions and limitations under the License.                          -->
+<!--                                                                           -->
+<!-- ========================================================================= -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>thymeleafsandbox</groupId>
+	<artifactId>stsm-reactive</artifactId>
+	<version>ci</version>
+	<packaging>jar</packaging>
+
+	<name>Thymeleaf Sandbox - STSM Reactive</name>
+	<description>Thymeleaf Sandbox - STSM Reactive</description>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.0.0-SNAPSHOT</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <organization>
+    <name>The THYMELEAF team</name>
+    <url>http://www.thymeleaf.org</url>
+  </organization>
+  
+  <scm>
+    <url>scm:git:git@github.com:thymeleaf/thymeleafsandbox-stsm-reactive.git</url>
+    <connection>scm:git:git@github.com:thymeleaf/thymeleafsandbox-stsm-reactive.git</connection>
+    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleafsandbox-stsm-reactive.git</developerConnection>
+  </scm>
+  
+  <developers>
+    <developer>
+      <id>dfernandez</id>
+      <name>Daniel Fernandez</name>
+      <email>daniel.fernandez AT 11thlabs DOT org</email>
+      <roles>
+        <role>Project admin</role>
+      </roles>
+     </developer>
+  </developers>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>17</java.version>
+		<thymeleaf.version>3.1.0-SNAPSHOT</thymeleaf.version>
+	</properties>
+
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>sonatype-nexus-snapshots</id>
+			<name>Sonatype Nexus Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>jboss</id>
+			<url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+</project>
