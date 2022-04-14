@@ -53,6 +53,7 @@
 
   <modules>
     <module>thymeleaf-examples-spring5-stsm</module>
+    <module>thymeleaf-examples-spring5-sayhello</module>
   </modules>
 
 </project>
