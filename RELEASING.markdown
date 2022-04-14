@@ -22,7 +22,7 @@ Configure access to the snapshots and staging servers in `settings.xml`:
 ## 2. Set the new version
 
 ```shell
-mvn versions:set -DnewVersion=X.Y.Z
+mvn versions:set -DprocessAllModules=true -DnewVersion=X.Y.Z
 mvn versions:commit
 git add .
 git commit -m "Prepare release thymeleaf-X.Y.Z"
@@ -39,7 +39,7 @@ mvn clean compile deploy
 
 ```shell
 mvn scm:tag -Dtag thymeleaf-X.Y.Z
-mvn versions:set -DnewVersion=X.Y.[Z+1]-SNAPSHOT
+mvn versions:set -DprocessAllModules=true -DnewVersion=X.Y.[Z+1]-SNAPSHOT
 mvn versions:commit
 git add .;
 git commit -m "Prepare for next development iteration"
