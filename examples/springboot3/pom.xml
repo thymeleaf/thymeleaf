@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ =============================================================================
+  ~
+  ~   Copyright (c) 2011-2022, The THYMELEAF team (http://www.thymeleaf.org)
+  ~
+  ~   Licensed under the Apache License, Version 2.0 (the "License");
+  ~   you may not use this file except in compliance with the License.
+  ~   You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~   Unless required by applicable law or agreed to in writing, software
+  ~   distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~
+  ~ =============================================================================
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <!--
+    ~ =============================================================================================
+    ~
+    ~ This module is intended to be the parent of all example applications based on this version
+    ~ of Spring Boot. It should be used as a parent in replacement of spring-boot-starter-parent,
+    ~ so that some Thymeleaf-related metadata is added, and also the version of Thymeleaf being
+    ~ used by the example applications can be managed to the one being developed.
+    ~
+    ~ This module does not inherit from thymeleaf-parent, so no dependency or plugin management
+    ~ comes from the root of the multiproject module tree. All this is expected to come from
+    ~ the Spring Boot hierarchy, which is used as a parent in the desired version.
+    ~
+    ~ However, this is still a sub-branch of the multiproject module tree, so aggregation will
+    ~ still work even if there is no inheritance. This means this project and its submodules will
+    ~ be built as a part of the multiproject, and that their versions can be managed by means of
+    ~ calls to the "versions:set" goal, as long as the "-DprocessAllModules" flag is set to true.
+    ~
+    ~ This pom's own version matches that of the version of Thymeleaf being developed (set at
+    ~ the thymeleaf-parent root) so that calls to "versions:set" will modify this version (and
+    ~ consequently the version of all the submodules) during the deployment and release process,
+    ~ even if this module itself does not inherit from thymeleaf-parent.
+    ~
+    ~ Also, the "thymeleaf.version" property, defined by Spring Boot's parent and affecting all
+    ~ the Thymeleaf core dependencies, is set to "project.version" so that a change in the version
+    ~ of the project itself also affects the version of Thymeleaf being used by Spring Boot in
+    ~ the children example applications.
+    ~
+    ~ The reason this approach is used instead of making the SpringBoot-based example apps
+    ~ inherit from thymeleaf-parent and include spring-boot-dependencies as an "import" in their
+    ~ dependencyManagement section is that such approach would not allow the management of the
+    ~ dependencies on the Thymeleaf core via properties, and also that it would not ensure that
+    ~ plugins and all other dependencies are managed in the way defined by Spring Boot itself
+    ~ instead of Thymeleaf's. So using Spring Boot's own parent is cleaner and more realistic
+    ~ in order to test how Thymeleaf would behave in a real-world Spring Boot application.
+    ~
+    ~ =============================================================================================
+    -->
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>org.thymeleaf</groupId>
+  <artifactId>thymeleaf-examples-springboot3</artifactId>
+  <packaging>pom</packaging>
+  <version>3.1.0-SNAPSHOT</version>
+  <name>thymeleaf examples springboot3</name>
+
+  <organization>
+    <name>Thymeleaf</name>
+    <url>http://www.thymeleaf.org</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Thymeleaf</name>
+      <organization>The Thymeleaf Team</organization>
+      <organizationUrl>https://www.thymeleaf.org/team.html</organizationUrl>
+    </developer>
+  </developers>
+
+  <properties>
+    <thymeleaf.version>${project.version}</thymeleaf.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>spring-milestones</id>
+      <name>Spring Milestones</name>
+      <url>https://repo.spring.io/milestone</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>springio-snapshots</id>
+      <name>Spring Snapshots</name>
+      <url>https://repo.spring.io/snapshot</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>spring-milestones</id>
+      <name>Spring Milestones</name>
+      <url>https://repo.spring.io/milestone</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <modules>
+    <module>thymeleaf-examples-springboot3-stsm-mvc</module>
+  </modules>
+
+</project>
