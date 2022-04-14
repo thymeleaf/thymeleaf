@@ -1,6 +1,14 @@
 <!--
 Thanks for raising a Thymeleaf issue.
 
+*****************************
+For POSSIBLE SECURITY VULNERABILITIES:
+
+Please NEVER create a GitHub issue for what you think might be a
+security vulnerability. Instead, send an email telling your findings
+to the Thymeleaf Team: https://www.thymeleaf.org/team.html
+*****************************
+
 For ENHANCEMENTS or SUGGESTIONS:
 
 Please describe the problem that you are trying to solve in the maximum
