@@ -35,7 +35,7 @@
 
   <artifactId>stsm-spring6</artifactId>
   <packaging>war</packaging>
-  <name>thymeleaf examples - STSM [spring6]</name>
+  <name>thymeleaf examples spring6 - STSM</name>
 
   <build>
 
