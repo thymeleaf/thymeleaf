@@ -144,6 +144,7 @@
     <commons-lang3.version>3.12.0</commons-lang3.version>
     <hibernate-validator-jakarta.version>7.0.4.Final</hibernate-validator-jakarta.version>
     <hibernate-validator-javax.version>6.2.3.Final</hibernate-validator-javax.version>
+    <hibernate-validator.version>TO_BE_SPECIFIED_BY_CHILDREN:hibernate-validator.version</hibernate-validator.version>
     <mockito.version>4.4.0</mockito.version>
     <slf4j.version>1.7.32</slf4j.version>
     <log4j.version>2.17.2</log4j.version>
@@ -379,6 +380,12 @@
         <groupId>org.springframework.webflow</groupId>
         <artifactId>spring-webflow</artifactId>
         <version>${spring-webflow.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hibernate.validator</groupId>
+        <artifactId>hibernate-validator-annotation-processor</artifactId>
+        <version>${hibernate-validator.version}</version>
       </dependency>
 
       <dependency>

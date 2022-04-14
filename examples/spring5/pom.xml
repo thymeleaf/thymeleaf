@@ -40,6 +40,8 @@
   <properties>
     <!-- Spring version is set to the predefined Spring 5 version property.                     -->
     <spring.version>${spring5.version}</spring.version>
+    <!-- Hibernate Validator version is set to the predefined JAVAX-based version property.     -->
+    <hibernate-validator.version>${hibernate-validator-javax.version}</hibernate-validator.version>
   </properties>
 
   <dependencies>
