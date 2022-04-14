@@ -24,47 +24,33 @@
 
   <parent>
     <groupId>org.thymeleaf</groupId>
-    <artifactId>thymeleaf-parent</artifactId>
+    <artifactId>thymeleaf-examples</artifactId>
     <version>3.1.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>thymeleaf-examples</artifactId>
+  <artifactId>thymeleaf-examples-spring5</artifactId>
   <packaging>pom</packaging>
-  <name>thymeleaf examples</name>
+  <name>thymeleaf examples spring5</name>
 
-  <build>
+  <properties>
+    <!-- Spring version is set to the predefined Spring 5 version property.                     -->
+    <spring.version>${spring5.version}</spring.version>
+  </properties>
 
-    <plugins>
+  <dependencies>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
+    <dependency>
+      <groupId>org.thymeleaf</groupId>
+      <artifactId>thymeleaf-spring5</artifactId>
+    </dependency>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
-
-    </plugins>
-
-  </build>
+  </dependencies>
 
   <modules>
-    <module>core</module>
-    <module>spring5</module>
-    <module>spring6</module>
-    <module>springboot2</module>
-    <module>springboot3</module>
+    <module>stsm-spring5</module>
   </modules>
 
 </project>
