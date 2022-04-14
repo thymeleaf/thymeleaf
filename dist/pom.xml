@@ -35,13 +35,6 @@
   <packaging>pom</packaging>
   <name>thymeleaf distribution</name>
 
-  <properties>
-    <!-- =========================  -->
-    <!-- Build file locations       -->
-    <!-- =========================  -->
-    <thymeleaf-parent.basedir>${project.basedir}/..</thymeleaf-parent.basedir>
-  </properties>
-
   <build>
 
     <plugins>
