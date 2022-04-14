@@ -35,25 +35,7 @@
   <packaging>pom</packaging>
   <name>thymeleaf examples</name>
 
-  <properties>
-    <!-- =========================  -->
-    <!-- Build file locations       -->
-    <!-- =========================  -->
-    <disclaimer-files.basedir>${project.basedir}/../..</disclaimer-files.basedir>
-  </properties>
-
   <build>
-
-    <resources>
-      <resource>
-        <directory>${disclaimer-files.basedir}</directory>
-        <targetPath>META-INF</targetPath>
-        <includes>
-          <include>LICENSE.txt</include>
-          <include>NOTICE.txt</include>
-        </includes>
-      </resource>
-    </resources>
 
     <plugins>
 
