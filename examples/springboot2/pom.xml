@@ -99,7 +99,6 @@
   </developers>
 
   <properties>
-    <java.version>8</java.version>
     <thymeleaf.version>${project.version}</thymeleaf.version>
   </properties>
 
