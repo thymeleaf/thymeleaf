@@ -45,7 +45,7 @@
     <!-- =========================  -->
     <!-- JPMS MODULE management     -->
     <!-- =========================  -->
-    <module.name>[TO_BE_SPECIFIED_BY_CHILDREN:module.name]</module.name>
+    <module.name>TO_BE_SPECIFIED_BY_CHILDREN:module.name</module.name>
   </properties>
 
   <build>
