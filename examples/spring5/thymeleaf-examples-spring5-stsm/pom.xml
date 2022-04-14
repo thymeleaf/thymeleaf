@@ -28,19 +28,19 @@
 
   <parent>
     <groupId>org.thymeleaf</groupId>
-    <artifactId>thymeleaf-examples-core</artifactId>
+    <artifactId>thymeleaf-examples-spring5</artifactId>
     <version>3.1.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>gtvg-javax</artifactId>
+  <artifactId>thymeleaf-examples-spring5-stsm</artifactId>
   <packaging>war</packaging>
-  <name>thymeleaf examples core - GTVG [javax]</name>
+  <name>thymeleaf examples spring5 - STSM</name>
 
   <build>
-    
-    <resources>
 
+    <resources>
+    
       <resource>
         <directory>src/main/resources</directory>
       </resource>
@@ -75,6 +75,50 @@
     </dependency>
 
     <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aop</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aspects</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-expression</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+    </dependency>
+        
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+    </dependency>
+        
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator-annotation-processor</artifactId>
+      <version>${hibernate-validator-javax.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
@@ -90,5 +134,5 @@
     </dependency>
 
   </dependencies>
-    
+
 </project>

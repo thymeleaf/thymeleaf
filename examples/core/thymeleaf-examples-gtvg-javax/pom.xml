@@ -33,9 +33,9 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>gtvg-jakarta</artifactId>
+  <artifactId>thymeleaf-examples-gtvg-javax</artifactId>
   <packaging>war</packaging>
-  <name>thymeleaf examples core - GTVG [jakarta]</name>
+  <name>thymeleaf examples core - GTVG [javax]</name>
 
   <build>
     
@@ -68,8 +68,8 @@
   <dependencies>
 
     <dependency>
-      <groupId>jakarta.servlet</groupId>
-      <artifactId>jakarta.servlet-api</artifactId>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>

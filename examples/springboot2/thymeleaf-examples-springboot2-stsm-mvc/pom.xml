@@ -29,7 +29,7 @@
     <version>3.1.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-  <artifactId>stsm-boot-spring5-mvc</artifactId>
+  <artifactId>thymeleaf-examples-springboot2-stsm-mvc</artifactId>
   <packaging>jar</packaging>
   <name>thymeleaf examples springboot2 - STSM [MVC]</name>
 

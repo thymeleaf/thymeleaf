@@ -47,8 +47,8 @@
   </dependencies>
 
   <modules>
-    <module>gtvg-jakarta</module>
-    <module>gtvg-javax</module>
+    <module>thymeleaf-examples-gtvg-jakarta</module>
+    <module>thymeleaf-examples-gtvg-javax</module>
   </modules>
 
 </project>

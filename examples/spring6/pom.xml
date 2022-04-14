@@ -52,7 +52,7 @@
   </dependencies>
 
   <modules>
-    <module>stsm-spring6</module>
+    <module>thymeleaf-examples-spring6-stsm</module>
   </modules>
 
 </project>
