@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title data-th-remove="all">Template for HTML email (editable)</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    </head>
+    <body>
+        <div style="background-color: #ccc; background-image: url(images/background.png)"
+             data-th-style="|background-color: #ccc; background-image: url(cid:background)|">
+            <div style="padding: 40px;">
+                <div style="margin-left: auto; margin-right: auto; min-width: 320px; border: solid 1px #555; border-radius: 6px;">
+                    <div style="background-color: #555; padding: 4px 4px 2px 4px;">
+                        <div style="background-image: url(images/logo-background.png);"
+                             data-th-style="|background-image: url(cid:logo-background)|">
+                            <img style="border: solid 1px #555; border-radius: 6px;"
+                                 src="images/thymeleaf-banner.png" data-th-src="|cid:thymeleaf-banner|" />
+                        </div>
+                    </div>
+                    <div style="padding: 15px 15px 30px 15px; font-family: Verdana, Arial, Helvetica, sans-serif; font-size:1em; background-color: #fff; color:#333;">
+                        <p>Hello <b data-th-text="${name}">Peter</b>! (this is a placeholder for dynamic recipient name)</p>
+                        <p>
+                            You have been successfully subscribed to the <b>Fake newsletter</b> on
+                            <span data-th-text="${#dates.format(subscriptionDate)}">28-12-2012</span>
+                        </p>
+                        <p>Your hobbies are:</p>
+                        <ul data-th-remove="all-but-first">
+                            <li data-th-each="hobby : ${hobbies}"
+                                data-th-text="${hobby}">Reading</li>
+                            <li>Writing</li>
+                            <li>Bowling</li>
+                        </ul>
+                        <p>
+                            Regards, <br />
+                            &emsp; <em>The Thymeleaf Team</em>
+                        </p>
+                    </div>
+                    <div style="background-color: #555; padding: 4px 4px 0px 4px; text-align: right;">
+                        <div style="background-image: url(images/logo-background.png);"
+                             data-th-style="|background-image: url(cid:logo-background)|">
+                            <img style="border: solid 1px #555; border-radius: 6px;"
+                                 src="images/thymeleaf-logo.png" data-th-src="|cid:thymeleaf-logo|" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

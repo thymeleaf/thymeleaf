@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Spring email with Thymeleaf</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Raleway:400,300,600" />
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css" />
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css" />
+        <link rel="stylesheet" href="../../css/main.css" th:href="@{/css/main.css}" />
+    </head>
+    <body>
+        <div class="container">
+            <h1 th:text="#{application.title}">Spring email with Thymeleaf</h1>
+            <p>
+                This is a demo application exemplifying the use of Thymeleaf for creating
+                and sending several kinds of HTML email in a Spring application.
+            </p>
+            <p>
+                Note that, although for educational purposes this is a web application 
+                developed with <b>Spring MVC</b> and <b>HTML5</b>, these same techniques would work perfectly in 
+                a <b>standalone</b> application with no web interface at all.
+            </p>
+            <p>
+                In order to run the application to should configure your SMTP server correctly.
+                You can do this by modifying the values on <kbd>src/main/resources/configuration.properties</kbd>
+                and <kbd>src/main/resources/javamail.properties</kbd>.
+            </p>
+            <table class="u-full-width">
+                <thead>
+                    <tr>
+                        <th>Examples</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <p class="title">Plain text email</p>
+                        </td>
+                        <td>
+                            <p>
+                                This example shows how to send a plain TEXT email
+                                using Thymeleaf text syntax.
+                            </p>
+                        </td>
+                        <td>
+                            <a href="text.html" th:href="@{/text.html}" class="button">See example</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="title">Simple HTML email</p>
+                        </td>
+                        <td>
+                            <p>
+                                This example shows how to send a simple HTML email with
+                                no attachments or images.
+                            </p>
+                        </td>
+                        <td>
+                            <a href="simple.html" th:href="@{/simple.html}" class="button">See example</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="title">HTML email with attachment</p>
+                        </td>
+                        <td>
+                            <p>
+                                This example shows how to send an HTML email with
+                                a file attachment.
+                            </p>
+                        </td>
+                        <td>
+                            <a href="attachment.html" th:href="@{/attachment.html}" class="button">See example</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="title">HTML email with inline image</p>
+                        </td>
+                        <td>
+                            <p>
+                                This example shows how to send an HTML email with
+                                an inlined image.
+                            </p>
+                        </td>
+                        <td>
+                            <a href="inline.html" th:href="@{/inline.html}" class="button">See example</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="title">Editable HTML email</p>
+                        </td>
+                        <td>
+                            <p>
+                                This example shows how to send an HTML email composed
+                                with a rich text editor.
+                            </p>
+                        </td>
+                        <td>
+                            <a href="editable.html" th:href="@{/editable.html}" class="button">See example</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>
