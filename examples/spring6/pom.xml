@@ -37,11 +37,6 @@
   <packaging>pom</packaging>
   <name>thymeleaf examples spring6</name>
 
-  <properties>
-    <!-- Hibernate Validator version is set to the predefined JAVAX-based version property.     -->
-    <hibernate-validator.version>${hibernate-validator-jakarta.version}</hibernate-validator.version>
-  </properties>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -50,6 +45,11 @@
         <version>${spring-framework6.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate.validator</groupId>
+        <artifactId>hibernate-validator-annotation-processor</artifactId>
+        <version>${hibernate-validator-jakarta.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

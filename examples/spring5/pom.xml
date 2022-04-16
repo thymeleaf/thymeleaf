@@ -37,11 +37,6 @@
   <packaging>pom</packaging>
   <name>thymeleaf examples spring5</name>
 
-  <properties>
-    <!-- Hibernate Validator version is set to the predefined JAVAX-based version property.     -->
-    <hibernate-validator.version>${hibernate-validator-javax.version}</hibernate-validator.version>
-  </properties>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -55,6 +50,11 @@
         <groupId>org.springframework.webflow</groupId>
         <artifactId>spring-webflow</artifactId>
         <version>${spring-webflow.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate.validator</groupId>
+        <artifactId>hibernate-validator-annotation-processor</artifactId>
+        <version>${hibernate-validator-javax.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
