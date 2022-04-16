@@ -128,8 +128,10 @@
     <thymeleaf.version>${project.version}</thymeleaf.version>
     <jakarta-servlet-api.version>5.0.0</jakarta-servlet-api.version>
     <jakarta-validation-api.version>3.0.1</jakarta-validation-api.version>
+    <jakarta-mail-api.version>2.0.1</jakarta-mail-api.version>
     <javax-servlet-api.version>3.0.1</javax-servlet-api.version>
     <javax-validation-api.version>2.0.1.Final</javax-validation-api.version>
+    <javax-mail-api.version>1.6.2</javax-mail-api.version>
     <ognl.version>3.2.21</ognl.version>
     <attoparser.version>2.0.5.RELEASE</attoparser.version>
     <unbescape.version>1.1.6.RELEASE</unbescape.version>
@@ -142,6 +144,8 @@
     <spring-webflow.version>2.5.1.RELEASE</spring-webflow.version>
     <jackson.version>2.13.0</jackson.version>
     <commons-lang3.version>3.12.0</commons-lang3.version>
+    <commons-io.version>2.11.0</commons-io.version>
+    <commons-fileupload.version>1.4</commons-fileupload.version>
     <hibernate-validator-jakarta.version>7.0.4.Final</hibernate-validator-jakarta.version>
     <hibernate-validator-javax.version>6.2.3.Final</hibernate-validator-javax.version>
     <hibernate-validator.version>TO_BE_SPECIFIED_BY_CHILDREN:hibernate-validator.version</hibernate-validator.version>
@@ -221,6 +225,18 @@
       </dependency>
 
       <dependency>
+        <groupId>jakarta.mail</groupId>
+        <artifactId>jakarta.mail-api</artifactId>
+        <version>${jakarta-mail-api.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>jakarta.mail</artifactId>
+        <version>${jakarta-mail-api.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
         <version>${javax-servlet-api.version}</version>
@@ -230,6 +246,18 @@
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
         <version>${javax-validation-api.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.mail</groupId>
+        <artifactId>javax.mail-api</artifactId>
+        <version>${javax-mail-api.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>javax.mail</artifactId>
+        <version>${javax-mail-api.version}</version>
       </dependency>
 
       <dependency>
@@ -271,6 +299,12 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-context</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context-support</artifactId>
         <version>${spring.version}</version>
       </dependency>
 
@@ -392,6 +426,18 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>${commons-lang3.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${commons-io.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>${commons-fileupload.version}</version>
       </dependency>
 
       <dependency>
