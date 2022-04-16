@@ -38,11 +38,26 @@
   <name>thymeleaf examples spring5</name>
 
   <properties>
-    <!-- Spring version is set to the predefined Spring 5 version property.                     -->
-    <spring.version>${spring5.version}</spring.version>
     <!-- Hibernate Validator version is set to the predefined JAVAX-based version property.     -->
     <hibernate-validator.version>${hibernate-validator-javax.version}</hibernate-validator.version>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-framework-bom</artifactId>
+        <version>${spring-framework5.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.webflow</groupId>
+        <artifactId>spring-webflow</artifactId>
+        <version>${spring-webflow.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
 

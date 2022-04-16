@@ -43,10 +43,6 @@
     <!-- NOTE module name is fixed and not set to project.artifactId because this would not be  -->
     <!-- a valid approach for project names containing hyphens (not allowed in module names).   -->
     <module.name>thymeleaf.testing.spring6</module.name>
-    <!-- Spring version is set to the predefined Spring 6 version property.                     -->
-    <spring.version>${spring6.version}</spring.version>
-    <!-- Spring Security version is set to the predefined Spring Security 6 version property.   -->
-    <spring-security.version>${spring-security6.version}</spring-security.version>
   </properties>
 
   <build>
@@ -67,6 +63,25 @@
     </plugins>
 
   </build>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-framework-bom</artifactId>
+        <version>${spring-framework6.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-bom</artifactId>
+        <version>${spring-security6.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
 
