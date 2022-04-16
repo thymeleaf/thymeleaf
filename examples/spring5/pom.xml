@@ -56,6 +56,7 @@
   <modules>
     <module>thymeleaf-examples-spring5-stsm</module>
     <module>thymeleaf-examples-spring5-sayhello</module>
+    <module>thymeleaf-examples-spring5-springmail</module>
   </modules>
 
 </project>
