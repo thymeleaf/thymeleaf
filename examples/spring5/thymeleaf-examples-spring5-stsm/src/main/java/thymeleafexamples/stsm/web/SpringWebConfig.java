@@ -29,7 +29,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
@@ -40,8 +40,7 @@ import thymeleafexamples.stsm.web.conversion.VarietyFormatter;
 @Configuration
 @EnableWebMvc
 @ComponentScan
-public class SpringWebConfig
-        extends WebMvcConfigurerAdapter implements ApplicationContextAware {
+public class SpringWebConfig implements WebMvcConfigurer, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
@@ -68,7 +67,7 @@ public class SpringWebConfig
      */
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-        super.addResourceHandlers(registry);
+        WebMvcConfigurer.super.addResourceHandlers(registry);
         registry.addResourceHandler("/images/**").addResourceLocations("/images/");
         registry.addResourceHandler("/css/**").addResourceLocations("/css/");
         registry.addResourceHandler("/js/**").addResourceLocations("/js/");
@@ -90,7 +89,7 @@ public class SpringWebConfig
      */
     @Override
     public void addFormatters(final FormatterRegistry registry) {
-        super.addFormatters(registry);
+        WebMvcConfigurer.super.addFormatters(registry);
         registry.addFormatter(varietyFormatter());
         registry.addFormatter(dateFormatter());
     }
