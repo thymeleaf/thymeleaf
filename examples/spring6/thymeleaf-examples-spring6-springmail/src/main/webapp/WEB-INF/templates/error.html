@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Spring email with Thymeleaf</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Raleway:400,300,600" />
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css" />
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css" />
+        <link rel="stylesheet" href="../../css/main.css" th:href="@{/css/main.css}" />
+    </head>
+    <body>
+        <div class="container">
+            <h1 th:text="#{application.title}">Spring email with Thymeleaf</h1>
+            <h2>An ERROR happened (check the logs)</h2>
+            <p>
+                <b>Tip</b>: Did you remember to correctly configure your SMTP server at <kbd>src/main/resources/configuration.properties</kbd>
+                and <kbd>src/main/resources/javamail.properties</kbd>?
+            </p>
+            <p>
+                Error message: <span th:text="${errorMessage}">Unknown error</span>
+            </p>
+            <p>
+                <a href="index.html" th:href="@{/index.html}" class="button">Back to home page</a>
+            </p>
+        </div>
+    </body>
+</html>

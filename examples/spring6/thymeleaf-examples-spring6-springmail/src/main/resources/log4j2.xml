@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n" />
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="WARN">
+            <AppenderRef ref="console" />
+        </Root>
+        <Logger name="org.thymeleaf" level="DEBUG" />
+        <Logger name="org.thymeleaf.TemplateEngine.CONFIG" level="DEBUG" />
+        <Logger name="org.thymeleaf.TemplateEngine.TIMER" level="DEBUG" />
+        <Logger name="org.thymeleaf.TemplateEngine.cache.TEMPLATE_CACHE" level="DEBUG" />
+        <Logger name="org.thymeleaf.TemplateEngine.cache.FRAGMENT_CACHE" level="DEBUG" />
+        <Logger name="org.thymeleaf.TemplateEngine.cache.MESSAGE_CACHE" level="DEBUG" />
+        <Logger name="org.thymeleaf.TemplateEngine.cache.EXPRESSION_CACHE" level="DEBUG" />
+        <Logger name="thymeleafexamples" level="DEBUG" />
+    </Loggers>
+</Configuration>
