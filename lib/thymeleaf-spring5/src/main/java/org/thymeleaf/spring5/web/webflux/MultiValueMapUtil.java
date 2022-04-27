@@ -37,6 +37,9 @@ import org.springframework.util.MultiValueMap;
  */
 final class MultiValueMapUtil {
 
+    static String[] EMPTY_VALUES = new String[0];
+
+
     static Map<String,String[]> stringToStringArrayMultiMap(final MultiValueMap<String,String> multiValueMap) {
         if (multiValueMap == null) {
             return null;

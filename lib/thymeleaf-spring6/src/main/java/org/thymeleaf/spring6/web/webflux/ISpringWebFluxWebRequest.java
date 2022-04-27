@@ -20,6 +20,7 @@
 package org.thymeleaf.spring6.web.webflux;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,27 +39,30 @@ import org.thymeleaf.web.IWebRequest;
  */
 public interface ISpringWebFluxWebRequest extends IWebRequest {
 
-
     public URI getURI();
 
     @Override
     default String getScheme() {
-        return getURI().getScheme();
+        final URI uri = getURI();
+        return (uri == null)? null : uri.getScheme();
     }
 
     @Override
     default String getServerName() {
-        return getURI().getHost();
+        final URI uri = getURI();
+        return (uri == null)? null : uri.getHost();
     }
 
     @Override
     default Integer getServerPort() {
-        return Integer.valueOf(getURI().getPort());
+        final URI uri = getURI();
+        return (uri == null)? null : Integer.valueOf(uri.getPort());
     }
 
     @Override
     default String getQueryString() {
-        return getURI().getRawQuery();
+        final URI uri = getURI();
+        return (uri == null)? null : uri.getRawQuery();
     }
 
 
@@ -67,34 +71,49 @@ public interface ISpringWebFluxWebRequest extends IWebRequest {
     @Override
     default boolean containsHeader(final String name) {
         Validate.notNull(name, "Name cannot be null");
-        return getHeaderMultiValueMap().containsKey(name);
+        final MultiValueMap<String,String> headerMultiValueMap = getHeaderMultiValueMap();
+        return headerMultiValueMap != null && headerMultiValueMap.containsKey(name);
     }
 
     @Override
     default int getHeaderCount() {
-        return getHeaderMultiValueMap().size();
+        final MultiValueMap<String,String> headerMultiValueMap = getHeaderMultiValueMap();
+        return (headerMultiValueMap == null) ? 0 : headerMultiValueMap.size();
     }
 
     @Override
     default Set<String> getAllHeaderNames() {
-        return getHeaderMultiValueMap().keySet();
+        final MultiValueMap<String,String> headerMultiValueMap = getHeaderMultiValueMap();
+        return (headerMultiValueMap == null) ? Collections.emptySet() : headerMultiValueMap.keySet();
     }
 
     @Override
     default Map<String, String[]> getHeaderMap() {
-        return MultiValueMapUtil.stringToStringArrayMultiMap(getHeaderMultiValueMap());
+        final MultiValueMap<String,String> headerMultiValueMap = getHeaderMultiValueMap();
+        if (headerMultiValueMap == null) {
+            return Collections.emptyMap();
+        }
+        return MultiValueMapUtil.stringToStringArrayMultiMap(headerMultiValueMap);
     }
 
     @Override
     default String getHeaderValue(final String name) {
         Validate.notNull(name, "Name cannot be null");
-        return getHeaderMultiValueMap().getFirst(name);
+        final MultiValueMap<String,String> headerMultiValueMap = getHeaderMultiValueMap();
+        return (headerMultiValueMap == null) ? null : headerMultiValueMap.getFirst(name);
     }
 
     @Override
     default String[] getHeaderValues(final String name) {
         Validate.notNull(name, "Name cannot be null");
-        final List<String> headerValueList = getHeaderMultiValueMap().get(name);
+        final MultiValueMap<String,String> headerMultiValueMap = getHeaderMultiValueMap();
+        if (headerMultiValueMap == null) {
+            return MultiValueMapUtil.EMPTY_VALUES;
+        }
+        final List<String> headerValueList = headerMultiValueMap.get(name);
+        if (headerValueList == null) {
+            return MultiValueMapUtil.EMPTY_VALUES;
+        }
         return headerValueList.toArray(new String[headerValueList.size()]);
     }
 
@@ -104,34 +123,49 @@ public interface ISpringWebFluxWebRequest extends IWebRequest {
     @Override
     default boolean containsParameter(final String name) {
         Validate.notNull(name, "Name cannot be null");
-        return getParameterMultiValueMap().containsKey(name);
+        final MultiValueMap<String,String> parameterMultiValueMap = getParameterMultiValueMap();
+        return parameterMultiValueMap != null && parameterMultiValueMap.containsKey(name);
     }
 
     @Override
     default int getParameterCount() {
-        return getParameterMultiValueMap().size();
+        final MultiValueMap<String,String> parameterMultiValueMap = getParameterMultiValueMap();
+        return (parameterMultiValueMap == null)? 0 : parameterMultiValueMap.size();
     }
 
     @Override
     default Set<String> getAllParameterNames() {
-        return getParameterMultiValueMap().keySet();
+        final MultiValueMap<String,String> parameterMultiValueMap = getParameterMultiValueMap();
+        return (parameterMultiValueMap == null)? null : parameterMultiValueMap.keySet();
     }
 
     @Override
     default Map<String, String[]> getParameterMap() {
-        return MultiValueMapUtil.stringToStringArrayMultiMap(getParameterMultiValueMap());
+        final MultiValueMap<String,String> parameterMultiValueMap = getParameterMultiValueMap();
+        if (parameterMultiValueMap == null) {
+            return Collections.emptyMap();
+        }
+        return MultiValueMapUtil.stringToStringArrayMultiMap(parameterMultiValueMap);
     }
 
     @Override
     default String getParameterValue(final String name) {
         Validate.notNull(name, "Name cannot be null");
-        return getParameterMultiValueMap().getFirst(name);
+        final MultiValueMap<String,String> parameterMultiValueMap = getParameterMultiValueMap();
+        return (parameterMultiValueMap == null)? null : parameterMultiValueMap.getFirst(name);
     }
 
     @Override
     default String[] getParameterValues(final String name) {
         Validate.notNull(name, "Name cannot be null");
-        final List<String> parameterValueList = getParameterMultiValueMap().get(name);
+        final MultiValueMap<String,String> parameterMultiValueMap = getParameterMultiValueMap();
+        if (parameterMultiValueMap == null) {
+            return MultiValueMapUtil.EMPTY_VALUES;
+        }
+        final List<String> parameterValueList = parameterMultiValueMap.get(name);
+        if (parameterValueList == null) {
+            return MultiValueMapUtil.EMPTY_VALUES;
+        }
         return parameterValueList.toArray(new String[parameterValueList.size()]);
     }
 
@@ -141,35 +175,53 @@ public interface ISpringWebFluxWebRequest extends IWebRequest {
     @Override
     default boolean containsCookie(final String name) {
         Validate.notNull(name, "Name cannot be null");
-        return getCookieMultiValueMap().containsKey(name);
+        final MultiValueMap<String,HttpCookie> cookieMultiValueMap = getCookieMultiValueMap();
+        return cookieMultiValueMap != null && cookieMultiValueMap.containsKey(name);
     }
 
     @Override
     default int getCookieCount() {
-        return getCookieMultiValueMap().size();
+        final MultiValueMap<String,HttpCookie> cookieMultiValueMap = getCookieMultiValueMap();
+        return (cookieMultiValueMap == null)? 0 : cookieMultiValueMap.size();
     }
 
     @Override
     default Set<String> getAllCookieNames() {
-        return getCookieMultiValueMap().keySet();
+        final MultiValueMap<String,HttpCookie> cookieMultiValueMap = getCookieMultiValueMap();
+        return (cookieMultiValueMap == null)? Collections.emptySet() : cookieMultiValueMap.keySet();
     }
 
     @Override
     default Map<String, String[]> getCookieMap() {
-        return MultiValueMapUtil.cookieToStringArrayMultiMap(getCookieMultiValueMap());
+        final MultiValueMap<String,HttpCookie> cookieMultiValueMap = getCookieMultiValueMap();
+        if (cookieMultiValueMap == null) {
+            return Collections.emptyMap();
+        }
+        return MultiValueMapUtil.cookieToStringArrayMultiMap(cookieMultiValueMap);
     }
 
     @Override
     default String getCookieValue(final String name) {
         Validate.notNull(name, "Name cannot be null");
-        final HttpCookie cookie = getCookieMultiValueMap().getFirst(name);
+        final MultiValueMap<String,HttpCookie> cookieMultiValueMap = getCookieMultiValueMap();
+        if (cookieMultiValueMap == null) {
+            return null;
+        }
+        final HttpCookie cookie = cookieMultiValueMap.getFirst(name);
         return (cookie == null)? null : cookie.getValue();
     }
 
     @Override
     default String[] getCookieValues(final String name) {
         Validate.notNull(name, "Name cannot be null");
-        final List<HttpCookie> cookieList = getCookieMultiValueMap().get(name);
+        final MultiValueMap<String,HttpCookie> cookieMultiValueMap = getCookieMultiValueMap();
+        if (cookieMultiValueMap == null) {
+            return MultiValueMapUtil.EMPTY_VALUES;
+        }
+        final List<HttpCookie> cookieList = cookieMultiValueMap.get(name);
+        if (cookieList == null) {
+            return MultiValueMapUtil.EMPTY_VALUES;
+        }
         return cookieList.stream().map(HttpCookie::getValue).toArray(String[]::new);
     }
 

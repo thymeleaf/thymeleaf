@@ -20,6 +20,7 @@
 
 package org.thymeleaf.spring6.web.webflux;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,17 +44,20 @@ public interface ISpringWebFluxWebApplication extends IWebApplication {
     @Override
     default boolean containsAttribute(final String name) {
         Validate.notNull(name, "Name cannot be null");
-        return getAttributes().containsKey(name);
+        final Map<String,Object> attributes = getAttributes();
+        return attributes != null && attributes.containsKey(name);
     }
 
     @Override
     default int getAttributeCount() {
-        return getAttributes().size();
+        final Map<String,Object> attributes = getAttributes();
+        return (attributes == null)? 0 : attributes.size();
     }
 
     @Override
     default Set<String> getAllAttributeNames() {
-        return getAttributes().keySet();
+        final Map<String,Object> attributes = getAttributes();
+        return (attributes == null)? Collections.emptySet() : attributes.keySet();
     }
 
     @Override
@@ -64,7 +68,8 @@ public interface ISpringWebFluxWebApplication extends IWebApplication {
     @Override
     default Object getAttributeValue(final String name) {
         Validate.notNull(name, "Name cannot be null");
-        return getAttributes().get(name);
+        final Map<String,Object> attributes = getAttributes();
+        return (attributes == null)? null : attributes.get(name);
     }
 
 }

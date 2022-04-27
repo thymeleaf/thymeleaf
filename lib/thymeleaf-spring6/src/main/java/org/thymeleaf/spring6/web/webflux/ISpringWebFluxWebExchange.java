@@ -20,6 +20,7 @@
 
 package org.thymeleaf.spring6.web.webflux;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,19 +55,22 @@ public interface ISpringWebFluxWebExchange extends IWebExchange {
     @Override
     default boolean containsAttribute(final String name) {
         Validate.notNull(name, "Name cannot be null");
+        final Map<String, Object> attributes = getAttributes();
         // Attribute map in ServerWebExchange, which does not allow null values. So containsKey is enough
         // to be equivalent to the Servlet implementations (in which null = removal)
-        return getAttributes().containsKey(name);
+        return attributes != null && attributes.containsKey(name);
     }
 
     @Override
     default int getAttributeCount() {
-        return getAttributes().size();
+        final Map<String, Object> attributes = getAttributes();
+        return (attributes == null)? 0 : attributes.size();
     }
 
     @Override
     default Set<String> getAllAttributeNames() {
-        return getAttributes().keySet();
+        final Map<String, Object> attributes = getAttributes();
+        return (attributes == null)? Collections.emptySet() : attributes.keySet();
     }
 
     @Override
@@ -77,7 +81,8 @@ public interface ISpringWebFluxWebExchange extends IWebExchange {
     @Override
     default Object getAttributeValue(final String name) {
         Validate.notNull(name, "Name cannot be null");
-        return getAttributes().get(name);
+        final Map<String, Object> attributes = getAttributes();
+        return (attributes == null)? null : attributes.get(name);
     }
 
 
