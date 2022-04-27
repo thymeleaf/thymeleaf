@@ -140,6 +140,30 @@
     </pluginRepository>
   </pluginRepositories>
 
+  <build>
+
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+    </plugins>
+
+  </build>
+
   <modules>
     <module>thymeleaf-examples-springboot3-stsm-mvc</module>
     <module>thymeleaf-examples-springboot3-stsm-webflux</module>
