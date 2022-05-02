@@ -15,6 +15,7 @@
 - Support Servlet 5.0 (jakarta.*) namespace besides Servlet < 5 (javax.*).
 - Support Spring 6.0 (6.0.0-SNAPSHOT): new lib module thymeleaf-spring6.
 - Removed support for Spring 3.x and Spring 4.x.
+- Removed web-API based expression security objects (#request, #response, #session, #servletContext).
 - Set minimum JDK compatibility level to JDK 8 project-wide (JDK 17 for thymeleaf-spring6).
 - Seggregated Spring support in thymeleaf-testing into specific modules: thymeleaf-testing-spring5
   and thymeleaf-testing-spring6.
