@@ -7,7 +7,8 @@
 - Added project-wide BOM (thymeleaf-parent) for the unified management of dependency and plugin versions.
 - Removed website content from "dist" (thymeleaf-dist) in favour of the thymeleaf.github.com repository.
 - Refactored build and release procedure: replaced use of maven-release-plugin with maven-deploy-plugin.
-- Fix explanatory error message for removed expression utility objects.
+- Fixed missing null checks in web interfaces causing NPEs.
+- Fixed explanatory error message for removed expression utility objects.
 
 
 
