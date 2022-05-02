@@ -122,7 +122,11 @@ public class StandardExpressionObjectFactory implements IExpressionObjectFactory
                             AGGREGATES_EXPRESSION_OBJECT_NAME,
                             MESSAGES_EXPRESSION_OBJECT_NAME,
                             IDS_EXPRESSION_OBJECT_NAME,
-                            EXECUTION_INFO_OBJECT_NAME
+                            EXECUTION_INFO_OBJECT_NAME,
+                            REQUEST_EXPRESSION_OBJECT_NAME,
+                            RESPONSE_EXPRESSION_OBJECT_NAME,
+                            SESSION_EXPRESSION_OBJECT_NAME,
+                            SERVLET_CONTEXT_EXPRESSION_OBJECT_NAME
                     }
             )));
 
