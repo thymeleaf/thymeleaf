@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.spring6.expression;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,8 +34,10 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.EvaluationException;
 import org.springframework.expression.MethodExecutor;
 import org.springframework.expression.MethodResolver;
+import org.springframework.expression.PropertyAccessor;
 import org.springframework.expression.TypeLocator;
 import org.springframework.expression.spel.support.ReflectiveMethodResolver;
+import org.springframework.expression.spel.support.ReflectivePropertyAccessor;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.expression.spel.support.StandardTypeConverter;
 import org.springframework.expression.spel.support.StandardTypeLocator;
@@ -76,6 +79,8 @@ public final class ThymeleafEvaluationContext
     public static final String THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME = "thymeleaf::EvaluationContext";
 
 
+    private static final ReflectivePropertyAccessor REFLECTIVE_PROPERTY_ACCESSOR_INSTANCE =
+            new ThymeleafEvaluationContextACLPropertyAccessor();
     private static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
     private static final TypeLocator TYPE_LOCATOR = new ThymeleafEvaluationContextACLTypeLocator();
     private static final List<MethodResolver> METHOD_RESOLVERS =
@@ -103,8 +108,11 @@ public final class ThymeleafEvaluationContext
             this.setTypeConverter(new StandardTypeConverter(conversionService));
         }
 
-        this.addPropertyAccessor(SPELContextPropertyAccessor.INSTANCE);
-        this.addPropertyAccessor(MAP_ACCESSOR_INSTANCE);
+        final List<PropertyAccessor> propertyAccessors = new ArrayList<>(5);
+        propertyAccessors.add(REFLECTIVE_PROPERTY_ACCESSOR_INSTANCE);
+        propertyAccessors.add(SPELContextPropertyAccessor.INSTANCE);
+        propertyAccessors.add(MAP_ACCESSOR_INSTANCE);
+        this.setPropertyAccessors(propertyAccessors);
 
         // We need to establish a custom type locator in order to forbid access to certain dangerous classes in expressions
         this.setTypeLocator(TYPE_LOCATOR);
@@ -181,6 +189,43 @@ public final class ThymeleafEvaluationContext
 
 
 
+    static final class ThymeleafEvaluationContextACLPropertyAccessor extends ReflectivePropertyAccessor {
+
+        ThymeleafEvaluationContextACLPropertyAccessor() {
+            // allowWrite = false
+            super(false);
+        }
+
+
+        @Override
+        public boolean canRead(final EvaluationContext context, final Object target, final String name) throws AccessException {
+
+            if (target != null) {
+
+                final Class<?> type = (target instanceof Class ? (Class<?>) target : target.getClass());
+
+                if (!ExpressionUtils.isTypeAllowed(type.getName())) {
+                    // We will only specifically allow calling "Object.getClass()" and "Class.getName()"
+                    if (!(Class.class.equals(type) && "name".equals(name))
+                            && !(Object.class.equals(type) && "class".equals(name))) {
+                        throw new EvaluationException(
+                                String.format(
+                                        "Calling methods is forbidden for type '%s' in Thymeleaf expressions. " +
+                                        "Blocked classes are: %s. Allowed classes are: %s.",
+                                        type.getName(), ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
+                    }
+                }
+
+            }
+
+            return super.canRead(context, target, name);
+
+        }
+
+    }
+
+
+
     static final class ThymeleafEvaluationContextACLMethodResolver extends ReflectiveMethodResolver {
 
         ThymeleafEvaluationContextACLMethodResolver() {
@@ -193,6 +238,7 @@ public final class ThymeleafEvaluationContext
                 final String name, final List<TypeDescriptor> argumentTypes) throws AccessException {
 
             final Class<?> type = (targetObject instanceof Class ? (Class<?>) targetObject : targetObject.getClass());
+
             if (!ExpressionUtils.isTypeAllowed(type.getName())) {
                 // We will only specifically allow calling "Object.getClass()" and "Class.getName()"
                 if (!(Class.class.equals(type) && "getName".equals(name))
