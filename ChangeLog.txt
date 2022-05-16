@@ -9,6 +9,7 @@
 - Refactored build and release procedure: replaced use of maven-release-plugin with maven-deploy-plugin.
 - Fixed missing null checks in web interfaces causing NPEs.
 - Fixed explanatory error message for removed expression utility objects.
+- Fixed type/member restriction application in order to avoid being too restrictive on valid interfaces.
 
 
 

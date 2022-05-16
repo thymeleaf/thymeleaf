@@ -109,9 +109,9 @@ public final class ThymeleafEvaluationContext
         }
 
         final List<PropertyAccessor> propertyAccessors = new ArrayList<>(5);
-        propertyAccessors.add(REFLECTIVE_PROPERTY_ACCESSOR_INSTANCE);
         propertyAccessors.add(SPELContextPropertyAccessor.INSTANCE);
         propertyAccessors.add(MAP_ACCESSOR_INSTANCE);
+        propertyAccessors.add(REFLECTIVE_PROPERTY_ACCESSOR_INSTANCE);
         this.setPropertyAccessors(propertyAccessors);
 
         // We need to establish a custom type locator in order to forbid access to certain dangerous classes in expressions
@@ -198,27 +198,24 @@ public final class ThymeleafEvaluationContext
 
 
         @Override
-        public boolean canRead(final EvaluationContext context, final Object target, final String name) throws AccessException {
+        public boolean canRead(final EvaluationContext context, final Object targetObject, final String name) throws AccessException {
 
-            if (target != null) {
+            // We need to perform the check on the getter equivalent to the member being called
+            final String methodEquiv =
+                    ("empty".equals(name) || "blank".equals(name)) ?
+                        "is" + Character.toUpperCase(name.charAt(0)) + name.substring(1) :
+                        "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
 
-                final Class<?> type = (target instanceof Class ? (Class<?>) target : target.getClass());
-
-                if (!ExpressionUtils.isTypeAllowed(type.getName())) {
-                    // We will only specifically allow calling "Object.getClass()" and "Class.getName()"
-                    if (!(Class.class.equals(type) && "name".equals(name))
-                            && !(Object.class.equals(type) && "class".equals(name))) {
-                        throw new EvaluationException(
-                                String.format(
-                                        "Calling methods is forbidden for type '%s' in Thymeleaf expressions. " +
-                                        "Blocked classes are: %s. Allowed classes are: %s.",
-                                        type.getName(), ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
-                    }
-                }
-
+            if (!ExpressionUtils.isMemberAllowed(targetObject, methodEquiv)) {
+                throw new EvaluationException(
+                        String.format(
+                                "Accessing member '%s' is forbidden for type '%s' in Thymeleaf expressions. " +
+                                "Blocked classes are: %s. Allowed classes are: %s.",
+                                name, targetObject.getClass(),
+                                ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
             }
 
-            return super.canRead(context, target, name);
+            return super.canRead(context, targetObject, name);
 
         }
 
@@ -237,20 +234,17 @@ public final class ThymeleafEvaluationContext
                 final EvaluationContext context, final Object targetObject,
                 final String name, final List<TypeDescriptor> argumentTypes) throws AccessException {
 
-            final Class<?> type = (targetObject instanceof Class ? (Class<?>) targetObject : targetObject.getClass());
-
-            if (!ExpressionUtils.isTypeAllowed(type.getName())) {
-                // We will only specifically allow calling "Object.getClass()" and "Class.getName()"
-                if (!(Class.class.equals(type) && "getName".equals(name))
-                        && !(Object.class.equals(type) && "getClass".equals(name))) {
-                    throw new EvaluationException(
-                            String.format(
-                                    "Calling methods is forbidden for type '%s' in Thymeleaf expressions. " +
-                                    "Blocked classes are: %s. Allowed classes are: %s.",
-                                    type.getName(), ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
-                }
+            if (!ExpressionUtils.isMemberAllowed(targetObject, name)) {
+                throw new EvaluationException(
+                        String.format(
+                                "Calling method '%s' is forbidden for type '%s' in Thymeleaf expressions. " +
+                                "Blocked classes are: %s. Allowed classes are: %s.",
+                                name, targetObject.getClass(),
+                                ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
             }
+
             return super.resolve(context, targetObject, name, argumentTypes);
+
         }
 
     }

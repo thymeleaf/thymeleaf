@@ -424,17 +424,13 @@ public final class OGNLVariableExpressionEvaluator
                 return false;
             }
             if (member instanceof Method) {
-                final Class<?> declaringClass = member.getDeclaringClass();
-                if (!ExpressionUtils.isTypeAllowed(declaringClass.getName())) {
-                    // We will only specifically allow calling "Object.getClass()" and "Class.getName()"
-                    if (!(Class.class.equals(declaringClass) && "getName".equals(member.getName()))
-                            && !(Object.class.equals(declaringClass) && "getClass".equals(member.getName()))) {
-                        throw new TemplateProcessingException(
-                                String.format(
-                                        "Calling methods is forbidden for type '%s' in Thymeleaf expressions. " +
-                                        "Blocked classes are: %s. Allowed classes are: %s.",
-                                        declaringClass.getName(), ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
-                    }
+                if (!ExpressionUtils.isMemberAllowed(target, member.getName())) {
+                    throw new TemplateProcessingException(
+                            String.format(
+                                    "Accessing member '%s' is forbidden for type '%s' in Thymeleaf expressions. " +
+                                    "Blocked classes are: %s. Allowed classes are: %s.",
+                                    member.getName(), target.getClass(),
+                                    ExpressionUtils.getBlockedClasses(), ExpressionUtils.getAllowedClasses()));
                 }
             }
             return true;
