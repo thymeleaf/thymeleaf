@@ -38,12 +38,12 @@ mvn clean compile deploy
 ## 4. Create tag and set to new development version
 
 ```shell
-mvn scm:tag -Dtag thymeleaf-X.Y.Z
+mvn scm:tag -Dtag=thymeleaf-X.Y.Z
 mvn versions:set -DprocessAllModules=true -DnewVersion=X.Y.[Z+1]-SNAPSHOT
 mvn versions:commit
 git add .;
 git commit -m "Prepare for next development iteration"
-git git push
+git push
 ```
 
 ## 5. Manage staging repository in Central
