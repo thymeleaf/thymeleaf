@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <title>Thymeleaf Sandbox: SSE</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+
+  <body>
+
+    <h2>Spring WebFlux - Thymeleaf Sandbox application</h2>
+
+    <table>
+      <tbody id="dataTable">
+
+      </tbody>
+    </table>
+
+
+    <script>
+
+      var dataTable = document.getElementById("dataTable");
+
+      var source = new EventSource("/events");
+      source.addEventListener("message", function(event) {
+         dataTable.innerHTML = event.data + dataTable.innerHTML;
+      });
+
+    </script>
+
+  </body>
+  
+</html>
