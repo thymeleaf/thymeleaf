@@ -19,7 +19,8 @@
  */
 package thymeleafexamples.thvsjsp.web.controller;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -32,7 +33,7 @@ import thymeleafexamples.thvsjsp.business.entities.SubscriptionType;
 @Controller
 public class SubscribeJsp {
 
-    private static final Logger log = Logger.getLogger(SubscribeJsp.class);
+    private static final Logger log = LoggerFactory.getLogger(SubscribeJsp.class);
 
     
     public SubscribeJsp() {
