@@ -93,9 +93,11 @@
   </dependencies>
 
   <modules>
-    <module>thymeleaf-examples-spring5-stsm</module>
+    <module>thymeleaf-examples-spring5-extrathyme</module>
     <module>thymeleaf-examples-spring5-sayhello</module>
     <module>thymeleaf-examples-spring5-springmail</module>
+    <module>thymeleaf-examples-spring5-stsm</module>
+    <module>thymeleaf-examples-spring5-thvsjsp</module>
   </modules>
 
 </project>

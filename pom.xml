@@ -127,6 +127,8 @@
     <!-- ======================     -->
     <thymeleaf.version>${project.version}</thymeleaf.version>
     <jakarta-servlet-api.version>6.0.0</jakarta-servlet-api.version>
+    <jakarta-servlet-jsp-api.version>3.1.0</jakarta-servlet-jsp-api.version>
+    <jakarta-servlet-jsp-jstl-api.version>3.0.0</jakarta-servlet-jsp-jstl-api.version>
     <jakarta-validation-api.version>3.0.2</jakarta-validation-api.version>
     <jakarta-mail-api.version>2.0.1</jakarta-mail-api.version>
     <javax-servlet-api.version>3.0.1</javax-servlet-api.version>
@@ -135,6 +137,7 @@
     <javax-validation-api.version>2.0.1.Final</javax-validation-api.version>
     <javax-mail-api.version>1.6.2</javax-mail-api.version>
     <apache-taglibs-standard.version>1.2.5</apache-taglibs-standard.version>
+    <glassfish-jakarta-servlet-jsp-jstl.version>3.0.0</glassfish-jakarta-servlet-jsp-jstl.version>
     <ognl.version>3.2.21</ognl.version>
     <attoparser.version>2.0.5.RELEASE</attoparser.version>
     <unbescape.version>1.1.6.RELEASE</unbescape.version>
@@ -221,6 +224,18 @@
       </dependency>
 
       <dependency>
+        <groupId>jakarta.servlet.jsp</groupId>
+        <artifactId>jakarta.servlet.jsp-api</artifactId>
+        <version>${jakarta-servlet-jsp-api.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>jakarta.servlet.jsp.jstl</groupId>
+        <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+        <version>${jakarta-servlet-jsp-jstl-api.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>jakarta.validation</groupId>
         <artifactId>jakarta.validation-api</artifactId>
         <version>${jakarta-validation-api.version}</version>
@@ -278,6 +293,12 @@
         <groupId>org.apache.taglibs</groupId>
         <artifactId>taglibs-standard-impl</artifactId>
         <version>${apache-taglibs-standard.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.glassfish.web</groupId>
+        <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+        <version>${glassfish-jakarta-servlet-jsp-jstl.version}</version>
       </dependency>
 
       <dependency>
