@@ -92,6 +92,7 @@
   </dependencies>
 
   <modules>
+    <module>thymeleaf-examples-spring6-extrathyme</module>
     <module>thymeleaf-examples-spring6-sayhello</module>
     <module>thymeleaf-examples-spring6-springmail</module>
     <module>thymeleaf-examples-spring6-stsm</module>
