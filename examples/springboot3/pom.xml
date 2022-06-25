@@ -173,6 +173,7 @@
   </build>
 
   <modules>
+    <module>thymeleaf-examples-springboot3-biglist-mvc</module>
     <module>thymeleaf-examples-springboot3-stsm-mvc</module>
     <module>thymeleaf-examples-springboot3-stsm-webflux</module>
   </modules>
