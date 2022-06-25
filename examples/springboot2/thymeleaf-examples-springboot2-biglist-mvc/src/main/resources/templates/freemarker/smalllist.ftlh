@@ -26,11 +26,11 @@
       <tbody>
         <#list entries as e>
         <tr>
-          <td>${e.playlistId?html}</td>
-          <td>${e.playlistName?html}</td>
-          <td>${e.trackName?html}</td>
-          <td>${e.artistName?html}</td>
-          <td>${e.albumTitle?html}</td>
+          <td>${e.playlistId}</td>
+          <td>${e.playlistName}</td>
+          <td>${e.trackName}</td>
+          <td>${e.artistName}</td>
+          <td>${e.albumTitle}</td>
         </tr>
         </#list>
       </tbody>
