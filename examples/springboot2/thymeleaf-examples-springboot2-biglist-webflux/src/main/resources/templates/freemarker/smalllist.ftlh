@@ -9,11 +9,11 @@
 
   <body>
 
-    <h2>Big Listing (8,715 * 300 = 2,614,500 entries)</h2>
+  <h2>Small Listing (8,715 entries)</h2>
 
-    <p>Using template engine: <strong>FreeMarker</strong></p>
+  <p>Using template engine: <strong>FreeMarker</strong></p>
 
-    <table>
+  <table>
       <thead>
         <tr>
           <th>Playlist ID</th>
@@ -24,14 +24,15 @@
         </tr>
       </thead>
       <tbody>
-<#list dataSource as e>        <tr>
-          <td>${e.playlistId?html}</td>
-          <td>${e.playlistName?html}</td>
-          <td>${e.trackName?html}</td>
-          <td>${e.artistName?html}</td>
-          <td>${e.albumTitle?html}</td>
+        <#list entries as e>
+        <tr>
+          <td>${e.playlistId}</td>
+          <td>${e.playlistName}</td>
+          <td>${e.trackName}</td>
+          <td>${e.artistName}</td>
+          <td>${e.albumTitle}</td>
         </tr>
-</#list>
+        </#list>
       </tbody>
     </table>
 
