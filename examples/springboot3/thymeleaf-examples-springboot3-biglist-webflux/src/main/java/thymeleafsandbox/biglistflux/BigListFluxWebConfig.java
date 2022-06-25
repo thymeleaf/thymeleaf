@@ -64,7 +64,7 @@ public class BigListFluxWebConfig {
      */
     @Bean
     public FreeMarkerViewResolver freeMarkerViewResolver() {
-        final FreeMarkerViewResolver freeMarkerViewResolver = new FreeMarkerViewResolver("", ".ftl");
+        final FreeMarkerViewResolver freeMarkerViewResolver = new FreeMarkerViewResolver("", ".ftlh");
         freeMarkerViewResolver.setOrder(4);
         // TODO * Apparently no way to specify which views can be handled by this ViewResolver (viewNames property)
         return freeMarkerViewResolver;
