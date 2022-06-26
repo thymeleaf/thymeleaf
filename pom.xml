@@ -200,19 +200,19 @@
       </dependency>
 
       <dependency>
-        <groupId>org.thymeleaf</groupId>
+        <groupId>org.thymeleaf.testing</groupId>
         <artifactId>thymeleaf-testing</artifactId>
         <version>${thymeleaf.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>org.thymeleaf</groupId>
+        <groupId>org.thymeleaf.testing</groupId>
         <artifactId>thymeleaf-testing-spring5</artifactId>
         <version>${thymeleaf.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>org.thymeleaf</groupId>
+        <groupId>org.thymeleaf.testing</groupId>
         <artifactId>thymeleaf-testing-spring6</artifactId>
         <version>${thymeleaf.version}</version>
       </dependency>

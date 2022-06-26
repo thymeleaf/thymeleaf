@@ -33,6 +33,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
+  <groupId>org.thymeleaf.testing</groupId>
   <artifactId>thymeleaf-testing-lib</artifactId>
   <packaging>pom</packaging>
   <name>thymeleaf testing lib</name>
