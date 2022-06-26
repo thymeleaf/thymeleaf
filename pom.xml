@@ -131,7 +131,7 @@
     <jakarta-servlet-jsp-jstl-api.version>3.0.0</jakarta-servlet-jsp-jstl-api.version>
     <jakarta-validation-api.version>3.0.2</jakarta-validation-api.version>
     <jakarta-mail-api.version>2.0.1</jakarta-mail-api.version>
-    <javax-servlet-api.version>3.0.1</javax-servlet-api.version>
+    <javax-servlet-api.version>4.0.1</javax-servlet-api.version>
     <javax-servlet-jsp-api.version>2.3.3</javax-servlet-jsp-api.version>
     <javax-servlet-jsp-jstl-api.version>1.2.2</javax-servlet-jsp-jstl-api.version>
     <javax-validation-api.version>2.0.1.Final</javax-validation-api.version>
