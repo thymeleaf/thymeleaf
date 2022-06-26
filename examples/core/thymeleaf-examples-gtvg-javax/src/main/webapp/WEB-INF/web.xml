@@ -14,7 +14,7 @@
 
     <filter>
         <filter-name>gtvgfilter</filter-name>
-        <filter-class>thymeleafexamples.gtvg.web.filter.GTVGFilter</filter-class>
+        <filter-class>org.thymeleaf.examples.gtvg.web.filter.GTVGFilter</filter-class>
     </filter>
 
 
