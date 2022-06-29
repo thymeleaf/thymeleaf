@@ -151,21 +151,47 @@
     <moduleSet>
       <useAllReactorProjects>true</useAllReactorProjects>
       <includes>
-        <include>org.thymeleaf.examples:*</include>
+        <include>org.thymeleaf.examples:thymeleaf-examples</include>
       </includes>
-      <excludes>
-        <exclude>*:pom</exclude>
-      </excludes>
       <sources>
-        <includeModuleDirectory>false</includeModuleDirectory>
+        <excludeSubModuleDirectories>false</excludeSubModuleDirectories>
+        <outputDirectoryMapping>/examples/sources</outputDirectoryMapping>
         <fileSets>
           <fileSet>
-            <outputDirectory>/examples/sources/${module.basedir.name}</outputDirectory>
             <excludes>
-              <exclude>${project.build.directory}/**</exclude>
+              <!-- Source code files will be included in a fileset that sets unix line feeds -->
+              <exclude>**/*.java</exclude>
+              <exclude>**/*.html</exclude>
+              <exclude>**/*.xml</exclude>
+              <exclude>**/*.css</exclude>
+              <exclude>**/*.properties</exclude>
+              <exclude>**/*.yaml</exclude>
+              <exclude>**/*.yml</exclude>
+              <exclude>**/*.markdown</exclude>
+              <exclude>**/*.md</exclude>
+              <exclude>**/*.txt</exclude>
+              <!-- Exclude typical project binary artifacts and IDE metadata -->
+              <exclude>**/target/</exclude>
               <exclude>**/*.iml</exclude>
-              <exclude>.*</exclude>
+              <exclude>**/.idea/</exclude>
+              <exclude>**/.settings/</exclude>
+              <exclude>**/bin/</exclude>
+              <exclude>**/.*</exclude>
             </excludes>
+          </fileSet>
+          <fileSet>
+            <includes>
+              <include>**/*.java</include>
+              <include>**/*.html</include>
+              <include>**/*.xml</include>
+              <include>**/*.css</include>
+              <include>**/*.properties</include>
+              <include>**/*.yaml</include>
+              <include>**/*.yml</include>
+              <include>**/*.markdown</include>
+              <include>**/*.md</include>
+              <include>**/*.txt</include>
+            </includes>
             <lineEnding>unix</lineEnding>
           </fileSet>
         </fileSets>
