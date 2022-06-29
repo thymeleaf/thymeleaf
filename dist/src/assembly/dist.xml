@@ -1,111 +1,183 @@
 <?xml version="1.0"?>
-<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 https://maven.apache.org/xsd/assembly-1.1.2.xsd">
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 https://maven.apache.org/xsd/assembly-2.1.0.xsd">
 
   <id>dist</id>
   
   <formats>
     <format>zip</format>
   </formats>
-  
+
+  <moduleSets>
+
+    <moduleSet>
+      <useAllReactorProjects>true</useAllReactorProjects>
+      <includes>
+        <include>org.thymeleaf:*</include>
+      </includes>
+      <binaries>
+        <outputDirectory>/dist</outputDirectory>
+        <unpack>false</unpack>
+        <dependencySets>
+          <dependencySet>
+            <outputDirectory>/lib</outputDirectory>
+            <scope>runtime</scope>
+            <useProjectArtifact>false</useProjectArtifact>
+            <excludes>
+              <exclude>org.thymeleaf:*</exclude>
+            </excludes>
+          </dependencySet>
+        </dependencySets>
+      </binaries>
+    </moduleSet>
+
+    <moduleSet>
+      <useAllReactorProjects>true</useAllReactorProjects>
+      <includes>
+        <include>org.thymeleaf:*</include>
+      </includes>
+      <binaries>
+        <attachmentClassifier>sources</attachmentClassifier>
+        <outputDirectory>/dist</outputDirectory>
+        <unpack>false</unpack>
+        <includeDependencies>false</includeDependencies>
+      </binaries>
+    </moduleSet>
+
+    <moduleSet>
+      <useAllReactorProjects>true</useAllReactorProjects>
+      <includes>
+        <include>org.thymeleaf:*</include>
+      </includes>
+      <binaries>
+        <attachmentClassifier>javadoc</attachmentClassifier>
+        <outputDirectory>/dist</outputDirectory>
+        <unpack>false</unpack>
+        <includeDependencies>false</includeDependencies>
+      </binaries>
+    </moduleSet>
+
+    <moduleSet>
+      <useAllReactorProjects>true</useAllReactorProjects>
+      <includes>
+        <include>org.thymeleaf:*</include>
+      </includes>
+      <binaries>
+        <attachmentClassifier>javadoc</attachmentClassifier>
+        <outputDirectory>/apidocs/${module.artifactId}</outputDirectory>
+        <unpack>true</unpack>
+        <includeDependencies>false</includeDependencies>
+      </binaries>
+    </moduleSet>
+
+
+
+    <moduleSet>
+      <useAllReactorProjects>true</useAllReactorProjects>
+      <includes>
+        <include>org.thymeleaf.testing:*</include>
+      </includes>
+      <binaries>
+        <outputDirectory>/testing/dist</outputDirectory>
+        <unpack>false</unpack>
+        <dependencySets>
+          <dependencySet>
+            <outputDirectory>/testing/lib</outputDirectory>
+            <scope>runtime</scope>
+            <useProjectArtifact>false</useProjectArtifact>
+            <excludes>
+              <exclude>org.thymeleaf:*</exclude>
+              <exclude>org.thymeleaf.testing:*</exclude>
+            </excludes>
+          </dependencySet>
+        </dependencySets>
+      </binaries>
+    </moduleSet>
+
+    <moduleSet>
+      <useAllReactorProjects>true</useAllReactorProjects>
+      <includes>
+        <include>org.thymeleaf.testing:*</include>
+      </includes>
+      <binaries>
+        <attachmentClassifier>sources</attachmentClassifier>
+        <outputDirectory>/testing/dist</outputDirectory>
+        <unpack>false</unpack>
+        <includeDependencies>false</includeDependencies>
+      </binaries>
+    </moduleSet>
+
+    <moduleSet>
+      <useAllReactorProjects>true</useAllReactorProjects>
+      <includes>
+        <include>org.thymeleaf.testing:*</include>
+      </includes>
+      <binaries>
+        <attachmentClassifier>javadoc</attachmentClassifier>
+        <outputDirectory>/testing/dist</outputDirectory>
+        <unpack>false</unpack>
+        <includeDependencies>false</includeDependencies>
+      </binaries>
+    </moduleSet>
+
+    <moduleSet>
+      <useAllReactorProjects>true</useAllReactorProjects>
+      <includes>
+        <include>org.thymeleaf.testing:*</include>
+      </includes>
+      <binaries>
+        <attachmentClassifier>javadoc</attachmentClassifier>
+        <outputDirectory>/testing/apidocs/${module.artifactId}</outputDirectory>
+        <unpack>true</unpack>
+        <includeDependencies>false</includeDependencies>
+      </binaries>
+    </moduleSet>
+
+
+
+    <moduleSet>
+      <useAllReactorProjects>true</useAllReactorProjects>
+      <includes>
+        <include>org.thymeleaf.examples:*</include>
+      </includes>
+      <binaries>
+        <outputDirectory>/examples/binaries</outputDirectory>
+        <unpack>false</unpack>
+        <includeDependencies>false</includeDependencies>
+      </binaries>
+    </moduleSet>
+
+    <moduleSet>
+      <useAllReactorProjects>true</useAllReactorProjects>
+      <includes>
+        <include>org.thymeleaf.examples:*</include>
+      </includes>
+      <excludes>
+        <exclude>*:pom</exclude>
+      </excludes>
+      <sources>
+        <includeModuleDirectory>false</includeModuleDirectory>
+        <fileSets>
+          <fileSet>
+            <outputDirectory>/examples/sources/${module.basedir.name}</outputDirectory>
+            <excludes>
+              <exclude>${project.build.directory}/**</exclude>
+              <exclude>**/*.iml</exclude>
+              <exclude>.*</exclude>
+            </excludes>
+            <lineEnding>unix</lineEnding>
+          </fileSet>
+        </fileSets>
+      </sources>
+    </moduleSet>
+
+  </moduleSets>
+
+
+
+
   <fileSets>
-    <fileSet>
-      <directory>${project.basedir}/../lib/thymeleaf/target/apidocs/</directory>
-      <outputDirectory>/apidocs/thymeleaf/</outputDirectory>
-      <includes>
-        <include>**/*</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/../lib/thymeleaf-spring5/target/apidocs/</directory>
-      <outputDirectory>/apidocs/thymeleaf-spring5/</outputDirectory>
-      <includes>
-        <include>**/*</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/../lib/thymeleaf-spring6/target/apidocs/</directory>
-      <outputDirectory>/apidocs/thymeleaf-spring6/</outputDirectory>
-      <includes>
-        <include>**/*</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/../lib/testing/thymeleaf-testing/target/apidocs/</directory>
-      <outputDirectory>/apidocs/thymeleaf-testing/</outputDirectory>
-      <includes>
-        <include>**/*</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/../lib/testing/thymeleaf-testing-spring5/target/apidocs/</directory>
-      <outputDirectory>/apidocs/thymeleaf-testing-spring5/</outputDirectory>
-      <includes>
-        <include>**/*</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/../lib/testing/thymeleaf-testing-spring6/target/apidocs/</directory>
-      <outputDirectory>/apidocs/thymeleaf-testing-spring6/</outputDirectory>
-      <includes>
-        <include>**/*</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/../lib/thymeleaf/target/</directory>
-      <outputDirectory>/dist</outputDirectory>
-      <includes>
-        <include>thymeleaf-${project.version}.jar</include>
-        <include>thymeleaf-${project.version}-javadoc.jar</include>
-        <include>thymeleaf-${project.version}-sources.jar</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/../lib/thymeleaf-spring5/target/</directory>
-      <outputDirectory>/dist</outputDirectory>
-      <includes>
-        <include>thymeleaf-spring5-${project.version}.jar</include>
-        <include>thymeleaf-spring5-${project.version}-javadoc.jar</include>
-        <include>thymeleaf-spring5-${project.version}-sources.jar</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/../lib/thymeleaf-spring6/target/</directory>
-      <outputDirectory>/dist</outputDirectory>
-      <includes>
-        <include>thymeleaf-spring6-${project.version}.jar</include>
-        <include>thymeleaf-spring6-${project.version}-javadoc.jar</include>
-        <include>thymeleaf-spring6-${project.version}-sources.jar</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/../lib/testing/thymeleaf-testing/target/</directory>
-      <outputDirectory>/dist</outputDirectory>
-      <includes>
-        <include>thymeleaf-testing-${project.version}.jar</include>
-        <include>thymeleaf-testing-${project.version}-javadoc.jar</include>
-        <include>thymeleaf-testing-${project.version}-sources.jar</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/../lib/testing/thymeleaf-testing-spring5/target/</directory>
-      <outputDirectory>/dist</outputDirectory>
-      <includes>
-        <include>thymeleaf-testing-spring5-${project.version}.jar</include>
-        <include>thymeleaf-testing-spring5-${project.version}-javadoc.jar</include>
-        <include>thymeleaf-testing-spring5-${project.version}-sources.jar</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/../lib/testing/thymeleaf-testing-spring6/target/</directory>
-      <outputDirectory>/dist</outputDirectory>
-      <includes>
-        <include>thymeleaf-testing-spring6-${project.version}.jar</include>
-        <include>thymeleaf-testing-spring6-${project.version}-javadoc.jar</include>
-        <include>thymeleaf-testing-spring6-${project.version}-sources.jar</include>
-      </includes>
-    </fileSet>
     <fileSet>
       <directory>${project.basedir}/..</directory>
       <outputDirectory>/</outputDirectory>
@@ -115,23 +187,5 @@
       </includes>
     </fileSet>
   </fileSets>
-    
-    
-  <dependencySets>
-    <dependencySet>
-      <outputDirectory>/lib</outputDirectory>
-      <unpack>false</unpack>
-      <scope>runtime</scope>
-      <excludes>
-        <exclude>org.thymeleaf:thymeleaf</exclude>
-        <exclude>org.thymeleaf:thymeleaf-spring5</exclude>
-        <exclude>org.thymeleaf:thymeleaf-spring6</exclude>
-        <exclude>org.thymeleaf:thymeleaf-testing</exclude>
-        <exclude>org.thymeleaf:thymeleaf-testing-spring5</exclude>
-        <exclude>org.thymeleaf:thymeleaf-testing-spring6</exclude>
-      </excludes>
-    </dependencySet>
-  </dependencySets> 
-  
-  
+
 </assembly>
