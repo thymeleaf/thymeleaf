@@ -43,6 +43,12 @@
     <!-- =========================  -->
     <disclaimer-files.basedir>${project.basedir}/../..</disclaimer-files.basedir>
     <!-- =========================  -->
+    <!-- Configure JavaDoc plugin   -->
+    <!-- (Avoids JPMS issues.)      -->
+    <!-- =========================  -->
+    <maven.javadoc.source>8</maven.javadoc.source>
+    <maven.javadoc.release>8</maven.javadoc.release>
+    <!-- =========================  -->
     <!-- JPMS MODULE management     -->
     <!-- =========================  -->
     <module.name>TO_BE_SPECIFIED_BY_CHILDREN:module.name</module.name>
@@ -87,8 +93,8 @@
           <configuration>
             <show>protected</show>
             <noqualifier>java.lang</noqualifier>
-            <source>${maven.compiler.source}</source>
-            <release>${maven.compiler.release}</release>
+            <source>${maven.javadoc.source}</source>
+            <release>${maven.javadoc.release}</release>
             <overview>${basedir}/src/main/javadoc/overview.html</overview>
             <javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
             <reportOutputDirectory>${project.build.directory}/apidocs</reportOutputDirectory>
