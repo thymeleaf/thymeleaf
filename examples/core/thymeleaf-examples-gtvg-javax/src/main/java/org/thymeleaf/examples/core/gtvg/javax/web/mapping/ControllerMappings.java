@@ -53,8 +53,23 @@ public class ControllerMappings {
 
     
     public static IGTVGController resolveControllerForRequest(final IWebRequest request) {
-        final String path = request.getPathWithinApplication();
+        final String path = getRequestPath(request);
         return controllersByURL.get(path);
+    }
+
+
+    // Path within application might contain the ";jsessionid" fragment due to URL rewriting
+    private static String getRequestPath(final IWebRequest request) {
+
+        String requestPath = request.getPathWithinApplication();
+
+        final int fragmentIndex = requestPath.indexOf(';');
+        if (fragmentIndex != -1) {
+            requestPath = requestPath.substring(0, fragmentIndex);
+        }
+
+        return requestPath;
+
     }
 
     private ControllerMappings() {
