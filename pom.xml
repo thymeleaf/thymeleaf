@@ -174,7 +174,7 @@
     <maven-antrun-plugin.version>3.0.0</maven-antrun-plugin.version>
     <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
     <maven-versions-plugin.version>2.10.0</maven-versions-plugin.version>
-    <maven-cargo-plugin.version>1.9.10</maven-cargo-plugin.version>
+    <maven-cargo-plugin.version>1.9.13</maven-cargo-plugin.version>
   </properties>
 
 
