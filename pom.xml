@@ -219,6 +219,12 @@
       </dependency>
 
       <dependency>
+        <groupId>org.thymeleaf.examples</groupId>
+        <artifactId>thymeleaf-examples</artifactId>
+        <version>${thymeleaf.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>jakarta.servlet</groupId>
         <artifactId>jakarta.servlet-api</artifactId>
         <version>${jakarta-servlet-api.version}</version>

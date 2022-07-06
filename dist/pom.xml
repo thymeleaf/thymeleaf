@@ -82,4 +82,49 @@
     
   </build>
 
+  <dependencies>
+
+    <!--
+      ~ These dependencies should not be needed here, but
+      ~ the Maven Assembly Plugin is unable to use dependencies
+      ~ from the reactor execution when deployinh due to
+      ~ MASSEMBLY-907, and instead it needs these modules to
+      ~ be dependencies too.
+      ~
+      ~ See https://issues.apache.org/jira/projects/MASSEMBLY/issues/MASSEMBLY-907
+      -->
+
+    <dependency>
+      <groupId>org.thymeleaf</groupId>
+      <artifactId>thymeleaf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.thymeleaf</groupId>
+      <artifactId>thymeleaf-spring5</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.thymeleaf</groupId>
+      <artifactId>thymeleaf-spring6</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.thymeleaf.testing</groupId>
+      <artifactId>thymeleaf-testing</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.thymeleaf.testing</groupId>
+      <artifactId>thymeleaf-testing-spring5</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.thymeleaf.testing</groupId>
+      <artifactId>thymeleaf-testing-spring6</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.thymeleaf.examples</groupId>
+      <artifactId>thymeleaf-examples</artifactId>
+    </dependency>
+
+  </dependencies>
+
 </project>
