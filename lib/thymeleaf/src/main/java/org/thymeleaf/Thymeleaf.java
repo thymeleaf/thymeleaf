@@ -91,7 +91,9 @@ public final class Thymeleaf {
 
 
     public static boolean isVersionStableRelease() {
-        return STABLE_RELEASE_QUALIFIER.equals(VERSION_SPEC.getQualifier());
+        final String versionQualifier = getVersionQualifier();
+        return (!VERSION_SPEC.isUnknown() && versionQualifier == null)
+                || STABLE_RELEASE_QUALIFIER.equals(VERSION_SPEC.getQualifier());
     }
 
 
