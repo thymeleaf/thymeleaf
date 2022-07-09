@@ -136,6 +136,7 @@ public final class VersionUtils {
 
     public static final class VersionSpec {
 
+        private static final String STABLE_RELEASE_QUALIFIER = "RELEASE";
         private static final String UNKNOWN_VERSION = "UNKNOWN";
 
         private boolean unknown;
@@ -272,6 +273,11 @@ public final class VersionUtils {
             return this.major > major ||
                     (this.major == major && this.minor > minor) ||
                     (this.major == major && this.minor == minor && this.patch >= patch);
+        }
+
+        public boolean isStableRelease() {
+            return (!this.unknown && (this.qualifier == null || this.qualifier.length() == 0))
+                    || STABLE_RELEASE_QUALIFIER.equals(this.qualifier);
         }
 
     }

@@ -37,8 +37,6 @@ import org.thymeleaf.util.VersionUtils;
  */
 public final class Thymeleaf {
 
-    private static final String STABLE_RELEASE_QUALIFIER = "RELEASE";
-
     private static final VersionUtils.VersionSpec VERSION_SPEC;
 
 
@@ -89,11 +87,8 @@ public final class Thymeleaf {
         return VERSION_SPEC.getQualifier();
     }
 
-
     public static boolean isVersionStableRelease() {
-        final String versionQualifier = getVersionQualifier();
-        return (!VERSION_SPEC.isUnknown() && versionQualifier == null)
-                || STABLE_RELEASE_QUALIFIER.equals(VERSION_SPEC.getQualifier());
+        return VERSION_SPEC.isStableRelease();
     }
 
 
