@@ -22,6 +22,8 @@ package org.thymeleaf.spring5.expression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.SpelCompilerMode;
 import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpression;
@@ -173,13 +175,13 @@ public class SPELVariableExpressionEvaluator
             }
 
             final IEngineConfiguration configuration = context.getConfiguration();
-
+            ExpressionParser expressionParser = (ExpressionParser) context.getVariable("thymeleaf::ExpressionParser");
 
             /*
              * OBTAIN THE EXPRESSION (SpelExpression OBJECT) FROM THE CACHE, OR PARSE IT
              */
-            final ComputedSpelExpression exp =
-                    obtainComputedSpelExpression(configuration, expression, spelExpression, expContext);
+            final ComputedExpression exp =
+                    obtainComputedSpelExpression(configuration, expression, spelExpression, expContext, expressionParser);
 
 
             /*
@@ -299,10 +301,11 @@ public class SPELVariableExpressionEvaluator
 
 
 
-    private static ComputedSpelExpression obtainComputedSpelExpression(
+    private static ComputedExpression obtainComputedSpelExpression(
             final IEngineConfiguration configuration,
             final IStandardVariableExpression expression, final String spelExpression,
-            final StandardExpressionExecutionContext expContext) {
+            final StandardExpressionExecutionContext expContext,
+            final ExpressionParser expressionParser) {
 
         if (expContext.getRestrictInstantiationAndStatic()
                 && SpringStandardExpressionUtils.containsSpELInstantiationOrStaticOrParam(spelExpression)) {
@@ -315,14 +318,14 @@ public class SPELVariableExpressionEvaluator
             final VariableExpression vexpression = (VariableExpression) expression;
 
             Object cachedExpression = vexpression.getCachedExpression();
-            if (cachedExpression != null && cachedExpression instanceof ComputedSpelExpression) {
-                return (ComputedSpelExpression) cachedExpression;
+            if (cachedExpression != null && cachedExpression instanceof ComputedExpression) {
+                return (ComputedExpression) cachedExpression;
             }
-            cachedExpression = getExpression(configuration, spelExpression);
+            cachedExpression = getExpression(configuration, spelExpression, expressionParser);
             if (cachedExpression != null) {
                 vexpression.setCachedExpression(cachedExpression);
             }
-            return (ComputedSpelExpression) cachedExpression;
+            return (ComputedExpression) cachedExpression;
 
         }
 
@@ -331,48 +334,52 @@ public class SPELVariableExpressionEvaluator
             final SelectionVariableExpression vexpression = (SelectionVariableExpression) expression;
 
             Object cachedExpression = vexpression.getCachedExpression();
-            if (cachedExpression != null && cachedExpression instanceof ComputedSpelExpression) {
-                return (ComputedSpelExpression) cachedExpression;
+            if (cachedExpression != null && cachedExpression instanceof ComputedExpression) {
+                return (ComputedExpression) cachedExpression;
             }
-            cachedExpression = getExpression(configuration, spelExpression);
+            cachedExpression = getExpression(configuration, spelExpression, expressionParser);
             if (cachedExpression != null) {
                 vexpression.setCachedExpression(cachedExpression);
             }
-            return (ComputedSpelExpression) cachedExpression;
+            return (ComputedExpression) cachedExpression;
 
         }
 
-        return getExpression(configuration, spelExpression);
+        return getExpression(configuration, spelExpression, expressionParser);
 
     }
 
 
-    private static ComputedSpelExpression getExpression(
-            final IEngineConfiguration configuration, final String spelExpression) {
+    private static ComputedExpression getExpression(
+            final IEngineConfiguration configuration,
+            final String spelExpression,
+            final ExpressionParser expressionParser) {
 
-        ComputedSpelExpression exp = null;
+        ComputedExpression exp = null;
         ICache<ExpressionCacheKey, Object> cache = null;
 
         final ICacheManager cacheManager = configuration.getCacheManager();
         if (cacheManager != null) {
             cache = cacheManager.getExpressionCache();
             if (cache != null) {
-                exp = (ComputedSpelExpression) cache.get(new ExpressionCacheKey(EXPRESSION_CACHE_TYPE_SPEL,spelExpression));
+                exp = (ComputedExpression) cache.get(new ExpressionCacheKey(EXPRESSION_CACHE_TYPE_SPEL,spelExpression));
             }
         }
 
         if (exp == null) {
 
             // SELECT THE ADEQUATE SpEL EXPRESSION PARSER depending on whether SpEL compilation is enabled
-            final SpelExpressionParser spelExpressionParser =
-                    PARSER_WITH_COMPILED_SPEL != null && SpringStandardExpressions.isSpringELCompilerEnabled(configuration)?
-                            PARSER_WITH_COMPILED_SPEL : PARSER_WITHOUT_COMPILED_SPEL;
+            ExpressionParser parser = expressionParser;
+            if (parser==null) {
+                parser = PARSER_WITH_COMPILED_SPEL != null && SpringStandardExpressions.isSpringELCompilerEnabled(configuration)?
+                        PARSER_WITH_COMPILED_SPEL : PARSER_WITHOUT_COMPILED_SPEL;
+            }
 
             final boolean mightNeedExpressionObjects = StandardExpressionUtils.mightNeedExpressionObjects(spelExpression);
 
-            final SpelExpression spelExpressionObject = (SpelExpression) spelExpressionParser.parseExpression(spelExpression);
+            final Expression spelExpressionObject = parser.parseExpression(spelExpression);
 
-            exp = new ComputedSpelExpression(spelExpressionObject, mightNeedExpressionObjects);
+            exp = new ComputedExpression(spelExpressionObject, mightNeedExpressionObjects);
 
             if (cache != null && null != exp) {
                 cache.put(new ExpressionCacheKey(EXPRESSION_CACHE_TYPE_SPEL,spelExpression), exp);
@@ -416,12 +423,12 @@ public class SPELVariableExpressionEvaluator
 
 
 
-    private static final class ComputedSpelExpression {
+    private static final class ComputedExpression {
 
-        final SpelExpression expression;
+        final Expression expression;
         final boolean mightNeedExpressionObjects;
 
-        ComputedSpelExpression(final SpelExpression expression, final boolean mightNeedExpressionObjects) {
+        ComputedExpression(final Expression expression, final boolean mightNeedExpressionObjects) {
             super();
             this.expression = expression;
             this.mightNeedExpressionObjects = mightNeedExpressionObjects;
