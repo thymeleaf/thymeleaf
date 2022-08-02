@@ -279,10 +279,6 @@ public class SpringTemplateEngine
 
     @Override
     protected final void initializeSpecific() {
-
-        // First of all, give the opportunity to subclasses to apply their own configurations
-        initializeSpringSpecific();
-
         // Once the subclasses have had their opportunity, compute configurations belonging to SpringTemplateEngine
         super.initializeSpecific();
 
@@ -300,6 +296,8 @@ public class SpringTemplateEngine
 
         super.setMessageResolver(messageResolver);
 
+        // At last, give the opportunity to subclasses to apply their own configurations
+        initializeSpringSpecific();
     }
 
 
